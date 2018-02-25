@@ -1,0 +1,335 @@
+# Analysis of Options for Memory Interfaces for a Mobile-class Libre SoC
+
+This document covers why, according to best risk-reducing and practical
+issues, DDR3/DDR3L/LPDDR3 is the best option for a mobile-class SoC
+*at the time of writing*.
+
+The requirements which minimise risk are:
+
+* Reasonable power consumption for the target SoC (well below 1.5 watts)
+ power budget for the RAM ICs.
+* Minimum or equivalent of 700mhz @ 32-bit transfers (so 350mhz clockrate
+  for a total 700mhz DDR @ 32-bit or 175mhz @ 64-bit or 700mhz @ 16-bit)
+* Mass-volume pricing
+* High availability
+* Multiple suppliers
+* No more than 15 cm^3 board area required for RAM plus routing to SoC
+  (just about covers 4x DDR3 78-pin FBGA ICs, or 4x DDR3 96-pin FBGA ICs).
+  Around 15 cm^3 is quite generous, and is practical for making a credit-card
+  sized SBC with all RAM ICs and the SoC on TOP side of the PCB.
+
+Each of these will be covered in turn, below.  Then, there will be a
+separate section covering the various types of RAM offerings, including
+some innovative (research-style) ideas.  These are:
+
+* Package-on-Package (POP)
+* RAM on-die (known as Multi-Chip Modules)
+* MCM standard and *non*-standard interfaces (custom-designed)
+* Standard off-the-shelf die vs custom-made DRAM or SRAM ASIC
+* DDR1, DDR2, DDR3, DDR4 ....
+
+# Requirements
+
+## Power Consumption
+
+Lowering the power consumption is simply a practical consideration to keep
+cost down and make component selection, manufacturing and design of the PCB
+easier.  For example: if the AXP209 can be utilised as the PMIC for the
+entire product, that is a USD $0.5 part and the layout, amount of current
+it consumes, and general support including linux drivers makes it an easy
+choice.  On the other hand, if more complex PMIC layouts are required that
+automatically pushes pricing up, introduces risk and NREs.
+
+Therefore if the total budget for the entire design can be kept below
+around 3.5 watts, which translates roughly to around 1.5 watts for the memory
+and around 1.5 to 2W for the SoC, a lower-cost PMIC can be deployed *and*
+there is a lot less to worry about when it comes to thermal dissipation.
+
+Note that from Micron's Technical Note TN-41-01, a single x16 1033mhz
+DDR3 (not DDR3L) DRAM can consume 436mW on its own.  If two of those
+are deployed to give a 32-bit-wide memory interface @ 1033mhz, that's
+872mW which is just about acceptable.  It would be much better to
+consider using DDR3L (1.35v instead of 1.5v) as this would lower power
+consumption roughly on a square law with voltage for an approximate
+20% drop.
+
+## Minimum 700mhz @ 32-bit transfer rates
+
+This is a practical consideration for delivering reasonable performance
+and being able to cover 720 / 1080p video playback without stalling.
+Once decoded from their compressed format, video framebuffers take up
+an enormous amount of memory bandwidth, which cannot be cached on-chip
+so has to be written out to RAM and then read back in again.  Video
+(and 3D) therefore have a massive impact on the SoC's performance when
+using a lower-cost "shared memory bus" architecture.
+
+1.4 Gigabytes per second of raw reads/writes is therefore a reasonable
+compromise between development costs, overall system price, running too
+hot, and running so slow that users start complaining or cannot play
+certain videos or applications at all.
+If better than this absolute minimum can be achieved within the power
+budget that would be great.
+
+Other options to include are: going for a 64-bit wide total bus bandwidth,
+which can be achieved with either 4x 16-bit FBGA96 ICs, or 2x 32-bit
+FBGA168 LPDDR3 ICs.  The issue is: that assumes that it's okay to
+correspondingly increase the number of pins of the SoC by an extra
+100 on its pincount, in order to cover dual 32-bit DRAM interfaces.
+Aside from the increased licensing costs and power consumption associated
+with twin DRAM interfaces, the current proposed SoC is only 290 pins, meaning
+that it can be done as a 0.8mm pitch BGA that is only around 15mm on
+a side.  That makes it extremely low-cost and very easy to manufacture,
+even being possible to consider 4-layer PCBs and 10mil drill-holes
+(very cheap).
+
+If the pincount were increased to 400 it would be necessary to go to
+a 0.6mm pin pitch in order to keep the package size down.  That then in
+turn increases manufacturing costs (6-7 mil BGA VIA drill-holes, requiring
+laser-drilling) and so on.  Whilst it seems strange to consider the
+pin count and pin pitch of an SoC when considering something like the
+bandwidth of the memory bus, it goes some way to illustrate quite how
+interconnected everything really is.
+
+Bottom line: yes you *could* go to dual 32-bit-wide DDR RAM interfaces,
+but the *production* cost increases in doing so need to be taken into
+consideration.  Some SoCs do actually take only a 16-bit wide DDR RAM
+interface: these tend not to be very popular (or are used in specialist
+markets such as smart watches) as the reduction in memory bandwidth tends
+to go hand-in-hand with ultra-low-power scenarios.  Try putting them into
+the hands of mass-volume end users running general-purpose OSes such as
+Android and the users only complain and consider their purchase to have
+been a total waste of money.  32-bit-wide at around 1066mhz seems
+to be an acceptable compromise on all fronts.
+
+## Mass-volume Pricing, High availability, Multiple Suppliers
+
+These are all important inter-related considerations.  Surprisingly,
+older ICs *and* newer ICs tend to be higher cost.  It comes down to
+what is currently available and being mass-produced.  Older ICs fall
+out of popularity and thus become harder to find, or move to "legacy"
+foundries that have a higher cost per unit production.
+
+Newer ICs tend to be higher speeds and higher capacities, meaning that
+the yields are lower, the demands higher.  Costs can be sky high on a
+near-exponential curve based on capacity and speed compared to other
+offerings.
+
+Picking the right RAM interface (*and* picking the right speed grade range
+and bus bandwidth)
+that will ensure that the entire SoC
+has a useful lifetime is therefore really rather important!  If the
+expected lifetime is to be for example 5 years, it would be foolish
+to pick a DDR RAM interface that, towards the end of those 5 years,
+the cost of the only available RAM ICs is ten times higher than it
+was when the SoC first came out.
+
+In short - jumping the gun somewhat on why this document has been
+written - this means that DDR3/DDR3L/LPDDR3 is the preferred interface
+*at the moment*, given especially that SoCs such as the iMX6 have a
+support profile (lifetime) of 19 years, another 15 of which are
+still to go before the iMX6 reaches EOL.  Whilst DDR4/LPDDR4 would be
+"nice to have", it's still simply not reached the point yet where
+it's commonly available from multiple suppliers, and will not do
+so for many years yet.  It will require at least two Chinese
+Memory Manufacturers (not just Hynix, Micron and Samsung basically)
+before it starts to become price-competitive.  A quick search
+on taobao.com for Hynix P/N H9HCNNNBUUMLHR basically tells you
+what you need to know: very few suppliers, all with multiple
+"fake" listings, fluffing themselves up literally like a peacock
+to make them appear more attractive.  Compare that to searching
+for P/N H5TC4G63CFR on taobao and the fact that there are 5 *pages*
+of results from wildly disparate sellers, all roughly around the
+same price of RMB 20 (around USD $3) and that tells you that it's
+mass-produced and commonly available.
+
+## Board area
+
+15 cm^2 is about the minimum in which either four x8 or x16 DDR3 RAM ICs
+can be accommodated, including their routing, on one side of the PCB.
+There are other arrangements however 15 cm^2 is still reasonable
+for the majority of products with the exception of mobile phones and
+smaller sized smartphones.  7in Tablets, SBCs, Netbooks, Media Centres:
+all these products can be designed with a 15 cm^2 budget for RAM, and
+meet a very reasonable target price due to not needing 8+ layers, blind
+vias, double-sided reflow involving epoxy resin to glue underside ICs,
+or other strategies that get really quite expensive if they are to be
+considered for small initial production runs.
+
+With massive production budgets to jump over many of the hurdles, there is
+nothing to be concerned about.  However if considering a production and
+design budget below USD $50,000 and initial production runs using Shenzhen
+factories for pre-production and prototyping, "techniques" such as
+blind vias, 8+ layer PCBs and epoxy resin for gluing ICs onto the underside
+of PCBs become quickly cost-prohibitive, despite the costs averaging out
+by the time mass-production is reached.
+
+So there is a barrier to entry to overcome, and the simplest way to
+overcome that is to not get into the "small PCB budget" territory that
+requires these techniques in the first place.
+
+# RAM Design Options
+
+This section covers various options for board layout and IC selection,
+including custom-designing ICs.
+
+## Multi-Chip Modules
+
+This is basically where the SoC and the RAM bare die are on a common
+PCB *inside* the same IC packaging.  Routing between the dies is carried
+out on the common PCB, which is usually multi-layer.
+
+With the down-side that it requires large up-front costs to produce, plus
+an overhead on production costs when compared to separate ICs, the space
+and pincount savings can be enormous: one IC taking up 1.5 cm^2 instead
+of up to 15 cm^2 for a larger SoC plus routing plus 4 DRAM ICs, plus a
+saving of around 75 pins for 32-bit-wide DDR RAM not being needed to be
+brought out.
+
+In addition, beyond a certain speed (and number of dies on-board), the
+amount of power consumption could potentially exceed the thermal capacity
+of smaller packages in the first place.
+
+The short version is: for smaller DRAM sizes (32mb up to 256mb), on-board
+RAM as a Multi-Chip Module has proven extremely successful, as evidenced
+by the Ingenic M200 and X1000 SoCs that are used in smart watches sold in
+China.  Beyond that capacity (512mb and above) the cost of the resultant
+multi-die chip appear less attractive than a multi-chip solution, meaning
+that it is quite a risky investment proposition.
+
+## Package-on-Package RAM
+
+The simplest way to express how much PoP RAM is not a good idea is
+to reference the following, an analysis of a rather useful but
+very expensive lesson:
+<http://laforge.gnumonks.org/blog/20170306-gta04-omap3_pop_soldering/>
+
+Package-on-Package RAM basically saves a lot of space on a PCB by stacking
+ICs vertically.  It's typically used in mobile phones where space is at
+a premium, yet the flexibility when compared to (fixed capacity) Multi-Chip
+Modules is desirable.
+
+The problem comes in assembly, as the GTA04 / GTA05 team found out to their
+cost.  In the case of the TI SoC selected, it was discovered - *after* the
+design had been finalised and pre-production prototypes were being assembled -
+that the SoC actually *warped and buckled* under the heat of the reflow oven.
+"Fixing" this involves extremely careful analysis and much more costly
+equipment than is commonly available, plus trying tricks such as covering
+the SoC and the PoP RAM in U.V. sensitive epoxy resin prior to placing it
+into the reflow oven, as a way to make sure that the IC "stack" has a
+reduced chance of warpage.
+
+Normally, a PoP RAM supplier, knowing that these problems can occur, simply
+will not sell the RAM to a manufacturer unless they have proven expertise
+or deep pockets to solve these kinds of issues.  Nokia for example was known
+to have tried, in one case, to have failed sufficient times such that they
+had around 10,000 to 50,000 production-grade PCBs that needed to be recovered
+before they managed to find a solution.  Once they had succeeded they went
+back to those failed units, had the SoC and PoP RAM removed (and either
+re-balled or, if too badly warped, simply thrown out), and re-processed
+the PCBs with new PoP RAM and SoC on them rather than write them off entirely:
+still a costly proposition all on its own.
+
+In short: Package-on-Package RAM is only something that, realistically, a
+multi-billion-dollar company can consider, when the supply volumes are
+*guaranteed* to exceed tens of millions of units.
+
+## Multi-chip Module RAM Interfaces
+
+One possibility would be to consider either custom-designing
+a RAM IC vs using a standard (JEDEC) RAM interface, or even some kind
+of pre-existing Bus (ATI, Wishbone, AXI).  When DDR (JEDEC) standard
+interfaces are utilised, the advantage is that off-the-shelf die pricing
+and supply can be negotiated with any of the DRAM vendors.
+
+However, in a fully libre IC, if that is indeed one of the goals,
+it becomes necessary to actually implement the DRAM interface (JEDEC
+standard DDRn).  Several independent designers have considered this:
+there even exists two published DDR3 designs that are already available
+online, the only problem being: they are Controllers not including the
+PHY (actual pin pads).
+
+So to save on doing that, logically we might consider utilising a
+pre-existing bus for which the VHDL / Verilog source code already
+exists: ATI Bus, SRAM Bus, even ONFI, or better Wishbone or AXI.
+The only problem is: now that you are into non-standard territory,
+it becomes necessary to consider *designing and making your own DRAM*.
+This is covered in the following section.
+
+## Custom DRAM or SRAM vs off-the-shelf dies
+
+The distinct advantage of an off-the-shelf die that conforms to the JEDEC
+DDR1/2/3/4 standard is: it's a known quantity, mass-produced (all the
+advantages already described above).  We might reasonably wish to consider
+utilising SRAM instead, but SRAM is a multi-gate solution per "bit" whereas
+a DRAM cell is basically a capacitor, taking up only one gate's worth of
+space per bit: absolutely tiny, in other words, which is why it's used.
+
+Not only that but considering creating your own custom DRAM, you in effect
+become your own "single supplier", with Research and Development overheads
+to have had to take into consideration as well.
+
+In short: it's a huge risk with no guaranteed payoff, and not only that
+but if the development of the alternative DRAM fails but the SoC was
+designed exclusively without a JEDEC-standard DRAM interface on the
+expectation that the alternative DRAM *would* succeed, the SoC is now
+up the creek without a paddle.
+
+In reverse-engineering terms: the rule of thumb is, you never make more
+than one change at a time, because then you cannot tell which change
+actually caused the error.  An adaptation of this rule of thumb to apply
+heree: there are *three* changes being made: one to use a non-standard
+Memory interface, two to develop and eentirely new DRAM chip and three to
+use the same non-standard Memory interface *on* that DRAM IC.  In short,
+it's too much to consider all at once.
+
+## DDR1..DDR4
+
+Overall it's pointing towards using one of the standard JEDEC DDR interfaces.
+DDR1 only runs at 133mhz and the power consumption is enormous: 1.8v and above
+is not uncommon.  DDR2 again is too slow and too power-hungry.  DDR3 hits
+the right spot in terms of "common mass production" whereas DDR4, despite
+its speed and power consumption advantages, is migrating towards being
+too challenging.
+
+In an earlier section the availability of LPDDR4 RAM ICs, which would be great
+to use if they were easily accessible, was shown to be far too low.  Not only
+that but DDR4 runs at a minimum 2400mhz DDR clock rate: 1200mhz (1.2ghz!)
+signal paths.  It's now necessary to take into consideration the length of
+the tracks *on the actual dies* - both in the SoC and inside the DRAM - when
+designing the tracks between the two.  It's just far too risky to consider
+tackling.
+
+So overall this is reinforcing that DDR3/DDR3L/LPDDR3 is the right choice
+*at this time*.
+
+# Conclusion: DDR3/DDR3L/LPDDR3
+
+DDR3 basically meets the requirements.
+
+* 4x DDR3L 8-bit FBGA78 ICs @ 1066mhz meets the power budget
+* Likewise 2x DDR3L 16-bit FBGA96 @ 1066mhz
+* Likewise 1x LPDDR3 32-bit FBGA168 @ 1866mhz
+* Pricing and availability is good on 8x and 16x DDR3/DDR3L ICs
+  (not so much on LPDDR3)
+* There are multiple suppliers of DDR3 including some chinese companies
+* 4x DDR3 8/16-bit RAM ICs easily fits into around 15 cm^2.
+
+Risks are reduced, pricing is competitive, supply is guaranteed, future
+supply as speeds increase is also guaranteed, power consumption is reasonable.
+Overall everything points towards DDR3 *at the moment*.  Despite the iMX6
+still having nearly 15 years until it is EOL, meaning that Freescale / NXP
+genuinely anticipate availability of the types (speed grades) of DDR3 RAM ICs
+with which the iMX6 is compatible, it is *always* sensible to monitor the
+situation continuously, and, critically, to bear in mind that, in the
+projected lifespan planning, an SoC takes at least 18 months before it
+hits production.
+
+So from the moment that the SoC is planned, whatever peripherals (including
+DRAM ICs) it is to be used with, the availability planning starts a
+full *eighteen months* into the future.  For a libre SoC where many
+people working on it will not consider signing NDAs, it becomes even
+more critically important to ensure that whatever ICs it requires -
+DRAM especially - are cast-iron guaranteed to be available within the SoC's
+projected lifespan.  DDR3 it can be said to meet that and all other
+requirements.
+
