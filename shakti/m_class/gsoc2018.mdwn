@@ -18,16 +18,16 @@ pins can switch to different functions, just like any Embedded STM32F,
 or any Texas Instruments OMAP Series processor.
 
 A pre-existing multiplexer already exists which may provide a good starting
-point: https://github.com/wallento/pmod_switchbox.  Another exists
+point: <https://github.com/wallento/pmod_switchbox>.  Another exists
 in the form of the SiFive "IOF":
-https://github.com/sifive/freedom/blob/master/src/main/scala/everywhere/e300artydevkit/Platform.scala
+<https://github.com/sifive/freedom/blob/master/src/main/scala/everywhere/e300artydevkit/Platform.scala>
 
 Additional peripherals
 in the form of PWM, UART, I2C, SPI, SD/MMC and RGB/TTL already exist on
 http://opencores.org so there will be no need to develop those.
 
 If RISC-V is chosen (for example the lowRISC ethernet-0.5 branch
-https://github.com/lowRISC/lowrisc-chip/tree/ethernet-v0.5) then the
+<https://github.com/lowRISC/lowrisc-chip/tree/ethernet-v0.5>) then the
 first task will be to move the MicroSD and Ethernet peripherals aside
 and place the GPIO pinmux in between.  This should be a relatively
 straightforward task that on its own is a significant contribution,
