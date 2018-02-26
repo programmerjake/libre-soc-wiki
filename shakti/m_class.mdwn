@@ -211,111 +211,15 @@ Some interfaces at:
 * <https://github.com/sifive/freedom/blob/master/src/main/scala/everywhere/e300artydevkit/Platform.scala>
   Pinmux ("IOF") for multiplexing several I/O functions onto a single pin
 
-## I2C
+List of Interfaces:
 
-At its own page [[I2C]]
-
-## I2S
-
-At its own page [[I2S]]
-
-## FlexBus
-
-At its own page [[FlexBus]]
-
-## RGB/TTL interface
-
-At its own page [[RGBTTL]]
-
-## SPI
-
-At its own page [[SPI]]
-
-## SD/MMC (including eMMC)
-
-At its own page [[sdmmc]]
-
-# Pin Multiplexing
-
-Complex!  Covered in [[pinouts]].  The general idea is to target several
-distinct applications and, by trial-and-error, create a pinmux table that
-successfully covers all the target scenarios by providing absolutely all
-required functions for each and every target.  A few general rules:
-
-* Different functions (SPI, I2C) which overlap on the same pins on one
- bank should also be duplicated on completely different banks, both from
- each other and also the bank on which they overlap.  With each bank having
- separate Power Domains this strategy increases the chances of being able
- to place low-power and high-power peripherals and sensors on separate
- GPIO banks without needing external level-shifters.
-* Functions which have optional bus-widths (eMMC: 1/2/4/8) may have more
- functions overlapping them than would otherwise normally be considered.
-* Then the same overlapped high-order bus pins can also be mapped onto
- other pins.  This particularly applies to the very large buses, such
- as FlexBus (over 50 pins).  However if the overlapped pins are on a
- different bank it becomes necessary to have both banks run in the same
- GPIO Power Domain.
-* All functions should really be pin-muxed at least twice, preferably
- three times.  Four or more times on average makes it pointless to
- even have four-way pinmuxing at all, so this should be avoided.
- The only exceptions (functions which have not been pinmuxed multiple
- times) are the RGB/TTL LCD channel, and both ULPI interfaces.  
-
-## GPIO Pinmux Power Domains
-
-Of particular importance is the Power Domains for the GPIO.  Realistically
-it has to be flexible (simplest option: recommended to be between
-1.8v and 3.3v) as the majority of low-cost mass-produced sensors and
-peripherals on I2C, SPI, UART and SD/MMC are at or are compatible with
-this voltage range.  Long-tail (older / stable / low-cost / mass-produced)
-peripherals in particular tend to be 3.3v, whereas newer ones with a
-particular focus on Mobile tend to be 1.2v to 1.8v.
-
-A large percentage of sensors and peripherals have separate IO voltage
-domains from their main supply voltage: a good example is the SN75LVDS83b
-which has one power domain for the RGB/TTL I/O, one for the LVDS output,
-and one for the internal logic controller (typical deployments tend not
-to notice the different power-domain capability, as they usually supply all
-three voltages at 3.3v).
-
-Relying on this capability, however, by selecting a fixed voltage for
-the entire SoC's GPIO domain, is simply not a good idea: all sensors
-and peripherals which do not have a variable (VREF) capability for the
-logic side, or coincidentally are not at the exact same fixed voltage,
-will simply not be compatible if they are high-speed CMOS-level push-push
-driven.  Open-Drain on the other hand can be handled with a MOSFET for
-two-way or even a diode for one-way depending on the levels, but this means
-significant numbers of external components if the number of lines is large.
-
-So, selecting a fixed voltage (such as 1.8v or 3.3v) results in a bit of a
-problem: external level-shifting is required on pretty much absolutely every
-single pin, particularly the high-speed (CMOS) push-push I/O.  An example: the
-DM9000 is best run at 3.3v.  A fixed 1.8v FlexBus would
-require a whopping 18 pins (possibly even 24 for a 16-bit-wide bus)
-worth of level-shifting, which is not just costly
-but also a huge amount of PCB space: bear in mind that for level-shifting, an
-IC with **double** the number of pins being level-shifted is required.
-
-Given that level-shifting is an unavoidable necessity, and external
-level-shifting has such high cost(s), the workable solution is to
-actually include GPIO-group level-shifting actually on the SoC die,
-after the pin-muxer at the front-end (on the I/O pads of the die),
-on a per-bank basis.  This is an extremely common technique that is
-deployed across a very wide range of mass-volume SoCs.
-
-One very useful side-effect for example of a variable Power Domain voltage
-on a GPIO bank containing SD/MMC functionality is to be able to change the
-bank's voltage from 3.3v to 1.8v, to match an SD Card's capabilities, as
-permitted under the SD/MMC Specification.  The alternative is to be forced to
-deploy an external level-shifter IC (if PCB space and BOM target allows) or to
-fix the voltage at 3.3v and thus lose access to the low-power and higher-speed
-capabilities of modern SD Cards.
-
-In summary: putting level shifters right at the I/O pads of the SoC, after
-the pin-mux (so that the core logic remains at the core voltage) is a
-cost-effective solution that can have additional unintended side-benefits
-and cost savings beyond simply saving on external level-shifting components
-and board space.
+* [[I2C]]
+* [[I2S]]
+* [[FlexBus]]
+* LCD / RGB/TTL [[RGBTTL]]
+* [[SPI]]
+* SD/MMC and eMMC [[sdmmc]]
+* Pin Multiplexing [[pinmux]]
 
 # Items requiring clarification, or proposals TBD
 
