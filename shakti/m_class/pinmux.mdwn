@@ -7,7 +7,32 @@
 * <https://github.com/sifive/freedom/blob/master/src/main/scala/everywhere/e300artydevkit/Platform.scala>
   Pinmux ("IOF") for multiplexing several I/O functions onto a single pin
 
-Complex!  Covered in [[pinouts]].  The general idea is to target several
+Complex!  
+
+# Requirements
+
+"to create a general-purpose libre-licensed pinmux
+module that can be used with a wide range of interfaces that have
+Open-Drain, Push-Push *and bi-directional* capabilities, as well as
+optional pull-up and pull-down resistors, in an IDENTICAL fashion to
+that of ALL major well-known embedded SoCs from ST Micro, Cypress,
+Texas Instruments, NXP, Rockchip, Allwinner and many many others".
+
+## Analysis
+
+Questions:
+
+* Can damage occur by outputs being short-circuited to outputs in any way?
+  A partial analysis showed that because outputs are one-to-many, there should
+  not be a possibility for that to occur.  However what if a function is
+  bi-directional?
+* Is de-bouncing always needed on every input?  Is it ok for de-bouncing
+  to be only done on EINT?
+
+
+# Pinouts Specification
+
+Covered in [[pinouts]].  The general idea is to target several
 distinct applications and, by trial-and-error, create a pinmux table that
 successfully covers all the target scenarios by providing absolutely all
 required functions for each and every target.  A few general rules:
