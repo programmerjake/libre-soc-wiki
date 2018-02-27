@@ -56,7 +56,6 @@ def sdmmc(bankspec, suffix, offs, bank, mux=1, spec=None,
     sdmmcpins = ['CMD', 'CLK']
     for i in range(4):
         sdmmcpins.append("D%d" % i)
-    print sdmmcpins, start, limit
     sdmmcpins = sdmmcpins[start:limit]
     sdmmcpins = namesuffix('SD', suffix, sdmmcpins)
     return pins(sdmmcpins, bankspec, '', offs, bank, mux, spec)
@@ -108,9 +107,9 @@ def rgbttl(bankspec, suffix, offs, bank, mux=1, spec=None):
 
 def rgmii(bankspec, suffix, offs, bank, mux=1, spec=None):
     buspins = []
-    for i in range(3):
+    for i in range(4):
         buspins.append("RG_ERXD%d" % i)
-    for i in range(3):
+    for i in range(4):
         buspins.append("RG_ETXD%d" % i)
     for i in range(2):
         buspins.append("RG_FB_CS%d" % i)
