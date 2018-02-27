@@ -550,7 +550,7 @@ if __name__ == '__main__':
     # Bank G
     pinmerge(pinouts, gpio(bankspec, "", ('G', 0), "G", 0, 32, 0))
     pinmerge(pinouts, rgmii(bankspec, "", ('G', 0), "G", 1))
-    pinmerge(pinouts, ulpi(bankspec, "3", ('G', 18), "G", 1))
+    pinmerge(pinouts, ulpi(bankspec, "3", ('G', 20), "G", 1))
     pinmerge(pinouts, rgbttl(bankspec, "1", ('G', 0), "G", 2))
     pinmerge(pinouts, quadspi(bankspec, "3", ('G', 26), "G", 3))
     pinmerge(pinouts, flexbus2(bankspec, "", ('G', 0), "G", 3))
