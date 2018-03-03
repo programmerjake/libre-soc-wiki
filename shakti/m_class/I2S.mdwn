@@ -14,3 +14,64 @@ Question: how does I2S fit in with [[AC97]]?
 
 * <https://www.sparkfun.com/products/12767>
 * <https://cdn.sparkfun.com/datasheets/Dev/Teensy/SGTL5000.pdf>
+
+Audio Master Controller
+=======================
+
+Terminology and lots of confusion. I2S, AC97, PCM, TDM ???  :-)
+
+
+# Physical interface
+
+Both "I2S" and "AC97" use the same physical interface, which is
+really what "I2S" stands for. AC97 defined a TDM mechanism for
+fancy data packing.
+
+Multi bit or single bit ?
+
+So far I have not seen a single device with multiple serial data
+lines (but same bit and word clock). My understanding that multi
+bit will allow for multiple codecs, but since there is no particular
+standard for that, I would not recommend implementing this.
+
+A single I2S interface in TDM/AC97 mode, can support over 32
+channels of audio. It will be of advantage to have multiple I2S
+interfaces (complete blocks), as it will give most flexibility.
+I think two I2S interfaces should be sufficient (one internal
+link to Bluetooth and such, and one to a codec for external audio,
+like speaker, headphones, microphones).
+
+So I propose to have each I2S link look like this:
+* bit clock, input (may be optionally also an output - TBD)
+* word/frame/lr/sync clock, output
+* serial data, input
+* serial data, output
+* coder reset, output, optional
+
+# Protocols
+
+I don't think there is an easy way out, we need to support all
+protocols there are.
+
+* basic I2S L/R
+* PCM (very similar to I2S L/R)
+* AC97/TDM
+
+# Data Alignment
+
+Powerful data alignment is very important. It is relatively easy to
+implement in hardware, and is reduces the load on the CPU when moving
+audio data between different interfaces.
+* 8, 16, 18, 20, 24, 32 bit sample sizes supported
+* Left/Right alignment
+* Packed/unpacked streams
+
+# SoC Interface
+
+Two interfaces will be implemented:
+
+* AXI Light for Register file access
+* AXI Streaming Interface for data
+
+Both interfaces will be slave interfaces. An external DMA can
+be added to move data from AXI MM to AXI Streaming interface.
