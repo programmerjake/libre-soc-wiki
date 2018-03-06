@@ -545,8 +545,10 @@ if __name__ == '__main__':
         ],
 
       'POWER_GPIO':
-        ['VDD_GPIOA', 'VDD_GPIOB', 'VDD_GPIOC', 'VDD_GPIOD', 'VDD_GPIOE',
-         'GND_GPIOA', 'GND_GPIOB', 'GND_GPIOC', 'GND_GPIOD', 'GND_GPIOE',
+        ['VDD_GPIOA', 'VDD_GPIOB', 'VDD_GPIOC',
+         'VDD_GPIOD', 'VDD_GPIOE', 'VDD_GPIOD',
+         'GND_GPIOA', 'GND_GPIOB', 'GND_GPIOC',
+         'GND_GPIOD', 'GND_GPIOE', 'GND_GPIOF',
         ]
 
       }
