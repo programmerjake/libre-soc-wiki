@@ -436,7 +436,8 @@ if __name__ == '__main__':
                 'B': 16,
                 'C': 16,
                 'D': 16,
-                'E': 48,
+                'E': 16,
+                'F': 48,
               }
     bankspec = {}
     pkeys = pinbanks.keys()
@@ -470,29 +471,38 @@ if __name__ == '__main__':
         pinmerge(pinouts, pwm(bankspec, str(i+16), ('B', i), "B", mux=2))
 
     # Bank C, 32-47
-    pinmerge(pinouts, ulpi(bankspec, "0", ('C', 0), "C", 1))
-    pinmerge(pinouts, spi(bankspec, "0", ('C', 12), "C", 1))
+    pinmerge(pinouts, gpio(bankspec, "", ('C', 0), "C", 0, 16, 0))
+    pinmerge(pinouts, spi(bankspec, "1", ('C', 0), "C", 1))
+    pinmerge(pinouts, spi(bankspec, "2", ('C', 4), "C", 1))
+    pinmerge(pinouts, uart(bankspec, "2", ('C', 8), "C", 1))
+    pinmerge(pinouts, uart(bankspec, "3", ('C', 10), "C", 1))
+    pinmerge(pinouts, i2c(bankspec, "1", ('C', 12), "C", 1))
+    pinmerge(pinouts, i2c(bankspec, "3", ('C', 14), "C", 1))
 
-    # Bank D, 48-64
-    pinmerge(pinouts, sdmmc(bankspec, "0", ('D', 0), "D", 1))
-    pinmerge(pinouts, jtag(bankspec, "0", ('D', 6), "D", 1))
-    pinmerge(pinouts, uart(bankspec, "0", ('D', 10), "D", 1))
-    pinmerge(pinouts, i2c(bankspec, "0", ('D', 12), "D", 1))
-    pinmerge(pinouts, uart(bankspec, "1", ('D', 14), "D", 1))
+    # Bank C, 48-63
+    pinmerge(pinouts, ulpi(bankspec, "0", ('D', 0), "D", 1))
+    pinmerge(pinouts, spi(bankspec, "0", ('D', 12), "D", 1))
 
-    # Bank E, 64-111
+    # Bank D, 64-80
+    pinmerge(pinouts, sdmmc(bankspec, "0", ('E', 0), "E", 1))
+    pinmerge(pinouts, jtag(bankspec, "0", ('E', 6), "E", 1))
+    pinmerge(pinouts, uart(bankspec, "0", ('E', 10), "E", 1))
+    pinmerge(pinouts, i2c(bankspec, "0", ('E', 12), "E", 1))
+    pinmerge(pinouts, uart(bankspec, "1", ('E', 14), "E", 1))
+
+    # Bank F, 80-127
     flexspec = {
-        'FB_TS': ('FB_ALE', 2, "D"),
-        'FB_CS2': ('FB_BWE2', 2, "D"),
-        'FB_A0': ('FB_BWE2', 3, "D"),
-        'FB_CS3': ('FB_BWE3', 2, "D"),
-        'FB_A1': ('FB_BWE3', 3, "D"),
-        'FB_TBST': ('FB_OE', 2, "D"),
-        'FB_TSIZ0': ('FB_BWE0', 2, "D"),
-        'FB_TSIZ1': ('FB_BWE1', 2, "D"),
+        'FB_TS': ('FB_ALE', 2, "F"),
+        'FB_CS2': ('FB_BWE2', 2, "F"),
+        'FB_A0': ('FB_BWE2', 3, "F"),
+        'FB_CS3': ('FB_BWE3', 2, "F"),
+        'FB_A1': ('FB_BWE3', 3, "F"),
+        'FB_TBST': ('FB_OE', 2, "F"),
+        'FB_TSIZ0': ('FB_BWE0', 2, "F"),
+        'FB_TSIZ1': ('FB_BWE1', 2, "F"),
     }
-    pinmerge(pinouts, flexbus1(bankspec, "", ('E', 0), "E", 1))
-    pinmerge(pinouts, flexbus2(bankspec, "", ('E', 30), "E", 1, limit=8))
+    pinmerge(pinouts, flexbus1(bankspec, "", ('F', 0), "F", 1))
+    pinmerge(pinouts, flexbus2(bankspec, "", ('F', 30), "F", 1, limit=8))
 
     print "# Pinouts (PinMux)"
     print
@@ -596,8 +606,8 @@ if __name__ == '__main__':
 
     robotics = ['FB', 'ULPI0/8', 
                 'SD0',
-                'JTAG0', 'D1:UART0', 
-              'C1:SPI0', 'D1:TWI0']
+                'JTAG0', 'E1:UART0', 
+              'D1:SPI0', 'E1:TWI0']
     robotics_pwm = []
     for i in range(32):
         robotics_pwm.append('PWM_%d' % i)
