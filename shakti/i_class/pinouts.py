@@ -596,8 +596,8 @@ if __name__ == '__main__':
 
     robotics = ['FB', 'ULPI0/8', 
                 'SD0',
-                'JTAG0', 'UART0', 
-              'SPI0', 'TWI0']
+                'JTAG0', 'D1:UART0', 
+              'C1:SPI0', 'D1:TWI0']
     robotics_pwm = []
     for i in range(32):
         robotics_pwm.append('PWM_%d' % i)
