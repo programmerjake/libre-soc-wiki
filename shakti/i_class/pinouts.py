@@ -140,6 +140,32 @@ def flexbus2(bankspec, suffix, offs, bank, mux=1, spec=None, limit=None):
         buspins.append("FB_AD%d" % i)
     return pins(buspins, bankspec, suffix, offs, bank, mux, spec, limit)
 
+def sdram1(bankspec, suffix, offs, bank, mux=1, spec=None):
+    buspins = []
+    for i in range(16):
+        buspins.append("SDRDQM%d" % i)
+    for i in range(12):
+        buspins.append("SDRAD%d" % i)
+    for i in range(8):
+        buspins.append("SDRDQ%d" % i)
+    for i in range(3):
+        buspins.append("SDRCS%d#" % i)
+    for i in range(2):
+        buspins.append("SDRDQ%d" % i)
+    for i in range(2):
+        buspins.append("SDRBA%d" % i)
+    buspins += ['SDRCKE', 'SDRRAS#', 'SDRCAS#', 'SDRWE#',
+                'SDRRST']
+    return pins(buspins, bankspec, suffix, offs, bank, mux, spec)
+
+def sdram2(bankspec, suffix, offs, bank, mux=1, spec=None, limit=None):
+    buspins = []
+    for i in range(3,6):
+        buspins.append("SDRCS%d#" % i)
+    for i in range(8,32):
+        buspins.append("SDRDQ%d" % i)
+    return pins(buspins, bankspec, suffix, offs, bank, mux, spec, limit)
+
 def mcu8080(bankspec, suffix, offs, bank, mux=1, spec=None):
     buspins = []
     for i in range(8):
@@ -480,11 +506,11 @@ if __name__ == '__main__':
     pinmerge(pinouts, i2c(bankspec, "1", ('C', 12), "C", 1))
     pinmerge(pinouts, i2c(bankspec, "3", ('C', 14), "C", 1))
 
-    # Bank C, 48-63
+    # Bank D, 48-63
     pinmerge(pinouts, ulpi(bankspec, "0", ('D', 0), "D", 1))
     pinmerge(pinouts, spi(bankspec, "0", ('D', 12), "D", 1))
 
-    # Bank D, 64-80
+    # Bank E, 64-80
     pinmerge(pinouts, sdmmc(bankspec, "0", ('E', 0), "E", 1))
     pinmerge(pinouts, jtag(bankspec, "0", ('E', 6), "E", 1))
     pinmerge(pinouts, uart(bankspec, "0", ('E', 10), "E", 1))
