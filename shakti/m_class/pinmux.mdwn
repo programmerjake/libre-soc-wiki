@@ -6,6 +6,7 @@
   is a Watchdog Timer and others.
 * <https://github.com/sifive/freedom/blob/master/src/main/scala/everywhere/e300artydevkit/Platform.scala>
   Pinmux ("IOF") for multiplexing several I/O functions onto a single pin
+* <https://bitbucket.org/casl/pinmux.git> - implementation by Shakti RISE Group
 
 Surprisingly complex!  
 
@@ -18,16 +19,20 @@ optional pull-up and pull-down resistors, in an IDENTICAL fashion to
 that of ALL major well-known embedded SoCs from ST Micro, Cypress,
 Texas Instruments, NXP, Rockchip, Allwinner and many many others".
 
+* The IO pad shall have pull-up enable, pull-down enable, variable
+  frequency de-bounce (schmidt trigger), tri-state capability, 
+  variable current drive (on input), Open Drain and CMOS Push-Push.
+* Certain functions shall have the ability to control whether
+  IO pads will be input or output (not the GPIO registers).
 * Number of wires shall be minimised especially in cases where
   the IO pad (puen, oe) need to change under the control of the
   function (not the GPIO registers).
-* There shall be no short-circuits created by multiple input
-  pins trying to drive the same input function
-* The IO pad shall have pull-up enable, pull-down enable, variable
-  frequency de-bounce, tri-state capability, Open Drain and CMOS
-  Push-Push.
 * The amount of latency (gates in between I/O pad and function)
   shall be minimised
+* There shall be no short-circuits created by multiple input
+  pins trying to drive the same input function
+* There shall be no short-circuits even when functions control
+  when the IO pad is an input.
 
 ## Analysis
 
