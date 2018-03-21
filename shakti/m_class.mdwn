@@ -108,7 +108,7 @@ firmly a priority focus.
 * SD/MMC for external MicroSD
 * SD/MMC for on-PCB eMMC (care needed on power/boot sequence)
 * NAND Flash (not recommended), requires 8080/ATI-style Bus with dedicated CS#
-* Optional 4-wire SPI NAND/NOR for boot (XIP - Execute In-place - recommended).
+* Optional 4-wire [[QSPI]] NAND/NOR for boot (XIP - Execute In-place - recommended).
 * Audio over [[I2S]] (5-pin: 4 for output, 1 for input), fall-back to USB Audio
 * Audio also over [[AC97]]
 * Some additional SPI peripherals, e.g. connection to low-power MCU.
@@ -202,8 +202,8 @@ TBD
 
 * Plain [[GPIO]] multiplexed with a [[pinmux]] onto (nearly) all other pins
 * RGB/TTL up to 1440x900 @ 60fps, 24-bit colour
-* 2x 1-lane SPI
-* 1x 4-lane (quad) SPI
+* 2x 1-lane [[SPI]]
+* 1x 4-lane (quad) [[QSPI]]
 * 4x SD/MMC (1x 1/2/4/8-bit, 3x 1/2/4-bit)
 * 2x full UART incl. CTS/RTS
 * 3x UART (TX/RX only)
@@ -236,6 +236,7 @@ List of Interfaces:
 * [[FlexBus]]
 * LCD / RGB/TTL [[RGBTTL]]
 * [[SPI]]
+* [[QSPI]]
 * SD/MMC and eMMC [[sdmmc]]
 * Pin Multiplexing [[pinmux]]
 * Gigabit Ethernet [[RGMII]]
