@@ -27,6 +27,23 @@ performance improvements and where they wish to optimise for power
 and/or area.  If that can be offered even on a per-operation basis that
 would provide even more flexibility.
 
+**TODO**: reword this to better suit this document:
+
+Having looked at both P and V as they stand, they're _both_ very much
+"separate engines" that, despite both their respective merits and
+extremely powerful features, don't really cleanly fit into the RV design
+ethos (or the flexible extensibility) and, as such, are both in danger
+of not being widely adopted.  I'm inclined towards recommending:
+
+* splitting out the DSP aspects of P-SIMD to create a single-issue DSP
+* splitting out the polymorphism, esoteric data types (GF, complex
+  numbers) and unusual operations of V to create a single-issue "Esoteric
+  Floating-Point" extension
+* splitting out the loop-aspects, vector aspects and data-width aspects
+  of both P and V to a *new* "P-SIMD / Simple-V" and requiring that they
+  apply across *all* Extensions, whether those be DSP, M, Base, V, P -
+  everything.
+
 # Analysis and discussion of Vector vs SIMD
 
 There are four combined areas between the two proposals that help with
