@@ -145,6 +145,16 @@ architecture.
 Constructing a SIMD/Simple-Vector proposal based around even only these four
 (five?) requirements would therefore seem to be a logical thing to do.
 
+# Instruction Format
+
+**TODO** *basically borrow from both P and V, which should be quite simple
+to do, with the exception of Tag/no-tag, which needs a bit more
+thought.  V's Section 17.19 of Draft V2.3 spec is reminiscent of B's BGS
+gather-scatterer, and, if implemented, could actually be a really useful
+way to span 8-bit up to 64-bit groups of data, where BGS as it stands
+and described by Clifford does **bits** of up to 16 width.  Lots to
+look at and investigate!*
+
 # References
 
 * SIMD considered harmful <https://www.sigarch.org/simd-instructions-considered-harmful/>
@@ -153,4 +163,4 @@ Constructing a SIMD/Simple-Vector proposal based around even only these four
   "implicit program-counter" <https://groups.google.com/a/groups.riscv.org/d/msg/isa-dev/vYVi95gF2Mo/SHz6a4_lAgAJ>
 * Re-continuing P-Extension proposal <https://groups.google.com/a/groups.riscv.org/forum/#!msg/isa-dev/IkLkQn3HvXQ/SEMyC9IlAgAJ>
 * First Draft P-SIMD (DSP) proposal <https://groups.google.com/a/groups.riscv.org/forum/#!topic/isa-dev/vYVi95gF2Mo>
-
+* B-Extension discussion <https://groups.google.com/a/groups.riscv.org/forum/#!topic/isa-dev/zi_7B15kj6s>
