@@ -69,6 +69,12 @@ This has some extremely useful properties, without being particularly
 burdensome to implementations, given that instruction decode already has
 to direct the operation to a correctly-sized width ALU engine, anyway.
 
+Not least: in places where an ISA was previously constrained (due for
+whatever reason, including limitations of the available operand spcace),
+implicit bit-width allows the meaning of certain operations to be
+type-overloaded *without* pollution or alteration of frozen and immutable
+instructions, in a fully backwards-compatible fashion.
+
 ## Implicit and explicit type-conversion
 
 The Draft 2.3 V-extension proposal has (deprecated) polymorphism to help
@@ -117,7 +123,13 @@ follows:
 * Implicit vs explicit type-conversion: <b>explicit</b>
 * Implicit vs explicit inner loops: <b>implicit</b>
 
-
+In particular: variable-length vectors came out on top because of the
+high setup, teardown and corner-cases associated with the fixed width
+of SIMD.  Implicit bit-width helps to extend the ISA to escape from
+former limitations and restrictions (in a backwards-compatible fashion),
+and implicit (zero-overhead) loops provide a means to keep pipelines
+potentially 100% occupied *without* requiring a super-scalar or out-of-order
+architecture.
 
 # References
 
