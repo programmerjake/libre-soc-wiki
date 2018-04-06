@@ -27,8 +27,12 @@ Therefore it makes a huge amount of sense to have a means and method
 of introducing instruction parallelism in a flexible way that provides
 implementors with the option to choose exactly where they wish to offer
 performance improvements and where they wish to optimise for power
-and/or area.  If that can be offered even on a per-operation basis that
-would provide even more flexibility.
+and/or area (and if that can be offered even on a per-operation basis that
+would provide even more flexibility).
+
+Additionally it makes sense to *split out* the parallelism inherent within
+each of P and V, and to see if each of P and V then, in *combination* with
+a "best-of-both" parallelism extension, would work well.
 
 **TODO**: reword this to better suit this document:
 
@@ -180,6 +184,42 @@ way to span 8-bit up to 64-bit groups of data, where BGS as it stands
 and described by Clifford does **bits** of up to 16 width.  Lots to
 look at and investigate!*
 
+# Note on implementation of parallelism
+
+One extremely important aspect of this proposal is to respect and support
+implementors desire to focus on power, area or performance.  In that regard,
+it is proposed that implementors be free to choose whether to implement
+the Vector (or variable-width SIMD) parallelism as sequential operations
+with a single ALU, fully parallel (if practical) with multiple ALUs, or
+a hybrid combination of both.
+
+In Broadcom's Videocore-IV, they chose hybrid, and called it "Virtual
+Parallelism".  They achieve a 16-way SIMD at an **instruction** level
+by providing a combination of a 4-way parallel ALU *and* an externally
+transparent loop that feeds 4 sequential sets of data into each of the
+4 ALUs.
+
+Also in the same core, it is worth noting that particularly uncommon
+but essential operations (Reciprocal-Square-Root for example) are
+*not* part of the 4-way parallel ALU but instead have a *single* ALU.
+Under the proposed Vector (varible-width SIMD) implementors would
+be free to do precisely that: i.e. free to choose *on a per operation
+basis* whether and how much "Virtual Parallelism" to deploy.
+
+It is absolutely critical to note that it is proposed that such choices MUST
+be **entirely transparent** to the end-user and the compiler.  Whilst
+a Vector (varible-width SIM) may not precisely match the width of the
+parallelism within the implementation, the end-user **should not care**
+and in this way the performance benefits are gained but the ISA remains
+simple.  All that happens at the end of an instruction run is: some
+parallel units (if there are any) would remain offline, completely
+transparently to the ISA, the program, and the compiler.
+
+The "SIMD considered harmful" trap of having huge complexity and extra
+instructions to deal with corner-cases is thus avoided, and implementors
+get to choose precisely where to focus and target the benefits of their
+implementationefforts..
+
 # References
 
 * SIMD considered harmful <https://www.sigarch.org/simd-instructions-considered-harmful/>
@@ -189,3 +229,5 @@ look at and investigate!*
 * Re-continuing P-Extension proposal <https://groups.google.com/a/groups.riscv.org/forum/#!msg/isa-dev/IkLkQn3HvXQ/SEMyC9IlAgAJ>
 * First Draft P-SIMD (DSP) proposal <https://groups.google.com/a/groups.riscv.org/forum/#!topic/isa-dev/vYVi95gF2Mo>
 * B-Extension discussion <https://groups.google.com/a/groups.riscv.org/forum/#!topic/isa-dev/zi_7B15kj6s>
+* Broadcom VideoCore-IV <https://docs.broadcom.com/docs/12358545>
+  Figure 2 P17 and Section 3 on P16.
