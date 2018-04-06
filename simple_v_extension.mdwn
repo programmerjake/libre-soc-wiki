@@ -22,11 +22,94 @@ performance improvements and where they wish to optimise for power
 and area.  If that can be offered even on a per-operation basis that
 would provide even more flexibility.
 
+# Analysis and discussion of Vector vs SIMD
+
+There are four combined areas between the two proposals that help with
+parallelism without over-burdening the ISA with a huge proliferation of
+instructions:
+
+* Fixed vs variable parallelism (fixed or variable "M" in SIMD)
+* Implicit vs fixed instruction bit-width (integral to instruction or not)
+* Implicit vs explicit type-conversion (compounded on bit-width)
+* Implicit vs explicit inner loops.
+
+The pros and cons of each are discussed and analysed below.
+
+## Fixed vs variable parallelism length
+
 In David Patterson and Andrew Waterman's analysis of SIMD and Vector
-ISAs, the analysis comes out clearly in favour of 
+ISAs, the analysis comes out clearly in favour of (effectively) variable
+length SIMD.  As SIMD is a fixed width, typically 4, 8 or in extreme cases
+16 or 32 simultaneous operations, the setup, teardown and corner-cases of SIMD
+are extremely burdensome except for applications that *specifically* require
+match the *precise and exact* depth of the SIMD engine.
+
+Thus, SIMD, no matter what width is chosen, is never going to be acceptable
+for general-purpose computation.
+
+That basically leaves "variable-length vector" as the clear *general-purpose*
+winner, at least in terms of greatly simplifying the instruction set,
+reducing the number of instructions required for any given task, and thus
+reducing power consumption for the same.
+
+## Implicit vs fixed instruction bit-width
+
+SIMD again has a severe disadvantage here, over Vector: huge proliferation
+of specialist instructions that target 8-bit, 16-bit, 32-bit, 64-bit, and
+have to then have operations *for each and between each*.  It gets very
+messy, very quickly.
+
+The V-Extension on the other hand proposes to set the bit-width of
+future instructions on a per-register basis, such that subsequent instructions
+involving that register are *implicitly* of that particular bit-width until
+otherwise changed or reset.
+
+This has some extremely useful properties, without being particularly
+burdensome to implementations, given that instruction decode already has
+to direct the operation to a correctly-sized width ALU engine, anyway.
+
+## Implicit and explicit type-conversion
+
+The Draft 2.3 V-extension proposal has (deprecated) polymorphism to help
+deal with over-population of instructions, such that type-casting from
+integer (and floating point) of various sizes is automatically inferred
+due to "type tagging" that is set with a special instruction.  A register
+will be *specifically* marked as "16-bit Floating-Point" and, if added
+to an operand that is specifically tagged as "32-bit Integer" an implicit
+type-conversion will take placce *without* requiring that type-conversion
+to be explicitly done with its own separate instruction.
+
+However, implicit type-conversion is not only quite burdensome to
+implement (explosion of inferred type-to-type conversion) but also is
+never really going to be complete.  It gets even worse when bit-widths
+also have to be taken into consideration.
+
+Overall, type-conversion is generally best to leave to explicit
+type-conversion instructions, or in definite specific use-cases left to
+be part of an actual instruction (DSP or FP)
+
+## Zero-overhead loops vs explicit loops
+
+The initial Draft P-SIMD Proposal by Chuanhua Chang of Andes Technology
+contains an extremely interesting feature: zero-overhead loops.  This
+proposal would basically allow an inner loop of instructions to be
+repeated indefinitely, a fixed number of times.
+
+Its specific advantage over explicit loops is that the pipeline in a
+DSP can potentially be kept completely full *even in an in-order
+implementation*.  Normally, it requires a superscalar architecture and
+out-of-order execution capabilities to "pre-process" instructions in order
+to keep ALU pipelines 100% occupied.
+
+This very simple proposal offers a way to increase pipeline activity in the
+one key area which really matters: the inner loop.
+
+# References
 
 * SIMD considered harmful <https://www.sigarch.org/simd-instructions-considered-harmful/>
 * Link to first proposal <https://groups.google.com/a/groups.riscv.org/forum/#!topic/isa-dev/GuukrSjgBH8>
 * Recommendation by Jacob Bachmeyer to make zero-overhead loop an
   "implicit program-counter" <https://groups.google.com/a/groups.riscv.org/d/msg/isa-dev/vYVi95gF2Mo/SHz6a4_lAgAJ>
 * Re-continuing P-Extension proposal <https://groups.google.com/a/groups.riscv.org/forum/#!msg/isa-dev/IkLkQn3HvXQ/SEMyC9IlAgAJ>
+* First Draft P-SIMD (DSP) proposal <https://groups.google.com/a/groups.riscv.org/forum/#!topic/isa-dev/vYVi95gF2Mo>
+
