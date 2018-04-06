@@ -1,5 +1,31 @@
 # SIMD / Simple-V Extension Proposal
 
+This proposal exists so as to be able to satisfy several disparate
+requirements: area-conscious designs and performance-conscious designs.
+Also, the existing P (SIMD) proposal and the V (Vector) proposals,
+whilst each extremely powerful in their own right and clearly desirable,
+are also:
+
+* Clearly independent in their origins (Cray and AndeStar v3 respectively)
+* Both contain duplication of pre-existing RISC-V instructions
+* Both have independent and disparate methods for introducing parallelism
+  at the instruction level.
+* Both require that their respective parallelism paradigm be implemented
+  along-side their respective functionality *or not at all*.
+* Both independently have methods for introducing parallelism that could,
+  if separated, benefit *other areas of RISC-V not just DSP and Floating-point*.
+
+Therefore it makes a huge amount of sense to have a means and method
+of introducing instruction parallelism in a flexible way that provides
+implementors with the option to choose exactly where they wish to offer
+performance improvements and where they wish to optimise for power
+and area.  If that can be offered even on a per-operation basis that
+would provide even more flexibility.
+
+In David Patterson and Andrew Waterman's analysis of SIMD and Vector
+ISAs, the analysis comes out clearly in favour of 
+
+* SIMD considered harmful <https://www.sigarch.org/simd-instructions-considered-harmful/>
 * Link to first proposal <https://groups.google.com/a/groups.riscv.org/forum/#!topic/isa-dev/GuukrSjgBH8>
 * Recommendation by Jacob Bachmeyer to make zero-overhead loop an
   "implicit program-counter" <https://groups.google.com/a/groups.riscv.org/d/msg/isa-dev/vYVi95gF2Mo/SHz6a4_lAgAJ>
