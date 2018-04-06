@@ -111,6 +111,15 @@ to keep ALU pipelines 100% occupied.
 This very simple proposal offers a way to increase pipeline activity in the
 one key area which really matters: the inner loop.
 
+## Mask and Tagging
+
+*TODO: research masks as they can be superb and extremely powerful.
+If B-Extension is implemented and provides Bit-Gather-Scatter it
+becomes really cool and easy to switch out certain indexed values
+from an array of data, but actually BGS **on its own** might be
+sufficient.  Bottom line, this is complex, and needs a proper analysis.
+The other sections are pretty straightforward.*
+
 ## Conclusions
 
 In the above sections the four different ways where parallel instruction
@@ -122,6 +131,7 @@ follows:
 * Implicit (indirect) vs fixed (integral) instruction bit-width: <b>indirect</b>
 * Implicit vs explicit type-conversion: <b>explicit</b>
 * Implicit vs explicit inner loops: <b>implicit</b>
+* Tag or no-tag: <b>TODO</b>
 
 In particular: variable-length vectors came out on top because of the
 high setup, teardown and corner-cases associated with the fixed width
@@ -130,6 +140,9 @@ former limitations and restrictions (in a backwards-compatible fashion),
 and implicit (zero-overhead) loops provide a means to keep pipelines
 potentially 100% occupied *without* requiring a super-scalar or out-of-order
 architecture.
+
+Constructing a SIMD/Simple-Vector proposal based around even only these four
+(five?) requirements would therefore seem to be a logical thing to do.
 
 # References
 
