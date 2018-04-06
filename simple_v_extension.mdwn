@@ -105,6 +105,20 @@ to keep ALU pipelines 100% occupied.
 This very simple proposal offers a way to increase pipeline activity in the
 one key area which really matters: the inner loop.
 
+## Conclusions
+
+In the above sections the four different ways where parallel instruction
+execution has closely and loosely inter-related implications for the ISA and
+for implementors, were outlined.  The pluses and minuses came out as
+follows:
+
+* Fixed vs variable parallelism: <b>variable</b>
+* Implicit (indirect) vs fixed (integral) instruction bit-width: <b>indirect</b>
+* Implicit vs explicit type-conversion: <b>explicit</b>
+* Implicit vs explicit inner loops: <b>implicit</b>
+
+
+
 # References
 
 * SIMD considered harmful <https://www.sigarch.org/simd-instructions-considered-harmful/>
