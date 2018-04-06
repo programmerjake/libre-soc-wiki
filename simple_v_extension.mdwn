@@ -41,11 +41,12 @@ In David Patterson and Andrew Waterman's analysis of SIMD and Vector
 ISAs, the analysis comes out clearly in favour of (effectively) variable
 length SIMD.  As SIMD is a fixed width, typically 4, 8 or in extreme cases
 16 or 32 simultaneous operations, the setup, teardown and corner-cases of SIMD
-are extremely burdensome except for applications that *specifically* require
-match the *precise and exact* depth of the SIMD engine.
+are extremely burdensome except for applications whose requirements
+*specifically* match the *precise and exact* depth of the SIMD engine.
 
 Thus, SIMD, no matter what width is chosen, is never going to be acceptable
-for general-purpose computation.
+for general-purpose computation, and in the context of developing a
+general-purpose ISA, is never going to satisfy 100 percent of implementors.
 
 That basically leaves "variable-length vector" as the clear *general-purpose*
 winner, at least in terms of greatly simplifying the instruction set,
