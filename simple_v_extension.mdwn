@@ -492,6 +492,23 @@ existing non-Simple-V implementation.  i say that despite really *really*
 wanting IEEE 704 FP Half-precision to end up somewhere in RISC-V in some
 fashion, for optimising 3D Graphics.  *sigh*.
 
+## TODO: instructions (based on Hwacha) V-Ext duplication analysis
+
+This is partly speculative due to lack of access to an up-to-date
+V-Ext Spec (V2.3-draft RVV 0.4-Draft at the time of writing).  However
+basin an analysis instead on Hwacha, a cursory examination shows over
+an **85%** duplication of V-Ext operand-related instructions when
+compared to Simple-V on a standard RG64G base.   Even Vector Fetch
+is analogous to "zero-overhead loop".
+
+Exceptions are:
+
+* Vector Indexed Memory Instructions (non-contiguous)
+* Vector Atomic Memory Instructions.
+* Some of the Vector Arithmetic ops: FMIN, FMAX, FSQRT, MADD, MSUB,
+  VSRL, VSRA, VEIDX, VFIRST, VSGNJN, VFSGNJX and potentially more.
+* Consensual Jump
+
 ## TODO: sort
 
 > I suspect that the "hardware loop" in question is actually a zero-overhead
@@ -540,3 +557,5 @@ translates effectively to:
 * B-Extension discussion <https://groups.google.com/a/groups.riscv.org/forum/#!topic/isa-dev/zi_7B15kj6s>
 * Broadcom VideoCore-IV <https://docs.broadcom.com/docs/12358545>
   Figure 2 P17 and Section 3 on P16.
+* Hwacha <https://www2.eecs.berkeley.edu/Pubs/TechRpts/2015/EECS-2015-262.html>
+* Hwacha <https://www2.eecs.berkeley.edu/Pubs/TechRpts/2015/EECS-2015-263.html>
