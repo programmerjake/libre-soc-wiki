@@ -315,8 +315,46 @@ Has a direct corresponding equivalent.
 
 ## 17.17 Predicated Execution
 
+Predicated Execution is another name for "masking" or "tagging".  Masked
+(or tagged) implies that there is a bit field which is indexed, and each
+bit associated with the corresponding indexed offset register within
+the "Vector".  If the tag / mask bit is 1, when a parallel operation is
+issued, the indexed element of the vector has the operation carried out.
+However if the tag / mask bit is *zero*, that particular indexed element
+of the vector does *not* have the requested operation carried out.
 
+In V2.3-draft V, there is a significant (not recommended) difference:
+the zero-tagged elements are *set to zero*.  This loses a *significant*
+advantage of mask / tagging, particularly if the entire mask register
+is itself a general-purpose register, as that general-purpose register
+can be inverted, shifted, and'ed, or'ed and so on.  In other words
+it becomes possible, especially if Carry/Overflow from each vector
+operation is also accessible, to do conditional (step-by-step) vector
+operations including things like turn vectors into 1024-bit or greater
+operands with very few instructions, by treating the "carry" from
+one instruction as a way to do "Conditional add of 1 to the register
+next door".  If V2.3-draft V sets zero-tagged elements to zero, such
+extremely powerful techniques are simply not possible.
 
+It is noted that there is no mention of an equivalent to BEXT (element
+skipping) which would be particularly fascinating and powerful to have.
+In this mode, the "mask" would skip elements where its mask bit was zero
+in either the source or the destination operand.
+
+Lots to be discussed.
+
+## 17.18 Vector Load/Store Instructions
+
+These may not have a direct equivalent in Simple-V, except if mask/tagging
+is to be deployed.
+
+To be discussed.
+
+## 17.19 Vector Register Gather
+
+TODO
+
+## TODO, sort
 
 > However, there are also several features that go beyond simply attaching VL
 > to a scalar operation and are crucial to being able to vectorize a lot of
