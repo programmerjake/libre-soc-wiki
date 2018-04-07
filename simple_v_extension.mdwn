@@ -1,4 +1,4 @@
-# SIMD / Simple-V Extension Proposal
+# Variable-width Variable-packed SIMD / Simple-V / Parallelism Extension Proposal
 
 This proposal exists so as to be able to satisfy several disparate
 requirements: power-conscious, area-conscious, and performance-conscious
@@ -220,7 +220,103 @@ instructions to deal with corner-cases is thus avoided, and implementors
 get to choose precisely where to focus and target the benefits of their
 implementationefforts..
 
-# TODO incorporate
+# V-Extension to Simple-V Comparative Analysis
+
+This section covers the ways in which Simple-V is comparable
+to, or more flexible than, V-Extension (V2.3-draft).  Also covered is
+one major weak-point (register files are fixed size, where V is
+arbitrary length), and how best to deal with that, should V be adapted
+to be on top of Simple-V.
+
+The first stages of this section go over each of the sections of V2.3-draft V
+where appropriate
+
+## 17.3 Shape Encoding
+
+Simple-V's proposed means of expressing whether a register (from the
+standard integer or the standard floating-point file) is a scalar or
+a vector is to simply set the vector length to 1.  The instruction
+would however have to specify which register file (integer or FP) that
+the vector-length was to be applied to.
+
+Extended shapes (2-D etc) would not be part of Simple-V at all.
+
+## 17.4 Representation Encoding
+
+Simple-V would not have representation-encoding.  This is part of
+polymorphism, which is considered too complex to implement (TODO: confirm?)
+
+## 17.5 Element Bitwidth
+
+This is directly equivalent to Simple-V's "Packed", and implies that
+integer (or floating-point) are divided down into vector-indexable
+chunks of size Bitwidth.
+
+In this way it becomes possible to have ADD effectively and implicitly
+turn into ADDb (8-bit add), ADDw (16-bit add) and so on, and where
+vector-length has been set to greater than 1, it becomes a "Packed"
+(SIMD) instruction.
+
+It remains to be decided what should be done when RV32 / RV64 ADD (sized)
+opcodes are used.  One useful idea would be, on an RV64 system where
+a 32-bit-sized ADD was performed, to simply use the least significant
+32-bits of the register (exactly as is currently done) but at the same
+time to *respect the packed bitwidth as well*.
+
+The extended encoding (Table 17.6) would not be part of Simple-V.
+
+## 17.6 Base Vector Extension Supported Types
+
+TODO: analyse.  probably exactly the same.
+
+## 17.7 Maximum Vector Element Width
+
+No equivalent in Simple-V
+
+## 17.8 Vector Configuration Registers
+
+TODO: analyse.
+
+## 17.9 Legal Vector Unit Configurations
+
+TODO: analyse
+
+## 17.10 Vector Unit CSRs
+
+TODO: analyse
+
+## 17.11 Maximum Vector Length (MVL)
+
+Basically implicitly this is set to the maximum size of the register
+file multiplied by the number of 8-bit packed ints that can fit into
+a register (4 for RV32, 8 for RV64 and 16 for RV128).
+
+## !7.12 Vector Instruction Formats
+
+No equivalent in Simple-V because *all* instructions of *all* Extensions
+are implicitly parallelised (and packed).
+
+## 17.13 Polymorphic Vector Instructions
+
+Polymorphism (implicit type-casting) is deliberately not supported
+in Simple-V.
+
+## 17.14 Rapid Configuration Instructions
+
+TODO: analyse if this is useful to have an equivalent in Simple-V
+
+## 17.15 Vector-Type-Change Instructions
+
+TODO: analyse if this is useful to have an equivalent in Simple-V
+
+## 17.16 Vector Length
+
+Has a direct corresponding equivalent.
+
+## 17.17 Predicated Execution
+
+
+
 
 > However, there are also several features that go beyond simply attaching VL
 > to a scalar operation and are crucial to being able to vectorize a lot of
