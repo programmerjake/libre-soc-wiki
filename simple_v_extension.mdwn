@@ -285,6 +285,26 @@ TODO: analyse
 
 TODO: analyse
 
+> Ok so this is an aspect of Simple-V that I hadn't thought through,
+> yet (proposal / idea only a few days old!).  in V2.3-Draft ISA Section
+> 17.10 the CSRs are listed.  I note that there's some general-purpose
+> CSRs (including a global/active vector-length) and 16 vcfgN CSRs.  i
+> don't precisely know what those are for.
+
+>  In the Simple-V proposal, *every* register in both the integer
+> register-file *and* the floating-point register-file would have at
+> least a 2-bit "data-width" CSR and probably something like an 8-bit
+> "vector-length" CSR (less in RV32E, by exactly one bit).
+
+>  What I *don't* know is whether that would be considered perfectly
+> reasonable or completely insane.  If it turns out that the proposed
+> Simple-V CSRs can indeed be stored in SRAM then I would imagine that
+> adding somewhere in the region of 10 bits per register would be... okay? 
+> I really don't honestly know.
+
+>  Would these proposed 10-or-so-bit per-register Simple-V CSRs need to
+> be multi-ported? No I don't believe they would.
+
 ## 17.11 Maximum Vector Length (MVL)
 
 Basically implicitly this is set to the maximum size of the register
