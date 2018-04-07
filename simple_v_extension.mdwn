@@ -448,8 +448,6 @@ TODO
  Yikes that's a lot.  I'm going to need to pull this into the wiki to
  make sure it's not lost.
 
- l.
-
 [1] inherent data type conversion: 25 years ago i designed a hypothetical
 hyper-hyper-hyper-escape-code-sequencing ISA based around 2-bit
 (escape-extended) opcodes and 2-bit (escape-extended) operands that
@@ -473,6 +471,43 @@ think would be much too hard for implementors to easily "slide in" to an
 existing non-Simple-V implementation.  i say that despite really *really*
 wanting IEEE 704 FP Half-precision to end up somewhere in RISC-V in some
 fashion, for optimising 3D Graphics.  *sigh*.
+
+## TODO: sort
+
+> I suspect that the "hardware loop" in question is actually a zero-overhead
+> loop unit that diverts execution from address X to address Y if a certain
+> condition is met.
+
+ not quite.  The zero-overhead loop unit interestingly would be at
+an [independent] level above vector-length.  The distinctions are
+as follows:
+
+* Vector-length issues *virtual* instructions where the register
+  operands are *specifically* altered (to cover a range of registers),
+  whereas zero-overhead loops *specifically* do *NOT* alter the operands
+  in *ANY* way.
+
+* Vector-length-driven "virtual" instructions are driven by *one*
+ and *only* one instruction (whether it be a LOAD, STORE, or pure
+ one/two/three-operand opcode) whereas zero-overhead loop units
+ specifically apply to *multiple* instructions.
+
+Where vector-length-driven "virtual" instructions might get conceptually
+blurred with zero-overhead loops is LOAD / STORE.  In the case of LOAD /
+STORE, to actually be useful, vector-length-driven LOAD / STORE should
+increment the LOAD / STORE memory address to correspondingly match the
+increment in the register bank.  example:
+
+* set vector-length for r0 to 4
+* issue RV32 LOAD from addr 0x1230 to r0
+
+translates effectively to:
+
+* RV32 LOAD from addr 0x1230 to r0
+* ...
+* ...
+* RV32 LOAD from addr 0x123B to r3
+
 
 # References
 
