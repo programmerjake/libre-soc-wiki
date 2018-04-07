@@ -220,6 +220,126 @@ instructions to deal with corner-cases is thus avoided, and implementors
 get to choose precisely where to focus and target the benefits of their
 implementationefforts..
 
+# TODO incorporate
+
+> However, there are also several features that go beyond simply attaching VL
+> to a scalar operation and are crucial to being able to vectorize a lot of
+> code.  To name a few:
+> - Conditional execution (i.e., predicated operations)
+> - Inter-lane data movement (e.g. SLIDE, SELECT)
+> - Reductions (e.g., VADD with a scalar destination)
+
+ Ok so the Conditional and also the Reductions is one of the reasons
+ why as part of SimpleV / variable-SIMD / parallelism (gah gotta think
+ of a decent name) i proposed that it be implemented as "if you say r0
+ is to be a vector / SIMD that means operations actually take place on
+ r0,r1,r2... r(N-1)".
+
+ Consequently any parallel operation could be paused (or... more
+ specifically: vectors disabled by resetting it back to a default /
+ scalar / vector-length=1) yet the results would actually be in the
+ *main register file* (integer or float) and so anything that wasn't
+ possible to easily do in "simple" parallel terms could be done *out*
+ of parallel "mode" instead.
+
+ I do appreciate that the above does imply that there is a limit to the
+ length that SimpleV (whatever) can be parallelised, namely that you
+ run out of registers!  my thought there was, "leave space for the main
+ V-Ext proposal to extend it to the length that V currently supports".
+ Honestly i had not thought through precisely how that would work.
+
+ Inter-lane (SELECT) i saw 17.19 in V2.3-Draft p117, I liked that,
+ it reminds me of the discussion with Clifford on bit-manipulation
+ (gather-scatter except not Bit Gather Scatter, *data* gather scatter): if
+ applied "globally and outside of V and P" SLIDE and SELECT might become
+ an extremely powerful way to do fast memory copy and reordering [2[.
+
+ However I haven't quite got my head round how that would work: i am
+ used to the concept of register "tags" (the modern term is "masks")
+ and i *think* if "masks" were applied to a Simple-V-enhanced LOAD /
+ STORE you would get the exact same thing as SELECT.
+
+ SLIDE you could do simply by setting say r0 vector-length to say 16
+ (meaning that if referred to in any operation it would be an implicit
+ parallel operation on *all* registers r0 through r15), and temporarily
+ set say.... r7 vector-length to say... 5.  Do a LOAD on r7 and it would
+ implicitly mean "load from memory into r7 through r11".  Then you go
+ back and do an operation on r0 and ta-daa, you're actually doing an
+ operation on a SLID {SLIDED?) vector.
+
+ The advantage of Simple-V (whatever) over V would be that you could
+ actually do *operations* in the middle of vectors (not just SLIDEs)
+ simply by (as above) setting r0 vector-length to 16 and r7 vector-length
+ to 5.  There would be nothing preventing you from doing an ADD on r0
+ (which meant do an ADD on r0 through r15) followed *immediately in the
+ next instruction with no setup cost* a MUL on r7 (which actually meant
+ "do a parallel MUL on r7 through r11").
+
+ btw it's worth mentioning that you'd get scalar-vector and vector-scalar
+ implicitly by having one of the source register be vector-length 1
+ (the default) and one being N > 1.  but without having special opcodes
+ to do it.  i *believe* (or more like "logically infer or deduce" as
+ i haven't got access to the spec) that that would result in a further
+ opcode reduction when comparing [draft] V-Ext to [proposed] Simple-V.
+
+ Also, Reduction *might* be possible by specifying that the destination be
+ a scalar (vector-length=1) whilst the source be a vector.  However... it
+ would be an awful lot of work to go through *every single instruction*
+ in *every* Extension, working out which ones could be parallelised (ADD,
+ MUL, XOR) and those that definitely could not (DIV, SUB).  Is that worth
+ the effort?  maybe.  Would it result in huge complexity? probably.
+ Could an implementor just go "I ain't doing *that* as parallel!
+ let's make it virtual-parallelism (sequential reduction) instead"?
+ absolutely.  So, now that I think it through, Simple-V (whatever)
+ covers Reduction as well.  huh, that's a surprise.
+
+
+> - Vector-length speculation (making it possible to vectorize some loops with
+> unknown trip count) - I don't think this part of the proposal is written
+> down yet.
+
+ Now that _is_ an interesting concept.  A little scary, i imagine, with
+ the possibility of putting a processor into a hard infinite execution
+ loop... :)
+
+
+> Also, note the vector ISA consumes relatively little opcode space (all the
+> arithmetic fits in 7/8ths of a major opcode).  This is mainly because data
+> type and size is a function of runtime configuration, rather than of opcode.
+
+ yes.  i love that aspect of V, i am a huge fan of polymorphism [1]
+ which is why i am keen to advocate that the same runtime principle be
+ extended to the rest of the RISC-V ISA [3]
+
+ Yikes that's a lot.  I'm going to need to pull this into the wiki to
+ make sure it's not lost.
+
+ l.
+
+[1] inherent data type conversion: 25 years ago i designed a hypothetical
+hyper-hyper-hyper-escape-code-sequencing ISA based around 2-bit
+(escape-extended) opcodes and 2-bit (escape-extended) operands that
+only required a fixed 8-bit instruction length.  that relied heavily
+on polymorphism and runtime size configurations as well.  At the time
+I thought it would have meant one HELL of a lot of CSRs... but then I
+met RISC-V and was cured instantly of that delusion^Wmisapprehension :)
+
+[2] Interestingly if you then also add in the other aspect of Simple-V
+(the data-size, which is effectively functionally orthogonal / identical
+to "Packed" of Packed-SIMD), masked and packed *and* vectored LOAD / STORE
+operations become byte / half-word / word augmenters of B-Ext's proposed
+"BGS" i.e. where B-Ext's BGS dealt with bits, masked-packed-vectored
+LOAD / STORE would deal with 8 / 16 / 32 bits at a time.  Where it
+would get really REALLY interesting would be masked-packed-vectored
+B-Ext BGS instructions.  I can't even get my head fully round that,
+which is a good sign that the combination would be *really* powerful :)
+
+[3] ok sadly maybe not the polymorphism, it's too complicated and I
+think would be much too hard for implementors to easily "slide in" to an
+existing non-Simple-V implementation.  i say that despite really *really*
+wanting IEEE 704 FP Half-precision to end up somewhere in RISC-V in some
+fashion, for optimising 3D Graphics.  *sigh*.
+
 # References
 
 * SIMD considered harmful <https://www.sigarch.org/simd-instructions-considered-harmful/>
