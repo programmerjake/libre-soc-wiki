@@ -51,6 +51,18 @@ of not being widely adopted.  I'm inclined towards recommending:
   apply across *all* Extensions, whether those be DSP, M, Base, V, P -
   everything.
 
+**TODO**: propose overflow registers be actually one of the integer regs
+(flowing to multiple regs).
+
+**TODO**: propose "mask" (predication) registers likewise.  combination with
+standard RV instructions and overflow registers extremely powerful
+
+**TODO**: propose two LOAD/STORE offset CSRs, which mark a particular
+register as being "if you use this reg in LOAD/STORE, use the offset
+amount CSRoffsN (N=0,1) instead of treating LOAD/STORE as contiguous".
+can be used for matrix spanning.
+
+
 # Analysis and discussion of Vector vs SIMD
 
 There are four combined areas between the two proposals that help with
