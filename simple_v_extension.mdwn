@@ -57,11 +57,47 @@ of not being widely adopted.  I'm inclined towards recommending:
 **TODO**: propose "mask" (predication) registers likewise.  combination with
 standard RV instructions and overflow registers extremely powerful
 
+## Stride
+
 **TODO**: propose two LOAD/STORE offset CSRs, which mark a particular
 register as being "if you use this reg in LOAD/STORE, use the offset
 amount CSRoffsN (N=0,1) instead of treating LOAD/STORE as contiguous".
 can be used for matrix spanning.
 
+> For LOAD/STORE, could a better option be to interpret the offset in the 
+> opcode as a stride instead, so "LOAD t3, 12(t2)" would, if t3 is 
+> configured as a length-4 vector base, result in t3 = *t2, t4 = *(t2+12), 
+> t5 = *(t2+24), t6 = *(t2+32)?  Perhaps include a bit in the 
+> vector-control CSRs to select between offset-as-stride and unit-stride 
+> memory accesses? 
+
+So there would be an instruction like this:
+
+| SETOFF | On=rN | OBank={float|int} | Smode={offs|unit} | OFFn=rM |
+| opcode | 5 bit | 1 bit             | 1 bit             | 5 bit, OFFn=XLEN |
+
+
+which would mean:
+
+* CSR-Offset register n <= (float|int) register number N
+* CSR-Offset Stride-mode = offset or unit
+* CSR-Offset amount register n = contents of register M
+
+LOAD rN, ldoffs(rM) would then be (assuming packed bit-width not set):
+
+> offs = 0
+> stride = 1
+> vector-len = CSR-Vector-length register N
+>
+> for (o = 0, o < 2, o++)
+>   if (CSR-Offset register o == M)
+>       offs = CSR-Offset amount register o
+>       if CSR-Offset Stride-mode == offset:
+>           stride = ldoffs
+>       break
+>
+> for (i = 0, i < vector-len; i++)
+>   r[N+i] = mem[(offs*i + r[M+i])*stride]
 
 # Analysis and discussion of Vector vs SIMD
 
@@ -673,3 +709,4 @@ translates effectively to:
   Figure 2 P17 and Section 3 on P16.
 * Hwacha <https://www2.eecs.berkeley.edu/Pubs/TechRpts/2015/EECS-2015-262.html>
 * Hwacha <https://www2.eecs.berkeley.edu/Pubs/TechRpts/2015/EECS-2015-263.html>
+* Vector Workshop <http://riscv.org/wp-content/uploads/2015/06/riscv-vector-workshop-june2015.pdf>
