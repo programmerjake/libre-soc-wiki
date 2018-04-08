@@ -811,6 +811,10 @@ greatly reduce CSR space:
 
 (See "CSR vector-length and CSR SIMD packed-bitwidth" section for details)
 
+In addition, LOAD/STORE has its own associated proposed CSRs that
+mirror the STRIDE (but not yet STRIDE-SEGMENT?) functionality of
+V (and Hwacha).
+
 Also bear in mind that, for reasons of simplicity for implementors,
 I was coming round to the idea of permitting implementors to choose
 exactly which bitwidths they would like to support in hardware and which
