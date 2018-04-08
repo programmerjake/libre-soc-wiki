@@ -559,15 +559,31 @@ translates effectively to:
 
 # P-Ext ISA
 
-| Mnemonic           | 16-bit Instruction        |
-| ------------------ | ------------------------- |
-| ADD16 rt, ra, rb   | add                       |
-| RADD16 rt, ra, rb  | Signed Halving add        |
-| URADD16 rt, ra, rb | Unsigned Halving add      |
-| KADD16 rt, ra, rb  | Signed Saturating add     |
-| UKADD16 rt, ra, rb | Unsigned Saturating add   |
-| SUB16 rt, ra, rb   | sub                       |
-| RSUB16 rt, ra, rb  | Signed Halving sub        |
+## 16-bit Arithmetic
+
+| Mnemonic           | 16-bit Instruction        | Simple-V Equivalent |
+| ------------------ | ------------------------- | ------------------- |
+| ADD16 rt, ra, rb   | add                       | RV ADD (bitwidth=16) |
+| RADD16 rt, ra, rb  | Signed Halving add        | |
+| URADD16 rt, ra, rb | Unsigned Halving add      | |
+| KADD16 rt, ra, rb  | Signed Saturating add     | |
+| UKADD16 rt, ra, rb | Unsigned Saturating add   | |
+| SUB16 rt, ra, rb   | sub                       | RV SUB (bitwidth=16) |
+| RSUB16 rt, ra, rb  | Signed Halving sub        | |
+| URSUB16 rt, ra, rb | Unsigned Halving sub                | |
+| KSUB16 rt, ra, rb  | Signed Saturating sub               | |
+| UKSUB16 rt, ra, rb | Unsigned Saturating sub             | |
+| CRAS16 rt, ra, rb  | Cross Add & Sub                     | |
+| RCRAS16 rt, ra, rb | Signed Halving Cross Add & Sub      | |
+| URCRAS16 rt, ra, rb| Unsigned Halving Cross Add & Sub    | |
+| KCRAS16 rt, ra, rb | Signed Saturating Cross Add & Sub   | |
+| UKCRAS16 rt, ra, rb| Unsigned Saturating Cross Add & Sub | |
+| CRSA16 rt, ra, rb  | Cross Sub & Add                     | |
+| RCRSA16 rt, ra, rb | Signed Halving Cross Sub & Add      | |
+| URCRSA16 rt, ra, rb| Unsigned Halving Cross Sub & Add    | |
+| KCRSA16 rt, ra, rb | Signed Saturating Cross Sub & Add   | |
+| UKCRSA16 rt, ra, rb| Unsigned Saturating Cross Sub & Add | |
+
 
 
 # References
