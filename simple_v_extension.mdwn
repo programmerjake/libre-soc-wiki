@@ -702,6 +702,12 @@ translates effectively to:
 * if the destination operand is also a vector, and the source is longer
   than the destination, throw an exception.
 
+> And what about instructions like JALR? 
+> What does jumping to a vector do? 
+
+* Throw an exception.  Whether that actually results in spawning threads
+  as part of the trap-handling remains to be seen.
+
 # Impementing V on top of Simple-V
 
 * Number of Offset CSRs extends from 2
