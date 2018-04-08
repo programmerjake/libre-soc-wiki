@@ -36,6 +36,11 @@ Additionally it makes sense to *split out* the parallelism inherent within
 each of P and V, and to see if each of P and V then, in *combination* with
 a "best-of-both" parallelism extension, would work well.
 
+Furthermore, an additional goal of this proposal is to reduce the number
+of opcodes utilised by each of P and V as they currently stand, leveraging
+existing RISC-V opcodes where possible, and also potentially allowing
+P and V to make use of Compressed Instructions as a result.
+
 **TODO**: reword this to better suit this document:
 
 Having looked at both P and V as they stand, they're _both_ very much
