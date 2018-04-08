@@ -695,6 +695,19 @@ translates effectively to:
 | URSUB8 rt, ra, rb  | Unsigned Halving sub      | |
 
 
+# Impementing V on top of Simple-V
+
+* Number of Offset CSRs extends from 2
+* Extra register file: vector-file
+* Setup of Vector length and bitwidth CSRs now can specify vector-file
+  as well as integer or float file.
+* TODO
+
+# Implementing P (renamed to DSP) on top of Simple-V
+
+* Implementors indicate chosen bitwidth support in Vector-bitwidth CSR
+  (caveat: anything not specified drops through to software-emulation / traps)
+* TODO
 
 # References
 
