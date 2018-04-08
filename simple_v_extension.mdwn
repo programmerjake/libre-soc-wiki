@@ -694,6 +694,13 @@ translates effectively to:
 | RSUB8 rt, ra, rb   | Signed Halving sub        | |
 | URSUB8 rt, ra, rb  | Unsigned Halving sub      | |
 
+# Exceptions
+
+> What does an ADD of two different-sized vectors do in simple-V?
+
+* if the two source operands are not the same, throw an exception.
+* if the destination operand is also a vector, and the source is longer
+  than the destination, throw an exception.
 
 # Impementing V on top of Simple-V
 
