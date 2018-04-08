@@ -57,6 +57,48 @@ of not being widely adopted.  I'm inclined towards recommending:
 **TODO**: propose "mask" (predication) registers likewise.  combination with
 standard RV instructions and overflow registers extremely powerful
 
+## CSR vector-length and CSR SIMD packed-bitwidth
+
+**TODO** analyse each of these:
+
+* splitting out the loop-aspects, vector aspects and data-width aspects
+* integer reg 0 *and* fp reg0 share CSR vlen 0 *and* CSR packed-bitwidth 0
+* integer reg 1 *and* fp reg1 share CSR vlen 1 *and* CSR packed-bitwidth 1
+* ....
+* .... 
+
+instead:
+
+* CSR vlen 0 *and* CSR packed-bitwidth 0 register contain extra bits
+  specifying an *INDEX* of WHICH int/fp register they refer to
+* CSR vlen 1 *and* CSR packed-bitwidth 1 register contain extra bits
+  specifying an *INDEX* of WHICH int/fp register they refer to
+* ...
+* ...
+
+Have to be very *very* careful about not implementing too few of those
+(or too many).  Assess implementation impact on decode latency.  Is it
+worth it?
+
+Implementation of the latter:
+
+Operation involving (referring to) register M:
+
+> bitwidth = default # default for opcode?
+> vectorlen = 1 # scalar
+> 
+> for (o = 0, o < 2, o++)
+>   if (CSR-Vector_registernum[o] == M)
+>       bitwidth = CSR-Vector_bitwidth[o]
+>       vectorlen = CSR-Vector_len[o]
+>       break
+
+and for the former it would simply be:
+
+> bitwidth = CSR-Vector_bitwidth[M]
+> vectorlen = CSR-Vector_len[M]
+
+
 ## Stride
 
 **TODO**: propose two LOAD/STORE offset CSRs, which mark a particular
