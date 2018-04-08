@@ -1,5 +1,7 @@
 # Variable-width Variable-packed SIMD / Simple-V / Parallelism Extension Proposal
 
+[[!toc levels=3]]
+
 This proposal exists so as to be able to satisfy several disparate
 requirements: power-conscious, area-conscious, and performance-conscious
 designs all pull an ISA and its implementation in different conflicting
@@ -764,6 +766,77 @@ translates effectively to:
   (caveat: anything not specified drops through to software-emulation / traps)
 * TODO
 
+# Analysis of CSR decoding on latency
+
+It could indeed have been logically deduced (or expected), that there
+would be additional decode latency in this proposal, because if
+overloading the opcodes to have different meanings, there is guaranteed
+to be some state, some-where, directly related to registers.
+
+There are several cases:
+
+* All operands vector-length=1 (scalars), all operands
+  packed-bitwidth="default": instructions are passed through direct as if
+  Simple-V did not exist.  Simple-V is, in effect, completely disabled.
+* At least one operand vector-length > 1, all operands
+  packed-bitwidth="default": any parallel vector ALUs placed on "alert",
+  virtual parallelism looping may be activated.
+* All operands vector-length=1 (scalars), at least one
+  operand packed-bitwidth != default: degenerate case of SIMD,
+  implementation-specific complexity here (packed decode before ALUs or
+  *IN* ALUs)
+* At least one operand vector-length > 1, at least one operand
+  packed-bitwidth != default: parallel vector ALUs (if any)
+  placed on "alert", virtual parallelsim looping may be activated,
+  implementation-specific SIMD complexity kicks in (packed decode before
+  ALUs or *IN* ALUs).
+
+Bear in mind that the proposal includes that the decision whether
+to parallelise in hardware or whether to virtual-parallelise (to
+dramatically simplify compilers and also not to run into the SIMD
+instruction proliferation nightmare) *or* a transprent combination
+of both, be done on a *per-operand basis*, so that implementors can
+specifically choose to create an application-optimised implementation
+that they believe (or know) will sell extremely well, without having
+"Extra Standards-Mandated Baggage" that would otherwise blow their area
+or power budget completely out the window.
+
+Additionally, two possible CSR schemes have been proposed, in order to
+greatly reduce CSR space:
+
+* per-register CSRs (vector-length and packed-bitwidth)
+* a smaller number of CSRs with the same information but with an *INDEX*
+  specifying WHICH register in one of three regfiles (vector, fp, int)
+  the length and bitwidth applies to.
+
+(See "CSR vector-length and CSR SIMD packed-bitwidth" section for details)
+
+Also bear in mind that, for reasons of simplicity for implementors,
+I was coming round to the idea of permitting implementors to choose
+exactly which bitwidths they would like to support in hardware and which
+to allow to fall through to software-trap emulation.
+
+So the question boils down to:
+
+* whether either (or both) of those two CSR schemes have significant
+  latency that could even potentially require an extra pipeline decode stage
+* whether there are implementations that can be thought of which do *not*
+  introduce significant latency
+* whether it is possible to explicitly (through quite simply
+  disabling Simple-V-Ext) or implicitly (detect the case all-vlens=1,
+  all-simd-bitwidths=default) switch OFF any decoding, perhaps even to
+  the extreme of skipping an entire pipeline stage (if one is needed)
+* whether packed bitwidth and associated regfile splitting is so complex
+  that it should definitely, definitely be made mandatory that implementors
+  move regfile splitting into the ALU, and what are the implications of that
+* whether even if that *is* made mandatory, is software-trapped
+  "unsupported bitwidths" still desirable, on the basis that SIMD is such
+  a complete nightmare that *even* having a software implementation is
+  better, making Simple-V have more in common with a software API than
+  anything else.
+
+
+
 # References
 
 * SIMD considered harmful <https://www.sigarch.org/simd-instructions-considered-harmful/>
@@ -778,3 +851,4 @@ translates effectively to:
 * Hwacha <https://www2.eecs.berkeley.edu/Pubs/TechRpts/2015/EECS-2015-262.html>
 * Hwacha <https://www2.eecs.berkeley.edu/Pubs/TechRpts/2015/EECS-2015-263.html>
 * Vector Workshop <http://riscv.org/wp-content/uploads/2015/06/riscv-vector-workshop-june2015.pdf>
+
