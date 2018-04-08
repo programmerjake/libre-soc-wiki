@@ -846,6 +846,20 @@ So the question boils down to:
   better, making Simple-V have more in common with a software API than
   anything else.
 
+Whilst the above may seem to be severe minuses, there are some strong
+pluses:
+
+* Significant reduction of V's opcode space: over 85%.
+* Smaller reduction of P's opcode space: around 10%.
+* The potential to use Compressed instructions in both Vector and SIMD
+  due to the overloading of register meaning (implicit vectorisation,
+  implicit packing)
+* Not only present but also future extensions automatically gain parallelism.
+* Already mentioned but worth emphasising: the simplification to compiler
+  writers and assembly-level writers of having the same consistent ISA
+  regardless of whether the internal level of parallelism (number of
+  parallel ALUs) is only equal to one ("virtual" parallelism), or is
+  greater than one, should not be underestimated.
 
 
 # References
