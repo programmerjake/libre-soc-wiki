@@ -64,6 +64,21 @@ of not being widely adopted.  I'm inclined towards recommending:
 **TODO**: propose "mask" (predication) registers likewise.  combination with
 standard RV instructions and overflow registers extremely powerful
 
+## CSRs marking registers as Vector
+
+A 32-bit CSR would be needed (1 bit per integer register) to indicate
+whether a register was, if referred to, implicitly to be treated as
+a vector.
+
+A second 32-bit CSR would be needed (1 bit per floating-point register)
+to indicate whether a floating-point register was to be treated as a
+vector.
+
+In this way any standard (current or future) operation involving
+register operands may detect if the operation is to be vector-vector,
+vector-scalar or scalar-scalar (standard) simply through a single
+bit test.
+
 ## CSR vector-length and CSR SIMD packed-bitwidth
 
 **TODO** analyse each of these:
@@ -105,6 +120,9 @@ and for the former it would simply be:
 > bitwidth = CSR-Vector_bitwidth[M]
 > vectorlen = CSR-Vector_len[M]
 
+Alternatives:
+
+* One single "global" vector-length CSR
 
 ## Stride
 
@@ -238,14 +256,66 @@ to keep ALU pipelines 100% occupied.
 This very simple proposal offers a way to increase pipeline activity in the
 one key area which really matters: the inner loop.
 
-## Mask and Tagging
+## Mask and Tagging (Predication)
 
-*TODO: research masks as they can be superb and extremely powerful.
-If B-Extension is implemented and provides Bit-Gather-Scatter it
-becomes really cool and easy to switch out certain indexed values
-from an array of data, but actually BGS **on its own** might be
-sufficient.  Bottom line, this is complex, and needs a proper analysis.
-The other sections are pretty straightforward.*
+Tagging (aka Masks aka Predication) is a pseudo-method of implementing
+simplistic branching in a parallel fashion, by allowing execution on
+elements of a vector to be switched on or off depending on the results
+of prior operations in the same array position.
+
+The reason for considering this is simple: by *definition* it
+is not possible to perform individual parallel branches in a SIMD
+(Single-Instruction, **Multiple**-Data) context.  Branches (modifying
+of the Program Counter) will result in *all* parallel data having
+a different instruction executed on it: that's just the definition of
+SIMD, and it is simply unavoidable.
+
+So these are the ways in which conditional execution may be implemented:
+
+* explicit compare and branch: BNE x, y -> offs would jump offs
+  instructions if x was not equal to y
+* explicit store of tag condition: CMP x, y -> tagbit
+* implicit (condition-code) ADD results in a carry, carry bit implicitly
+  (or sometimes explicitly) goes into a "tag" (mask) register
+
+The first of these is a "normal" branch method, which is flat-out impossible
+to parallelise without look-ahead and effectively rewriting instructions.
+This would defeat the purpose of RISC.
+
+The latter two are where parallelism becomes easy to do without complexity:
+every operation is modified to be "conditionally executed" (in an explicit
+way directly in the instruction format *or* implicitly).
+
+RVV (Vector-Extension) proposes to have *explicit* storing of the compare
+in a tag/mask register, and to *explicitly* have every vector operation
+*require* that its operation be "predicated" on the bits within an
+explicitly-named tag/mask register.
+
+SIMD (P-Extension) has not yet published precise documentation on what its
+schema is to be: there is however verbal indication at the time of writing
+that:
+
+> The "compare" instructions in the DSP/SIMD ISA proposed by Andes will
+> be executed using the same compare ALU logic for the base ISA with some
+> minor modifications to handle smaller data types. The function will not
+> be duplicated.
+
+This is an *implicit* form of predication as the base RV ISA does not have
+condition-codes or predication.  By adding a CSR it becomes possible
+to also tag certain registers as "predicated if referenced as a destination".
+Example:
+
+> # in future operations if r0 is the destination use r5 as
+> # the PREDICATION register
+> IMPLICICSRPREDICATE r0, r5
+> # store the compares in r5 as the PREDICATION register
+> CMPEQ8 r5, r1, r2
+> # r0 is used here.  ah ha!  that means it's predicated using r5!
+> ADD8 r0, r1, r3
+
+With enough registers (and there are enough registers) some fairly
+complex predication can be set up and yet still execute without significant
+stalling, even in a simple non-superscalar architecture.
 
 ## Conclusions
 
@@ -258,7 +328,7 @@ follows:
 * Implicit (indirect) vs fixed (integral) instruction bit-width: <b>indirect</b>
 * Implicit vs explicit type-conversion: <b>explicit</b>
 * Implicit vs explicit inner loops: <b>implicit</b>
-* Tag or no-tag: <b>TODO</b>
+* Tag or no-tag: <b>Complex and needs further thought</b>
 
 In particular: variable-length vectors came out on top because of the
 high setup, teardown and corner-cases associated with the fixed width
@@ -876,4 +946,4 @@ pluses:
 * Hwacha <https://www2.eecs.berkeley.edu/Pubs/TechRpts/2015/EECS-2015-262.html>
 * Hwacha <https://www2.eecs.berkeley.edu/Pubs/TechRpts/2015/EECS-2015-263.html>
 * Vector Workshop <http://riscv.org/wp-content/uploads/2015/06/riscv-vector-workshop-june2015.pdf>
-
+* Predication <https://groups.google.com/a/groups.riscv.org/forum/#!topic/isa-dev/XoP4BfYSLXA>
