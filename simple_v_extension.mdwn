@@ -319,7 +319,7 @@ stalling, even in a simple non-superscalar architecture.
 
 ## Conclusions
 
-In the above sections the four different ways where parallel instruction
+In the above sections the five different ways where parallel instruction
 execution has closely and loosely inter-related implications for the ISA and
 for implementors, were outlined.  The pluses and minuses came out as
 follows:
@@ -378,14 +378,14 @@ be **entirely transparent** to the end-user and the compiler.  Whilst
 a Vector (varible-width SIM) may not precisely match the width of the
 parallelism within the implementation, the end-user **should not care**
 and in this way the performance benefits are gained but the ISA remains
-simple.  All that happens at the end of an instruction run is: some
+straightforward.  All that happens at the end of an instruction run is: some
 parallel units (if there are any) would remain offline, completely
 transparently to the ISA, the program, and the compiler.
 
 The "SIMD considered harmful" trap of having huge complexity and extra
 instructions to deal with corner-cases is thus avoided, and implementors
 get to choose precisely where to focus and target the benefits of their
-implementationefforts..
+implementation efforts, without "extra baggage".
 
 # V-Extension to Simple-V Comparative Analysis
 
@@ -678,64 +678,64 @@ Exceptions are:
 
 Table of RV32V Instructions
 
-| RV32V      |     |
-| -----      | --- |
-| VADD       |     |
-| VSUB       |     |
-| VSL        |     |
-| VSR        |     |
-| VAND       |     |
-| VOR        |     |
-| VXOR       |     |
-| VSEQ       |     |
-| VSNE       |     |
-| VSLT       |     |
-| VSGE       |     |
-| VCLIP      |     |
-| VCVT       |     |
-| VMPOP      |     |
-| VMFIRST    |     |
-| VEXTRACT   |     |
-| VINSERT    |     |
-| VMERGE     |     |
-| VSELECT    |     |
-| VSLIDE     |     |
-| VDIV       |     |
-| VREM       |     |
-| VMUL       |     |
-| VMULH      |     |
-| VMIN       |     |
-| VMAX       |     |
-| VSGNJ      |     |
-| VSGNJN     |     |
-| VSGNJX     |     |
-| VSQRT      |     |
-| VCLASS     |     |
-| VPOPC      |     |
-| VADDI      |     |
-| VSLI       |     |
-| VSRI       |     |
-| VANDI      |     |
-| VORI       |     |
-| VXORI      |     |
-| VCLIPI     |     |
-| VMADD      |     |
-| VMSUB      |     |
-| VNMADD     |     |
-| VNMSUB     |     |
-| VLD        |     |
-| VLDS       |     |
-| VLDX       |     |
-| VST        |     |
-| VSTS       |     |
-| VSTX       |     |
-| VAMOSWAP   |     |
-| VAMOADD    |     |
-| VAMOAND    |     |
-| VAMOOR     |     |
-| VAMOXOR    |     |
-| VAMOMIN    |     |
-| VAMOMAX    |     |
+| RV32V      | RV Equivalent (FP)   | RV Equivalent (Int) |
+| -----      | --- | |
+| VADD       | FADD    | ADD |
+| VSUB       | FSUB    | SUB |
+| VSL        |     | |
+| VSR        |     | |
+| VAND       |     | AND |
+| VOR        |     | OR |
+| VXOR       |     | XOR |
+| VSEQ       |     | |
+| VSNE       |     | |
+| VSLT       |     | |
+| VSGE       |     | |
+| VCLIP      |     | |
+| VCVT       |     | |
+| VMPOP      |     | |
+| VMFIRST    |     | |
+| VEXTRACT   |     | |
+| VINSERT    |     | |
+| VMERGE     |     | |
+| VSELECT    |     | |
+| VSLIDE     |     | |
+| VDIV       | FDIV    | DIV |
+| VREM       |     | REM |
+| VMUL       | FMUL    | MUL |
+| VMULH      |     | |
+| VMIN       | FMIN    | |
+| VMAX       | FMUX    | |
+| VSGNJ      | FSGNJ    | |
+| VSGNJN     | FSGNJN    | |
+| VSGNJX     | FSNGJX    | |
+| VSQRT      | FSQRT    | |
+| VCLASS     |     | |
+| VPOPC      |     | |
+| VADDI      |     | |
+| VSLI       |     | |
+| VSRI       |     | |
+| VANDI      |     | |
+| VORI       |     | |
+| VXORI      |     | |
+| VCLIPI     |     | |
+| VMADD      | FMADD    | |
+| VMSUB      | FMSUB    | |
+| VNMADD     | FNMSUB    | |
+| VNMSUB     | FNMADD    | |
+| VLD        | FLD    | |
+| VLDS       |     | |
+| VLDX       |     | |
+| VST        | FST    | |
+| VSTS       |     | |
+| VSTX       |     | |
+| VAMOSWAP   |     | AMOSWAP |
+| VAMOADD    |     | AMOADD |
+| VAMOAND    |     | AMOAND |
+| VAMOOR     |     | AMOOR |
+| VAMOXOR    |     | AMOXOR |
+| VAMOMIN    |     | AMOMIN |
+| VAMOMAX    |     | AMOMAX |
 
 ## TODO: sort
 
