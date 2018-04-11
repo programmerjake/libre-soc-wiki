@@ -661,6 +661,46 @@ existing non-Simple-V implementation.  i say that despite really *really*
 wanting IEEE 704 FP Half-precision to end up somewhere in RISC-V in some
 fashion, for optimising 3D Graphics.  *sigh*.
 
+## TODO: analyse, auto-increment on unit-stride and constant-stride
+
+so i thought about that for a day or so, and wondered if it would be
+possible to propose a variant of zero-overhead loop that included
+auto-incrementing the two address registers a2 and a3, as well as
+providing a means to interact between the zero-overhead loop and the
+vsetvl instruction.  a sort-of pseudo-assembly of that would look like:
+
+> # a2 to be auto-incremented by t0*4
+> zero-overhead-set-auto-increment a2, t0, 4
+> # a2 to be auto-incremented by t0*4
+> zero-overhead-set-auto-increment a3, t0, 4
+> zero-overhead-set-loop-terminator-condition a0 zero
+> zero-overhead-set-start-end stripmine, stripmine+endoffset
+> stripmine:
+> vsetvl t0,a0
+> vlw v0, a2
+> vlw v1, a3
+> vfma v1, a1, v0, v1
+> vsw v1, a3
+> sub a0, a0, t0
+>stripmine+endoffset:
+
+the question is: would something like this even be desirable?  it's a
+variant of auto-increment [1].  last time i saw any hint of auto-increment
+register opcodes was in the 1980s... 68000 if i recall correctly... yep
+see [1]
+
+[1] http://fourier.eng.hmc.edu/e85_old/lectures/instruction/node6.html
+
+Reply:
+
+Another option for auto-increment is for vector-memory-access instructions
+to support post-increment addressing for unit-stride and constant-stride
+modes.  This can be implemented by the scalar unit passing the operation
+to the vector unit while itself executing an appropriate multiply-and-add
+to produce the incremented address.  This does *not* require additional
+ports on the scalar register file, unlike scalar post-increment addressing
+modes.
+
 ## TODO: instructions (based on Hwacha) V-Ext duplication analysis
 
 This is partly speculative due to lack of access to an up-to-date
