@@ -319,6 +319,38 @@ With enough registers (and there are enough registers) some fairly
 complex predication can be set up and yet still execute without significant
 stalling, even in a simple non-superscalar architecture.
 
+### Retro-fitting Predication into branch-explicit ISA
+
+One of the goals of this parallelism proposal is to avoid instruction
+duplication.  However, with the base ISA having been designed explictly
+to *avoid* condition-codes entirely, shoe-horning predication into it
+bcomes quite challenging.
+
+However what if all branch instructions, if referencing a vectorised
+register, were instead given *completely new analogous meanings* that
+resulted in a parallel bit-wise predication register being set?  This
+would have to be done for both C.BEQZ and C.BNEZ, as well as BEQ, BNE,
+BLT and BGE.
+
+We might imagine that FEQ, FLT and FLT would also need to be converted,
+however these are effectively *already* in the precise form needed and
+do not need to be converted *at all*!  The difference is that FEQ, FLT
+and FLE *specifically* write a 1 to an integer register if the condition
+holds, and 0 if not.  All that needs to be done here is to say, "if
+the integer register is tagged with a bit that says it is a predication
+register, the **bit** in the integer register is set based on the
+current vector index" instead.
+
+There is, in the standard Conditional Branch instruction, more than
+adequate space to interpret it in a similar fashion:
+
+|   31    |30       25 |24     20 | 19     15 | 14        12 | 11          8 |      7  | 6         0 |
+| -----   |----------- |--------- | --------- | ------------ | ------------- |  -----  | ----------- |
+| imm[12] | imm[10:5]  |        rs2 |     rs1 |       funct3 |      imm[4:1] | imm[11] |    opcode   |
+|  1      |        6   |      5   |      5    |       3      |     4         |  1      |   7         |
+|    offset|[12,10:5]  |    src2  |    src1   |  BE?         |    offset|[11,4:1]      | BRANCH      |
+
+
 ## Conclusions
 
 In the above sections the five different ways where parallel instruction
