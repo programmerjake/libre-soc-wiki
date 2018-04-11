@@ -345,20 +345,47 @@ There is, in the standard Conditional Branch instruction, more than
 adequate space to interpret it in a similar fashion:
 
 [[!table  data="""
-   31    |30 ..... 25 |24 ... 20 | 19 ... 15 | 14 ...... 12 | 11 .......  8 |      7  | 6 ....... 0 |
- imm[12] | imm[10:5]  |        rs2 |     rs1 |       funct3 |      imm[4:1] | imm[11] |    opcode   |
-  1      |        6   |      5   |      5    |       3      |     4         |  1      |   7         |
-    offset[12,10:5]  ||    src2  |    src1   |  BEQ         |    offset[11,4:1]      || BRANCH      |
+  31    |30 ..... 25 |24 ... 20 | 19 ... 15 | 14 ...... 12 | 11 .......  8 |      7  | 6 ....... 0 |
+imm[12] | imm[10:5]  |        rs2 |     rs1 |       funct3 |      imm[4:1] | imm[11] |    opcode   |
+ 1      |        6   |      5   |      5    |       3      |     4         |  1      |   7         |
+   offset[12,10:5]  ||    src2  |    src1   |  BEQ         |    offset[11,4:1]      || BRANCH      |
 """]]
 
 This would become:
 
 [[!table  data="""
-   31    |30 ..... 25 |24 ... 20 | 19 ... 15 | 14 ...... 12 | 11 .......  8 |      7  | 6 ....... 0 |
- imm[12] | imm[10:5]  |        rs2 |     rs1 |       funct3 |      imm[4:1] | imm[11] |    opcode   |
-  1      |        6   |      5   |      5    |       3      |     4         |  1      |   7         |
-    reserved         ||    src2  |    src1   |  BEQ         |   predicate rs3        || BRANCH      |
+  31    |30 ..... 25 |24 ... 20 | 19 ... 15 | 14 ...... 12 | 11 .......  8 |      7  | 6 ....... 0 |
+imm[12] | imm[10:5]  |        rs2 |     rs1 |       funct3 |      imm[4:1] | imm[11] |    opcode   |
+ 1      |        6   |      5   |      5    |       3      |     4         |  1      |   7         |
+   reserved         ||    src2  |    src1   |  BEQ         |   predicate rs3        || BRANCH      |
 """]]
+
+Similarly the C.BEQZ and C.BNEZ instruction format may be retro-fitted,
+with the interesting side-effect that there is space within what is presently
+the "immediate offset" field to reinterpret that to add in not only a bit
+field to distinguish between floating-point compare and integer compare,
+not only to add in a second source register, but also use some of the bits as
+a predication target as well.
+
+[[!table  data="""
+15 ...... 13 | 12 ...........  10 | 9..... 7 | 6 ................. 2 | 1 .. 0 |
+   funct3    |       imm          |   rs10   |         imm           |   op   |
+      3      |         3          |    3     |           5           |   2    |
+   C.BEQZ    |   offset[8|4:3]    |   src    |   offset[7:6|2:1|5]   |   C1   |
+"""]]
+
+Now uses the CS format:
+
+[[!table  data="""
+15 ...... 13 | 12 ...........  10 | 9..... 7 | 6 .. 5 | 4......... 2 | 1 .. 0 |
+   funct3    |       imm          |   rs10   |  imm   |              |   op   |
+      3      |         3          |    3     |  2     |  3           |   2    |
+   C.BEQZ    |   predicate rs3    |   src1   |  I/F B | src2         |   C1   |
+"""]]
+
+Bit 6 would be decoded as "operation refers to Integer or Float"
+whilst Bit 5 would allow the operation to be decoded, in combination with
+funct3 = 110 or 111, a combination of four distinct comparison operators.
 
 ## Conclusions
 
