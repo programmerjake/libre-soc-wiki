@@ -307,12 +307,12 @@ condition-codes or predication.  By adding a CSR it becomes possible
 to also tag certain registers as "predicated if referenced as a destination".
 Example:
 
-> # in future operations if r0 is the destination use r5 as
-> # the PREDICATION register
+> // in future operations if r0 is the destination use r5 as 
+> // the PREDICATION register
 > IMPLICICSRPREDICATE r0, r5
-> # store the compares in r5 as the PREDICATION register
+> // store the compares in r5 as the PREDICATION register 
 > CMPEQ8 r5, r1, r2
-> # r0 is used here.  ah ha!  that means it's predicated using r5!
+> // r0 is used here.  ah ha!  that means it's predicated using r5! 
 > ADD8 r0, r1, r3
 
 With enough registers (and there are enough registers) some fairly
