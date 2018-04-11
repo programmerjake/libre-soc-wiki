@@ -604,10 +604,42 @@ Lots to be discussed.
 
 ## 17.18 Vector Load/Store Instructions
 
-These may not have a direct equivalent in Simple-V, except if mask/tagging
-is to be deployed.
+The Vector Load/Store instructions as proposed in V are extremely powerful
+and can be used for reordering and regular restructuring.
 
-To be discussed.
+Vector Load:
+
+    if (unit-strided) stride = elsize;
+    else stride = areg[as2]; // constant-strided
+    for (int i=0; i<vl; ++i)
+      if ([!]preg[p][i])
+        for (int j=0; j<seglen+1; j++)
+          vreg[vd+j][i] = mem[areg[as1] + (i*(seglen+1)+j)*stride];
+
+Store:
+
+    if (unit-strided) stride = elsize;
+    else stride = areg[as2]; // constant-strided
+    for (int i=0; i<vl; ++i)
+      if ([!]preg[p][i])
+        for (int j=0; j<seglen+1; j++)
+          mem[areg[base] + (i*(seglen+1)+j)*stride] = vreg[vd+j][i];
+
+Indexed Load:
+
+    for (int i=0; i<vl; ++i)
+      if ([!]preg[p][i])
+        for (int j=0; j<seglen+1; j++)
+          vreg[vd+j][i] = mem[sreg[base] + vreg[vs2][i] + j*elsize];
+
+Indexed Store:
+
+    for (int i=0; i<vl; ++i)
+    if ([!]preg[p][i])
+      for (int j=0; j<seglen+1; j++)
+        mem[sreg[base] + vreg[vs2][i] + j*elsize] = vreg[vd+j][i];
+
+Keeping these instructions as-is for Simple-V is highly recommended.
 
 ## 17.19 Vector Register Gather
 
