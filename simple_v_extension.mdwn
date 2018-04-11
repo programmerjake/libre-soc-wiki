@@ -799,10 +799,10 @@ Table of RV32V Instructions
 | VAND       |     | AND |
 | VOR        |     | OR |
 | VXOR       |     | XOR |
-| VSEQ       |     | |
-| VSNE       |     | |
-| VSLT       |     | |
-| VSGE       |     | |
+| VSEQ       | FEQ | BEQ |
+| VSNE       | !FEQ | BNE |
+| VSLT       | FLT    | BLT |
+| VSGE       | !FLE | BGE |
 | VCLIP      |     | |
 | VCVT       |     | |
 | VMPOP      |     | |
@@ -824,21 +824,21 @@ Table of RV32V Instructions
 | VSQRT      | FSQRT    | |
 | VCLASS     |     | |
 | VPOPC      |     | |
-| VADDI      |     | |
-| VSLI       |     | |
-| VSRI       |     | |
-| VANDI      |     | |
-| VORI       |     | |
-| VXORI      |     | |
+| VADDI      |     | ADDI |
+| VSLI       |     | SLI |
+| VSRI       |     | SRI |
+| VANDI      |     | ANDI |
+| VORI       |     | ORI |
+| VXORI      |     | XORI |
 | VCLIPI     |     | |
 | VMADD      | FMADD    | |
 | VMSUB      | FMSUB    | |
 | VNMADD     | FNMSUB    | |
 | VNMSUB     | FNMADD    | |
-| VLD        | FLD    | |
-| VLDS       |     | |
-| VLDX       |     | |
-| VST        | FST    | |
+| VLD        | FLD    | LD |
+| VLDS       |     | LW |
+| VLDX       |     | LWU |
+| VST        | FST    | ST |
 | VSTS       |     | |
 | VSTX       |     | |
 | VAMOSWAP   |     | AMOSWAP |
