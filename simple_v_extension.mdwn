@@ -790,64 +790,69 @@ Exceptions are:
 
 Table of RV32V Instructions
 
-| RV32V      | RV Equivalent (FP)   | RV Equivalent (Int) |
-| -----      | --- | |
-| VADD       | FADD    | ADD |
-| VSUB       | FSUB    | SUB |
-| VSL        |     | |
-| VSR        |     | |
-| VAND       |     | AND |
-| VOR        |     | OR |
-| VXOR       |     | XOR |
-| VSEQ       | FEQ | BEQ |
-| VSNE       | !FEQ | BNE |
-| VSLT       | FLT    | BLT |
-| VSGE       | !FLE | BGE |
-| VCLIP      |     | |
-| VCVT       |     | |
-| VMPOP      |     | |
-| VMFIRST    |     | |
-| VEXTRACT   |     | |
-| VINSERT    |     | |
-| VMERGE     |     | |
-| VSELECT    |     | |
-| VSLIDE     |     | |
-| VDIV       | FDIV    | DIV |
-| VREM       |     | REM |
-| VMUL       | FMUL    | MUL |
-| VMULH      |     | |
-| VMIN       | FMIN    | |
-| VMAX       | FMUX    | |
-| VSGNJ      | FSGNJ    | |
-| VSGNJN     | FSGNJN    | |
-| VSGNJX     | FSNGJX    | |
-| VSQRT      | FSQRT    | |
-| VCLASS     |     | |
-| VPOPC      |     | |
-| VADDI      |     | ADDI |
-| VSLI       |     | SLI |
-| VSRI       |     | SRI |
-| VANDI      |     | ANDI |
-| VORI       |     | ORI |
-| VXORI      |     | XORI |
-| VCLIPI     |     | |
-| VMADD      | FMADD    | |
-| VMSUB      | FMSUB    | |
-| VNMADD     | FNMSUB    | |
-| VNMSUB     | FNMADD    | |
-| VLD        | FLD    | LD |
-| VLDS       |     | LW |
-| VLDX       |     | LWU |
-| VST        | FST    | ST |
-| VSTS       |     | |
-| VSTX       |     | |
-| VAMOSWAP   |     | AMOSWAP |
-| VAMOADD    |     | AMOADD |
-| VAMOAND    |     | AMOAND |
-| VAMOOR     |     | AMOOR |
-| VAMOXOR    |     | AMOXOR |
-| VAMOMIN    |     | AMOMIN |
-| VAMOMAX    |     | AMOMAX |
+| RV32V      | RV Equivalent (FP)   | RV Equivalent (Int) | Notes |
+| -----      | --- | |   |
+| VADD       | FADD    | ADD |   |
+| VSUB       | FSUB    | SUB |   |
+| VSL        |     | |   |
+| VSR        |     | |   |
+| VAND       |     | AND |   |
+| VOR        |     | OR |   |
+| VXOR       |     | XOR |   |
+| VSEQ       | FEQ | BEQ | {1} |
+| VSNE       | !FEQ | BNE | {1} |
+| VSLT       | FLT    | BLT | {1} |
+| VSGE       | !FLE | BGE | {1} |
+| VCLIP      |     | |   |
+| VCVT       |     | |   |
+| VMPOP      |     | |   |
+| VMFIRST    |     | |   |
+| VEXTRACT   |     | |   |
+| VINSERT    |     | |   |
+| VMERGE     |     | |   |
+| VSELECT    |     | |   |
+| VSLIDE     |     | |   |
+| VDIV       | FDIV    | DIV |   |
+| VREM       |     | REM |   |
+| VMUL       | FMUL    | MUL |   |
+| VMULH      |     | |   |
+| VMIN       | FMIN    | |   |
+| VMAX       | FMUX    | |   |
+| VSGNJ      | FSGNJ    | |   |
+| VSGNJN     | FSGNJN    | |   |
+| VSGNJX     | FSNGJX    | |   |
+| VSQRT      | FSQRT    | |   |
+| VCLASS     |     | |   |
+| VPOPC      |     | |   |
+| VADDI      |     | ADDI |   |
+| VSLI       |     | SLI |   |
+| VSRI       |     | SRI |   |
+| VANDI      |     | ANDI |   |
+| VORI       |     | ORI |   |
+| VXORI      |     | XORI |   |
+| VCLIPI     |     | |   |
+| VMADD      | FMADD    | |   |
+| VMSUB      | FMSUB    | |   |
+| VNMADD     | FNMSUB    | |   |
+| VNMSUB     | FNMADD    | |   |
+| VLD        | FLD    | LD |   |
+| VLDS       |     | LW |   |
+| VLDX       |     | LWU |   |
+| VST        | FST    | ST |   |
+| VSTS       |     | |   |
+| VSTX       |     | |   |
+| VAMOSWAP   |     | AMOSWAP |   |
+| VAMOADD    |     | AMOADD |   |
+| VAMOAND    |     | AMOAND |   |
+| VAMOOR     |     | AMOOR |   |
+| VAMOXOR    |     | AMOXOR |   |
+| VAMOMIN    |     | AMOMIN |   |
+| VAMOMAX    |     | AMOMAX |   |
+
+Notes:
+
+* {1} retro-fit predication variants into branch instructions (base and C),
+  decoding triggered by CSR bit marking register as "Vector type".
 
 ## TODO: sort
 
