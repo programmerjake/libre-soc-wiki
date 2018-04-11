@@ -383,7 +383,9 @@ Now uses the CS format:
    C.BEQZ    |   predicate rs3    |   src1   |  I/F B | src2         |   C1   |
 """]]
 
-Bit 6 would be decoded as "operation refers to Integer or Float"
+Bit 6 would be decoded as "operation refers to Integer or Float" including
+interpreting src1 and src2 accordingly as outlined in Table 12.2 of the
+"C" Standard, version 2.0,
 whilst Bit 5 would allow the operation to be decoded, in combination with
 funct3 = 110 or 111, a combination of four distinct comparison operators.
 
