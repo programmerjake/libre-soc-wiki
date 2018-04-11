@@ -344,11 +344,19 @@ current vector index" instead.
 There is, in the standard Conditional Branch instruction, more than
 adequate space to interpret it in a similar fashion:
 
-|   31    |30       25 |24     20 | 19     15 | 14        12 | 11          8 |      7  | 6         0 |
+|   31    |30 ..... 25 |24 ... 20 | 19 ... 15 | 14 ...... 12 | 11 .......  8 |      7  | 6 ....... 0 |
 | -----   |----------- |--------- | --------- | ------------ | ------------- |  -----  | ----------- |
 | imm[12] | imm[10:5]  |        rs2 |     rs1 |       funct3 |      imm[4:1] | imm[11] |    opcode   |
 |  1      |        6   |      5   |      5    |       3      |     4         |  1      |   7         |
-|    offset|[12,10:5]  |    src2  |    src1   |  BE?         |    offset|[11,4:1]      | BRANCH      |
+|    offset[12,10:5]  ||    src2  |    src1   |  BE?         |    offset[11,4:1]      || BRANCH      |
+
+This would become:
+
+|   31    |30 ..... 25 |24 ... 20 | 19 ... 15 | 14 ...... 12 | 11 .......  8 |      7  | 6 ....... 0 |
+| -----   |----------- |--------- | --------- | ------------ | ------------- |  -----  | ----------- |
+| imm[12] | imm[10:5]  |        rs2 |     rs1 |       funct3 |      imm[4:1] | imm[11] |    opcode   |
+|  1      |        6   |      5   |      5    |       3      |     4         |  1      |   7         |
+|    reserved         ||    src2  |    src1   |  BE?         |   predicate rs3        || BRANCH      |
 
 
 ## Conclusions
