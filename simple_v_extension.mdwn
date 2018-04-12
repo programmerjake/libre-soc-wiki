@@ -108,19 +108,19 @@ Implementation of the latter:
 
 Operation involving (referring to) register M:
 
-> bitwidth = default # default for opcode?
-> vectorlen = 1 # scalar
-> 
-> for (o = 0, o < 2, o++)
->   if (CSR-Vector_registernum[o] == M)
->       bitwidth = CSR-Vector_bitwidth[o]
->       vectorlen = CSR-Vector_len[o]
->       break
+    bitwidth = default # default for opcode?
+    vectorlen = 1 # scalar
+    
+    for (o = 0, o < 2, o++)
+      if (CSR-Vector_registernum[o] == M)
+          bitwidth = CSR-Vector_bitwidth[o]
+          vectorlen = CSR-Vector_len[o]
+          break
 
 and for the former it would simply be:
 
-> bitwidth = CSR-Vector_bitwidth[M]
-> vectorlen = CSR-Vector_len[M]
+    bitwidth = CSR-Vector_bitwidth[M]
+    vectorlen = CSR-Vector_len[M]
 
 Alternatives:
 
@@ -154,19 +154,19 @@ which would mean:
 
 LOAD rN, ldoffs(rM) would then be (assuming packed bit-width not set):
 
-> offs = 0
-> stride = 1
-> vector-len = CSR-Vector-length register N
->
-> for (o = 0, o < 2, o++)
->   if (CSR-Offset register o == M)
->       offs = CSR-Offset amount register o
->       if CSR-Offset Stride-mode == offset:
->           stride = ldoffs
->       break
->
-> for (i = 0, i < vector-len; i++)
->   r[N+i] = mem[(offs*i + r[M+i])*stride]
+    offs = 0
+    stride = 1
+    vector-len = CSR-Vector-length register N
+  
+    for (o = 0, o < 2, o++)
+      if (CSR-Offset register o == M)
+          offs = CSR-Offset amount register o
+          if CSR-Offset Stride-mode == offset:
+              stride = ldoffs
+          break
+   
+    for (i = 0, i < vector-len; i++)
+      r[N+i] = mem[(offs*i + r[M+i])*stride]
 
 # Analysis and discussion of Vector vs SIMD
 
@@ -307,13 +307,13 @@ condition-codes or predication.  By adding a CSR it becomes possible
 to also tag certain registers as "predicated if referenced as a destination".
 Example:
 
-> // in future operations if r0 is the destination use r5 as 
-> // the PREDICATION register
-> IMPLICICSRPREDICATE r0, r5
-> // store the compares in r5 as the PREDICATION register 
-> CMPEQ8 r5, r1, r2
-> // r0 is used here.  ah ha!  that means it's predicated using r5! 
-> ADD8 r0, r1, r3
+    // in future operations if r0 is the destination use r5 as 
+    // the PREDICATION register
+    IMPLICICSRPREDICATE r0, r5
+    // store the compares in r5 as the PREDICATION register 
+    CMPEQ8 r5, r1, r2
+    // r0 is used here.  ah ha!  that means it's predicated using r5! 
+    ADD8 r0, r1, r3
 
 With enough registers (and there are enough registers) some fairly
 complex predication can be set up and yet still execute without significant
@@ -788,20 +788,20 @@ auto-incrementing the two address registers a2 and a3, as well as
 providing a means to interact between the zero-overhead loop and the
 vsetvl instruction.  a sort-of pseudo-assembly of that would look like:
 
-> # a2 to be auto-incremented by t0*4
-> zero-overhead-set-auto-increment a2, t0, 4
-> # a2 to be auto-incremented by t0*4
-> zero-overhead-set-auto-increment a3, t0, 4
-> zero-overhead-set-loop-terminator-condition a0 zero
-> zero-overhead-set-start-end stripmine, stripmine+endoffset
-> stripmine:
-> vsetvl t0,a0
-> vlw v0, a2
-> vlw v1, a3
-> vfma v1, a1, v0, v1
-> vsw v1, a3
-> sub a0, a0, t0
->stripmine+endoffset:
+    # a2 to be auto-incremented by t0 times 4
+    zero-overhead-set-auto-increment a2, t0, 4
+    # a2 to be auto-incremented by t0 times 4
+    zero-overhead-set-auto-increment a3, t0, 4
+    zero-overhead-set-loop-terminator-condition a0 zero
+    zero-overhead-set-start-end stripmine, stripmine+endoffset
+    stripmine:
+    vsetvl t0,a0
+    vlw v0, a2
+    vlw v1, a3
+    vfma v1, a1, v0, v1
+    vsw v1, a3
+    sub a0, a0, t0
+    stripmine+endoffset:
 
 the question is: would something like this even be desirable?  it's a
 variant of auto-increment [1].  last time i saw any hint of auto-increment
