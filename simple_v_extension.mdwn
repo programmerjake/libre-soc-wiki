@@ -641,7 +641,7 @@ Indexed Store:
 
 Keeping these instructions as-is for Simple-V is highly recommended.
 However: one of the goals of this Extension is to retro-fit (re-use)
-existing RV Load/Store.
+existing RV Load/Store:
 
 [[!table  data="""
 31                  20 | 19      15 | 14    12 | 11           7 | 6         0 |
@@ -650,10 +650,12 @@ existing RV Load/Store.
        offset[11:0]    |    base    |  width   |      dest      |    LOAD |
 """]]
 
+[[!table  data="""
 31          25 | 24    20 | 19     15 | 14    12 | 11          7 | 6         0 |
  imm[11:5]     |   rs2    |    rs1    |  funct3  |   imm[4:0]    |    opcode |
       7        |    5     |     5     |    3     |       5       |      7 |
  offset[11:5]  |   src    |   base    |  width   |  offset[4:0]  |   STORE |
+"""]]
 
 
 ## 17.19 Vector Register Gather
@@ -1114,3 +1116,5 @@ pluses:
 * Branch Divergence <https://jbush001.github.io/2014/12/07/branch-divergence-in-parallel-kernels.html>
 * Life of Triangles (3D) <https://jbush001.github.io/2016/02/27/life-of-triangle.html>
 * Videocore-IV <https://github.com/hermanhermitage/videocoreiv/wiki/VideoCore-IV-3d-Graphics-Pipeline>
+* Discussion proposing CSRs that change ISA definition
+  <https://groups.google.com/a/groups.riscv.org/forum/#!topic/isa-dev/InzQ1wr_3Ak>
