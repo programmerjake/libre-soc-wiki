@@ -640,6 +640,21 @@ Indexed Store:
         mem[sreg[base] + vreg[vs2][i] + j*elsize] = vreg[vd+j][i];
 
 Keeping these instructions as-is for Simple-V is highly recommended.
+However: one of the goals of this Extension is to retro-fit (re-use)
+existing RV Load/Store.
+
+[[!table  data="""
+31                  20 | 19      15 | 14    12 | 11           7 | 6         0 |
+       imm[11:0]       |     rs1    |  funct3  |       rd       |    opcode |
+            12         |      5     |    3     |        5       |      7 |
+       offset[11:0]    |    base    |  width   |      dest      |    LOAD |
+"""]]
+
+31          25 | 24    20 | 19     15 | 14    12 | 11          7 | 6         0 |
+ imm[11:5]     |   rs2    |    rs1    |  funct3  |   imm[4:0]    |    opcode |
+      7        |    5     |     5     |    3     |       5       |      7 |
+ offset[11:5]  |   src    |   base    |  width   |  offset[4:0]  |   STORE |
+
 
 ## 17.19 Vector Register Gather
 
