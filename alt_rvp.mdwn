@@ -1,0 +1,21 @@
+# Lanes
+
+Example parallel add:
+
+    /* XLEN and N are "baked-in" to the hardware */
+    parameter XLEN;
+    parameter N;
+    /* note that N cannot be greater than XLEN */
+
+    register plane[XLEN];
+    register x[N][32][XLEN];
+
+    function op_add(rd, rs1, rs2) {
+       /* note that this is ADD, not PADD */
+       int i;
+       for (i = 0; i<N; i++)
+          if (plane[i])
+             x[i][rd] <= x[i][rs1] + x[i][rs2];
+    }
+    /* note that "<=" is the Verilog non-blocking assignment operator */
+
