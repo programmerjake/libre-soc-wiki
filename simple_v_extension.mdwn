@@ -1087,6 +1087,18 @@ be achieved by *actually* splitting the regfile into 64 virtual 32-bit
 registers such that a 64-bit FP scalar operation is dropped into (r0.H
 r0.L) tuples.  Implementation therefore hidden through register renaming.
 
+Instructions "ADD r2 r4 r4" would result in three instructions being
+generated and placed into the FIFO: ADD r2 r4 r4; ADD r2 r5 r5;
+ADD r2 r6 r6;
+
+Implementations intending to introduce VLIW, OoO and parallelism
+(even without Simple-V) would then find that the instructions are
+generated quicker (or in a more compact fashion that is less heavy
+on caches).  Interestingly we observe then that Simple-V is about
+"consolidation of instruction generation", where actual parallelism
+of underlying hardware is an implementor-choice that could just as
+equally be applied *without* Simple-V even being implemented.
+
 # Analysis of CSR decoding on latency <a name="csr_decoding_analysis"></a>
 
 It could indeed have been logically deduced (or expected), that there
