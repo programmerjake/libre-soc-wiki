@@ -9,7 +9,7 @@ a consistent "API" to parallelisation of existing *and future* operations.
 *Actual* internal hardware-level parallelism is *not* required, such
 that Simple-V may be viewed as providing a "compact" or "consolidated"
 means of issuing multiple near-identical arithmetic instructions to an
-instruction FIFO, pending execution.
+instruction queue (FILO), pending execution.
 
 *Actual* parallelism, if added independently of Simple-V in the form
 of Out-of-order restructuring (including parallel ALU lanes) or VLIW
@@ -1098,7 +1098,7 @@ single-bit is less burdensome on instruction decode phase.
 ## Example Instruction translation: <a name="example_translation"></a>
 
 Instructions "ADD r2 r4 r4" would result in three instructions being
-generated and placed into the FIFO:
+generated and placed into the FILO:
 
 * ADD r2 r4 r4
 * ADD r2 r5 r5
