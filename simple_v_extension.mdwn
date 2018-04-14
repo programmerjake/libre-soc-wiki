@@ -2,6 +2,22 @@
 
 [[!toc ]]
 
+# Summary
+
+Key insight: Simple-V is intended as an abstraction layer to provide
+a consistent "API" to parallelisation of existing *and future* operations.
+*Actual* internal hardware-level parallelism is *not* required, such
+that Simple-V may be viewed as providing a "compact" or "consolidated"
+means of issuing multiple near-identical arithmetic instructions to an
+instruction FIFO, pending execution.
+
+*Actual* parallelism, if added independently of Simple-V in the form
+of Out-of-order restructuring (including parallel ALU lanes) or VLIW
+implementations, or SIMD, or anything else, would then benefit *if*
+Simple-V was added on top.
+
+# Introduction
+
 This proposal exists so as to be able to satisfy several disparate
 requirements: power-conscious, area-conscious, and performance-conscious
 designs all pull an ISA and its implementation in different conflicting
@@ -1034,7 +1050,7 @@ translates effectively to:
 
 # Register reordering <a name="register_reordering"></a>
 
-Register File 
+## Register File 
 
 | Reg Num | Bits |
 | ------- | ---- |
@@ -1047,13 +1063,16 @@ Register File
 | r6 | (32..0) |
 | r7 | (32..0) |
 
-Vectorised CSR
+## Vectorised CSR
+
+May not be an actual CSR: may be generated from Vector Length CSR:
+single-bit is less burdensome on instruction decode phase.
 
 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 |
 | - | - | - | - | - | - | - | - |  
 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 1 |
 
-Vector Length CSR
+## Vector Length CSR
 
 | Reg Num | (3..0) |
 | ------- | ---- |
@@ -1066,7 +1085,7 @@ Vector Length CSR
 | r6 | 0 |
 | r7 | 1 |
 
-Virtual Register Reordering:
+## Virtual Register Reordering:
 
 | Reg Num | Bits (0) | Bits (1) | Bits (2) |
 | ------- | -------- | -------- | -------- |
@@ -1075,6 +1094,17 @@ Virtual Register Reordering:
 | r3 | (32..0) |
 | r4 | (32..0) | (32..0) | (32..0) |
 | r7 | (32..0) |
+
+## Example Instruction translation: <a name="example_translation"></a>
+
+Instructions "ADD r2 r4 r4" would result in three instructions being
+generated and placed into the FIFO:
+
+* ADD r2 r4 r4
+* ADD r2 r5 r5
+* ADD r2 r6 r6
+
+## Insights 
 
 SIMD register file splitting still to consider.  For RV64, benefits of doubling
 (quadrupling in the case of Half-Precision IEEE754 FP) the apparent
@@ -1086,10 +1116,6 @@ done on 64-bit registers it's not so conceptually difficult.  May even
 be achieved by *actually* splitting the regfile into 64 virtual 32-bit
 registers such that a 64-bit FP scalar operation is dropped into (r0.H
 r0.L) tuples.  Implementation therefore hidden through register renaming.
-
-Instructions "ADD r2 r4 r4" would result in three instructions being
-generated and placed into the FIFO: ADD r2 r4 r4; ADD r2 r5 r5;
-ADD r2 r6 r6;
 
 Implementations intending to introduce VLIW, OoO and parallelism
 (even without Simple-V) would then find that the instructions are
