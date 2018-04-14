@@ -1032,6 +1032,46 @@ translates effectively to:
   (caveat: anything not specified drops through to software-emulation / traps)
 * TODO
 
+# Register reordering <a name="register_reordering"></a>
+
+Register File 
+
+| Reg Num | Bits |
+| r0 | (32..0) |
+| r1 | (32..0) |
+| r2 | (32..0) |
+| r3 | (32..0) |
+| r4 | (32..0) |
+| r5 | (32..0) |
+| r6 | (32..0) |
+| r7 | (32..0) |
+
+Vectorised CSR
+
+| 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 |
+| 0 | 0 | 0 | 1 | 0 | 0 | 0 | 1 |
+
+Vector Length CSR
+
+| Reg Num | (3..0) |
+| r0 | 2 |
+| r1 | 0 |
+| r2 | 1 |
+| r3 | 1 |
+| r4 | 3 |
+| r5 | 0 |
+| r6 | 0 |
+| r7 | 1 |
+
+Virtual Register Reordering:
+
+| Reg Num | Bits (0) | Bits (1) | Bits (2) |
+| r0 | (32..0) | (32..0) |
+| r2 | (32..0) |
+| r3 | (32..0) |
+| r4 | (32..0) | (32..0) | (32..0) |
+| r7 | (32..0) |
+
 # Analysis of CSR decoding on latency <a name="csr_decoding_analysis"></a>
 
 It could indeed have been logically deduced (or expected), that there
