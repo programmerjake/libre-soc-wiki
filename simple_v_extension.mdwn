@@ -1076,6 +1076,17 @@ Virtual Register Reordering:
 | r4 | (32..0) | (32..0) | (32..0) |
 | r7 | (32..0) |
 
+SIMD register file splitting still to consider.  For RV64, benefits of doubling
+(quadrupling in the case of Half-Precision IEEE754 FP) the apparent
+size of the floating point register file to 64 (128 in the case of HP)
+seem pretty clear and worth the complexity.
+
+64 virtual 32-bit F.P. registers and given that 32-bit FP operations are
+done on 64-bit registers it's not so conceptually difficult.  May even
+be achieved by *actually* splitting the regfile into 64 virtual 32-bit
+registers such that a 64-bit FP scalar operation is dropped into (r0.H
+r0.L) tuples.  Implementation therefore hidden through register renaming.
+
 # Analysis of CSR decoding on latency <a name="csr_decoding_analysis"></a>
 
 It could indeed have been logically deduced (or expected), that there
