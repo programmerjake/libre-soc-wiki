@@ -265,14 +265,15 @@ contains an extremely interesting feature: zero-overhead loops.  This
 proposal would basically allow an inner loop of instructions to be
 repeated indefinitely, a fixed number of times.
 
-Its specific advantage over explicit loops is that the pipeline in a
-DSP can potentially be kept completely full *even in an in-order
+Its specific advantage over explicit loops is that the pipeline in a DSP
+can potentially be kept completely full *even in an in-order single-issue
 implementation*.  Normally, it requires a superscalar architecture and
-out-of-order execution capabilities to "pre-process" instructions in order
-to keep ALU pipelines 100% occupied.
+out-of-order execution capabilities to "pre-process" instructions in
+order to keep ALU pipelines 100% occupied.
 
-This very simple proposal offers a way to increase pipeline activity in the
-one key area which really matters: the inner loop.
+By bringing that capability in, this proposal offers a way to increase
+pipeline activity even in simpler implementations in the one key area
+which really matters: the inner loop.
 
 ## Mask and Tagging (Predication)
 
@@ -1234,3 +1235,4 @@ pluses:
 * Videocore-IV <https://github.com/hermanhermitage/videocoreiv/wiki/VideoCore-IV-3d-Graphics-Pipeline>
 * Discussion proposing CSRs that change ISA definition
   <https://groups.google.com/a/groups.riscv.org/forum/#!topic/isa-dev/InzQ1wr_3Ak>
+* Zero-overhead loops <https://pdfs.semanticscholar.org/dbaa/66985cc730d4b44d79f519e96ec9c43ab5b7.pdf>
