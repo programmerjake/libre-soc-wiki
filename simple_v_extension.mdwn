@@ -271,9 +271,15 @@ implementation*.  Normally, it requires a superscalar architecture and
 out-of-order execution capabilities to "pre-process" instructions in
 order to keep ALU pipelines 100% occupied.
 
-By bringing that capability in, this proposal offers a way to increase
+By bringing that capability in, this proposal could offer a way to increase
 pipeline activity even in simpler implementations in the one key area
 which really matters: the inner loop.
+
+However when looking at much more comprehensive schemes
+"A portable specification of zero-overhead loop control hardware
+applied to embedded processors" (ZOLC), optimising only the single
+inner loop seems inadequate, tending to suggest that ZOLC may be
+better off being proposed as an entirely separate Extension.
 
 ## Mask and Tagging (Predication)
 
@@ -416,19 +422,24 @@ follows:
 * Fixed vs variable parallelism: <b>variable</b>
 * Implicit (indirect) vs fixed (integral) instruction bit-width: <b>indirect</b>
 * Implicit vs explicit type-conversion: <b>explicit</b>
-* Implicit vs explicit inner loops: <b>implicit</b>
-* Tag or no-tag: <b>Complex and needs further thought</b>
+* Implicit vs explicit inner loops: <b>implicit but best done separately</b>
+* Tag or no-tag: <b>Complex but highly beneficial</b>
 
-In particular: variable-length vectors came out on top because of the
-high setup, teardown and corner-cases associated with the fixed width
-of SIMD.  Implicit bit-width helps to extend the ISA to escape from
-former limitations and restrictions (in a backwards-compatible fashion),
-and implicit (zero-overhead) loops provide a means to keep pipelines
-potentially 100% occupied *without* requiring a super-scalar or out-of-order
-architecture.
+In particular:
 
-Constructing a SIMD/Simple-Vector proposal based around even only these four
-(five?) requirements would therefore seem to be a logical thing to do.
+* variable-length vectors came out on top because of the high setup, teardown
+  and corner-cases associated with the fixed width of SIMD.
+* Implicit bit-width helps to extend the ISA to escape from
+  former limitations and restrictions (in a backwards-compatible fashion),
+  whilst also leaving implementors free to simmplify implementations
+  by using actual explicit internal parallelism.
+* Implicit (zero-overhead) loops provide a means to keep pipelines
+  potentially 100% occupied in a single-issue in-order implementation
+  i.e. *without* requiring a super-scalar or out-of-order architecture,
+  but doing a proper, full job (ZOLC) is an entirely different matter.
+
+Constructing a SIMD/Simple-Vector proposal based around four of these five
+requirements would therefore seem to be a logical thing to do.
 
 # Instruction Format
 
