@@ -1218,9 +1218,18 @@ the question is asked "How can each of the proposals effectively implement
   topologically transplant every single instruction from RVV (as
   designed) into Simple-V equivalents, with *zero loss of functionality
    or capability*.
-* With the "parallelism" abstracted out, a "DSP" Extension which contained
-  the basic primitives (non-parallelised 8, 16 or 32-bit SIMD operations)
-  inherently *become* parallel, automatically.
+* With the "parallelism" abstracted out, a hypothetical SIMD-less "DSP"
+  Extension which contained the basic primitives (non-parallelised
+  8, 16 or 32-bit SIMD operations) inherently *become* parallel,
+  automatically.
+* Additionally, standard operations (ADD, MUL) that would normally have
+  to have special SIMD-parallel opcodes added need no longer have *any*
+  of the length-dependent variants (2of 32-bit ADDs in a 64-bit register,
+  4of 32-bit ADDs in a 128-bit register) because Simple-V takes the
+  *standard* RV opcodes (present and future) and automatically parallelises
+  them.
+* By inheriting the RVV feature of arbitrary vector-length, then just as
+  with RVV the corner-cases and ISA proliferation of SIMD is avoided.
 * Whilst not entirely finalised, registers are expected to be
   capable of being subdivided down to an implementor-chosen bitwidth
   in the underlying hardware (r1 becomes r1[31..24] r1[23..16] r1[15..8]
@@ -1230,9 +1239,10 @@ the question is asked "How can each of the proposals effectively implement
   else including no subdivisions at all.
 * Even though implementors have that choice even to have full 64-bit
   (with RV64) SIMD, they *must* provide predication that transparently
-  switches off the required units on the last loop, thus neatly fitting
-  underlying SIMD ALU implementations *into* the RVV paradigm, keeping
-  the uniform consistent API that is a key strategic feature of Simple-V.
+  switches off appropriate units on the last loop, thus neatly fitting
+  underlying SIMD ALU implementations *into* the arbitrary vector-length
+  RVV paradigm, keeping the uniform consistent API that is a key strategic
+  feature of Simple-V.
 * With Simple-V fitting into the standard register files, certain classes
   of SIMD operations such as High/Low arithmetic (r1[31..16] + r2[15..0])
   can be done by applying *Parallelised* Bit-manipulation operations
@@ -1240,6 +1250,12 @@ the question is asked "How can each of the proposals effectively implement
   arithmetic operations, even if the bit-manipulation operations require
   changing the bitwidth of the "vectors" to do so.  Predication can
   be utilised to skip high words (or low words) in source or destination.
+* In essence, the key downside of SIMD - massive duplication of
+  identical functions over time as an architecture evolves from 32-bit
+  wide SIMD all the way up to 512-bit, is avoided with Simple-V, through
+  vector-style parallelism being dropped on top of 8-bit or 16-bit
+  operations, all the while keeping a consistent ISA-level "API" irrespective
+  of implementor design choices (or indeed actual implementations).
 
 # Impementing V on top of Simple-V
 
