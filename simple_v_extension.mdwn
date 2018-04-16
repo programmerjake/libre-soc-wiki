@@ -762,10 +762,10 @@ Notes:
 Revised LOAD:
 
 [[!table  data="""
-31 | 30 | 29  25      |  24   20 | 19    15 | 14    12 | 11   7 | 6     0 |
-   imm[11:0]                  ||||    rs1   |  funct3  |   rd   |  opcode |
- 1 | 1  |  5          |    5     |     5    |    3     |    5   |     7   |
- ? | s  |  rs2        | imm[4:0] |   base   |  width   |  dest  |  LOAD   |
+31 | 30 | 29 25 | 24    20 | 19 15 | 14   12 | 11 7 | 6    0 |
+imm[11:0]               |||| rs1   | funct3  | rd   | opcode |
+1  | 1  |  5    | 5        | 5     | 3       | 5    | 7      |
+?  | s  |  rs2  | imm[4:0] | base  | width   | dest | LOAD   |
 """]]
 
 Where in turn the pseudo-code may now combine the two:
