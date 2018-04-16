@@ -1095,6 +1095,15 @@ Simple-V
   chunks of the register file.  However in the case of RV64 and 32-bit
   operations, that effectively means 64 slots are available for parallel
   operations.
+* plus: inherent parallelism (actual parallel ALUs) doesn't actually need to
+  be added, yet the instruction opcodes remain unchanged (and still appear
+  to be parallel).  consistent "API" regardless of actual internal parallelism:
+  even an in-order single-issue implementation with a single ALU would still
+  appear to have parallel vectoristion.
+* hard-to-judge: if actual inherent underlying ALU parallelism is added it's
+  hard to say if there would be pluses or minuses.  At worse it would
+  be "no worse" than existing register renaming, OoO, VLIW and register
+  file cacheing schemes.
 
 RVV (as it stands, Draft 0.4 Section 17, RISC-V ISA V2.3-Draft)
 
