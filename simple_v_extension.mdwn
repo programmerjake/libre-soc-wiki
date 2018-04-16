@@ -1046,12 +1046,15 @@ translates effectively to:
 * Throw an exception.  Whether that actually results in spawning threads
   as part of the trap-handling remains to be seen.
 
-# Comparison of SIMD (TODO) Alt-RVP, Simple-V and RVV Proposals <a name="parallelism_comparisons"></a>
+# Comparison of "Traditional" SIMD, Alt-RVP, Simple-V and RVV Proposals <a name="parallelism_comparisons"></a>
 
-This section compares the various parallelism proposals as they stand.
-SIMD is yet to be explicitly incorporated into this section.
+This section compares the various parallelism proposals as they stand,
+compared to traditional SIMD.
 
-[[alt_rvp]]
+## [[alt_rvp]]
+
+Primary benefit of Alt-RVP is the simplicity with which parallelism
+may be introduced (effective multiplication of regfiles and associated ALUs).
 
 * plus: the simplicity of the lanes (combined with the regularity of
   allocating identical opcodes multiple independent registers) meaning
@@ -1071,7 +1074,12 @@ SIMD is yet to be explicitly incorporated into this section.
 * minus: Access to registers across multiple lanes is challenging. "Solution"
   is to drop data into memory and immediately back in again (like MMX).
 
-Simple-V
+## Simple-V
+
+Primary benefit of Simple-V is the OO abstraction of parallel principles
+from actual hardware.  It's an API in effect that's designed to be
+slotted in to an existing implementation (just after instruction decode)
+with minimum disruption and effort.
 
 * minus: the complexity of having to use register renames, OoO, VLIW,
   register file cacheing, all of which has been done before but is a
@@ -1105,10 +1113,13 @@ Simple-V
   be "no worse" than existing register renaming, OoO, VLIW and register
   file cacheing schemes.
 
-RVV (as it stands, Draft 0.4 Section 17, RISC-V ISA V2.3-Draft)
+## RVV (as it stands, Draft 0.4 Section 17, RISC-V ISA V2.3-Draft)
 
-* plus: regular predictable workload means effects on L1/L2 Cache can
-  be streamlined.
+RVV is extremely well-designed and has some amazing features, including
+2D reorganisation of memory through LOAD/STORE "strides".
+
+* plus: regular predictable workload means that implmentations may
+  streamline effects on L1/L2 Cache.
 * plus: regular and clear parallel workload also means that lanes
   (similar to Alt-RVP) may be used as an implementation detail,
   using either SRAM or 2R1W registers.
@@ -1130,6 +1141,35 @@ RVV (as it stands, Draft 0.4 Section 17, RISC-V ISA V2.3-Draft)
   implementation time and die area, meaning that adoption is likely only
   to be in high-performance specialist supercomputing (where it will
   be absolutely superb).
+
+## Traditional SIMD
+
+The only really good things about SIMD are how easy it is to implement and
+get good performance.  Unfortunately that makes it quite seductive...
+
+* plus: really straightforward, ALU basically does several packed operations
+  at once.  Parallelism is inherent at the ALU, making the rest of the
+  processor really straightforward (zero impact).
+* plus (continuation): SIMD in simple in-order single-issue designs
+  can therefore result in great throughput even with a very simple execution
+  engine.
+* minus: ridiculously complex setup and corner-cases.
+* minus: getting data usefully out of registers (if separate regfiles
+  are used) means outputting to memory and back.
+* minus: quite a lot of supplementary instructions for bit-level manipulation
+  are needed in order to efficiently extract (or prepare) SIMD operands.
+* minus: MASSIVE proliferation of ISA both in terms of opcodes in one
+  dimension and parallelism (width): an at least O(N^2) and quite probably
+  O(N^3) ISA proliferation that often results in several thousand
+  separate instructions.  all with separate corner-case algorithms!
+* minus: EVEN BIGGER proliferation of SIMD ISA if the functionality of
+  8, 16, 32 or 64-bit reordering is built-in to the SIMD instruction.
+  For example: add (high|low) 16-bits of r1 to (low|high) of r2.
+* minus: EVEN BIGGER proliferation of SIMD ISA if there is a mismatch
+  between operand and result bit-widths.  In combination with high/low
+  proliferation the situation is made even worse.
+* minor-saving-grace: some implementations *may* have predication masks
+  that allow control over individual elements within the SIMD block.
 
 # Impementing V on top of Simple-V
 
