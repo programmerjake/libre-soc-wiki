@@ -1046,6 +1046,66 @@ translates effectively to:
 * Throw an exception.  Whether that actually results in spawning threads
   as part of the trap-handling remains to be seen.
 
+# Comparison of SIMD (TODO) Alt-RVP, Simple-V and RVV Proposals <a name="parallelism_comparisons"></a>
+
+This section compares the various parallelism proposals as they stand.
+SIMD is yet to be explicitly incorporated into this section.
+
+[[alt_rvp]]
+
+* plus: the simplicity of the lanes (combined with the regularity of
+  allocating identical opcodes multiple independent registers)
+* minus: a more complex instruction set where the parallelism is much
+  more explicitly directly specified in the instruction and
+* minus: if you *don't* have an explicit instruction (opcode) and you
+  need one, the only place it can be added is... in the vector unit
+* plus-and-minus: Lanes may be utilised for high-speed context-switching
+  but with the down-side that they're an all-or-nothing part of the Extension.
+  No Alt-RVP: no fast register-bank switching.
+* plus: Lane-switching would mean that complex operations not suited to
+  parallelisation can be carried out, followed by further parallel Lane-based
+  work
+* minus: Access to registers across multiple lanes is challenging. "Solution"
+  is to drop data into memory and immediately back in again (like MMX).
+
+Simple-V
+
+* minus: the complexity of having to use register renames, OoO, VLIW,
+  register file cacheing, all of which has been done before but is a
+  pain
+* plus: transparent re-use of existing opcodes as-is just indirectly
+  saying "this register's now a vector" which
+* plus: means that future instructions also get to be inherently
+  parallelised because there's no "separate vector opcodes"
+* plus: shared register file meaning that, like Alt-RVP, complex
+  operations not suited to parallelisation may be carried out interleaved
+  between parallelised instructions *without* requiring data to be dropped
+  down to memory and back (into a separate vectorised register engine).
+* plus-and-minus: re-use of integer and floating-point 32-wide register
+  files means that huge parallel workloads would use up considerable
+  chunks of the register file.  However in the case of RV64 and 32-bit
+  operations, that effectively means 64 slots are available for parallel
+  operations.
+
+RVV (as it stands, Draft 0.4 Section 17, RISC-V ISA V2.3-Draft)
+
+* plus: regular predictable workload means effects on L1/L2 Cache can
+  be streamlined.
+* plus: regular and clear parallel workload also means that lanes
+  (similar to Alt-RVP) may be used as an implementation details,
+  using either SRAM or 2R1W registers.
+* plus: separate engine with no impact on the rest of an implementation
+* minus: separate *complex* engine with no RTL (ALUs, Pipeline stages) reuse
+  really feasible.
+* minus: no ISA abstraction or re-use either: additions to other Extensions
+  do not gain parallelism, resulting in prolific duplication of functionality
+  inside RVV *and out*.
+* minus: when operations require a different approach (scalar operations
+  using the standard integer or FP regfile) an entire vector must be
+  transferred out to memory, into standard regfiles, then back to memory,
+  then back to the vector unit, this to occur potentially multiple times.
+
+
 # Impementing V on top of Simple-V
 
 * Number of Offset CSRs extends from 2
