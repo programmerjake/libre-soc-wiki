@@ -1054,17 +1054,20 @@ SIMD is yet to be explicitly incorporated into this section.
 [[alt_rvp]]
 
 * plus: the simplicity of the lanes (combined with the regularity of
-  allocating identical opcodes multiple independent registers)
+  allocating identical opcodes multiple independent registers) meaning
+  that SRAM or 2R1W can be used for entire regfile (potentially).
 * minus: a more complex instruction set where the parallelism is much
   more explicitly directly specified in the instruction and
 * minus: if you *don't* have an explicit instruction (opcode) and you
-  need one, the only place it can be added is... in the vector unit
+  need one, the only place it can be added is... in the vector unit and
+* minus: opcode functions (and associated ALUs) duplicated in Alt-RVP are
+  not useable or accessible in other Extensions.
 * plus-and-minus: Lanes may be utilised for high-speed context-switching
   but with the down-side that they're an all-or-nothing part of the Extension.
   No Alt-RVP: no fast register-bank switching.
 * plus: Lane-switching would mean that complex operations not suited to
   parallelisation can be carried out, followed by further parallel Lane-based
-  work
+  work, without moving register contents down to memory (and back)
 * minus: Access to registers across multiple lanes is challenging. "Solution"
   is to drop data into memory and immediately back in again (like MMX).
 
@@ -1081,7 +1084,7 @@ Simple-V
   operations not suited to parallelisation may be carried out interleaved
   between parallelised instructions *without* requiring data to be dropped
   down to memory and back (into a separate vectorised register engine).
-* plus-and-minus: re-use of integer and floating-point 32-wide register
+* plus-and-maybe-minus: re-use of integer and floating-point 32-wide register
   files means that huge parallel workloads would use up considerable
   chunks of the register file.  However in the case of RV64 and 32-bit
   operations, that effectively means 64 slots are available for parallel
@@ -1092,7 +1095,7 @@ RVV (as it stands, Draft 0.4 Section 17, RISC-V ISA V2.3-Draft)
 * plus: regular predictable workload means effects on L1/L2 Cache can
   be streamlined.
 * plus: regular and clear parallel workload also means that lanes
-  (similar to Alt-RVP) may be used as an implementation details,
+  (similar to Alt-RVP) may be used as an implementation detail,
   using either SRAM or 2R1W registers.
 * plus: separate engine with no impact on the rest of an implementation
 * minus: separate *complex* engine with no RTL (ALUs, Pipeline stages) reuse
