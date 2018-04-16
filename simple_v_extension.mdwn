@@ -1049,7 +1049,8 @@ translates effectively to:
 # Comparison of "Traditional" SIMD, Alt-RVP, Simple-V and RVV Proposals <a name="parallelism_comparisons"></a>
 
 This section compares the various parallelism proposals as they stand,
-compared to traditional SIMD.
+including traditional SIMD, in terms of features, ease of implementation,
+complexity, flexibility, and die area.
 
 ## [[alt_rvp]]
 
@@ -1170,6 +1171,54 @@ get good performance.  Unfortunately that makes it quite seductive...
   proliferation the situation is made even worse.
 * minor-saving-grace: some implementations *may* have predication masks
   that allow control over individual elements within the SIMD block.
+
+# Comparison *to* Traditional SIMD: Alt-RVP, Simple-V and RVV Proposals <a name="simd_comparison"></a>
+
+This section compares the various parallelism proposals as they stand,
+*against* traditional SIMD as opposed to *alongside* SIMD.  In other words,
+the question is asked "How can each of the proposals effectively implement
+(or replace) SIMD"?
+
+## [[alt_rvp]]
+
+* Alt-RVP would not actually replace SIMD but would augment it: just as with
+  a SIMD architecture where the ALU becomes responsible for the parallelism,
+  Alt-RVP ALUs would likewise be so responsible... with *additional*
+  (lane-based) parallelism on top.
+* Thus, unfortunately, Alt-RVP would suffer the same inherent proliferation
+  of instructions as SIMD.
+* In the same discussion for Alt-RVP, an additional proposal was made to
+  be able to subdivide the bits of each register lane (columns) down into
+  arbitrary bit-lengths.
+* A recommendation was given instead to make the subdivisions down to 32-bit,
+  16-bit or even 8-bit, effectively dividing the registerfile into
+  Lane0(H), Lane0(L), Lane1(H) ... LaneN(L) or further.  If inter-lane
+  "swapping" instructions were then introduced, some of the disadvantages
+  of SIMD could be mitigated.
+
+## RVV
+
+* RVV is designed to replace SIMD with a better paradigm: arbitrary-length
+  parallelism.
+* However whilst SIMD is usually designed for single-issue in-order simple
+  DSPs with a focus on Multimedia (Audio, Video and Image processing),
+  RVV's primary focus appears to be on Supercomputing: optimisation of
+  mathematical operations that fit into the OpenCL space.
+* Adding functions (operations) that would normally fit (in parallel) 
+  into a SIMD instruction requires an equivalent to be added to the
+  RVV Extension, if one does not exist.  Given the specialist nature of
+  some SIMD instructions (8-bit or 16-bit saturated or halving add),
+  this possibility seems extremely unlikely to occur, even if the
+  implementation overhead of RVV were acceptable (compared to
+  normal SIMD/DSP-style single-issue in-order simplicity).
+
+## Simple-V
+
+* Simple-V borrows hugely from RVV as it is intended to be easy to
+  topologically transplant every single instruction from RVV (as
+  designed) into Simple-V equivalents, with *zero loss of functionality
+   or capability*.
+
 
 # Impementing V on top of Simple-V
 
