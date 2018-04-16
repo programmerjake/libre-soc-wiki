@@ -1080,6 +1080,12 @@ Simple-V
   saying "this register's now a vector" which
 * plus: means that future instructions also get to be inherently
   parallelised because there's no "separate vector opcodes"
+* plus: Compressed instructions may also be (indirectly) parallelised
+* minus: the indirect nature of Simple-V means that setup (setting
+  a CSR register to indicate vector length, a separate one to indicate
+  that it is a predicate register and so on) means a little more setup
+  time than Alt-RVP or RVV's "direct and within the (longer) instruction"
+  approach.
 * plus: shared register file meaning that, like Alt-RVP, complex
   operations not suited to parallelisation may be carried out interleaved
   between parallelised instructions *without* requiring data to be dropped
@@ -1107,6 +1113,10 @@ RVV (as it stands, Draft 0.4 Section 17, RISC-V ISA V2.3-Draft)
   using the standard integer or FP regfile) an entire vector must be
   transferred out to memory, into standard regfiles, then back to memory,
   then back to the vector unit, this to occur potentially multiple times.
+* minus: will never fit into Compressed instruction space (as-is.  May
+  be able to do so if features of Simple-V are partially adopted).
+* plus-and-slight-minus: extended variants may address up to 256
+  vectorised registers (requires 48/64-bit opcodes to do it).
 
 
 # Impementing V on top of Simple-V
