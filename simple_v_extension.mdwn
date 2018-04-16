@@ -1149,12 +1149,16 @@ The only really good things about SIMD are how easy it is to implement and
 get good performance.  Unfortunately that makes it quite seductive...
 
 * plus: really straightforward, ALU basically does several packed operations
-  at once.  Parallelism is inherent at the ALU, making the rest of the
-  processor really straightforward (zero impact).
-* plus (continuation): SIMD in simple in-order single-issue designs
-  can therefore result in great throughput even with a very simple execution
-  engine.
-* minus: ridiculously complex setup and corner-cases.
+  at once.  Parallelism is inherent at the ALU, making the addition of
+  SIMD-style parallelism an easy decision that has zero significant impact
+  on the rest of any given architectural design and layout.
+* plus (continuation): SIMD in simple in-order single-issue designs can
+  therefore result in superb throughput, easily achieved even with a very
+  simple execution model.
+* minus: ridiculously complex setup and corner-cases that disproportionately
+  increase instruction count on what would otherwise be a "simple loop",
+  should the number of elements in an array not happen to exactly match
+  the SIMD group width.
 * minus: getting data usefully out of registers (if separate regfiles
   are used) means outputting to memory and back.
 * minus: quite a lot of supplementary instructions for bit-level manipulation
@@ -1162,10 +1166,13 @@ get good performance.  Unfortunately that makes it quite seductive...
 * minus: MASSIVE proliferation of ISA both in terms of opcodes in one
   dimension and parallelism (width): an at least O(N^2) and quite probably
   O(N^3) ISA proliferation that often results in several thousand
-  separate instructions.  all with separate corner-case algorithms!
+  separate instructions.  all requiring separate and distinct corner-case
+  algorithms!
 * minus: EVEN BIGGER proliferation of SIMD ISA if the functionality of
   8, 16, 32 or 64-bit reordering is built-in to the SIMD instruction.
-  For example: add (high|low) 16-bits of r1 to (low|high) of r2.
+  For example: add (high|low) 16-bits of r1 to (low|high) of r2 requires
+  two separate and distinct instructions: one for (r1:low r2:high) and
+  one for (r1:high r2:low) *per function*.
 * minus: EVEN BIGGER proliferation of SIMD ISA if there is a mismatch
   between operand and result bit-widths.  In combination with high/low
   proliferation the situation is made even worse.
@@ -1185,11 +1192,14 @@ the question is asked "How can each of the proposals effectively implement
   a SIMD architecture where the ALU becomes responsible for the parallelism,
   Alt-RVP ALUs would likewise be so responsible... with *additional*
   (lane-based) parallelism on top.
+* Thus at least some of the downsides of SIMD are avoided (architectural
+  upgrades introducing 128-bit then 256-bit then 512-bit variants of the
+  exact same 64-bit SIMD block)
 * Thus, unfortunately, Alt-RVP would suffer the same inherent proliferation
-  of instructions as SIMD.
+  of instructions as SIMD, albeit not quite as badly (due to Lanes).
 * In the same discussion for Alt-RVP, an additional proposal was made to
   be able to subdivide the bits of each register lane (columns) down into
-  arbitrary bit-lengths.
+  arbitrary bit-lengths (RGB 565 for example).
 * A recommendation was given instead to make the subdivisions down to 32-bit,
   16-bit or even 8-bit, effectively dividing the registerfile into
   Lane0(H), Lane0(L), Lane1(H) ... LaneN(L) or further.  If inter-lane
