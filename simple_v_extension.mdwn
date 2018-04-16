@@ -1171,8 +1171,9 @@ get good performance.  Unfortunately that makes it quite seductive...
 * minus: EVEN BIGGER proliferation of SIMD ISA if the functionality of
   8, 16, 32 or 64-bit reordering is built-in to the SIMD instruction.
   For example: add (high|low) 16-bits of r1 to (low|high) of r2 requires
-  two separate and distinct instructions: one for (r1:low r2:high) and
-  one for (r1:high r2:low) *per function*.
+  four separate and distinct instructions: one for (r1:low r2:high),
+  one for (r1:high r2:low), one for (r1:high r2:high) and one for
+  (r1:low r2:low) *per function*.
 * minus: EVEN BIGGER proliferation of SIMD ISA if there is a mismatch
   between operand and result bit-widths.  In combination with high/low
   proliferation the situation is made even worse.
