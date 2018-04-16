@@ -1218,7 +1218,28 @@ the question is asked "How can each of the proposals effectively implement
   topologically transplant every single instruction from RVV (as
   designed) into Simple-V equivalents, with *zero loss of functionality
    or capability*.
-
+* With the "parallelism" abstracted out, a "DSP" Extension which contained
+  the basic primitives (non-parallelised 8, 16 or 32-bit SIMD operations)
+  inherently *become* parallel, automatically.
+* Whilst not entirely finalised, registers are expected to be
+  capable of being subdivided down to an implementor-chosen bitwidth
+  in the underlying hardware (r1 becomes r1[31..24] r1[23..16] r1[15..8]
+  and r1[7..0], or just r1[31..16] r1[15..0]) where implementors can
+  choose to have separate independent 8-bit ALUs or dual-SIMD 16-bit
+  ALUs that perform twin 8-bit operations as they see fit, or anything
+  else including no subdivisions at all.
+* Even though implementors have that choice even to have full 64-bit
+  (with RV64) SIMD, they *must* provide predication that transparently
+  switches off the required units on the last loop, thus neatly fitting
+  underlying SIMD ALU implementations *into* the RVV paradigm, keeping
+  the uniform consistent API that is a key strategic feature of Simple-V.
+* With Simple-V fitting into the standard register files, certain classes
+  of SIMD operations such as High/Low arithmetic (r1[31..16] + r2[15..0])
+  can be done by applying *Parallelised* Bit-manipulation operations
+  followed by parallelised *straight* versions of element-to-element
+  arithmetic operations, even if the bit-manipulation operations require
+  changing the bitwidth of the "vectors" to do so.  Predication can
+  be utilised to skip high words (or low words) in source or destination.
 
 # Impementing V on top of Simple-V
 
