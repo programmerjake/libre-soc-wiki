@@ -733,23 +733,23 @@ Conversion on LOAD as follows:
 * width from RV format (14..12) is same (width and zero/sign extend)
 
 [[!table  data="""
-31 30 | 29  25 | 24    20 | 19    15 | 14    12 | 11 7 | 6    0 |
-imm[11:0]               |||    rs1   |  funct3  | rd   | opcode |
-2     |  5     |    5     |     5    |    3     | 5    |    7   |
-00    |  00000 | imm[4:0] |   base   |  width   | dest | LOAD   |
-01    |  rs2   | imm[4:0] |   base   |  width   | dest | LOAD.S |
-11    |  rs2   | imm[4:0] |   base   |  width   | dest | LOAD.X |
+31 30 | 29 25 | 24    20 | 19 15 | 14  12 | 11      7 | 6    0 |
+imm[11:0]              ||| rs1   | funct3 | rd        | opcode |
+2     | 5     | 5        | 5     | 3      | 5         | 7      |
+00    | 00000 | imm[4:0] | base  | width  | dest      | LOAD   |
+01    | rs2   | imm[4:0] | base  | width  | dest      | LOAD.S |
+11    | rs2   | imm[4:0] | base  | width  | dest      | LOAD.X |
 """]]
 
 Similar conversion on STORE as follows:
 
 [[!table  data="""
-31 30 | 29  25 | 24   20 | 19    15 | 14    12 | 11      7 | 6    0 |
-imm[11:0]              ||| rs1      | funct3   | rd        | opcode |
-2     | 5      | 5       | 5        | 3        | 5         | 7      |
-00    | 00000  | src     | base     | width    | offs[4:0] | LOAD   |
-01    | rs3    | src     | base     | width    | offs[4:0] | LOAD.S |
-11    | rs3    | src     | base     | width    | offs[4:0] | LOAD.X |
+31 30 | 29  25 | 24   20 | 19 15 | 14  12 | 11      7 | 6    0 |
+imm[11:0]              ||| rs1   | funct3 | rd        | opcode |
+2     | 5      | 5       | 5     | 3      | 5         | 7      |
+00    | 00000  | src     | base  | width  | offs[4:0] | LOAD   |
+01    | rs3    | src     | base  | width  | offs[4:0] | LOAD.S |
+11    | rs3    | src     | base  | width  | offs[4:0] | LOAD.X |
 """]]
 
 Notes:
