@@ -710,6 +710,84 @@ existing RV Load/Store:
  offset[11:5]  |   src    |   base    |  width   |  offset[4:0]  |   STORE |
 """]]
 
+The RV32 instruction opcodes as follows:
+
+[[!table  data="""
+31 28  27 | 26 25 | 24  20 |19  15  |14| 13 12 | 11   7 | 6     0 | op  |
+imm[4:0]  | 00    | 00000  |    rs1 | 1| m     | vd     | 0000111 | VLD |
+imm[4:0]  | 01    |   rs2  |    rs1 | 1| m     | vd     | 0000111 | VLDS|
+imm[4:0]  | 11    |   vs2  |    rs1 | 1| m     | vd     | 0000111 | VLDX|
+vs3       | 00    | 00000  |    rs1 |1 | m     |imm[4:0]| 0100111 |VST  |
+vs3       | 01    | rs2    |    rs1 |1 | m     |imm[4:0]| 0100111 |VSTS |
+vs3       | 11    | vs2    |    rs1 |1 | m     |imm[4:0]| 0100111 |VSTX |
+"""]]
+
+Conversion on LOAD as follows:
+
+* rd or rs1 are CSR-vectorised indicating "Vector Mode"
+* rd equivalent to vd
+* rs1 equivalent to rs1
+* imm[4:0] from RV format (11..7]) is same
+* imm[9:5] from RV format (29..25] is rs2 (rs2=00000 for VLD)
+* imm[11:10] from RV format (31..30] is opcode (VLD, VLDS, VLDX)
+* width from RV format (14..12) is same (width and zero/sign extend)
+
+[[!table  data="""
+31 30 | 29  25      |  24   20 | 19    15 | 14    12 | 11   7 | 6     0 |
+   imm[11:0]                 |||    rs1   |  funct3  |   rd   |  opcode |
+  2   |  5          |    5     |     5    |    3     |    5   |     7   |
+ 00   |  00000      | imm[4:0] |   base   |  width   |  dest  |  LOAD   |
+ 01   |  rs2        | imm[4:0] |   base   |  width   |  dest  |  LOAD.S |
+ 11   |  rs2        | imm[4:0] |   base   |  width   |  dest  |  LOAD.X |
+"""]]
+
+Similar conversion on STORE as follows:
+
+[[!table  data="""
+31 30 | 29  25      |  24   20 | 19    15 | 14    12 | 11      7 | 6     0 |
+   imm[11:0]                 |||    rs1   |  funct3  |   rd      |  opcode |
+  2   |  5          |    5     |     5    |    3     |    5      |     7   |
+ 00   |  00000      | src      |   base   |  width   | offs[4:0] |  LOAD   |
+ 01   |  rs3        | src      |   base   |  width   | offs[4:0] |  LOAD.S |
+ 11   |  rs3        | src      |   base   |  width   | offs[4:0] |  LOAD.X |
+"""]]
+
+Notes:
+
+* Predication CSR-marking register is not explicitly shown in instruction
+* In both LOAD and STORE, it is possible now to rs2 (or rs3) as a vector.
+* That in turn means that Indexed Load need not have an explicit opcode
+* That in turn means that bit 30 may indicate "stride" and bit 31 is free
+
+Revised LOAD:
+
+[[!table  data="""
+31 | 30 | 29  25      |  24   20 | 19    15 | 14    12 | 11   7 | 6     0 |
+   imm[11:0]                  ||||    rs1   |  funct3  |   rd   |  opcode |
+ 1 | 1  |  5          |    5     |     5    |    3     |    5   |     7   |
+ ? | s  |  rs2        | imm[4:0] |   base   |  width   |  dest  |  LOAD   |
+"""]]
+
+Where in turn the pseudo-code may now combine the two:
+
+    if (unit-strided) stride = elsize;
+    else stride = areg[as2]; // constant-strided
+    for (int i=0; i<vl; ++i)
+      if ([!]preg[p][i])
+        for (int j=0; j<seglen+1; j++)
+        {
+          if CSRvectorised[rs2])
+             offs = vreg[rs2][i]
+          else
+             offs = i*(seglen+1)*stride;
+          vreg[vd+j][i] = mem[sreg[base] + offs + j*stride];
+        }
+
+Notes:
+
+* j is multiplied by stride, not elsize, including in the rs2 vectorised case.
+* There may be more sophisticated variants involving the 31st bit, however
+  it would be nice to reserve that bit for post-increment of address registers
 
 ## 17.19 Vector Register Gather
 
