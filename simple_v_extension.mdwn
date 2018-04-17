@@ -1073,6 +1073,7 @@ This is interpreted as follows:
 * Given that the context is RV32, ELEN=32.
 * With ELEN=32 and bitwidth=16, the number of SIMD elements is 2
 * Therefore the actual vector length is up to *six* elements
+* However vsetl sets a length 5 therefore the last "element" is skipped
 
 So when using an operation that uses r2 as a source (or destination)
 the operation is carried out as follows:
