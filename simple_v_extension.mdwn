@@ -388,14 +388,14 @@ implementation efforts, without "extra baggage".
 # CSRs <a name="csrs"></a>
 
 There are a number of CSRs needed, which are used at the instruction
-decode phase to re-interpret standard RV opcodes (a practice that has precedent
-in the setting of MISA to enable / disable extensions).
+decode phase to re-interpret standard RV opcodes (a practice that has
+precedent in the setting of MISA to enable / disable extensions).
 
 * Integer Register N is Vector of length M: r(N) -> r(N..N+M-1)
 * Integer Register N is of implicit bitwidth M (M=default,8,16,32,64)
 * Floating-point Register N is Vector of length M: r(N) -> r(N..N+M-1)
 * Floating-point Register N is of implicit bitwidth M (M=default,8,16,32,64)
-* Integer Register N is a Predication Register (key-value store)
+* Integer Register N is a Predication Register (note: a key-value store)
 
 Notes:
 
@@ -567,31 +567,6 @@ predicated.
 
 An example of how to subdivide the register file when bitwidth != default
 is given in the section "Bitwidth Virtual Register Reordering".
-
-# Example of vector / vector, vector / scalar, scalar / scalar => vector add
-
-    register CSRvectorlen[XLEN][4]; # not quite decided yet about this one...
-    register CSRpredicate[XLEN][4]; # 2^4 is max vector length
-    register CSRreg_is_vectorised[XLEN]; # just for fun support scalars as well
-    register x[32][XLEN];
-
-    function op_add(rd, rs1, rs2, predr)
-    {
-       /* note that this is ADD, not PADD */
-       int i, id, irs1, irs2;
-       # checks CSRvectorlen[rd] == CSRvectorlen[rs] etc. ignored
-       # also destination makes no sense as a scalar but what the hell...
-       for (i = 0, id=0, irs1=0, irs2=0; i<CSRvectorlen[rd]; i++)
-          if (CSRpredicate[predr][i]) # i *think* this is right...
-             x[rd+id] <= x[rs1+irs1] + x[rs2+irs2];
-          # now increment the idxs
-          if (CSRreg_is_vectorised[rd]) # bitfield check rd, scalar/vector?
-             id += 1;
-          if (CSRreg_is_vectorised[rs1]) # bitfield check rs1, scalar/vector?
-             irs1 += 1;
-          if (CSRreg_is_vectorised[rs2]) # bitfield check rs2, scalar/vector?
-             irs2 += 1;
-    }
 
 # V-Extension to Simple-V Comparative Analysis
 
@@ -853,9 +828,36 @@ the question is asked "How can each of the proposals effectively implement
   (caveat: anything not specified drops through to software-emulation / traps)
 * TODO
 
-# Register reordering <a name="register_reordering"></a>
+# Appendix
 
-## Register File
+## Example of vector / vector, vector / scalar, scalar / scalar => vector add
+
+    register CSRvectorlen[XLEN][4]; # not quite decided yet about this one...
+    register CSRpredicate[XLEN][4]; # 2^4 is max vector length
+    register CSRreg_is_vectorised[XLEN]; # just for fun support scalars as well
+    register x[32][XLEN];
+
+    function op_add(rd, rs1, rs2, predr)
+    {
+       /* note that this is ADD, not PADD */
+       int i, id, irs1, irs2;
+       # checks CSRvectorlen[rd] == CSRvectorlen[rs] etc. ignored
+       # also destination makes no sense as a scalar but what the hell...
+       for (i = 0, id=0, irs1=0, irs2=0; i<CSRvectorlen[rd]; i++)
+          if (CSRpredicate[predr][i]) # i *think* this is right...
+             x[rd+id] <= x[rs1+irs1] + x[rs2+irs2];
+          # now increment the idxs
+          if (CSRreg_is_vectorised[rd]) # bitfield check rd, scalar/vector?
+             id += 1;
+          if (CSRreg_is_vectorised[rs1]) # bitfield check rs1, scalar/vector?
+             irs1 += 1;
+          if (CSRreg_is_vectorised[rs2]) # bitfield check rs2, scalar/vector?
+             irs2 += 1;
+    }
+
+## Register reordering <a name="register_reordering"></a>
+
+### Register File
 
 | Reg Num | Bits |
 | ------- | ---- |
@@ -870,7 +872,7 @@ the question is asked "How can each of the proposals effectively implement
 | .. | (32..0) |
 | r31| (32..0) |
 
-## Vectorised CSR
+### Vectorised CSR
 
 May not be an actual CSR: may be generated from Vector Length CSR:
 single-bit is less burdensome on instruction decode phase.
@@ -879,7 +881,7 @@ single-bit is less burdensome on instruction decode phase.
 | - | - | - | - | - | - | - | - |
 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 1 |
 
-## Vector Length CSR
+### Vector Length CSR
 
 | Reg Num | (3..0) |
 | ------- | ---- |
@@ -892,7 +894,7 @@ single-bit is less burdensome on instruction decode phase.
 | r6 | 0 |
 | r7 | 1 |
 
-## Virtual Register Reordering
+### Virtual Register Reordering
 
 This example assumes the above Vector Length CSR table
 
@@ -904,7 +906,7 @@ This example assumes the above Vector Length CSR table
 | r4 | (32..0) | (32..0) | (32..0) |
 | r7 | (32..0) |
 
-## Bitwidth Virtual Register Reordering
+### Bitwidth Virtual Register Reordering
 
 This example goes a little further and illustrates the effect that a
 bitwidth CSR has been set on a register.  Preconditions:
@@ -942,7 +944,7 @@ operations carried out 32-bits at a time is perfectly acceptable, as is
 Regardless of the internal parallelism choice, *predication must
 still be respected*, making Simple-V in effect the "consistent public API".
 
-## Example Instruction translation: <a name="example_translation"></a>
+### Example Instruction translation: <a name="example_translation"></a>
 
 Instructions "ADD r2 r4 r4" would result in three instructions being
 generated and placed into the FILO:
@@ -951,7 +953,7 @@ generated and placed into the FILO:
 * ADD r2 r5 r5
 * ADD r2 r6 r6
 
-## Insights
+### Insights
 
 SIMD register file splitting still to consider.  For RV64, benefits of doubling
 (quadrupling in the case of Half-Precision IEEE754 FP) the apparent
@@ -972,7 +974,7 @@ on caches).  Interestingly we observe then that Simple-V is about
 of underlying hardware is an implementor-choice that could just as
 equally be applied *without* Simple-V even being implemented.
 
-# Analysis of CSR decoding on latency <a name="csr_decoding_analysis"></a>
+## Analysis of CSR decoding on latency <a name="csr_decoding_analysis"></a>
 
 It could indeed have been logically deduced (or expected), that there
 would be additional decode latency in this proposal, because if
@@ -1060,9 +1062,7 @@ pluses:
   parallel ALUs) is only equal to one ("virtual" parallelism), or is
   greater than one, should not be underestimated.
 
-# Appendix
-
-# Reducing Register Bank porting
+## Reducing Register Bank porting
 
 This looks quite reasonable.
 <https://www.princeton.edu/~rblee/ELE572Papers/MultiBankRegFile_ISCA2000.pdf>
@@ -1078,8 +1078,6 @@ The nice thing about a vector architecture is that you *know* that
 *even more* registers are going to be pulled in: Hwacha uses this fact
 to optimise L1/L2 cache-line usage (avoid thrashing), strangely enough
 by *introducing* deliberate latency into the execution phase.
-
-
 
 # References
 
