@@ -1,9 +1,5 @@
 # Variable-width Variable-packed SIMD / Simple-V / Parallelism Extension Proposal
 
-[[!toc ]]
-
-# Summary
-
 Key insight: Simple-V is intended as an abstraction layer to provide
 a consistent "API" to parallelisation of existing *and future* operations.
 *Actual* internal hardware-level parallelism is *not* required, such
@@ -15,6 +11,8 @@ instruction queue (FILO), pending execution.
 of Out-of-order restructuring (including parallel ALU lanes) or VLIW
 implementations, or SIMD, or anything else, would then benefit *if*
 Simple-V was added on top.
+
+[[!toc ]]
 
 # Introduction
 
@@ -52,35 +50,21 @@ Additionally it makes sense to *split out* the parallelism inherent within
 each of P and V, and to see if each of P and V then, in *combination* with
 a "best-of-both" parallelism extension, could be added on *on top* of
 this proposal, to topologically provide the exact same functionality of
-each of P and V.
+each of P and V.  Each of P and V then can focus on providing the best
+operations possible for their respective target areas, without being
+hugely concerned about the actual parallelism.
 
 Furthermore, an additional goal of this proposal is to reduce the number
 of opcodes utilised by each of P and V as they currently stand, leveraging
 existing RISC-V opcodes where possible, and also potentially allowing
 P and V to make use of Compressed Instructions as a result.
 
-**TODO**: reword this to better suit this document:
-
-Having looked at both P and V as they stand, they're _both_ very much
-"separate engines" that, despite both their respective merits and
-extremely powerful features, don't really cleanly fit into the RV design
-ethos (or the flexible extensibility) and, as such, are both in danger
-of not being widely adopted.  I'm inclined towards recommending:
-
-* splitting out the DSP aspects of P-SIMD to create a single-issue DSP
-* splitting out the polymorphism, esoteric data types (GF, complex
-  numbers) and unusual operations of V to create a single-issue "Esoteric
-  Floating-Point" extension
-* splitting out the loop-aspects, vector aspects and data-width aspects
-  of both P and V to a *new* "P-SIMD / Simple-V" and requiring that they
-  apply across *all* Extensions, whether those be DSP, M, Base, V, P -
-  everything.
-
 **TODO**: propose overflow registers be actually one of the integer regs
 (flowing to multiple regs).
 
 **TODO**: propose "mask" (predication) registers likewise.  combination with
-standard RV instructions and overflow registers extremely powerful
+standard RV instructions and overflow registers extremely powerful, see
+Aspex ASP.
 
 # Analysis and discussion of Vector vs SIMD
 
@@ -108,6 +92,13 @@ are extremely burdensome except for applications whose requirements
 Thus, SIMD, no matter what width is chosen, is never going to be acceptable
 for general-purpose computation, and in the context of developing a
 general-purpose ISA, is never going to satisfy 100 percent of implementors.
+
+Worse, for increased workloads over time, as the performance requirements
+increase for new target markets, implementors choose to extend the SIMD
+width (so as to again avoid mixing parallelism into the instruction issue
+phases: the primary "simplicity" benefit of SIMD in the first place),
+with the result that the entire opcode space effectively doubles
+with each new SIMD width that's added to the ISA.
 
 That basically leaves "variable-length vector" as the clear *general-purpose*
 winner, at least in terms of greatly simplifying the instruction set,
