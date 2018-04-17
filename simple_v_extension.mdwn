@@ -422,11 +422,12 @@ Pseudo-code (excludes CSR SIMD bitwidth):
           vreg[rd+j][i] = mem[sreg[base] + offs + j*stride];
         }
 
-Taking CSR (SIMD) bitwidth into account involves extending vl according
-to the "Bitwidth Virtual Register Reordering" scheme shown in the Appendix.
+Taking CSR (SIMD) bitwidth into account involves using the vector
+length and register encoding according to the "Bitwidth Virtual Register
+Reordering" scheme shown in the Appendix (see function "regoffs").
 
 A similar instruction exists for STORE, with identical topological
-translation of all features.
+translation of all features.  **TODO**
 
 # Note on implementation of parallelism
 
