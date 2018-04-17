@@ -481,6 +481,7 @@ and so on).
 The reason for setting this limit is so that predication registers, when
 marked as such, may fit into a single register as opposed to fanning out
 over several registers.  This keeps the implementation a little simpler.
+Note that RVV on top of Simple-V may choose to over-ride this decision.
 
 ## Vector-length CSRs
 
@@ -565,7 +566,7 @@ The reason for multiplying the vector length by the number of SIMD elements
 predicated.
 
 An example of how to subdivide the register file when bitwidth != default
-is given in the section "Virtual Register Reordering".
+is given in the section "Bitwidth Virtual Register Reordering".
 
 # Example of vector / vector, vector / scalar, scalar / scalar => vector add
 
@@ -891,7 +892,7 @@ single-bit is less burdensome on instruction decode phase.
 | r6 | 0 |
 | r7 | 1 |
 
-## Virtual Register Reordering:
+## Virtual Register Reordering
 
 This example assumes the above Vector Length CSR table
 
@@ -903,8 +904,10 @@ This example assumes the above Vector Length CSR table
 | r4 | (32..0) | (32..0) | (32..0) |
 | r7 | (32..0) |
 
+## Bitwidth Virtual Register Reordering
+
 This example goes a little further and illustrates the effect that a
-bitwidth CSR has been set on a register
+bitwidth CSR has been set on a register.  Preconditions:
 
 * RV32 assumed
 * CSRintbitwidth[2] = 010 # integer r2 is 16-bit
