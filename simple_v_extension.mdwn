@@ -369,13 +369,59 @@ C.BPR  | pred rs3 | src1 | I/F B | src2 | C1   |      |
 111    | pred rs3 | src1 | I/F 1 | src2 | C1   | P.LE |
 """]]
 
-
 Notes:
 
 * Bits 5 13 14 and 15 make up the comparator type
 * In both floating-point and integer cases there are four predication
   comparators: EQ/NEQ/LT/LE (with GT and GE being synthesised by inverting
   src1 and src2).
+
+# LOAD / STORE Instructions
+
+For full analysis of adaptation of RVV LOAD/STORE see [[v_comparative_analysis]]
+
+Revised LOAD:
+
+[[!table  data="""
+31 | 30 | 29 25 | 24    20 | 19 15 | 14   12 | 11 7 | 6    0 |
+imm[11:0]               |||| rs1   | funct3  | rd   | opcode |
+1  | 1  |  5    | 5        | 5     | 3       | 5    | 7      |
+?  | s  |  rs2  | imm[4:0] | base  | width   | dest | LOAD   |
+"""]]
+
+Notes:
+
+* LOAD remains functionally (topologically) identical to RVV LOAD
+* Predication CSR-marking register is not explicitly shown in instruction, it's
+  implicit based on the CSR predicate state for the rd (destination) register
+* rs2, the source, may *also be marked as a vector*, which implicitly
+  is taken to indicate "Indexed Load" (LD.X)
+* Bit 30 indicates "element stride" or "constant-stride" (LD or LD.S)
+* Bit 31 is reserved (ideas under consideration: auto-increment)
+* **TODO**: include CSR SIMD bitwidth in the pseudo-code below.
+* **TODO**: clarify where width maps to elsize
+
+Pseudo-code (excludes CSR SIMD bitwidth):
+
+    if (unit-strided) stride = elsize;
+    else stride = areg[as2]; // constant-strided
+
+    pred_enabled = int_pred_enabled
+    preg = int_pred_reg[rd]
+
+    for (int i=0; i<vl; ++i)
+      if (preg_enabled[rd] && [!]preg[i])
+        for (int j=0; j<seglen+1; j++)
+        {
+          if CSRvectorised[rs2])
+             offs = vreg[rs2][i]
+          else
+             offs = i*(seglen+1)*stride;
+          vreg[rd+j][i] = mem[sreg[base] + offs + j*stride];
+        }
+
+A similar instruction exists for STORE, with identical topological
+translation of all features.
 
 # Note on implementation of parallelism
 
