@@ -378,7 +378,9 @@ Notes:
 
 # LOAD / STORE Instructions
 
-For full analysis of adaptation of RVV LOAD/STORE see [[v_comparative_analysis]]
+For full analysis of topological adaptation of RVV LOAD/STORE
+see [[v_comparative_analysis]].  All three types (LD, LD.S and LD.X)
+may be implicitly overloaded into the one base RV LOAD instruction.
 
 Revised LOAD:
 
@@ -419,6 +421,9 @@ Pseudo-code (excludes CSR SIMD bitwidth):
              offs = i*(seglen+1)*stride;
           vreg[rd+j][i] = mem[sreg[base] + offs + j*stride];
         }
+
+Taking CSR (SIMD) bitwidth into account involves extending vl according
+to the "Bitwidth Virtual Register Reordering" scheme shown in the Appendix.
 
 A similar instruction exists for STORE, with identical topological
 translation of all features.
@@ -1089,6 +1094,38 @@ operations carried out 32-bits at a time is perfectly acceptable, as is
 8-bit SIMD operations carried out 16-bits at a time requiring two ALUs).
 Regardless of the internal parallelism choice, *predication must
 still be respected*, making Simple-V in effect the "consistent public API".
+
+vew may be one of the following (giving a table "bytestable", used below):
+
+| vew | bitwidth |
+| --- | -------- |
+| 000 | default  |
+| 001 | 8        |
+| 010 | 16       |
+| 011 | 32       |
+| 100 | 64       |
+| 101 | 128      |
+| 110 | rsvd     |
+| 111 | rsvd     |
+
+Pseudocode for vector length taking CSR SIMD-bitwidth into account:
+
+    vew = CSRbitwidth[rs1]
+    if (vew == 0)
+        bytesperreg = (XLEN/8) # or FLEN as appropriate
+    else:
+        bytesperreg = bytestable[vew] # 1 2 4 8 16
+    simdmult = (XLEN/8) / bytesperreg # or FLEN as appropriate
+    vlen = CSRvectorlen[rs1] * simdmult
+
+To index an element in a register rnum where the vector element index is i:
+
+    function regoffs(rnum, i):
+        regidx = floor(i / simdmult)  # integer-div rounded down
+        byteidx = i % simdmult        # integer-remainder
+        return rnum + regidx,         # actual real register
+               byteidx * 8,           # low
+               byteidx * 8 + (vew-1), # high
 
 ### Example Instruction translation: <a name="example_translation"></a>
 
