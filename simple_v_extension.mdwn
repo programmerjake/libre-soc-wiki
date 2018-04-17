@@ -308,7 +308,9 @@ Bit 6 would be decoded as "operation refers to Integer or Float" including
 interpreting src1 and src2 accordingly as outlined in Table 12.2 of the
 "C" Standard, version 2.0,
 whilst Bit 5 would allow the operation to be extended, in combination with
-funct3 = 110 or 111: a combination of four distinct comparison operators.
+funct3 = 110 or 111: a combination of four distinct (predicated) comparison
+operators.  In both floating-point and integer cases those could be
+EQ/NEQ/LT/LE (with GT and GE being synthesised by inverting src1 and src2).
 
 ## Conclusions
 
@@ -347,7 +349,10 @@ thought.  V's Section 17.19 of Draft V2.3 spec is reminiscent of B's BGS
 gather-scatterer, and, if implemented, could actually be a really useful
 way to span 8-bit up to 64-bit groups of data, where BGS as it stands
 and described by Clifford does **bits** of up to 16 width.  Lots to
-look at and investigate!*
+look at and investigate*
+
+* For analysis of RVV see [[v_comparative_analysis]] which begins to
+  outline topologically-equivalent mappings of instructions
 
 # Note on implementation of parallelism
 
@@ -567,14 +572,6 @@ predicated.
 
 An example of how to subdivide the register file when bitwidth != default
 is given in the section "Bitwidth Virtual Register Reordering".
-
-# V-Extension to Simple-V Comparative Analysis
-
-This section has been moved to its own page [[v_comparative_analysis]]
-
-# P-Ext ISA
-
-This section has been moved to its own page [[p_comparative_analysis]]
 
 # Exceptions
 
@@ -829,6 +826,14 @@ the question is asked "How can each of the proposals effectively implement
 * TODO
 
 # Appendix
+
+## V-Extension to Simple-V Comparative Analysis
+
+This section has been moved to its own page [[v_comparative_analysis]]
+
+## P-Ext ISA
+
+This section has been moved to its own page [[p_comparative_analysis]]
 
 ## Example of vector / vector, vector / scalar, scalar / scalar => vector add
 
