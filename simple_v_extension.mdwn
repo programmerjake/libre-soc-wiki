@@ -135,7 +135,7 @@ integer (and floating point) of various sizes is automatically inferred
 due to "type tagging" that is set with a special instruction.  A register
 will be *specifically* marked as "16-bit Floating-Point" and, if added
 to an operand that is specifically tagged as "32-bit Integer" an implicit
-type-conversion will take placce *without* requiring that type-conversion
+type-conversion will take place *without* requiring that type-conversion
 to be explicitly done with its own separate instruction.
 
 However, implicit type-conversion is not only quite burdensome to
@@ -935,7 +935,7 @@ This section has been moved to its own page [[p_comparative_analysis]]
              irs2 += 1;
     }
 
-## Retro-fitting Predication into branch-explicit ISA
+## Retro-fitting Predication into branch-explicit ISA <a name="predication_retrofit"></a>
 
 One of the goals of this parallelism proposal is to avoid instruction
 duplication.  However, with the base ISA having been designed explictly
