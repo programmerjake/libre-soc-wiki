@@ -228,12 +228,12 @@ condition-codes or predication.  By adding a CSR it becomes possible
 to also tag certain registers as "predicated if referenced as a destination".
 Example:
 
-    // in future operations if r0 is the destination use r5 as 
+    // in future operations if r0 is the destination use r5 as
     // the PREDICATION register
     IMPLICICSRPREDICATE r0, r5
-    // store the compares in r5 as the PREDICATION register 
+    // store the compares in r5 as the PREDICATION register
     CMPEQ8 r5, r1, r2
-    // r0 is used here.  ah ha!  that means it's predicated using r5! 
+    // r0 is used here.  ah ha!  that means it's predicated using r5!
     ADD8 r0, r1, r3
 
 With enough registers (and there are enough registers) some fairly
@@ -566,12 +566,12 @@ register as being "if you use this reg in LOAD/STORE, use the offset
 amount CSRoffsN (N=0,1) instead of treating LOAD/STORE as contiguous".
 can be used for matrix spanning.
 
-> For LOAD/STORE, could a better option be to interpret the offset in the 
-> opcode as a stride instead, so "LOAD t3, 12(t2)" would, if t3 is 
-> configured as a length-4 vector base, result in t3 = *t2, t4 = *(t2+12), 
-> t5 = *(t2+24), t6 = *(t2+32)?  Perhaps include a bit in the 
-> vector-control CSRs to select between offset-as-stride and unit-stride 
-> memory accesses? 
+> For LOAD/STORE, could a better option be to interpret the offset in the
+> opcode as a stride instead, so "LOAD t3, 12(t2)" would, if t3 is
+> configured as a length-4 vector base, result in t3 = *t2, t4 = *(t2+12),
+> t5 = *(t2+24), t6 = *(t2+32)?  Perhaps include a bit in the
+> vector-control CSRs to select between offset-as-stride and unit-stride
+> memory accesses?
 
 So there would be an instruction like this:
 
@@ -902,7 +902,7 @@ Notes:
 * j is multiplied by stride, not elsize, including in the rs2 vectorised case.
 * There may be more sophisticated variants involving the 31st bit, however
   it would be nice to reserve that bit for post-increment of address registers
-* 
+*
 
 ## 17.19 Vector Register Gather
 
@@ -1234,7 +1234,7 @@ translates effectively to:
   than the destination, throw an exception.
 
 > And what about instructions like JALR? 
-> What does jumping to a vector do? 
+> What does jumping to a vector do?
 
 * Throw an exception.  Whether that actually results in spawning threads
   as part of the trap-handling remains to be seen.
@@ -1409,7 +1409,7 @@ the question is asked "How can each of the proposals effectively implement
   DSPs with a focus on Multimedia (Audio, Video and Image processing),
   RVV's primary focus appears to be on Supercomputing: optimisation of
   mathematical operations that fit into the OpenCL space.
-* Adding functions (operations) that would normally fit (in parallel) 
+* Adding functions (operations) that would normally fit (in parallel)
   into a SIMD instruction requires an equivalent to be added to the
   RVV Extension, if one does not exist.  Given the specialist nature of
   some SIMD instructions (8-bit or 16-bit saturated or halving add),
@@ -1478,7 +1478,7 @@ the question is asked "How can each of the proposals effectively implement
 
 # Register reordering <a name="register_reordering"></a>
 
-## Register File 
+## Register File
 
 | Reg Num | Bits |
 | ------- | ---- |
@@ -1497,7 +1497,7 @@ May not be an actual CSR: may be generated from Vector Length CSR:
 single-bit is less burdensome on instruction decode phase.
 
 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 |
-| - | - | - | - | - | - | - | - |  
+| - | - | - | - | - | - | - | - |
 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 1 |
 
 ## Vector Length CSR
@@ -1532,7 +1532,7 @@ generated and placed into the FILO:
 * ADD r2 r5 r5
 * ADD r2 r6 r6
 
-## Insights 
+## Insights
 
 SIMD register file splitting still to consider.  For RV64, benefits of doubling
 (quadrupling in the case of Half-Precision IEEE754 FP) the apparent
