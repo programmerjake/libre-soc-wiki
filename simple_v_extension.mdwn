@@ -82,108 +82,6 @@ of not being widely adopted.  I'm inclined towards recommending:
 **TODO**: propose "mask" (predication) registers likewise.  combination with
 standard RV instructions and overflow registers extremely powerful
 
-## CSRs marking registers as Vector
-
-A 32-bit CSR would be needed (1 bit per integer register) to indicate
-whether a register was, if referred to, implicitly to be treated as
-a vector.
-
-A second 32-bit CSR would be needed (1 bit per floating-point register)
-to indicate whether a floating-point register was to be treated as a
-vector.
-
-In this way any standard (current or future) operation involving
-register operands may detect if the operation is to be vector-vector,
-vector-scalar or scalar-scalar (standard) simply through a single
-bit test.
-
-## CSR vector-length and CSR SIMD packed-bitwidth
-
-**TODO** analyse each of these:
-
-* splitting out the loop-aspects, vector aspects and data-width aspects
-* integer reg 0 *and* fp reg0 share CSR vlen 0 *and* CSR packed-bitwidth 0
-* integer reg 1 *and* fp reg1 share CSR vlen 1 *and* CSR packed-bitwidth 1
-* ....
-* .... 
-
-instead:
-
-* CSR vlen 0 *and* CSR packed-bitwidth 0 register contain extra bits
-  specifying an *INDEX* of WHICH int/fp register they refer to
-* CSR vlen 1 *and* CSR packed-bitwidth 1 register contain extra bits
-  specifying an *INDEX* of WHICH int/fp register they refer to
-* ...
-* ...
-
-Have to be very *very* careful about not implementing too few of those
-(or too many).  Assess implementation impact on decode latency.  Is it
-worth it?
-
-Implementation of the latter:
-
-Operation involving (referring to) register M:
-
-    bitwidth = default # default for opcode?
-    vectorlen = 1 # scalar
-    
-    for (o = 0, o < 2, o++)
-      if (CSR-Vector_registernum[o] == M)
-          bitwidth = CSR-Vector_bitwidth[o]
-          vectorlen = CSR-Vector_len[o]
-          break
-
-and for the former it would simply be:
-
-    bitwidth = CSR-Vector_bitwidth[M]
-    vectorlen = CSR-Vector_len[M]
-
-Alternatives:
-
-* One single "global" vector-length CSR
-
-## Stride
-
-**TODO**: propose two LOAD/STORE offset CSRs, which mark a particular
-register as being "if you use this reg in LOAD/STORE, use the offset
-amount CSRoffsN (N=0,1) instead of treating LOAD/STORE as contiguous".
-can be used for matrix spanning.
-
-> For LOAD/STORE, could a better option be to interpret the offset in the 
-> opcode as a stride instead, so "LOAD t3, 12(t2)" would, if t3 is 
-> configured as a length-4 vector base, result in t3 = *t2, t4 = *(t2+12), 
-> t5 = *(t2+24), t6 = *(t2+32)?  Perhaps include a bit in the 
-> vector-control CSRs to select between offset-as-stride and unit-stride 
-> memory accesses? 
-
-So there would be an instruction like this:
-
-| SETOFF | On=rN | OBank={float|int} | Smode={offs|unit} | OFFn=rM |
-| opcode | 5 bit | 1 bit             | 1 bit             | 5 bit, OFFn=XLEN |
-
-
-which would mean:
-
-* CSR-Offset register n <= (float|int) register number N
-* CSR-Offset Stride-mode = offset or unit
-* CSR-Offset amount register n = contents of register M
-
-LOAD rN, ldoffs(rM) would then be (assuming packed bit-width not set):
-
-    offs = 0
-    stride = 1
-    vector-len = CSR-Vector-length register N
-  
-    for (o = 0, o < 2, o++)
-      if (CSR-Offset register o == M)
-          offs = CSR-Offset amount register o
-          if CSR-Offset Stride-mode == offset:
-              stride = ldoffs
-          break
-   
-    for (i = 0, i < vector-len; i++)
-      r[N+i] = mem[(offs*i + r[M+i])*stride]
-
 # Analysis and discussion of Vector vs SIMD
 
 There are four combined areas between the two proposals that help with
@@ -487,6 +385,222 @@ instructions to deal with corner-cases is thus avoided, and implementors
 get to choose precisely where to focus and target the benefits of their
 implementation efforts, without "extra baggage".
 
+# CSRs
+
+There are a number of CSRs needed, which are used at the instruction
+decode phase to re-interpret standard RV opcodes (a practice that has precedent
+in the setting of MISA to enable / disable extensions).
+
+* Integer Register N is Vector of length M: r(N) -> r(N..N+M-1)
+* Integer Register N is of implicit bitwidth M (M=default,8,16,32,64)
+* Floating-point Register N is Vector of length M: r(N) -> r(N..N+M-1)
+* Floating-point Register N is of implicit bitwidth M (M=default,8,16,32,64)
+* Integer Register N is a Predication Register (key-value store)
+
+Notes:
+
+* for the purposes of LOAD / STORE, Integer Registers which are
+  marked as a Vector will result in a Vector LOAD / STORE.
+* Vector Lengths are *not* the same as vsetl but are an integral part
+  of vsetl.
+* Actual vector length is *multipled* by how many blocks of length
+  "bitwidth" may fit into an XLEN-sized register file.
+* Predication is a key-value store due to the implicit referencing,
+  as opposed to having the predicate register explicitly in the instruction.
+
+## Predication CSR
+
+The Predication CSR is a key-value store indicating whether, if a given
+destination register (integer or floating-point) is referred to in an
+instruction, it is to be predicated.  The first entry is whether predication
+is enabled.  The second entry is whether the register index refers to a
+floating-point or an integer register.  The third entry is the index
+of that register which is to be predicated (if referred to).  The fourth entry
+is the integer register that is treated as a bitfield, indexable by the
+vector element index.
+
+| RegNo | 6      | 5   | (4..0)  | (4..0)  |
+| ----- | -      | -   | ------- | ------- |
+| r0    | pren0  | i/f | regidx  | predidx |
+| r1    | pren1  | i/f | regidx  | predidx |
+| ..    | pren.. | i/f | regidx  | predidx |
+| r15   | pren15 | i/f | regidx  | predidx |
+
+The Predication CSR Table is a key-value store, so implementation-wise
+it will be faster to turn the table around (maintain topologically
+equivalent state):
+
+    fp_pred_enabled[32];
+    int_pred_enabled[32];
+    for (i = 0; i < 16; i++)
+       if CSRpred[i].pren:
+          idx = CSRpred[i].regidx
+          predidx = CSRpred[i].predidx
+          if CSRpred[i].type == 0: # integer
+            int_pred_enabled[idx] = 1
+            int_pred_reg[idx] = predidx
+          else:
+            fp_pred_enabled[idx] = 1
+            fp_pred_reg[idx] = predidx
+
+So when an operation is to be predicated, it is the internal state that
+is used.  In Section 6.4.2 of Hwacha's Manual (EECS-2015-262) the following
+pseudo-code for operations is given, where p is the explicit (direct)
+reference to the predication register to be used:
+
+    for (int i=0; i<vl; ++i)
+        if ([!]preg[p][i])
+           (d ? vreg[rd][i] : sreg[rd]) =
+            iop(s1 ? vreg[rs1][i] : sreg[rs1],
+                s2 ? vreg[rs2][i] : sreg[rs2]); // for insts with 2 inputs
+
+This instead becomes an *indirect* reference using the *internal* state
+table generated from the Predication CSR key-value store:
+
+    if type(iop) == INT:
+        pred_enabled = int_pred_enabled
+        preg = int_pred_reg[rd]
+    else:
+        pred_enabled = fp_pred_enabled
+        preg = fp_pred_reg[rd]
+
+    for (int i=0; i<vl; ++i)
+        if (preg_enabled[rd] && [!]preg[i])
+           (d ? vreg[rd][i] : sreg[rd]) =
+            iop(s1 ? vreg[rs1][i] : sreg[rs1],
+                s2 ? vreg[rs2][i] : sreg[rs2]); // for insts with 2 inputs
+
+
+
+## MAXVECTORDEPTH
+
+MAXVECTORDEPTH is the same concept as MVL in RVV.  However in Simple-V,
+given that its primary (base, unextended) purpose is for 3D, Video and
+other purposes (not requiring supercomputing capability), it makes sense
+to limit MAXVECTORDEPTH to the regfile bitwidth (32 for RV32, 64 for RV64
+and so on).
+
+The reason for setting this limit is so that predication registers, when
+marked as such, may fit into a single register as opposed to fanning out
+over several registers.  This keeps the implementation a little simpler.
+
+## Vector-length CSRs
+
+Vector lengths are interpreted as meaning "any instruction referring to
+r(N) generates implicit identical instructions referring to registers
+r(N+M-1) where M is the Vector Length".  Vector Lengths may be set to
+use up to 16 registers in the register file.
+
+One separate CSR table is needed for each of the integer and floating-point
+register files:
+
+| RegNo | (3..0) |
+| ----- | ------ |
+| r0    | vlen0  |
+| r1    | vlen1  |
+| ..    | vlen.. |
+| r31   | vlen31 |
+
+An array of 32 4-bit CSRs is needed (4 bits per register) to indicate
+whether a register was, if referred to in any standard instructions,
+implicitly to be treated as a vector.  A vector length of 1 indicates
+that it is to be treated as a scalar.  Vector lengths of 0 are reserved.
+
+Internally, implementations may choose to use the non-zero vector length
+to set a bit-field per register, to be used in the instruction decode phase.
+In this way any standard (current or future) operation involving
+register operands may detect if the operation is to be vector-vector,
+vector-scalar or scalar-scalar (standard) simply through a single
+bit test.
+
+Note that when using the "vsetl rs1, rs2" instruction (caveat: when the
+bitwidth is specifically not set) it becomes:
+
+    CSRvlength = MIN(MIN(CSRvectorlen[rs1], MAXVECTORDEPTH), rs2)
+
+This is in contrast to RVV:
+
+    CSRvlength = MIN(MIN(rs1, MAXVECTORDEPTH), rs2)
+
+## Element (SIMD) bitwidth CSRs
+
+Element bitwidths may be specified with a per-register CSR, and indicate
+how a register (integer or floating-point) is to be subdivided.
+
+| RegNo | (2..0) |
+| ----- | ------ |
+| r0    | vew0   |
+| r1    | vew1   |
+| ..    | vew..  |
+| r31   | vew31  |
+
+vew may be one of the following (giving a table "bytestable", used below):
+
+| vew | bitwidth |
+| --- | -------- |
+| 000 | default  |
+| 001 | 8        |
+| 010 | 16       |
+| 011 | 32       |
+| 100 | 64       |
+| 101 | 128      |
+| 110 | rsvd     |
+| 111 | rsvd     |
+
+Note that when using the "vsetl rs1, rs2" instruction, taking bitwidth
+into account, it becomes:
+
+    vew = CSRbitwidth[rs1]
+    if (vew == 0)
+        bytesperreg = (XLEN/8) # or FLEN as appropriate
+    else:
+        bytesperreg = bytestable[vew] # 1 2 4 8 16
+    simdmult = (XLEN/8) / bytesperreg # or FLEN as appropriate
+    vlen = CSRvectorlen[rs1] * simdmult
+    CSRvlength = MIN(MIN(vlen, MAXVECTORDEPTH), rs2)
+
+## Stride
+
+**TODO**: propose two LOAD/STORE offset CSRs, which mark a particular
+register as being "if you use this reg in LOAD/STORE, use the offset
+amount CSRoffsN (N=0,1) instead of treating LOAD/STORE as contiguous".
+can be used for matrix spanning.
+
+> For LOAD/STORE, could a better option be to interpret the offset in the 
+> opcode as a stride instead, so "LOAD t3, 12(t2)" would, if t3 is 
+> configured as a length-4 vector base, result in t3 = *t2, t4 = *(t2+12), 
+> t5 = *(t2+24), t6 = *(t2+32)?  Perhaps include a bit in the 
+> vector-control CSRs to select between offset-as-stride and unit-stride 
+> memory accesses? 
+
+So there would be an instruction like this:
+
+| SETOFF | On=rN | OBank={float|int} | Smode={offs|unit} | OFFn=rM |
+| opcode | 5 bit | 1 bit             | 1 bit             | 5 bit, OFFn=XLEN |
+
+
+which would mean:
+
+* CSR-Offset register n <= (float|int) register number N
+* CSR-Offset Stride-mode = offset or unit
+* CSR-Offset amount register n = contents of register M
+
+LOAD rN, ldoffs(rM) would then be (assuming packed bit-width not set):
+
+    offs = 0
+    stride = 1
+    vector-len = CSR-Vector-length register N
+
+    for (o = 0, o < 2, o++)
+      if (CSR-Offset register o == M)
+          offs = CSR-Offset amount register o
+          if CSR-Offset Stride-mode == offset:
+              stride = ldoffs
+          break
+
+    for (i = 0, i < vector-len; i++)
+      r[N+i] = mem[(offs*i + r[M+i])*stride]
+
 # Example of vector / vector, vector / scalar, scalar / scalar => vector add
 
     register CSRvectorlen[XLEN][4]; # not quite decided yet about this one...
@@ -788,6 +902,7 @@ Notes:
 * j is multiplied by stride, not elsize, including in the rs2 vectorised case.
 * There may be more sophisticated variants involving the 31st bit, however
   it would be nice to reserve that bit for post-increment of address registers
+* 
 
 ## 17.19 Vector Register Gather
 
