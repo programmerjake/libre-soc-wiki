@@ -1,0 +1,561 @@
+# V-Extension to Simple-V Comparative Analysis
+
+[[!toc ]]
+
+This section covers the ways in which Simple-V is comparable
+to, or more flexible than, V-Extension (V2.3-draft).  Also covered is
+one major weak-point (register files are fixed size, where V is
+arbitrary length), and how best to deal with that, should V be adapted
+to be on top of Simple-V.
+
+The first stages of this section go over each of the sections of V2.3-draft V
+where appropriate
+
+# 17.3 Shape Encoding
+
+Simple-V's proposed means of expressing whether a register (from the
+standard integer or the standard floating-point file) is a scalar or
+a vector is to simply set the vector length to 1.  The instruction
+would however have to specify which register file (integer or FP) that
+the vector-length was to be applied to.
+
+Extended shapes (2-D etc) would not be part of Simple-V at all.
+
+# 17.4 Representation Encoding
+
+Simple-V would not have representation-encoding.  This is part of
+polymorphism, which is considered too complex to implement (TODO: confirm?)
+
+# 17.5 Element Bitwidth
+
+This is directly equivalent to Simple-V's "Packed", and implies that
+integer (or floating-point) are divided down into vector-indexable
+chunks of size Bitwidth.
+
+In this way it becomes possible to have ADD effectively and implicitly
+turn into ADDb (8-bit add), ADDw (16-bit add) and so on, and where
+vector-length has been set to greater than 1, it becomes a "Packed"
+(SIMD) instruction.
+
+It remains to be decided what should be done when RV32 / RV64 ADD (sized)
+opcodes are used.  One useful idea would be, on an RV64 system where
+a 32-bit-sized ADD was performed, to simply use the least significant
+32-bits of the register (exactly as is currently done) but at the same
+time to *respect the packed bitwidth as well*.
+
+The extended encoding (Table 17.6) would not be part of Simple-V.
+
+# 17.6 Base Vector Extension Supported Types
+
+TODO: analyse.  probably exactly the same.
+
+# 17.7 Maximum Vector Element Width
+
+No equivalent in Simple-V
+
+# 17.8 Vector Configuration Registers
+
+TODO: analyse.
+
+# 17.9 Legal Vector Unit Configurations
+
+TODO: analyse
+
+# 17.10 Vector Unit CSRs
+
+TODO: analyse
+
+> Ok so this is an aspect of Simple-V that I hadn't thought through,
+> yet (proposal / idea only a few days old!).  in V2.3-Draft ISA Section
+> 17.10 the CSRs are listed.  I note that there's some general-purpose
+> CSRs (including a global/active vector-length) and 16 vcfgN CSRs.  i
+> don't precisely know what those are for.
+
+>  In the Simple-V proposal, *every* register in both the integer
+> register-file *and* the floating-point register-file would have at
+> least a 2-bit "data-width" CSR and probably something like an 8-bit
+> "vector-length" CSR (less in RV32E, by exactly one bit).
+
+>  What I *don't* know is whether that would be considered perfectly
+> reasonable or completely insane.  If it turns out that the proposed
+> Simple-V CSRs can indeed be stored in SRAM then I would imagine that
+> adding somewhere in the region of 10 bits per register would be... okay? 
+> I really don't honestly know.
+
+>  Would these proposed 10-or-so-bit per-register Simple-V CSRs need to
+> be multi-ported? No I don't believe they would.
+
+# 17.11 Maximum Vector Length (MVL)
+
+Basically implicitly this is set to the maximum size of the register
+file multiplied by the number of 8-bit packed ints that can fit into
+a register (4 for RV32, 8 for RV64 and 16 for RV128).
+
+# !7.12 Vector Instruction Formats
+
+No equivalent in Simple-V because *all* instructions of *all* Extensions
+are implicitly parallelised (and packed).
+
+# 17.13 Polymorphic Vector Instructions
+
+Polymorphism (implicit type-casting) is deliberately not supported
+in Simple-V.
+
+# 17.14 Rapid Configuration Instructions
+
+TODO: analyse if this is useful to have an equivalent in Simple-V
+
+# 17.15 Vector-Type-Change Instructions
+
+TODO: analyse if this is useful to have an equivalent in Simple-V
+
+# 17.16 Vector Length
+
+Has a direct corresponding equivalent.
+
+# 17.17 Predicated Execution
+
+Predicated Execution is another name for "masking" or "tagging".  Masked
+(or tagged) implies that there is a bit field which is indexed, and each
+bit associated with the corresponding indexed offset register within
+the "Vector".  If the tag / mask bit is 1, when a parallel operation is
+issued, the indexed element of the vector has the operation carried out.
+However if the tag / mask bit is *zero*, that particular indexed element
+of the vector does *not* have the requested operation carried out.
+
+In V2.3-draft V, there is a significant (not recommended) difference:
+the zero-tagged elements are *set to zero*.  This loses a *significant*
+advantage of mask / tagging, particularly if the entire mask register
+is itself a general-purpose register, as that general-purpose register
+can be inverted, shifted, and'ed, or'ed and so on.  In other words
+it becomes possible, especially if Carry/Overflow from each vector
+operation is also accessible, to do conditional (step-by-step) vector
+operations including things like turn vectors into 1024-bit or greater
+operands with very few instructions, by treating the "carry" from
+one instruction as a way to do "Conditional add of 1 to the register
+next door".  If V2.3-draft V sets zero-tagged elements to zero, such
+extremely powerful techniques are simply not possible.
+
+It is noted that there is no mention of an equivalent to BEXT (element
+skipping) which would be particularly fascinating and powerful to have.
+In this mode, the "mask" would skip elements where its mask bit was zero
+in either the source or the destination operand.
+
+Lots to be discussed.
+
+# 17.18 Vector Load/Store Instructions
+
+The Vector Load/Store instructions as proposed in V are extremely powerful
+and can be used for reordering and regular restructuring.
+
+Vector Load:
+
+    if (unit-strided) stride = elsize;
+    else stride = areg[as2]; // constant-strided
+    for (int i=0; i<vl; ++i)
+      if ([!]preg[p][i])
+        for (int j=0; j<seglen+1; j++)
+          vreg[vd+j][i] = mem[areg[as1] + (i*(seglen+1)+j)*stride];
+
+Store:
+
+    if (unit-strided) stride = elsize;
+    else stride = areg[as2]; // constant-strided
+    for (int i=0; i<vl; ++i)
+      if ([!]preg[p][i])
+        for (int j=0; j<seglen+1; j++)
+          mem[areg[base] + (i*(seglen+1)+j)*stride] = vreg[vd+j][i];
+
+Indexed Load:
+
+    for (int i=0; i<vl; ++i)
+      if ([!]preg[p][i])
+        for (int j=0; j<seglen+1; j++)
+          vreg[vd+j][i] = mem[sreg[base] + vreg[vs2][i] + j*elsize];
+
+Indexed Store:
+
+    for (int i=0; i<vl; ++i)
+    if ([!]preg[p][i])
+      for (int j=0; j<seglen+1; j++)
+        mem[sreg[base] + vreg[vs2][i] + j*elsize] = vreg[vd+j][i];
+
+Keeping these instructions as-is for Simple-V is highly recommended.
+However: one of the goals of this Extension is to retro-fit (re-use)
+existing RV Load/Store:
+
+[[!table  data="""
+31                  20 | 19      15 | 14    12 | 11           7 | 6         0 |
+       imm[11:0]       |     rs1    |  funct3  |       rd       |    opcode |
+            12         |      5     |    3     |        5       |      7 |
+       offset[11:0]    |    base    |  width   |      dest      |    LOAD |
+"""]]
+
+[[!table  data="""
+31          25 | 24    20 | 19     15 | 14    12 | 11          7 | 6         0 |
+ imm[11:5]     |   rs2    |    rs1    |  funct3  |   imm[4:0]    |    opcode |
+      7        |    5     |     5     |    3     |       5       |      7 |
+ offset[11:5]  |   src    |   base    |  width   |  offset[4:0]  |   STORE |
+"""]]
+
+The RV32 instruction opcodes as follows:
+
+[[!table  data="""
+31 28  27 | 26 25 | 24  20 |19  15  |14| 13 12 | 11   7 | 6     0 | op  |
+imm[4:0]  | 00    | 00000  |    rs1 | 1| m     | vd     | 0000111 | VLD |
+imm[4:0]  | 01    |   rs2  |    rs1 | 1| m     | vd     | 0000111 | VLDS|
+imm[4:0]  | 11    |   vs2  |    rs1 | 1| m     | vd     | 0000111 | VLDX|
+vs3       | 00    | 00000  |    rs1 |1 | m     |imm[4:0]| 0100111 |VST  |
+vs3       | 01    | rs2    |    rs1 |1 | m     |imm[4:0]| 0100111 |VSTS |
+vs3       | 11    | vs2    |    rs1 |1 | m     |imm[4:0]| 0100111 |VSTX |
+"""]]
+
+Conversion on LOAD as follows:
+
+* rd or rs1 are CSR-vectorised indicating "Vector Mode"
+* rd equivalent to vd
+* rs1 equivalent to rs1
+* imm[4:0] from RV format (11..7]) is same
+* imm[9:5] from RV format (29..25] is rs2 (rs2=00000 for VLD)
+* imm[11:10] from RV format (31..30] is opcode (VLD, VLDS, VLDX)
+* width from RV format (14..12) is same (width and zero/sign extend)
+
+[[!table  data="""
+31 30 | 29 25 | 24    20 | 19 15 | 14  12 | 11      7 | 6    0 |
+imm[11:0]              ||| rs1   | funct3 | rd        | opcode |
+2     | 5     | 5        | 5     | 3      | 5         | 7      |
+00    | 00000 | imm[4:0] | base  | width  | dest      | LOAD   |
+01    | rs2   | imm[4:0] | base  | width  | dest      | LOAD.S |
+11    | rs2   | imm[4:0] | base  | width  | dest      | LOAD.X |
+"""]]
+
+Similar conversion on STORE as follows:
+
+[[!table  data="""
+31 30 | 29  25 | 24   20 | 19 15 | 14  12 | 11      7 | 6    0 |
+imm[11:0]              ||| rs1   | funct3 | rd        | opcode |
+2     | 5      | 5       | 5     | 3      | 5         | 7      |
+00    | 00000  | src     | base  | width  | offs[4:0] | LOAD   |
+01    | rs3    | src     | base  | width  | offs[4:0] | LOAD.S |
+11    | rs3    | src     | base  | width  | offs[4:0] | LOAD.X |
+"""]]
+
+Notes:
+
+* Predication CSR-marking register is not explicitly shown in instruction
+* In both LOAD and STORE, it is possible now to rs2 (or rs3) as a vector.
+* That in turn means that Indexed Load need not have an explicit opcode
+* That in turn means that bit 30 may indicate "stride" and bit 31 is free
+
+Revised LOAD:
+
+[[!table  data="""
+31 | 30 | 29 25 | 24    20 | 19 15 | 14   12 | 11 7 | 6    0 |
+imm[11:0]               |||| rs1   | funct3  | rd   | opcode |
+1  | 1  |  5    | 5        | 5     | 3       | 5    | 7      |
+?  | s  |  rs2  | imm[4:0] | base  | width   | dest | LOAD   |
+"""]]
+
+Where in turn the pseudo-code may now combine the two:
+
+    if (unit-strided) stride = elsize;
+    else stride = areg[as2]; // constant-strided
+    for (int i=0; i<vl; ++i)
+      if ([!]preg[p][i])
+        for (int j=0; j<seglen+1; j++)
+        {
+          if CSRvectorised[rs2])
+             offs = vreg[rs2][i]
+          else
+             offs = i*(seglen+1)*stride;
+          vreg[vd+j][i] = mem[sreg[base] + offs + j*stride];
+        }
+
+Notes:
+
+* j is multiplied by stride, not elsize, including in the rs2 vectorised case.
+* There may be more sophisticated variants involving the 31st bit, however
+  it would be nice to reserve that bit for post-increment of address registers
+*
+
+# 17.19 Vector Register Gather
+
+TODO
+
+# TODO, sort
+
+> However, there are also several features that go beyond simply attaching VL
+> to a scalar operation and are crucial to being able to vectorize a lot of
+> code.  To name a few:
+> - Conditional execution (i.e., predicated operations)
+> - Inter-lane data movement (e.g. SLIDE, SELECT)
+> - Reductions (e.g., VADD with a scalar destination)
+
+ Ok so the Conditional and also the Reductions is one of the reasons
+ why as part of SimpleV / variable-SIMD / parallelism (gah gotta think
+ of a decent name) i proposed that it be implemented as "if you say r0
+ is to be a vector / SIMD that means operations actually take place on
+ r0,r1,r2... r(N-1)".
+
+ Consequently any parallel operation could be paused (or... more
+ specifically: vectors disabled by resetting it back to a default /
+ scalar / vector-length=1) yet the results would actually be in the
+ *main register file* (integer or float) and so anything that wasn't
+ possible to easily do in "simple" parallel terms could be done *out*
+ of parallel "mode" instead.
+
+ I do appreciate that the above does imply that there is a limit to the
+ length that SimpleV (whatever) can be parallelised, namely that you
+ run out of registers!  my thought there was, "leave space for the main
+ V-Ext proposal to extend it to the length that V currently supports".
+ Honestly i had not thought through precisely how that would work.
+
+ Inter-lane (SELECT) i saw 17.19 in V2.3-Draft p117, I liked that,
+ it reminds me of the discussion with Clifford on bit-manipulation
+ (gather-scatter except not Bit Gather Scatter, *data* gather scatter): if
+ applied "globally and outside of V and P" SLIDE and SELECT might become
+ an extremely powerful way to do fast memory copy and reordering [2[.
+
+ However I haven't quite got my head round how that would work: i am
+ used to the concept of register "tags" (the modern term is "masks")
+ and i *think* if "masks" were applied to a Simple-V-enhanced LOAD /
+ STORE you would get the exact same thing as SELECT.
+
+ SLIDE you could do simply by setting say r0 vector-length to say 16
+ (meaning that if referred to in any operation it would be an implicit
+ parallel operation on *all* registers r0 through r15), and temporarily
+ set say.... r7 vector-length to say... 5.  Do a LOAD on r7 and it would
+ implicitly mean "load from memory into r7 through r11".  Then you go
+ back and do an operation on r0 and ta-daa, you're actually doing an
+ operation on a SLID {SLIDED?) vector.
+
+ The advantage of Simple-V (whatever) over V would be that you could
+ actually do *operations* in the middle of vectors (not just SLIDEs)
+ simply by (as above) setting r0 vector-length to 16 and r7 vector-length
+ to 5.  There would be nothing preventing you from doing an ADD on r0
+ (which meant do an ADD on r0 through r15) followed *immediately in the
+ next instruction with no setup cost* a MUL on r7 (which actually meant
+ "do a parallel MUL on r7 through r11").
+
+ btw it's worth mentioning that you'd get scalar-vector and vector-scalar
+ implicitly by having one of the source register be vector-length 1
+ (the default) and one being N > 1.  but without having special opcodes
+ to do it.  i *believe* (or more like "logically infer or deduce" as
+ i haven't got access to the spec) that that would result in a further
+ opcode reduction when comparing [draft] V-Ext to [proposed] Simple-V.
+
+ Also, Reduction *might* be possible by specifying that the destination be
+ a scalar (vector-length=1) whilst the source be a vector.  However... it
+ would be an awful lot of work to go through *every single instruction*
+ in *every* Extension, working out which ones could be parallelised (ADD,
+ MUL, XOR) and those that definitely could not (DIV, SUB).  Is that worth
+ the effort?  maybe.  Would it result in huge complexity? probably.
+ Could an implementor just go "I ain't doing *that* as parallel!
+ let's make it virtual-parallelism (sequential reduction) instead"?
+ absolutely.  So, now that I think it through, Simple-V (whatever)
+ covers Reduction as well.  huh, that's a surprise.
+
+
+> - Vector-length speculation (making it possible to vectorize some loops with
+> unknown trip count) - I don't think this part of the proposal is written
+> down yet.
+
+ Now that _is_ an interesting concept.  A little scary, i imagine, with
+ the possibility of putting a processor into a hard infinite execution
+ loop... :)
+
+
+> Also, note the vector ISA consumes relatively little opcode space (all the
+> arithmetic fits in 7/8ths of a major opcode).  This is mainly because data
+> type and size is a function of runtime configuration, rather than of opcode.
+
+ yes.  i love that aspect of V, i am a huge fan of polymorphism [1]
+ which is why i am keen to advocate that the same runtime principle be
+ extended to the rest of the RISC-V ISA [3]
+
+ Yikes that's a lot.  I'm going to need to pull this into the wiki to
+ make sure it's not lost.
+
+[1] inherent data type conversion: 25 years ago i designed a hypothetical
+hyper-hyper-hyper-escape-code-sequencing ISA based around 2-bit
+(escape-extended) opcodes and 2-bit (escape-extended) operands that
+only required a fixed 8-bit instruction length.  that relied heavily
+on polymorphism and runtime size configurations as well.  At the time
+I thought it would have meant one HELL of a lot of CSRs... but then I
+met RISC-V and was cured instantly of that delusion^Wmisapprehension :)
+
+[2] Interestingly if you then also add in the other aspect of Simple-V
+(the data-size, which is effectively functionally orthogonal / identical
+to "Packed" of Packed-SIMD), masked and packed *and* vectored LOAD / STORE
+operations become byte / half-word / word augmenters of B-Ext's proposed
+"BGS" i.e. where B-Ext's BGS dealt with bits, masked-packed-vectored
+LOAD / STORE would deal with 8 / 16 / 32 bits at a time.  Where it
+would get really REALLY interesting would be masked-packed-vectored
+B-Ext BGS instructions.  I can't even get my head fully round that,
+which is a good sign that the combination would be *really* powerful :)
+
+[3] ok sadly maybe not the polymorphism, it's too complicated and I
+think would be much too hard for implementors to easily "slide in" to an
+existing non-Simple-V implementation.  i say that despite really *really*
+wanting IEEE 704 FP Half-precision to end up somewhere in RISC-V in some
+fashion, for optimising 3D Graphics.  *sigh*.
+
+# TODO: analyse, auto-increment on unit-stride and constant-stride
+
+so i thought about that for a day or so, and wondered if it would be
+possible to propose a variant of zero-overhead loop that included
+auto-incrementing the two address registers a2 and a3, as well as
+providing a means to interact between the zero-overhead loop and the
+vsetvl instruction.  a sort-of pseudo-assembly of that would look like:
+
+    # a2 to be auto-incremented by t0 times 4
+    zero-overhead-set-auto-increment a2, t0, 4
+    # a2 to be auto-incremented by t0 times 4
+    zero-overhead-set-auto-increment a3, t0, 4
+    zero-overhead-set-loop-terminator-condition a0 zero
+    zero-overhead-set-start-end stripmine, stripmine+endoffset
+    stripmine:
+    vsetvl t0,a0
+    vlw v0, a2
+    vlw v1, a3
+    vfma v1, a1, v0, v1
+    vsw v1, a3
+    sub a0, a0, t0
+    stripmine+endoffset:
+
+the question is: would something like this even be desirable?  it's a
+variant of auto-increment [1].  last time i saw any hint of auto-increment
+register opcodes was in the 1980s... 68000 if i recall correctly... yep
+see [1]
+
+[1] http://fourier.eng.hmc.edu/e85_old/lectures/instruction/node6.html
+
+Reply:
+
+Another option for auto-increment is for vector-memory-access instructions
+to support post-increment addressing for unit-stride and constant-stride
+modes.  This can be implemented by the scalar unit passing the operation
+to the vector unit while itself executing an appropriate multiply-and-add
+to produce the incremented address.  This does *not* require additional
+ports on the scalar register file, unlike scalar post-increment addressing
+modes.
+
+# TODO: instructions (based on Hwacha) V-Ext duplication analysis
+
+This is partly speculative due to lack of access to an up-to-date
+V-Ext Spec (V2.3-draft RVV 0.4-Draft at the time of writing).  However
+basin an analysis instead on Hwacha, a cursory examination shows over
+an **85%** duplication of V-Ext operand-related instructions when
+compared to Simple-V on a standard RG64G base.   Even Vector Fetch
+is analogous to "zero-overhead loop".
+
+Exceptions are:
+
+* Vector Indexed Memory Instructions (non-contiguous)
+* Vector Atomic Memory Instructions.
+* Some of the Vector Misc ops: VEIDX, VFIRST, VCLASS, VPOPC
+  and potentially more.
+* Consensual Jump
+
+Table of RV32V Instructions
+
+| RV32V      | RV Equivalent (FP)   | RV Equivalent (Int) | Notes |
+| -----      | --- | |   |
+| VADD       | FADD    | ADD |   |
+| VSUB       | FSUB    | SUB |   |
+| VSL        |     | SLL |   |
+| VSR        |     | SRL |   |
+| VAND       |     | AND |   |
+| VOR        |     | OR |   |
+| VXOR       |     | XOR |   |
+| VSEQ       | FEQ | BEQ | {1} |
+| VSNE       | !FEQ | BNE | {1} |
+| VSLT       | FLT    | BLT | {1} |
+| VSGE       | !FLE | BGE | {1} |
+| VCLIP      |     | |   |
+| VCVT       | FCVT    | |   |
+| VMPOP      |     | |   |
+| VMFIRST    |     | |   |
+| VEXTRACT   |     | |   |
+| VINSERT    |     | |   |
+| VMERGE     |     | |   |
+| VSELECT    |     | |   |
+| VSLIDE     |     | |   |
+| VDIV       | FDIV    | DIV |   |
+| VREM       |     | REM |   |
+| VMUL       | FMUL    | MUL |   |
+| VMULH      |     | |   |
+| VMIN       | FMIN    | |   |
+| VMAX       | FMUX    | |   |
+| VSGNJ      | FSGNJ    | |   |
+| VSGNJN     | FSGNJN    | |   |
+| VSGNJX     | FSNGJX    | |   |
+| VSQRT      | FSQRT    | |   |
+| VCLASS     |     | |   |
+| VPOPC      |     | |   |
+| VADDI      |     | ADDI |   |
+| VSLI       |     | SLI |   |
+| VSRI       |     | SRI |   |
+| VANDI      |     | ANDI |   |
+| VORI       |     | ORI |   |
+| VXORI      |     | XORI |   |
+| VCLIPI     |     | |   |
+| VMADD      | FMADD    | |   |
+| VMSUB      | FMSUB    | |   |
+| VNMADD     | FNMSUB    | |   |
+| VNMSUB     | FNMADD    | |   |
+| VLD        | FLD    | LD |   |
+| VLDS       |     | LW |   |
+| VLDX       |     | LWU |   |
+| VST        | FST    | ST |   |
+| VSTS       |     | |   |
+| VSTX       |     | |   |
+| VAMOSWAP   |     | AMOSWAP |   |
+| VAMOADD    |     | AMOADD |   |
+| VAMOAND    |     | AMOAND |   |
+| VAMOOR     |     | AMOOR |   |
+| VAMOXOR    |     | AMOXOR |   |
+| VAMOMIN    |     | AMOMIN |   |
+| VAMOMAX    |     | AMOMAX |   |
+
+Notes:
+
+* {1} retro-fit predication variants into branch instructions (base and C),
+  decoding triggered by CSR bit marking register as "Vector type".
+
+# TODO: sort
+
+> I suspect that the "hardware loop" in question is actually a zero-overhead
+> loop unit that diverts execution from address X to address Y if a certain
+> condition is met.
+
+ not quite.  The zero-overhead loop unit interestingly would be at
+an [independent] level above vector-length.  The distinctions are
+as follows:
+
+* Vector-length issues *virtual* instructions where the register
+  operands are *specifically* altered (to cover a range of registers),
+  whereas zero-overhead loops *specifically* do *NOT* alter the operands
+  in *ANY* way.
+
+* Vector-length-driven "virtual" instructions are driven by *one*
+ and *only* one instruction (whether it be a LOAD, STORE, or pure
+ one/two/three-operand opcode) whereas zero-overhead loop units
+ specifically apply to *multiple* instructions.
+
+Where vector-length-driven "virtual" instructions might get conceptually
+blurred with zero-overhead loops is LOAD / STORE.  In the case of LOAD /
+STORE, to actually be useful, vector-length-driven LOAD / STORE should
+increment the LOAD / STORE memory address to correspondingly match the
+increment in the register bank.  example:
+
+* set vector-length for r0 to 4
+* issue RV32 LOAD from addr 0x1230 to r0
+
+translates effectively to:
+
+* RV32 LOAD from addr 0x1230 to r0
+* ...
+* ...
+* RV32 LOAD from addr 0x123B to r3
+
