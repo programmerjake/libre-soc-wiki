@@ -470,8 +470,6 @@ table generated from the Predication CSR key-value store:
             iop(s1 ? vreg[rs1][i] : sreg[rs1],
                 s2 ? vreg[rs2][i] : sreg[rs2]); // for insts with 2 inputs
 
-
-
 ## MAXVECTORDEPTH
 
 MAXVECTORDEPTH is the same concept as MVL in RVV.  However in Simple-V,
@@ -566,30 +564,8 @@ The reason for multiplying the vector length by the number of SIMD elements
 (in each individual register) is so that each SIMD element may optionally be
 predicated.
 
-Example:
-
-* RV32 assumed
-* CSRintbitwidth[2] = 010 # integer r2 is 16-bit
-* CSRintvlength[2] = 3 # integer r2 is a vector of length 3
-* vsetl rs1, 5 # set the vector length to 5
-
-This is interpreted as follows:
-
-* Given that the context is RV32, ELEN=32.
-* With ELEN=32 and bitwidth=16, the number of SIMD elements is 2
-* Therefore the actual vector length is up to *six* elements
-
-So when using an operation that uses r2 as a source (or destination)
-the operation is carried out as follows:
-
-* 16-bit operation on r2(15..0) - vector element index 0
-* 16-bit operation on r2(31..16) - vector element index 1
-* 16-bit operation on r3(15..0) - vector element index 2
-* 16-bit operation on r3(31..16) - vector element index 3
-* 16-bit operation on r4(15..0) - vector element index 4
-* 16-bit operation on r4(31..16) **NOT** carried out due to length being 5
-
-Predication has been left out of the above example for simplicity.
+An example of how to subdivide the register file when bitwidth != default
+is given in the section "Virtual Register Reordering".
 
 # Example of vector / vector, vector / scalar, scalar / scalar => vector add
 
@@ -622,43 +598,7 @@ This section has been moved to its own page [[v_comparative_analysis]]
 
 # P-Ext ISA
 
-## 16-bit Arithmetic
-
-| Mnemonic           | 16-bit Instruction        | Simple-V Equivalent |
-| ------------------ | ------------------------- | ------------------- |
-| ADD16 rt, ra, rb   | add                       | RV ADD (bitwidth=16) |
-| RADD16 rt, ra, rb  | Signed Halving add        | |
-| URADD16 rt, ra, rb | Unsigned Halving add      | |
-| KADD16 rt, ra, rb  | Signed Saturating add     | |
-| UKADD16 rt, ra, rb | Unsigned Saturating add   | |
-| SUB16 rt, ra, rb   | sub                       | RV SUB (bitwidth=16) |
-| RSUB16 rt, ra, rb  | Signed Halving sub        | |
-| URSUB16 rt, ra, rb | Unsigned Halving sub                | |
-| KSUB16 rt, ra, rb  | Signed Saturating sub               | |
-| UKSUB16 rt, ra, rb | Unsigned Saturating sub             | |
-| CRAS16 rt, ra, rb  | Cross Add & Sub                     | |
-| RCRAS16 rt, ra, rb | Signed Halving Cross Add & Sub      | |
-| URCRAS16 rt, ra, rb| Unsigned Halving Cross Add & Sub    | |
-| KCRAS16 rt, ra, rb | Signed Saturating Cross Add & Sub   | |
-| UKCRAS16 rt, ra, rb| Unsigned Saturating Cross Add & Sub | |
-| CRSA16 rt, ra, rb  | Cross Sub & Add                     | |
-| RCRSA16 rt, ra, rb | Signed Halving Cross Sub & Add      | |
-| URCRSA16 rt, ra, rb| Unsigned Halving Cross Sub & Add    | |
-| KCRSA16 rt, ra, rb | Signed Saturating Cross Sub & Add   | |
-| UKCRSA16 rt, ra, rb| Unsigned Saturating Cross Sub & Add | |
-
-## 8-bit Arithmetic
-
-| Mnemonic           | 16-bit Instruction        | Simple-V Equivalent |
-| ------------------ | ------------------------- | ------------------- |
-| ADD8 rt, ra, rb    | add                       | RV ADD (bitwidth=8)|
-| RADD8 rt, ra, rb   | Signed Halving add        | |
-| URADD8 rt, ra, rb  | Unsigned Halving add      | |
-| KADD8 rt, ra, rb   | Signed Saturating add     | |
-| UKADD8 rt, ra, rb  | Unsigned Saturating add   | |
-| SUB8 rt, ra, rb    | sub                       | RV SUB (bitwidth=8)|
-| RSUB8 rt, ra, rb   | Signed Halving sub        | |
-| URSUB8 rt, ra, rb  | Unsigned Halving sub      | |
+This section has been moved to its own page [[p_comparative_analysis]]
 
 # Exceptions
 
@@ -926,6 +866,8 @@ the question is asked "How can each of the proposals effectively implement
 | r5 | (32..0) |
 | r6 | (32..0) |
 | r7 | (32..0) |
+| .. | (32..0) |
+| r31| (32..0) |
 
 ## Vectorised CSR
 
@@ -951,6 +893,8 @@ single-bit is less burdensome on instruction decode phase.
 
 ## Virtual Register Reordering:
 
+This example assumes the above Vector Length CSR table
+
 | Reg Num | Bits (0) | Bits (1) | Bits (2) |
 | ------- | -------- | -------- | -------- |
 | r0 | (32..0) | (32..0) |
@@ -958,6 +902,42 @@ single-bit is less burdensome on instruction decode phase.
 | r3 | (32..0) |
 | r4 | (32..0) | (32..0) | (32..0) |
 | r7 | (32..0) |
+
+This example goes a little further and illustrates the effect that a
+bitwidth CSR has been set on a register
+
+* RV32 assumed
+* CSRintbitwidth[2] = 010 # integer r2 is 16-bit
+* CSRintvlength[2] = 3 # integer r2 is a vector of length 3
+* vsetl rs1, 5 # set the vector length to 5
+
+This is interpreted as follows:
+
+* Given that the context is RV32, ELEN=32.
+* With ELEN=32 and bitwidth=16, the number of SIMD elements is 2
+* Therefore the actual vector length is up to *six* elements
+
+So when using an operation that uses r2 as a source (or destination)
+the operation is carried out as follows:
+
+* 16-bit operation on r2(15..0) - vector element index 0
+* 16-bit operation on r2(31..16) - vector element index 1
+* 16-bit operation on r3(15..0) - vector element index 2
+* 16-bit operation on r3(31..16) - vector element index 3
+* 16-bit operation on r4(15..0) - vector element index 4
+* 16-bit operation on r4(31..16) **NOT** carried out due to length being 5
+
+Predication has been left out of the above example for simplicity, however
+predication is ANDed with the latter stages (vsetl not equal to maximum
+capacity).
+
+Note also that it is entirely an implementor's choice as to whether to have
+actual separate ALUs down to the minimum bitwidth, or whether to have something
+more akin to traditional SIMD (at any level of subdivision: 8-bit SIMD
+operations carried out 32-bits at a time is perfectly acceptable, as is
+8-bit SIMD operations carried out 16-bits at a time requiring two ALUs).
+Regardless of the internal parallelism choice, *predication must
+still be respected*, making Simple-V in effect the "consistent public API".
 
 ## Example Instruction translation: <a name="example_translation"></a>
 
