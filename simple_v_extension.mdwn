@@ -84,7 +84,7 @@ standard RV instructions and overflow registers extremely powerful
 
 # Analysis and discussion of Vector vs SIMD
 
-There are four combined areas between the two proposals that help with
+There are five combined areas between the two proposals that help with
 parallelism without over-burdening the ISA with a huge proliferation of
 instructions:
 
@@ -547,6 +547,9 @@ vew may be one of the following (giving a table "bytestable", used below):
 | 110 | rsvd     |
 | 111 | rsvd     |
 
+Extending this table (with extra bits) is covered in the section
+"Implementing RVV on top of Simple-V".
+
 Note that when using the "vsetl rs1, rs2" instruction, taking bitwidth
 into account, it becomes:
 
@@ -559,47 +562,34 @@ into account, it becomes:
     vlen = CSRvectorlen[rs1] * simdmult
     CSRvlength = MIN(MIN(vlen, MAXVECTORDEPTH), rs2)
 
-## Stride
+The reason for multiplying the vector length by the number of SIMD elements
+(in each individual register) is so that each SIMD element may optionally be
+predicated.
 
-**TODO**: propose two LOAD/STORE offset CSRs, which mark a particular
-register as being "if you use this reg in LOAD/STORE, use the offset
-amount CSRoffsN (N=0,1) instead of treating LOAD/STORE as contiguous".
-can be used for matrix spanning.
+Example:
 
-> For LOAD/STORE, could a better option be to interpret the offset in the
-> opcode as a stride instead, so "LOAD t3, 12(t2)" would, if t3 is
-> configured as a length-4 vector base, result in t3 = *t2, t4 = *(t2+12),
-> t5 = *(t2+24), t6 = *(t2+32)?  Perhaps include a bit in the
-> vector-control CSRs to select between offset-as-stride and unit-stride
-> memory accesses?
+* RV32 assumed
+* CSRintbitwidth[2] = 010 # integer r2 is 16-bit
+* CSRintvlength[2] = 3 # integer r2 is a vector of length 3
+* vsetl rs1, 5 # set the vector length to 5
 
-So there would be an instruction like this:
+This is interpreted as follows:
 
-| SETOFF | On=rN | OBank={float|int} | Smode={offs|unit} | OFFn=rM |
-| opcode | 5 bit | 1 bit             | 1 bit             | 5 bit, OFFn=XLEN |
+* Given that the context is RV32, ELEN=32.
+* With ELEN=32 and bitwidth=16, the number of SIMD elements is 2
+* Therefore the actual vector length is up to *six* elements
 
+So when using an operation that uses r2 as a source (or destination)
+the operation is carried out as follows:
 
-which would mean:
+* 16-bit operation on r2(15..0) - vector element index 0
+* 16-bit operation on r2(31..16) - vector element index 1
+* 16-bit operation on r3(15..0) - vector element index 2
+* 16-bit operation on r3(31..16) - vector element index 3
+* 16-bit operation on r4(15..0) - vector element index 4
+* 16-bit operation on r4(31..16) **NOT** carried out due to length being 5
 
-* CSR-Offset register n <= (float|int) register number N
-* CSR-Offset Stride-mode = offset or unit
-* CSR-Offset amount register n = contents of register M
-
-LOAD rN, ldoffs(rM) would then be (assuming packed bit-width not set):
-
-    offs = 0
-    stride = 1
-    vector-len = CSR-Vector-length register N
-
-    for (o = 0, o < 2, o++)
-      if (CSR-Offset register o == M)
-          offs = CSR-Offset amount register o
-          if CSR-Offset Stride-mode == offset:
-              stride = ldoffs
-          break
-
-    for (i = 0, i < vector-len; i++)
-      r[N+i] = mem[(offs*i + r[M+i])*stride]
+Predication has been left out of the above example for simplicity.
 
 # Example of vector / vector, vector / scalar, scalar / scalar => vector add
 
@@ -1468,6 +1458,7 @@ the question is asked "How can each of the proposals effectively implement
 * Extra register file: vector-file
 * Setup of Vector length and bitwidth CSRs now can specify vector-file
   as well as integer or float file.
+* Extend CSR tables (bitwidth) with extra bits
 * TODO
 
 # Implementing P (renamed to DSP) on top of Simple-V
