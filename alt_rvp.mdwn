@@ -1,3 +1,31 @@
+This RVP proposal is an alternative that uses only the integer register file.  It provides both SIMD groups equal to XLEN by partitioning the standard ALU, and provides SIMD groups larger than XLEN by effectively expanding the register file with additional lanes using a scheme inspired by the Hwacha microarchitecture.
+
+(All examples on this page assume RV32.)
+
+----
+
+# Partitioning
+
+Each bit set in the "part" CSR inhibits carry-in to that position and defines an element boundary.  Only the packed-data instructions honor the part CSR.
+
+ADD
+
+|    | reg | 31..0 |
+| -  | --- | ----- |
+|    | rs1 |    x1 |
+| +  | rs2 |    y1 |
+| ->  | rd  | x1+y1 |
+
+PADD ("packed ADD") (with bits 5, 11, 16, 21, and 27 set in the "part" CSR for pairs of RGB565 data)
+
+|    | reg | 31..27 | 26..21 | 20..16 | 15..11 | 10..5 | 4..0 |
+| -  | --- | ------ | ------ | ------ | ------ | ----- | ---- |
+|    | rs1 |   x2r  |   x2g  |   x2b  |   x1r  |  x1g  |  x1b |
+| +  | rs2 |   y2r  |   y2g  |   y2b  |   y1r  |  y1g  |  y1b |
+| -> | rd  | x2r+y2r| x2g+y2g| x2b+y2b| x1r+y1r|x1g+y1g| x1b+y1b|
+
+----
+
 # Lanes
 
 The term "Lanes" is borrowed from Hwacha (and is an implementation
