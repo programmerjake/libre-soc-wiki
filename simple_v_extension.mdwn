@@ -268,13 +268,12 @@ requirements would therefore seem to be a logical thing to do.
 
 # Instruction Format
 
-**TODO** *basically borrow from both P and V, which should be quite simple
-to do, with the exception of Tag/no-tag, which needs a bit more
-thought.  V's Section 17.19 of Draft V2.3 spec is reminiscent of B's BGS
-gather-scatterer, and, if implemented, could actually be a really useful
-way to span 8-bit up to 64-bit groups of data, where BGS as it stands
-and described by Clifford does **bits** of up to 16 width.  Lots to
-look at and investigate*
+The instruction format for Simple-V does not actually have *any* compare
+operations, *any* arithmetic, floating point or memory instructions.
+Instead it *overloads* pre-existing branch operations into predicated
+variants, and implicitly overloads arithmetic operations and LOAD/STORE
+depending on implicit CSR configurations for both vector length and
+bitwidth.  This includes Compressed instructions.
 
 * For analysis of RVV see [[v_comparative_analysis]] which begins to
   outline topologically-equivalent mappings of instructions
@@ -376,7 +375,7 @@ Notes:
   comparators: EQ/NEQ/LT/LE (with GT and GE being synthesised by inverting
   src1 and src2).
 
-# LOAD / STORE Instructions
+## LOAD / STORE Instructions
 
 For full analysis of topological adaptation of RVV LOAD/STORE
 see [[v_comparative_analysis]].  All three types (LD, LD.S and LD.X)
@@ -391,9 +390,16 @@ imm[11:0]               |||| rs1   | funct3  | rd   | opcode |
 ?  | s  |  rs2  | imm[4:0] | base  | width   | dest | LOAD   |
 """]]
 
+The exact same corresponding adaptation is also carried out on the single,
+double and quad precision floating-point LOAD-FP and STORE-FP operations,
+which fit the exact same instruction format.  Thus all three types
+(unit, stride and indexed) may be fitted into FLW, FLD and FLQ, 
+as well as FSW, FSD and FSQ.
+
 Notes:
 
 * LOAD remains functionally (topologically) identical to RVV LOAD
+  (for both integer and floating-point variants).
 * Predication CSR-marking register is not explicitly shown in instruction, it's
   implicit based on the CSR predicate state for the rd (destination) register
 * rs2, the source, may *also be marked as a vector*, which implicitly
@@ -428,6 +434,38 @@ Reordering" scheme shown in the Appendix (see function "regoffs").
 
 A similar instruction exists for STORE, with identical topological
 translation of all features.  **TODO**
+
+## Compressed LOAD / STORE Instructions
+
+Compressed LOAD and STORE are of the same format, where bits 2-4 are
+a src register instead of dest:
+
+[[!table  data="""
+15  13 | 12       10 | 9    7 | 6         5 | 4  2 | 1  0 |
+funct3 | imm         | rs10   | imm         | rd0  | op   |
+3      | 3           | 3      | 2           | 3    | 2    |
+C.LW   | offset[5:3] | base   | offset[2|6] | dest | C0   |
+"""]]
+
+Unfortunately it is not possible to fit the full functionality
+of vectorised LOAD / STORE into C.LD / C.ST: the "X" variants (Indexed)
+require another operand (rs2) in addition to the operand width
+(which is also missing), offset, base, and src/dest.
+
+However a close approximation may be achieved by taking the top bit
+of the offset in each of the five types of LD (and ST), reducing the
+offset to 4 bits and utilising the 5th bit to indicate whether "stride"
+is to be enabled.  In this way it is at least possible to introduce
+that functionality.
+
+We also assume (including for the "stride" variant) that the "width"
+parameter, which is missing, is derived and implicit, just as it is
+with the standard Compressed LOAD/STORE instructions.  For C.LW, C.LD
+and C.LQ, the width is implicitly 4, 8 and 16 respectively, whilst for
+C.FLW and C.FLD the width is implicitly 4 and 8 respectively.
+
+**TODO**: assess whether the loss of one bit from offset is worth having
+"stride" capability.
 
 # Note on implementation of parallelism
 
@@ -476,6 +514,7 @@ precedent in the setting of MISA to enable / disable extensions).
 * Floating-point Register N is Vector of length M: r(N) -> r(N..N+M-1)
 * Floating-point Register N is of implicit bitwidth M (M=default,8,16,32,64)
 * Integer Register N is a Predication Register (note: a key-value store)
+* Vector Length CSR (VSETVL, VGETVL)
 
 Notes:
 
