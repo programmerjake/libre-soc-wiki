@@ -458,14 +458,25 @@ offset to 4 bits and utilising the 5th bit to indicate whether "stride"
 is to be enabled.  In this way it is at least possible to introduce
 that functionality.
 
+(**TODO**: *assess whether the loss of one bit from offset is worth having
+"stride" capability.*)
+
 We also assume (including for the "stride" variant) that the "width"
 parameter, which is missing, is derived and implicit, just as it is
 with the standard Compressed LOAD/STORE instructions.  For C.LW, C.LD
 and C.LQ, the width is implicitly 4, 8 and 16 respectively, whilst for
 C.FLW and C.FLD the width is implicitly 4 and 8 respectively.
 
-**TODO**: assess whether the loss of one bit from offset is worth having
-"stride" capability.
+Interestingly we note that the Vectorised Simple-V variant of
+LOAD/STORE (Compressed and otherwise), due to it effectively using the
+standard register file(s), is the direct functional equivalent of
+standard load-multiple and store-multiple instructions found in other
+processors.
+
+In Section 12.3 riscv-isa manual V2.3-draft it is noted the comments on
+page 76, "For virtual memory systems some data accesses could be resident
+in physical memory and some not".  The interesting question then arises:
+how does RVV deal with the exact same scenario?
 
 # Note on implementation of parallelism
 
