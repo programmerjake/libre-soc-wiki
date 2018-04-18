@@ -11,15 +11,15 @@ Each bit set in the "part" CSR inhibits carry-in to that position and defines an
 ADD
 
 |    | reg | 31..0 |
-| -  | --- | ----- |
+| -- | --- | ----- |
 |    | rs1 |    x1 |
 | +  | rs2 |    y1 |
-| ->  | rd  | x1+y1 |
+| -> | rd  | x1+y1 |
 
 PADD ("packed ADD") (with bits 5, 11, 16, 21, and 27 set in the "part" CSR for pairs of RGB565 data)
 
 |    | reg | 31..27 | 26..21 | 20..16 | 15..11 | 10..5 | 4..0 |
-| -  | --- | ------ | ------ | ------ | ------ | ----- | ---- |
+| -- | --- | ------ | ------ | ------ | ------ | ----- | ---- |
 |    | rs1 |   x2r  |   x2g  |   x2b  |   x1r  |  x1g  |  x1b |
 | +  | rs2 |   y2r  |   y2g  |   y2b  |   y1r  |  y1g  |  y1b |
 | -> | rd  | x2r+y2r| x2g+y2g| x2b+y2b| x1r+y1r|x1g+y1g| x1b+y1b|
@@ -28,16 +28,16 @@ PADD ("packed ADD") (with bits 5, 11, 16, 21, and 27 set in the "part" CSR for p
 
 # Lanes
 
-The term "Lanes" is borrowed from Hwacha (and is an implementation
-detail not an actual part of the ISA)
+Each bit set in the "plane" CSR activates that lane.  Only bits corresponding to implemented lanes are writable.  Writing zero to "plane" disables all lanes, zeroes all registers except for lane 0, clears the status bits that indicate that other lanes need to be saved/restored, and stores "1" to "plane" to leave lane 0 active.
 
-Register table
+ADD (with "plane" CSR == 0x0000000F)
 
-| reg num | Lane 0 | Lane 1 | Lane 2 | Lane 3 |
-| ------- | ------ | ------ | ------ | ------ |
-| r0      | (31.0) | (31.0) | (31.0) | (31.0) |
-| r1      | (31.0) | (31.0) | (31.0) | (31.0) |
-| r2      | (31.0) | (31.0) | (31.0) | (31.0) |
+|    | reg | Lane 0 | Lane 1 | Lane 2 | Lane 3 |
+| -- | --- | ------ | ------ | ------ | ------ |
+|    | reg | 31..0  | 31..0  | 31..0  | 31..0  |
+|    | rs1 |   x1   |   x2   |   x3   |   x4   |
+| +  | rs2 |   y1   |   y2   |   y3   |   y4   |
+| -> | rd  | x1+y1  | x2+y2  | x3+y3  | x4+y4  |
 
 Example parallel add:
 
@@ -58,3 +58,7 @@ Example parallel add:
     }
     /* note that "<=" is the Verilog non-blocking assignment operator */
 
+The above pseudocode works equally well for packed-ADD, by simply replacing the "+" operator with a packed-ADD.  All lanes use the shared part CSR for packed element boundaries.
+
+
+The reuse of the baseline operations makes trap-and-emulate for RVP lanes infeasible, but this seems to be less of a problem than it appears to be at first glance:  the entire purpose of RVP lanes is increased performance and lanes *can* be emulated by using software emulation until the plane CSR is written with zero.
