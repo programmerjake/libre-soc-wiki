@@ -1316,6 +1316,110 @@ The nice thing about a vector architecture is that you *know* that
 to optimise L1/L2 cache-line usage (avoid thrashing), strangely enough
 by *introducing* deliberate latency into the execution phase.
 
+# Virtual Memory page-faults
+
+> I was going through the C.LOAD / C.STORE section 12.3 of V2.3-Draft
+> riscv-isa-manual in order to work out how to re-map RVV onto the standard
+> ISA, and came across an interesting comments at the bottom of pages 75
+> and 76:
+
+> "   A common mechanism used in other ISAs to further reduce save/restore
+> code size is load- multiple and store-multiple instructions. "
+
+> Fascinatingly, due to Simple-V proposing to use the *standard* register
+> file, both C.LOAD / C.STORE *and* LOAD / STORE would in effect be exactly
+> that: load-multiple and store-multiple instructions.  Which brings us
+> on to this comment:
+
+> "For virtual memory systems, some data accesses could be resident in
+> physical memory and
+>   some could not, which requires a new restart mechanism for partially
+> executed instructions."
+
+> Which then of course brings us to the interesting question: how does RVV
+> cope with the scenario when, particularly with LD.X (Indexed / indirect
+> loads), part-way through the loading a page fault occurs?
+
+> Has this been noted or discussed before?
+
+For applications-class platforms, the RVV exception model is
+element-precise (that is, if an exception occurs on element j of a
+vector instruction, elements 0..j-1 have completed execution and elements
+j+1..vl-1 have not executed).
+
+Certain classes of embedded platforms where exceptions are always fatal
+might choose to offer resumable/swappable interrupts but not precise
+exceptions.
+
+
+> Is RVV designed in any way to be re-entrant?
+
+Yes.
+
+
+> What would the implications be for instructions that were in a FIFO at
+> the time, in out-of-order and VLIW implementations, where partial decode
+> had taken place?
+
+The usual bag of tricks for maintaining precise exceptions applies to
+vector machines as well.  Register renaming makes the job easier, and
+it's relatively cheaper for vectors, since the control cost is amortized
+over longer registers.
+
+
+> Would it be reasonable at least to say *bypass* (and freeze) the
+> instruction FIFO (drop down to a single-issue execution model temporarily)
+> for the purposes of executing the instructions in the interrupt (whilst
+> setting up the VM page), then re-continue the instruction with all
+> state intact?
+
+This approach has been done successfully, but it's desirable to be
+able to swap out the vector unit state to support context switches on
+exceptions that result in long-latency I/O.
+
+
+> Or would it be better to switch to an entirely separate secondary
+> hyperthread context?
+
+> Does anyone have any ideas or know if there is any academic literature
+> on solutions to this problem?
+
+The Vector VAX offered imprecise but restartable and swappable exceptions:
+http://mprc.pku.edu.cn/~liuxianhua/chn/corpus/Notes/articles/isca/1990/VAX%20vector%20architecture.pdf
+
+Sec. 4.6 of Krste's dissertation assesses some of
+the tradeoffs and references a bunch of related work:
+http://people.eecs.berkeley.edu/~krste/thesis.pdf
+
+
+----
+
+Started reading section 4.6 of Krste's thesis, noted the "IEE85 F.P
+exceptions" and thought, "hmmm that could go into a CSR, must re-read
+the section on FP state CSRs in RVV 0.4-Draft again" then i suddenly
+thought, "ah ha!  what if the memory exceptions were, instead of having
+an immediate exception thrown, were simply stored in a type of predication
+bit-field with a flag "error this element failed"?
+
+Then, *after* the vector load (or store, or even operation) was
+performed, you could *then* raise an exception, at which point it
+would be possible (yes in software... I know....) to go "hmmm, these
+indexed operations didn't work, let's get them into memory by triggering
+page-loads", then *re-run the entire instruction* but this time with a
+"memory-predication CSR" that stops the already-performed operations
+(whether they be loads, stores or an arithmetic / FP operation) from
+being carried out a second time.
+
+This theoretically could end up being done multiple times in an SMP
+environment, and also for LD.X there would be the remote outside annoying
+possibility that the indexed memory address could end up being modified.
+
+The advantage would be that the order of execution need not be
+sequential, which potentially could have some big advantages.
+Am still thinking through the implications as any dependent operations
+(particularly ones already decoded and moved into the execution FIFO)
+would still be there (and stalled).  hmmm.
+
 # References
 
 * SIMD considered harmful <https://www.sigarch.org/simd-instructions-considered-harmful/>
