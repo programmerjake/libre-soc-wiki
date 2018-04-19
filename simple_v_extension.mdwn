@@ -39,7 +39,23 @@ are also:
   could, if separated, benefit
   *other areas of RISC-V not just DSP or Floating-point respectively*.
 
-Therefore it makes a huge amount of sense to have a means and method
+There are also key differences between Vectorisation and SIMD (full
+details outlined in the Appendix), the key points being:
+
+* SIMD has an extremely seductively compelling ease of implementation argument:
+  each operation is passed to the ALU, which is where the parallelism
+  lies.  There is *negligeable* (if any) impact on the rest of the core.
+* By contrast, Vectorisation has quite some complexity (for considerable
+  flexibility, reduction in opcode proliferation and much more).
+* Vectorisation typically includes much more comprehensive memory load
+  and store schemes (unit stride, constant-stride and indexed), which
+  in turn have ramifications: virtual memory misses (TLB cache misses)
+  and even multiple page-faults... all caused by a *single instruction*.
+* By contrast, SIMD can use "standard" memory load/stores (32-bit aligned
+  to pages), and these load/stores have absolutely nothing to do with the
+  SIMD / ALU engine, no matter how wide the operand.
+
+Overall it makes a huge amount of sense to have a means and method
 of introducing instruction parallelism in a flexible way that provides
 implementors with the option to choose exactly where they wish to offer
 performance improvements and where they wish to optimise for power
@@ -714,13 +730,38 @@ is given in the section "Bitwidth Virtual Register Reordering".
 * Throw an exception.  Whether that actually results in spawning threads
   as part of the trap-handling remains to be seen.
 
-# Comparison of "Traditional" SIMD, Alt-RVP, Simple-V and RVV Proposals <a name="parallelism_comparisons"></a>
+# Impementing V on top of Simple-V
+
+* Number of Offset CSRs extends from 2
+* Extra register file: vector-file
+* Setup of Vector length and bitwidth CSRs now can specify vector-file
+  as well as integer or float file.
+* Extend CSR tables (bitwidth) with extra bits
+* TODO
+
+# Implementing P (renamed to DSP) on top of Simple-V
+
+* Implementors indicate chosen bitwidth support in Vector-bitwidth CSR
+  (caveat: anything not specified drops through to software-emulation / traps)
+* TODO
+
+# Appendix
+
+## V-Extension to Simple-V Comparative Analysis
+
+This section has been moved to its own page [[v_comparative_analysis]]
+
+## P-Ext ISA
+
+This section has been moved to its own page [[p_comparative_analysis]]
+
+## Comparison of "Traditional" SIMD, Alt-RVP, Simple-V and RVV Proposals <a name="parallelism_comparisons"></a>
 
 This section compares the various parallelism proposals as they stand,
 including traditional SIMD, in terms of features, ease of implementation,
 complexity, flexibility, and die area.
 
-## [[alt_rvp]]
+### [[alt_rvp]]
 
 Primary benefit of Alt-RVP is the simplicity with which parallelism
 may be introduced (effective multiplication of regfiles and associated ALUs).
@@ -743,7 +784,7 @@ may be introduced (effective multiplication of regfiles and associated ALUs).
 * minus: Access to registers across multiple lanes is challenging. "Solution"
   is to drop data into memory and immediately back in again (like MMX).
 
-## Simple-V
+### Simple-V
 
 Primary benefit of Simple-V is the OO abstraction of parallel principles
 from actual (internal) parallel hardware.  It's an API in effect that's
@@ -782,7 +823,7 @@ instruction decode) with minimum disruption and effort.
   would be "no worse" than existing register renaming, OoO, VLIW and register
   file cacheing schemes.
 
-## RVV (as it stands, Draft 0.4 Section 17, RISC-V ISA V2.3-Draft)
+### RVV (as it stands, Draft 0.4 Section 17, RISC-V ISA V2.3-Draft)
 
 RVV is extremely well-designed and has some amazing features, including
 2D reorganisation of memory through LOAD/STORE "strides".
@@ -811,7 +852,7 @@ RVV is extremely well-designed and has some amazing features, including
   to be in high-performance specialist supercomputing (where it will
   be absolutely superb).
 
-## Traditional SIMD
+### Traditional SIMD
 
 The only really good things about SIMD are how easy it is to implement and
 get good performance.  Unfortunately that makes it quite seductive...
@@ -848,14 +889,14 @@ get good performance.  Unfortunately that makes it quite seductive...
 * minor-saving-grace: some implementations *may* have predication masks
   that allow control over individual elements within the SIMD block.
 
-# Comparison *to* Traditional SIMD: Alt-RVP, Simple-V and RVV Proposals <a name="simd_comparison"></a>
+## Comparison *to* Traditional SIMD: Alt-RVP, Simple-V and RVV Proposals <a name="simd_comparison"></a>
 
 This section compares the various parallelism proposals as they stand,
 *against* traditional SIMD as opposed to *alongside* SIMD.  In other words,
 the question is asked "How can each of the proposals effectively implement
 (or replace) SIMD, and how effective would they be"?
 
-## [[alt_rvp]]
+### [[alt_rvp]]
 
 * Alt-RVP would not actually replace SIMD but would augment it: just as with
   a SIMD architecture where the ALU becomes responsible for the parallelism,
@@ -876,7 +917,7 @@ the question is asked "How can each of the proposals effectively implement
   "swapping" instructions were then introduced, some of the disadvantages
   of SIMD could be mitigated.
 
-## RVV
+### RVV
 
 * RVV is designed to replace SIMD with a better paradigm: arbitrary-length
   parallelism.
@@ -892,7 +933,7 @@ the question is asked "How can each of the proposals effectively implement
   implementation overhead of RVV were acceptable (compared to
   normal SIMD/DSP-style single-issue in-order simplicity).
 
-## Simple-V
+### Simple-V
 
 * Simple-V borrows hugely from RVV as it is intended to be easy to
   topologically transplant every single instruction from RVV (as
@@ -936,31 +977,6 @@ the question is asked "How can each of the proposals effectively implement
   vector-style parallelism being dropped on top of 8-bit or 16-bit
   operations, all the while keeping a consistent ISA-level "API" irrespective
   of implementor design choices (or indeed actual implementations).
-
-# Impementing V on top of Simple-V
-
-* Number of Offset CSRs extends from 2
-* Extra register file: vector-file
-* Setup of Vector length and bitwidth CSRs now can specify vector-file
-  as well as integer or float file.
-* Extend CSR tables (bitwidth) with extra bits
-* TODO
-
-# Implementing P (renamed to DSP) on top of Simple-V
-
-* Implementors indicate chosen bitwidth support in Vector-bitwidth CSR
-  (caveat: anything not specified drops through to software-emulation / traps)
-* TODO
-
-# Appendix
-
-## V-Extension to Simple-V Comparative Analysis
-
-This section has been moved to its own page [[v_comparative_analysis]]
-
-## P-Ext ISA
-
-This section has been moved to its own page [[p_comparative_analysis]]
 
 ## Example of vector / vector, vector / scalar, scalar / scalar => vector add
 
