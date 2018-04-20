@@ -193,12 +193,25 @@ result in multiple register-memory transfer operations resulting
 from a single instruction.  They're complicated to implement in hardware,
 yet the benefits are a huge consistent regularisation of memory accesses
 that can be highly optimised with respect to both actual memory and any
-L1, L2 or other caches.
+L1, L2 or other caches.  In Hwacha EECS-2015-263 it is explicitly made
+clear the consequences of getting this architecturally wrong:
+L2 cache-thrashing at the very least.
 
 Complications arise when Virtual Memory is involved: TLB cache misses
 need to be dealt with, as do page faults.  Some of the tradeoffs are
 discussed in <http://people.eecs.berkeley.edu/~krste/thesis.pdf>, Section
-4.6.
+4.6, and an article by Jeff Bush when faced with some of these issues
+is particularly enlightening
+<https://jbush001.github.io/2015/11/03/lost-in-translation.html>
+
+Interestingly, none of this complexity is faced in SIMD architectures...
+but then they do not get the opportunity to optimise for highly-streamlined
+memory accesses either.
+
+With the "bang-per-buck" ratio being so high and the direct improvement
+in L1 Instruction Cache usage, as well as the opportunity to optimise
+L1 and L2 cache usage, the case for including Vector LOAD/STORE is
+compelling.
 
 ## Mask and Tagging (Predication)
 
@@ -275,6 +288,7 @@ follows:
 * Implicit (indirect) vs fixed (integral) instruction bit-width: <b>indirect</b>
 * Implicit vs explicit type-conversion: <b>explicit</b>
 * Implicit vs explicit inner loops: <b>implicit but best done separately</b>
+* Single-instruction Vector LOAD/STORE: <b>Complex but highly beneficial</b>
 * Tag or no-tag: <b>Complex but highly beneficial</b>
 
 In particular:
@@ -295,12 +309,12 @@ requirements would therefore seem to be a logical thing to do.
 
 # Instruction Format
 
-The instruction format for Simple-V does not actually have *any* compare
-operations, *any* arithmetic, floating point or memory instructions.
+The instruction format for Simple-V does not actually have *any* explicit
+compare operations, *any* arithmetic, floating point or memory instructions.
 Instead it *overloads* pre-existing branch operations into predicated
 variants, and implicitly overloads arithmetic operations and LOAD/STORE
 depending on implicit CSR configurations for both vector length and
-bitwidth.  This includes Compressed instructions.
+bitwidth.  *This includes Compressed instructions* as well as future ones.
 
 * For analysis of RVV see [[v_comparative_analysis]] which begins to
   outline topologically-equivalent mappings of instructions
@@ -314,33 +328,64 @@ as always being 64-bit opcodes (32 for the prefix, 32 for the instruction)
 with some opportunities for to use Compressed bringing it down to 48.
 Also to consider is whether one or both of the last two remaining Compressed
 instruction codes in Quadrant 1 could be used as a parallelism prefix,
-bringing parallelised opcodes down to 32-bit and having the benefit of
-being explicit.*
+bringing parallelised opcodes down to 32-bit (when combined with C)
+and having the benefit of being explicit.*
 
 ## Branch Instruction:
 
+This is the overloaded table for Integer-base Branch operations.  Opcode
+(bits 6..0) is set in all cases to 1100011.
+
 [[!table  data="""
-31      | 30 .. 25 |24 ... 20 | 19 15 | 14  12 | 11 ..  8 | 7       | 6 ... 0 |
-imm[12] | imm[10:5]| rs2      | rs1   | funct3 | imm[4:1] | imm[11] | opcode  |
-1       | 6        | 5        | 5     | 3      | 4             | 1  | 7       |
-I/F     | reserved | src2     | src1  | BPR    | predicate rs3     || BRANCH  |
-0       | reserved | src2     | src1  | 000    | predicate rs3     || BEQ     |
-0       | reserved | src2     | src1  | 001    | predicate rs3     || BNE     |
-0       | reserved | src2     | src1  | 010    | predicate rs3     || rsvd    |
-0       | reserved | src2     | src1  | 011    | predicate rs3     || rsvd    |
-0       | reserved | src2     | src1  | 100    | predicate rs3     || BLE     |
-0       | reserved | src2     | src1  | 101    | predicate rs3     || BGE     |
-0       | reserved | src2     | src1  | 110    | predicate rs3     || BLTU    |
-0       | reserved | src2     | src1  | 111    | predicate rs3     || BGEU    |
-1       | reserved | src2     | src1  | 000    | predicate rs3     || FEQ     |
-1       | reserved | src2     | src1  | 001    | predicate rs3     || FNE     |
-1       | reserved | src2     | src1  | 010    | predicate rs3     || rsvd    |
-1       | reserved | src2     | src1  | 011    | predicate rs3     || rsvd    |
-1       | reserved | src2     | src1  | 100    | predicate rs3     || FLT     |
-1       | reserved | src2     | src1  | 101    | predicate rs3     || FLE     |
-1       | reserved | src2     | src1  | 110    | predicate rs3     || rsvd    |
-1       | reserved | src2     | src1  | 111    | predicate rs3     || rsvd    |
+31    .. 25 |24 ... 20 | 19 15 | 14  12 | 11 ..  8 | 7       | 6 ... 0 |
+imm[12|10:5]| rs2      | rs1   | funct3 | imm[4:1] | imm[11] | opcode  |
+7           | 5        | 5     | 3      | 4             | 1  | 7       |
+reserved    | src2     | src1  | BPR    | predicate rs3     || BRANCH  |
+reserved    | src2     | src1  | 000    | predicate rs3     || BEQ     |
+reserved    | src2     | src1  | 001    | predicate rs3     || BNE     |
+reserved    | src2     | src1  | 010    | predicate rs3     || rsvd    |
+reserved    | src2     | src1  | 011    | predicate rs3     || rsvd    |
+reserved    | src2     | src1  | 100    | predicate rs3     || BLE     |
+reserved    | src2     | src1  | 101    | predicate rs3     || BGE     |
+reserved    | src2     | src1  | 110    | predicate rs3     || BLTU    |
+reserved    | src2     | src1  | 111    | predicate rs3     || BGEU    |
 """]]
+
+This is the overloaded table for Floating-point Predication operations.
+Interestingly no change is needed to the instruction format because
+FP Compare already stores a 1 or a zero in its "rd" integer register
+target, i.e. it's not actually a Branch at all: it's a compare.
+The target needs to simply change to be a predication bitfield.
+
+As with
+Standard RVF/D/Q, Opcode (bits 6..0) is set in all cases to 1010011.
+Likewise Single-precision, fmt bits 26..25) is still set to 00.
+Double-precision is still set to 01, whilst Quad-precision
+appears not to have a definition in V2.3-Draft (but should be unaffected).
+
+It is however noted that an entry "FNE" (the opposite of FEQ) is missing,
+and whilst in ordinary branch code this is fine because the standard
+RVF compare can always be followed up with an integer BEQ or a BNE (or
+a compressed comparison to zero or non-zero), in predication terms that
+becomes more of an impact as an explicit (scalar) instruction is needed
+to invert the predicate.  An additional encoding funct3=011 is therefore
+proposed to cater for this.
+
+[[!table  data="""
+31 .. 27| 26 .. 25 |24 ... 20 | 19 15 | 14  12 | 11 .. 7  | 6 ... 0 |
+funct5  | fmt      | rs2      | rs1   | funct3 | rd       | opcode  |
+5       | 2        | 5        | 5     | 3      | 4        | 7       |
+10100   | 00/01/11 | src2     | src1  | 010    | pred rs3 | FEQ     |
+?       | 00/01/11 | src2     | src1  | *011*  | pred rs3 | FNE     |
+10100   | 00/01/11 | src2     | src1  | 001    | pred rs3 | FLT     |
+10100   | 00/01/11 | src2     | src1  | 000    | pred rs3 | FLE     |
+"""]]
+
+Note (**TBD**): floating-point exceptions will need to be extended
+to cater for multiple exceptions (and statuses of the same).  The
+usual approach is to have an array of status codes and bit-fields,
+and one exception, rather than throw separate exceptions for each
+Vector element.
 
 In Hwacha EECS-2015-262 Section 6.7.2 the following pseudocode is given
 for predicated compare operations of function "cmp":
