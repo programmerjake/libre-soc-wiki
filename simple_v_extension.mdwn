@@ -79,14 +79,16 @@ P and V to make use of Compressed Instructions as a result.
 
 # Analysis and discussion of Vector vs SIMD
 
-There are five combined areas between the two proposals that help with
-parallelism without over-burdening the ISA with a huge proliferation of
+There are six combined areas between the two proposals that help with
+parallelism (increased performance, reduced power / area) without
+over-burdening the ISA with a huge proliferation of
 instructions:
 
 * Fixed vs variable parallelism (fixed or variable "M" in SIMD)
 * Implicit vs fixed instruction bit-width (integral to instruction or not)
 * Implicit vs explicit type-conversion (compounded on bit-width)
 * Implicit vs explicit inner loops.
+* Single-instruction LOAD/STORE.
 * Masks / tagging (selecting/preventing certain indexed elements from execution)
 
 The pros and cons of each are discussed and analysed below.
@@ -183,6 +185,20 @@ However when looking at much more comprehensive schemes
 applied to embedded processors" (ZOLC), optimising only the single
 inner loop seems inadequate, tending to suggest that ZOLC may be
 better off being proposed as an entirely separate Extension.
+
+## Single-instruction LOAD/STORE
+
+In traditional Vector Architectures there are instructions which
+result in multiple register-memory transfer operations resulting
+from a single instruction.  They're complicated to implement in hardware,
+yet the benefits are a huge consistent regularisation of memory accesses
+that can be highly optimised with respect to both actual memory and any
+L1, L2 or other caches.
+
+Complications arise when Virtual Memory is involved: TLB cache misses
+need to be dealt with, as do page faults.  Some of the tradeoffs are
+discussed in <http://people.eecs.berkeley.edu/~krste/thesis.pdf>, Section
+4.6.
 
 ## Mask and Tagging (Predication)
 
