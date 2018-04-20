@@ -1515,6 +1515,21 @@ Am still thinking through the implications as any dependent operations
 (particularly ones already decoded and moved into the execution FIFO)
 would still be there (and stalled).  hmmm.
 
+## Implementation Paradigms
+
+TODO: assess various implementation paradigms:
+
+* Single-issue In-order, reduced pipeline depth (traditional SIMD / DSP)
+* In-order 5+ stage pipelines with instruction FIFOs and mild register-renaming
+* Out-of-order with instruction FIFOs and aggressive register-renaming
+* VLIW
+
+Also to be taken into consideration:
+
+* "Virtual" vectorisation: single-issue loop, no internal ALU parallelism
+* Comphrensive vectorisation: FIFOs and internal parallelism
+* Hybrid Parallelism
+
 # References
 
 * SIMD considered harmful <https://www.sigarch.org/simd-instructions-considered-harmful/>
