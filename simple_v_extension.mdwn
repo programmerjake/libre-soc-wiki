@@ -44,7 +44,9 @@ details outlined in the Appendix), the key points being:
 
 * SIMD has an extremely seductively compelling ease of implementation argument:
   each operation is passed to the ALU, which is where the parallelism
-  lies.  There is *negligeable* (if any) impact on the rest of the core.
+  lies.  There is *negligeable* (if any) impact on the rest of the core
+  (with life instead being made hell for compiler writers and applications
+  writers due to extreme ISA proliferation).
 * By contrast, Vectorisation has quite some complexity (for considerable
   flexibility, reduction in opcode proliferation and much more).
 * Vectorisation typically includes much more comprehensive memory load
@@ -74,13 +76,6 @@ Furthermore, an additional goal of this proposal is to reduce the number
 of opcodes utilised by each of P and V as they currently stand, leveraging
 existing RISC-V opcodes where possible, and also potentially allowing
 P and V to make use of Compressed Instructions as a result.
-
-**TODO**: propose overflow registers be actually one of the integer regs
-(flowing to multiple regs).
-
-**TODO**: propose "mask" (predication) registers likewise.  combination with
-standard RV instructions and overflow registers extremely powerful, see
-Aspex ASP.
 
 # Analysis and discussion of Vector vs SIMD
 
@@ -1332,7 +1327,28 @@ The nice thing about a vector architecture is that you *know* that
 to optimise L1/L2 cache-line usage (avoid thrashing), strangely enough
 by *introducing* deliberate latency into the execution phase.
 
-# Virtual Memory page-faults
+## Overflow registers in combination with predication
+
+**TODO**: propose overflow registers be actually one of the integer regs
+(flowing to multiple regs).
+
+**TODO**: propose "mask" (predication) registers likewise.  combination with
+standard RV instructions and overflow registers extremely powerful, see
+Aspex ASP.
+
+When integer overflow is stored in an easily-accessible bit (or another
+register), parallelisation turns this into a group of bits which can
+potentially be interacted with in predication, in interesting and powerful
+ways.  For example, by taking the integer-overflow result as a predication
+field and shifting it by one, a predicated vectorised "add one" can emulate
+"carry" on arbitrary (unlimited) length addition.
+
+However despite RVV having made room for floating-point exceptions, neither
+RVV nor base RV have taken integer-overflow (carry) into account, which
+makes proposing it quite challenging given that the relevant (Base) RV
+sections are frozen.  Consequently it makes sense to forgo this feature.
+
+## Virtual Memory page-faults
 
 > I was going through the C.LOAD / C.STORE section 12.3 of V2.3-Draft
 > riscv-isa-manual in order to work out how to re-map RVV onto the standard
