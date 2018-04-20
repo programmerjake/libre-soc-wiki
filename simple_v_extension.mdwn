@@ -550,7 +550,9 @@ page 76, "For virtual memory systems some data accesses could be resident
 in physical memory and some not".  The interesting question then arises:
 how does RVV deal with the exact same scenario?
 Expired U.S. Patent 5895501 (Filing Date Sep 3 1996) describes a method
-of detecting early page / segmentation faults.
+of detecting early page / segmentation faults and adjusting the TLB
+in advance, accordingly: other strategies are explored in the Appendix
+Section "Virtual Memory Page Faults".
 
 # Note on implementation of parallelism
 
