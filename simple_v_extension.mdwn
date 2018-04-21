@@ -5,7 +5,7 @@ a consistent "API" to parallelisation of existing *and future* operations.
 *Actual* internal hardware-level parallelism is *not* required, such
 that Simple-V may be viewed as providing a "compact" or "consolidated"
 means of issuing multiple near-identical arithmetic instructions to an
-instruction queue (FILO), pending execution.
+instruction queue (FIFO), pending execution.
 
 *Actual* parallelism, if added independently of Simple-V in the form
 of Out-of-order restructuring (including parallel ALU lanes) or VLIW
@@ -1036,6 +1036,15 @@ the question is asked "How can each of the proposals effectively implement
   operations, all the while keeping a consistent ISA-level "API" irrespective
   of implementor design choices (or indeed actual implementations).
 
+### Example Instruction translation: <a name="example_translation"></a>
+
+Instructions "ADD r2 r4 r4" would result in three instructions being
+generated and placed into the FIFO:
+
+* ADD r2 r4 r4
+* ADD r2 r5 r5
+* ADD r2 r6 r6
+
 ## Example of vector / vector, vector / scalar, scalar / scalar => vector add
 
     register CSRvectorlen[XLEN][4]; # not quite decided yet about this one...
@@ -1254,15 +1263,6 @@ To index an element in a register rnum where the vector element index is i:
         return rnum + regidx,         # actual real register
                byteidx * 8,           # low
                byteidx * 8 + (vew-1), # high
-
-### Example Instruction translation: <a name="example_translation"></a>
-
-Instructions "ADD r2 r4 r4" would result in three instructions being
-generated and placed into the FILO:
-
-* ADD r2 r4 r4
-* ADD r2 r5 r5
-* ADD r2 r6 r6
 
 ### Insights
 
@@ -1515,6 +1515,38 @@ Am still thinking through the implications as any dependent operations
 (particularly ones already decoded and moved into the execution FIFO)
 would still be there (and stalled).  hmmm.
 
+----
+
+    > > # assume internal parallelism of 8 and MAXVECTORLEN of 8
+    > > VSETL r0, 8
+    > > FADD x1, x2, x3
+    >
+    > > x3[0]: ok
+    > > x3[1]: exception
+    > > x3[2]: ok
+    > > ...
+    > > ...
+    > > x3[7]: ok
+    >
+    > > what happens to result elements 2-7?  those may be *big* results
+    > > (RV128)
+    > > or in the RVV-Extended may be arbitrary bit-widths far greater.
+    >
+    >  (you replied:)
+    >
+    > Thrown away.
+
+discussion then led to the question of OoO architectures 
+
+> The costs of the imprecise-exception model are greater than the benefit. 
+> Software doesn't want to cope with it.  It's hard to debug.  You can't
+> migrate state between different microarchitectures--unless you force all
+> implementations to support the same imprecise-exception model, which would
+> greatly limit implementation flexibility.  (Less important, but still
+> relevant, is that the imprecise model increases the size of the context
+> structure, as the microarchitectural guts have to be spilled to memory.)
+
+
 ## Implementation Paradigms
 
 TODO: assess various implementation paradigms:
@@ -1529,6 +1561,10 @@ Also to be taken into consideration:
 * "Virtual" vectorisation: single-issue loop, no internal ALU parallelism
 * Comphrensive vectorisation: FIFOs and internal parallelism
 * Hybrid Parallelism
+
+# TODO Research
+
+> For great floating point DSPs check TI’s C3x, C4X, and C6xx DSPs
 
 # References
 
