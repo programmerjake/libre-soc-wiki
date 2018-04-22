@@ -814,12 +814,12 @@ levels: Base and reserved future functionality.
   register file size is 5 bits (32 registers), whilst the "Extended"
   variant of RVV specifies 8 bits (256 registers) and has yet to
   be published.
-* One big difference: there are only two possible predication
-  registers in RVV "Base".  Through the "indirect" method, Simple-V
-  provides a key-value CSR table that allows (arbitrarily) up to 16 (TBD)
-  of either the floating-point or integer registers to be marked as
-  "predicated" (key), and if so, which integer register to use as the
-  predication mask (value).
+* One big difference: Sections 17.12 and 17.17, there are only two possible
+  predication registers in RVV "Base".  Through the "indirect" method,
+  Simple-V provides a key-value CSR table that allows (arbitrarily)
+  up to 16 (TBD) of either the floating-point or integer registers to
+  be marked as "predicated" (key), and if so, which integer register to
+  use as the predication mask (value).
   
 **TODO**
 
