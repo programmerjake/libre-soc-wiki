@@ -307,14 +307,25 @@ In particular:
 Constructing a SIMD/Simple-Vector proposal based around four of these five
 requirements would therefore seem to be a logical thing to do.
 
-# Instruction Format
+# Instructions
+
+By being a topological remap of RVV concepts, the following RVV instructions
+remain exactly the same: VMPOP, VMFIRST, VEXTRACT, VINSERT, VMERGE, VSELECT,
+VSLIDE, VCLASS and VPOPC.  Two instructions, VCLIP and VCLIPI, do not
+have RV Standard equivalents, so are left out of Simple-V.
+All other instructions from RVV are topologically re-mapped and retain
+their complete functionality, intact.
+
+## Instruction Format
 
 The instruction format for Simple-V does not actually have *any* explicit
-compare operations, *any* arithmetic, floating point or memory instructions.
+compare operations, *any* arithmetic, floating point or *any*
+memory instructions.
 Instead it *overloads* pre-existing branch operations into predicated
 variants, and implicitly overloads arithmetic operations and LOAD/STORE
 depending on implicit CSR configurations for both vector length and
-bitwidth.  *This includes Compressed instructions* as well as future ones.
+bitwidth.  *This includes Compressed instructions* as well as any
+future ones, *including* future Extensions.
 
 * For analysis of RVV see [[v_comparative_analysis]] which begins to
   outline topologically-equivalent mappings of instructions
@@ -481,7 +492,7 @@ Notes:
 * **TODO**: include CSR SIMD bitwidth in the pseudo-code below.
 * **TODO**: clarify where width maps to elsize
 
-Pseudo-code (excludes CSR SIMD bitwidth):
+Pseudo-code (excludes CSR SIMD bitwidth for simplicity):
 
     if (unit-strided) stride = elsize;
     else stride = areg[as2]; // constant-strided
