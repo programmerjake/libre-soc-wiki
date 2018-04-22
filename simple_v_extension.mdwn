@@ -790,12 +790,38 @@ is given in the section "Bitwidth Virtual Register Reordering".
 
 # Impementing V on top of Simple-V
 
-* Number of Offset CSRs extends from 2
-* Extra register file: vector-file
-* Setup of Vector length and bitwidth CSRs now can specify vector-file
-  as well as integer or float file.
-* Extend CSR tables (bitwidth) with extra bits
-* TODO
+With Simple-V converting the original RVV draft concept-for-concept
+from explicit opcodes to implicit overloading of existing RV Standard
+Extensions, certain features were (deliberately) excluded that need
+to be added back in for RVV to reach its full potential.  This is
+made slightly complicated by the fact that RVV itself has two
+levels: Base and reserved future functionality.
+
+* Representation Encoding is entirely left out of Simple-V in favour of
+  implicitly taking the exact (explicit) meaning from RV Standard Extensions.
+* VCLIP and VCLIPI do not have corresponding RV Standard Extension
+  opcodes (and are the only such operations).
+* Extended Element bitwidths (1 through to 24576 bits) were left out
+  of Simple-V as, again, there is no corresponding RV Standard Extension
+  that covers anything even below 32-bit operands.
+* Polymorphism was entirely left out of Simple-V due to the inherent
+  complexity of automatic type-conversion.
+* Vector Register files were specifically left out of Simple-V in favour
+  of fitting on top of the integer and floating-point files.  An
+  "RVV re-retro-fit" needs to be able to mark (implicitly marked)
+  registers as being actually in a separate *vector* register file.
+* Fortunately in RVV (Draft 0.4, V2.3-Draft), the "base" vector
+  register file size is 5 bits (32 registers), whilst the "Extended"
+  variant of RVV specifies 8 bits (256 registers) and has yet to
+  be published.
+* One big difference: there are only two possible predication
+  registers in RVV "Base".  Through the "indirect" method, Simple-V
+  provides a key-value CSR table that allows (arbitrarily) up to 16 (TBD)
+  of either the floating-point or integer registers to be marked as
+  "predicated" (key), and if so, which integer register to use as the
+  predication mask (value).
+  
+**TODO**
 
 # Implementing P (renamed to DSP) on top of Simple-V
 
