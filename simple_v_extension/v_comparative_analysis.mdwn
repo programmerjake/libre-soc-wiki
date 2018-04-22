@@ -443,80 +443,78 @@ modes.
 # TODO: instructions V-Ext duplication analysis <a name="duplication_analysis">
 
 This is partly speculative due to lack of access to an up-to-date
-V-Ext Spec (V2.3-draft RVV 0.4-Draft at the time of writing).  However
-basin an analysis instead on Hwacha, a cursory examination shows over
-an **85%** duplication of V-Ext operand-related instructions when
-compared to Simple-V on a standard RG64G base.   Even Vector Fetch
-is analogous to "zero-overhead loop".
+V-Ext Spec (V2.3-draft RVV 0.4-Draft at the time of writing).  
+A cursory examination shows an **85%** duplication of V-Ext
+operand-related instructions when compared to a standard RG64G base,
+and a **95%** duplication of arithmetic and floating-point operations.
 
 Exceptions are:
 
-* Vector Indexed Memory Instructions (non-contiguous)
-* Vector Atomic Memory Instructions.
-* Some of the Vector Misc ops: VEIDX, VFIRST, VCLASS, VPOPC
-  and potentially more.
-* Consensual Jump
+* The Vector Misc ops: VEIDX, VFIRST, VCLASS, VPOPC
+  and potentially more (9 control-related instructions)
+* VCLIP and VCLIPI (the only 2 opcodes not duplicated out of 46
+  total arithmetic / floating-point operations)
 
 Table of RV32V Instructions
 
 | RV32V      | RV Equivalent (FP)   | RV Equivalent (Int) | Notes |
-| -----      | --- | |   |
-| VADD       | FADD    | ADD |   |
-| VSUB       | FSUB    | SUB |   |
-| VSL        |     | SLL |   |
-| VSR        |     | SRL |   |
-| VAND       |     | AND |   |
-| VOR        |     | OR |   |
-| VXOR       |     | XOR |   |
-| VSEQ       | FEQ | BEQ | (1) |
-| VSNE       | !FEQ | BNE | (1) |
-| VSLT       | FLT    | BLT | (1) |
-| VSGE       | !FLE | BGE | (1) |
-| VCLIP      |     | |   |
-| VCVT       | FCVT    | |   |
-| VMPOP      |     | |   |
-| VMFIRST    |     | |   |
-| VEXTRACT   |     | |   |
-| VINSERT    |     | |   |
-| VMERGE     |     | |   |
-| VSELECT    |     | |   |
-| VSLIDE     |     | |   |
-| VDIV       | FDIV    | DIV |   |
-| VREM       |     | REM |   |
-| VMUL       | FMUL    | MUL |   |
-| VMULH      |     | |   |
-| VMIN       | FMIN    | |   |
-| VMAX       | FMUX    | |   |
-| VSGNJ      | FSGNJ    | |   |
-| VSGNJN     | FSGNJN    | |   |
-| VSGNJX     | FSNGJX    | |   |
-| VSQRT      | FSQRT    | |   |
-| VCLASS     |     | |   |
-| VPOPC      |     | |   |
-| VADDI      |     | ADDI |   |
-| VSLI       |     | SLI |   |
-| VSRI       |     | SRI |   |
-| VANDI      |     | ANDI |   |
-| VORI       |     | ORI |   |
-| VXORI      |     | XORI |   |
-| VCLIPI     |     | |   |
-| VMADD      | FMADD    | |   |
-| VMSUB      | FMSUB    | |   |
-| VNMADD     | FNMSUB    | |   |
-| VNMSUB     | FNMADD    | |   |
-| VLD        | FLD    | LD |   |
-| VLDS       |     | LD | (2)  |
-| VLDX       |     | LD | (3)  |
-| VST        | FST    | ST |   |
-| VSTS       |     | ST | (2)  |
-| VSTX       |     | ST | (3)  |
-| VAMOSWAP   |     | AMOSWAP |   |
-| VAMOADD    |     | AMOADD |   |
-| VAMOAND    |     | AMOAND |   |
-| VAMOOR     |     | AMOOR |   |
-| VAMOXOR    |     | AMOXOR |   |
-| VAMOMIN    |     | AMOMIN |   |
-| VAMOMAX    |     | AMOMAX |   |
+| -----      | ---      |         |   |
+| VADD       | FADD     | ADD     |   |
+| VSUB       | FSUB     | SUB     |   |
+| VSL        |          | SLL     |   |
+| VSR        |          | SRL     |   |
+| VAND       |          | AND     |   |
+| VOR        |          | OR      |   |
+| VXOR       |          | XOR     |   |
+| VSEQ       | FEQ      | BEQ     | (1) |
+| VSNE       | !FEQ     | BNE     | (1) |
+| VSLT       | FLT      | BLT     | (1) |
+| VSGE       | !FLE     | BGE     | (1) |
+| VCLIP      |          |         |   |
+| VCVT       | FCVT     |         |   |
+| VMPOP      |          |         |   |
+| VMFIRST    |          |         |   |
+| VEXTRACT   |          |         |   |
+| VINSERT    |          |         |   |
+| VMERGE     |          |         |   |
+| VSELECT    |          |         |   |
+| VSLIDE     |          |         |   |
+| VDIV       | FDIV     | DIV     |   |
+| VREM       |          | REM     |   |
+| VMUL       | FMUL     | MUL     |   |
+| VMULH      |          | MULH    |   |
+| VMIN       | FMIN     |         |   |
+| VMAX       | FMUX     |         |   |
+| VSGNJ      | FSGNJ    |         |   |
+| VSGNJN     | FSGNJN   |         |   |
+| VSGNJX     | FSNGJX   |         |   |
+| VSQRT      | FSQRT    |         |   |
+| VCLASS     |          |         |   |
+| VPOPC      |          |         |   |
+| VADDI      |          | ADDI    |   |
+| VSLI       |          | SLI     |   |
+| VSRI       |          | SRI     |   |
+| VANDI      |          | ANDI    |   |
+| VORI       |          | ORI     |   |
+| VXORI      |          | XORI    |   |
+| VCLIPI     |          |         |   |
+| VMADD      | FMADD    |         |   |
+| VMSUB      | FMSUB    |         |   |
+| VNMADD     | FNMSUB   |         |   |
+| VNMSUB     | FNMADD   |         |   |
+| VLD        | FLD      | LD      |   |
+| VLDS       | FLD      | LD      | (2)  |
+| VLDX       | FLD      | LD      | (3)  |
+| VST        | FST      | ST      |   |
+| VSTS       | FST      | ST      | (2)  |
+| VSTX       | FST      | ST      | (3)  |
+| VAMOSWAP   |          | AMOSWAP |   |
+| VAMOADD    |          | AMOADD  |   |
+| VAMOAND    |          | AMOAND  |   |
+| VAMOOR     |          | AMOOR   |   |
+| VAMOXOR    |          | AMOXOR  |   |
+| VAMOMIN    |          | AMOMIN  |   |
+| VAMOMAX    |          | AMOMAX  |   |
 
 Notes:
 
