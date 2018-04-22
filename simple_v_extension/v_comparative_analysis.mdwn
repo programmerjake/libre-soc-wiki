@@ -468,10 +468,10 @@ Table of RV32V Instructions
 | VAND       |     | AND |   |
 | VOR        |     | OR |   |
 | VXOR       |     | XOR |   |
-| VSEQ       | FEQ | BEQ | {1} |
-| VSNE       | !FEQ | BNE | {1} |
-| VSLT       | FLT    | BLT | {1} |
-| VSGE       | !FLE | BGE | {1} |
+| VSEQ       | FEQ | BEQ | (1) |
+| VSNE       | !FEQ | BNE | (1) |
+| VSLT       | FLT    | BLT | (1) |
+| VSGE       | !FLE | BGE | (1) |
 | VCLIP      |     | |   |
 | VCVT       | FCVT    | |   |
 | VMPOP      |     | |   |
@@ -505,11 +505,11 @@ Table of RV32V Instructions
 | VNMADD     | FNMSUB    | |   |
 | VNMSUB     | FNMADD    | |   |
 | VLD        | FLD    | LD |   |
-| VLDS       |     | LW |   |
-| VLDX       |     | LWU |   |
+| VLDS       |     | LD | (2)  |
+| VLDX       |     | LD | (3)  |
 | VST        | FST    | ST |   |
-| VSTS       |     | |   |
-| VSTX       |     | |   |
+| VSTS       |     | ST | (2)  |
+| VSTX       |     | ST | (3)  |
 | VAMOSWAP   |     | AMOSWAP |   |
 | VAMOADD    |     | AMOADD |   |
 | VAMOAND    |     | AMOAND |   |
@@ -520,8 +520,12 @@ Table of RV32V Instructions
 
 Notes:
 
-* {1} retro-fit predication variants into branch instructions (base and C),
+* (1) retro-fit predication variants into branch instructions (base and C),
   decoding triggered by CSR bit marking register as "Vector type".
+* (2) retro-fit LOAD/STORE constant-stride by reinterpreting one bit of
+  immediate-offset when register arguments are detected as being vectorised
+* (3) retro-fit LOAD/STORE indexed-stride through detection of address
+  register argument being vectorised
 
 # TODO: sort
 
