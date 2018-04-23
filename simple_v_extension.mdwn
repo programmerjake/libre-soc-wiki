@@ -1586,8 +1586,15 @@ discussion then led to the question of OoO architectures
 
 ## Implementation Paradigms
 
-TODO: assess various implementation paradigms:
+TODO: assess various implementation paradigms.  These are listed roughly
+in order of simplicity (minimum compliance, for ultra-light-weight
+embedded systems or to reduce design complexity and the burden of
+design implementation and compliance, in non-critical areas), right the
+way to high-performance systems.
 
+* Full (or partial) software-emulated (via traps): full support for CSRs
+  required, however when a register is used that is detected (in hardware)
+  to be vectorised, an exception is thrown.
 * Single-issue In-order, reduced pipeline depth (traditional SIMD / DSP)
 * In-order 5+ stage pipelines with instruction FIFOs and mild register-renaming
 * Out-of-order with instruction FIFOs and aggressive register-renaming
