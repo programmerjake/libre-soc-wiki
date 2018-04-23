@@ -450,14 +450,14 @@ and a **95%** duplication of arithmetic and floating-point operations.
 
 Exceptions are:
 
-* The Vector Misc ops: VEIDX, VFIRST, VCLASS, VPOPC
+* The Vector Misc ops: VEIDX, VFIRST, VPOPC
   and potentially more (9 control-related instructions)
-* VCLIP and VCLIPI (the only 2 opcodes not duplicated out of 46
+* VCLIP and VCLIPI (the only 2 opcodes not duplicated out of 47
   total arithmetic / floating-point operations)
 
 Table of RV32V Instructions
 
-| RV32V      | RV Equivalent (FP)   | RV Equivalent (Int) | Notes |
+| RV32V      | RV Std (FP) | RV Std (Int) | Notes |
 | -----      | ---      |         |   |
 | VADD       | FADD     | ADD     |   |
 | VSUB       | FSUB     | SUB     |   |
@@ -489,7 +489,7 @@ Table of RV32V Instructions
 | VSGNJN     | FSGNJN   |         |   |
 | VSGNJX     | FSNGJX   |         |   |
 | VSQRT      | FSQRT    |         |   |
-| VCLASS     |          |         |   |
+| VCLASS     | FCLASS   |         |   |
 | VPOPC      |          |         |   |
 | VADDI      |          | ADDI    |   |
 | VSLI       |          | SLI     |   |
