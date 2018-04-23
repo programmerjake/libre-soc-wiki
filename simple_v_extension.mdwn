@@ -1448,7 +1448,10 @@ RVV nor base RV have taken integer-overflow (carry) into account, which
 makes proposing it quite challenging given that the relevant (Base) RV
 sections are frozen.  Consequently it makes sense to forgo this feature.
 
-## Virtual Memory page-faults
+## Virtual Memory page-faults on LOAD/STORE
+
+
+### Notes from conversations
 
 > I was going through the C.LOAD / C.STORE section 12.3 of V2.3-Draft
 > riscv-isa-manual in order to work out how to re-map RVV onto the standard
@@ -1609,6 +1612,18 @@ Also to be taken into consideration:
 # TODO Research
 
 > For great floating point DSPs check TI’s C3x, C4X, and C6xx DSPs
+
+Idea: basic simple butterfly swap on a few element indices, primarily targetted
+at SIMD / DSP.  High-byte low-byte swapping, high-word low-word swapping,
+perhaps allow reindexing of permutations up to 4 elements?  8?  Reason:
+such operations are less costly than a full indexed-shuffle, which requires
+a separate instruction cycle.
+
+Predication "all zeros" needs to be "leave alone".  Detection of
+ADD r1, rs1, rs0 cases result in nop on predication index 0, whereas
+ADD r0, rs1, rs2 is actually a desirable copy from r2 into r0.
+Destruction of destination indices requires a copy of the entire vector
+in advance to avoid.
 
 # References
 
