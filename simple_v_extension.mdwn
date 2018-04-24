@@ -235,8 +235,8 @@ So these are the ways in which conditional execution may be implemented:
 * explicit compare and branch: BNE x, y -> offs would jump offs
   instructions if x was not equal to y
 * explicit store of tag condition: CMP x, y -> tagbit
-* implicit (condition-code) ADD results in a carry, carry bit implicitly
-  (or sometimes explicitly) goes into a "tag" (mask) register
+* implicit (condition-code) such as ADD results in a carry, carry bit
+  implicitly (or sometimes explicitly) goes into a "tag" (mask) register
 
 The first of these is a "normal" branch method, which is flat-out impossible
 to parallelise without look-ahead and effectively rewriting instructions.
