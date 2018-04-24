@@ -606,6 +606,10 @@ reserved    | src2     | src1  | 110    | predicate rs3     || BLTU    |
 reserved    | src2     | src1  | 111    | predicate rs3     || BGEU    |
 """]]
 
+Note that just as with the standard (scalar, non-predicated) branch
+operations, BLT, BGT, BLEU and BTGU may be synthesised by inverting
+src1 and src2.
+
 Below is the overloaded table for Floating-point Predication operations.
 Interestingly no change is needed to the instruction format because
 FP Compare already stores a 1 or a zero in its "rd" integer register
