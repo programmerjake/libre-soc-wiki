@@ -1321,16 +1321,16 @@ still be respected*, making Simple-V in effect the "consistent public API".
 
 vew may be one of the following (giving a table "bytestable", used below):
 
-| vew | bitwidth |
-| --- | -------- |
-| 000 | default  |
-| 001 | 8        |
-| 010 | 16       |
-| 011 | 32       |
-| 100 | 64       |
-| 101 | 128      |
-| 110 | rsvd     |
-| 111 | rsvd     |
+| vew | bitwidth | bytestable |
+| --- | -------- | ---------- |
+| 000 | default  | XLEN/8     |
+| 001 | 8        | 1          |
+| 010 | 16       | 2          |
+| 011 | 32       | 4          |
+| 100 | 64       | 8          |
+| 101 | 128      | 16         |
+| 110 | rsvd     | rsvd       |
+| 111 | rsvd     | rsvd       |
 
 Pseudocode for vector length taking CSR SIMD-bitwidth into account:
 
