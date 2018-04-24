@@ -936,9 +936,9 @@ from actual (internal) parallel hardware.  It's an API in effect that's
 designed to be slotted in to an existing implementation (just after
 instruction decode) with minimum disruption and effort.
 
-* minus: the complexity of having to use register renames, OoO, VLIW,
-  register file cacheing, all of which has been done before but is a
-  pain
+* minus: the complexity (if full parallelism is to be exploited)
+  of having to use register renames, OoO, VLIW, register file cacheing,
+  all of which has been done before but is a pain
 * plus: transparent re-use of existing opcodes as-is just indirectly
   saying "this register's now a vector" which
 * plus: means that future instructions also get to be inherently
