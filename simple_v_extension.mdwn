@@ -588,6 +588,23 @@ and having the benefit of being explicit.*
 
 ## Branch Instruction:
 
+Branch operations use standard RV opcodes that are reinterpreted to be
+"predicate variants" in the instance where either of the two src registers
+have their corresponding CSRvectorlen[src] entry as non-zero.  When this
+reinterpretation is enabled the predicate target register rs3 is to be
+treated as a bitfield (up to a maximum of XLEN bits corresponding to a
+maximum of XLEN elements).
+
+If either of src1 or src2 are scalars (CSRvectorlen[src] == 0) the comparison
+goes ahead as vector-scalar or scalar-vector.  Implementors should note that
+this could require considerable multi-porting of the register file in order
+to parallelise properly, so may have to involve the use of register cacheing
+and transparent copying (see Multiple-Banked Register File Architectures
+paper).
+
+In instances where no vectorisation is detected on either src registers
+the operation is treated as an absolutely standard scalar branch operation.
+
 This is the overloaded table for Integer-base Branch operations.  Opcode
 (bits 6..0) is set in all cases to 1100011.
 
