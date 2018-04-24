@@ -379,6 +379,10 @@ Notes:
   as opposed to having the predicate register explicitly in the instruction.
 * Whilst the predication CSR is a key-value store it *generates* easier-to-use
   state information.
+* TODO: assess whether the same technique could be applied to the other
+  Vector CSRs, particularly as pointed out in Section 17.8 (Draft RV 0.4,
+  V2.3-Draft ISA Reference) it becomes possible to greatly reduce state
+  needed for context-switches (empty slots need never be stored).
 
 ## Predication CSR
 
