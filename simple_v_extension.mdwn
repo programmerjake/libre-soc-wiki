@@ -52,10 +52,13 @@ details outlined in the Appendix), the key points being:
 * Vectorisation typically includes much more comprehensive memory load
   and store schemes (unit stride, constant-stride and indexed), which
   in turn have ramifications: virtual memory misses (TLB cache misses)
-  and even multiple page-faults... all caused by a *single instruction*.
+  and even multiple page-faults... all caused by a *single instruction*,
+  yet with a clear benefit that the regularisation of LOAD/STOREs can
+  be optimised for minimal impact on caches and maximised throughput.
 * By contrast, SIMD can use "standard" memory load/stores (32-bit aligned
   to pages), and these load/stores have absolutely nothing to do with the
-  SIMD / ALU engine, no matter how wide the operand.
+  SIMD / ALU engine, no matter how wide the operand.  Simplicity but with
+  more impact on instruction and data caches.
 
 Overall it makes a huge amount of sense to have a means and method
 of introducing instruction parallelism in a flexible way that provides
