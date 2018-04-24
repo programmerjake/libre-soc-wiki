@@ -334,17 +334,25 @@ basis* whether and how much "Virtual Parallelism" to deploy.
 
 It is absolutely critical to note that it is proposed that such choices MUST
 be **entirely transparent** to the end-user and the compiler.  Whilst
-a Vector (varible-width SIM) may not precisely match the width of the
+a Vector (varible-width SIMD) may not precisely match the width of the
 parallelism within the implementation, the end-user **should not care**
 and in this way the performance benefits are gained but the ISA remains
 straightforward.  All that happens at the end of an instruction run is: some
 parallel units (if there are any) would remain offline, completely
 transparently to the ISA, the program, and the compiler.
 
-The "SIMD considered harmful" trap of having huge complexity and extra
+To make that clear: should an implementor choose a particularly wide
+SIMD-style ALU, each parallel unit *must* have predication so that
+the parallel SIMD ALU may emulate variable-length parallel operations.
+Thus the "SIMD considered harmful" trap of having huge complexity and extra
 instructions to deal with corner-cases is thus avoided, and implementors
 get to choose precisely where to focus and target the benefits of their
 implementation efforts, without "extra baggage".
+
+In addition, implementors will be free to choose whether to provide an
+absolute bare minimum level of compliance with the "API" (software-traps
+when vectorisation is detected), all the way up to full supercomputing
+level all-hardware parallelism.  Options are covered in the Appendix.
 
 # CSRs <a name="csrs"></a>
 
