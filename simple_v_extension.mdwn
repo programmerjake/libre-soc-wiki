@@ -307,7 +307,7 @@ In particular:
   i.e. *without* requiring a super-scalar or out-of-order architecture,
   but doing a proper, full job (ZOLC) is an entirely different matter.
 
-Constructing a SIMD/Simple-Vector proposal based around four of these five
+Constructing a SIMD/Simple-Vector proposal based around four of these six
 requirements would therefore seem to be a logical thing to do.
 
 # Instructions
@@ -326,9 +326,9 @@ compare operations, *any* arithmetic, floating point or *any*
 memory instructions.
 Instead it *overloads* pre-existing branch operations into predicated
 variants, and implicitly overloads arithmetic operations and LOAD/STORE
-depending on implicit CSR configurations for both vector length and
-bitwidth.  *This includes Compressed instructions* as well as any
-future ones, *including* future Extensions.
+depending on CSR configurations for vector length, bitwidth and
+predication.  *This includes Compressed instructions* as well as any
+future instructions and Custom Extensions.
 
 * For analysis of RVV see [[v_comparative_analysis]] which begins to
   outline topologically-equivalent mappings of instructions
@@ -365,11 +365,12 @@ reserved    | src2     | src1  | 110    | predicate rs3     || BLTU    |
 reserved    | src2     | src1  | 111    | predicate rs3     || BGEU    |
 """]]
 
-This is the overloaded table for Floating-point Predication operations.
+Below is the overloaded table for Floating-point Predication operations.
 Interestingly no change is needed to the instruction format because
 FP Compare already stores a 1 or a zero in its "rd" integer register
 target, i.e. it's not actually a Branch at all: it's a compare.
-The target needs to simply change to be a predication bitfield.
+The target needs to simply change to be a predication bitfield (done
+implicitly).
 
 As with
 Standard RVF/D/Q, Opcode (bits 6..0) is set in all cases to 1010011.
@@ -382,15 +383,15 @@ and whilst in ordinary branch code this is fine because the standard
 RVF compare can always be followed up with an integer BEQ or a BNE (or
 a compressed comparison to zero or non-zero), in predication terms that
 becomes more of an impact as an explicit (scalar) instruction is needed
-to invert the predicate.  An additional encoding funct3=011 is therefore
-proposed to cater for this.
+to invert the predicate bitmask.  An additional encoding funct3=011 is
+therefore proposed to cater for this.
 
 [[!table  data="""
 31 .. 27| 26 .. 25 |24 ... 20 | 19 15 | 14  12 | 11 .. 7  | 6 ... 0 |
 funct5  | fmt      | rs2      | rs1   | funct3 | rd       | opcode  |
 5       | 2        | 5        | 5     | 3      | 4        | 7       |
 10100   | 00/01/11 | src2     | src1  | 010    | pred rs3 | FEQ     |
-10100   | 00/01/11 | src2     | src1  | *011*  | pred rs3 | FNE     |
+10100   | 00/01/11 | src2     | src1  | **011**| pred rs3 | FNE     |
 10100   | 00/01/11 | src2     | src1  | 001    | pred rs3 | FLT     |
 10100   | 00/01/11 | src2     | src1  | 000    | pred rs3 | FLE     |
 """]]
@@ -416,9 +417,11 @@ complex), this becomes:
     if I/F == INT: # integer type cmp
         pred_enabled = int_pred_enabled # TODO: exception if not set!
         preg = int_pred_reg[rd]
+        reg = int_regfile
     else:
         pred_enabled = fp_pred_enabled # TODO: exception if not set!
         preg = fp_pred_reg[rd]
+        reg = fp_regfile
 
     s1 = CSRvectorlen[src1] > 1;
     s2 = CSRvectorlen[src2] > 1;
@@ -430,7 +433,7 @@ Notes:
 
 * Predicated SIMD comparisons would break src1 and src2 further down
   into bitwidth-sized chunks (see Appendix "Bitwidth Virtual Register
-  Reordering") setting Vector-Length * (number of SIMD elements) bits
+  Reordering") setting Vector-Length times (number of SIMD elements) bits
   in Predicate Register rs3 as opposed to just Vector-Length bits.
 * Predicated Branches do not actually have an adjustment to the Program
   Counter, so all of bits 25 through 30 in every case are not needed.
