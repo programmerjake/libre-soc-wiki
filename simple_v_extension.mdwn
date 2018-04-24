@@ -357,7 +357,7 @@ level all-hardware parallelism.  Options are covered in the Appendix.
 # CSRs <a name="csrs"></a>
 
 There are a number of CSRs needed, which are used at the instruction
-decode phase to re-interpret standard RV opcodes (a practice that has
+decode phase to re-interpret RV opcodes (a practice that has
 precedent in the setting of MISA to enable / disable extensions).
 
 * Integer Register N is Vector of length M: r(N) -> r(N..N+M-1)
@@ -377,6 +377,8 @@ Notes:
   "bitwidth" may fit into an XLEN-sized register file.
 * Predication is a key-value store due to the implicit referencing,
   as opposed to having the predicate register explicitly in the instruction.
+* Whilst the predication CSR is a key-value store it *generates* easier-to-use
+  state information.
 
 ## Predication CSR
 
