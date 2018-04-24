@@ -310,6 +310,42 @@ In particular:
 Constructing a SIMD/Simple-Vector proposal based around four of these six
 requirements would therefore seem to be a logical thing to do.
 
+# Note on implementation of parallelism
+
+One extremely important aspect of this proposal is to respect and support
+implementors desire to focus on power, area or performance.  In that regard,
+it is proposed that implementors be free to choose whether to implement
+the Vector (or variable-width SIMD) parallelism as sequential operations
+with a single ALU, fully parallel (if practical) with multiple ALUs, or
+a hybrid combination of both.
+
+In Broadcom's Videocore-IV, they chose hybrid, and called it "Virtual
+Parallelism".  They achieve a 16-way SIMD at an **instruction** level
+by providing a combination of a 4-way parallel ALU *and* an externally
+transparent loop that feeds 4 sequential sets of data into each of the
+4 ALUs.
+
+Also in the same core, it is worth noting that particularly uncommon
+but essential operations (Reciprocal-Square-Root for example) are
+*not* part of the 4-way parallel ALU but instead have a *single* ALU.
+Under the proposed Vector (varible-width SIMD) implementors would
+be free to do precisely that: i.e. free to choose *on a per operation
+basis* whether and how much "Virtual Parallelism" to deploy.
+
+It is absolutely critical to note that it is proposed that such choices MUST
+be **entirely transparent** to the end-user and the compiler.  Whilst
+a Vector (varible-width SIM) may not precisely match the width of the
+parallelism within the implementation, the end-user **should not care**
+and in this way the performance benefits are gained but the ISA remains
+straightforward.  All that happens at the end of an instruction run is: some
+parallel units (if there are any) would remain offline, completely
+transparently to the ISA, the program, and the compiler.
+
+The "SIMD considered harmful" trap of having huge complexity and extra
+instructions to deal with corner-cases is thus avoided, and implementors
+get to choose precisely where to focus and target the benefits of their
+implementation efforts, without "extra baggage".
+
 # Instructions
 
 By being a topological remap of RVV concepts, the following RVV instructions
@@ -460,6 +496,7 @@ C.BPR  | pred rs3 | src1 | I/F B | src2 | C1   |      |
 Notes:
 
 * Bits 5 13 14 and 15 make up the comparator type
+* Bit 6 indicates whether to use integer or floating-point comparisons
 * In both floating-point and integer cases there are four predication
   comparators: EQ/NEQ/LT/LE (with GT and GE being synthesised by inverting
   src1 and src2).
@@ -468,7 +505,8 @@ Notes:
 
 For full analysis of topological adaptation of RVV LOAD/STORE
 see [[v_comparative_analysis]].  All three types (LD, LD.S and LD.X)
-may be implicitly overloaded into the one base RV LOAD instruction.
+may be implicitly overloaded into the one base RV LOAD instruction,
+and likewise for STORE.
 
 Revised LOAD:
 
@@ -570,42 +608,6 @@ Expired U.S. Patent 5895501 (Filing Date Sep 3 1996) describes a method
 of detecting early page / segmentation faults and adjusting the TLB
 in advance, accordingly: other strategies are explored in the Appendix
 Section "Virtual Memory Page Faults".
-
-# Note on implementation of parallelism
-
-One extremely important aspect of this proposal is to respect and support
-implementors desire to focus on power, area or performance.  In that regard,
-it is proposed that implementors be free to choose whether to implement
-the Vector (or variable-width SIMD) parallelism as sequential operations
-with a single ALU, fully parallel (if practical) with multiple ALUs, or
-a hybrid combination of both.
-
-In Broadcom's Videocore-IV, they chose hybrid, and called it "Virtual
-Parallelism".  They achieve a 16-way SIMD at an **instruction** level
-by providing a combination of a 4-way parallel ALU *and* an externally
-transparent loop that feeds 4 sequential sets of data into each of the
-4 ALUs.
-
-Also in the same core, it is worth noting that particularly uncommon
-but essential operations (Reciprocal-Square-Root for example) are
-*not* part of the 4-way parallel ALU but instead have a *single* ALU.
-Under the proposed Vector (varible-width SIMD) implementors would
-be free to do precisely that: i.e. free to choose *on a per operation
-basis* whether and how much "Virtual Parallelism" to deploy.
-
-It is absolutely critical to note that it is proposed that such choices MUST
-be **entirely transparent** to the end-user and the compiler.  Whilst
-a Vector (varible-width SIM) may not precisely match the width of the
-parallelism within the implementation, the end-user **should not care**
-and in this way the performance benefits are gained but the ISA remains
-straightforward.  All that happens at the end of an instruction run is: some
-parallel units (if there are any) would remain offline, completely
-transparently to the ISA, the program, and the compiler.
-
-The "SIMD considered harmful" trap of having huge complexity and extra
-instructions to deal with corner-cases is thus avoided, and implementors
-get to choose precisely where to focus and target the benefits of their
-implementation efforts, without "extra baggage".
 
 # CSRs <a name="csrs"></a>
 
