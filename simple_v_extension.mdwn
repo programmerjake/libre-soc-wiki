@@ -478,8 +478,15 @@ register files:
 
 An array of 32 4-bit CSRs is needed (4 bits per register) to indicate
 whether a register was, if referred to in any standard instructions,
-implicitly to be treated as a vector.  A vector length of 1 indicates
-that it is to be treated as a scalar.  Vector lengths of 0 are reserved.
+implicitly to be treated as a vector.  
+
+Note:
+
+* A vector length of 1 indicates that it is to be treated as a scalar.
+  Bitwidths (on the same register) are interpreted and meaningful.
+* A vector length of 0 indicates that the parallelism is to be switched
+  off for this register (treated as a scalar).  When length is 0,
+  the bitwidth CSR for the register is *ignored*.
 
 Internally, implementations may choose to use the non-zero vector length
 to set a bit-field per register, to be used in the instruction decode phase.
