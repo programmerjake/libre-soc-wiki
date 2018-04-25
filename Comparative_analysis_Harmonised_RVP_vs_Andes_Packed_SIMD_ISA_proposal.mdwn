@@ -7,7 +7,7 @@ An example use case is a string copy operation - using Harmonised RVP, binary co
 ## Register file comparison
 
 The default Harmonised RVP GPR register file is divided into a lower bank of Vector[INT8] and an upper bank of Vector[INT16].
-In contrast, the Andes Packed SIMD ISA permits any GPR to be used for either INT8 or INT16 vector operations
+In contrast, the Andes Packed SIMD ISA permits any GPR to be used for either INT8 or INT16 vector operations.
 
 | Register           | Andes ISA                              | Harmonised RVP ISA            |
 | ------------------ | -------------------------              | -------------------           |
@@ -47,6 +47,9 @@ In contrast, the Andes Packed SIMD ISA permits any GPR to be used for either INT
 | v30                | 32bit GPR or Vector[4xINT8 or 2xINT16] | 32bit GPR or Vector[1xSINT32] |
 | v31                | 32bit GPR or Vector[4xINT8 or 2xINT16] | 32bit GPR or Vector[1xSINT32] |
 
+However, programmers may reconfigure the Harmonised RVP register file if the default configuration is unsuitable.
+To keep implementations simple and focused on within-register SIMD only, there is a strict 1:1 mapping between vectors (v0-v31) and integer registers (r0-r31).
+Programmers needing forwards compatibility with RV Vector implementations should use VLD and VST to load/store from vector registers (even though these are then mapped into integer registers).
 
 ## Proposed Harmonised RVP vector op instruction encoding
 
