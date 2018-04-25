@@ -83,3 +83,12 @@ Andes SIMD Packed ISA omits 8 bit shifts, but these can be encoded in Harmonised
 | n/a     | Saturating Shift left logical       | VSLL (r2 <= rt,ra,rb <= r15), mm=01|
 | n/a     | Saturating Shift left logical imm   | VSLLI (r2 <= rt,ra <= r15), mm=01|
 
+## 16-bit Comparison
+
+| Andes Mnemonic           | 16-bit Instruction        | Harmonised RVP Equivalent |
+| ------------------   | ------------------------- | ------------------- |
+| CMPEQ16 rt, ra, rb   | Compare equal             | VSEQ (r16 <= rt,ra,rb <= r29), mm=00|
+| SCMPLT16 rt, ra, rb   | Signed Compare less than        | !VSGT (r16 <= rt,ra,rb <= r23), mm=00|
+| SCMPLE16 rt, ra, rb   | Signed Compare less or equal    | VSLE (r16 <= rt,ra,rb <= r23), mm=00|
+| UCMPLT16 rt, ra, rb   | Unsigned Compare less than      | !VSGT (r24 <= rt,ra,rb <= r29), mm=00|
+| UCMPLE16 rt, ra, rb   | Unsigned Compare less or equal  | VSLE (r24 <= rt,ra,rb <= r29), mm=00|
