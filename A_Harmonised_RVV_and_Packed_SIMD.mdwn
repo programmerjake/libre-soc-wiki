@@ -53,13 +53,13 @@ The above are pure subsets of valid RVV VCFG configurations (and hence forward c
 | Mnemonic           | 16-bit Instruction        | Harmonised RVP Equivalent |
 | ------------------ | ------------------------- | ------------------- |
 | ADD16 rt, ra, rb   | add                       | VADD (r16 <= rt,ra,rb <= r29), mm=00|
-| RADD16 rt, ra, rb  | Signed Halving add        | |
-| URADD16 rt, ra, rb | Unsigned Halving add      | |
+| RADD16 rt, ra, rb  | Signed Halving add        | VRADD (r16 <= rt,ra,rb <= r23), mm=00|
+| URADD16 rt, ra, rb | Unsigned Halving add      | VRADD (r24 <= rt,ra,rb <= r29), mm=00|
 | KADD16 rt, ra, rb  | Signed Saturating add     | VADD (r16 <= rt,ra,rb <= r23), mm=01|
 | UKADD16 rt, ra, rb | Unsigned Saturating add   | VADD (r24 <= rt,ra,rb <= r29), mm=01|
 | SUB16 rt, ra, rb   | sub                       | VSUB (r16 <= rt,ra,rb <= r29), mm=00|
-| RSUB16 rt, ra, rb  | Signed Halving sub        | |
-| URSUB16 rt, ra, rb | Unsigned Halving sub                | |
+| RSUB16 rt, ra, rb  | Signed Halving sub        | VRSUB (r16 <= rt,ra,rb <= r23), mm=00|
+| URSUB16 rt, ra, rb | Unsigned Halving sub                | VRSUB (r24 <= rt,ra,rb <= r29), mm=00|
 | KSUB16 rt, ra, rb  | Signed Saturating sub               | VSUB (r16 <= rt,ra,rb <= r23), mm=01|
 | UKSUB16 rt, ra, rb | Unsigned Saturating sub             | VSUB (r24 <= rt,ra,rb <= r29), mm=01|
 | CRAS16 rt, ra, rb  | Cross Add & Sub                     | |
@@ -78,13 +78,13 @@ The above are pure subsets of valid RVV VCFG configurations (and hence forward c
 | Mnemonic           | 16-bit Instruction        | Harmonised RVP Equivalent |
 | ------------------ | ------------------------- | ------------------- |
 | ADD8 rt, ra, rb    | add                       | VADD (r2 <= rt,ra,rb <= r15), mm=00 |
-| RADD8 rt, ra, rb   | Signed Halving add        | |
-| URADD8 rt, ra, rb  | Unsigned Halving add      | |
+| RADD8 rt, ra, rb   | Signed Halving add        | VRADD (r2 <= rt,ra,rb <= r7), mm=00 |
+| URADD8 rt, ra, rb  | Unsigned Halving add      | VRADD (r8 <= rt,ra,rb <= r15), mm=00 |
 | KADD8 rt, ra, rb   | Signed Saturating add     | VADD (r2 <= rt,ra,rb <= r7), mm=01 |
 | UKADD8 rt, ra, rb  | Unsigned Saturating add   | VADD (r8 <= rt,ra,rb <= r15), mm=01 |
 | SUB8 rt, ra, rb    | sub                       | VSUB (r2 <= rt,ra,rb <= r15), mm=00 |
-| RSUB8 rt, ra, rb   | Signed Halving sub        | |
-| URSUB8 rt, ra, rb  | Unsigned Halving sub      | |
+| RSUB8 rt, ra, rb   | Signed Halving sub        | VRSUB (r2 <= rt,ra,rb <= r7), mm=00 |
+| URSUB8 rt, ra, rb  | Unsigned Halving sub      | VRSUB (r8 <= rt,ra,rb <= r15), mm=00 |
 | KSUB8 rt, ra, rb   | Signed Saturating sub        | VSUB (r2 <= rt,ra,rb <= r7), mm=01 |
 | UKSUB8 rt, ra, rb  | Unsigned Saturating sub      | VSUB (r8 <= rt,ra,rb <= r15), mm=01 |
 
