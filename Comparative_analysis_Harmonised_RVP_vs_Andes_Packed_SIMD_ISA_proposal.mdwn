@@ -102,3 +102,13 @@ Andes SIMD Packed ISA omits 8 bit shifts, but these can be encoded in Harmonised
 | SCMPLE8 rt, ra, rb   | Signed Compare less or equal    | VSLE (r2 <= rt,ra,rb <= r7), mm=00|
 | UCMPLT8 rt, ra, rb   | Unsigned Compare less than      | !VSGT (r8 <= rt,ra,rb <= r15), mm=00|
 | UCMPLE8 rt, ra, rb   | Unsigned Compare less or equal  | VSLE (r8 <= rt,ra,rb <= r15), mm=00|
+
+## 16-bit Miscellaneous instructions
+
+| Andes Mnemonic           | 16-bit Instruction        | Harmonised RVP Equivalent |
+| ------------------   | ------------------------- | ------------------- |
+| SMIN16 rt, ra, rb   | Signed minimum           | VMIN (r16 <= rt,ra,rb <= r23), mm=00|
+| UMIN16 rt, ra, rb   | Unsigned minimum         | VMIN (r24 <= rt,ra,rb <= r29), mm=00|
+| SMAX16 rt, ra, rb   | Signed maximum           | VMAX (r16 <= rt,ra,rb <= r23), mm=00|
+| UMAX16 rt, ra, rb   | Unsigned maximum         | VMAX (r24 <= rt,ra,rb <= r29), mm=00|
+| KABS16 rt, ra, rb   | Saturated absolute value | VSGNX (r16 <= rt <= r29, 16 <= ra,rb <= 23, mm=01 |
