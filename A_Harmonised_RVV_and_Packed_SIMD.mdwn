@@ -111,3 +111,23 @@ The “K” (Saturation) and “u” (Rounding) variants could be encoded using 
 | KSLRA16 rt, ra, rb    | Saturating Shift left logical or Shift right arithmetic              ||
 | KSLRA16.u rt, ra, rb  | Saturating Shift left logical or Rounding Shift right arithmetic     ||
 
+
+## 8-bit Shifts
+
+Andes SIMD Packed ISA omits 8 bit shifts, but these can be encoded in Harmonised RVP as follows:
+
+| Mnemonic             | 8-bit Instruction         | Harmonised RVP Equivalent |
+| ------------------   | -------------------------  | ------------------- |
+|      | Shift right arithmetic     | VSRA (r2 <= rt,ra,rb <= r15), mm=00|
+|      | Shift right arithmetic imm | VSRAI (r2 <= rt,ra <= r15), mm=00|
+|      | Rounding Shift right arithmetic     | VSRA (r2 <= rt,ra,rb <= r15), mm=01|
+|      | Rounding Shift right arithmetic imm | VSRAI (r2 <= rt,ra <= r15), mm=01|
+|      | Shift right logical        | VSRL (r2 <= rt,ra,rb <= r15), mm=00|
+|      | Shift right logical imm    | VSRLI (r2 <= rt,ra <= r15), mm=00|
+|      | Rounding Shift right logical     | VSRL (r2 <= rt,ra,rb <= r15), mm=01|
+|      | Rounding Shift right logical imm | VSLRI (r2 <= rt,ra <= r15), mm=01|
+|      | Shift left logical         | VSLL (r2 <= rt,ra,rb <= r15), mm=00|
+|      | Shift left logical imm     | VSLLI (r2 <= rt,ra <= r15), mm=00|
+|      | Saturating Shift left logical       | VSLL (r2 <= rt,ra,rb <= r15), mm=01|
+|      | Saturating Shift left logical imm   | VSLLI (r2 <= rt,ra <= r15), mm=01|
+
