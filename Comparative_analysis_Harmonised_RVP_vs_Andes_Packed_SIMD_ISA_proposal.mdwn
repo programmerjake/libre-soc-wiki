@@ -1,32 +1,5 @@
 # Comparative analysis of Andes Packed ISA proposal vs RVP Harmonised (with RV Vector spec)
 
-## Proposed Harmonised RVP vector op instruction encoding
-
-Register x 2 -> register operations:
-
-| 31 30 29 28 27 26 | 25  | 24 23 22 21 20 | 19 18 17 16 15 | 14 | 13 12 | 11 10 9 8 7 | 6 5 4 3 2 1 0 |
-| ----------------- | --  | -------------- | -------------- | -- | ----- | ----------- | ------------- |
-| func_6            | 0   | rs2            | rs1            | 0  | mm    | rd1         | VOP opcode    |
-
-Immediate + register -> register operations:
-
-| 31 30 29 | 28 27 26 | 25  | 24 23 22 21 20 | 19 18 17 16 15 | 14 | 13 12 | 11 10 9 8 7 | 6 5 4 3 2 1 0 |
-| -------- | -------- | --  | -------------- | -------------- | -- | ----- | ----------- | ------------- |
-| func_3   | imm[7:5] | 1   | imm[4:0]       | rs1            | 0  | mm    | rd1         | VOP opcode    |
-
-Register x 3 -> register operations:
-
-| 31 30 29 28 27 | 26 25  | 24 23 22 21 20 | 19 18 17 16 15 | 14 | 13 12 | 11 10 9 8 7 | 6 5 4 3 2 1 0 |
-| ----------------------- | -------------- | -------------- | -- | ----- | ----------- | ------------- |
-| rs3            | func_2 | rs2            | rs1            | 1  | mm    | rd1         | VOP opcode    |
-
-Values for mm field (bits 12:13 above):
-
-* mm = 00 -> no predicate mask, and use current global saturation / rounding settings
-* mm = 00 -> no predicate mask, and force saturation or rounding for this instruction only
-* mm = 10 -> use v1 as predicate mask, and use global saturation / rounding settings
-* mm = 11 -> use ~v1 as predicate mask, and use global saturation / rounding settings
-
 ## Register file comparison
 
 The default Harmonised RVP GPR register file is divided into a lower bank of Vector[INT8] and an upper bank of Vector[INT16].
@@ -70,6 +43,33 @@ In contrast, the Andes Packed SIMD ISA permits any GPR to be used for either INT
 | v30                | 32bit GPR or Vector[4xINT8 or 2xINT16] | 32bit GPR or Vector[1xSINT32] |
 | v31                | 32bit GPR or Vector[4xINT8 or 2xINT16] | 32bit GPR or Vector[1xSINT32] |
 
+
+## Proposed Harmonised RVP vector op instruction encoding
+
+Register x 2 -> register operations:
+
+| 31 30 29 28 27 26 | 25  | 24 23 22 21 20 | 19 18 17 16 15 | 14 | 13 12 | 11 10 9 8 7 | 6 5 4 3 2 1 0 |
+| ----------------- | --  | -------------- | -------------- | -- | ----- | ----------- | ------------- |
+| func_6            | 0   | rs2            | rs1            | 0  | mm    | rd1         | VOP opcode    |
+
+Immediate + register -> register operations:
+
+| 31 30 29 | 28 27 26 | 25  | 24 23 22 21 20 | 19 18 17 16 15 | 14 | 13 12 | 11 10 9 8 7 | 6 5 4 3 2 1 0 |
+| -------- | -------- | --  | -------------- | -------------- | -- | ----- | ----------- | ------------- |
+| func_3   | imm[7:5] | 1   | imm[4:0]       | rs1            | 0  | mm    | rd1         | VOP opcode    |
+
+Register x 3 -> register operations:
+
+| 31 30 29 28 27 | 26 25  | 24 23 22 21 20 | 19 18 17 16 15 | 14 | 13 12 | 11 10 9 8 7 | 6 5 4 3 2 1 0 |
+| ----------------------- | -------------- | -------------- | -- | ----- | ----------- | ------------- |
+| rs3            | func_2 | rs2            | rs1            | 1  | mm    | rd1         | VOP opcode    |
+
+Values for mm field (bits 12:13 above):
+
+* mm = 00 -> no predicate mask, and use current global saturation / rounding settings
+* mm = 00 -> no predicate mask, and force saturation or rounding for this instruction only
+* mm = 10 -> use v1 as predicate mask, and use global saturation / rounding settings
+* mm = 11 -> use ~v1 as predicate mask, and use global saturation / rounding settings
 
 ## 16-bit Arithmetic
 
