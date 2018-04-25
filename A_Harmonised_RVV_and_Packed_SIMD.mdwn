@@ -90,7 +90,7 @@ The above are pure subsets of valid RVV VCFG configurations (and hence forward c
 
 ## 16-bit Shifts
 
-SRA[I]16/SRL[I]16/SLL[I]16 to be mapped to VOP shift instructions in same manner as ADD16/SUB16  ie: map to signed r16-23 and unsigned r24-29 register banks in default vdcfg CSR setting
+SRA[I]16/SRL[I]16/SLL[I]16 to be mapped to VOP shift instructions in same manner as ADD16/SUB16
 
 The “K” (Saturation) and “u” (Rounding) variants could be encoded using VOP’s mm field (mm=01 is saturated or rounded shift, mm=00 is standard VOP shift)
 
@@ -101,7 +101,13 @@ The “K” (Saturation) and “u” (Rounding) variants could be encoded using 
 | SRA16.u rt, ra, rb   | Rounding Shift right arithmetic     | VSRA (r16 <= rt,ra,rb <= r29), mm=01|
 | SRAI16.u rt, ra, im  | Rounding Shift right arithmetic imm | VSRAI (r16 <= rt,ra <= r29), mm=01|
 | SRL16 rt, ra, rb     | Shift right logical        | VSRL (r16 <= rt,ra,rb <= r29), mm=00|
-| SRLI16 rt, ra, im    | Shift right lgoical imm    | VSRLI (r16 <= rt,ra <= r29), mm=00|
+| SRLI16 rt, ra, im    | Shift right logical imm    | VSRLI (r16 <= rt,ra <= r29), mm=00|
 | SRL16.u rt, ra, rb   | Rounding Shift right logical     | VSRL (r16 <= rt,ra,rb <= r29), mm=01|
 | SRLI16.u rt, ra, im  | Rounding Shift right logical imm | VSLRI (r16 <= rt,ra <= r29), mm=01|
+| SLL16 rt, ra, rb     | Shift left logical         | VSLL (r16 <= rt,ra,rb <= r29), mm=00|
+| SLLI16 rt, ra, im    | Shift left logical imm     | VSLLI (r16 <= rt,ra <= r29), mm=00|
+| KSLL16 rt, ra, rb    | Saturating Shift left logical       | VSLL (r16 <= rt,ra,rb <= r29), mm=01|
+| KSLLI16 rt, ra, im   | Saturating Shift left logical imm   | VSLLI (r16 <= rt,ra <= r29), mm=01|
+| KSLRA16 rt, ra, rb    | Saturating Shift left logical or Shift right arithmetic              ||
+| KSLRA16.u rt, ra, rb  | Saturating Shift left logical or Rounding Shift right arithmetic     ||
 
