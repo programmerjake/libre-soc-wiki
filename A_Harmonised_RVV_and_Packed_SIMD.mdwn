@@ -32,7 +32,7 @@ Notes:
 
 ##### Default MVL
 
-The default RVV MVL value (in absence of explicit VDCFG setup) is to be MVL = 2 on RV32I machines and MVL = 4 on RV64I machines.
+The default RVV MVL value (in absence of explicit VCFG setup) is to be MVL = 2 on RV32I machines and MVL = 4 on RV64I machines.
 However, note RV32I registers can fit 4x INT8 elements.  To preserve Andes SIMD behaviour, all VOP instructions should still operate on all “unused” elements in the register, regardless of MVL.  (This is still compliant with the RVV spec, provided elements from VL..MVL-1 are set to zero).  VMEM instructions however will only operate on VL elements, and so where full Andes SIMD compliance is required (without RVV forward compatibility), LW/LD and SW/SD are to be used instead of VLD and VST.
 
 ##### Alternative register "banks" and alternative MVL
@@ -44,4 +44,4 @@ A programmer can configure VCFG with any mix of these alternative configurations
 *  A lesser number of registers (<v31) could be supported, eg. default is only v0-v29 defined.  (Accessing registers beyond maximum defined by VDCFG is to be legal, with a type of INT32 assumed.  However, this is not to affect the MVL, which is to be calculated based on INT8/INT16 vectors only)
 *  With the above alternative configs, there can be any split between signed & unsigned.
 
-The above are pure subsets of valid RVV VDCFG configurations (and hence forward compatible between RVP and RVV, whilst also keeping RVP simple).  Other useful element types are fixed point fraction types and small integer(4 bit to 7 bit) elements. However these are omitted for now as they aren’t currently part of RVV spec, and the intention of this proposal is to harmonise the Andes SIMD instructions into a subset of RVV.
+The above are pure subsets of valid RVV VCFG configurations (and hence forward compatible between RVP and RVV, whilst also keeping RVP simple).  Other useful element types are fixed point fraction types and small integer(4 bit to 7 bit) elements. However these are omitted for now as they aren’t currently part of RVV spec, and the intention of this proposal is to harmonise the Andes SIMD instructions into a subset of RVV.
