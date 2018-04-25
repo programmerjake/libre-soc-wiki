@@ -105,13 +105,21 @@ Andes SIMD Packed ISA omits 8 bit shifts, but these can be encoded in Harmonised
 
 ## 16-bit Miscellaneous instructions
 
-| Andes Mnemonic           | 16-bit Instruction        | Harmonised RVP Equivalent |
-| ------------------   | ------------------------- | ------------------- |
-| SMIN16 rt, ra, rb   | Signed minimum           | VMIN (r16 <= rt,ra,rb <= r23), mm=00|
-| UMIN16 rt, ra, rb   | Unsigned minimum         | VMIN (r24 <= rt,ra,rb <= r29), mm=00|
-| SMAX16 rt, ra, rb   | Signed maximum           | VMAX (r16 <= rt,ra,rb <= r23), mm=00|
-| UMAX16 rt, ra, rb   | Unsigned maximum         | VMAX (r24 <= rt,ra,rb <= r29), mm=00|
-| KABS16 rt, ra, rb   | Saturated absolute value | VSGNX (r16 <= rt <= r29, r16 <= ra,rb <= r23, mm=01) |
+| Andes Mnemonic      | 16-bit Instruction                | Harmonised RVP Equivalent |
+| ------------------  | ------------------------          | ------------------- |
+| SMIN16 rt, ra, rb   | Signed minimum                    | VMIN (r16 <= rt,ra,rb <= r23), mm=00|
+| UMIN16 rt, ra, rb   | Unsigned minimum                  | VMIN (r24 <= rt,ra,rb <= r29), mm=00|
+| SMAX16 rt, ra, rb   | Signed maximum                    | VMAX (r16 <= rt,ra,rb <= r23), mm=00|
+| UMAX16 rt, ra, rb   | Unsigned maximum                  | VMAX (r24 <= rt,ra,rb <= r29), mm=00|
+| SCLIP16 rt, ra, rb  | Signed clip                       | ?VCLIP (r16 <= rt,ra,rb <= r23), mm=01|
+| UCLIP16 rt, ra, rb  | Unsigned clip                     | ?VCLIP (r24 <= rt,ra,rb <= r29), mm=01|
+| KMUL16 rt, ra, rb   | Signed multiply 16x16->16         | VMUL (r16 <= rt,ra,rb <= r23), mm=01|
+| KMULX16 rt, ra, rb  | Signed crossed multiply 16x16->16 | |
+| SMUL16 rt, ra, rb   | Signed multiply 16x16->32         | VMUL (30 <= rt <= 31, r16 <= ra,rb <= r23), mm=00|
+| SMULX16 rt, ra, rb  | Signed crossed multiply 16x16->32 | |
+| UMUL16 rt, ra, rb   | Signed multiply 16x16->32         | VMUL (30 <= rt <= 31, r24 <= ra,rb <= r31), mm=00|
+| UMULX16 rt, ra, rb  | Signed crossed multiply 16x16->32 | |
+| KABS16 rt, ra, rb   | Saturated absolute value          | VSGNX (r16 <= rt <= r29, r16 <= ra,rb <= r23, mm=01) |
 
 ## 8-bit Miscellaneous instructions
 
