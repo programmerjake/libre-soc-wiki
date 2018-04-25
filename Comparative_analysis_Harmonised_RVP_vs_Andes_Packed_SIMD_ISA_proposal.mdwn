@@ -22,10 +22,10 @@ Register x 3 -> register operations:
 
 Values for mm field (bits 12:13 above):
 
-* mm = 00 -> use current global saturation or rounding, no mask
-* mm = 00 -> force saturation or rounding for this instruction only
-* mm = 10 -> use v1 as predicate mask
-* mm = 11 -> use ~v1 as predicate mask
+* mm = 00 -> no predicate mask, and use current global saturation / rounding settings
+* mm = 00 -> no predicate mask, and force saturation or rounding for this instruction only
+* mm = 10 -> use v1 as predicate mask, and use global saturation / rounding settings
+* mm = 11 -> use ~v1 as predicate mask, and use global saturation / rounding settings
 
 ## Register file
 
