@@ -60,8 +60,8 @@ The above are pure subsets of valid RVV VCFG configurations (and hence forward c
 | SUB16 rt, ra, rb   | sub                       | VSUB (r16 <= rt,ra,rb <= r29), mm=00|
 | RSUB16 rt, ra, rb  | Signed Halving sub        | |
 | URSUB16 rt, ra, rb | Unsigned Halving sub                | |
-| KSUB16 rt, ra, rb  | Signed Saturating sub               | |
-| UKSUB16 rt, ra, rb | Unsigned Saturating sub             | |
+| KSUB16 rt, ra, rb  | Signed Saturating sub               | VSUB (r16 <= rt,ra,rb <= r23), mm=01|
+| UKSUB16 rt, ra, rb | Unsigned Saturating sub             | VSUB (r24 <= rt,ra,rb <= r29), mm=01|
 | CRAS16 rt, ra, rb  | Cross Add & Sub                     | |
 | RCRAS16 rt, ra, rb | Signed Halving Cross Add & Sub      | |
 | URCRAS16 rt, ra, rb| Unsigned Halving Cross Add & Sub    | |
@@ -85,4 +85,6 @@ The above are pure subsets of valid RVV VCFG configurations (and hence forward c
 | SUB8 rt, ra, rb    | sub                       | VSUB (r2 <= rt,ra,rb <= r15), mm=00 |
 | RSUB8 rt, ra, rb   | Signed Halving sub        | |
 | URSUB8 rt, ra, rb  | Unsigned Halving sub      | |
+| KSUB8 rt, ra, rb   | Signed Saturating sub        | VSUB (r2 <= rt,ra,rb <= r7), mm=01 |
+| UKSUB8 rt, ra, rb  | Unsigned Saturating sub      | VSUB (r8 <= rt,ra,rb <= r15), mm=01 |
 
