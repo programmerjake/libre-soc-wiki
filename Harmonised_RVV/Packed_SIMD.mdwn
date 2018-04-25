@@ -6,7 +6,8 @@
 
 RVP implementations may choose to load/store to/from Integer register file (rather than from a dedicated Vector register file).
 
-* VLD and VST in this case will have similar behaviour to LW/LD and SW/SD respectively, but only operate on up to VL elements (see point #4 below).   Mapping of v0-31 <-> r0-31 IS FIXED AT 1:1.  (An exception may be made to map v1 to r5, as otherwise may clash with procedure linkage).
+* VLD and VST in this case will have similar behaviour to LW/LD and SW/SD respectively, but only operate on up to VL elements (see point #4 below).   
+* Mapping of v0-31 <-> r0-31 *is fixed* at 1:1.  (An exception may be made to map v1 to r5, as otherwise may clash with procedure linkage).
 * Thus, RVP implementations have a choice of providing a dedicated Vector register file, or sharing the integer register file, but not both  simultaneously.  (Supporting both would need a CSR mode switch bit).
 * If integer register file is used for vector operations, any callee saved registers (r2-4, 8-9, 18-27) must be saved with RVI SW or SD instructions, before being used as vector registers (this register saving behaviour is harmless but redundant when RVP code is run on a machine with a dedicated vector reg file).
 
