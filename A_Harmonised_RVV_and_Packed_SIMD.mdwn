@@ -50,13 +50,13 @@ The above are pure subsets of valid RVV VCFG configurations (and hence forward c
 
 ## 16-bit Arithmetic
 
-| Mnemonic           | 16-bit Instruction        | Simple-V Equivalent |
+| Mnemonic           | 16-bit Instruction        | Harmonised RVP Equivalent |
 | ------------------ | ------------------------- | ------------------- |
 | ADD16 rt, ra, rb   | add                       | VADD (r16 <= rt,ra,rb <= r29), mm=00|
 | RADD16 rt, ra, rb  | Signed Halving add        | |
 | URADD16 rt, ra, rb | Unsigned Halving add      | |
-| KADD16 rt, ra, rb  | Signed Saturating add     | |
-| UKADD16 rt, ra, rb | Unsigned Saturating add   | |
+| KADD16 rt, ra, rb  | Signed Saturating add     | VADD (r16 <= rt,ra,rb <= r23), mm=01|
+| UKADD16 rt, ra, rb | Unsigned Saturating add   | VADD (r24 <= rt,ra,rb <= r29), mm=01|
 | SUB16 rt, ra, rb   | sub                       | VSUB (r16 <= rt,ra,rb <= r29), mm=00|
 | RSUB16 rt, ra, rb  | Signed Halving sub        | |
 | URSUB16 rt, ra, rb | Unsigned Halving sub                | |
@@ -75,13 +75,13 @@ The above are pure subsets of valid RVV VCFG configurations (and hence forward c
 
 ## 8-bit Arithmetic
 
-| Mnemonic           | 16-bit Instruction        | Simple-V Equivalent |
+| Mnemonic           | 16-bit Instruction        | Harmonised RVP Equivalent |
 | ------------------ | ------------------------- | ------------------- |
 | ADD8 rt, ra, rb    | add                       | VADD (r2 <= rt,ra,rb <= r15), mm=00 |
 | RADD8 rt, ra, rb   | Signed Halving add        | |
 | URADD8 rt, ra, rb  | Unsigned Halving add      | |
-| KADD8 rt, ra, rb   | Signed Saturating add     | |
-| UKADD8 rt, ra, rb  | Unsigned Saturating add   | |
+| KADD8 rt, ra, rb   | Signed Saturating add     | VADD (r2 <= rt,ra,rb <= r7), mm=01 |
+| UKADD8 rt, ra, rb  | Unsigned Saturating add   | VADD (r8 <= rt,ra,rb <= r15), mm=01 |
 | SUB8 rt, ra, rb    | sub                       | VSUB (r2 <= rt,ra,rb <= r15), mm=00 |
 | RSUB8 rt, ra, rb   | Signed Halving sub        | |
 | URSUB8 rt, ra, rb  | Unsigned Halving sub      | |
