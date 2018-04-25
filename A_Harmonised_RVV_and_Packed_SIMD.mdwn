@@ -52,12 +52,12 @@ The above are pure subsets of valid RVV VCFG configurations (and hence forward c
 
 | Mnemonic           | 16-bit Instruction        | Harmonised RVP Equivalent |
 | ------------------ | ------------------------- | ------------------- |
-| ADD16 rt, ra, rb   | add                       | VADD (r16 <= rt,ra,rb <= r29), mm=00|
+| ADD16 rt, ra, rb   | Add                       | VADD (r16 <= rt,ra,rb <= r29), mm=00|
 | RADD16 rt, ra, rb  | Signed Halving add        | RADD (r16 <= rt,ra,rb <= r23), mm=00|
 | URADD16 rt, ra, rb | Unsigned Halving add      | RADD (r24 <= rt,ra,rb <= r29), mm=00|
 | KADD16 rt, ra, rb  | Signed Saturating add     | VADD (r16 <= rt,ra,rb <= r23), mm=01|
 | UKADD16 rt, ra, rb | Unsigned Saturating add   | VADD (r24 <= rt,ra,rb <= r29), mm=01|
-| SUB16 rt, ra, rb   | sub                       | VSUB (r16 <= rt,ra,rb <= r29), mm=00|
+| SUB16 rt, ra, rb   | Subtract                  | VSUB (r16 <= rt,ra,rb <= r29), mm=00|
 | RSUB16 rt, ra, rb  | Signed Halving sub        | RSUB (r16 <= rt,ra,rb <= r23), mm=00|
 | URSUB16 rt, ra, rb | Unsigned Halving sub                | RSUB (r24 <= rt,ra,rb <= r29), mm=00|
 | KSUB16 rt, ra, rb  | Signed Saturating sub               | VSUB (r16 <= rt,ra,rb <= r23), mm=01|
@@ -75,16 +75,33 @@ The above are pure subsets of valid RVV VCFG configurations (and hence forward c
 
 ## 8-bit Arithmetic
 
-| Mnemonic           | 16-bit Instruction        | Harmonised RVP Equivalent |
+| Mnemonic           | 8-bit Instruction        | Harmonised RVP Equivalent |
 | ------------------ | ------------------------- | ------------------- |
-| ADD8 rt, ra, rb    | add                       | VADD (r2 <= rt,ra,rb <= r15), mm=00 |
+| ADD8 rt, ra, rb    | Add                       | VADD (r2 <= rt,ra,rb <= r15), mm=00 |
 | RADD8 rt, ra, rb   | Signed Halving add        | RADD (r2 <= rt,ra,rb <= r7), mm=00 |
 | URADD8 rt, ra, rb  | Unsigned Halving add      | RADD (r8 <= rt,ra,rb <= r15), mm=00 |
 | KADD8 rt, ra, rb   | Signed Saturating add     | VADD (r2 <= rt,ra,rb <= r7), mm=01 |
 | UKADD8 rt, ra, rb  | Unsigned Saturating add   | VADD (r8 <= rt,ra,rb <= r15), mm=01 |
-| SUB8 rt, ra, rb    | sub                       | VSUB (r2 <= rt,ra,rb <= r15), mm=00 |
+| SUB8 rt, ra, rb    | Subtract                  | VSUB (r2 <= rt,ra,rb <= r15), mm=00 |
 | RSUB8 rt, ra, rb   | Signed Halving sub        | RSUB (r2 <= rt,ra,rb <= r7), mm=00 |
 | URSUB8 rt, ra, rb  | Unsigned Halving sub      | RSUB (r8 <= rt,ra,rb <= r15), mm=00 |
 | KSUB8 rt, ra, rb   | Signed Saturating sub        | VSUB (r2 <= rt,ra,rb <= r7), mm=01 |
 | UKSUB8 rt, ra, rb  | Unsigned Saturating sub      | VSUB (r8 <= rt,ra,rb <= r15), mm=01 |
+
+## 16-bit Shifts
+
+SRA[I]16/SRL[I]16/SLL[I]16 to be mapped to VOP shift instructions in same manner as ADD16/SUB16  ie: map to signed r16-23 and unsigned r24-29 register banks in default vdcfg CSR setting
+
+The “K” (Saturation) and “u” (Rounding) variants could be encoded using VOP’s mm field (mm=01 is saturated or rounded shift, mm=00 is standard VOP shift)
+
+| Mnemonic             | 16-bit Instruction         | Harmonised RVP Equivalent |
+| ------------------   | -------------------------  | ------------------- |
+| SRA16 rt, ra, rb     | Shift right arithmetic     | VSRA (r16 <= rt,ra,rb <= r29), mm=00|
+| SRAI16 rt, ra, im    | Shift right arithmetic imm | VSRAI (r16 <= rt,ra <= r29), mm=00|
+| SRA16.u rt, ra, rb   | Rounding Shift right arithmetic     | VSRA (r16 <= rt,ra,rb <= r29), mm=01|
+| SRAI16.u rt, ra, im  | Rounding Shift right arithmetic imm | VSRAI (r16 <= rt,ra <= r29), mm=01|
+| SRL16 rt, ra, rb     | Shift right logical        | VSRL (r16 <= rt,ra,rb <= r29), mm=00|
+| SRLI16 rt, ra, im    | Shift right lgoical imm    | VSRLI (r16 <= rt,ra <= r29), mm=00|
+| SRL16.u rt, ra, rb   | Rounding Shift right logical     | VSRL (r16 <= rt,ra,rb <= r29), mm=01|
+| SRLI16.u rt, ra, im  | Rounding Shift right logical imm | VSLRI (r16 <= rt,ra <= r29), mm=01|
 
