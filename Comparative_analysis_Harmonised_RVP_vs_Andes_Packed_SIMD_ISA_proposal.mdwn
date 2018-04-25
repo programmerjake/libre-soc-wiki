@@ -1,4 +1,8 @@
-# Comparative analysis of Andes Packed ISA proposal vs RVP Harmonised (with RV Vector spec)
+# Comparative analysis of Andes Packed ISA proposal vs Harmonised RVP
+
+Harmonised RVP is a proposal to provide SIMD functionality comparable to the Andes Packed SIMD, but in a manner that is forwards compatible ("harmonised") with the RV Vector specification.
+
+An example use case is a string copy operation - using Harmonised RVP, binary code using integer register based SIMD to copy a string of bytes can also execute (unchanged) on a full RV Vector processor and use the dedicated vector unit to copy string.  The is also upwards compatibility between RV32 and RV64 SIMD using this same approach.
 
 ## Register file comparison
 
