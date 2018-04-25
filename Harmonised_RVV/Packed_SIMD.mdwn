@@ -5,8 +5,9 @@
 ##### VLD and VST are supported
 
 RVP implementations may choose to load/store to/from Integer register file (rather than from a dedicated Vector register file).
-* VLD and VST in this case will have similar behaviour to LW/LD and SW/SD respectively, but only operate on up to VL elements (see point #4 below).  Mapping of v0-31 <-> r0-31 IS FIXED AT 1:1.  (An exception may be made to map v1 to r5, as otherwise may clash with procedure linkage).
-* Thus, RVP implementations have a choice of providing a dedicated Vector register file, or sharing the integer register file, but not both simultaneously.  (Supporting both would need a CSR mode switch bit).
+
+* VLD and VST in this case will have similar behaviour to LW/LD and SW/SD respectively, but only operate on up to VL elements (see point #4 below).   Mapping of v0-31 <-> r0-31 IS FIXED AT 1:1.  (An exception may be made to map v1 to r5, as otherwise may clash with procedure linkage).
+* Thus, RVP implementations have a choice of providing a dedicated Vector register file, or sharing the integer register file, but not both  simultaneously.  (Supporting both would need a CSR mode switch bit).
 * If integer register file is used for vector operations, any callee saved registers (r2-4, 8-9, 18-27) must be saved with RVI SW or SD instructions, before being used as vector registers (this register saving behaviour is harmless but redundant when RVP code is run on a machine with a dedicated vector reg file).
 
 ##### VLDX, VSTX, VLDS, VSTS are not supported in RVP
@@ -15,12 +16,14 @@ To keep RVP implementations simple, these instructions will trap, and may be imp
 ##### Default register "banks" and types
 
 In the absence of an explicit VCFG setup, the vector registers (when shared with Integer register file) are to default into two “banks” as follows:
+
 * v0-v15:    vectors with INT8 elements, split into 8 x signed (v0-v7) & 8 x unsigned (v8-v15)
 * v16-v29:  vectors with INT16 elements, split into 8 x signed (v16-v23) & 6 x unsigned (v24-v29)
 
 Having the above default vector type configuration harmonises most of the Andes SIMD instruction set (which explicitly encodes INT8 vs INT16 vector types as separate instructions).  The main change from the Andes SIMD proposal is that instructions are restricted to 14 registers of each vector element type (with element size explicitly encoded in the most significant bit of the 5 bit register specifier fields).
 
 Notes:
+
 * To preserve forward RVV compatibility, programmers should still explicitly setup VDCFG to the above default vector types
 * Essentially the same register allocation algorithm used for RVV can be used for RVP, except the algorithm should preferentially use temporary registers first, before using saved registers
 * v30-v31 are reserved for 32 bit operations (see Section 2.3 of this document), and hence not part of the register bank of INT16 vectors.
@@ -32,7 +35,9 @@ The default RVV MVL value (in absence of explicit VDCFG setup) is to be MVL = 2 
 However, note RV32I registers can fit 4x INT8 elements.  To preserve Andes SIMD behaviour, all VOP instructions should still operate on all “unused” elements in the register, regardless of MVL.  (This is still compliant with the RVV spec, provided elements from VL..MVL-1 are set to zero).  VMEM instructions however will only operate on VL elements, and so where full Andes SIMD compliance is required (without RVV forward compatibility), LW/LD and SW/SD are to be used instead of VLD and VST.
 
 ##### Alternative register "banks" and MVL
+
 A programmer can configure VCFG with the any mix of these alternative configurations:
+
 *  v0-v31 are all INT 16, and MVL is same as point #4 above
 *  v0-v31 are all INT 8 and MVL is 4 on RV32I and 8 on RV64I
 *  A lesser number of registers (<v31) could be supported, eg. default is only v0-v29 defined.  (Accessing registers beyond maximum defined by VDCFG is to be legal, with a type of INT32 assumed.  However, this is not to affect the MVL, which is to be calculated based on INT8/INT16 vectors only)
