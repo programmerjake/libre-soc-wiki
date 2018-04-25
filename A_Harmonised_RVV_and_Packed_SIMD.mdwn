@@ -1,5 +1,7 @@
 # Proposal to harmonise RV Vector spec with Andes Packed SIMD ("Harmonised" RVP)
 
+[[Comparative analysis Harmonised RVP vs Andes Packed SIMD ISA proposal]]
+
 ##### MVL, setvl instruction & VL CSR work as per RV Vector spec.
 
 ##### VLD and VST are supported
@@ -45,5 +47,3 @@ A programmer can configure VCFG with any mix of these alternative configurations
 *  With the above alternative configs, there can be any split between signed & unsigned.
 
 The above are pure subsets of valid RVV VCFG configurations (and hence forward compatible between RVP and RVV, whilst also keeping RVP simple).  Other useful element types are fixed point fraction types and small integer(4 bit to 7 bit) elements. However these are omitted for now as they aren’t currently part of RVV spec, and the intention of this proposal is to harmonise the Andes SIMD instructions into a subset of RVV.
-
-[[Comparative analysis Harmonised RVP vs Andes Packed SIMD ISA proposal]]
