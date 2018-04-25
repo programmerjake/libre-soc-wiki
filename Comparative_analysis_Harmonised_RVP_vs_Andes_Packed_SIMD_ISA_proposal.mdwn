@@ -20,11 +20,12 @@ Register x 3 -> register operations:
 | ----------------------- | -------------- | -------------- | -- | ----- | ----------- | ------------- |
 | rs3            | func_2 | rs2            | rs1            | 1  | mm    | rd1         | VOP opcode    |
 
-mm values:
-mm = 00 -> use current global saturation or rounding, no mask
-mm = 00 -> force saturation or rounding for this instruction only
-mm = 10 -> use v1 as predicate mask
-mm = 11 -> use ~v1 as predicate mask
+Values for mm field (bits 12:13 above):
+
+* mm = 00 -> use current global saturation or rounding, no mask
+* mm = 00 -> force saturation or rounding for this instruction only
+* mm = 10 -> use v1 as predicate mask
+* mm = 11 -> use ~v1 as predicate mask
 
 ## Register file
 
