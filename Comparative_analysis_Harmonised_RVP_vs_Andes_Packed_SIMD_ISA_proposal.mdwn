@@ -50,7 +50,10 @@ However programmers can reconfigure the register file data types, if the default
 | v31                | 32bit GPR or Vector[4xINT8 or 2xINT16] | 32bit GPR or Vector[1xSINT32] |
 
 Both Andes Packed SIMD and Harmonised RVP are intended to be "low end" SIMD implementations for processors without dedicated vector registers.
-Instead, the integer register file is used for SIMD operations.  To maintain forwards compatibility with "high end" RV Vector implementations, programmer should use VLD and VST to load/store vectors.  The implementation will then load/store a vector to/from the register file supported by the implementation.  To keep implementations simple and focused on within-register SIMD only, there is a strict 1:1 mapping between vectors (v0-v31) and integer registers (r0-r31).  Strided (VLDS/VSTS) and indexed (VLDX/VSTX) load/stores are complex and simple implementations will trap on these instructions, permitting emulation in software.
+Instead, the integer register file is used for SIMD operations.  To maintain forwards compatibility with "high end" RV Vector implementations, programmer should use VLD and VST to load/store vectors.  The implementation will then load/store a vector to/from the register file supported by the implementation.
+
+To keep implementations simple and focused on within-register SIMD only, there is a strict 1:1 mapping between vectors (v0-v31) and integer registers (r0-r31).  Standard calling conventions apply and so callee saved integer registers should be saved before being used as vector registers. 
+ Strided (VLDS/VSTS) and indexed (VLDX/VSTX) load/stores are complex, and simple implementations will trap on these instructions, permitting emulation in software.
 
 ## Proposed Harmonised RVP vector op instruction encoding
 
