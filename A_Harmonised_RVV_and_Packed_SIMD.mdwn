@@ -50,7 +50,7 @@ The above are pure subsets of valid RVV VCFG configurations (and hence forward c
 
 ## 16-bit Arithmetic
 
-| Mnemonic           | 16-bit Instruction        | Harmonised RVP Equivalent |
+| Andes Mnemonic           | 16-bit Instruction        | Harmonised RVP Equivalent |
 | ------------------ | ------------------------- | ------------------- |
 | ADD16 rt, ra, rb   | Add                       | VADD (r16 <= rt,ra,rb <= r29), mm=00|
 | RADD16 rt, ra, rb  | Signed Halving add        | RADD (r16 <= rt,ra,rb <= r23), mm=00|
@@ -75,7 +75,7 @@ The above are pure subsets of valid RVV VCFG configurations (and hence forward c
 
 ## 8-bit Arithmetic
 
-| Mnemonic           | 8-bit Instruction        | Harmonised RVP Equivalent |
+| Andes Mnemonic           | 8-bit Instruction        | Harmonised RVP Equivalent |
 | ------------------ | ------------------------- | ------------------- |
 | ADD8 rt, ra, rb    | Add                       | VADD (r2 <= rt,ra,rb <= r15), mm=00 |
 | RADD8 rt, ra, rb   | Signed Halving add        | RADD (r2 <= rt,ra,rb <= r7), mm=00 |
@@ -94,7 +94,7 @@ SRA[I]16/SRL[I]16/SLL[I]16 to be mapped to VOP shift instructions in same manner
 
 The “K” (Saturation) and “u” (Rounding) variants could be encoded using VOP’s mm field (mm=01 is saturated or rounded shift, mm=00 is standard VOP shift)
 
-| Mnemonic             | 16-bit Instruction         | Harmonised RVP Equivalent |
+| Andes Mnemonic             | 16-bit Instruction         | Harmonised RVP Equivalent |
 | ------------------   | -------------------------  | ------------------- |
 | SRA16 rt, ra, rb     | Shift right arithmetic     | VSRA (r16 <= rt,ra,rb <= r29), mm=00|
 | SRAI16 rt, ra, im    | Shift right arithmetic imm | VSRAI (r16 <= rt,ra <= r29), mm=00|
@@ -116,18 +116,18 @@ The “K” (Saturation) and “u” (Rounding) variants could be encoded using 
 
 Andes SIMD Packed ISA omits 8 bit shifts, but these can be encoded in Harmonised RVP as follows:
 
-| Mnemonic             | 8-bit Instruction         | Harmonised RVP Equivalent |
+| Andes Mnemonic             | 8-bit Instruction         | Harmonised RVP Equivalent |
 | ------------------   | -------------------------  | ------------------- |
-|      | Shift right arithmetic     | VSRA (r2 <= rt,ra,rb <= r15), mm=00|
-|      | Shift right arithmetic imm | VSRAI (r2 <= rt,ra <= r15), mm=00|
-|      | Rounding Shift right arithmetic     | VSRA (r2 <= rt,ra,rb <= r15), mm=01|
-|      | Rounding Shift right arithmetic imm | VSRAI (r2 <= rt,ra <= r15), mm=01|
-|      | Shift right logical        | VSRL (r2 <= rt,ra,rb <= r15), mm=00|
-|      | Shift right logical imm    | VSRLI (r2 <= rt,ra <= r15), mm=00|
-|      | Rounding Shift right logical     | VSRL (r2 <= rt,ra,rb <= r15), mm=01|
-|      | Rounding Shift right logical imm | VSLRI (r2 <= rt,ra <= r15), mm=01|
-|      | Shift left logical         | VSLL (r2 <= rt,ra,rb <= r15), mm=00|
-|      | Shift left logical imm     | VSLLI (r2 <= rt,ra <= r15), mm=00|
-|      | Saturating Shift left logical       | VSLL (r2 <= rt,ra,rb <= r15), mm=01|
-|      | Saturating Shift left logical imm   | VSLLI (r2 <= rt,ra <= r15), mm=01|
+| n/a     | Shift right arithmetic     | VSRA (r2 <= rt,ra,rb <= r15), mm=00|
+| n/a     | Shift right arithmetic imm | VSRAI (r2 <= rt,ra <= r15), mm=00|
+| n/a     | Rounding Shift right arithmetic     | VSRA (r2 <= rt,ra,rb <= r15), mm=01|
+| n/a     | Rounding Shift right arithmetic imm | VSRAI (r2 <= rt,ra <= r15), mm=01|
+| n/a     | Shift right logical        | VSRL (r2 <= rt,ra,rb <= r15), mm=00|
+| n/a     | Shift right logical imm    | VSRLI (r2 <= rt,ra <= r15), mm=00|
+| n/a     | Rounding Shift right logical     | VSRL (r2 <= rt,ra,rb <= r15), mm=01|
+| n/a     | Rounding Shift right logical imm | VSLRI (r2 <= rt,ra <= r15), mm=01|
+| n/a     | Shift left logical         | VSLL (r2 <= rt,ra,rb <= r15), mm=00|
+| n/a     | Shift left logical imm     | VSLLI (r2 <= rt,ra <= r15), mm=00|
+| n/a     | Saturating Shift left logical       | VSLL (r2 <= rt,ra,rb <= r15), mm=01|
+| n/a     | Saturating Shift left logical imm   | VSLLI (r2 <= rt,ra <= r15), mm=01|
 
