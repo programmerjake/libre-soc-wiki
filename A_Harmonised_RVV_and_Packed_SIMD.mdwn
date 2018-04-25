@@ -1,4 +1,4 @@
-## Proposal to harmonise RV Vector spec with Packed SIMD ("Harmonised" RVP)
+# Proposal to harmonise RV Vector spec with Packed SIMD ("Harmonised" RVP)
 
 ##### MVL, setvl instruction & VL CSR work as per RV Vector spec.
 
@@ -45,3 +45,44 @@ A programmer can configure VCFG with any mix of these alternative configurations
 *  With the above alternative configs, there can be any split between signed & unsigned.
 
 The above are pure subsets of valid RVV VCFG configurations (and hence forward compatible between RVP and RVV, whilst also keeping RVP simple).  Other useful element types are fixed point fraction types and small integer(4 bit to 7 bit) elements. However these are omitted for now as they aren’t currently part of RVV spec, and the intention of this proposal is to harmonise the Andes SIMD instructions into a subset of RVV.
+
+# Comparative analysis with Andes Packed ISA proposal
+
+## 16-bit Arithmetic
+
+| Mnemonic           | 16-bit Instruction        | Simple-V Equivalent |
+| ------------------ | ------------------------- | ------------------- |
+| ADD16 rt, ra, rb   | add                       | VADD (r16 <= rt,ra,rb <= r29), mm=00|
+| RADD16 rt, ra, rb  | Signed Halving add        | |
+| URADD16 rt, ra, rb | Unsigned Halving add      | |
+| KADD16 rt, ra, rb  | Signed Saturating add     | |
+| UKADD16 rt, ra, rb | Unsigned Saturating add   | |
+| SUB16 rt, ra, rb   | sub                       | VSUB (r16 <= rt,ra,rb <= r29), mm=00|
+| RSUB16 rt, ra, rb  | Signed Halving sub        | |
+| URSUB16 rt, ra, rb | Unsigned Halving sub                | |
+| KSUB16 rt, ra, rb  | Signed Saturating sub               | |
+| UKSUB16 rt, ra, rb | Unsigned Saturating sub             | |
+| CRAS16 rt, ra, rb  | Cross Add & Sub                     | |
+| RCRAS16 rt, ra, rb | Signed Halving Cross Add & Sub      | |
+| URCRAS16 rt, ra, rb| Unsigned Halving Cross Add & Sub    | |
+| KCRAS16 rt, ra, rb | Signed Saturating Cross Add & Sub   | |
+| UKCRAS16 rt, ra, rb| Unsigned Saturating Cross Add & Sub | |
+| CRSA16 rt, ra, rb  | Cross Sub & Add                     | |
+| RCRSA16 rt, ra, rb | Signed Halving Cross Sub & Add      | |
+| URCRSA16 rt, ra, rb| Unsigned Halving Cross Sub & Add    | |
+| KCRSA16 rt, ra, rb | Signed Saturating Cross Sub & Add   | |
+| UKCRSA16 rt, ra, rb| Unsigned Saturating Cross Sub & Add | |
+
+## 8-bit Arithmetic
+
+| Mnemonic           | 16-bit Instruction        | Simple-V Equivalent |
+| ------------------ | ------------------------- | ------------------- |
+| ADD8 rt, ra, rb    | add                       | VADD (r2 <= rt,ra,rb <= r15), mm=00 |
+| RADD8 rt, ra, rb   | Signed Halving add        | |
+| URADD8 rt, ra, rb  | Unsigned Halving add      | |
+| KADD8 rt, ra, rb   | Signed Saturating add     | |
+| UKADD8 rt, ra, rb  | Unsigned Saturating add   | |
+| SUB8 rt, ra, rb    | sub                       | VSUB (r2 <= rt,ra,rb <= r15), mm=00 |
+| RSUB8 rt, ra, rb   | Signed Halving sub        | |
+| URSUB8 rt, ra, rb  | Unsigned Halving sub      | |
+
