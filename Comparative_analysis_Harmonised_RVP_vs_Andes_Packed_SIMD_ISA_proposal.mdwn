@@ -1,5 +1,51 @@
 # Comparative analysis with Andes Packed ISA proposal
 
+## Register file
+
+| Register           | Andes ISA                    | Harmonised RVP ISA        |
+| ------------------ | -------------------------    | -------------------       |
+| v0                 | Hardwired zero               | Hardwired zero            |
+| v1                 | 32bit GPR or Vector[4xB|2xH] | Predicate masks           |
+| v2                 | 32bit GPR or Vector[4xB|2xH] | 32bit GPR or Vector[4xSB] |
+| v3                 | 32bit GPR or Vector[4xB|2xH] | 32bit GPR or Vector[4xSB] |
+| v4                 | 32bit GPR or Vector[4xB|2xH] | 32bit GPR or Vector[4xSB] |
+| v5                 | 32bit GPR or Vector[4xB|2xH] | 32bit GPR or Vector[4xSB] |
+| v6                 | 32bit GPR or Vector[4xB|2xH] | 32bit GPR or Vector[4xSB] |
+| v7                 | 32bit GPR or Vector[4xB|2xH] | 32bit GPR or Vector[4xSB] |
+| v8                 | 32bit GPR or Vector[4xB|2xH] | 32bit GPR or Vector[4xUB] |
+| v9                 | 32bit GPR or Vector[4xB|2xH] | 32bit GPR or Vector[4xUB] |
+| v10                | 32bit GPR or Vector[4xB|2xH] | 32bit GPR or Vector[4xUB] |
+| v11                | 32bit GPR or Vector[4xB|2xH] | 32bit GPR or Vector[4xUB] |
+| v12                | 32bit GPR or Vector[4xB|2xH] | 32bit GPR or Vector[4xUB] |
+| v13                | 32bit GPR or Vector[4xB|2xH] | 32bit GPR or Vector[4xUB] |
+| v14                | 32bit GPR or Vector[4xB|2xH] | 32bit GPR or Vector[4xUB] |
+| v15                | 32bit GPR or Vector[4xB|2xH] | 32bit GPR or Vector[4xUB] |
+| v16                | 32bit GPR or Vector[4xB|2xH] | 32bit GPR or Vector[2xSH] |
+| v17                | 32bit GPR or Vector[4xB|2xH] | 32bit GPR or Vector[2xSH] |
+| v18                | 32bit GPR or Vector[4xB|2xH] | 32bit GPR or Vector[2xSH] |
+| v19                | 32bit GPR or Vector[4xB|2xH] | 32bit GPR or Vector[2xSH] |
+| v20                | 32bit GPR or Vector[4xB|2xH] | 32bit GPR or Vector[2xSH] |
+| v21                | 32bit GPR or Vector[4xB|2xH] | 32bit GPR or Vector[2xSH] |
+| v22                | 32bit GPR or Vector[4xB|2xH] | 32bit GPR or Vector[2xSH] |
+| v23                | 32bit GPR or Vector[4xB|2xH] | 32bit GPR or Vector[2xSH] |
+| v24                | 32bit GPR or Vector[4xB|2xH] | 32bit GPR or Vector[2xUH] |
+| v25                | 32bit GPR or Vector[4xB|2xH] | 32bit GPR or Vector[2xUH] |
+| v26                | 32bit GPR or Vector[4xB|2xH] | 32bit GPR or Vector[2xUH] |
+| v27                | 32bit GPR or Vector[4xB|2xH] | 32bit GPR or Vector[2xUH] |
+| v28                | 32bit GPR or Vector[4xB|2xH] | 32bit GPR or Vector[2xUH] |
+| v29                | 32bit GPR or Vector[4xB|2xH] | 32bit GPR or Vector[2xUH] |
+| v30                | 32bit GPR or Vector[4xB|2xH] | 32bit GPR or Vector[1xUW] |
+| v31                | 32bit GPR or Vector[4xB|2xH] | 32bit GPR or Vector[1xUW] |
+
+
+
+| RADD16 rt, ra, rb  | Signed Halving add        | RADD (r16 <= rt,ra,rb <= r23), mm=00|
+| URADD16 rt, ra, rb | Unsigned Halving add      | RADD (r24 <= rt,ra,rb <= r29), mm=00|
+| KADD16 rt, ra, rb  | Signed Saturating add     | VADD (r16 <= rt,ra,rb <= r23), mm=01|
+| UKADD16 rt, ra, rb | Unsigned Saturating add   | VADD (r24 <= rt,ra,rb <= r29), mm=01|
+| SUB16 rt, ra, rb   | Subtract                  | VSUB (r16 <= rt,ra,rb <= r29), mm=00|
+| RSUB16 rt, ra, rb  | Signed Halving sub        | RSUB (r16 <= rt,ra,rb <= r23), mm=00|
+
 ## 16-bit Arithmetic
 
 | Andes Mnemonic           | 16-bit Instruction        | Harmonised RVP Equivalent |
