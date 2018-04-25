@@ -10,7 +10,7 @@ RVP implementations may choose to load/store to/from Integer register file (rath
 * Thus, RVP implementations have a choice of providing a dedicated Vector register file, or sharing the integer register file, but not both  simultaneously.  (Supporting both would need a CSR mode switch bit).
 * If integer register file is used for vector operations, any callee saved registers (r2-4, 8-9, 18-27) must be saved with RVI SW or SD instructions, before being used as vector registers (this register saving behaviour is harmless but redundant when RVP code is run on a machine with a dedicated vector reg file).
 
-##### VLDX, VSTX, VLDS, VSTS are not supported in RVP
+##### VLDX, VSTX, VLDS, VSTS are not supported in hardware
 To keep RVP implementations simple, these instructions will trap, and may be implemented as software emulation
 
 ##### Default register "banks" and types
