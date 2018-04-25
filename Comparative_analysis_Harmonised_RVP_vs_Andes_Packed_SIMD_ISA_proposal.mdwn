@@ -111,4 +111,14 @@ Andes SIMD Packed ISA omits 8 bit shifts, but these can be encoded in Harmonised
 | UMIN16 rt, ra, rb   | Unsigned minimum         | VMIN (r24 <= rt,ra,rb <= r29), mm=00|
 | SMAX16 rt, ra, rb   | Signed maximum           | VMAX (r16 <= rt,ra,rb <= r23), mm=00|
 | UMAX16 rt, ra, rb   | Unsigned maximum         | VMAX (r24 <= rt,ra,rb <= r29), mm=00|
-| KABS16 rt, ra, rb   | Saturated absolute value | VSGNX (r16 <= rt <= r29, 16 <= ra,rb <= 23, mm=01 |
+| KABS16 rt, ra, rb   | Saturated absolute value | VSGNX (r16 <= rt <= r29, r16 <= ra,rb <= r23, mm=01 |
+
+## 8-bit Miscellaneous instructions
+
+| Andes Mnemonic           | 8-bit Instruction        | Harmonised RVP Equivalent |
+| ------------------   | ------------------------- | ------------------- |
+| SMIN8 rt, ra, rb   | Signed minimum           | VMIN (r2 <= rt,ra,rb <= r7), mm=00|
+| UMIN8 rt, ra, rb   | Unsigned minimum         | VMIN (r8 <= rt,ra,rb <= r15), mm=00|
+| SMAX8 rt, ra, rb   | Signed maximum           | VMAX (r2 <= rt,ra,rb <= r7), mm=00|
+| UMAX8 rt, ra, rb   | Unsigned maximum         | VMAX (r8 <= rt,ra,rb <= r15), mm=00|
+| KABS8 rt, ra, rb   | Saturated absolute value | VSGNX (r2 <= rt <= r15, r2 <= ra,rb <= r8, mm=01 |
