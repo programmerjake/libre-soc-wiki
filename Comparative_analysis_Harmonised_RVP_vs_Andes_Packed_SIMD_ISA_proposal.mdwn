@@ -1,4 +1,30 @@
-# Comparative analysis with Andes Packed ISA proposal
+# Comparative analysis of Andes Packed ISA proposal vs Harmonised RVP (forwards compatible with RV Vector)
+
+## Proposed vector instruction encoding
+
+Register x 2 -> register operations:
+
+| 31 30 29 28 27 26 | 25  | 24 23 22 21 20 | 19 18 17 16 15 | 14 | 13 12 | 11 10 9 8 7 | 6 5 4 3 2 1 0 |
+| ----------------- | --  | -------------- | -------------- | -- | ----- | ----------- | ------------- |
+| func_6            | 0   | rs2            | rs1            | 0  | mm    | rd1         | VOP opcode    |
+
+Immediate + register -> register operations:
+
+| 31 30 29 | 28 27 26 | 25  | 24 23 22 21 20 | 19 18 17 16 15 | 14 | 13 12 | 11 10 9 8 7 | 6 5 4 3 2 1 0 |
+| -------- | -------- | --  | -------------- | -------------- | -- | ----- | ----------- | ------------- |
+| func_3   | imm[7:5] | 1   | imm[4:0]       | rs1            | 0  | mm    | rd1         | VOP opcode    |
+
+Register x 3 -> register operations:
+
+| 31 30 29 28 27 | 26 25  | 24 23 22 21 20 | 19 18 17 16 15 | 14 | 13 12 | 11 10 9 8 7 | 6 5 4 3 2 1 0 |
+| ----------------------- | -------------- | -------------- | -- | ----- | ----------- | ------------- |
+| rs3            | func_2 | rs2            | rs1            | 1  | mm    | rd1         | VOP opcode    |
+
+mm values:
+mm = 00 -> use current global saturation or rounding, no mask
+mm = 00 -> force saturation or rounding for this instruction only
+mm = 10 -> use v1 as predicate mask
+mm = 11 -> use ~v1 as predicate mask
 
 ## Register file
 
