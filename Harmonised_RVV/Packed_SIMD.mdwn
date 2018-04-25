@@ -38,7 +38,7 @@ However, note RV32I registers can fit 4x INT8 elements.  To preserve Andes SIMD 
 
 A programmer can configure VCFG with the any mix of these alternative configurations:
 
-*  v0-v31 are all INT 16, and MVL is same as point #4 above
+*  v0-v31 are all INT 16, and MVL is same as for Default MVL above
 *  v0-v31 are all INT 8 and MVL is 4 on RV32I and 8 on RV64I
 *  A lesser number of registers (<v31) could be supported, eg. default is only v0-v29 defined.  (Accessing registers beyond maximum defined by VDCFG is to be legal, with a type of INT32 assumed.  However, this is not to affect the MVL, which is to be calculated based on INT8/INT16 vectors only)
 *  With the above alternative configs, there can be any split between signed & unsigned.
