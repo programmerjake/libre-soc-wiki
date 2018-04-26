@@ -406,16 +406,21 @@ and is the only idea that meets the three requirements:
   (at all) that could cost them immediate short-term profits.**
   (met because existing implementations, with the exception of those
   that have Custom Extensions, come under the "vendor/arch-id read only
-  is a declaration of having no Custom Extensions" fall-back category)
+  is a formal declaration of an implementation having no Custom Extensions"
+  fall-back category)
 
 So to summarise:
 
 * The consequences of not tackling this are severe: the RISC-V Foundation
   cannot take a back seat.  If it does, clear historical precedent shows
   100% what the outcome will be (1).
+* Making the mvendorid and marchid CSRs WARL solves the problem in a
+  minimal to zero-disruptive fashion.
 * The retro-fitting cost onto existing implementations (even though the
-  specification has not been finalised) is negligeable
-  (changes to words in the specification)
+  specification has not been finalised) is zero to negligeable
+  (only changes to words in the specification required at this time:
+  no vendor need discard existing designs, either being designed,
+  taped out, or actually in production).
 * The benefits are clear (pain-free transition path for vendors to safely
   upgrade over time; no fights over Custom opcode space; no hassle for
   software toolchain; no hassle for GNU/Linux Distros)
