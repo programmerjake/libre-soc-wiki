@@ -306,11 +306,31 @@ correct implementation of (mandatory) support for MISA.
 
 (Summary: good solid orthogonal idea.  See [[ioctl]] for full details)
 
+==RB===
+
+This proposal adds a standardised extension interface to the RV instruction set by introducing a fixed small number (e.g. 8) of "overloadable" R-type opcodes ext_ctl0, .. ext_ctl7. Each takes a process local interface cookie in rs1. Based on the cookie, the CPU routes the "overloaded" instructions to a "device" on or off the CPU that implements the actual semantics. 
+
+The cookie is "opened" with an additional r-type instruction ext_open that takes a 20 bit identifier and "closed" with an  ext_close instruction. The implementing hardware device can use the cookie to reference internal state. Thus, interfaces may be statefull.
+
+CPU's and devices may implement several interfaces, indeed, are expected to. E.g. a single hardware device might expose a functional interface with 6 overloaded instructions, expose configuration with two highly device specific management interfaces with 8 resp. 4 overloaded instructions, and respond to a standardised save state interface with 4 overloaded instructions.
+
+Having a standardised overloadable interface simply avoids much of the need for isa extensions for hardware with non standard interfaces and semantics. This is analogous to the way that the standardised overloadable ioctl interface of the kernel almost completely avoids the need for extending the kernel with syscalls for the myriad of hardware devices with their specific interfaces and semantics.  
+
+Since the rs1 input of the overloaded  ext_ctl instruction's are taken by the interface cookie, they are restricted in use compared to a normal R-type instruction (it is possible to pass 12 bits of additional info by or ing it with the cookie). Delegation is also expected to come at a small additional performance price compared to a "native" instruction. This should be an acceptable tradeoff in most cases. 
+
+The expanded flexibility comes at the cost: the standard can specify the semantics of the delegation mechanism and the interfacing with the rest of the cpu, but the actual semantics of the overloaded instructions can only be defined by the designer of the interface. Likewise, a device can be conforming as far as delegation and interaction with the CPU is concerned, but whether the hardware is conforming to the semantics of the interface is outside the scope of spec. Being able to specify that semantics using the methods used for RV itself is clearly very valuable. One impetus for doing that is using it for purposes of its own, effectively freeing opcode space for other purposes. Also, some interfaces may become de facto or de jure standards themselves, necessitating hardware to implement competing interfaces. I.e., facilitating a free for all, may lead to standards proliferation. C'est la vie.  
+
+The only "ISA-collisions" that can still occur are in the 20 bit (~10^6) interface identifier space, with 12 more bits to identify a device on a hart that implements the interface. One suggestion is setting aside 2^19 id's that are handed out for a small fee by a central (automated) registration (making sure the space is not just claimed), while the remaining 2^19 are used as a good hash on a long, plausibly globally unique human readable interface name. This gives implementors the choice between a guaranteed private identifier paying a fee, or relying on low probabilities. The interface identifier could also easily be extended to 42 bits on RV64. 
+
+
+====End RB==
+
 This proposal basically mirrors the concept of POSIX ioctls, providing
 (arbitrarily) 8 functions (opcodes) whose meaning may be over-ridden
 in an object-orientated fashion by calling an "open handle" (and close)
 function (instruction) that switches (redirects) the 8 functions over to
 different opcodes.
+
 
 The "open handle" opcode takes a GUID (globally-unique identifier)
 and an ioctl number, and stores the UUID in a table indexed by the
@@ -324,6 +344,7 @@ ioctl number:
     def close_handle(ioctl_num): 
           handle_global_state[ioctl_num] = -1 # clear table entry
 
+         
 "Ioctls" (arbitrarily 8 separate R-type opcodes) then perform a redirect
 based on what the global state for that numbered "ioctl" has been set to:
 
@@ -335,12 +356,116 @@ based on what the global state for that numbered "ioctl" has been set to:
         else:
             raise Exception("undefined opcode")
 
+=== RB ==
+
+not quite I think. It is more like
+
+    def A_shutdown(cookie, data):
+       ...
+
+    def A_init(data)
+
+    def A_do_stuff(cookie, data):
+       ...
+
+    def A_do_more_stuff(cookie, data):
+       ...
+
+    def B_do_stuff(cookie, data):
+       ...
+
+    def B_shutdown(cookie, data)
+       ...
+
+    interfaceA = {
+                  shutdown: A_shutdown,
+                  init:     A_init,
+                  ctl0:     A_do_stuff, 
+                  ctl1:     A_do_more_stuff
+                 }
+
+    interfaceB = {
+                  shutdown: B_shutdown,
+                  init:     B_init,
+                  ctl0:     B_do_stuff
+                 }
+
+    cpu_interfaces = {
+                  0xABCD: interfaceA,
+                  0x1234: interfaceB
+                 }
+
+    cpu_open_handles = {}
+  
+    __handleId = 0
+    def new_unused_handle_id()
+        __handle = __handle + 1
+        return __handle
+         
+    def ext_open(uuid, data):
+        interface = cpu_interface[uuid]
+        if interface == NIL:
+            raise Exception("Unrecognised interface")
+        
+        handleId = new_unused_handle_id()
+        cpu_open_handles[handleId] = (interface, CurrentVirtualMemoryAddressSpace).
+        cookie = A_init(data)
+
+        return (handle_id, cookie)
+
+    def ext_close(handle, data):
+        (handleId, cookie) = handle
+        intf_VMA = cpu_open_handles[handleId]
+        if intf_VMA == NIL:
+             return -1
+
+        (interface, VMA) = intf_VMA
+        if VMA != CurrentVirtualMemoryAddressSpace:
+             return -1
+        assert(interface != NIL)
+        shutdown = interface["shutdown"]
+        if shutdown != NIL:
+             err = interface.shutdown(cookie, data)
+             if err != 0:
+                 return err
+        cpu_open_handles[handleId] = NIL
+        return 0
+
+    def ext_ctl0(handle, data):
+        (handleId, cookie) = handle
+        intf_VMA = cpu_open_handles[handleId]
+        if intf_VMA == NIL:
+             raise Exception("unknown interface")   
+
+        (interface, VMA) = intf_VMA
+        if VMA != CurrentVirtualMemoryAddressSpace: 
+             raise Exception("unknown interface")  #Disclosing that the interface exists in different address is security hole 
+
+        assert(interface != NIL)
+        ctl0 = interface["ctl0"]
+        if ctl0 == NIL:
+            raise Exception("Invalid Instruction")
+
+        return ctl0(cookie, data)
+       
+        
+   The other ext_ctl's are similar. 
+        
+==End RB==
+
+
+
+      
 The proposal is functionally near-identical to that of the mvendor/march-id
 except extended down to individual opcodes.  As such it could hypothetically
 be proposed as an independent Standard Extension in its own right that extends
 the Custom Opcode space *or* fits into the brownfield spaces within the
 existing ISA opcode space *or* is used as the basis of an independent
 Custom Extension in its own right.
+
+==RB==
+I really think it should be in browncode
+==RB==
 
 One of the reasons for seeking an extension of the Custom opcode space is
 that the Custom opcode space is severely limited: only 2 opcodes are free
@@ -351,6 +476,8 @@ Despite the proposal (which is still undergoing clarification)
 being worthwhile in its own right, and standing on its own merits and
 thus definitely worthwhile pursuing, it is non-trivial and much more
 invasive than the mvendor/march-id WARL concept.
+
+
 
 # Comments, Discussion and analysis
 
@@ -487,4 +614,3 @@ The following conversation exerpts are taken from the ISA-dev discussion
 
 * <https://groups.google.com/a/groups.riscv.org/forum/#!topic/isa-dev/7bbwSIW5aqM>
 * <https://groups.google.com/a/groups.riscv.org/forum/#!topic/isa-dev/InzQ1wr_3Ak%5B1-25%5D>
-
