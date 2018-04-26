@@ -50,23 +50,23 @@ The Andes Packed SIMD ISA permits any GPR to be used for either INT8 or INT16 ve
 
 Both Andes Packed SIMD and Harmonised RVP are intended to be "low end" SIMD implementations (for processors without dedicated vector registers). Instead, the integer register file is used for SIMD operations. To maintain forwards compatibility with "high end" RV Vector implementations, programmer should use VLD and VST to load/store vectors. The implementation will then load/store a vector to/from the register file supported by the implementation.
 
-To keep implementations simple and focused on SIMD within­-register only, there is a strict 1:1 mapping between vectors (v0­ v31) and integer registers (r0­r31). Standard calling conventions apply and so callee saved integer registers should be saved before being used as vector registers. Strided (VLDS/VSTS) and indexed (VLDX/VSTX) load/stores are complex, and simple implementations will trap on these instructions, permitting emulation in software.
+To keep implementations simple and focused on SIMD within­-register only, there is a strict 1:1 mapping between vectors (v0­-v31) and integer registers (r0­-r31). Standard calling conventions apply and so callee saved integer registers should be saved before being used as vector registers. Strided (VLDS/VSTS) and indexed (VLDX/VSTX) load/stores are complex, and simple implementations will trap on these instructions, permitting emulation in software.
 
 ## Proposed Harmonised RVP vector op instruction encoding
 
-Register x 2 ­> register operations:
+Register x 2 ­--> register operations:
 
 | 31 30 29 28 27 26 | 25 | 24 23 22 21 20 | 19 18 17 16 15 | 14 | 13 12 | 11 10 9 8 7 | 6 5 4 3 2 1 0 |
 | ----------------- | -- | -------------- | -------------- | -- | ----- | ----------- | ------------- |
 | func6             | 0  | rs2            | rs1            | 0  | mm    | rd1         | VOP opcode    |
 
-Immediate + register ­> register operations:
+Immediate + register ­--> register operations:
 
 | 31 30 29 28 27 26 | 25 | 24 23 22 21 20 | 19 18 17 16 15 | 14 | 13 12 | 11 10 9 8 7 | 6 5 4 3 2 1 0 |
 | ----------------- | -- | -------------- | -------------- | -- | ----- | ----------- | ------------- |
 | func3, imm[7:5]   | 1  | imm[4:0]       | rs1            | 0  | mm    | rd1         | VOP opcode    |
 
-Register x 3 ­> register operations:
+Register x 3 --­> register operations:
 
 | 31 30 29 28 27 | 26 25 | 24 23 22 21 20 | 19 18 17 16 15 | 14 | 13 12 | 11 10 9 8 7 | 6 5 4 3 2 1 0 |
 | -------------- | ----- | -------------- | -------------- | -- | ----- | ----------- | ------------- |
