@@ -200,7 +200,7 @@ another that happens to use the same binary encoding.
   that wish to simultaneously interpret the same binary encoding.
 * There is nothing in the MISA specification which permits
   *future* versions (bug-fixes) of the RISC-V ISA to be "switched in".
- 
+
 Overall, whilst the MISA concept is a step in the right direction it's
 a hundred percent unsuitable for solving the problem.
 
@@ -297,7 +297,8 @@ pressing issues to deal with that make resolving encoding conflicts trivial
 by comparison).
 
 Also pointed out was that in certain cases pipeline stalls could be introduced
-during the switching phase, if needed.
+during the switching phase, if needed, just as they may be needed for
+correct implementation of (mandatory) support for MISA.
 
 **This is the only one of the proposals that meet the full requirements**
 
@@ -405,7 +406,7 @@ The following conversation exerpts are taken from the ISA-dev discussion
 
 > Yes. Well, it should be blocked via legal means. Incompatibility is
 > a disaster for an architecture.
-> 
+>
 > The viability of PowerPC was badly damaged when SPE was
 > introduced. This was a vector instruction set that was incompatible
 > with the AltiVec instruction set. Software vendors had to choose,
@@ -418,7 +419,7 @@ The following conversation exerpts are taken from the ISA-dev discussion
 > Both MMX and SSE remain today, in all shipping processors. With very
 > few exceptions, Intel does not ship chips with missing functionality.
 > There is a unified software ecosystem.
-> 
+>
 > This goes beyond the instruction set. MMU functionality also matters.
 > You can add stuff, but then it must be implemented in every future CPU.
 > You can not take stuff away without harming the architecture.
