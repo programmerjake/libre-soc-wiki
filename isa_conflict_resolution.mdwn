@@ -65,6 +65,7 @@ Several proposals were put forward (and some are still under discussion)
 
 * "Do nothing": problem is not severe: no action needed.
 * "Do nothing": problem is out-of-scope for RISC-V Foundation.
+* "Do nothing": problem complicates Compliance Testing (and is out of scope)
 * "MISA": the MISA CSR enables and disables extensions already: use that
 * "MISA-like": a new CSR which switches in and out new encodings
   (without destroying state)
@@ -77,20 +78,100 @@ Each of these will be discussed below in their own sections.
 
 TBD (basically not an option).
 
+There were several solutions offered that fell into this category.
+A few of them are listed in the introduction; more are listed below,
+and it was exhaustively (and exhaustingly) established that none of
+them are workable.
+
+Initially it was pointed out that Fabless Semiconductor companies could
+simply license multiple Custom Extensions and a suitable RISC-V core, and
+modify them accordingly.  The Fabless Semi Company would be responsible
+for paying the NREs on re-developing the test vectors (as the extension
+licensers would be extremely unlikely to do that without payment), and
+given that said Companies have an "integration" job to do, it would
+be reasonable to expect them to have such additional costs as well.
+
+The costs of this approach were outlined and discussed as being
+disproportionate and extreme compared to the actual likely cost of
+licensing the Custom Extensions in the first place.  Additionally it
+was pointed out that not only hardware NREs would be involved but
+custom software tools (compilers and more) would also be required
+(and maintained separately, on the basis that upstream would not
+accept them except under extreme pressure, and then only with
+prejudice).
+
+All similar schemes involving customisation of the custom extensions
+were likewise rejected, but not before the customisation process was
+mistakenly conflated with tne *normal* integration process of developing
+a custom processor (Bus Architectures, Cache layouts, peripheral layouts).
+
+The most compelling hardware-related reason (excluding the severe impact on
+the software ecosystem) for rejecting the customisation-of-customisation
+approach was the case where Extensions were using an instruction encoding
+space (48-bit, 64-bit) *greater* than that which the chosen core could
+cope with (32-bit, 48-bit).
+
+Overall, none of the options presented were feasible, and, in addition,
+even if they were followed through, still would result in the failure
+of the RISC-V ecosystem due to global conflicting ISA binary-encoding
+meanings (POWERPC's Altivec / SPE nightmare).
+
 # Do nothing (out of scope)
 
 TBD (basically, may not be RV Foundation's "scope", still results in
 problem, so not an option)
 
+This was one of the first arguments presented: The RISC-V Foundation
+considers Custom Extensions to be "out of scope"; that "it's not their
+problem, therefore there isn't a problem".
+
+The logical errors in this argument were quickly enumerated: namely
+that the RISC-V Foundation is not in control of the use-cases, such
+that binary-encoding is a hundred percent guaranteed to occur, and
+a hundred percent guaranteed to occur in *commodity* hardware where
+Debian, Fedora, SUSE and other distros will be hardest hit by the
+resultant chaos, and that will just be the more "visible" aspect of
+the underlying problem.
+
+# Do nothing (Compliance too complex, therefore out of scope)
+
+TBD (basically, may not be RV Foundation's "scope", still results in
+problem, so not an option)
+
+Two interestingly diametrically-opposed equally valid arguments exist here:
+
+* Whilst Compliance testing of Custom Extensions is definitely legitimately
+  out of scope, Compliance testing of simultaneous legacy (old revisions of
+  ISA Standards) and current (new revisions of ISA Standard) definitely
+  is not.  Efforts to reduce *Compliance Testing* complexity is therefore
+  "Compliance Tail Wagging Standard Dog".
+* Beyond a certain threshold, complexity of Compliance Testing is so
+  burdensome that it risks outright rejection of the entire Standard.
+
+Meeting these two diametrically-opposed perspectives requires that the
+solution be very, very simple.
+
 # MISA
 
 TBD, basically MISA not suitable
 
-> * MISA Extension disabling is permitted (optionally) to DESTROY the state
-> information (which means that it *has* to be re-initialised just to be
-> safe... mistake in the standard, there), and
-> * MISA was only designed to cover Standard Extensions.
+MISA permits extensions to be disabled by masking out the relevant bit.
+Hypothetically it could be used to disable one extension, then enable
+another that happens to use the same binary encoding.
+
+*However*:
+
+* MISA Extension disabling is permitted (optionally) to **destroy**
+  the state information.  Thus it is totally unsuitable for cases
+  where instructions from different Custom extensions are needed in
+  quick succession.
+* MISA was only designed to cover Standard Extensions.
+* There is nothing to prevent multiple Extensions being enabled
+  that wish to simultaneously interpret the same binary encoding.
  
+Overall, whilst the MISA concept is a step in the right direction it's
+a hundred percent unsuitable for solving the problem.
+
 # MISA-like
 
 TBD, basically same as mvend/march WARL except needs an extra CSR where
