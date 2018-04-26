@@ -360,6 +360,8 @@ based on what the global state for that numbered "ioctl" has been set to:
 
 not quite I think. It is more like
 
+// Hardware, implementing interface with UUID 0xABCD
+
     def A_shutdown(cookie, data):
        ...
 
@@ -371,45 +373,51 @@ not quite I think. It is more like
     def A_do_more_stuff(cookie, data):
        ...
 
-    def B_do_stuff(cookie, data):
-       ...
+    interfaceA = {
+                  "shutdown": A_shutdown,
+                  "init":     A_init,
+                  "ctl0":     A_do_stuff, 
+                  "ctl1":     A_do_more_stuff
+                 }
 
+// hardware implementing interface with UUID = 0x1234
+
+    def B_do_things(cookie, data):
+       ...
     def B_shutdown(cookie, data)
        ...
 
-    interfaceA = {
-                  shutdown: A_shutdown,
-                  init:     A_init,
-                  ctl0:     A_do_stuff, 
-                  ctl1:     A_do_more_stuff
+    interfaceB = {
+                  "shutdown": B_shutdown,
+                  "ctl0":     B_do_things
                  }
 
-    interfaceB = {
-                  shutdown: B_shutdown,
-                  init:     B_init,
-                  ctl0:     B_do_stuff
-                 }
+
+// The CPU being wired to the devices
 
     cpu_interfaces = {
                   0xABCD: interfaceA,
                   0x1234: interfaceB
                  }
 
+// The functionality that the CPU must implement to use the extension interface
+
     cpu_open_handles = {}
   
     __handleId = 0
     def new_unused_handle_id()
-        __handle = __handle + 1
-        return __handle
+        __handleId = __handleId + 1
+        return __handleId
          
     def ext_open(uuid, data):
         interface = cpu_interface[uuid]
         if interface == NIL:
-            raise Exception("Unrecognised interface")
+            raise Exception("No such interface")
         
         handleId = new_unused_handle_id()
-        cpu_open_handles[handleId] = (interface, CurrentVirtualMemoryAddressSpace).
-        cookie = A_init(data)
+        cpu_open_handles[handleId] = (interface, CurrentVirtualMemoryAddressSpace)
+
+        cookie = A_init(data)                      # Here device takes over
 
         return (handle_id, cookie)
 
@@ -425,7 +433,9 @@ not quite I think. It is more like
         assert(interface != NIL)
         shutdown = interface["shutdown"]
         if shutdown != NIL:
-             err = interface.shutdown(cookie, data)
+
+             err = interface.shutdown(cookie, data)  # Here device takes over
+
              if err != 0:
                  return err
         cpu_open_handles[handleId] = NIL
@@ -435,21 +445,21 @@ not quite I think. It is more like
         (handleId, cookie) = handle
         intf_VMA = cpu_open_handles[handleId]
         if intf_VMA == NIL:
-             raise Exception("unknown interface")   
+             raise Exception("No such interface")   
 
         (interface, VMA) = intf_VMA
         if VMA != CurrentVirtualMemoryAddressSpace: 
-             raise Exception("unknown interface")  #Disclosing that the interface exists in different address is security hole 
+             raise Exception("No such interface")  #Disclosing that the interface exists in different address is security hole 
 
         assert(interface != NIL)
         ctl0 = interface["ctl0"]
         if ctl0 == NIL:
-            raise Exception("Invalid Instruction")
+            raise Exception("No such Instruction")
 
-        return ctl0(cookie, data)
+        return ctl0(cookie, data)                  # Here device takes over
        
         
-   The other ext_ctl's are similar. 
+The other ext_ctl's are similar. 
         
 ==End RB==
 
