@@ -1,0 +1,124 @@
+==introduction==
+
+This proposal adds a standardised extension interface to the RV instruction set. 
+
+The extension consists of 2 + a fixed small number (we will assume 8) of R-type instructions. The main 8 instructions are "overloadable" R-type instructions ext_ctl0, .. ext_ctl7 that take a handle in rs1 consisting of a cpu determined, virtual-memory-address-space local interface id and a device determined cookie. More precisely, based on the interface id, the CPU routes the "overloaded" instructions to an on or off chip device that implements the actual semantics. The handle is created with an additional r-type instruction ext_open that takes a 20 bit UUID identifier and is "closed" with an  ext_close instruction. The implementing hardware device can use the cookie to reference internal state. Thus, interfaces may be state-full.
+
+CPU's and devices may implement several interfaces, indeed, are expected to. E.g. a single hardware device might expose a functional interface with 6 overloaded instructions, expose configuration with two highly device specific management interfaces with 8 resp. 4 overloaded instructions, and respond to a standardised save state interface with 4 overloaded instructions.
+
+The following table shows the analogies:
+
+posix                                             RV Extension interface
+
+long open(const char* device_interface)           lui rd <20bit-hash of device_interface_name>; ext_open rd rd zero
+long open(cons char* hw_device)                   lui rd <20bit-hash of device_interface_name>; ori rd rd <12 bit deviceId>; ext_open rd rd zero 
+int close(int fd)                                 ext_close rd rs1 zero
+long ioctl(int fd, 0, long data)                  ext_ctl0 rd rs1 rs2
+long ioctl(int fd, 1, long data)                  ext_ctl1 rd rs1 rs2    
+long ioctl(int fd, 2, long data)                  ext_ctl2 rd rs1 rs2
+
+
+Since the rs1 input of the overloaded  ext_ctl instruction's are taken by the interface cookie, they are restricted in use compared to a normal R-type instruction (it is possible to pass 12 bits of additional info by or ing it with the cookie). Delegation is also expected to come at a small additional performance price compared to a "native" instruction. This should be an acceptable tradeoff in most cases. 
+
+The expanded flexibility comes at the cost: the standard can specify the semantics of the delegation mechanism and the interfacing with the rest of the cpu, but the actual semantics of the overloaded instructions can only be defined by the designer of the interface. Likewise, a device can be conforming as far as delegation and interaction with the CPU is concerned, but whether the hardware is conforming to the semantics of the interface is outside the scope of spec. Being able to specify that semantics using the methods used for RV itself is clearly very valuable. One impetus for doing that is using it for purposes of its own, effectively freeing opcode space for other purposes. Also, some interfaces may become de facto or de jure standards themselves, necessitating hardware to implement competing interfaces. I.e., facilitating a free for all, may lead to standards proliferation. C'est la vie.  
+
+The only "ISA-collisions" that can still occur are in the 20 bit (~10^6) interface identifier space, with 12 more bits to identify a device on a hart that implements the interface. One suggestion is setting aside 2^19 id's that are handed out for a small fee by a central (automated) registration (making sure the space is not just claimed), while the remaining 2^19 are used as a good hash on a long, plausibly globally unique human readable interface name. This gives implementors the choice between a guaranteed private identifier paying a fee, or relying on low probabilities. The interface identifier could also easily be extended to 42 bits on RV64. 
+
+
+The whole extension consists of 10 R-type instructions, ext_open, ext_close ext_ctl0, ext_ctl1, ext_ctl7 that mimic the device interface for posix The number of 8 ext_ctl instructions is arbitrary and open to debate. 
+
+Encoding is TBD but it is intended that the instructions are in the regular OP segment of the encoding, NOT in one reserved for experimentation or future extensions since the point of the 
+
+
+== Description of the instructions ==
+
+EXT_OPEN  rd rs1 rs2 
+
+Opens am extension device implementing some extension interface. 
+
+-- rs1 contains a XLEN length number whose bits 12..31 that are an UIID that identifies the interface (recommended practice is either a registered number or of a good hash function over a long human readable plausibly unique interface name)
+The low 12 bits enumerate the devices implementing this interface on the current hart (e.g. a low_power slow and high_power fast or connected to different periferals). 
+
+-- rs2 contains unspecified data that may be required to properly initialise the device.
+
+After execution  
+
+--if the cpu does not support the device (in particular, not support the interface if the low 12 bits of rs1 are zero), rd == 0, otherwise
+--if the device did not successfully initialise, rd == a non negative error code < (1 << 12), otherwise
+--rd == a device handle, a nonzero number with bit 0,..11 zero, 12..XLEN-1 identifying an initialised device + possible resource state.
+
+The restrictions on rd mean that after the following sequence the device is guaranteed to be available and properly initialised 
+
+li t0 <20-bit UUID>
+ext_open t0 t0 rs2
+li t1 (1 << 12)
+bltu t0 t1  L_fail 
+//use t0 with ext_ctl's
+
+We can use c.li instead of li if the error code is guaranteed to be less than (1<<5) and beqz if the interface is guaranteed to not fail on initialisation.
+
+It also follows that all the devices implementing an interface (with a simple close) can be enumerated with the following sequence
+
+li t0 <20-bit UUID>
+Loop_begin:
+ext_open t0 t0 rs2
+beqz t0 Loop_end
+//use t0 with ext_ctl's
+...
+ext_close zero t0 zero     
+add t0 t0 1
+j Loop begin:
+Loop_end:
+
+ 
+------------------
+
+EXT_CLOSE rd rs1 rs2 
+
+invalidate the extension handle and releases the extension device and the resources associated to the the handle obtained with EXT_OPEN.  
+
+-- rs1 contains any number 
+-- rs2 contains unspecified data that may be necessary to deinitialise the engine
+
+After execution: 
+
+--  rd == a nonzero error code if rs1 contains an opened extension device handle, optionally or'ed with a 12 bit unsigned number, but failed to close it.
+--  rd == 0 otherwise.
+
+It follows that EXT_CLOSE does not trap, and that EXT_CLOSE is idempotent.
+
+Remark:
+
+Devices that do not exhaust resources may not require closing. 
+------------------
+
+EXT_CTL0 rd rs1 rs2
+EXT_CTL1 rd rs1 rs2
+....
+
+EXT_CTL7 rd rs1 rs2
+
+Execute some operation on the extension device. The number of EXT_CTL instructions is open to debate. 
+
+-- rs1 contains an opened extension handle, optionally or'ed with a 12 bit unsigned number
+-- rs2 constains unspecified data
+
+If rs1 is not an opened extension handle, the instruction MUST trap. 
+If the interface of the device represented by rs1 does not specify the instruction or only specifies it for other registers (usually x0 = zero or nonzero) it MAY trap or return an unspecified value.
+
+Otherwise, the CPU will provide the engine with the content of rs1 on read port1, content of rs2 on read port 2 and  the output port will be set to rd.  Moreover the device will execute operation <i> if EXT_CTL<i> is called. 
+The extension device implementing the extension is free to do whatever  it wants in this operation. It can use the device handle in rs1 to access internal state and it can use the first 12 bits of rs1 as additional data to multiplex additional operations, use them as an immediate or even to specify additional registers (although that sounds like asking for trouble). 
+
+Remark1. 
+
+Obviously the handle taking up input port 1 is a restriction.  It would be nice if one could use two inputs, e.g. by using  _rd_ to specify both the extension device handle and the output. Obviously that is not a regular R type instruction. However, the handle comes in effectively at the decode level, and the extension device does not really require 3 input ports. In any case, for a stateful interface the restriction of 1 input is not so bad. 
+ 
+Remark2:
+For a device not requiring closing
+
+lui rd <20bit hash of the Frobate interface>
+ext_open rd rd zero
+ext_op0   rd rd rs2
+
+can be macro op fused to a two register instruction frobate rd rs2. Maybe putting the extension handle in rs2 instead of rs1 makes this easier. 
+
