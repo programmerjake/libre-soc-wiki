@@ -2,16 +2,32 @@
 
 ## Executive Summary
 
-A non-invasive backwards-compatible change to make
-mvendorid and marchid being read-only to be a formal declaration of an
-architecture having no Custom Extensions, and being permitted to be
-WARL in order to support multiple simultaneous architectures on the
-same processor (or hart) permits not only backwards and forwards
-compatibility with existing implementations of the RISC-V Standard,
-not only permits seamless transitions to future versions of the
-RISC-V Standard (something that is not possible at the moment), but
-permanently fixes the problem of clashes in Custom Extension opcodes
-on a global basis.
+A non-invasive backwards-compatible change to make mvendorid and marchid
+being read-only to be a formal declaration of an architecture having no
+Custom Extensions, and being permitted to be WARL in order to support
+multiple simultaneous architectures on the same processor (or per hart
+or harts) permits not only backwards and forwards compatibility with
+existing implementations of the RISC-V Standard, not only permits seamless
+transitions to future versions of the RISC-V Standard (something that is
+not possible at the moment), but fixes the problem of clashes in Custom
+Extension opcodes on a global worldwide permanent and ongoing basis.
+
+Summary of impact and benefits:
+
+* Implementation impact for existing implementations (even though
+  the Standard is not finalised) is zero.
+* Impact for future implementations compliant with (only one) version of the
+  RISC-V Standard is zero.
+* Benefits for implementations complying with (one or more) versions
+  of the RISC-V Standard is: increased customer acceptance due to
+  a smooth upgrade path at the customer's pace and initiative vis-a-vis
+  legacy proprietary software.
+* Benefits for implementations deploying multiple Custom Extensions
+  are a massive reduction in NREs and the hugely reduced ongoing software
+  toolchain maintenance costs plus the benefit of having security updates
+  from upstream software sources due to
+  *globally unique identifying information* being in the toolchains
+  *even for Custom Extensions*.
 
 ## Introduction
 
