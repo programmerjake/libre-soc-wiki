@@ -1,8 +1,14 @@
 # Comparative analysis with Andes Packed ISA proposal
 
+Harmonised RVP is a proposal to provide SIMD functionality comparable to the Andes Packed SIMD ISA, but in a manner that is forwards compatible ("harmonised") with the RV Vector specification.
+
+An example use case is a string copy operation ­ using Harmonised RVP, code can use integer register SIMD instructions to copy a string. This code can then also execute (unchanged) on a full RV Vector processor and use the dedicated vector unit to copy the string. Harmonised RVP also upwards compatibility between RV32 and RV64 SIMD using this same approach.
+
 ## Register file
 
-The harmonised RVP register file is divided into a lower bank of Vector[INT8] and an upper bank of Vector[INT16]
+The Andes Packed SIMD ISA permits any GPR to be used for either INT8 or INT16 vector operations. In contrast, the default Harmonised RVP GPR register file is divided into a lower bank of Vector[INT8] and an upper banxk of Vector[INT16]. (Effectively, the vector element size is encoded by the most significant bit of the 5 bit register specifiers. However programmers can reconfigure the register file data types, if the default configuration is unsuitable.)
+
+(GPR = General Purpose Integer Register)
 
 | Register           | Andes ISA                              | Harmonised RVP ISA            |
 | ------------------ | -------------------------              | -------------------           |
@@ -42,6 +48,36 @@ The harmonised RVP register file is divided into a lower bank of Vector[INT8] an
 | v30                | 32bit GPR or Vector[4xINT8 or 2xINT16] | 32bit GPR or Vector[1xSINT32] |
 | v31                | 32bit GPR or Vector[4xINT8 or 2xINT16] | 32bit GPR or Vector[1xSINT32] |
 
+Both Andes Packed SIMD and Harmonised RVP are intended to be "low end" SIMD implementations (for processors without dedicated vector registers). Instead, the integer register file is used for SIMD operations. To maintain forwards compatibility with "high end" RV Vector implementations, programmer should use VLD and VST to load/store vectors. The implementation will then load/store a vector to/from the register file supported by the implementation.
+
+To keep implementations simple and focused on SIMD within­-register only, there is a strict 1:1 mapping between vectors (v0­ v31) and integer registers (r0­r31). Standard calling conventions apply and so callee saved integer registers should be saved before being used as vector registers. Strided (VLDS/VSTS) and indexed (VLDX/VSTX) load/stores are complex, and simple implementations will trap on these instructions, permitting emulation in software.
+
+## Proposed Harmonised RVP vector op instruction encoding
+
+Register x 2 ­> register operations:
+
+| 31 30 29 28 27 26 | 25 | 24 23 22 21 20 | 19 18 17 16 15 | 14 | 13 12 | 11 10 9 8 7 | 6 5 4 3 2 1 0 |
+| ----------------- | -- | -------------- | -------------- | -- | ----- | ----------- | ------------- |
+| func6             | 0  | rs2            | rs1            | 0  | mm    | rd1         | VOP opcode    |
+
+Immediate + register ­> register operations:
+
+| 31 30 29 28 27 26 | 25 | 24 23 22 21 20 | 19 18 17 16 15 | 14 | 13 12 | 11 10 9 8 7 | 6 5 4 3 2 1 0 |
+| ----------------- | -- | -------------- | -------------- | -- | ----- | ----------- | ------------- |
+| func3, imm[7:5]   | 1  | imm[4:0]       | rs1            | 0  | mm    | rd1         | VOP opcode    |
+
+Register x 3 ­> register operations:
+
+| 31 30 29 28 27 | 26 25 | 24 23 22 21 20 | 19 18 17 16 15 | 14 | 13 12 | 11 10 9 8 7 | 6 5 4 3 2 1 0 |
+| -------------- | ----- | -------------- | -------------- | -- | ----- | ----------- | ------------- |
+| rs3            | func2 | rs2            | rs1            | 1  | mm    | rd1         | VOP opcode    |
+
+Values for mm field (bits 12:13 above):
+
+* mm = 00 ­> no predicate mask, and use current global saturation / rounding settings
+* mm = 01 ­> no predicate mask, and force saturation or rounding for this instruction only
+* mm = 10 ­> use v1 as predicate mask, and use global saturation / rounding settings
+* mm = 11 ­> use ~v1 as predicate mask, and use global saturation / rounding settings
 
 ## 16-bit Arithmetic
 
