@@ -326,7 +326,45 @@ TBD
 
 # Conclusion
 
-TBD
+In the early sections (those in the category "no action") it was established
+in each case that the problem is not solved.  Avoidance of responsibility,
+or conflation of "not our problem" with "no problem" does not make "problem"
+go away.
+
+The first idea considered which could fix the problem was to just use
+the pre-existing MISA CSR, however this was determined not to have
+the right coverage (Standard Extensions only), and also crucially it
+destroyed state.  Whilst unworkable it did lead to the first "workable"
+solution, "MISA-like".
+
+The "MISA-like" proposal, whilst meeting most of the requirements, led to
+a better idea: "mvendor/march-id WARL", which, in combination with an offshoot
+idea related to gcc and binutils, is the only proposal that fully meets the
+requirements.
+
+The "ioctl-like" idea *also* solves the problem, but, unlike the WARL idea
+does not meet the full requirements to be "non-invasive" and "backwards
+compatible" with pre-existing (pre-Standards-finalised) implementations.
+It does however stand on its own merit as a way to extend the extremely
+small Custom Extension opcode space, even if it itself implemented *as*
+a Custom Extension.
+
+Overall the mvendor/march-id WARL idea meets the three requirements,
+and is the only idea that meets the three requirements:
+
+* **Any proposal must be a minimal change with minimal (or zero) impact**
+  (met through being purely a single change to the specification:
+   mvendor/march-id changes from read-only to WARL)
+* **Any proposal should place no restriction on existing or future
+  ISA encoding space**
+  (met because it is just a change to one pre-existing CSR)
+* **Any proposal should take into account that there are existing implementors
+  of the (yet to be finalised but still "partly frozen") Standard who may
+  resist, for financial investment reasons, efforts to make any change
+  (at all) that could cost them immediate short-term profits.**
+  (met because existing implementations, with the exception of those
+  that have Custom Extensions, come under the "vendor/arch-id read only
+  is a declaration of having no Custom Extensions" fall-back category)
 
 # Conversation Exerpts
 
@@ -343,6 +381,7 @@ The following conversation exerpts are taken from the ISA-dev discussion
 > and typically the choice was "neither". Nobody wants to put in the
 > effort when there is uncertainty and a market fragmented into
 > small bits.
+>
 > Note how Intel did not screw up. When SSE was added, MMX remained.
 > Software vendors could trust that instructions would be supported.
 > Both MMX and SSE remain today, in all shipping processors. With very
