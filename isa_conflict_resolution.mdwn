@@ -89,7 +89,7 @@ Each of these will be discussed below in their own sections.
 
 # Do nothing (no problem exists)
 
-TBD (basically not an option).
+(Summary: not an option)
 
 There were several solutions offered that fell into this category.
 A few of them are listed in the introduction; more are listed below,
@@ -138,7 +138,7 @@ field.
 
 # Do nothing (out of scope)
 
-TBD (basically, may not be RV Foundation's "scope", still results in
+(Summary: may not be RV Foundation's "scope", still results in
 problem, so not an option)
 
 This was one of the first arguments presented: The RISC-V Foundation
@@ -156,7 +156,7 @@ be hardest hit by the resultant chaos, and that will just be the more
 
 # Do nothing (Compliance too complex, therefore out of scope)
 
-TBD (basically, may not be RV Foundation's "scope", still results in
+(Summary: may not be RV Foundation's "scope", still results in
 problem, so not an option)
 
 The summary here was that Compliance testing of Custom Extensions is
@@ -183,7 +183,7 @@ solution be very, very simple.
 
 # MISA
 
-TBD, basically MISA not suitable
+(Summary: MISA not suitable, leads to better idea)
 
 MISA permits extensions to be disabled by masking out the relevant bit.
 Hypothetically it could be used to disable one extension, then enable
@@ -206,8 +206,8 @@ a hundred percent unsuitable for solving the problem.
 
 # MISA-like
 
-TBD, basically same as mvend/march WARL except needs an extra CSR where
-mv/ma doesn't.
+(Summary: basically same as mvend/march WARL except needs an extra CSR where
+mv/ma doesn't. Along right lines, doesn't meet full requirements)
 
 Out of the MISA discussion came a "MISA-like" proposal, which would
 take into account the flaws pointed out by trying to use "MISA":
@@ -237,7 +237,8 @@ separate page?  review this para?**)
 
 # mvendorid/marchid WARL
 
-TBD paraphrase and clarify
+(Summary: the only idea that meets the full requirements.  Needs
+ toolchain backup, but only when the first chip is released)
 
 Coming out of the software-related proposal by Jacob Bachmeyer, which
 hinged on the idea of a globally-maintained gcc / binutils database
@@ -302,7 +303,7 @@ during the switching phase, if needed.
 
 # ioctl-like
 
-TBD - [[ioctl]] for full details, summary kept here
+(Summary: good solid orthogonal idea.  See [[ioctl]] for full details)
 
 This proposal basically mirrors the concept of POSIX ioctls, providing
 (arbitrarily) 8 functions (opcodes) whose meaning may be over-ridden
@@ -335,8 +336,9 @@ TBD: placeholder as of 26apr2018
 In the early sections (those in the category "no action") it was established
 in each case that the problem is not solved.  Avoidance of responsibility,
 or conflation of "not our problem" with "no problem" does not make "problem"
-go away.  Even "making it the Fabless Semiconductor's problem" resulted
-in a chip being *more costly to engineer and maintain*... without actually
+go away.  Even "making it the Fabless Semiconductor's design problem" resulted
+in a chip being *more costly to engineer as hardware **and** more costly
+from a software-support perspective to maintain*... without actually
 fixing the problem.
 
 The first idea considered which could fix the problem was to just use
