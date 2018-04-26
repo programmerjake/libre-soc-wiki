@@ -312,11 +312,35 @@ in an object-orientated fashion by calling an "open handle" (and close)
 function (instruction) that switches (redirects) the 8 functions over to
 different opcodes.
 
+The "open handle" opcode takes a GUID (globally-unique identifier)
+and an ioctl number, and stores the UUID in a table indexed by the
+ioctl number:
+
+    handle_global_state[8] # stores UUID or index of same 
+
+    def open_handle(uuid, ioctl_num): 
+          handle_global_state[ioctl_num] = uuid 
+
+    def close_handle(ioctl_num): 
+          handle_global_state[ioctl_num] = -1 # clear table entry
+
+"Ioctls" (arbitrarily 8 separate R-type opcodes) then perform a redirect
+based on what the global state for that numbered "ioctl" has been set to:
+
+    def ioctl_fn0(*rargs): # star means "take all arguments as a tuple"
+        if handle_global_state[0] == CUSTOMEXT1UUID: 
+           CUSTOMEXT1_FN0(*rargs) # apply all arguments to function 
+        elif handle_global_state[0] == CUSTOMEXT2UUID: 
+           CUSTOMEXT2_FN0(*rargs) # apply all arguments to function 
+        else:
+            raise Exception("undefined opcode")
+
 The proposal is functionally near-identical to that of the mvendor/march-id
 except extended down to individual opcodes.  As such it could hypothetically
 be proposed as an independent Standard Extension in its own right that extends
 the Custom Opcode space *or* fits into the brownfield spaces within the
-existing ISA opcode space.
+existing ISA opcode space *or* is used as the basis of an independent
+Custom Extension in its own right.
 
 One of the reasons for seeking an extension of the Custom opcode space is
 that the Custom opcode space is severely limited: only 2 opcodes are free
