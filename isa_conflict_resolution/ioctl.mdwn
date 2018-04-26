@@ -32,7 +32,7 @@ Encoding is TBD but it is intended that the instructions are in the regular OP s
 
 == Description of the instructions ==
 
-EXT_OPEN  rd rs1 rs2 
+ext_open  rd rs1 rs2 
 
 Opens am extension device implementing some extension interface. 
 
@@ -44,81 +44,80 @@ The low 12 bits enumerate the devices implementing this interface on the current
 After execution  
 
 --if the cpu does not support the device (in particular, not support the interface if the low 12 bits of rs1 are zero), rd == 0, otherwise
---if the device did not successfully initialise, rd == a non negative error code < (1 << 12), otherwise
---rd == a device handle, a nonzero number with bit 0,..11 zero, 12..XLEN-1 identifying an initialised device + possible resource state.
+--if the device did not successfully initialise, rd == a positive error code < (1 << 12), otherwise
+--rd == a device handle, a nonzero number with bit 0,..11 zero, 12..XLEN-1 identifying an initialised device + implementation defined cookie to be used by the device e.g. to identify possible resource state.
 
-The restrictions on rd mean that after the following sequence the device is guaranteed to be available and properly initialised 
 
-li t0 <20-bit UUID>
-ext_open t0 t0 rs2
-li t1 (1 << 12)
-bltu t0 t1  L_fail 
+The ext_open instruction never traps.
+
+The following sequence the device is can be used to ensure a device implementing an interface is properly initialised 
+
+     li t0 <20-bit UUID>
+     ext_open t0 t0 rs2
+     li t1 (1 << 12)
+     bltu t0 t1  L_fail 
+
 //use t0 with ext_ctl's
 
 We can use c.li instead of li if the error code is guaranteed to be less than (1<<5) and beqz if the interface is guaranteed to not fail on initialisation.
 
-It also follows that all the devices implementing an interface (with a simple close) can be enumerated with the following sequence
+All the devices implementing an interface (with a non failing close) can be enumerated with the following sequence
 
-li t0 <20-bit UUID>
+    lui t1 <20-bit UUID>
 Loop_begin:
-ext_open t0 t0 rs2
-beqz t0 Loop_end
-//use t0 with ext_ctl's
-...
-ext_close zero t0 zero     
-add t0 t0 1
-j Loop begin:
+    ext_open t0 t1 zero
+    beqz t0 Loop_end
+
+    //use t0 with ext_ctl's
+    ...
+    ext_close zero t0 zero     
+    add a5 a5 1
+    j Loop_begin:
 Loop_end:
 
- 
 ------------------
 
-EXT_CLOSE rd rs1 rs2 
+ext_close rd rs1 rs2 
 
-invalidate the extension handle and releases the extension device and the resources associated to the the handle obtained with EXT_OPEN.  
+invalidate the extension handle, and release the extension device and the resources associated to the the handle obtained with ext_open.  
 
 -- rs1 contains any number 
--- rs2 contains unspecified data that may be necessary to deinitialise the engine
+-- rs2 contains unspecified data that may be necessary to deinitialise the device
 
 After execution: 
+-- if rs1 contains an opened extension device and the device did not successfully close, the handle remains valid and rd == negative error code, 
+-- if rs1 contains an opened extension device and the device successfully closed, all resources are released, the handle is invalidated,and rd == 0  
+-- if rs1 does not contain an opened extension device handle, rd == 0
 
---  rd == a nonzero error code if rs1 contains an opened extension device handle, optionally or'ed with a 12 bit unsigned number, but failed to close it.
---  rd == 0 otherwise.
-
-It follows that EXT_CLOSE does not trap, and that EXT_CLOSE is idempotent.
+It follows that ext_close does not trap and is idempotent. 
 
 Remark:
+Devices that do not exhaust resources may not need closing. 
 
-Devices that do not exhaust resources may not require closing. 
 ------------------
 
-EXT_CTL0 rd rs1 rs2
-EXT_CTL1 rd rs1 rs2
+ext_ctl0 rd rs1 rs2
+ext_ctl1 rd rs1 rs2
 ....
 
-EXT_CTL7 rd rs1 rs2
+ext_ctl7 rd rs1 rs2
 
-Execute some operation on the extension device. The number of EXT_CTL instructions is open to debate. 
+Execute some operation on the extension device. The number of ext_ctl  instructions is open to debate. 
 
 -- rs1 contains an opened extension handle, optionally or'ed with a 12 bit unsigned number
 -- rs2 constains unspecified data
 
-If rs1 is not an opened extension handle, the instruction MUST trap. 
-If the interface of the device represented by rs1 does not specify the instruction or only specifies it for other registers (usually x0 = zero or nonzero) it MAY trap or return an unspecified value.
+After execution of ext_ctl[[i]]
+-- If rs1 is not an opened device handle, the instruction traps. 
+-- If rs1 is an open device handle but the instruction is not defined in the interface, the instruction traps.
+-- If rs1 is an open device handle and the instruction is defined by the interface,  a device is identified by the device handle and the operation ctl[[i]] of the device is called with the low twelve bits and the cookie of the handle on input port1, the value of rs2 on input port2 and rd as the output port. 
 
-Otherwise, the CPU will provide the engine with the content of rs1 on read port1, content of rs2 on read port 2 and  the output port will be set to rd.  Moreover the device will execute operation <i> if EXT_CTL<i> is called. 
-The extension device implementing the extension is free to do whatever  it wants in this operation. It can use the device handle in rs1 to access internal state and it can use the first 12 bits of rs1 as additional data to multiplex additional operations, use them as an immediate or even to specify additional registers (although that sounds like asking for trouble). 
+Remark:
+For a device that never fails, is always available and that does not requiring closing
 
-Remark1. 
+lui rd <20bit UUID of the Frobate interface>
+ext_open rd rd rs1
+ext_ctl0 rd rd rs2
 
-Obviously the handle taking up input port 1 is a restriction.  It would be nice if one could use two inputs, e.g. by using  _rd_ to specify both the extension device handle and the output. Obviously that is not a regular R type instruction. However, the handle comes in effectively at the decode level, and the extension device does not really require 3 input ports. In any case, for a stateful interface the restriction of 1 input is not so bad. 
- 
-Remark2:
-For a device not requiring closing
-
-lui rd <20bit hash of the Frobate interface>
-ext_open rd rd zero
-ext_op0   rd rd rs2
-
-can be macro op fused to a two register instruction frobate rd rs2. Maybe putting the extension handle in rs2 instead of rs1 makes this easier. 
+can be macro op fused to an internal instruction frobate_ctl0 rd rs1 rs2. Effectively this introduces a 2 input 1 output register instruction without claiming opcode space. The sequence will be well-defined on cpu's not implementing the Frobate instruction but trap. on the ext_ctl0 instruction because because after the ext_open rd == 0.   . 
 
