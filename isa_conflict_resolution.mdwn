@@ -392,11 +392,14 @@ Overall the mvendor/march-id WARL idea meets the three requirements,
 and is the only idea that meets the three requirements:
 
 * **Any proposal must be a minimal change with minimal (or zero) impact**
-  (met through being purely a single change to the specification:
-   mvendor/march-id changes from read-only to WARL)
+  (met through being purely a single backwards-compatible change to the
+  wording of the specification: mvendor/march-id changes from read-only
+  to WARL)
 * **Any proposal should place no restriction on existing or future
   ISA encoding space**
-  (met because it is just a change to one pre-existing CSR)
+  (met because it is just a change to one pre-existing CSR, as opposed
+  to requiring additional CSRs or requiring extra opcodes or changes
+  to existing opcodes)
 * **Any proposal should take into account that there are existing implementors
   of the (yet to be finalised but still "partly frozen") Standard who may
   resist, for financial investment reasons, efforts to make any change
