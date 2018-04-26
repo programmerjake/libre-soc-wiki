@@ -366,6 +366,21 @@ and is the only idea that meets the three requirements:
   that have Custom Extensions, come under the "vendor/arch-id read only
   is a declaration of having no Custom Extensions" fall-back category)
 
+So to summarise:
+
+* The consequences of not tackling this are severe: the RISC-V Foundation
+  cannot take a back seat.  If it does, clear historical precedent shows
+  100% what the outcome will be (1).
+* The retro-fitting cost onto existing implementations (even though the
+  specification has not been finalised) is negligeable
+  (changes to words in the specification);
+* The benefits are clear (pain-free transition path for vendors to safely
+  upgrade over time; no fights over Custom opcode space; no hassle for
+  software toolchain; no hassle for GNU/Linux Distros)
+* The implementation details are clear (and problem-free except for
+  vendors who insist on deploying dozens of conflicting Custom Extensions:
+  an extreme unlikely outlier).
+
 # Conversation Exerpts
 
 The following conversation exerpts are taken from the ISA-dev discussion
