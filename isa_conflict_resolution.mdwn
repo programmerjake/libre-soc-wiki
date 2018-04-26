@@ -158,6 +158,15 @@ be hardest hit by the resultant chaos, and that will just be the more
 TBD (basically, may not be RV Foundation's "scope", still results in
 problem, so not an option)
 
+The summary here was that Compliance testing of Custom Extensions is
+not just out-of-scope, but even if it was taken into account that
+binary-encoding meanings could change, it would still be out-of-scope.
+
+However at the time that this argument was made, it had not yet been
+appreciated fully the impact that revisions to the Standard would have,
+when billions of dollars worth of (older, legacy) RISC-V hardware had
+already been deployed.
+
 Two interestingly diametrically-opposed equally valid arguments exist here:
 
 * Whilst Compliance testing of Custom Extensions is definitely legitimately
@@ -196,6 +205,31 @@ a hundred percent unsuitable for solving the problem.
 
 TBD, basically same as mvend/march WARL except needs an extra CSR where
 mv/ma doesn't.
+
+Out of the MISA discussion came a "MISA-like" proposal, which would
+take into account the flaws pointed out by trying to use "MISA":
+
+* The MISA-like CSR's meaning would be identified by compilers using the
+  mvendor-id/march-id tuple as a compiler target
+* Each custom-defined bit of the MISA-like CSR would (mutually-exclusively)
+  redirect binary encoding(s) to specific encodings
+* No Extension would *actually* be disabled: its internal state would
+  be left on (permanently) so that switching could be done inside
+  inner loops.
+
+Whilst it was the first "workable" solution it was also noted that the
+scheme is quite invasive: it requires an entirely new CSR to be added
+to the privileged spec.  This does not completely fulfil the "minimum
+impact" requirement.
+
+Also interesting around the same time an additional discussion was
+raised that covered the *compiler* side of the same equation.  This
+revolved around using mvendorid-marchid tuples at the compiler level,
+to be put into assembly output (by gcc), preserving the required
+*globally* unique identifying information for binutils to successfully
+turn the custom instruction into an actual binary-encoding (plus
+binary-encoding of the context-switching information).  (**TBD, Jacob,
+separate page?  review this para?**)
 
 # mvendorid/marchid WARL
 
