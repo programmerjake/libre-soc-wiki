@@ -1,5 +1,18 @@
 # Resolving ISA conflicts and providing a pain-free RISC-V Standards Upgrade Path
 
+**Executive Summary:** A non-invasive backwards-compatible change to make
+mvendorid and marchid being read-only to be a formal declaration of an
+architecture having no Custom Extensions, and being permitted to be
+WARL in order to support multiple simultaneous architectures on the
+same processor (or hart) permits not only backwards and forwards
+compatibility with existing implementations of the RISC-V Standard,
+not only permits seamless transitions to future versions of the
+RISC-V Standard (something that is not possible at the moment), but
+permanently fixes the problem of clashes in Custom Extension opcodes
+on a global basis.
+
+--------
+
 In a lengthy thread that ironically was full of conflict indicative
 of the future direction in which RISC-V will go if left unresolved,
 multiple Custom Extensions were noted to be permitted free rein to
