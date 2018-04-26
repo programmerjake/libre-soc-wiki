@@ -1,0 +1,152 @@
+# Resolving ISA conflicts and providing a pain-free RISC-V Standards Upgrade Path
+
+In a lengthy thread that ironically was full of conflict indicative
+of the future direction in which RISC-V will go if left unresolved,
+multiple Custom Extensions were noted to be permitted free rein to
+introduce global binary-encoding conflict with no means of resolution
+described or endorsed by the RISC-V Standard: a practice that has known
+disastrous and irreversible consequences for any architecture that
+permits such practices (1).
+
+Much later on in the discussion it was realised that there is also no way
+within the current RISC-V Specification to transition to improved versions
+of the standard, regardless of whether the fixes are absolutely critical
+show-stoppers or whether they are just keeping the standard up-to-date (2).
+
+It was also pointed out that Compliance is an extremely important factor
+to take into consideration, and that Custom Extensions (as being optional)
+effectively fall entirely outside of the Compliance Testing.  At this
+point in the discussion however it was not yet noted the stark problem
+that the *mandatory* RISC-V Specification also faces, by virtue of there
+being no transitional way to bring in show-stopping critical alterations.
+
+To put this into perspective, just taking into account hardware costs
+alone: with production mask charges for 28nm being around USD $1.5m,
+engineering development costs and licensing of RTLs for peripherals
+being of a similar magnitude, no manufacturer is going to back away
+from selling a "flawed" or "legacy" product (whether it complies with
+the RISC-V Specification or not) without a bitter fight.
+
+It was also pointed out that there will be significant software tool
+maintenance costs for manufacturers, meaning that the probability will
+be extremely high that they will refuse to shoulder such costs, and
+publish hopelessly out-of-date unpatched tools.  This practice is
+well-known to result in security flaws going unpatched, with one
+of many immediate consequences being that product gets discarded into
+landfill.
+
+All and any of the issues that were discussed, and all of those that
+were not, can be avoided by providing a forwards and backwards
+compatible transition path between the current and future *mandatory*
+parts of revisions of the RISC-V ISA Standard.
+
+The rest of the discussion - indicative as it was of the stark mutually
+exclusive gap being faced by the RISC-V ISA Standard given that it does
+not cope with the problem - was an effort by two groups in two clear
+camps: one that wanted things to remain as they are, and another that
+made efforts to point out that the consequences of not taking action
+are clearly extreme and irreversible (which, unfortunately, given the
+severity, some of the first group were unable to believe, despite there
+being clear historical precedent for the same mistake being made in
+other architectures).
+
+However after a significant amount of time, certain clear requirements came
+out of the discussion:
+
+* Any proposal must be a minimal change with minimal (or zero) impact
+* Any proposal should place no restriction on existing or future
+  ISA encoding space
+* Any proposal should take into account that there are existing implementors
+  of the (yet to be finalised but still "partly frozen") Standard who may
+  resist, for financial investment reasons, efforts to make any change
+  (at all) that could cost them immediate short-term profits.
+
+Several proposals were put forward (and some are still under discussion)
+
+* "Do nothing": problem is not severe: no action needed.
+* "Do nothing": problem is out-of-scope for RISC-V Foundation.
+* "MISA": the MISA CSR enables and disables extensions already: use that
+* "MISA-like": a new CSR which switches in and out new encodings
+  (without destroying state)
+* "mvendorid/marchid WARL": switching the entire "identity" of a machine
+* "ioctl-like": a OO proposal based around the linux kernel "ioctl" system.
+
+Each of these will be discussed below in their own sections.
+
+# Do nothing (no problem exists)
+
+TBD
+
+# Do nothing (out of scope)
+
+TBD
+
+# MISA
+
+TBD
+
+# MISA-like
+
+TBD
+
+# mvendorid/marchid WARL
+
+TBD
+
+# ioctl-like
+
+TBD
+
+# Discussion and analysis
+
+TBD
+
+# Conclusion
+
+TBD
+
+# Conversation Exerpts
+
+The following conversation exerpts are taken from the ISA-dev discussion
+
+## (1) Albert Calahan on SPE / Altiven conflict in POWERPC
+
+> Yes. Well, it should be blocked via legal means. Incompatibility is
+> a disaster for an architecture.
+> 
+> The viability of PowerPC was badly damaged when SPE was
+> introduced. This was a vector instruction set that was incompatible
+> with the AltiVec instruction set. Software vendors had to choose,
+> and typically the choice was "neither". Nobody wants to put in the
+> effort when there is uncertainty and a market fragmented into
+> small bits.
+> Note how Intel did not screw up. When SSE was added, MMX remained.
+> Software vendors could trust that instructions would be supported.
+> Both MMX and SSE remain today, in all shipping processors. With very
+> few exceptions, Intel does not ship chips with missing functionality.
+> There is a unified software ecosystem.
+> 
+> This goes beyond the instruction set. MMU functionality also matters.
+> You can add stuff, but then it must be implemented in every future CPU.
+> You can not take stuff away without harming the architecture.
+
+## (2) Luke Kenneth Casson Leighton on Standards backwards-compatibility
+
+> For the case where "legacy" variants of the RISC-V Standard are
+> backwards-forwards-compatibly supported over a 10-20 year period in
+> Industrial and Military/Goverment-procurement scenarios (so that the
+> impossible-to-achieve pressure is off to get the spec ABSOLUTELY
+> correct, RIGHT now), nobody would expect a seriously heavy-duty amount
+> of instruction-by-instruction switching: it'd be used pretty much once
+> and only once at boot-up (or once in a Hypervisor Virtual Machine
+> client) and that's it.
+
+## (3) Allen Baum on Standards Compliance
+
+> Putting my compliance chair hat on: One point that was made quite
+> clear to me is that compliance will only test that an implementation
+> correctly implements the portions of the spec that are mandatory, and
+> the portions of the spec that are optional and the implementor claims
+> it is implementing. It will test nothing in the custom extension space,
+> and doesn't monitor or care what is in that space.
+
