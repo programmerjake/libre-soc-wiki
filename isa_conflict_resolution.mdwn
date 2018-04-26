@@ -382,7 +382,11 @@ does not meet the full requirements to be "non-invasive" and "backwards
 compatible" with pre-existing (pre-Standards-finalised) implementations.
 It does however stand on its own merit as a way to extend the extremely
 small Custom Extension opcode space, even if it itself implemented *as*
-a Custom Extension.
+a Custom Extension into which *other* Custom Extensions are subsequently
+shoe-horned.  This approach has the advantage that it requires no "approval"
+from the RISC-V Foundation... but without the RISC-V Standard "approval"
+guaranteeing no binary-encoding conflicts, still does not actually solve the
+problem (if deployed as a Custom Extension for extending Custom Extensions).
 
 Overall the mvendor/march-id WARL idea meets the three requirements,
 and is the only idea that meets the three requirements:
