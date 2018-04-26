@@ -250,10 +250,36 @@ advantages over other proposals:
   (but has "frozen" aspects) - would be completely unaffected: the
   change is to the "wording" of the specification to "retrospectively"
   fit reality.
+* Unlike with the MISA idea this is *purely* at the "decode" phase:
+  no internal Extension state information is permitted to be disabled,
+  altered or destroyed as a direct result of writing to the
+  mvendor/march-id CSRs.
+* Compliance Testing may be carried out with a different vendorid/marchid
+  tuple set prior to a test, allowing a vendor to claim *Certified*
+  compatibility with *both* one (or more) legacy variants of the RISC-V
+  Specification *and* with a present one.
+* With sufficient care taken in the implementation an implementor
+  may have multiple interpretations of the same binary encoding within
+  an inner loop, with a single instruction (to the WARL register)
+  changing the meaning.
 
->  In an earlier part of the thread someone kindly pointed out that MISA
-> already switches out entire sets of instructions [which interacts at the
-> "decode" phase].  However it was noted after a few days of investigating
+A couple of points were made:
+
+* Compliance Testing may **fail** any system that has mvendorid/marchid
+  as WARL.  This however is a clear case of "Compliance Tail Wagging Standard
+  Dog".
+* The redirection of meaning of certain binary encodings to multiple
+  engines was considered extreme, eyebrow-raising, and also (importantly)
+  potentially expensive, introducing significant latency at the decode
+  phase.
+
+On this latter point, it was observed that MISA already switches out entire
+sets of instructions (interacts at the "decode" phase).  The difference
+between what MISA does and the mvendor/march-id WARL idea is that whilst
+MISA only switches instruction decoding on (or off), the WARL idea
+*redirects* encoding, to *different* engines, fortunately in a deliberately
+mutually-exclusive fashion.
+
 > that particular lead that:
 > 
 > * MISA Extension disabling is permitted (optionally) to DESTROY the state
