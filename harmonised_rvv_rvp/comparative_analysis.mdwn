@@ -56,7 +56,7 @@ To keep implementations simple and focused on SIMD within­-register only, there
 
 Harmonised RVP re-uses the same RV Vector opcodes to encode RVP SIMD instructions on *integer* registers.
 This is a deliberate design, to provide a means for binary code to be forwards compatible between RVP and RV Vector.
-Such "forwards compatible" code will need to take care to respect normal calling conventions (ie: save callee saved GPR registers before loading vectors into register - this is harmless but redundant behaviour on RV Vector implementations dedicated vector registers).
+Such "forwards compatible" code will need to take care to respect normal calling conventions (ie: save callee saved GPR registers before loading vectors into register - this is harmless but redundant behaviour on RV Vector implementations with dedicated vector registers).
 
 Register x 2 ­--> register operations:
 
