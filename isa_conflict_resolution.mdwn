@@ -290,13 +290,35 @@ pressing issues to deal with that make resolving encoding conflicts trivial
 by comparison).
 
 Also pointed out was that in certain cases pipeline stalls could be introduced
-during the switching phase, if needed.  
+during the switching phase, if needed.
 
 **This is the only one of the proposals that meet the full requirements**
 
 # ioctl-like
 
 TBD - [[ioctl]] for full details, summary kept here
+
+This proposal basically mirrors the concept of POSIX ioctls, providing
+(arbitrarily) 8 functions (opcodes) whose meaning may be over-ridden
+in an object-orientated fashion by calling an "open handle" (and close)
+function (instruction) that switches (redirects) the 8 functions over to
+different opcodes.
+
+The proposal is functionally near-identical to that of the mvendor/march-id
+except extended down to individual opcodes.  As such it could hypothetically
+be proposed as an independent Standard Extension in its own right that extends
+the Custom Opcode space *or* fits into the brownfield spaces within the
+existing ISA opcode space.
+
+One of the reasons for seeking an extension of the Custom opcode space is
+that the Custom opcode space is severely limited: only 2 opcodes are free
+within the 32-bit space, and only four total remain in the 48 and 64-bit
+space.
+
+Despite the proposal (which is still undergoing clarification)
+being worthwhile in its own right, and standing on its own merits and
+thus definitely worthwhile pursuing, it is non-trivial and much more
+invasive than the mvendor/march-id WARL concept.
 
 # Discussion and analysis
 
