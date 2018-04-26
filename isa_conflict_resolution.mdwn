@@ -280,47 +280,19 @@ MISA only switches instruction decoding on (or off), the WARL idea
 *redirects* encoding, to *different* engines, fortunately in a deliberately
 mutually-exclusive fashion.
 
-> that particular lead that:
-> 
-> * MISA Extension disabling is permitted (optionally) to DESTROY the state
-> information (which means that it *has* to be re-initialised just to be
-> safe... mistake in the standard, there), and * MISA was only designed
-> to cover Standard Extensions.
-> 
-> So the practice of switching extensions in and out - and the resultant
-> "disablement" and "enablement" at the *instruction decode phase* is
-> *already* a hard requirement as part of conforming with the present
-> RISC-V Specification.
-> 
-> Around the same MISA discussion, someone else also kindly pointed out
-> that one solution to the heavyweight nature of the switching would
-> be to deliberately introduce a pipeline stall whilst the switching is
-> occurring: I can see the sense in that approach, even if I don't know the
-> full details of what each implementor might choose to do.  They may even
-> choose two, or three, or N pipeline stalls: it really doesn't matter,
-> as it's an implementors' choice (and problem to solve).
-> 
-> So yes it's pretty heavy-duty... and also already required.
-> 
-> For the case where "legacy" variants of the RISC-V Standard are
-> backwards-forwards-compatibly supported over a 10-20 year period
-> in Industrial and Military/Goverment-procurement scenarios (so that
-> the impossible-to-achieve pressure is off to get the spec ABSOLUTELY
-> correct, RIGHT now), nobody would expect a seriously heavy-duty amount
-> of instruction-by-instruction switching: it'd be used pretty much once
-> and only once at boot-up (or once in a Hypervisor Virtual Machine client)
-> and that's it.
-> 
-> I can however foresee instances where implementors would actually
-> genuinely want a bank of operations to be carried out using one extension,
-> followed immediately by another bank from a (conflicting binary-encoding)
-> extension, in an inner loop: Software-defined MPEG / MP4 decode to call
-> DCT block decode Custom Extension followed immediately by Custom Video
-> Processing Extension followed immediately by Custom DSP Processing
-> Extension to do YUV-to-RGB conversion for example is something that
-> is clearly desirable.  Solving that one would be entiiirely their
-> problem... and the RISC-V Specification really really should give them
-> the space to do that in a clear-cut unambiguous way.
+Implementations would therefore, in each Extension (assuming one separate
+"decode" engine per Extension), simply have an extra (mutually-exclusively
+enabled) wire in the AND gate for any given binary encoding, and in this
+way there would actually be very little impact on the latency.  The assumption
+here is that there are not dozens of Extensions vying for the same binary
+encoding (at which point the Fabless Semi Company has other much more
+pressing issues to deal with that make resolving encoding conflicts trivial
+by comparison).
+
+Also pointed out was that in certain cases pipeline stalls could be introduced
+during the switching phase, if needed.  
+
+**This is the only one of the proposals that meet the full requirements**
 
 # ioctl-like
 
