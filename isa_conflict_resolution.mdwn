@@ -217,13 +217,14 @@ take into account the flaws pointed out by trying to use "MISA":
 * Each custom-defined bit of the MISA-like CSR would (mutually-exclusively)
   redirect binary encoding(s) to specific encodings
 * No Extension would *actually* be disabled: its internal state would
-  be left on (permanently) so that switching could be done inside
-  inner loops.
+  be left on (permanently) so that switching of ISA decoding
+  could be done inside inner loops without adverse impact on
+  performance.
 
 Whilst it was the first "workable" solution it was also noted that the
-scheme is quite invasive: it requires an entirely new CSR to be added
-to the privileged spec.  This does not completely fulfil the "minimum
-impact" requirement.
+scheme is invasive: it requires an entirely new CSR to be added
+to the privileged spec (thus making existing implementations redundant).
+This does not completely fulfil the "minimum impact" requirement.
 
 Also interesting around the same time an additional discussion was
 raised that covered the *compiler* side of the same equation.  This
