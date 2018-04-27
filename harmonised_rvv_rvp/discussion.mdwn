@@ -7,3 +7,38 @@
 * Likewise the last (and first) of 2-wide 16-bit operations?
 * What about predication within a 4-wide 8-bit group?
 * Likewise what about predication within a 2-wide 16-bit group?
+
+## Providing "cross-over" between elements in a group
+
+what do you think of the "CSR cross[32][6]" idea?  sorry below may 
+not be exactly clear, it's basically a way to generalise all 
+cross-operations, even the SUNPKD810 rt, ra and ZUNPKD810 rt, ra would 
+reduce down to one instruction as opposed to 8 right now. 
+
+    def butterfly_remap(remap_me): 
+        # hmmm a little hazy on the details here.... 
+        # help, help! logic-dyslexia kicking in! 
+        # erm do some crossover using the 6 bits from 
+        # the CSR cross map.  first 2 bits swap 
+        # elements in index positions 0,1 and 2,3 
+        # second 2 bits swap elements in positions 0,2 and 1,3 
+        # then swap 0,1 and 2,3 a second time. 
+        # gives full set of all permutations. 
+        return something, something 
+
+    def crossover(elidx, destreg): 
+        base = elidx & ~0x7 
+        return butterfly_remap(CSR_cross[destreg][elidx & 0x7]) 
+
+    def op(v1, v2, v3): 
+       for l in vlen: 
+          remap_src1, remap_src2 = crossover(i, v1) 
+          # remap_srcN references byte offsets? erm.... :) 
+          GPR[v1] = scalar_op(GPR[v2][remap_src1],
+                              GPR[v3][remap_src2])
+
+Otherwise, VSHUFFLE and so on (and possibly xBitManip) would
+need to be used. xBitManip would not be a bad idea, except
+consideration of VLIW-like DSP (TI C67*) architectures needs
+to be given, which do not do register-renaming and have fixed
+pipeline phases with no stalling on register-dependencies.
