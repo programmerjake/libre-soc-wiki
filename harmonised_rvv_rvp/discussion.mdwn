@@ -1,0 +1,9 @@
+# Comments
+
+## enabling/disabling individual 8 and 16-bit operations in SIMD blocks
+
+* At the end of a loop, how are the three end operations of 4-wide 8-bit operations to be disabled (to avoid "SIMD considered harmful"?)
+* Likewise at the beginning of a loop, how are (up to) the first three operations to be disabled?
+* Likewise the last (and first) of 2-wide 16-bit operations?
+* What about predication within a 4-wide 8-bit group?
+* Likewise what about predication within a 2-wide 16-bit group?
