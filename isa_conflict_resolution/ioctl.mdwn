@@ -9,7 +9,7 @@ local interface cookie in rs1. Based on the cookie, the CPU routes the
 "overloaded" instructions to a "device" on or off the CPU that implements
 the actual semantics.
 
-The cookie is "opened" with an additional r-type instruction ext_open that
+The cookie is "opened" with an additional R-type instruction ext_open that
 takes a 20 bit identifier and "closed" with an  ext_close instruction. The
 implementing hardware device can use the cookie to reference internal
 state. Thus, interfaces may be statefull.
