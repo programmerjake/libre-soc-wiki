@@ -86,13 +86,16 @@ ioctl number:
 "Ioctls" (arbitrarily 8 separate R-type opcodes) then perform a redirect
 based on what the global state for that numbered "ioctl" has been set to:
 
-    def ioctl_fn0(*rargs): # star means "take all arguments as a tuple"
+    def ioctl_fn0(funct7, rs2, rs1, funct3, rd): # all r-type bits
         if handle_global_state[0] == CUSTOMEXT1UUID:
-           CUSTOMEXT1_FN0(*rargs) # apply all arguments to function
+           CUSTEXT1_FN0(funct7, rs2, rs1, funct3, rd) # all r-type bits
         elif handle_global_state[0] == CUSTOMEXT2UUID:
-           CUSTOMEXT2_FN0(*rargs) # apply all arguments to function
+           CUSTEXT2_FN0(funct7, rs2, rs1, funct3, rd, opcode) # all r-type bits
         else:
             raise Exception("undefined opcode")
+
+Note that the "ioctl" receives all r-type bits (31:7) with the exception of the
+opcode (6:0).
 
 === RB ==
 
