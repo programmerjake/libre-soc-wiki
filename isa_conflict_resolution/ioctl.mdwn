@@ -74,25 +74,26 @@ The "open handle" opcode takes a GUID (globally-unique identifier)
 and an ioctl number, and stores the UUID in a table indexed by the
 ioctl number:
 
-    handle_global_state[8] # stores UUID or index of same
+    char handle_global_state[8][20] # stores UUID or index of same
 
-    def open_handle(uuid, ioctl_num):
+    void open_handle(char[20] uuid, byte ioctl_num):
           handle_global_state[ioctl_num] = uuid
 
-    def close_handle(ioctl_num):
+    void close_handle(byte ioctl_num):
           handle_global_state[ioctl_num] = -1 # clear table entry
-
 
 "Ioctls" (arbitrarily 8 separate R-type opcodes) then perform a redirect
 based on what the global state for that numbered "ioctl" has been set to:
 
-    def ioctl_fn0(funct7, rs2, rs1, funct3, rd): # all r-type bits
-        if handle_global_state[0] == CUSTOMEXT1UUID:
-           CUSTEXT1_FN0(funct7, rs2, rs1, funct3, rd) # all r-type bits
-        elif handle_global_state[0] == CUSTOMEXT2UUID:
-           CUSTEXT2_FN0(funct7, rs2, rs1, funct3, rd, opcode) # all r-type bits
-        else:
+    ioctl_fn0(funct7, rs2, rs1, funct3, rd): # all r-type bits
+    {
+        if (handle_global_state[0] == CUSTOMEXT1UUID)
+           CUSTEXT1_FN0(funct7, rs2, rs1, funct3, rd); # all r-type bits
+        else if (handle_global_state[0] == CUSTOMEXT2UUID)
+           CUSTEXT2_FN0(funct7, rs2, rs1, funct3, rd, opcode); # all r-type bits
+        else
             raise Exception("undefined opcode")
+    }
 
 Note that the "ioctl" receives all R-type bits (31:7) with the exception of the
 opcode (6:0).
