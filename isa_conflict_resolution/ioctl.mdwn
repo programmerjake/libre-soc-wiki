@@ -156,7 +156,8 @@ not quite I think. It is more like
             raise Exception("No such interface")
 
         handleId = new_unused_handle_id()
-        cpu_open_handles[handleId] = (interface, CurrentVirtualMemoryAddressSpace)
+        cpu_open_handles[handleId] = (interface,
+                                      CurrentVirtualMemoryAddressSpace)
 
         cookie = A_init(data)                      # Here device takes over
 
@@ -190,7 +191,10 @@ not quite I think. It is more like
 
         (interface, VMA) = intf_VMA
         if VMA != CurrentVirtualMemoryAddressSpace:
-             raise Exception("No such interface")  #Disclosing that the interface exists in different address is security hole
+             raise Exception("No such interface")  # Disclosing that the
+                                                   # interface exists in 
+                                                   # different address is 
+                                                   # security hole
 
         assert(interface != NIL)
         ctl0 = interface["ctl0"]
