@@ -33,10 +33,10 @@ In the absence of an explicit VCFG setup, the vector registers (when
 shared with Integer register file) are to default into two “banks”
 as follows:
 
-* v0-v15:    vectors with INT8 elements, split into 8 x signed (v0-v7)
-  & 8 x unsigned (v8-v15)
-* v16-v29:  vectors with INT16 elements, split into 8 x signed (v16-v23)
-  & 6 x unsigned (v24-v29)
+* v0-v15:    vectors with INT8 elements, split into signed (v0-v7)
+  & unsigned (v8-v15)
+* v16-v29:  vectors with INT16 elements, split into signed (v16-v23)
+  & unsigned (v24-v29)
 
 Having the above default vector type configuration harmonises most of
 the Andes SIMD instruction set (which explicitly encodes INT8 vs INT16
