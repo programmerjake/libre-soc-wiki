@@ -5,7 +5,7 @@ Harmonised RVP vs Andes Packed SIMD ISA proposal
 
 **MVL, setvl instruction & VL CSR work as per RV Vector spec.**
 
-## VLD and VST are supported
+**VLD and VST are supported**
 
 RVP implementations may choose to load/store to/from Integer register file
 (rather than from a dedicated Vector register file).
@@ -23,11 +23,11 @@ RVP implementations may choose to load/store to/from Integer register file
   harmless but redundant when RVP code is run on a machine with a dedicated
   vector reg file).
 
-## VLDX, VSTX, VLDS, VSTS are not supported in hardware
+**VLDX, VSTX, VLDS, VSTS are not supported in hardware**
 To keep RVP implementations simple, these instructions will trap, and
 may be implemented as software emulation
 
-## Default register "banks" and types
+**Default register "banks" and types**
 
 In the absence of an explicit VCFG setup, the vector registers (when
 shared with Integer register file) are to default into two “banks”
@@ -57,7 +57,7 @@ Notes:
 * v0 is mapped to r1 (hardwired to zero), and v1 is used for predicate
   masks.  However, both can be considered INT8 vectors.
 
-## Default MVL
+**Default MVL**
 
 The default RVV MVL value (in absence of explicit VCFG setup) is to
 be MVL = 2 on RV32I machines and MVL = 4 on RV64I machines.  However,
@@ -69,7 +69,7 @@ VMEM instructions however will only operate on VL elements, and so
 where full Andes SIMD compliance is required (without RVV forward
 compatibility), LW/LD and SW/SD are to be used instead of VLD and VST.
 
-## Alternative register "banks" and alternative MVL
+**Alternative register "banks" and alternative MVL**
 
 A programmer can configure VCFG with any mix of these alternative
 configurations:
