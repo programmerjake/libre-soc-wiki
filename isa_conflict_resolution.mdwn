@@ -334,6 +334,30 @@ correct implementation of (mandatory) support for MISA.
 
 **This is the only one of the proposals that meet the full requirements**
 
+Update 29apr2018:
+
+* In cases where mvendorid and marchid are WARL, the mvendorid-marchid becomes
+  part of the execution context that must be saved (and switched as necessary)
+  just like any other state / CSR.
+* When any trap exception is raised the context / state *must not* be altered
+  (so that it can be properly saved, if needed, by the exception handler)
+  and that includes the current mvendorid-marchid tuple.  This leads to some
+  interesting situations where a hart could conceivably be directed
+  to a set of trap handler binary instructions that the current
+  mvendorid-marchid setting is incapable of correctly interpreting.
+  To fix this it will be necessary for implementations (hardware /
+  software) to set up separate per-mvendorid-marchid trap handlers and
+  for the hardware (or software) to switch to the appropriate trap "set".
+* It's been noted that there may be certain legitimate cases where an
+  mvendorid-marchid should *specifically* not be tested for RISC-V
+  Certification Compliance: native support for foreign architectures
+  (not related to the JIT Extension: *actual* full entire non-RISC-V
+  foreign instruction encoding).  Exactly how this would work (vis-a-vis
+  Compliance) needs discussion, as it would be unfortunate and
+  undesirable for a hybrid processor capable of executing more than one
+  hardware-level ISA support to not be permitted to receive RISC-V
+  Certification Compliance.
+
 # ioctl-like <a name="#ioctl-like">
 
 (Summary: good solid orthogonal idea.  See [[ioctl]] for full details)
