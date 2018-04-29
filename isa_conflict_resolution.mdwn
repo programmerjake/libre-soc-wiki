@@ -347,7 +347,9 @@ Update 29apr2018:
   mvendorid-marchid setting is incapable of correctly interpreting.
   To fix this it will be necessary for implementations (hardware /
   software) to set up separate per-mvendorid-marchid trap handlers and
-  for the hardware (or software) to switch to the appropriate trap "set".
+  for the hardware (or software) to switch to the appropriate trap "set"
+  when the mvendorid-marchid is written to.  The switch to a different
+  "set" will almost undoubtedly require (transparent) hardware assistance.
 * It's been noted that there may be certain legitimate cases where an
   mvendorid-marchid should *specifically* not be tested for RISC-V
   Certification Compliance: native support for foreign architectures
