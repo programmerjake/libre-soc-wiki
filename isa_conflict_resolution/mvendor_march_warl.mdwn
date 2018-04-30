@@ -1,8 +1,10 @@
 # mvendorid/marchid WARL <a name="mvendor_marchid_warl"></a>
 
 This proposal is to make the mvendorid and marchid CSRs have WARL (writeable)
-characteristics.  Each unique tuple (including on a per-hart
-basis within the same processor) uniquely identifies and permits switch-over
+characteristics as a means and method of providing RISC-V implementations
+with a way to support multiple binary instruction encodings simultaneously
+within the same processor.  Each unique tuple (including on a per-hart
+basis) uniquely identifies and permits switch-over
 to a completely separate and distinct binary-encoding such that:
 
 * Different versions (legacy and new) of the RISC-V Standard may be
@@ -153,6 +155,46 @@ and separating older (and legacy) systems from present and future versions.
 The clear separation which mutually-exclusively redirects encodings based
 on which mvendorid-marchid tuple is currently active clearly meets that
 requirement.
+
+# How the "custom extension conflict" is solved
+
+* Vendor 1 produces a Custom Extension
+* Vendor 2 produces a Custom Extension
+* Both Custom Extensions have conflicting binary encodings.
+* Fabless Semi Company 1 licenses both Vendor 1 and 2 Custom Extensions
+* Fabless Semi Company 1 sets marchid=0xeee1 WARL to represent
+  enabling Vendor 1's conflicting encoding
+* Fabless Semi Company 1 sets marchid=0xeee2 WARL to represent
+  enabling Vendor 2's conflicting encoding
+* Fabless Semi Company 1 contacts the FSF, submitting patches to gcc
+  (and likewise with binutils) to register
+  (mvendorid=fabless1,marchid=0xeee1) to be added to the global
+  (FSF-curated?) database for Vendor 1's instruction encoding.
+* Likewise for Vendor 2's instruction encoding.
+
+Note that the RISC-V Foundation is **not** involved (or consulted) in
+this process.  The **FSF** (as the Copyright holder of gcc and binutils)
+inherently and implicitly becomes the de-facto atomic arbiter in control
+of the registration of Custom Extension instruction encodings.
+
+The FSF's "job" is however quite straightforward: ensure that all
+registrations are in fact unique.  It would be absolutely no good if a
+Vendor decided to re-use two mvendorid-marchid tuples to mean two
+totally different sets of instructions needed to be enabled!  Any
+Vendor attempting to do so should be red-flagged immediately.
+
+Situations in which the FSF receives requests for patches with
+*another fabless semiconductor company's* mvendorid should also be treated
+with suspicion, at the very least being queried as to why one fabless semi
+company is trying to encroach on another company's JEDEC-registered
+encoding space.
+
+The special case of the above is when a fabless semiconductor company
+implements a new version of the RISC-V Standard.  Here, again, the
+fabless semi company will provide patches to gcc and binutils, requesting
+that their specific mvendorid-marchid tuple be added to the (inherently
+de-facto atomic arbitrated) global database for that particular RISC-V
+Standard "Variant".
 
 # Questions to be resolved
 
