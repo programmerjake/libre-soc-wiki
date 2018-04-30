@@ -1,25 +1,57 @@
-# ioctl-like
+# pluggable extensions 
 
 ==RB===
 
-This proposal adds a standardised extension interface to the RV
-instruction set by introducing a fixed small number (e.g. 8) of
-"overloadable" R-type opcodes ext_ctl0, .. ext_ctl7. Each takes a process
-local interface cookie in rs1. Based on the cookie, the CPU routes the
-"overloaded" instructions to a "device" on or off the CPU that implements
-the actual semantics.
+This proposal adds a standardised extension instructions to the RV
+instruction set by introducing a fixed small number N (e.g. N = 8) of
+R-type opcodes xcmd0, .. xcmd7. Each takes in rs1 a 12bit "logical unit" (lun)
+identifying a (on or off chip) (sub)device with at most N commands that can execute the command, together with xlen - 12 bits of additional data. Based on the logical unit bits in rs1 the CPU routes each of the 8 commands to a  specific interface on a specific (sub)device on the CPU. Effectively, the xcmd0, ... xcmd7 instructions become "virtual method" opcodes, that can be overloaded for different extension (sub)devices
 
-The cookie is "opened" with an additional R-type instruction ext_open that
-takes a 20 bit identifier and "closed" with an  ext_close instruction. The
-implementing hardware device can use the cookie to reference internal
-state. Thus, interfaces may be statefull.
+The specific value of the lun is supposed to be convenient for the cpu to route the xcmd to the proper device and thus unstandardised. To portably construct the lun a further R-type instruction we define xext. It takes a 20 bit universally unique identifier identifying an interface with upto 8 almost (but not quite) standard R-type instructions, but implemented by the extension (sub)device. The restriction on 8 command commands is not problematic because a hardware implementation can (indeed is expected) to implement several interfaces as a subdevice. An optional sequence number identifies a specific enumerated device on the cpu that implements the interface as a subdevice. For convenience, xext also or's bits rs2[0..XLEN-12]. If the UUID is not recognised 0 is returned.   
 
-CPU's and devices may implement several interfaces, indeed, are expected
-to. E.g. a single hardware device might expose a functional interface with
-6 overloaded instructions, expose configuration with two highly device
-specific management interfaces with 8 resp. 4 overloaded instructions,
-and respond to a standardised save state interface with 4 overloaded
-instructions.
+Remark: xext is a purely stateless translation (and packing) operaton (unlike previous proposals). 
+
+The proposal allows people to define an extension interface of 8 (slightly crippled) R-type instructions implemented by an extension device, (e.g. an IP tile) configured at manufacturing or even startup time of the CPU. A sequence like 
+
+//fake UUID
+lui   rd 0xEDCBA
+xext  rd rd rs1
+xcmd0 rd rd rs2 
+
+then acts like a single instruction EDCBA_cmd0 rd rs1 rs2 with the caveats that, annoyingly, rs1 can only use bits 0..XLEN-12 (the sequence is not indivisible but the crucial semantics that you might want indivisible is in xcmd0). This can be used almost exactly like an R-type instruction rock rd, rs1, rs2 (in fact can be opcode fused if so wished). 
+
+Programatically the instructions in the interface are just a set of glorified assembler macros
+
+org.tinker.tinker:RocknRoll{
+     uuid : 0xABCDE
+     rock rd rs1 rs2 : xcmd0 rd rs1 rs2
+     roll rd rs1 rs2 : xcmd1 rd rs1 rs2
+}
+
+(or perhaps just non glorified standard assembler macros or defines with long names e.g.)
+
+  #define org_tinker_tinker__RocknRoll__interface_uuid 0xABCDE 
+  #define org_tinker_tinker__RocknRoll__rock(rd, rs1, rs2) xcmd0 rd, rs1, rs2
+  #define org_tinker_tinker__RocknRoll__roll(rd, rs1, rs2) xcmd1 rd, rs1, rs2
+
+so the same sequence is more readable as
+
+   lui   rd org.tinker.tinker__RocknRoll__interface_uuid 
+   xext  rd rs1
+   org_tinker_tinker__RocknRoll__rock(rd, rd, rs2)
+
+
+If several instructions of the same interface are used one can also have code like 
+lui   t1 org_tinker_tinker__RocknRoll__interface_uuid
+
+   xext  t1 zero
+   xcmd0 a5, t1, a0  // org_tinker_tinker__RocknRoll__rock(a5, t1, a0) 
+   xcmd1 t2, t1, a1  // org_tinker_tinker__RocknRoll__roll(t2, t1, a5)
+   xcmd0 a0, t1, t2  // org_tinker_tinker__RocknRoll__rock(a0, t1, t2)
+
+This amortises the cost of the xext instruction. 
+
+==Implications for the RiscV ecosystem ==
 
 Having a standardised overloadable interface simply avoids much of the
 need for isa extensions for hardware with non standard interfaces and
@@ -57,181 +89,162 @@ registration (making sure the space is not just claimed), while the
 remaining 2^19 are used as a good hash on a long, plausibly globally
 unique human readable interface name. This gives implementors the choice
 between a guaranteed private identifier paying a fee, or relying on low
-probabilities. The interface identifier could also easily be extended
-to 42 bits on RV64.
+probabilities. On RV64 the UUID can also be extended to 52 bits (> 10^15).
 
 
-====End RB==
+==== Description of the extension as C functions.== 
 
-This proposal basically mirrors the concept of POSIX ioctls, providing
-(arbitrarily) 8 functions (opcodes) whose meaning may be over-ridden
-in an object-orientated fashion by calling an "open handle" (and close)
-function (instruction) that switches (redirects) the 8 functions over to
-different opcodes.
+/* register format of rs1 for xext instructions */
+typedef struct uuid_device{
+      long dev:12;
+      long uuid: 8*sizeof(long) - 12;
+} uuid_device_t
 
+/* register format for rd of xext and rs1  for xcmd instructions, packs lun and data */
+typedef struct lun_data{
+      long lun:12;
+      long data: 8*sizeof(long) - 12;
+} lun_data_t
 
-The "open handle" opcode takes a GUID (globally-unique identifier)
-and an ioctl number, and stores the UUID in a table indexed by the
-ioctl number:
+/* proposed R-type instructions 
+   xext  rd rs1 rs2
+   xcmd0 rd rs1 rs2
+   xcmd1 rd rs1 rs2
+   ...
+   xcmd7 rd rs1 rs2
+*/
 
-    char handle_global_state[8][20] # stores UUID or index of same
+lun_data_t xext(uuid_dev_t rs1, long rs2);
+long xcmd0(lun_data_t rs1, long rs2);
+long xcmd1(lun_data_t rs1, long rs2);
+...
+long xcmd<N>(lun_data_t rs1, long rs2);
 
-    void open_handle(char[20] uuid, byte ioctl_num):
-          handle_global_state[ioctl_num] = uuid
+/* hardware interface presented by an implementing device. */
+typedef
+long device_fn(unsigned short subdevice_xcmd, lun_data_t rs1, long rs2);
 
-    void close_handle(byte ioctl_num):
-          handle_global_state[ioctl_num] = -1 # clear table entry
+/* cpu internal datatypes */
 
-"Ioctls" (arbitrarily 8 separate R-type opcodes) then perform a redirect
-based on what the global state for that numbered "ioctl" has been set to:
+typedef 
+struct lun{
+      unsigned short id:12
+} lun_t;
 
-    ioctl_fn0(funct7, rs2, rs1, funct3, rd): # all r-type bits
-    {
-        if (handle_global_state[0] == CUSTOMEXT1UUID)
-           CUSTEXT1_FN0(funct7, rs2, rs1, funct3, rd); # all r-type bits
-        else if (handle_global_state[0] == CUSTOMEXT2UUID)
-           CUSTEXT2_FN0(funct7, rs2, rs1, funct3, rd, opcode); # all r-type bits
-        else
-            raise Exception("undefined opcode")
-    }
+struct uuid_device2lun{
+      uuid_dev_t    uuid_dev;
+      lun_t lun;
+};
 
-Note that the "ioctl" receives all R-type bits (31:7) with the exception of the
-opcode (6:0).
+struct device_subdevice{
+      device_fn* device_addr;
+      unsigned short subdeviceId:12;
+};      
 
-=== RB ==
+struct lun2device_subdevice{
+      lun_t lun;
+      struct device_subdevice devAddr_subdevId;
+}
 
-not quite I think. It is more like
+struct uuid_dev2lun lun_map[];
 
-// Hardware, implementing interface with UUID 0xABCD
+/* associative memory magic to map UUID + device to a convenient 12 bit lun, returns (lun_t){0} on failure */
 
-    def A_shutdown(cookie, data):
-       ...
+lun_t cpu_lookup_lun(const struct uuid_dev2device_subdevice* lun_map, uuid_dev_t uuid_dev);
 
-    def A_init(data)
+lun_data_t xext(uuid_dev_t rs1, long rs2)
+{
+     lun_t lun = cpu_lookup_lun(lun_map, rs1);
 
-    def A_do_stuff(cookie, data):
-       ...
+     return (lun_data_t){.lun = lun.id, .data = rs2 % (1<< (8*sizeof(long) - 12))}
+}
 
-    def A_do_more_stuff(cookie, data):
-       ...
+struct lun2device_subdevice device_subdevice_map[];
 
-    interfaceA = {
-                  "shutdown": A_shutdown,
-                  "init":     A_init,
-                  "ctl0":     A_do_stuff,
-                  "ctl1":     A_do_more_stuff
-                 }
+/* maps lun to struct device_subdevice pair. In particular for lun = 0, returns (struct device_subdevice){NULL,0} on failure,  */
+device_subdevice_t cpu_lookup_device_subdevice(const struct lun2device_subdevice_map* dev_subdevice_map, short lun);
 
-// hardware implementing interface with UUID = 0x1234
-
-    def B_do_things(cookie, data):
-       ...
-    def B_shutdown(cookie, data)
-       ...
-
-    interfaceB = {
-                  "shutdown": B_shutdown,
-                  "ctl0":     B_do_things
-                 }
-
-
-// The CPU being wired to the devices
-
-    cpu_interfaces = {
-                  0xABCD: interfaceA,
-                  0x1234: interfaceB
-                 }
-
-// The functionality that the CPU must implement to use the extension interface
-
-    cpu_open_handles = {}
-
-    __handleId = 0
-    def new_unused_handle_id()
-        __handleId = __handleId + 1
-        return __handleId
-
-    def ext_open(uuid, data):
-        interface = cpu_interface[uuid]
-        if interface == NIL:
-            raise Exception("No such interface")
-
-        handleId = new_unused_handle_id()
-        cpu_open_handles[handleId] = (interface,
-                                      CurrentVirtualMemoryAddressSpace)
-
-        cookie = A_init(data)                      # Here device takes over
-
-        return (handle_id, cookie)
-
-    def ext_close(handle, data):
-        (handleId, cookie) = handle
-        intf_VMA = cpu_open_handles[handleId]
-        if intf_VMA == NIL:
-             return -1
-
-        (interface, VMA) = intf_VMA
-        if VMA != CurrentVirtualMemoryAddressSpace:
-             return -1
-        assert(interface != NIL)
-        shutdown = interface["shutdown"]
-        if shutdown != NIL:
-
-             err = interface.shutdown(cookie, data)  # Here device takes over
-
-             if err != 0:
-                 return err
-        cpu_open_handles[handleId] = NIL
-        return 0
-
-    def ext_ctl0(handle, data):
-        (handleId, cookie) = handle
-        intf_VMA = cpu_open_handles[handleId]
-        if intf_VMA == NIL:
-             raise Exception("No such interface")
-
-        (interface, VMA) = intf_VMA
-        if VMA != CurrentVirtualMemoryAddressSpace:
-             raise Exception("No such interface")  # Disclosing that the
-                                                   # interface exists in 
-                                                   # different address is 
-                                                   # security hole
-
-        assert(interface != NIL)
-        ctl0 = interface["ctl0"]
-        if ctl0 == NIL:
-            raise Exception("No such Instruction")
-
-        return ctl0(cookie, data)                  # Here device takes over
-
-
-The other ext_ctl's are similar.
-
-==End RB==
+/* functional description of the delegating xcmd0 .. xcmd7 instructions */
+template<k = 0..N-1> //pretend this is C
+long xcmd<k>(lun_data_t rs1, long rs2)
+{
+     struct device_subdevice dev_subdev = cpu_lookup_device_subdevice(device_subdevice_map, rs1.lun);
+     if(dev_subdev.devAddr == NULL)
+          trap(“Illegal instruction”);
+     
+    return dev_subdev.devAddr(dev_subdev.subdevId | k << 12, rs1, rs2);
+}
 
 
 
+Example:
+ 
+#define COM_BIGBUCKS__FROBATE__INTERFACE_UUID 0xABCDE
+#define ORG_TINKER_TINKER__ROCKNROLL_INTERFACE_UUID 0x12345
+#define ORG_TINKER_TINKER__JAZZ_INTERFACE_UUID 0xD0B0D
 
-The proposal is functionally near-identical to that of the mvendor/march-id
-except extended down to individual opcodes.  As such it could hypothetically
-be proposed as an independent Standard Extension in its own right that extends
-the Custom Opcode space *or* fits into the brownfield spaces within the
-existing ISA opcode space *or* is used as the basis of an independent
-Custom Extension in its own right.
+com.bigbucks:Frobate{
+    uuid: COM_BIGBUCKS__FROBATE__INTERFACE_UUID
+    frobate rd rs1 rs2 : cmd0 rd rs1 rs2
+    foo     rd rs1 rs2 : cmd1 rd rs1 rs2
+    bar     rd rs1 rs2 : cmd1 rd rs1 rs2
+}
 
-==RB==
-I really think it should be in browncode
-==RB==
+org.tinker.tinker:RocknRoll{
+    uuid: ORG_TINKER_TINKER__ROCKNROLL_INTERFACE_UUID
+    rock rd rs1 rs2: cmd0 rd rs1 rs2
+    roll rd rs1 rs2: cmd1 rd rs1 rs2
+}
 
-One of the reasons for seeking an extension of the Custom opcode space is
-that the Custom opcode space is severely limited: only 2 opcodes are free
-within the 32-bit space, and only four total remain in the 48 and 64-bit
-space.
+long com_bigbucks__device1(short  subdevice_xcmd, lun_data_t rs1, long rs2)
+{
+      switch(subdevice_xcmd) {
+      case 0 | 0 << 12  /* com.bigbucks:Frobate:frobate */     : return device1_frobate(rs1, rs2);
+      case 0 | 1 << 12  /* com.bigbucks:Frobate:foo */         : return device1_foo(rs1, rs2);
+      case 0 | 2 << 12  /* com.bigbucks:Frobate:bar */         : return device1_bar(rs1, rs2);
+      case 1 | 0 << 12  /* org.tinker.tinker:RocknRoll:rock */ : return device1_rock(rs1, rs2);
+      case 1 | 1 << 12  /* org.tinker.tinker:RocknRoll:roll */ : return device1_roll(rs1, rs2);
+      default: trap(“hardware configuration error”);
+      }
+}
 
-Despite the proposal (which is still undergoing clarification)
-being worthwhile in its own right, and standing on its own merits and
-thus definitely worthwhile pursuing, it is non-trivial and much more
-invasive than the mvendor/march-id WARL concept.
+org.tinker.tinker:Jazz{
+    uuid: ORG_TINKER_TINKER__JAZZ_INTERFACE_UUID 
+    boogy rd rs1 rs2: cmd0 rd rs1 rs2
+}
+
+long org_tinker_tinker__device2(short subdevice_xcmd,  lun_data_t rs1, long rs2)
+{
+      switch(dev_cmd.interfId){
+      case 0  | 0 << 12 /* com.bigbucks:Frobate:frobate */: return device2_frobate(rs1, rs2);
+      case 0  | 1 << 12 /* com.bigbucks:Frobate:foo */    : return device2_foo(rs1, rs2);
+      case 0  | 2 << 12 /* com.bigbucks:Frobate:bar */    : return device2_foo(rs1, rs2);
+      case 1  | 0 << 12 /* org_tinker_tinker:Jazz:boogy */: return device2_boogy(rs1, rs2);
+      default: trap(“hardware configuration error”);      
+      }
+}
+
+/* struct lun2dev_subdevice_map[] */
+  dev_subdevice_map = {
+//      .lun = 0,  error and falls back to trapping xcmd 
+       {.lun = 1, .devAddr_interfId = {fallback,    0 /* ReturnZero  */}},
+       {.lun = 2, .devAddr_interfId = {fallback,    1 /* ReturnMinusOne*/}},
+//      .lun = 3 .. 7  reserved for other fallback RV interfaces
+//      .lun = 8 .. 30 reserved as error numbers, c.li t1 31; bltu rd t1 L_fail tests errors
+//      .lun = 31  reserved out of caution 
+       {.lun = 32, .devAddr_interfId = {device1, 0 /* Frobate  interface */}},
+       {.lun = 33, .devAddr_InterfId = {device1, 1 /* RocknRoll interface */}},
+       {.lun = 34, .devAddr_interfId = {device2, 0 /* Frobate interface */}},
+       {.lun = 35, .devAddr_interfId = {device2, 1 /* Jazz interface */}},
+  }
 
 
-
+/* struct uuid_dev2lun_map[] */  
+ lun_map = {     
+     {.uuid_devId = {ORG_RISCV__FALLBACK__RETURN_ZERO__INTERFACE_UUID , 0},  .lun = 1},   
+     {.uuid_devId = {ORG_RISCV__FALLBACK__RETURN_MINUSONE__INTERFACE_UUID, 0},.lun = 2},
+     {.uuid_devId = {COM_BIGBUCKS__FROBATE__INTERFACE_UUID, 0}, .lun = 32},
+     {.uuid_devId = {COM_BIGBUCKS__FROBATE__INTERFACE_UUID, 1}, .lun = 34},        //sic!
+     {.uuid_devId = {ORG_TINKER_TINKER__ROCKNROLL__INTERFACE_UUID, 0}, .lun = 33},  //sic!
+     {.uuid_devId = {ORG_TINKER_TINKER__JAZZ__INTERFACE_UUID, 0}, .lun = 35}
+ }
