@@ -68,7 +68,8 @@ to not be permitted to receive RISC-V Certification Compliance.
 
 How such foreign architectures would switch back to RISC-V when the foreign
 architecture does not support the concept of mvendorid-marchid is out of
-scope and left to implementors.
+scope and left to implementors to define and implement equivalent
+functionality.
 
 ## Implementation
 
@@ -153,3 +154,8 @@ The clear separation which mutually-exclusively redirects encodings based
 on which mvendorid-marchid tuple is currently active clearly meets that
 requirement.
 
+# Questions to be resolved
+
+* Can the declaration (meaning) of read-only be expanded to cover
+  any number of (non-conflicting) Custom Extensions?  What are the
+  implications of doing so?
