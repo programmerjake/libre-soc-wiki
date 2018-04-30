@@ -1,0 +1,97 @@
+# mvendorid/marchid WARL <a name="mvendor_marchid_warl"></a>
+
+(Summary: the only idea that meets the full requirements.  Needs
+ toolchain backup, but only when the first chip is released)
+
+This proposal is make the mvendorid and marchid CSRs have WARL (writeable)
+characteristics.  Each unique tuple identifies (including on a per-hart
+basis within the same processor) and switches over to a completely
+separate and distinct binary-encoding support such that:
+
+* Different versions (legacy and new) of the RISC-V Standard may be
+  supported within the same processor
+* The fight over the extremely limited custom opcode space ends
+* Entirely foreign ISA may be supported within the same processor
+  (not the same as JIT Extension).
+
+For instances where mvendorid and marchid are readable, that would be
+taken to be a Standards-mandatory "declaration" that the architecture
+has *no* Custom Extensions (and that it conforms precisely to one and
+only one specific variant of the RISC-V Specification).
+
+This incredibly simple non-invasive idea has some unique and distinct
+advantages over other proposals:
+
+* Existing designs - even though the specification is not finalised
+  (but has "frozen" aspects) - would be completely unaffected: the
+  change is to the "wording" of the specification to "retrospectively"
+  fit reality.
+* Unlike with the MISA idea this is *purely* at the "decode" phase:
+  no internal Extension state information is permitted to be disabled,
+  altered or destroyed as a direct result of writing to the
+  mvendor/march-id CSRs.
+* Compliance Testing may be carried out with a different vendorid/marchid
+  tuple set prior to a test, allowing a vendor to claim *Certified*
+  compatibility with *both* one (or more) legacy variants of the RISC-V
+  Specification *and* with a present one.
+* With sufficient care taken in the implementation an implementor
+  may have multiple interpretations of the same binary encoding within
+  an inner loop, with a single instruction (to the WARL register)
+  changing the meaning.
+
+A couple of points were made:
+
+* Compliance Testing may **fail** any system that has mvendorid/marchid
+  as WARL.  This however is a clear case of "Compliance Tail Wagging Standard
+  Dog".
+* The redirection of meaning of certain binary encodings to multiple
+  engines was considered extreme, eyebrow-raising, and also (importantly)
+  potentially expensive, introducing significant latency at the decode
+  phase.
+
+On this latter point, it was observed that MISA already switches out entire
+sets of instructions (interacts at the "decode" phase).  The difference
+between what MISA does and the mvendor/march-id WARL idea is that whilst
+MISA only switches instruction decoding on (or off), the WARL idea
+*redirects* encoding, effectively to *different* simultaneous engines,
+fortunately in a deliberately mutually-exclusive fashion.
+
+Implementations would therefore, in each Extension (assuming one separate
+"decode" engine per Extension), simply have an extra (mutually-exclusively
+enabled) wire in the AND gate for any given binary encoding, and in this
+way there would actually be very little impact on the latency.  The assumption
+here is that there are not dozens of Extensions vying for the same binary
+encoding (at which point the Fabless Semi Company has other much more
+pressing issues to deal with that make resolving binary encoding conflicts
+trivial by comparison).
+
+Also pointed out was that in certain cases pipeline stalls could be introduced
+during the switching phase, if needed, just as they may be needed for
+correct implementation of (mandatory) support for MISA.
+
+Update 29apr2018:
+
+* In cases where mvendorid and marchid are WARL, the mvendorid-marchid becomes
+  part of the execution context that must be saved (and switched as necessary)
+  just like any other state / CSR.
+* When any trap exception is raised the context / state *must not* be altered
+  (so that it can be properly saved, if needed, by the exception handler)
+  and that includes the current mvendorid-marchid tuple.  This leads to some
+  interesting situations where a hart could conceivably be directed
+  to a set of trap handler binary instructions that the current
+  mvendorid-marchid setting is incapable of correctly interpreting.
+  To fix this it will be necessary for implementations (hardware /
+  software) to set up separate per-mvendorid-marchid trap handlers and
+  for the hardware (or software) to switch to the appropriate trap "set"
+  when the mvendorid-marchid is written to.  The switch to a different
+  "set" will almost undoubtedly require (transparent) hardware assistance.
+* It's been noted that there may be certain legitimate cases where an
+  mvendorid-marchid should *specifically* not be tested for RISC-V
+  Certification Compliance: native support for foreign architectures
+  (not related to the JIT Extension: *actual* full entire non-RISC-V
+  foreign instruction encoding).  Exactly how this would work (vis-a-vis
+  Compliance) needs discussion, as it would be unfortunate and
+  undesirable for a hybrid processor capable of executing more than one
+  hardware-level ISA support to not be permitted to receive RISC-V
+  Certification Compliance.
+
