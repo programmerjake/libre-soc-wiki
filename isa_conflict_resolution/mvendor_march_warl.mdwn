@@ -20,19 +20,24 @@ Beyond that, the change is so simple and straightforward that there is not
 much to discuss aside from its feasibility and its implications.  The
 main considerations are:
 
+* State information.  How is state to be handled?
 * Compliance.  What impact does the change have on Compliance (and testing)?
 * Implementation.  Is it feasible and practical?
 * Exception-handlling.  What happens during a trap?
 * Backwards compatibility.  Is the change zero-impact (for existing systems)
 * Forwards compatibility.  Does the change affect (limit) future hardware?
 
-Note that unlike with MISA, state information is **not permitted to be
-destroyed** during or by a switch-over.  Switch-over to a different
+## State information
+
+Unlike with MISA (which can be used to completely switch off - i.e. power
+down) certain Extensions, state information is **not permitted to be
+altered or destroyed** during or by a switch-over.  Switch-over to a different
 mvendorid-marchid tuple shall have the effect of *purely* disabling certain
 instruction encodings and enabling others.
 
-Note also that during context-switching *all* state of *all* custom
-extensions (and variants of the Base Standards) are saved onto the stack,
+Note also that during (for example) standard OS context-switching *all*
+state of *all* extensions (and variants of the Base Standards) related
+to *all* mvendorid-marchid tuples will need to be saved onto the stack,
 given that a hart may, at any time, switch between any available
 mvendorid-marchid tuples.
 
