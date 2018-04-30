@@ -289,6 +289,26 @@ a controlled means and method of supporting multiple (future, past and
 present) versions of the **Base** ISA, Custom Extensions and even
 completely foreign ISAs in the same processor.
 
+This incredibly simple non-invasive idea has some unique and distinct
+advantages over other proposals:
+
+* Existing designs - even though the specification is not finalised
+  (but has "frozen" aspects) - would be completely unaffected: the
+  change is to the "wording" of the specification to "retrospectively"
+  fit reality.
+* Unlike with the MISA idea this is *purely* at the "decode" phase:
+  no internal Extension state information is permitted to be disabled,
+  altered or destroyed as a direct result of writing to the
+  mvendor/march-id CSRs.
+* Compliance Testing may be carried out with a different vendorid/marchid
+  tuple set prior to a test, allowing a vendor to claim *Certified*
+  compatibility with *both* one (or more) legacy variants of the RISC-V
+  Specification *and* with a present one.
+* With sufficient care taken in the implementation an implementor
+  may have multiple interpretations of the same binary encoding within
+  an inner loop, with a single instruction (to the WARL register)
+  changing the meaning.
+
 **This is the only one of the proposals that meet the full requirements**
 
 # ioctl-like <a name="ioctl-like"></a>
