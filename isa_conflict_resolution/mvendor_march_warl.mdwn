@@ -26,6 +26,16 @@ main considerations are:
 * Backwards compatibility.  Is the change zero-impact (for existing systems)
 * Forwards compatibility.  Does the change affect (limit) future hardware?
 
+Note that unlike with MISA, state information is **not permitted to be
+destroyed** during or by a switch-over.  Switch-over to a different
+mvendorid-marchid tuple shall have the effect of *purely* disabling certain
+instruction encodings and enabling others.
+
+Note also that during context-switching *all* state of *all* custom
+extensions (and variants of the Base Standards) are saved onto the stack,
+given that a hart may, at any time, switch between any available
+mvendorid-marchid tuples.
+
 ## Compliance
 
 It was pointed out early in the discussions that Compliance Testing may
