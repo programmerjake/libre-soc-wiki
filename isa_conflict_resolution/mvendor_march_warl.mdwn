@@ -38,10 +38,18 @@ mvendorid-marchid tuple shall have the effect of *purely* disabling certain
 instruction encodings and enabling others.
 
 Note also that during (for example) standard OS context-switching *all*
-state of *all* extensions (and variants of the Base Standards) related
+state of *all* enabled extensions (and variants of the Base Standards) related
 to *all* mvendorid-marchid tuples will need to be saved onto the stack,
 given that a hart may, at any time, switch between any available
 mvendorid-marchid tuples.
+
+In other words there is absolutely zero connection *of any kind whatsoever*
+between the "encoding switching" and the state or status of the Extensions
+that the binary encodings are being directed *at* (on any upcoming
+conflicting instruction encodings).  If a program requires the enablement
+or disablement of an Extension it **uses MISA and other official methods
+to do so** that have **absolutely nothing to do with what mvendorid-marchid
+is presently enabled**.
 
 ## Compliance
 
