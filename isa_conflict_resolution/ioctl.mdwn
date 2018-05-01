@@ -2,7 +2,7 @@
 
 This proposal adds a standardised extension instructions to the RV
 instruction set by introducing a fixed small number N (e.g. N = 8) of
-R-type opcodes xcmd0 rd, rs1, rs2, .. , xcmd7 rd, rs1, rs2, that are intended to be used as "overloadable" (slightly crippled) R-type instructions for independently developed extensions in the form of non standard CPU extensions, IP tiles, or closely coupled external devices.
+R-type opcodes xcmd0 rd, rs1, rs2, .. , xcmd<N> rd, rs1, rs2, that are intended to be used as "overloadable" (slightly crippled) R-type instructions for independently developed extensions in the form of non standard CPU extensions, IP tiles, or closely coupled external devices.
  
 Tl;DR see below for a C description of how this is supposed to work. 
  
@@ -33,19 +33,20 @@ Programatically the instructions in the interface are just a set of glorified as
 so that the above sequence is more clearly written as 
 
     import(org.tinker.tinker:RocknRoll)
+
     lui rd org.tinker.tinker:RocknRoll:uuid
     xext rd rd rs1
     org.tinker.tinker:RocknRoll:rock rd rd rs2
     
-(Quite possibly even glorified standard assembler macros are overkill and it is easier to use defines or ordinary macro's with long names. E.g. writing 
+(Quite possibly even glorified standard assembler macros are overkill and it is easier to just use defines or ordinary macro's with long names. E.g. writing 
 
-    #define org_tinker_tinker__RocknRoll__interface_uuid 0xABCDE 
+    #define org_tinker_tinker__RocknRoll__uuid 0xABCDE 
     #define org_tinker_tinker__RocknRoll__rock(rd, rs1, rs2) xcmd0 rd, rs1, rs2
     #define org_tinker_tinker__RocknRoll__roll(rd, rs1, rs2) xcmd1 rd, rs1, rs2
 
 allows the same sequence to be written as
 
-    lui   rd org_tinker_tinker__RocknRoll__interface_uuid 
+    lui   rd org_tinker_tinker__RocknRoll__uuid 
     xext  rd rs1
     org_tinker_tinker__RocknRoll__rock(rd, rd, rs2)
 
@@ -54,7 +55,7 @@ Readability of assembler is no big deal for a compiler, but people are supposed 
 
 If several instructions of the same interface are used, one can also use instruction sequences like 
    
-    lui   t1 org_tinker_tinker__RocknRoll__interface_uuid
+    lui   t1 org_tinker_tinker__RocknRoll_uuid
     xext  t1 zero
     xcmd0 a5, t1, a0  // org_tinker_tinker__RocknRoll__rock(a5, t1, a0) 
     xcmd1 t2, t1, a1  // org_tinker_tinker__RocknRoll__roll(t2, t1, a5)
@@ -174,7 +175,7 @@ probabilities. On RV64 the UUID can also be extended to 52 bits (> 10^15).
 
      /* 
        map (UUID, device, privilege) to a 12 bit lun, 
-       return (lun_t){0} on unknown or no access
+       return (lun_t){0} on unknown  (at acces level)
 
        does associative memory lookup and tests privilege.
     */
@@ -206,7 +207,7 @@ probabilities. On RV64 the UUID can also be extended to 52 bits (> 10^15).
      template<k = 0..N-1> //pretend this is C
      long xcmd<k>(lun_data_t rs1, long rs2)
      {
-         struct device_subdevice dev_subdev = cpu_lookup_device_subdevice(device_subdevice_map, rs1.lun, current_privilege());
+         struct device_subdevice dev_subdev = cpu__lookup_device_subdevice(device_subdevice_map, rs1.lun, current_privilege());
          if(dev_subdev.devAddr == NULL)
             trap(“Illegal instruction”);
      
@@ -217,19 +218,19 @@ probabilities. On RV64 the UUID can also be extended to 52 bits (> 10^15).
 
 Example:
  
-     #define COM_BIGBUCKS__FROBATE__INTERFACE_UUID 0xABCDE
-     #define ORG_TINKER_TINKER__ROCKNROLL_INTERFACE_UUID 0x12345
-     #define ORG_TINKER_TINKER__JAZZ_INTERFACE_UUID 0xD0B0D
+     #define com_bigbucks__Frobate__uuid 0xABCDE
+     #define org_tinker_tinker__RocknRoll__uuid 0x12345
+     #define org_tinker_tinker__Jazz__uuid 0xD0B0D
      /*
      com.bigbucks:Frobate{
-         uuid: COM_BIGBUCKS__FROBATE__INTERFACE_UUID
+         uuid: com_bigbucks__Frobate__uuid
          frobate rd rs1 rs2 : cmd0 rd rs1 rs2
          foo     rd rs1 rs2 : cmd1 rd rs1 rs2
          bar     rd rs1 rs2 : cmd1 rd rs1 rs2
      }
      */
      org.tinker.tinker:RocknRoll{
-         uuid: ORG_TINKER_TINKER__ROCKNROLL_INTERFACE_UUID
+         uuid: org_tinker_tinker__RocknRoll__uuid
          rock rd rs1 rs2: cmd0 rd rs1 rs2
          roll rd rs1 rs2: cmd1 rd rs1 rs2
      }
@@ -249,7 +250,7 @@ Example:
 
      /*
      org.tinker.tinker:Jazz{
-       uuid: ORG_TINKER_TINKER__JAZZ_INTERFACE_UUID 
+       uuid: org_tinker_tinker__Jazz__uuid 
        boogy rd rs1 rs2: cmd0 rd rs1 rs2
      }
      */
@@ -265,6 +266,30 @@ Example:
         }
      }
 
+        /* struct uuid_dev2lun_map[] */  
+        lun_map = {     
+            {{.uuid_devId = {org_RiscV__Fallback__ReturnZero__uuid , 0},    .priv = user},  .lun =  1},
+            {{.uuid_devId = {org_RiscV__Fallback__ReturnZero__uuid , 0},    .priv = super}, .lun =  1},
+            {{.uuid_devId = {org_RiscV__Fallback__ReturnZero__uuid , 0},    .priv = hyper}, .lun =  1},
+            {{.uuid_devId = {org_RiscV__Fallback__ReturnZero__uuid , 0},    .priv = mach}   .lun =  1},   
+            {{.uuid_devId = {org_RiscV__Fallback__ReturnMinusOne__uuid, 0}, .priv = user},  .lun =  2},
+            {{.uuid_devId = {org_RiscV__Fallback__ReturnMinusOne__uuid, 0}, .priv = super}, .lun =  2},
+            {{.uuid_devId = {org_RiscV__Fallback__ReturnMinusOne__uuid, 0}, .priv = hyper}, .lun =  2},
+            {{.uuid_devId = {org_RiscV__Fallback__ReturnMinusOne__uuid, 0}, .priv = mach},  .lun =  2},
+            {{.uuid_devId = {com_bigbucks__Frobate__uuid, 0},               .priv = user}   .lun = 32},  //32 sic!
+            {{.uuid_devId = {com_bigbucks__Frobate__uuid, 1},               .priv = super}  .lun = 32},
+            {{.uuid_devId = {com_bigbucks__Frobate__uuid, 1},               .priv = hyper}  .lun = 32},
+            {{.uuid_devId = {com_bigbucks__Frobate__uuid, 1},               .priv = mach}   .lun = 32},
+            {{.uuid_devId = {com_bigbucks__Frobate__uuid, 0},               .priv = super}  .lun = 34},  //34 sic!
+            {{.uuid_devId = {com_bigbucks__Frobate__uuid, 0},               .priv = hyper}  .lun = 34},  
+            {{.uuid_devId = {com_bigbucks__Frobate__uuid, 0},               .priv = mach}   .lun = 34},  
+            {{.uuid_devId = {org_tinker_tinker__RocknRoll__uuid, 0},        .priv = user}   .lun = 33},  //33 sic!
+            {{.uuid_devId = {org_tinker_tinker__RocknRoll__uuid, 0},        .priv = super}  .lun = 33},  
+            {{.uuid_devId = {org_tinker_tinker__RocknRoll__uuid, 0},        .priv = hyper}  .lun = 33},  
+            {{.uuid_devId = {org_tinker_tinker__RocknRoll__uuid, 0},        .priv = super}, .lun = 35},
+            {{.uuid_devId = {org_tinker_tinker__RocknRoll__uuid, 0},        .priv = hyper}, .lun = 35},
+       }
+   
      /* struct lun2dev_subdevice_map[] */
         dev_subdevice_map = {
       //     {.lun = 0,   error and falls back to trapping xcmd 
@@ -293,28 +318,3 @@ Example:
              {{.lun = 35, .priv = hyper}, .devAddr_interfId = {device2, 1 /* Jazz interface */}},
          }
 
-
-        /* struct uuid_dev2lun_map[] */  
-        lun_map = {     
-            {{.uuid_devId = {ORG_RISCV__FALLBACK__RETURN_ZERO__INTERFACE_UUID , 0}, .priv = user},    .lun =  1},
-            {{.uuid_devId = {ORG_RISCV__FALLBACK__RETURN_ZERO__INTERFACE_UUID , 0}, .priv = super},   .lun =  1},
-            {{.uuid_devId = {ORG_RISCV__FALLBACK__RETURN_ZERO__INTERFACE_UUID , 0}, .priv = hyper},   .lun =  1},
-            {{.uuid_devId = {ORG_RISCV__FALLBACK__RETURN_ZERO__INTERFACE_UUID , 0}, .priv = mach}     .lun =  1},   
-            {{.uuid_devId = {ORG_RISCV__FALLBACK__RETURN_MINUSONE__INTERFACE_UUID, 0}, .priv = user}, .lun =  2},
-            {{.uuid_devId = {ORG_RISCV__FALLBACK__RETURN_MINUSONE__INTERFACE_UUID, 0}, .priv = super},.lun =  2},
-            {{.uuid_devId = {ORG_RISCV__FALLBACK__RETURN_MINUSONE__INTERFACE_UUID, 0}, .priv = hyper},.lun =  2},
-            {{.uuid_devId = {ORG_RISCV__FALLBACK__RETURN_MINUSONE__INTERFACE_UUID, 0}, .priv = mach}, .lun =  2},
-            {{.uuid_devId = {COM_BIGBUCKS__FROBATE__INTERFACE_UUID, 0}, .priv = user}                 .lun = 32},  //32 sic!
-            {{.uuid_devId = {COM_BIGBUCKS__FROBATE__INTERFACE_UUID, 0}, .priv = super}                .lun = 32},
-            {{.uuid_devId = {COM_BIGBUCKS__FROBATE__INTERFACE_UUID, 0}, .priv = hyper}                .lun = 32},
-            {{.uuid_devId = {COM_BIGBUCKS__FROBATE__INTERFACE_UUID, 0}, .priv = mach}                 .lun = 32},
-            {{.uuid_devId = {COM_BIGBUCKS__FROBATE__INTERFACE_UUID, 1}, .priv = super}                .lun = 34},  //34 sic!
-            {{.uuid_devId = {COM_BIGBUCKS__FROBATE__INTERFACE_UUID, 1}, .priv = hyper}                .lun = 34},  
-            {{.uuid_devId = {COM_BIGBUCKS__FROBATE__INTERFACE_UUID, 1}, .priv = mach}                 .lun = 34},  
-            {{.uuid_devId = {ORG_TINKER_TINKER__ROCKNROLL__INTERFACE_UUID, 0}, .priv = user}          .lun = 33},  //33 sic!
-            {{.uuid_devId = {ORG_TINKER_TINKER__ROCKNROLL__INTERFACE_UUID, 0}, .priv = super}         .lun = 33},  
-            {{.uuid_devId = {ORG_TINKER_TINKER__ROCKNROLL__INTERFACE_UUID, 0}, .priv = hyper}         .lun = 33},  
-            {{.uuid_devId = {ORG_TINKER_TINKER__JAZZ__INTERFACE_UUID, 0}, .priv = super},             .lun = 35},
-            {{.uuid_devId = {ORG_TINKER_TINKER__JAZZ__INTERFACE_UUID, 0}, .priv = hyper},             .lun = 35},
-       }
-   
