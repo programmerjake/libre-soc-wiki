@@ -320,31 +320,28 @@ advantages over other proposals:
 
 NOTE: under discussion.
 
-This proposal basically mirrors the concept of POSIX ioctls, providing
-(arbitrarily) 8 functions (opcodes) whose meaning may be over-ridden
-in an object-orientated fashion by calling an "open handle" (and close)
-function (instruction) that switches (redirects) the 8 functions over to
-different opcodes.
+==RB 2018-5-1 updated to reflect much simplified xext proposal== 
 
-The proposal is functionally near-identical to that of the mvendor/march-id
-except extended down to individual opcodes.  As such it could hypothetically
-be proposed as an independent Standard Extension in its own right that extends
-the Custom Opcode space *or* fits into the brownfield spaces within the
-existing ISA opcode space *or* is used as the basis of an independent
-Custom Extension in its own right.
-
-==RB==
-I really think it should be in browncode
-==RB==
+The xext proposal defines 8 standardised R-type xcmd0, xcmd1, ...xcmd7 instructions (preferably in the brownfield opcode space)
+that are routed to (sub)devices that implement interfaces with up to 8 (slightly crippled) R type commands. 
+Effectively the 8 standard xcmd instructions become overloadable. 
 
 One of the reasons for seeking an extension of the Custom opcode space is
 that the Custom opcode space is severely limited: only 2 opcodes are free
 within the 32-bit space, and only four total remain in the 48 and 64-bit
-space.
+space. Each xext interface is identified by a 20 bit UUID (or 52 bit on RV64), so there is much more room than in the (32 bit) instruction space. Thus it avoids most of the need to put a claim on obcode space thereby risking collisions when combining independent extensions. In this respect it is much like POSIX ioctls, which obviate the need for defining new syscalls to control new and nonstandard hardware..
+
+
+==RB not sure about this bit==
+The proposal is functionally similar to that of the mvendor/march-id
+==RB==
+except the non standard extension is explicit and restricted to a small set of well defined individual opcodes. 
+Hence several extensions can be mixed and there is no state to be tracked over context switches. 
+As such it could hypothetically be proposed as an independent Standard Extension.
 
 Despite the proposal (which is still undergoing clarification)
 being worthwhile in its own right, and standing on its own merits and
-thus definitely worthwhile pursuing, it is non-trivial and much more
+thus definitely worthwhile pursuing, it is non-trivial and more
 invasive than the mvendor/march-id WARL concept.
 
 # Comments, Discussion and analysis
