@@ -2,49 +2,62 @@
 
 ==RB===
 
+
 This proposal adds a standardised extension instructions to the RV
 instruction set by introducing a fixed small number N (e.g. N = 8) of
-R-type opcodes xcmd0 rd, rs1, rs2, .. , xcmd7 rd, rs1, rs2. 
-The input value in rs2 is arbitrary.
-The content of the first input rs1, however, is divided in a 12bit "logical unit" (lun)  together with xlen - 12 bits of additional data. 
+R-type opcodes xcmd0 rd, rs1, rs2, .. , xcmd7 rd, rs1, rs2, that are intended to be used as "overloadable" (slightly crippled) R-type instructions for independently developed extensions in the form of non standard CPU extensions, IP tiles, or closely coupled external devices.
+ 
+Tl;DR see below for a C description of how this is supposed to work. 
+ 
+The input value of an xcmd instruction in rs2 is arbitrary. The content of the first input rs1, however, is divided in a 12bit "logical unit" (lun)  together with xlen - 12 bits of additional data. 
 The lun bits in rs1, determines a specific (sub)device, and the CPU routes the command to this device with rs1 and rs2 as input, and rd as output. Effectively, the xcmd0, ... xcmd7 instructions are "virtual method" opcodes, overloaded for different extension (sub)devices. 
-
 
 The specific value of the lun is supposed to be convenient for the cpu and is thus unstandardised. Portable software therefore constructs the lun, with a further R-type instruction xext. It takes a 20 bit universally unique identifier (UUID) that identifies  an interface with upto N R-type instructions with the signature of xcmd. An optional sequence number identifies a specific enumerated device on the cpu that implements the interface as a subdevice. For convenience, xext also or's bits rs2[0..XLEN-12]. If the UUID is not recognised 0 is returned. , but implemented by the extension (sub)device. Note that this scheme gives an easy work around the restriction on N (e.g. 8 ) commands: an implementing device can simply implement several interfaces as routable subdevices, indeed is expected to do so.  
 
 The net effect is that a sequence like 
 
-//fake UUID
-lui   rd 0xEDCBA
-xext  rd rd rs1
-xcmd0 rd rd rs2 
+    //fake UUID
+    lui   rd 0xEDCBA
+    xext  rd rd rs1
+    xcmd0 rd rd rs2 
 
-acts like a single namespaced instruction EDCBA_cmd0 rd rs1 rs2 with the annoying caveat that rs1 can only use bits 0..XLEN-12 (the sequence is not indivisible but the crucial semantics that you might want to be indivisible in xcmd0). 
+acts like a single namespaced instruction cmd0_EDCBA rd rs1 rs2 with the annoying caveat that rs1 can only use bits 0..XLEN-12 (the sequence is also not indivisible but the crucial semantics that you might want to be indivisible is in xcmd0). Delegation is expected to come at a small
+additional performance price compared to a "native" instruction. This should, however, be an acceptable tradeoff in many cases.
+
 
 Programatically the instructions in the interface are just a set of glorified assembler macros
 
-org.tinker.tinker:RocknRoll{
-     uuid : 0xABCDE
-     rock rd rs1 rs2 : xcmd0 rd rs1 rs2
-     roll rd rs1 rs2 : xcmd1 rd rs1 rs2
-}
+    org.tinker.tinker:RocknRoll{
+        uuid : 0xABCDE
+        rock rd rs1 rs2 : xcmd0 rd rs1 rs2
+        roll rd rs1 rs2 : xcmd1 rd rs1 rs2
+    }
 
-(or perhaps just non glorified standard assembler macros or defines with long names e.g.)
+so that the above sequence is more clearly written as 
+
+   import(org.tinker.tinker:RocknRoll)
+   lui rd org.tinker.tinker:RocknRoll:uuid
+   xext rd rd rs1
+   org.tinker.tinker:RocknRoll:rock
+    
+(Quite possibly even glorified standard assembler macros are overkill and it is easier to use defines or ordinary macro's with long names. E.g. writing 
 
   #define org_tinker_tinker__RocknRoll__interface_uuid 0xABCDE 
   #define org_tinker_tinker__RocknRoll__rock(rd, rs1, rs2) xcmd0 rd, rs1, rs2
   #define org_tinker_tinker__RocknRoll__roll(rd, rs1, rs2) xcmd1 rd, rs1, rs2
 
-so the same sequence is more readable as
+allows the same sequence to be written as
 
-   lui   rd org.tinker.tinker__RocknRoll__interface_uuid 
+   lui   rd org_tinker_tinker__RocknRoll__interface_uuid 
    xext  rd rs1
    org_tinker_tinker__RocknRoll__rock(rd, rd, rs2)
 
+Readability of assembler is no big deal for a compiler, but people are supposed to _document_ the interface and its semantics. In particular a semantics specified like the semantics of the cpu would be most welcome.)
 
-If several instructions of the same interface are used one can also have code like 
-lui   t1 org_tinker_tinker__RocknRoll__interface_uuid
 
+If several instructions of the same interface are used, one can also use instruction sequences like 
+   
+   lui   t1 org_tinker_tinker__RocknRoll__interface_uuid
    xext  t1 zero
    xcmd0 a5, t1, a0  // org_tinker_tinker__RocknRoll__rock(a5, t1, a0) 
    xcmd1 t2, t1, a1  // org_tinker_tinker__RocknRoll__roll(t2, t1, a5)
@@ -55,8 +68,8 @@ This amortises the cost of the xext instruction.
 ==Implications for the RiscV ecosystem ==
 
 
-The proposal thus allow independent g to define one or more extensan extension interface of 8 (slightly crippled) R-type instructions implemented by an extension device, (e.g. an IP tile) configured at manufacturing or even startup time of the CPU.
-
+The proposal allows independent groups to define one or more extension interfaces of (slightly crippled) R-type instructions 
+implemented by an extension device. Such an extension device would be an intrinsic non standard part of the CPU, an IP tile or a closely coupled external chip and would be configured at manufacturing time or bootup of the CPU.
 
 Having a standardised overloadable interface simply avoids much of the
 need for isa extensions for hardware with non standard interfaces and
@@ -99,127 +112,155 @@ probabilities. On RV64 the UUID can also be extended to 52 bits (> 10^15).
 
 ==== Description of the extension as C functions.== 
 
-/* register format of rs1 for xext instructions */
-typedef struct uuid_device{
+    /* register format of rs1 for xext instructions */
+    typedef struct uuid_device{
       long dev:12;
       long uuid: 8*sizeof(long) - 12;
-} uuid_device_t
+    } uuid_device_t
 
-/* register format for rd of xext and rs1  for xcmd instructions, packs lun and data */
-typedef struct lun_data{
+    /* register format for rd of xext and rs1  for xcmd instructions, packs lun and data */
+    typedef struct lun_data{
       long lun:12;
       long data: 8*sizeof(long) - 12;
-} lun_data_t
+    } lun_data_t
 
-/* proposed R-type instructions 
-   xext  rd rs1 rs2
-   xcmd0 rd rs1 rs2
-   xcmd1 rd rs1 rs2
-   ...
-   xcmd7 rd rs1 rs2
-*/
+    /* proposed R-type instructions 
+    xext  rd rs1 rs2
+    xcmd0 rd rs1 rs2
+    xcmd1 rd rs1 rs2
+    ...
+    xcmd7 rd rs1 rs2
+    */
 
-lun_data_t xext(uuid_dev_t rs1, long rs2);
-long xcmd0(lun_data_t rs1, long rs2);
-long xcmd1(lun_data_t rs1, long rs2);
-...
-long xcmd<N>(lun_data_t rs1, long rs2);
+    lun_data_t xext(uuid_dev_t rs1, long rs2);
+    long xcmd0(lun_data_t rs1, long rs2);
+    long xcmd1(lun_data_t rs1, long rs2);
+    ...
+    long xcmd<N>(lun_data_t rs1, long rs2);
 
-/* hardware interface presented by an implementing device. */
-typedef
-long device_fn(unsigned short subdevice_xcmd, lun_data_t rs1, long rs2);
+    /* hardware interface presented by an implementing device. */
+    typedef
+    long device_fn(unsigned short subdevice_xcmd, lun_data_t rs1, long rs2);
 
-/* cpu internal datatypes */
+    /* cpu internal datatypes */
 
-typedef 
-struct lun{
+    enum privilege = {user = 0b0001, super = 0b0010, hyper = 0b0100, mach = 0b1000};
+
+    /* cpu internal, does what is on the label */
+    static
+    enum privilege cpu__current_privilege_level()
+
+    typedef 
+    struct lun{
       unsigned short id:12
-} lun_t;
+    } lun_t;
 
-struct uuid_device2lun{
-      uuid_dev_t    uuid_dev;
+    struct uuid_device_priv2lun{
+      struct{
+          uuid_dev_t    uuid_dev;
+          enum privilege reqpriv;
+      };
       lun_t lun;
-};
+    };
 
-struct device_subdevice{
+    struct device_subdevice{
       device_fn* device_addr;
       unsigned short subdeviceId:12;
-};      
+    };      
 
-struct lun2device_subdevice{
-      lun_t lun;
+    struct lun_priv2device_subdevice{
+      struct{
+           lun_t lun;
+           enum privilege reqpriv
+      }
       struct device_subdevice devAddr_subdevId;
-}
+    }
 
-struct uuid_dev2lun lun_map[];
+    static 
+    struct uuid_device_priv2lun cpu__lun_map[];
 
-/* associative memory magic to map UUID + device to a convenient 12 bit lun, returns (lun_t){0} on failure */
+    /* 
+       map (UUID, device, privilege) to a 12 bit lun, 
+       return (lun_t){0} on unknown or no access
 
-lun_t cpu_lookup_lun(const struct uuid_dev2device_subdevice* lun_map, uuid_dev_t uuid_dev);
+       does associative memory lookup and tests privilege.
+    */
+    static
+    lun_t cpu__lookup_lun(const struct uuid_device_priv2lun* lun_map, uuid_dev_t uuid_dev, enum privilege priv);
 
-lun_data_t xext(uuid_dev_t rs1, long rs2)
-{
-     lun_t lun = cpu_lookup_lun(lun_map, rs1);
 
-     return (lun_data_t){.lun = lun.id, .data = rs2 % (1<< (8*sizeof(long) - 12))}
-}
 
-struct lun2device_subdevice device_subdevice_map[];
+    lun_data_t xext(uuid_dev_t rs1, long rs2)
+    {
+       lun_t lun = cpu__lookup_lun(lun_map, rs1, current_privilege_level());
 
-/* maps lun to struct device_subdevice pair. In particular for lun = 0, returns (struct device_subdevice){NULL,0} on failure,  */
-device_subdevice_t cpu_lookup_device_subdevice(const struct lun2device_subdevice_map* dev_subdevice_map, short lun);
+       return (lun_data_t){.lun = lun.id, .data = rs2 % (1<< (8*sizeof(long) - 12))}
+    }
 
-/* functional description of the delegating xcmd0 .. xcmd7 instructions */
-template<k = 0..N-1> //pretend this is C
-long xcmd<k>(lun_data_t rs1, long rs2)
-{
-     struct device_subdevice dev_subdev = cpu_lookup_device_subdevice(device_subdevice_map, rs1.lun);
-     if(dev_subdev.devAddr == NULL)
+
+
+
+    struct lun_priv2device_subdevice cpu__device_subdevice_map[];
+
+    /* map (lun, priv)  to struct device_subdevice pair. 
+       For lun = 0, or unknown (lun, priv) pair, returns (struct device_subdevice){NULL,0} 
+    */
+    static
+    device_subdevice_t cpu__lookup_device_subdevice(const struct lun_priv2device_subdevice_map* dev_subdev_map, 
+                                                    lun_t lun, enum privileges priv);
+
+    /* functional description of the delegating xcmd0 .. xcmd7 instructions */
+    template<k = 0..N-1> //pretend this is C
+    long xcmd<k>(lun_data_t rs1, long rs2)
+    {
+        struct device_subdevice dev_subdev = cpu_lookup_device_subdevice(device_subdevice_map, rs1.lun, current_privilege());
+        if(dev_subdev.devAddr == NULL)
           trap(“Illegal instruction”);
      
-    return dev_subdev.devAddr(dev_subdev.subdevId | k << 12, rs1, rs2);
-}
+        return dev_subdev.devAddr(dev_subdev.subdevId | k << 12, rs1, rs2);
+    }
 
 
 
 Example:
  
-#define COM_BIGBUCKS__FROBATE__INTERFACE_UUID 0xABCDE
-#define ORG_TINKER_TINKER__ROCKNROLL_INTERFACE_UUID 0x12345
-#define ORG_TINKER_TINKER__JAZZ_INTERFACE_UUID 0xD0B0D
+    #define COM_BIGBUCKS__FROBATE__INTERFACE_UUID 0xABCDE
+    #define ORG_TINKER_TINKER__ROCKNROLL_INTERFACE_UUID 0x12345
+    #define ORG_TINKER_TINKER__JAZZ_INTERFACE_UUID 0xD0B0D
 
-com.bigbucks:Frobate{
-    uuid: COM_BIGBUCKS__FROBATE__INTERFACE_UUID
-    frobate rd rs1 rs2 : cmd0 rd rs1 rs2
-    foo     rd rs1 rs2 : cmd1 rd rs1 rs2
-    bar     rd rs1 rs2 : cmd1 rd rs1 rs2
-}
+    com.bigbucks:Frobate{
+        uuid: COM_BIGBUCKS__FROBATE__INTERFACE_UUID
+        frobate rd rs1 rs2 : cmd0 rd rs1 rs2
+        foo     rd rs1 rs2 : cmd1 rd rs1 rs2
+        bar     rd rs1 rs2 : cmd1 rd rs1 rs2
+    }
 
-org.tinker.tinker:RocknRoll{
-    uuid: ORG_TINKER_TINKER__ROCKNROLL_INTERFACE_UUID
-    rock rd rs1 rs2: cmd0 rd rs1 rs2
-    roll rd rs1 rs2: cmd1 rd rs1 rs2
-}
+    org.tinker.tinker:RocknRoll{
+        uuid: ORG_TINKER_TINKER__ROCKNROLL_INTERFACE_UUID
+        rock rd rs1 rs2: cmd0 rd rs1 rs2
+        roll rd rs1 rs2: cmd1 rd rs1 rs2
+    }
 
-long com_bigbucks__device1(short  subdevice_xcmd, lun_data_t rs1, long rs2)
-{
+    long com_bigbucks__device1(short  subdevice_xcmd, lun_data_t rs1, long rs2)
+    {
       switch(subdevice_xcmd) {
       case 0 | 0 << 12  /* com.bigbucks:Frobate:frobate */     : return device1_frobate(rs1, rs2);
+      case 42| 0 << 12  /* com.bigbucks:FrobateMach:frobate    : return device1_frobate_machine_level(rs1, rs2);
       case 0 | 1 << 12  /* com.bigbucks:Frobate:foo */         : return device1_foo(rs1, rs2);
       case 0 | 2 << 12  /* com.bigbucks:Frobate:bar */         : return device1_bar(rs1, rs2);
       case 1 | 0 << 12  /* org.tinker.tinker:RocknRoll:rock */ : return device1_rock(rs1, rs2);
       case 1 | 1 << 12  /* org.tinker.tinker:RocknRoll:roll */ : return device1_roll(rs1, rs2);
       default: trap(“hardware configuration error”);
       }
-}
+    }
 
-org.tinker.tinker:Jazz{
-    uuid: ORG_TINKER_TINKER__JAZZ_INTERFACE_UUID 
-    boogy rd rs1 rs2: cmd0 rd rs1 rs2
-}
+    org.tinker.tinker:Jazz{
+       uuid: ORG_TINKER_TINKER__JAZZ_INTERFACE_UUID 
+       boogy rd rs1 rs2: cmd0 rd rs1 rs2
+    }
 
-long org_tinker_tinker__device2(short subdevice_xcmd,  lun_data_t rs1, long rs2)
-{
+    long org_tinker_tinker__device2(short subdevice_xcmd,  lun_data_t rs1, long rs2)
+    {
       switch(dev_cmd.interfId){
       case 0  | 0 << 12 /* com.bigbucks:Frobate:frobate */: return device2_frobate(rs1, rs2);
       case 0  | 1 << 12 /* com.bigbucks:Frobate:foo */    : return device2_foo(rs1, rs2);
@@ -227,29 +268,44 @@ long org_tinker_tinker__device2(short subdevice_xcmd,  lun_data_t rs1, long rs2)
       case 1  | 0 << 12 /* org_tinker_tinker:Jazz:boogy */: return device2_boogy(rs1, rs2);
       default: trap(“hardware configuration error”);      
       }
-}
+    }
 
-/* struct lun2dev_subdevice_map[] */
-  dev_subdevice_map = {
-//      .lun = 0,  error and falls back to trapping xcmd 
-       {.lun = 1, .devAddr_interfId = {fallback,    0 /* ReturnZero  */}},
-       {.lun = 2, .devAddr_interfId = {fallback,    1 /* ReturnMinusOne*/}},
-//      .lun = 3 .. 7  reserved for other fallback RV interfaces
-//      .lun = 8 .. 30 reserved as error numbers, c.li t1 31; bltu rd t1 L_fail tests errors
-//      .lun = 31  reserved out of caution 
-       {.lun = 32, .devAddr_interfId = {device1, 0 /* Frobate  interface */}},
-       {.lun = 33, .devAddr_InterfId = {device1, 1 /* RocknRoll interface */}},
-       {.lun = 34, .devAddr_interfId = {device2, 0 /* Frobate interface */}},
-       {.lun = 35, .devAddr_interfId = {device2, 1 /* Jazz interface */}},
-  }
+   /* struct lun2dev_subdevice_map[] */
+      dev_subdevice_map = {
+      //     {.lun = 0,   error and falls back to trapping xcmd 
+             {{.lun = 1, .priv = user},  .devAddr_interfId = {fallback,    0 /* ReturnZero  */}},
+             {{.lun = 1, .priv = super}, .devAddr_interfId = {fallback,    0 /* ReturnZero  */}},
+             {{.lun = 1, .priv = hyper}, .devAddr_interfId = {fallback,    0 /* ReturnZero  */}},
+             {{.lun = 1, .priv = mach},  .devAddr_interfId = {fallback,    0 /* ReturnZero  */}},
+             {{.lun = 2, .priv = user},  .devAddr_interfId = {fallback,    1 /* ReturnMinusOne*/}},
+             {{.lun = 2, .priv = super}, .devAddr_interfId = {fallback,    1 /* ReturnMinusOne*/}},
+             {{.lun = 2, .priv = hyper}, .devAddr_interfId = {fallback,    1 /* ReturnMinusOne*/}},
+             {{.lun = 2, .priv = mach},  .devAddr_interfId = {fallback,    1 /* ReturnMinusOne*/}},
+     //       .lun = 3 .. 7  reserved for other fallback RV interfaces
+     //       .lun = 8 .. 30 reserved as error numbers, c.li t1 31; bltu rd t1 L_fail tests errors
+     //      .lun = 31  reserved out of caution 
+             {{.lun = 32, .priv = user},  .devAddr_interfId = {device1, 0 /* Frobate  interface */}},
+             {{.lun = 32, .priv = super}, .devAddr_interfId = {device1, 0 /* Frobate  interface */}},
+             {{.lun = 32, .priv = hyper}, .devAddr_interfId = {device1, 0 /* Frobate  interface */}},
+             {{.lun = 32, .priv = mach},  .devAddr_interfId = {device1,42 /* Frobate  machine level interface */}},
+             {{.lun = 33, .priv = user},  .devAddr_InterfId = {device1, 1 /* RocknRoll interface */}},
+             {{.lun = 33, .priv = super}, .devAddr_InterfId = {device1, 1 /* RocknRoll interface */}},
+             {{.lun = 33, .priv = hyper}, .devAddr_InterfId = {device1, 1 /* RocknRoll interface */}},
+             {{.lun = 34, .priv = super}, .devAddr_interfId = {device2, 0 /* Frobate interface */}},
+             {{.lun = 34, .priv = hyper}, .devAddr_interfId = {device2, 0 /* Frobate interface */}},
+             {{.lun = 34, .priv = mach},  .devAddr_interfId = {device2, 0 /* Frobate interface */}},
+             {{.lun = 35, .priv = super}, .devAddr_interfId = {device2, 1 /* Jazz interface */}},
+             {{.lun = 35, .priv = hyper}, .devAddr_interfId = {device2, 1 /* Jazz interface */}},
+       }
 
 
-/* struct uuid_dev2lun_map[] */  
- lun_map = {     
-     {.uuid_devId = {ORG_RISCV__FALLBACK__RETURN_ZERO__INTERFACE_UUID , 0},  .lun = 1},   
-     {.uuid_devId = {ORG_RISCV__FALLBACK__RETURN_MINUSONE__INTERFACE_UUID, 0},.lun = 2},
-     {.uuid_devId = {COM_BIGBUCKS__FROBATE__INTERFACE_UUID, 0}, .lun = 32},
-     {.uuid_devId = {COM_BIGBUCKS__FROBATE__INTERFACE_UUID, 1}, .lun = 34},        //sic!
-     {.uuid_devId = {ORG_TINKER_TINKER__ROCKNROLL__INTERFACE_UUID, 0}, .lun = 33},  //sic!
-     {.uuid_devId = {ORG_TINKER_TINKER__JAZZ__INTERFACE_UUID, 0}, .lun = 35}
- }
+     /* struct uuid_dev2lun_map[] */  
+      lun_map = {     
+          {.uuid_devId = {ORG_RISCV__FALLBACK__RETURN_ZERO__INTERFACE_UUID , 0},    {.lun = 1, .priv = user | super | hyper | mach },   
+          {.uuid_devId = {ORG_RISCV__FALLBACK__RETURN_MINUSONE__INTERFACE_UUID, 0}, {.lun = 2, .priv = user | super | hyper | mach },
+          {.uuid_devId = {COM_BIGBUCKS__FROBATE__INTERFACE_UUID, 0}, {.lun = 32, .priv = },
+          {.uuid_devId = {COM_BIGBUCKS__FROBATE__INTERFACE_UUID, 1}, .lun = 34},        //sic!
+          {.uuid_devId = {ORG_TINKER_TINKER__ROCKNROLL__INTERFACE_UUID, 0}, .lun = 33},  //sic!
+          {.uuid_devId = {ORG_TINKER_TINKER__JAZZ__INTERFACE_UUID, 0}, .lun = 35}
+     }
+   
