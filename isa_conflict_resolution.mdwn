@@ -348,6 +348,55 @@ invasive than the mvendor/march-id WARL concept.
 
 TBD: placeholder as of 26apr2018
 
+## new (old) m-a-i tuple idea
+
+> actually that's a good point: where the user decides that they want
+> to boot one and only one tuple (for the entire OS), forcing a HARDWARE
+> level default m-a-i tuple at them actually prevents and prohibits them
+> from doing that, Jacob.
+> 
+> so we have apps on one RV-Base ISA and apps on an INCOMPATIBLE (future)
+> variant of RV-Base ISA.  with the approach that i was advocating (S-mode
+> does NOT switch automatically), there are totally separate mtvec /
+> stvec / bstvec traps.
+> 
+> would it be reasonable to assume the following:
+> 
+> (a) RV-Base ISA, particularly code-execution in the critical S-mode
+> trap-handling, is *EXTREMELY* unlikely to ever be changed, even thinking
+> 30 years into the future ?
+> 
+> (b) if the current M-mode (user app level) context is "RV Base ISA 1"
+> then i would hazard a guess that S-mode is prettty much going to drop
+> down into *exactly* the same mode / context, the majority of the time
+> 
+> thus the hypothesis is that not only is it the common code-path to *not*
+> switch the ISA in the S-mode trap but that the instructions used are
+> extremely unlikely to be changed between "RV Base Revisions".
+> 
+> foreign isa hardware-level execution
+> ------------------------
+> 
+> this is the one i've not really thought through so much, other than it
+> would clearly be disadvantageous for S-mode to be arbitrarily restricted
+> to running RV-Base code (of any variant).  a case could be made that by the
+> time the m-a-i tuple is switched to the foreign isa it's "all bets off",
+> foreign arch is "on its own", including having to devise a means and
+> method to switch back (equivalent in its ISA of m-a-i switching).
+> 
+> conclusion / idea
+> --------------------
+> 
+> the multi-base "user wants to run one and only one tuple" is the key
+> case, here, that is a show-stopper to the idea of hard-wiring the default
+> S-mode m-a-i.
+> 
+> now, if instead we were to say, "ok so there should be a default S-mode
+> m-a-i tuple" and it was permitted to SET (choose) that tuple, *that*
+> would solve that problem.  it could even be set to the foreign isa. 
+> which would be hilarious.
+
+
 # Summary and Conclusion
 
 In the early sections (those in the category "no action") it was established
@@ -475,6 +524,13 @@ The following conversation exerpts are taken from the ISA-dev discussion
 > the portions of the spec that are optional and the implementor claims
 > it is implementing. It will test nothing in the custom extension space,
 > and doesn't monitor or care what is in that space.
+
+## (4) Jacob Bachmeyer on explaining disambiguation of opcode space
+
+> ...have different harts with different sets of encodings.)  Adding a "select"
+> CSR as has been proposed does not escape this fundamental truth that
+> instruction decode must be unambiguous, it merely expands every opcode with
+> extra bits from a "select" CSR.
 
 # References
 
