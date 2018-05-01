@@ -4,21 +4,22 @@
 
 This proposal adds a standardised extension instructions to the RV
 instruction set by introducing a fixed small number N (e.g. N = 8) of
-R-type opcodes xcmd0, .. xcmd7. Each takes in rs1 a 12bit "logical unit" (lun)
-identifying a (on or off chip) (sub)device with at most N commands that can execute the command, together with xlen - 12 bits of additional data. Based on the logical unit bits in rs1 the CPU routes each of the 8 commands to a  specific interface on a specific (sub)device on the CPU. Effectively, the xcmd0, ... xcmd7 instructions become "virtual method" opcodes, that can be overloaded for different extension (sub)devices
+R-type opcodes xcmd0 rd, rs1, rs2, .. , xcmd7 rd, rs1, rs2. 
+The input value in rs2 is arbitrary.
+The content of the first input rs1, however, is divided in a 12bit "logical unit" (lun)  together with xlen - 12 bits of additional data. 
+The lun bits in rs1, determines a specific (sub)device, and the CPU routes the command to this device with rs1 and rs2 as input, and rd as output. Effectively, the xcmd0, ... xcmd7 instructions are "virtual method" opcodes, overloaded for different extension (sub)devices. 
 
-The specific value of the lun is supposed to be convenient for the cpu to route the xcmd to the proper device and thus unstandardised. To portably construct the lun a further R-type instruction we define xext. It takes a 20 bit universally unique identifier identifying an interface with upto 8 almost (but not quite) standard R-type instructions, but implemented by the extension (sub)device. The restriction on 8 command commands is not problematic because a hardware implementation can (indeed is expected) to implement several interfaces as a subdevice. An optional sequence number identifies a specific enumerated device on the cpu that implements the interface as a subdevice. For convenience, xext also or's bits rs2[0..XLEN-12]. If the UUID is not recognised 0 is returned.   
 
-Remark: xext is a purely stateless translation (and packing) operaton (unlike previous proposals). 
+The specific value of the lun is supposed to be convenient for the cpu and is thus unstandardised. Portable software therefore constructs the lun, with a further R-type instruction xext. It takes a 20 bit universally unique identifier (UUID) that identifies  an interface with upto N R-type instructions with the signature of xcmd. An optional sequence number identifies a specific enumerated device on the cpu that implements the interface as a subdevice. For convenience, xext also or's bits rs2[0..XLEN-12]. If the UUID is not recognised 0 is returned. , but implemented by the extension (sub)device. Note that this scheme gives an easy work around the restriction on N (e.g. 8 ) commands: an implementing device can simply implement several interfaces as routable subdevices, indeed is expected to do so.  
 
-The proposal allows people to define an extension interface of 8 (slightly crippled) R-type instructions implemented by an extension device, (e.g. an IP tile) configured at manufacturing or even startup time of the CPU. A sequence like 
+The net effect is that a sequence like 
 
 //fake UUID
 lui   rd 0xEDCBA
 xext  rd rd rs1
 xcmd0 rd rd rs2 
 
-then acts like a single instruction EDCBA_cmd0 rd rs1 rs2 with the caveats that, annoyingly, rs1 can only use bits 0..XLEN-12 (the sequence is not indivisible but the crucial semantics that you might want indivisible is in xcmd0). This can be used almost exactly like an R-type instruction rock rd, rs1, rs2 (in fact can be opcode fused if so wished). 
+acts like a single namespaced instruction EDCBA_cmd0 rd rs1 rs2 with the annoying caveat that rs1 can only use bits 0..XLEN-12 (the sequence is not indivisible but the crucial semantics that you might want to be indivisible in xcmd0). 
 
 Programatically the instructions in the interface are just a set of glorified assembler macros
 
@@ -52,6 +53,10 @@ lui   t1 org_tinker_tinker__RocknRoll__interface_uuid
 This amortises the cost of the xext instruction. 
 
 ==Implications for the RiscV ecosystem ==
+
+
+The proposal thus allow independent g to define one or more extensan extension interface of 8 (slightly crippled) R-type instructions implemented by an extension device, (e.g. an IP tile) configured at manufacturing or even startup time of the CPU.
+
 
 Having a standardised overloadable interface simply avoids much of the
 need for isa extensions for hardware with non standard interfaces and
