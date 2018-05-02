@@ -366,10 +366,11 @@ probabilities. On RV64 the UUID can also be extended to 52 bits (> 10^15).
      }
 
 Example:
- 
+
+     // Fake UUID's
      #define com_bigbucks__Frobate__uuid 0xABCDE
      #define org_tinker_tinker__RocknRoll__uuid 0x12345
-     #define org_tinker_tinker__Jazz__uuid 0xD0B0D
+     #define org_tinker_tinker__Jazz__uuid 0xBEB0B
      /*
      com.bigbucks:Frobate{
          uuid: com_bigbucks__Frobate__uuid
@@ -384,11 +385,16 @@ Example:
          roll rd rs1 rs2: cmd1 rd rs1 rs2
      }
 
+     /* 
+        Device 1 implements com.bigbucks::Frobate and org.tinker.tinker interfaces, uses 
+        a special command for the machine level implementation.  
+     */
+
      long com_bigbucks__device1(short  subdevice_xcmd, lun_data_t rs1, long rs2)
      {
         switch(subdevice_xcmd) {
         case 0 | 0 << 12  /* com.bigbucks:Frobate:frobate */     : return device1_frobate(rs1, rs2);
-        case 42| 0 << 12  /* com.bigbucks:FrobateMach:frobate    : return device1_frobate_machine_level(rs1, rs2);
+        case 0 | 7 << 12  /* com.bigbucks:Frobate:frobate */     : return device1_frobate_machine_level(rs1, rs2);
         case 0 | 1 << 12  /* com.bigbucks:Frobate:foo */         : return device1_foo(rs1, rs2);
         case 0 | 2 << 12  /* com.bigbucks:Frobate:bar */         : return device1_bar(rs1, rs2);
         case 1 | 0 << 12  /* org.tinker.tinker:RocknRoll:rock */ : return device1_rock(rs1, rs2);
@@ -404,6 +410,7 @@ Example:
      }
      */
 
+     /* Device 2 implements Frobate and Jazz interfaces */
      long org_tinker_tinker__device2(short subdevice_xcmd,  lun_data_t rs1, long rs2)
      {
         switch(dev_cmd.interfId){
@@ -415,6 +422,7 @@ Example:
         }
      }
 
+     /* cpu assigns luns to the interfaces at different privilege levels on device1 and 2 to luns at manufacturing or boot up time */
      #define cpu__Device1__Frobate__lun   ((lun_t)32)
      #define cpu__Device1__RocknRoll__lun ((lun_t)33)
      #define cpu__Device2__Frobate__lun   ((lun_t)34)
@@ -444,6 +452,7 @@ Example:
             {{.uuid_devId = {org_tinker_tinker__RocknRoll__uuid, 0},        .priv = hyper}, .lun = cpu__Device2__Jazz__lun},
        }
    
+     /* cpu maps luns + privilege level to busaddress of device and particular subdevice according to spec of the device.*/
      /* struct lun2dev_subdevice_map[] */
         dev_subdevice_map = {
     //         .lun = 0,  will trap 
