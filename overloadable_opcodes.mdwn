@@ -296,9 +296,9 @@ probabilities. On RV64 the UUID can also be extended to 52 bits (> 10^15).
     short cpu__lookup_lun(const struct uuid_device_priv2lun* lun_map, uuid_dev_t uuid_dev, enum privilege priv, lun_t on_notfound);
 
 
-#define org_RiscV__Trap__lun           ((lun_t)0)
-#define org_RiscV__Fallback__ReturnZero__lun     ((lun_t)1)
-#define org_RiscV__Fallback__ReturnMinusOne__lun ((lun_t)2)
+     #define org_RiscV__Trap__lun           ((lun_t)0)
+     #define org_RiscV__Fallback__ReturnZero__lun     ((lun_t)1)
+     #define org_RiscV__Fallback__ReturnMinusOne__lun ((lun_t)2)
 
      lun_data_t xext(uuid_dev_t rs1, long rs2)
      {
@@ -446,7 +446,7 @@ Example:
    
      /* struct lun2dev_subdevice_map[] */
         dev_subdevice_map = {
-//             .lun = 0,  will trap 
+    //         .lun = 0,  will trap 
              {{.lun = org_RiscV__Fallback__ReturnZero__lun,     .priv = user},  .devAddr_interfId = {fallback,    1 /* ReturnZero  */}},
              {{.lun = org_RiscV__Fallback__ReturnZero__lun,     .priv = super}, .devAddr_interfId = {fallback,    1 /* ReturnZero  */}},
              {{.lun = org_RiscV__Fallback__ReturnZero__lun,     .priv = hyper}, .devAddr_interfId = {fallback,    1 /* ReturnZero  */}},
@@ -457,7 +457,7 @@ Example:
              {{.lun = org_RiscV__Fallback__ReturnMinusOne__lun, .priv = mach},  .devAddr_interfId = {fallback,    2 /* ReturnMinusOne*/}},
      //       .lun = 3 .. 7  reserved for other fallback RV interfaces
      //       .lun = 8 .. 30 reserved as error numbers, c.li t1 31; bltu rd t1 L_fail tests errors
-     //      .lun = 31  reserved out of caution 
+     //       .lun = 31  reserved out of caution 
              {{.lun = cpu__Device1__Frobate__lun,               .priv = user},  .devAddr_interfId = {device1, 0 /* Frobate  interface */}},
              {{.lun = cpu__Device1__Frobate__lun,               .priv = super}, .devAddr_interfId = {device1, 0 /* Frobate  interface */}},
              {{.lun = cpu__Device1__Frobate__lun,               .priv = hyper}, .devAddr_interfId = {device1, 0 /* Frobate  interface */}},
