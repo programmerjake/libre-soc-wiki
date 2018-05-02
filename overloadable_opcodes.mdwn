@@ -2,27 +2,65 @@
 
 This proposal adds a standardised extension instructions to the RV
 instruction set by introducing a fixed small number N (e.g. N = 8) of
-R-type opcodes xcmd0 rd, rs1, rs2, .. , xcmd<N> rd, rs1, rs2, that are intended to be used as "overloadable" (slightly crippled) R-type instructions for independently developed extensions in the form of non standard CPU extensions, IP tiles, or closely coupled external devices.
+R-type opcodes xcmd0 rd, rs1, rs2, .. , xcmd[N-1] rd, rs1, rs2, that are intended to be used as "overloadable" R-type instructions for independently developed extensions. Extensions may be implemented in the form of non standard CPU extensions, IP tiles, or closely coupled external devices.
  
 Tl;DR see below for a C description of how this is supposed to work. 
  
-The input value of an xcmd instruction in rs2 is arbitrary. The content of the first input rs1, however, is divided in a 12bit "logical unit" (lun)  together with xlen - 12 bits of additional data. 
-The lun bits in rs1, determines a specific (sub)device, and the CPU routes the command to this device with rs1 and rs2 as input, and rd as output. Effectively, the xcmd0, ... xcmd7 instructions are "virtual method" opcodes, overloaded for different extension (sub)devices. 
+-----
+    xcmd0 rd, rs1, rs2
+    xcmd1 rd, rs1, rs2
+    ....
+    xcmdN rd, rs1, rs2
 
-The specific value of the lun is supposed to be convenient for the cpu and is thus unstandardised. Portable software therefore constructs the lun, with a further R-type instruction xext. It takes a 20 bit universally unique identifier (UUID) that identifies  an interface with upto N R-type instructions with the signature of xcmd. An optional sequence number identifies a specific enumerated device on the cpu that implements the interface as a subdevice. For convenience, xext also or's bits rs2[0..XLEN-12]. If the UUID is not recognised 0 is returned. , but implemented by the extension (sub)device. Note that this scheme gives an easy work around the restriction on N (e.g. 8 ) commands: an implementing device can simply implement several interfaces as routable subdevices, indeed is expected to do so.  
+* rs1 contains a 12 bit "logical unit" (lun)  together with xlen - 12 bits of additional data.
+* rs2 is arbitrary
 
-The net effect is that a sequence like 
+For xmd3, route the inputs rs1, rs2 and output port rd to command 3 of the (sub)device on the cpu identified by the lun bits of rs1. 
 
-    //fake UUID
-    lui   rd 0xEDCBA
+after execution
+* rd contains the value that of the output port of the implementing device
+
+--------
+    xext  rd, rs1, rs2
+    xext0 rd, rs1, rs2
+    xextm1 rd, rs1, rs2
+
+
+* rs1 contains 
+--a UUID of at least 20 bit in bit 12 .. XLEN of rs1 identifying an xintf.
+--the sequence number of a device at the current privilege level on the cpu implementing the xintf in bit 0..11 . 
+  In particular, if bit 0..11  is zero, the default implemententation is meant.
+* rs2 is arbitrary (but bit XLEN-12 to XLEN -1 are unused)
+
+after execution,
+  rd contains the lun of a device implementing the xintf or the luns 0 (xext), 1 (xext0) or 2 (xextm1) 
+
+---
+The net effect is that, when the CPU implements an xintf with UUID 0xABCDE a sequence like 
+
+    //fake UUID of an xintf
+    lui   rd 0xABCDE
     xext  rd rd rs1
     xcmd0 rd rd rs2 
 
-acts like a single namespaced instruction cmd0_EDCBA rd rs1 rs2 with the annoying caveat that rs1 can only use bits 0..XLEN-12 (the sequence is also not indivisible but the crucial semantics that you might want to be indivisible is in xcmd0). Delegation is expected to come at a small
-additional performance price compared to a "native" instruction. This should, however, be an acceptable tradeoff in many cases.
+acts like a single namespaced instruction cmd0_ABCDE rd rs1 rs2 with the annoying caveat that rs1 can only use bits 0..XLEN-12 (the sequence is also not indivisible but the crucial semantics that you might want to be indivisible is in xcmd0). Delegation is expected to come at a small
+additional performance price compared to a "native" instruction. This should, however, be an acceptable tradeoff in many cases. Moreover implementations may opcode fuse the whole instruction sequence (or the first or last two instructions).
 
+If several instructions of the same interface are used, one can also use instruction sequences like 
+   
+    lui   t1 0xABCDE  //org_tinker_tinker__RocknRoll_uuid
+    xext  t1 t1 zero
+    xcmd0 a5, t1, a0  // org_tinker_tinker__RocknRoll__rock(a5, t1, a0) 
+    xcmd1 t2, t1, a1  // org_tinker_tinker__RocknRoll__roll(t2, t1, a5)
+    xcmd0 a0, t1, t2  // org_tinker_tinker__RocknRoll__rock(a0, t1, t2)
 
-Programatically the instructions in the interface are just a set of glorified assembler macros
+This amortises the cost of the xext instruction. 
+
+When the xintf UUID is not recognised, the xcmd in the above sequence traps. Using xext0 instead of xext ensures that the xcmd0 returns 0. 
+Likewise, using xextm1 ensures that the xcmd returns -1. This requires lun = 0 , 1 and 2 to be routed to three mandatory fallback 
+interfaces defined below.   
+
+On the software level, the xintf is just a set of glorified assembler macros
 
      org.tinker.tinker:RocknRoll{
         uuid : 0xABCDE
@@ -30,15 +68,60 @@ Programatically the instructions in the interface are just a set of glorified as
         roll rd rs1 rs2 : xcmd1 rd rs1 rs2
      }
 
-so that the above sequence is more clearly written as 
+so that the above sequence can be more clearly written as 
 
     import(org.tinker.tinker:RocknRoll)
 
     lui rd org.tinker.tinker:RocknRoll:uuid
     xext rd rd rs1
     org.tinker.tinker:RocknRoll:rock rd rd rs2
+
     
-(Quite possibly even glorified standard assembler macros are overkill and it is easier to just use defines or ordinary macro's with long names. E.g. writing 
+------
+The following standard xintfs shall be implemented by the CPU.
+
+For lun == 0: 
+
+At  privilege level user mode, supervisor mode and hypervisor mode
+
+    org.RiscV:Fallback:Trap{
+        uuid: 0
+        trap0 rd rs1 rs2: xcmd0 rd rs1 rs2
+        ...
+        trap[N-1] rd rs1 rs2: xcmd[N-1] rd rs1 rs2
+    }
+
+each of the xcmd instructions shall trap to one level higher.
+
+At privilege level machine mode each trap command has unspecified behaviour, but in debug mode 
+should cause an exception to a debug environment.  
+
+For lun == 1, at all privilege levels
+
+    org.RiscV:Fallback:ReturnZero{
+        uuid: 1
+        return_zero0 rd rs1 rs2: xcmd0 rd rs1 rs2
+        ...
+        return_zero[N-1] rd rs1 rs2: xcmd[N-1] rd rs1 rs2
+    }
+
+each return_zero command shall return 0 in rd.
+
+For lun == 2, at all privilege levels
+
+    org.RiscV:Fallback:ReturnMinusOne{
+        uuid: 2
+        return_minusone0 rd rs1 rs2: xcmd0 rd rs1 rs2
+        ...
+        return_minusone[N-1] rd rs1 rs2: xcmd[N-1] rd rs1 rs2
+    }
+
+each return_minusone shall return -1.
+
+---
+
+Remark:
+Quite possibly even glorified standard assembler macros are overkill and it is easier to just use defines or ordinary macro's with long names. E.g. writing 
 
     #define org_tinker_tinker__RocknRoll__uuid 0xABCDE 
     #define org_tinker_tinker__RocknRoll__rock(rd, rs1, rs2) xcmd0 rd, rs1, rs2
@@ -50,18 +133,7 @@ allows the same sequence to be written as
     xext  rd rs1
     org_tinker_tinker__RocknRoll__rock(rd, rd, rs2)
 
-Readability of assembler is no big deal for a compiler, but people are supposed to _document_ the interface and its semantics. In particular a semantics specified like the semantics of the cpu would be most welcome.)
-
-
-If several instructions of the same interface are used, one can also use instruction sequences like 
-   
-    lui   t1 org_tinker_tinker__RocknRoll_uuid
-    xext  t1 zero
-    xcmd0 a5, t1, a0  // org_tinker_tinker__RocknRoll__rock(a5, t1, a0) 
-    xcmd1 t2, t1, a1  // org_tinker_tinker__RocknRoll__roll(t2, t1, a5)
-    xcmd0 a0, t1, t2  // org_tinker_tinker__RocknRoll__rock(a0, t1, t2)
-
-This amortises the cost of the xext instruction. 
+Readability of assembler is no big deal for a compiler, but people are supposed to _document_ the interface and its semantics. In particular specifying the semantics of the xintf in same way as the semantics of the cpu should allow formal verification.
 
 ==Implications for the RiscV ecosystem ==
 
@@ -112,7 +184,7 @@ probabilities. On RV64 the UUID can also be extended to 52 bits (> 10^15).
        long uuid: 8*sizeof(long) - 12;
      } uuid_device_t
 
-     /* register format for rd of xext and rs1  for xcmd instructions, packs lun and data */
+     /* register format for rd of xext and rs1 of xcmd instructions, packs lun and data */
      typedef struct lun_data{
        long lun:12;
        long data: 8*sizeof(long) - 12;
@@ -192,8 +264,6 @@ probabilities. On RV64 the UUID can also be extended to 52 bits (> 10^15).
      }
 
 
-
-
      struct lun_priv2device_subdevice cpu__device_subdevice_map[];
 
      /* map (lun, priv)  to struct device_subdevice pair. 
@@ -203,21 +273,37 @@ probabilities. On RV64 the UUID can also be extended to 52 bits (> 10^15).
      device_subdevice_t cpu__lookup_device_subdevice(const struct lun_priv2device_subdevice_map* dev_subdev_map, 
                                                      lun_t lun, enum privileges priv);
 
+
+
      /* functional description of the delegating xcmd0 .. xcmd7 instructions */
-     template<k = 0..N-1> //pretend this is C
+     template<k = 0..N-1>   //pretend this is C
      long xcmd<k>(lun_data_t rs1, long rs2)
      {
-         struct device_subdevice dev_subdev = cpu__lookup_device_subdevice(device_subdevice_map, rs1.lun, current_privilege());
-         if(dev_subdev.devAddr == NULL)
-            trap(“Illegal instruction”);
-     
-         return dev_subdev.devAddr(dev_subdev.subdevId | k << 12, rs1, rs2);
+         struct device_subdevice dev_subdev = cpu__lookup_device_subdevice(device_subdevice_map, rs1.lun, current_privilege());     
+         return dev_subdev.devAddr(dev_subdev.subdevId | k >> 12 , rs1, rs2);
      }
 
+     /*Fallback interfaces*/
+     #define org_RiscV__Fallback__Trap__uuid 0
+     #define org_RiscV__Fallback__ReturnZero__uuid 1
+     #define org_RiscV__Fallback__ReturnMinusOne__uuid 2
 
+     /* fallback device */
+     static
+     long cpu__falback(short subdevice_xcmd,  lun_data_t rs1, long rs2)
+     {
+        switch(subdevice_xcmd % (1 << 12) ){
+        case 0  /* org.RiscV:Trap */:         trap_to(cpu__next_higher_privilege_level());
+        case 1  /* org.RiscV:ReturnZero */:   return 0;
+        case 2  /* org.RiscV:ReturnMinus1 */: return -1
+        case 3  /* org.RiscV:Trap Machinelevel */: printf("something is rotten in machinemode: unknown xintf device"); return 31415926;
+        default: trap("hardware configuration error");
+     }
 
 Example:
  
+
+
      #define com_bigbucks__Frobate__uuid 0xABCDE
      #define org_tinker_tinker__RocknRoll__uuid 0x12345
      #define org_tinker_tinker__Jazz__uuid 0xD0B0D
@@ -266,8 +352,13 @@ Example:
         }
      }
 
-        /* struct uuid_dev2lun_map[] */  
-        lun_map = {     
+
+     /* struct uuid_dev2lun_map[] */  
+     lun_map = {     
+            {{.uuid_devId = {org_RiscV__Fallback__Trap__uuid , 0},          .priv = user},  .lun =  0},
+            {{.uuid_devId = {org_RiscV__Fallback__Trap__uuid , 0},          .priv = super}, .lun =  0},
+            {{.uuid_devId = {org_RiscV__Fallback__Trap__uuid , 0},          .priv = hyper}, .lun =  0},
+            {{.uuid_devId = {org_RiscV__Fallback__Trap__uuid , 0},          .priv = mach},  .lun =  0}, 
             {{.uuid_devId = {org_RiscV__Fallback__ReturnZero__uuid , 0},    .priv = user},  .lun =  1},
             {{.uuid_devId = {org_RiscV__Fallback__ReturnZero__uuid , 0},    .priv = super}, .lun =  1},
             {{.uuid_devId = {org_RiscV__Fallback__ReturnZero__uuid , 0},    .priv = hyper}, .lun =  1},
@@ -292,15 +383,18 @@ Example:
    
      /* struct lun2dev_subdevice_map[] */
         dev_subdevice_map = {
-      //     {.lun = 0,   error and falls back to trapping xcmd 
-             {{.lun = 1, .priv = user},  .devAddr_interfId = {fallback,    0 /* ReturnZero  */}},
-             {{.lun = 1, .priv = super}, .devAddr_interfId = {fallback,    0 /* ReturnZero  */}},
-             {{.lun = 1, .priv = hyper}, .devAddr_interfId = {fallback,    0 /* ReturnZero  */}},
-             {{.lun = 1, .priv = mach},  .devAddr_interfId = {fallback,    0 /* ReturnZero  */}},
-             {{.lun = 2, .priv = user},  .devAddr_interfId = {fallback,    1 /* ReturnMinusOne*/}},
-             {{.lun = 2, .priv = super}, .devAddr_interfId = {fallback,    1 /* ReturnMinusOne*/}},
-             {{.lun = 2, .priv = hyper}, .devAddr_interfId = {fallback,    1 /* ReturnMinusOne*/}},
-             {{.lun = 2, .priv = mach},  .devAddr_interfId = {fallback,    1 /* ReturnMinusOne*/}},
+             {{.lun = 0, .priv = user},  .devAddr_interfId = {fallback,    0 /* Trap  */}},
+             {{.lun = 0, .priv = super}, .devAddr_interfId = {fallback,    0 /* Trap  */}},
+             {{.lun = 0, .priv = hyper}, .devAddr_interfId = {fallback,    0 /* Trap  */}},
+             {{.lun = 0, .priv = mach},  .devAddr_interfId = {fallback,    3 /* Trap  */}},  
+             {{.lun = 1, .priv = user},  .devAddr_interfId = {fallback,    1 /* ReturnZero  */}},
+             {{.lun = 1, .priv = super}, .devAddr_interfId = {fallback,    1 /* ReturnZero  */}},
+             {{.lun = 1, .priv = hyper}, .devAddr_interfId = {fallback,    1 /* ReturnZero  */}},
+             {{.lun = 1, .priv = mach},  .devAddr_interfId = {fallback,    1 /* ReturnZero  */}},
+             {{.lun = 2, .priv = user},  .devAddr_interfId = {fallback,    2 /* ReturnMinusOne*/}},
+             {{.lun = 2, .priv = super}, .devAddr_interfId = {fallback,    2 /* ReturnMinusOne*/}},
+             {{.lun = 2, .priv = hyper}, .devAddr_interfId = {fallback,    2 /* ReturnMinusOne*/}},
+             {{.lun = 2, .priv = mach},  .devAddr_interfId = {fallback,    2 /* ReturnMinusOne*/}},
      //       .lun = 3 .. 7  reserved for other fallback RV interfaces
      //       .lun = 8 .. 30 reserved as error numbers, c.li t1 31; bltu rd t1 L_fail tests errors
      //      .lun = 31  reserved out of caution 
