@@ -314,22 +314,18 @@ advantages over other proposals:
 
 **This is the only one of the proposals that meet the full requirements**
 
-# ioctl-like <a name="ioctl-like"></a>
+# Overloadable opcodes <a name="overloadable opcodes"></a>
 
-(Summary: good solid orthogonal idea.  See [[ioctl]] for [[pluggable extensions]] full details)
+See [[ioctl]] for [[pluggable extensions]] [[overloadable opcodes]] for full details)
 
 NOTE: under discussion.
 
 ==RB 2018-5-1 updated to reflect much simplified xext proposal== 
 
 The xext proposal defines 8 standardised R-type xcmd0, xcmd1, ...xcmd7 instructions (preferably in the brownfield opcode space)
-that are routed to (sub)devices that implement interfaces with up to 8 (slightly crippled) R type commands. 
-Effectively the 8 standard xcmd instructions become overloadable. 
-
-One of the reasons for seeking an extension of the Custom opcode space is
-that the Custom opcode space is severely limited: only 2 opcodes are free
-within the 32-bit space, and only four total remain in the 48 and 64-bit
-space. Each xext interface is identified by a 20 bit UUID (or 52 bit on RV64), so there is much more room than in the (32 bit) instruction space. Thus it avoids most of the need to put a claim on obcode space thereby risking collisions when combining independent extensions. In this respect it is much like POSIX ioctls, which obviate the need for defining new syscalls to control new and nonstandard hardware..
+that are routed to (sub)devices that implement one or more interfaces with up to 8 (slightly crippled) R type instruction like commands. 
+Each xext interface is identified by a 20 bit UUID (or 52 bit on RV64). Effectively the 8 standard xcmd instructions are designated as overloadable opcodes. 
+The 20 bit provided by the UUID, so there is much more room than in the 2 custom 32 bit or even 4 custom 64/48 bit opcode spaces. Thus it avoids most of the need to put a claim on opcode space thereby risking collisions when combining independent extensions. In this respect it is much like POSIX ioctls, which obviate the need for defining new syscalls to control new and nonstandard hardware..
 
 
 ==RB not sure about this bit==
