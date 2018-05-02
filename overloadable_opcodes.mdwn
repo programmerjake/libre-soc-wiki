@@ -160,7 +160,8 @@ each return_minusone shall return -1.
 ---
 
 Remark:
-Quite possibly even glorified standard assembler macros are overkill and it is easier to just use defines or ordinary macro's with long names. E.g. writing 
+Quite possibly even glorified standard assembler macros are overkill and it is 
+easier to just use defines or ordinary macro's with long names. E.g. writing 
 
     #define org_tinker_tinker__RocknRoll__uuid 0xABCDE 
     #define org_tinker_tinker__RocknRoll__rock(rd, rs1, rs2) xcmd0 rd, rs1, rs2
@@ -172,10 +173,11 @@ allows the same sequence to be written as
     xext  rd rs1
     org_tinker_tinker__RocknRoll__rock(rd, rd, rs2)
 
-Readability of assembler is no big deal for a compiler, but people are supposed to _document_ the semantics of the interface. In particular specifying the semantics of the xintf in same way as the semantics of the cpu should allow formal verification.
+Readability of assembler is no big deal for a compiler, but people are supposed 
+to _document_ the semantics of the interface. In particular specifying the semantics 
+of the xintf in same way as the semantics of the cpu should allow formal verification.
 
 ==Implications for the RiscV ecosystem ==
-
 
 The proposal allows independent groups to define one or more extension 
 interfaces of (slightly crippled) R-type instructions implemented by an 
@@ -183,7 +185,12 @@ extension device. Such an extension device would be an native but non standard
 extension of the CPU, an IP tile or a closely coupled external chip and would 
 be configured at manufacturing time or bootup of the CPU.
 
-The 20 bit provided by the UUID of an xintf is much more room than provided by the 2 custom 32 bit, or even 4 custom 64/48 bit opcode spaces. Thus the overloadable opcodes proposal avoids most of the need to put a claim on opcode space and the associated collisions when combining independent extensions. In this respect it is similar to POSIX ioctls, which (almost) obviate the need for defining new syscalls to control new or nonstandard hardware.
+The 20 bit provided by the UUID of an xintf is much more room than provided by 
+the 2 custom 32 bit, or even 4 custom 64/48 bit opcode spaces. Thus the overloadable 
+opcodes proposal avoids most of the need to put a claim on opcode space,
+and the associated collisions when combining independent extensions. 
+In this respect it is similar to POSIX ioctls, which (almost) obviate the need for 
+defining new syscalls to control new or nonstandard hardware.
 
 The expanded flexibility comes at the cost: the standard can specify the
 semantics of the delegation mechanism and the interfacing with the rest
@@ -281,20 +288,43 @@ probabilities. On RV64 the UUID can also be extended to 52 bits (> 10^15).
 
      /* 
        map (UUID, device, privilege) to a 12 bit lun, 
-       return (lun_t){0} on unknown  (at acces level)
+       return -1 on unknown  (at acces level)
 
        does associative memory lookup and tests privilege.
     */
     static
-    lun_t cpu__lookup_lun(const struct uuid_device_priv2lun* lun_map, uuid_dev_t uuid_dev, enum privilege priv);
+    short cpu__lookup_lun(const struct uuid_device_priv2lun* lun_map, uuid_dev_t uuid_dev, enum privilege priv, lun_t on_notfound);
 
 
+#define org_RiscV__Trap__lun           ((lun_t)0)
+#define org_RiscV__Fallback__ReturnZero__lun     ((lun_t)1)
+#define org_RiscV__Fallback__ReturnMinusOne__lun ((lun_t)2)
 
      lun_data_t xext(uuid_dev_t rs1, long rs2)
      {
-        lun_t lun = cpu__lookup_lun(lun_map, rs1, current_privilege_level());
+        short lun = cpu__lookup_lun(lun_map, rs1, current_privilege_level(), org_RiscV__Fallback__Trap__lun);
+        if(lun < 0)
+             return (lun_data_t){.lun = org_RiscV__Fallback__Trap__lun, .data = 0};
+       
+        return (lun_data_t){.lun = lun, .data = rs2 % (1<< (8*sizeof(long) - 12))}
+     }
 
-        return (lun_data_t){.lun = lun.id, .data = rs2 % (1<< (8*sizeof(long) - 12))}
+     lun_data_t xext0(uuid_dev_t rs1, long rs2)
+     {
+        short lun = cpu__lookup_lun(lun_map, rs1, current_privilege_level(), org_RiscV__Fallback__Trap__lun);
+        if(lun < 0)
+             return (lun_data_t){.lun = org_RiscV__Fallback__ReturnZero__lun, .data = 0};
+       
+        return (lun_data_t){.lun = lun, .data = rs2 % (1<< (8*sizeof(long) - 12))}
+     }
+
+     lun_data_t xextm1(uuid_dev_t rs1, long rs2)
+     {
+        short lun = cpu__lookup_lun(lun_map, rs1, current_privilege_level(), org_RiscV__Fallback__Trap__lun);
+        if(lun < 0)
+             return (lun_data_t){.lun = org_RiscV__Fallback__ReturnMinusOne__lun, .data = 0};
+       
+        return (lun_data_t){.lun = lun, .data = rs2 % (1<< (8*sizeof(long) - 12))}
      }
 
 
@@ -313,13 +343,16 @@ probabilities. On RV64 the UUID can also be extended to 52 bits (> 10^15).
      template<k = 0..N-1>   //pretend this is C
      long xcmd<k>(lun_data_t rs1, long rs2)
      {
-         struct device_subdevice dev_subdev = cpu__lookup_device_subdevice(device_subdevice_map, rs1.lun, current_privilege());     
+         struct device_subdevice dev_subdev = cpu__lookup_device_subdevice(device_subdevice_map, rs1.lun, current_privilege());
+ 
+        if(dev_subdev.devAddr == NULL)
+              cpu__trap_to(next_privilege); 
+     
          return dev_subdev.devAddr(dev_subdev.subdevId | k >> 12 , rs1, rs2);
      }
 
      /*Fallback interfaces*/
-     #define org_RiscV__Fallback__Trap__uuid 0
-     #define org_RiscV__Fallback__ReturnZero__uuid 1
+     #define org_RiscV__Fallback__ReturnZero__uuid     1
      #define org_RiscV__Fallback__ReturnMinusOne__uuid 2
 
      /* fallback device */
@@ -327,17 +360,13 @@ probabilities. On RV64 the UUID can also be extended to 52 bits (> 10^15).
      long cpu__falback(short subdevice_xcmd,  lun_data_t rs1, long rs2)
      {
         switch(subdevice_xcmd % (1 << 12) ){
-        case 0  /* org.RiscV:Trap */:         trap_to(cpu__next_higher_privilege_level());
-        case 1  /* org.RiscV:ReturnZero */:   return 0;
-        case 2  /* org.RiscV:ReturnMinus1 */: return -1
-        case 3  /* org.RiscV:Trap Machinelevel */: printf("something is rotten in machinemode: unknown xintf device"); return 31415926;
+        case 0  /* org.RiscV:ReturnZero */:   return 0;
+        case 1  /* org.RiscV:ReturnMinus1 */: return -1
         default: trap("hardware configuration error");
      }
 
 Example:
  
-
-
      #define com_bigbucks__Frobate__uuid 0xABCDE
      #define org_tinker_tinker__RocknRoll__uuid 0x12345
      #define org_tinker_tinker__Jazz__uuid 0xD0B0D
@@ -386,62 +415,60 @@ Example:
         }
      }
 
+     #define cpu__Device1__Frobate__lun   ((lun_t)32)
+     #define cpu__Device1__RocknRoll__lun ((lun_t)33)
+     #define cpu__Device2__Frobate__lun   ((lun_t)34)
+     #define cpu__Device2__Jazz__lun      ((lun_t)35)
 
      /* struct uuid_dev2lun_map[] */  
      lun_map = {     
-            {{.uuid_devId = {org_RiscV__Fallback__Trap__uuid , 0},          .priv = user},  .lun =  0},
-            {{.uuid_devId = {org_RiscV__Fallback__Trap__uuid , 0},          .priv = super}, .lun =  0},
-            {{.uuid_devId = {org_RiscV__Fallback__Trap__uuid , 0},          .priv = hyper}, .lun =  0},
-            {{.uuid_devId = {org_RiscV__Fallback__Trap__uuid , 0},          .priv = mach},  .lun =  0}, 
-            {{.uuid_devId = {org_RiscV__Fallback__ReturnZero__uuid , 0},    .priv = user},  .lun =  1},
-            {{.uuid_devId = {org_RiscV__Fallback__ReturnZero__uuid , 0},    .priv = super}, .lun =  1},
-            {{.uuid_devId = {org_RiscV__Fallback__ReturnZero__uuid , 0},    .priv = hyper}, .lun =  1},
-            {{.uuid_devId = {org_RiscV__Fallback__ReturnZero__uuid , 0},    .priv = mach}   .lun =  1},   
-            {{.uuid_devId = {org_RiscV__Fallback__ReturnMinusOne__uuid, 0}, .priv = user},  .lun =  2},
-            {{.uuid_devId = {org_RiscV__Fallback__ReturnMinusOne__uuid, 0}, .priv = super}, .lun =  2},
-            {{.uuid_devId = {org_RiscV__Fallback__ReturnMinusOne__uuid, 0}, .priv = hyper}, .lun =  2},
-            {{.uuid_devId = {org_RiscV__Fallback__ReturnMinusOne__uuid, 0}, .priv = mach},  .lun =  2},
-            {{.uuid_devId = {com_bigbucks__Frobate__uuid, 0},               .priv = user}   .lun = 32},  //32 sic!
-            {{.uuid_devId = {com_bigbucks__Frobate__uuid, 1},               .priv = super}  .lun = 32},
-            {{.uuid_devId = {com_bigbucks__Frobate__uuid, 1},               .priv = hyper}  .lun = 32},
-            {{.uuid_devId = {com_bigbucks__Frobate__uuid, 1},               .priv = mach}   .lun = 32},
-            {{.uuid_devId = {com_bigbucks__Frobate__uuid, 0},               .priv = super}  .lun = 34},  //34 sic!
-            {{.uuid_devId = {com_bigbucks__Frobate__uuid, 0},               .priv = hyper}  .lun = 34},  
-            {{.uuid_devId = {com_bigbucks__Frobate__uuid, 0},               .priv = mach}   .lun = 34},  
-            {{.uuid_devId = {org_tinker_tinker__RocknRoll__uuid, 0},        .priv = user}   .lun = 33},  //33 sic!
-            {{.uuid_devId = {org_tinker_tinker__RocknRoll__uuid, 0},        .priv = super}  .lun = 33},  
-            {{.uuid_devId = {org_tinker_tinker__RocknRoll__uuid, 0},        .priv = hyper}  .lun = 33},  
-            {{.uuid_devId = {org_tinker_tinker__RocknRoll__uuid, 0},        .priv = super}, .lun = 35},
-            {{.uuid_devId = {org_tinker_tinker__RocknRoll__uuid, 0},        .priv = hyper}, .lun = 35},
+            {{.uuid_devId = {org_RiscV__Fallback__ReturnZero__uuid , 0},    .priv = user},  .lun = org_RiscV__Fallback__ReturnZero__lun},
+            {{.uuid_devId = {org_RiscV__Fallback__ReturnZero__uuid , 0},    .priv = super}, .lun = org_RiscV__Fallback__ReturnZero__lun},
+            {{.uuid_devId = {org_RiscV__Fallback__ReturnZero__uuid , 0},    .priv = hyper}, .lun = org_RiscV__Fallback__ReturnZero__lun},
+            {{.uuid_devId = {org_RiscV__Fallback__ReturnZero__uuid , 0},    .priv = mach}   .lun = org_RiscV__Fallback__ReturnZero__lun},   
+            {{.uuid_devId = {org_RiscV__Fallback__ReturnMinusOne__uuid, 0}, .priv = user},  .lun = org_RiscV__Fallback__ReturnMinusOne__lun},
+            {{.uuid_devId = {org_RiscV__Fallback__ReturnMinusOne__uuid, 0}, .priv = super}, .lun = org_RiscV__Fallback__ReturnMinusOne__lun},
+            {{.uuid_devId = {org_RiscV__Fallback__ReturnMinusOne__uuid, 0}, .priv = hyper}, .lun = org_RiscV__Fallback__ReturnMinusOne__lun},
+            {{.uuid_devId = {org_RiscV__Fallback__ReturnMinusOne__uuid, 0}, .priv = mach},  .lun = org_RiscV__Fallback__ReturnMinusOne__lun},
+            {{.uuid_devId = {com_bigbucks__Frobate__uuid, 0},               .priv = user}   .lun = cpu__Device1__Frobate__lun}, 
+            {{.uuid_devId = {com_bigbucks__Frobate__uuid, 1},               .priv = super}  .lun = cpu__Device1__Frobate__lun},
+            {{.uuid_devId = {com_bigbucks__Frobate__uuid, 1},               .priv = hyper}  .lun = cpu__Device1__Frobate__lun},
+            {{.uuid_devId = {com_bigbucks__Frobate__uuid, 1},               .priv = mach}   .lun = cpu__Device1__Frobate__lun},
+            {{.uuid_devId = {com_bigbucks__Frobate__uuid, 0},               .priv = super}  .lun = cpu__Device2__Frobate__lun},  
+            {{.uuid_devId = {com_bigbucks__Frobate__uuid, 0},               .priv = hyper}  .lun = cpu__Device2__Frobate__lun},  
+            {{.uuid_devId = {com_bigbucks__Frobate__uuid, 0},               .priv = mach}   .lun = cpu__Device2__Frobate__lun},  
+            {{.uuid_devId = {org_tinker_tinker__RocknRoll__uuid, 0},        .priv = user}   .lun = cpu__Device1__RocknRoll__lun}, 
+            {{.uuid_devId = {org_tinker_tinker__RocknRoll__uuid, 0},        .priv = super}  .lun = cpu__Device1__RocknRoll__lun},  
+            {{.uuid_devId = {org_tinker_tinker__RocknRoll__uuid, 0},        .priv = hyper}  .lun = cpu__Device1__RocknRoll__lun},  
+            {{.uuid_devId = {org_tinker_tinker__RocknRoll__uuid, 0},        .priv = super}, .lun = cpu__Device2__Jazz__lun},
+            {{.uuid_devId = {org_tinker_tinker__RocknRoll__uuid, 0},        .priv = hyper}, .lun = cpu__Device2__Jazz__lun},
        }
    
      /* struct lun2dev_subdevice_map[] */
         dev_subdevice_map = {
-             {{.lun = 0, .priv = user},  .devAddr_interfId = {fallback,    0 /* Trap  */}},
-             {{.lun = 0, .priv = super}, .devAddr_interfId = {fallback,    0 /* Trap  */}},
-             {{.lun = 0, .priv = hyper}, .devAddr_interfId = {fallback,    0 /* Trap  */}},
-             {{.lun = 0, .priv = mach},  .devAddr_interfId = {fallback,    3 /* Trap  */}},  
-             {{.lun = 1, .priv = user},  .devAddr_interfId = {fallback,    1 /* ReturnZero  */}},
-             {{.lun = 1, .priv = super}, .devAddr_interfId = {fallback,    1 /* ReturnZero  */}},
-             {{.lun = 1, .priv = hyper}, .devAddr_interfId = {fallback,    1 /* ReturnZero  */}},
-             {{.lun = 1, .priv = mach},  .devAddr_interfId = {fallback,    1 /* ReturnZero  */}},
-             {{.lun = 2, .priv = user},  .devAddr_interfId = {fallback,    2 /* ReturnMinusOne*/}},
-             {{.lun = 2, .priv = super}, .devAddr_interfId = {fallback,    2 /* ReturnMinusOne*/}},
-             {{.lun = 2, .priv = hyper}, .devAddr_interfId = {fallback,    2 /* ReturnMinusOne*/}},
-             {{.lun = 2, .priv = mach},  .devAddr_interfId = {fallback,    2 /* ReturnMinusOne*/}},
+//             .lun = 0,  will trap 
+             {{.lun = org_RiscV__Fallback__ReturnZero__lun,     .priv = user},  .devAddr_interfId = {fallback,    1 /* ReturnZero  */}},
+             {{.lun = org_RiscV__Fallback__ReturnZero__lun,     .priv = super}, .devAddr_interfId = {fallback,    1 /* ReturnZero  */}},
+             {{.lun = org_RiscV__Fallback__ReturnZero__lun,     .priv = hyper}, .devAddr_interfId = {fallback,    1 /* ReturnZero  */}},
+             {{.lun = org_RiscV__Fallback__ReturnZero__lun,     .priv = mach},  .devAddr_interfId = {fallback,    1 /* ReturnZero  */}},
+             {{.lun = org_RiscV__Fallback__ReturnMinusOne__lun, .priv = user},  .devAddr_interfId = {fallback,    2 /* ReturnMinusOne*/}},
+             {{.lun = org_RiscV__Fallback__ReturnMinusOne__lun, .priv = super}, .devAddr_interfId = {fallback,    2 /* ReturnMinusOne*/}},
+             {{.lun = org_RiscV__Fallback__ReturnMinusOne__lun, .priv = hyper}, .devAddr_interfId = {fallback,    2 /* ReturnMinusOne*/}},
+             {{.lun = org_RiscV__Fallback__ReturnMinusOne__lun, .priv = mach},  .devAddr_interfId = {fallback,    2 /* ReturnMinusOne*/}},
      //       .lun = 3 .. 7  reserved for other fallback RV interfaces
      //       .lun = 8 .. 30 reserved as error numbers, c.li t1 31; bltu rd t1 L_fail tests errors
      //      .lun = 31  reserved out of caution 
-             {{.lun = 32, .priv = user},  .devAddr_interfId = {device1, 0 /* Frobate  interface */}},
-             {{.lun = 32, .priv = super}, .devAddr_interfId = {device1, 0 /* Frobate  interface */}},
-             {{.lun = 32, .priv = hyper}, .devAddr_interfId = {device1, 0 /* Frobate  interface */}},
-             {{.lun = 32, .priv = mach},  .devAddr_interfId = {device1,64 /* Frobate  machine level interface */}},
-             {{.lun = 33, .priv = user},  .devAddr_InterfId = {device1, 1 /* RocknRoll interface */}},
-             {{.lun = 33, .priv = super}, .devAddr_InterfId = {device1, 1 /* RocknRoll interface */}},
-             {{.lun = 33, .priv = hyper}, .devAddr_InterfId = {device1, 1 /* RocknRoll interface */}},
-             {{.lun = 34, .priv = super}, .devAddr_interfId = {device2, 0 /* Frobate interface */}},
-             {{.lun = 34, .priv = hyper}, .devAddr_interfId = {device2, 0 /* Frobate interface */}},
-             {{.lun = 34, .priv = mach},  .devAddr_interfId = {device2, 0 /* Frobate interface */}},
-             {{.lun = 35, .priv = super}, .devAddr_interfId = {device2, 1 /* Jazz interface */}},
-             {{.lun = 35, .priv = hyper}, .devAddr_interfId = {device2, 1 /* Jazz interface */}},
+             {{.lun = cpu__Device1__Frobate__lun,               .priv = user},  .devAddr_interfId = {device1, 0 /* Frobate  interface */}},
+             {{.lun = cpu__Device1__Frobate__lun,               .priv = super}, .devAddr_interfId = {device1, 0 /* Frobate  interface */}},
+             {{.lun = cpu__Device1__Frobate__lun,               .priv = hyper}, .devAddr_interfId = {device1, 0 /* Frobate  interface */}},
+             {{.lun = cpu__Device1__Frobate__lun,               .priv = mach},  .devAddr_interfId = {device1,64 /* Frobate  machine level */}},
+             {{.lun = cpu__Device1__RocknRoll__lun,             .priv = user},  .devAddr_InterfId = {device1, 1 /* RocknRoll interface */}},
+             {{.lun = cpu__Device1__RocknRoll__lun,             .priv = super}, .devAddr_InterfId = {device1, 1 /* RocknRoll interface */}},
+             {{.lun = cpu__Device1__RocknRoll__lun,             .priv = hyper}, .devAddr_InterfId = {device1, 1 /* RocknRoll interface */}},
+             {{.lun = cpu__Device1__RocknRoll__lun,             .priv = super}, .devAddr_interfId = {device2, 1 /* Frobate interface */}},
+             {{.lun = cpu__Device2__Frobate__lun,               .priv = super}, .devAddr_interfId = {device2, 0 /* Frobate interface */}},
+             {{.lun = cpu__Device2__Frobate__lun,               .priv = hyper}, .devAddr_interfId = {device2, 0 /* Frobate interface */}},
+             {{.lun = cpu__Device2__Frobate__lun,               .priv = mach},  .devAddr_interfId = {device2, 0 /* Frobate interface */}},
+             {{.lun = cpu__Device2__Jazz__lun,                  .priv = super}, .devAddr_interfId = {device2, 1 /* Jazz interface */}},
+             {{.lun = cpu__Device2__Jazz__lun,                  .priv = hyper}, .devAddr_interfId = {device2, 1 /* Jazz interface */}},
          }
