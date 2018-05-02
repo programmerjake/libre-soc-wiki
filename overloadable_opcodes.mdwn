@@ -1,13 +1,40 @@
 # Overloadable opcodes. 
 
-The xext proposal defines a small number N (e.g. N= 8) standardised R-type instructions xcmd0, xcmd1, ...xcmd[N-1]  (preferably in the brownfield opcode space). 
-Each xcmd takes (in rs1) a 12 bit "logical unit" (lun) identifying a (sub)device on the cpu that implements some "extension interface" (xintf) together with some additional data. Extension devices may be implemented in any convenient form, e.g. non standard extensions of the CPU iteself, IP tiles, or closely coupled external devices. An xintf is a set of up to N commands with 2 input and 1 output port (i.e. like an R-type instruction), together with a description of the semantics of the commands. Calling e.g. xcmd3 routes its two inputs and one output ports to command 3 on the device determined by the lun bits in rs1. Thus, the N standard xcmd instructions are standard-designated overloadable opcodes, with the non standard semantics of the opcode determined by the lun. 
+The xext proposal defines a small number N (e.g. N= 8) standardised R-type instructions 
+xcmd0, xcmd1, ...xcmd[N-1], preferably in the brownfield opcode space. 
+Each xcmd takes (in rs1) a 12 bit "logical unit" (lun) identifying a (sub)device on the cpu 
+that implements some "extension interface" (xintf) together with some additional data. 
+Extension devices may be implemented in any convenient form, e.g. non standard extensions 
+of the CPU iteself, IP tiles, or closely coupled external devices. 
 
-Portable software, does not use luns directly. Instead, it goes through a level of indirection using a further instruction xext. The xext instruction translates a 20 bit globally unique identifier UUID of an xintf, to the lun of a device on the cpu that implements that xintf. The cpu can do this, because it knows (at manufacturing or boot time) which devices it has, and which xintfs they provide. This includes devices that would be described as non standard extension of the cpu if the designers had used custom opcodes instead of xintf as an interface. If the UUID of the xintf is not recognised at the current privilege level, the xext instruction returns the special lun = 0, causing any xcmd to trap. Minor variations of this scheme (requiring two more instructions xext0 and xextm1) cause xcmd instructions to fallback to always return 0 or -1 instead of trapping. 
+An xintf is a set of up to N commands with 2 input and 1 output port (i.e. like an 
+R-type instruction), together with a description of the semantics of the commands. Calling 
+e.g. xcmd3 routes its two inputs and one output ports to command 3 on the device determined 
+by the lun bits in rs1. Thus, the N standard xcmd instructions are standard-designated 
+overloadable opcodes, with the non standard semantics of the opcode determined by the lun. 
 
-Remark1: the main difference with a previous "ioctl like proposal" is that UUID translation is stateless and does not use resources. The xext instruction _neither_ initialises a device _nor_ builds global state identified by a cookie. If a device needs initialisation it can do this using xcmds as init and deinit instructions. Likewise, it can hand out cookies (which can include the lun) as a return value .
+Portable software, does not use luns directly. Instead, it goes through a level of 
+indirection using a further instruction xext. The xext instruction translates a 20 bit globally 
+unique identifier UUID of an xintf, to the lun of a device on the cpu that implements that xintf. 
+The cpu can do this, because it knows (at manufacturing or boot time) which devices it has, and 
+which xintfs they provide. This includes devices that would be described as non standard extension 
+of the cpu if the designers had used custom opcodes instead of xintf as an interface. If the 
+UUID of the xintf is not recognised at the current privilege level, the xext instruction returns 
+the special lun = 0, causing any xcmd to trap. Minor variations of this scheme (requiring two 
+more instructions xext0 and xextm1) cause xcmd instructions to fallback to always return 0 
+or -1 instead of trapping. 
 
-Remark2: Implementing devices can respond to an (essentially) arbitrary number of xintfs. Hence, while an xintf is restricted to N commands, an implementing device can have an arbitrary number of commands. Organising related commands in xintfs, helps avoid UUID space pollution, and allows to amortise the (small) cost of UUID to lun translation if related commands are used in combination.
+Remark1: the main difference with a previous "ioctl like proposal" is that UUID translation 
+is stateless and does not use resources. The xext instruction _neither_ initialises a 
+device _nor_ builds global state identified by a cookie. If a device needs initialisation 
+it can do this using xcmds as init and deinit instructions. Likewise, it can hand out 
+cookies (which can include the lun) as a return value .
+
+Remark2: Implementing devices can respond to an (essentially) arbitrary number of xintfs. 
+Hence, while an xintf is restricted to N commands, an implementing device can have an 
+arbitrary number of commands. Organising related commands in xintfs, helps avoid UUID space 
+pollution, and allows to amortise the (small) cost of UUID to lun translation if related 
+commands are used in combination.
  
 Tl;DR see below for a C description of how this is supposed to work. 
  
