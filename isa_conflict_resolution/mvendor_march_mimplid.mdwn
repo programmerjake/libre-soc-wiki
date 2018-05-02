@@ -1,0 +1,50 @@
+# mvendorid/marchid/mimplid (mvendorid/marchid MRO, mimplid WARL)<a name="mvendor_marchid_mimplid"></a>
+
+This proposal explores the possibility of adding a "mimplid" (or isamux) CSR
+that acts as an extra bit of state that goes directly into instruction decoding.
+It would be analogous to extending every single RISC-V instruction by a few bits
+so as to guarantee that no conflicts may occur in either custom extensions or
+future revisions of the RISC-V Standard, as well as permitting processors
+to execute (rather than JIT decode) completely foreign architectures.
+
+Implementors register (mvendorid-marchid-mimpl) tuples with the FSF
+gcc and binutils teams, effectively making the FSF the de-facto atomic
+arbiter responsible for maintaining the world-wide unique encoding
+database as part of the gcc and binutils codebase.
+
+Conflicting custom extensions thus become world-wide globally unique
+such that assembly writers, gcc and binutils may have a high to 100%
+degree of confidence that a given binary will not need recompiling from
+source, if transferred from one architecture to another (that has the
+exact same set of extensions).
+
+# Ideas discussed so far
+
+## One hart, one ISA encoding
+
+This idea is quite straightforward: on any given multi-core processor
+it can have multiple mvendorid-marchid-mimplid tuples, where each core
+(hart) has *one* and *only* one tuple.  Thus, running different
+encodings is a simple matter of selecting the correct core.
+
+There are a couple of issues with this approach:
+
+* Single-core implementations are not possible.
+* Multi-core implementations are guaranteed, for high workloads,
+  to have "incompatible" cores sitting idle whilst "compatible"
+  cores are overloaded.
+
+Aside from those limitations it is a workable and valid proposal that has the
+potential to meet the requirements, that may turn out to be a legitimate
+and simple and easy to implement subset of other ideas outlined in this
+document.
+
+## Every hart, multiple ISA encodings, mimpl unchanged on traps
+
+This idea allows every hart (core) to have the ability to select
+any one of multiple ISA encodings, by setting mimpl *in U-mode*.
+
+## Every hart, multiple ISA encodings, mimpl set to "default" on traps
+
+## Every hart, multiple ISA encodings, mimpl set to "supervisor-selectable" 
+
