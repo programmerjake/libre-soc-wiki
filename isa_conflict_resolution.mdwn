@@ -316,21 +316,26 @@ advantages over other proposals:
 
 # Overloadable opcodes <a name="overloadable opcodes"></a>
 
-See [[ioctl]] for [[pluggable extensions]] [[overloadable opcodes]] for full details)
+See [[overloadable opcodes]] for full details, including a description in terms of C functions.
 
 NOTE: under discussion.
 
-==RB 2018-5-1 updated to reflect much simplified xext proposal== 
+==RB 2018-5-1 dropped IOCTL proposal for the much simpler overloadable opcodes proposal== 
 
-The xext proposal defines 8 standardised R-type xcmd0, xcmd1, ...xcmd7 instructions (preferably in the brownfield opcode space)
-that are routed to (sub)devices that implement one or more interfaces with up to 8 (slightly crippled) R type instruction like commands. 
-Each xext interface is identified by a 20 bit UUID (or 52 bit on RV64). Effectively the 8 standard xcmd instructions are designated as overloadable opcodes. 
-The 20 bit provided by the UUID, so there is much more room than in the 2 custom 32 bit or even 4 custom 64/48 bit opcode spaces. Thus it avoids most of the need to put a claim on opcode space thereby risking collisions when combining independent extensions. In this respect it is much like POSIX ioctls, which obviate the need for defining new syscalls to control new and nonstandard hardware..
+The xext proposal defines 8 standardised R-type instructions xcmd0, xcmd1, ...xcmd7  (preferably in the brownfield opcode space). 
+Each xcmd takes in rs1 a 12 bit "logical unit" (lun) identifying a device on the cpu that implements some "extension interface" (xintf) together with some additional data. An xintf is a set of up to 8 commands with 2 input and 1 output port (i.e. like an R-type instruction), together with a description of the semantics of the commands. Calling e.g. xcmd3 routes its two inputs and one output ports to command 3 on the device determined by the lun bits in rs1. Thus, the 8 standard xcmd instructions are standard-designated overloadable opcodes, with the non standard semantics of the opcode determined by the lun. 
 
+Portable software, does not use luns directly. Instead, it goes through a level of indirection using a further instruction xext that translates a 20 bit globally unique identifier UUID of an xintf, to the lun of a device on the cpu that implements that xintf. The cpu can do this, because it knows (at manufacturing or boot time) which devices it has, and which xintfs they provide. This includes devices that would be described as non standard extension of the cpu if the designers had used custom opcodes instead of xintf as an interface. If the UUID of the xintf is not recognised at the current privilege level, the xext instruction returns the special lun = 0, causing any xcmd to trap. Minor variations of this scheme (requiring two more instructions) cause xcmd instructions to fallback to always return 0 or -1 instead of trapping. 
 
-==RB not sure about this bit==
+The 20 bit provided by the UUID of the xintf is much more room than provided by the 2 custom 32 bit, or even 4 custom 64/48 bit opcode spaces. Thus the overloadable opcodes proposal avoids most of the need to put a claim on opcode space and the associated collisions when combining independent extensions. In this respect it is similar to POSIX ioctls, which obviate the need for defining new syscalls to control new and nonstandard hardware.
+
+Remark1: the main difference with a previous "ioctl like proposal" is that UUID translation is stateless and does not use resources. The xext instruction _neither_ initialises a device _nor_ builds global state identified by a cookie. If a device needs initialisation it can do this using xcmds as init and deinit instructions. Likewise, it can hand out cookies (which can include the lun) as a return value .
+
+Remark2: Implementing devices can respond to an (essentially) arbitrary number of xintfs. Hence an implementing device can respond to an arbitrary number of commands. Organising related commands in xintfs, helps avoid UUID space pollution, and allows to amortise the (small) cost of UUID to lun translation if related commands are used in combination.
+
+==RB not sure if this is still correct and relevant==
+
 The proposal is functionally similar to that of the mvendor/march-id
-==RB==
 except the non standard extension is explicit and restricted to a small set of well defined individual opcodes. 
 Hence several extensions can be mixed and there is no state to be tracked over context switches. 
 As such it could hypothetically be proposed as an independent Standard Extension.
@@ -339,6 +344,8 @@ Despite the proposal (which is still undergoing clarification)
 being worthwhile in its own right, and standing on its own merits and
 thus definitely worthwhile pursuing, it is non-trivial and more
 invasive than the mvendor/march-id WARL concept.
+
+==RB==
 
 # Comments, Discussion and analysis
 
