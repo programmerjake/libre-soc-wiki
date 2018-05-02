@@ -392,6 +392,27 @@ TBD: placeholder as of 26apr2018
 > would solve that problem.  it could even be set to the foreign isa. 
 > which would be hilarious.
 
+jacob's idea: one hart, one configuration:
+
+>>>  (a) RV-Base ISA, particularly code-execution in the critical S-mode
+>>> trap-handling, is *EXTREMELY* unlikely to ever be changed, even
+>>> thinking 30 years into the future ?
+>>
+>> Oddly enough, due to the minimalism of RISC-V, I believe that this is
+>> actually quite likely.  :-)
+>>
+>>>  thus the hypothesis is that not only is it the common code-path to
+>>> *not* switch the ISA in the S-mode trap but that the instructions used
+>>> are extremely unlikely to be changed between "RV Base Revisions".
+>>>
+>> Correct.  I argue that S-mode should *not* be able to switch the selected
+>> ISA on multi-arch processors. 
+>
+> that would produce an artificial limitation which would prevent
+> and prohibit implementors from making a single-core (single-hart)
+> multi-configuration processor.
+
+
 
 # Summary and Conclusion
 
