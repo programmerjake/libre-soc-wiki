@@ -66,7 +66,9 @@ after execution:
 * rs2 is arbitrary (but bit XLEN-12 to XLEN -1 is discarded)
 
 after execution,
-  rd contains the lun of a device implementing the xintf or the luns 0 (for xext), 1 (for xext0) or 2 (for xextm1). 
+ if the cpu recognises the UUID and device at the current privilege level, rd contains the lun of a device 
+implementing the xintf in bit 0..11, followed by bit 0.. XLEN - 13 of rs2.
+if the cpu does not recognise the UUID and device it returns the numbers 0 (for xext), 1 (for xext0) or 2 (for xextm1), in particular bit 12.. XLEN are 0.
 
 ---
 The net effect is that, when the CPU implements an xintf with UUID 0xABCDE a sequence like 
