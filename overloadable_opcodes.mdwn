@@ -11,7 +11,8 @@ Remark2: Implementing devices can respond to an (essentially) arbitrary number o
  
 Tl;DR see below for a C description of how this is supposed to work. 
  
------
+== Description of the instructions ==
+
     xcmd0 rd, rs1, rs2
     xcmd1 rd, rs1, rs2
     ....
@@ -20,9 +21,9 @@ Tl;DR see below for a C description of how this is supposed to work.
 * rs1 contains a 12 bit "logical unit" (lun)  together with xlen - 12 bits of additional data.
 * rs2 is arbitrary
 
-For xmd3, route the inputs rs1, rs2 and output port rd to command 3 of the (sub)device on the cpu identified by the lun bits of rs1. 
+For e.g xmd3, route the inputs rs1, rs2 and output port rd to command 3 of the (sub)device on the cpu identified by the lun bits of rs1. 
 
-after execution
+after execution:
 * rd contains the value that of the output port of the implementing device
 
 --------
@@ -34,11 +35,11 @@ after execution
 * rs1 contains 
 --a UUID of at least 20 bit in bit 12 .. XLEN of rs1 identifying an xintf.
 --the sequence number of a device at the current privilege level on the cpu implementing the xintf in bit 0..11 . 
-  In particular, if bit 0..11  is zero, the default implemententation is meant.
-* rs2 is arbitrary (but bit XLEN-12 to XLEN -1 are unused)
+  In particular, if bit 0..11  is zero, the default implemententation is requested.
+* rs2 is arbitrary (but bit XLEN-12 to XLEN -1 is discarded)
 
 after execution,
-  rd contains the lun of a device implementing the xintf or the luns 0 (xext), 1 (xext0) or 2 (xextm1) 
+  rd contains the lun of a device implementing the xintf or the luns 0 (for xext), 1 (for xext0) or 2 (for xextm1). 
 
 ---
 The net effect is that, when the CPU implements an xintf with UUID 0xABCDE a sequence like 
@@ -48,9 +49,9 @@ The net effect is that, when the CPU implements an xintf with UUID 0xABCDE a seq
     xext  rd rd rs1
     xcmd0 rd rd rs2 
 
-acts like a single namespaced instruction cmd0_ABCDE rd rs1 rs2 with the annoying caveat that rs1 can only use bits 0..XLEN-12 (the sequence is also not indivisible but the crucial semantics that you might want to be indivisible is in xcmd0). Delegation is expected to come at a small
-additional performance price compared to a "native" instruction. This should, however, be an acceptable tradeoff in many cases. Moreover implementations may opcode fuse the whole instruction sequence (or the first or last two instructions).
+acts like a single namespaced instruction cmd0_ABCDE rd rs1 rs2 (with the annoying caveat that the last 12 of rs1 are discarded) The sequence not indivisible but the crucial semantics that you might want to be indivisible is in xcmd0. 
 
+Delegation and UUID is expected to come at a small performance price compared to a "native" instruction. This should, however, be an acceptable tradeoff in many cases. Moreover implementations may opcode-fuse the whole instruction sequence or the first or last two instructions.
 If several instructions of the same interface are used, one can also use instruction sequences like 
    
     lui   t1 0xABCDE  //org_tinker_tinker__RocknRoll_uuid
@@ -58,11 +59,15 @@ If several instructions of the same interface are used, one can also use instruc
     xcmd0 a5, t1, a0  // org_tinker_tinker__RocknRoll__rock(a5, t1, a0) 
     xcmd1 t2, t1, a1  // org_tinker_tinker__RocknRoll__roll(t2, t1, a5)
     xcmd0 a0, t1, t2  // org_tinker_tinker__RocknRoll__rock(a0, t1, t2)
+ 
+If 0xABCDE is an unknown UUID at the current privilege level, the sequence results in a trap just like cmd0_ABCDE rd rs1 rs2 would. The sequence
 
-This amortises the cost of the xext instruction. 
+    //fake UUID of an xintf
+    lui   rd 0xABCDE
+    xext0  rd rd rs1
+    xcmd0 rd rd rs2 
 
-When the xintf UUID is not recognised, the xcmd in the above sequence traps. Using xext0 instead of xext ensures that the xcmd0 returns 0. 
-Likewise, using xextm1 ensures that the xcmd returns -1. This requires lun = 0 , 1 and 2 to be routed to three mandatory fallback 
+acts exactly like the sequence with xext, except that 0 is returned by xcmd0 if the UUID is unknown at the current privilege level. Likewise usage of xextm1  results in -1 being returned. This requires lun = 0 , 1 and 2 to be routed to three mandatory fallback 
 interfaces defined below.   
 
 On the software level, the xintf is just a set of glorified assembler macros
@@ -138,7 +143,7 @@ allows the same sequence to be written as
     xext  rd rs1
     org_tinker_tinker__RocknRoll__rock(rd, rd, rs2)
 
-Readability of assembler is no big deal for a compiler, but people are supposed to _document_ the interface and its semantics. In particular specifying the semantics of the xintf in same way as the semantics of the cpu should allow formal verification.
+Readability of assembler is no big deal for a compiler, but people are supposed to _document_ the semantics of the interface. In particular specifying the semantics of the xintf in same way as the semantics of the cpu should allow formal verification.
 
 ==Implications for the RiscV ecosystem ==
 
