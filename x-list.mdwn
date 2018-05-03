@@ -1,0 +1,465 @@
+Hi All,
+
+I think the time has come that someone constructs a list FAQ that we can
+put on the footer of posts. I’m not the best person to write it as like
+anyone I have unconscious biases that need to be moderated. It should be
+moderated and edited by several people. Nevertheless, I’ve had a go at
+a starting point. We need to put a stop to some of the recent behaviour
+on the list. Misinformation, speculation, gossip and negativity towards
+the current RISC-V standards track e.g. attacks on RISC-V suitability
+for use in X are not appropriate. We need to move the discussion back to
+purely technical issues, such as evolutionary and positive steps forward
+vs revolutionary rhetoric that attacks towards RISC-V. This requires
+some policy.
+
+This starting point for the list FAQ has a number of list misdemeanours
+including ones committed by me in the past, with lack of knowledge as a
+newcomer. Recent list traffic has crowded out the largest contributors
+to the specs and has made reading the list cringe material. The rhetoric
+on the list is occupying the mental bandwidth of many readers to the
+point where the list is becoming unreadable. This needs to stop. The
+traffic doesn’t represent the track of the many people who have
+contributed to the current base, which is the apex in which RISC-V
+will evolve from. RISC-V is not intended to be revolutionary rather it
+represents the next step in evolution from CISC, proprietary ISAs and
+the expiration of patents that allow for the construction of a royalty
+free open standard at the hardware level in a similar vain to what has
+happened with Linux at the software level. This is an industry standard
+group for an open standard.
+
+I’m not apologising for my long email. I’ve added bullets so one can
+skim through. I’m not apologising for my bias. I support the existing
+RISC-V standards track and open tools which represents the huge amount
+of work done by many contributors to date and I support the existing
+standards and its careful quantitative evolution.
+
+Work on a reference implementations for proposals and test them in RTL,
+Gem5, QEMU, spike or other. Ideas are not the time-consuming work. Testing
+them is…
+
+My response mirrors the discourse. It is not technical, or when it is,
+it is not consensus oriented. I find this difficult to digest. Particular
+because my recent focus has been on a faithful and accurate representation
+of the current specifications with a focus on backward and forward
+binary compatibility.
+
+-
+https://www.sifive.com/blog/2018/04/25/risc-v-qemu-part-2-the-risc-v-qemu-port-is-upstream/
+
+A lot of the recent discourse is at odds with the current standards
+track and stated goals of the foundation, such as agnosticism towards
+proprietary or open implementations. I believe the choice for openness
+is out of pragmatism vs ideology. DRM is going to be one of those things
+that gets implemented on RISC-V whether we personally agree with it or
+not. We should refrain from attaching emotive language to implementation
+choices that are legal for which we disagree with.
+
+I tend towards consensus seeking behaviour. This list has become
+somewhat exhausting to read and I can’t contribute to the current
+style of discussions. It has occupied too much of my mental bandwidth
+which compelled me to write this email, instead of working on what I’m
+supposed to be working on. I do think we have a problem on this list
+which we need to resolve.\
+
+The founders of the ISA should be able to respond constructively and
+positively to proposals on the list. The fact that they are not is an
+indication that something is wrong.
+
+This email is not intended to start a discussion. It’s more one of
+despair. i.e. being nearly ready to hit “unsubscribe”.
+
+Sincerely, X-Michael.
+
+
+
+## X-RISC-V ISA Development Mailing List FAQ
+
+
+* Advocate for RISC-V on this mailing list
+
+Constructive criticism is essential for evolution of the RISC-V
+specifications, however opinions without quantitative assessment or that
+contain a general disillusionment towards RISC-V are not in the spirit
+of this list. Things can and will be improved as the specifications
+evolve. Quirks exist. They can be ironed out. To improve the ISA we
+need to maintain a generally positive attitude towards the evolution
+of the specifications, keeping in mind binary compatibility with the
+existing specifications. Editing the specifications is hard work. Gossip,
+speculation and inaccurate accounts of computer history are not on topic.
+
+
+* Read Computer Architecture, Sixth Edition: A Quantitative Approach
+
+As we all know, this book contains the foundation of the RISC-V
+quantitative design. Quoting Amazon: “Computer Architecture:
+A Quantitative Approach, Sixth Edition has been considered essential
+reading by instructors, students and practitioners of computer design for
+over 20 years. The sixth edition of this classic textbook from Hennessy
+and Patterson, winners of the 2017 ACM A.M. Turing Award recognizing
+contributions of lasting and major technical importance to the computing
+field, is fully revised with the latest developments in processor and
+system architecture. The text now features examples from the RISC-V
+(RISC Five) instruction set architecture, a modern RISC instruction set
+developed and designed to be a free and openly adoptable standard. It
+also includes a new chapter on domain-specific architectures and an
+updated chapter on warehouse-scale computing that features the first
+public information on Google’s newest WSC.”
+
+
+* RISC origins at Berkeley
+
+Rhetoric that compares RISC-V to a student project is defamatory and
+belies the fact that there is widespread support and adoption for RISC-V
+in the MCU space with companies committing to ship billions of RISC-V
+processors in deeply embedded applications. The RISC-V Foundation
+represents the apex of the academic-industrial complex and this is
+shown by the Foundation membership. Please respect that this list is for
+supporters of RISC-V and includes some of the most brilliant minds in the
+industry. argumentum ad hominem and conspiracy theories should be avoided.
+
+
+* The RISC-V Foundation has a large number of committed member companies.
+
+There are newcomers on the list who are not aware that they are
+broadcasting to a large Foundation of committed RISC-V member companies
+who support the RISC-V standards. General rules for constructive
+criticism and neutral discourse apply as indeed they would for any
+industry working group.
+
+
+* The privileged ISA is not a POSIX/Linux ISA
+
+The only thing in the privileged specification that supports a
+UNIX/POSIX-like OS is S-mode page based address translation and
+the Supervisor mode / User mode privilege separation. These are
+optional. These functions are not limited to POSIX. Windows NT with its
+roots in VMS could use these facilities with PE/COFF and UEFI to run
+ntoskrnl.exe on RISC-V. The System V ELF ABI and calling convention is
+documented in a separate processor supplement ABI document. The Linux
+ABI is not part of the ISA.
+
+
+* Binary compatibility is important for MCUs
+
+The machine mode registers should be consistent across
+implementations. Binary compatibility for micro controllers is just
+as important as OS level binary compatibility (which is distinct) as
+it allows RISC-V system level code to be shared across heterogenous
+implementations.
+
+
+* Modularity makes small implementations easier
+
+The modularity of the RISC-V specifications is very well thought
+through and is one of its strengths; credit to the ISA designers. RVI
+plus minimal M-mode is as easy to implement as one would expect for a
+simple MCU with in the order of a few hundred bits for processor state
+on top of the register file.
+
+
+* A minimal M-mode implementation is not onerous
+
+An M-mode only implementation requires approximately 11 CSRs (mcycle,
+minstret, mstatus, misa, mie, mtvec, mscratch, mepc, mcause, mtval, mip)
+out of a set of 18 CSRs. This is not onerous. Several only require 1
+bit of state in a minimal configuration.
+
+Below are the 18 CSRs with the minimal 11 identified which are necessary
+to implement a processor confirming to the M-mode subset of the Privileged
+ISA as distinct from the User-level ISA which only specifies the runtime
+aspects of the ISA, versus privilege modes (M-mode is mandatory, S and U
+are optional). An implementation with < 11 XLEN machine words is possible.
+
+        /* machine counters */ mcycle - (useful to implement) minstret -
+        (useful to implement)
+
+        /* machine information */ mvendorid - (can wire to 0) marchid -
+        (can wire to 0) mimplid - (can wire to 0) mhartid - (single core
+        can wire to 0)
+
+        /* machine trap setup */ mstatus - (requires MIE) 1-bit misa -
+        (1 bit: ‘E’ or ‘I’) 1-bit mideleg - (can wire to 0)
+        medeleg - (can wire to 0) mie - (require to enable external and
+        timer interrupts MEIE, MTIE) 2-bits mtvec - (required for ISR
+        entry, address, can be hardwired e.g to 0x10000) mcounteren -
+        (can wire to 0)
+
+        /* machine trap handling */ mscratch - (required register for
+        ISR stack pointer) mepc - (required register for ISR return
+        address) mcause - (required register for ISR cause: exception or
+        interrupt) mtval - (required register for ISR exception info) mip
+        - (required register for ISR to see which interrupts are pending)
+
+
+* RISC-V Control and status registers are accessed with an immediate
+
+Control and status registers are accessed via an instruction
+immediate. This means there is no register read required to decode the
+CSR. This makes pipelined and Out Of Order implementations easier to
+implement. Thus it doesn’t favour one implementation style over the
+other. CSRs could be present in an MMIO address space however the CSR
+instructions are the interface, not loads or stores. The spec doesn’t
+preclude the CSR instructions from fronting MMIO backed register space and
+I believe it was a design considerations and a plausible implementation
+choice. However, the specified instructions for accessing processor
+state use an immediate. This simplifies implementation. Indirection of
+access to CSRs via a register would remove the ability to rename and
+force serialisation as CSRs can change the state of instructions before
+and after them. This would be similar to loads and stores to IO space
+which need to be ordered. The current design supports tiny MCUs up to
+large multi-core OoO application processors.
+
+
+* Micro controllers have different memory maps
+
+The only thing limiting binary compatibility between bare metal apps are
+typically a linker script because the “memory map” differs between
+implementations and they require different device drivers. Bare metal apps
+need to have custom chip bringup code for the MCU which is part of a BSP
+(Board Support Package). Fortunately the privileged ISA is a constant
+across implementations. Moving privileged ISA function into a memory map
+won't improve this situation. It will worsen binary compatibility. Higher
+level OSes like Linux have user level ABIs and virtual memory to hide the
+physical memory map visible to the OS which makes binary portability
+easier at higher layers in the application stack. Bare metal code
+typically depends on a specific memory map but good design can factor
+out the differences between different processors from different vendors.
+
+Many RISC-V vendors are actively working on solutions to these
+problems. For medium size systems there is even the possibility of
+implementing arm’s EBBR standard which includes a cut down version of
+UEFI designed to work with device-tree instead of ACPI. The interface
+surface area is tractable for moderately sized embedded systems.
+
+For smaller MCUs, the memory map and devices are likely to be unique.
+Systems that have scratchpads that may be too small to hold device-tree
+parser (like SiFive’s HiFive1) will of course need custom linker scripts
+and custom BSPs. This is par for the course for the type of system that
+when scaled may cost several cents and can be used on a smart conference
+badge and in systems that are in the 1mm^2 range excluding packaging.
+
+
+* Standard privilege status and control registers allow for portable
+bare-metal code
+
+The standard machine mode registers minimise friction when adapting code
+to processors with different memory maps because developers can rely on
+a standard control mechanism for traps (interrupts and exceptions).
+
+
+* An ISA can’t disallow software, on the contrary it is designed to
+support it
+
+arm’s EBBR subset of UEFI is actually not that onerous and provides
+a relatively clean interface for binary compatible booting on medium
+size embedded devices. It is not appropriate for the smallest of
+implementations that just depend on the presence of the 11 CRSs mentioned
+above. But given RISC-V is an ISA, it can’t prevent someone from porting
+UEFI, PE/COFF, coreboot, u-boot, or any OS for that matter. The ISA can
+however enforce binary compatibility at the M-mode level.
+
+
+* Secure implementations that support digital right management are
+supported
+
+Mask ROM code that verifies EEPROM payload with signature checks
+using a public key in OTP are supported e.g. a Trusted Computing
+Base. RISC-V member companies are actively working on boot integrity
+across heterogenous RISC-V systems. Customers of chip vendors that have
+intellectual property to protect are not excluded. RISC-V is agnostic
+towards end-use and doesn’t have any restrictions on endeavours besides
+compliance with the technical requirements of the ISA, for reasons of
+binary compatibility.
+
+
+* RISC-V has several ISA variants
+
+At the moment MCUs and application processors with the same ISA share
+the same calling convention, but there are several ISA variants with
+different calling conventions in the RISC-V suite depending on the
+presence of F, D, E. The C extension also creates an ISA variant (GC
+code is not compatible with G), hence its presence in ‘misa’.
+
+
+* MCUs don’t need to save/restore all registers
+
+In the future, users of the open source tools will be able to do things
+for the MCU profile like hide the ISR setup and entry assembly behind
+C/C++ attributes, so programmers don’t need to worry about these
+low-level details. It is possible, today, with existing tools, to model
+an MCU ABI that has less register save restore overhead by compiling ISRs
+(bottom half) with a different set of registers to top half code. It
+is not necessary to make wholesale changes to the Privileged ISA to
+achieve this. Optimising trap/entry exit clearly requires some thought
+and using the standard C ABI may not be optimal. Luckily we can write
+bare functions and use inline asm, etc.
+
+Save/restore overhead can be reduced now with thoughtful use of compiler
+flags (-ffixed-reg) or hand coded assembly. Special compiler support will
+make this even easier in the future. Also, if code is purely interrupt
+driven, then ISRs can also avoid save/restore alttogether. They are
+many techniques to minimise interrupt overhead that don’t require ISA
+changes. Recursive interrupts are of course a distinct issue that requires
+thoughtful design… and I suspect will be addressed in a future version
+of the spec, in an evolutionary vs revolutionary manner.
+
+When a competitive RISC-V system can run at an order of magnitude faster
+clock speed in the same process and area, then claims of these overheads
+are “bunkem”
+
+
+* Is forking the RISC-V ISA a good idea
+
+Folk are free to fork the architecture , as it is CC licensed, and folk
+can even call it RISC-V if they comply with the specifications and if
+implementing a processor, an implementation need to implement the 11
+or so M-mode registers (and several more wired to 0). The User-Level
+ISA can only be used alone as part of an AEE. This is outlined in the
+current specs. Custom additions have to follow the conventions set out
+in the specification.
+
+
+* Should RISC-V trademark rules should be enforced
+
+Members could potentially be violating the RISC-V trademark usage
+guidelines and I believe they should be enforced:
+
+- https://riscv.org/risc-v-trademark-usage/
+
+Example 1:  https://emb-riscv.github.io/
+
+Implementation proposal that does not comply with the minimal M mode
+requirements and may not be RISC-V compliant. The “Embedded RISC-V”
+initiative may very well comply with the Base ISA however as far as
+I am aware, a complete processor must implement M mode unless it only
+aims for AEE compliance. Use of the RISC-V logo in a way that suggests
+endorsement from the foundation without explicit permission should be
+questioned e.g. is “Embedded RISC-V” the official embedded working
+group and who is the chair? Using something like X-Embedded might be
+less risky assuming this may or may not be the Foundation’s official
+Embedded Working Group? It is hard to tell. It is suggestive.
+
+Example 2:
+https://github.com/cliffordwolf/xbitmanip/blob/master/xbitmanip-draft.pdf
+
+Uses X- prefix, extends the specifications, doesn’t modify the RISC-V
+logo. Clearly fair use.
+
+
+* Do we need an embedded working group.
+
+I’d like to know more about the embedded working group. I think it would
+be a disservice to the other foundation members if it was run by one
+member acting without consideration of the existing specifications and
+the needs of other members. I imagine minimising binary incompatibility
+would be a mandate for the group with an objective to create “minimal”
+differences or additions to the Privileged ISA versus a radical departure
+that throws out the most minimal portion of the Privileged ISA.
+
+
+* Folk should be free to experiment, within reasonable bounds
+
+Certainly there needs to be a balance of freedom to experiment with the
+RISC-V architecture i.e. academic or research use, versus commercial
+implementations that would be subject to compliance assessment. Look at
+how other commercial and individual members of the RISC-V Foundation
+use the RISC-V logo and represent their custom “extensions”. Very
+carefully. e.g. preceding specifications with X or noting said
+specifications are “unofficial proposals”. My advice would be to avoid
+wholesale replacement of portions of the specification and representing
+it as “Industrial RISC-V” and the “RISC-V Industrial Profile”
+versus “RISC-V X-Industrial Profile”. Someone could easily perceive
+these as a projects that are endorsed by the foundation.
+
+The mandatory portions for a minimal processor implementing M-mode and
+RVI are indeed by all accounts small, so if an additive X-custom micro
+controller profile is available, it may very well be accepted, assuming
+it is compatible.
+
+
+* RISC-V ISA is open but agnostic to free and open source versus
+proprietary implementations alike
+
+Regarding a Trusted Computing Base, RISC-V is available for use by
+proprietary and open source implementations alike. This is clearly
+stated on the foundation website. If implementations were restricted
+to the hardware equivalent of GPL, then adoption in industry would be
+very limited. The choice for on an open standard ISA is out of pragmatism
+(cost reduction, shared common interest, industry competitive ISA that is
+also a base for computer architecture research). It is not idealogical
+(anti-DRM, tit-for-tat licensing schemes, prevents proprietary usage
+or proprietary additions, or alternatively prevents open usage or open
+additions). Many RISC-V Foundation members have intellectual property they
+want to continue to protect and RISC-V is completely open to supporting
+these implementations.
+
+
+* RISC-V Base ISA requires 2-read ports 1-write port
+
+Newcomers to the list might propose things that are inappropriate based
+on design decisions that are already set in stone or frozen. We should
+maintain a list FAQ for things that have already been discussed on the
+list, such as instructions that require 3 read ports. FMA in F and D is
+an exception and why. The Vector ISA allows for predicated operations
+and the intent, as i’ve witnessed it, is to keep the implementation
+requirements for the Base ISA to 2-read ports 1-write port. This means
+two input operands. The Base ISA has no exceptions to this rule. F and
+D which are optional extensions have some instructions with 3 input
+operands and/or use implicit state. e.g. floating point instructions
+read ‘frm’ and write to ‘fflags’. We can then simply reply with
+a pointer to the FAQ.
+
+
+* Inflammatory language vs neutral tone
+
+Avoid inflammatory language and slang on the list. Words such as
+“bunkem” and “treacherous” are examples of words that are not
+appropriate for use on the list. “misinformation” is a more neutral
+and correct. Avoid sensationalising issues and/or grandstanding.
+
+
+* Long emails
+
+If you want to send long emails, keep their frequency very low. I’ve
+added bullets to this email so folk could skip ahead. i.e. “brevity
+is the sole of wit”. A long email every few weeks is better than
+occupying > 50% of the list bandwidth with distant goals when there are
+more immediate and practical issues to solve. This involves discussing
+and submitting edits to the “existing” specs versus occupying
+the list with a deluge of radical departures from the current ISA
+specifications. Post at a low frequency and gather feedback off list if
+you write very long proposals, link to them
+
+
+* Fragmentation, gossip, opinion and speculation
+
+Fragmentation, gossip, opinion and speculation on this list is harmful. We
+need to keep the discussions on this list technical and refrain from
+industry gossip, fear mongering and opinion. Let’s keep things technical
+and let’s focus this list on small incremental additions to the parts of
+the ISA that are not frozen. I thought discussing something like a SELECT
+instruction was quite controversial (3 operand form of conditional move
+that requires a third bit-line read port and a zero comparator on each
+physical register). Very uncontroversial in comparison to the recent
+rampant expletive filled sagas on this list.
+
+
+* Inclusivity and digesting
+
+The list should remain open, inclusive and friendly towards newcomers. If
+the discussion veers off topic, or becomes time consuming, point someone
+to a book, FAQ or other material. Newcomers however should not post
+material at a rate that a large number of members on the list can’t
+possibly digest. Care for other peoples consciousness and their ability
+to digest information. Its possible to overload people and occupy peoples
+consciousness to their detriment if they are regular readers of this list.
+
+
+* My own view. I’m not speaking on behalf of the foundation or my
+employer
+
+This should be implicit. This is a public list. I’m speaking in my
+personal capacity. I would not dare to represent anything as RISC-V
+without appropriate approval. Discussing the RISC-V ISA is on-topic on
+this list. Proposing additions to the official specs via established
+channels such as the working groups and this mailing list is on topic.
