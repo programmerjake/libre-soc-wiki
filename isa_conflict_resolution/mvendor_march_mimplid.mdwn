@@ -44,6 +44,26 @@ document.
 This idea allows every hart (core) to have the ability to select
 any one of multiple ISA encodings, by setting mimpl *in U-mode*.
 
+> I agree.. complete renumbering is a huge overhead. Guy's solution avoids
+> that overhead and provides a fast-switching mechanism.  We had already
+> identified what happens on traps, flushes, caches, etc. Would prefer if
+> we could review/critique that proposal.
+> 
+> If someone wants to re-number the entire custom ISA even then Guy's
+> solution will stand.  Plus, in the heterogenous envrionemt, considering
+> each hart/core has its own marcselect(mutable csr), the M mode (or
+> user/supervisor) can simply choose to enable that hart/core by writing
+> to the marchselect CSR.
+> 
+> For compliance, yes we will need Jacob's idea of having a global database
+> somewhere. Also, I believe that the compliance will check only if the
+> core is RISC-V compliant and not worry about any other extensions present
+> or not.
+> 
+> By adding a new mutable csr in the MRW region even existing
+> implementations will be compliant since accessing this CSR in current
+> implementations would just trap.
+
 ## Every hart, multiple ISA encodings, mimpl set to "default" on traps
 
 ## Every hart, multiple ISA encodings, mimpl set to "supervisor-selectable" 
