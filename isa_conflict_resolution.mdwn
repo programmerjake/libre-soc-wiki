@@ -322,6 +322,8 @@ NOTE: under discussion.
 
 ==RB 2018-5-1 dropped IOCTL proposal for the much simpler overloadable opcodes proposal== 
 
+The overloadable opcode (or xext) proposal allows a non standard extension to use a documented 20 + 3 bit   (or 52 + 3 bit on RV64) UUID identifier for an instruction for _software_ to use. At runtime, a cpu translates the UUID to a small implementation defined 12 + 3 bit bit identifier for _hardware_ to use. It also defines a fallback mechanism for the UUID's of instructions the cpu does not recognise.  
+
 The overloadable opcodes proposal defines 8 standardised R-type instructions xcmd0, xcmd1, ...xcmd7 preferably in the brownfield opcode space. 
 Each xcmd takes in rs1 a 12 bit "logical unit" (lun) identifying a device on the cpu that implements some "extension interface" (xintf) together with some additional data. An xintf is a set of up to 8 commands with 2 input and 1 output port (i.e. like an R-type instruction), together with a description of the semantics of the commands. Calling e.g. xcmd3 routes its two inputs and one output ports to command 3 on the device determined by the lun bits in rs1. Thus, the 8 standard xcmd instructions are standard-designated overloadable opcodes, with the non standard semantics of the opcode determined by the lun. 
 
