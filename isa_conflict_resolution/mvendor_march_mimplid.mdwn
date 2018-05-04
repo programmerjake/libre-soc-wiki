@@ -27,9 +27,18 @@ it can have multiple mvendorid-marchid-mimplid tuples, where each core
 (hart) has *one* and *only* one tuple.  Thus, running different
 encodings is a simple matter of selecting the correct core.
 
+clarification from jacob:
+
+> it solves the problem of one implementation needing to implement
+> conflicting extensions, with some limitations, specifically that each of
+> the conflicting extensions must be used in separate threads.  The Rocket
+> RoCC coprocessor interface, in a multi-tile SoC where different tiles
+> have different coprocessors, provides a working example of this model.
+> The overall system has both of two conflicting coprocessors.
+
 There are a couple of issues with this approach:
 
-* Single-core implementations are not possible.
+* Single-core (single hart) implementations are not possible.
 * Multi-core implementations are guaranteed, for high workloads,
   to have "incompatible" cores sitting idle whilst "compatible"
   cores are overloaded.
