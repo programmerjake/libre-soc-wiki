@@ -92,6 +92,11 @@ the M-Mode and S-Mode traps are running an incompatible ISA.
 So the solution here is that whenever M-mode changes the mimplid/isamux CSR,
 the underlying hardware switches mtvec, stvec and bstvec over to
 *separate* and distint entries (stored on a per-hart, per-mimplid basis).
+In the context of there being an OS, the OS would need to be running
+in a "default" initial context.  It would set up mtvec, stvec (and bstvec
+if required), then change the mimplid/isamux, and set up *new* mtvec etc.
+entries *as appropriate* for that particular (alternative) ISA (including
+if it is a foreign architecture).
 
 > I agree.. complete renumbering is a huge overhead. Guy's solution avoids
 > that overhead and provides a fast-switching mechanism.  We had already
@@ -126,4 +131,23 @@ made for the foreign ISA having its own entirely different orthogonal
 trap-handling system.
 
 ## Every hart, multiple ISA encodings, mimpl set to "supervisor-selectable" 
+
+This is again identical as far as mimplid/isamux is concerned, with, again,
+a different kind of decision-making on traps.  It was pointed out that
+if the mimplid/isamux is left unaltered when a trap occurs, switching over
+from one ISA to another inside a trap and dropping down to a different
+ISA in U-Mode is made slightly challenging by virtue of the fact that, when
+the trap changes the ISA, from that point onwards it *has to run that ISA
+inside the trap*.  This may involve extra code-paths (branches) to require
+multiple different exit points from the trap.
+
+Whilst again it is quite unlikely that this scenario will arise (due to
+it being unlikely that the Base ISA will change significantly between
+(stable, approved) revisions to the RV Standard, the possibility cannot
+entirely be ruled out.
+
+So this idea is a hybrid of the above two: there is a default ISA for
+M-Mode and S-Mode, however in each it is possible to *set* that default.
+
+The idea has not yet been fully analysed and needs further discussion.
 
