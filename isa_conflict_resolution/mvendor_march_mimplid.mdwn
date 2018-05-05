@@ -52,6 +52,46 @@ document.
 
 This idea allows every hart (core) to have the ability to select
 any one of multiple ISA encodings, by setting mimpl *in U-mode*.
+Implementation-wise the value in mimpl is passed to an out-muxer
+that generates mutually-exclusive HIGH signals that are passed
+as an additional input to the selection/enabler blocks of multiple
+(conflicting) decoders.  As an extra signal into the associated multi-input
+AND gate the overhead is negligeable, and there is no possibility of
+a conflict due to the out-mux outputs being mutually-exclusive.
+
+Note that whilst this is very similar to setting MISA bits, MISA actively
+disables instructions from being decoded (whereas whilst the above also
+disables a certain subset of the opcode space it also *enables* some
+in their place).  Also - and this is extremely important - it is
+**forbidden** for the encoding-switching to alter the actual state
+of any Extensions (custom or othewise).  Changing of mimplid **only**
+affects the decoding, it does **not**, unlike MISA, actually switch on
+or off the actual Extension and **cannot** be used to "power down" any
+hardware.
+
+The tricky bit for this idea is: what happens when a trap occurs,
+to switch to M-Mode or S-Mode?  If this is not taken care of properly
+there is the possibility for a trap to be running instructions that
+are completely alien and incompatible with the code and context from
+which the trap occurred.
+
+A cursory analysis of the situation came to the consensus that whilst in
+a trap, it would both be highly unlikely that custom opcodes would be
+used *in the trap*, or that even when the hart can support multiple
+*approved* (present and future) variants of the *RV Base Standard*,
+it would be so unusual for RV Base to change between (approved) variants
+that the possibility of there actually being a conflict is extremely
+remote.  This is good as the code-path in an OS trap (supervisor mode)
+needs to be kept as short as possible.
+
+However, the possibility that there will be a critical difference cannot
+be known or ruled out, and foreign ISAs will definitely be made much more
+difficult to implement full OSes for (particularly proprietary ones) if
+the M-Mode and S-Mode traps are running an incompatible ISA.
+
+So the solution here is that whenever M-mode changes the mimplid/isamux CSR,
+the underlying hardware switches mtvec, stvec and bstvec over to
+*separate* and distint entries (stored on a per-hart, per-mimplid basis).
 
 > I agree.. complete renumbering is a huge overhead. Guy's solution avoids
 > that overhead and provides a fast-switching mechanism.  We had already
@@ -74,6 +114,16 @@ any one of multiple ISA encodings, by setting mimpl *in U-mode*.
 > implementations would just trap.
 
 ## Every hart, multiple ISA encodings, mimpl set to "default" on traps
+
+This is effectively the same as the above except that when switching to
+M-Mode or S-Mode, the ISA encoding is always automatically switched to
+one and only one (default) ISA encoding.  There are no complications for
+the hardware, however for software - particularly OSes and in particular
+for running foreign hardware ISAs - every single trap now has to work
+out which ISA the U-mode was running, and branch accordingly.  Running a
+foreign OS thus becomes extremely challenging, although a case could be
+made for the foreign ISA having its own entirely different orthogonal
+trap-handling system.
 
 ## Every hart, multiple ISA encodings, mimpl set to "supervisor-selectable" 
 
