@@ -13,6 +13,56 @@ dependency(?): scratch/CAM memory extension
 * MFLUSH(?): flush local buffer
 * MSELECT: check if send (or receive) can succeed (or block)
 
+------
+
+I don't want to propose or advocate a full solution at this point, but
+a simple one might use a small CAM-based message system for fast
+storage (write) and retrieval (read) using an agreed key. If this was
+to fit into a two-operand instruction, both the key and destination
+must be encoded into one source register, with the data-to-send
+encoded into the other source register, and a result (sent or dropped)
+returned into rd.
+
+rs1 = key-id = prepare-to-send(dest-processID) // a system call to
+allocate a communications channel + src + dest encoded into key-id
+rs2 = data
+rd = return code
+
+MSEND  rd, rs1, rs2 // to send
+MRECVB rd, rs1, x0  // nonblocking receive, returns 0 if no data present
+MRECVB rd, rs1, x0  // blocking receive
+
+behaviour:
+MSEND is nonblocking, [rd]=1 on successful acceptance network (network
+delivery guaranteed)
+MRECV is nonblocking, [rd]=0 on no data to receive, [rd]=message
+otherwise (cannot send 0 as message)
+MRECVB is blocking, waits until data arrives (can send 0 as a message)I don't want to propose or advocate a full solution at this point, but
+a simple one might use a small CAM-based message system for fast
+storage (write) and retrieval (read) using an agreed key. If this was
+to fit into a two-operand instruction, both the key and destination
+must be encoded into one source register, with the data-to-send
+encoded into the other source register, and a result (sent or dropped)
+returned into rd.
+
+rs1 = key-id = prepare-to-send(dest-processID) // a system call to
+allocate a communications channel + src + dest encoded into key-id
+rs2 = data
+rd = return code
+
+MSEND  rd, rs1, rs2 // to send
+MRECVB rd, rs1, x0  // nonblocking receive, returns 0 if no data present
+MRECVB rd, rs1, x0  // blocking receive
+
+behaviour:
+MSEND is nonblocking, [rd]=1 on successful acceptance network (network
+delivery guaranteed)
+MRECV is nonblocking, [rd]=0 on no data to receive, [rd]=message
+otherwise (cannot send 0 as message)
+MRECVB is blocking, waits until data arrives (can send 0 as a message)
+
+-----
+
 MSEND can be like ST, but I chose to have a return value to indicate
 whether the send was accepted (i.e., copied into xmit buffer). this
 enables sharing of resources at the sender (future senders will be
@@ -29,6 +79,8 @@ memory would then store anything that is evicted. that way any values
 in the CAM that aren't used right away will migrate into main memory;
 it is acceptable to move them there because this is already a high
 
+----
+
 Maybe the *newest* message should spill to memory instead?  This keeps
 messages in FIFO order and could be easier to implement -- MSEND traps,
 supervisor transfers the message to memory and sets a bit in the target's
@@ -39,3 +91,5 @@ supervisor to reload the hardware queue from the memory overflow area.
 This avoids needing background DMA for the message buffers in hardware
 and allows supervisors to fully implement the overflow queues, rather
 than forcing a hardware-imposed structure.
+
+
