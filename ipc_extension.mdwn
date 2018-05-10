@@ -1,0 +1,41 @@
+# IPC Extension
+
+see Tony Brewer's (Micron) slides.
+
+idea: copy POSIX send/recv/select semantics
+
+dependency(?): scratch/CAM memory extension
+
+* MSTORE: message send; send message to a target hart) and store it in
+  its message-buffer. Traps when target buffer is full.
+* MLOAD: message load; load message from local message buffer. Traps
+  when buffer is empty.
+* MFLUSH(?): flush local buffer
+* MSELECT: check if send (or receive) can succeed (or block)
+
+MSEND can be like ST, but I chose to have a return value to indicate
+whether the send was accepted (i.e., copied into xmit buffer). this
+enables sharing of resources at the sender (future senders will be
+denied until the xmit buffer has space).
+
+MRECV has two versions, blocking and non-blocking. the non-blocking
+version allows the hart to do a bit more work before checking whether
+data has arrived. the blocking version waits until data is received.
+
+to improve upon the messaging system I described, there would need to
+be backing storage in main memory for the CAM data. perhaps the CAM
+needs to operate with an eviction policy based upon oldest-first. main
+memory would then store anything that is evicted. that way any values
+in the CAM that aren't used right away will migrate into main memory;
+it is acceptable to move them there because this is already a high
+
+Maybe the *newest* message should spill to memory instead?  This keeps
+messages in FIFO order and could be easier to implement -- MSEND traps,
+supervisor transfers the message to memory and sets a bit in the target's
+task state indicating "RX queue overflow".  When the target task finally
+does drain its RX queue, and that bit is set, MRECV traps to permit the
+supervisor to reload the hardware queue from the memory overflow area.
+
+This avoids needing background DMA for the message buffers in hardware
+and allows supervisors to fully implement the overflow queues, rather
+than forcing a hardware-imposed structure.
