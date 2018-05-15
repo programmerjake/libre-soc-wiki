@@ -1,0 +1,81 @@
+# Compiling LLVM on RISC-V
+
+By simply copying & pasting the following, absolutely verbatim with no
+changes, you can get a working clang from the head of the official llvm
+master branch. I've tested it on a completely virgin install of Ubuntu
+16.04 LTS server. It should work on other versions of Ubuntu and on
+other Debian-based distros. (If it doesn't then please let me know)
+
+Note that you currently must use a soft float version of the rv32 compiler
+and libraries.
+
+You can skip the gnu toolchain and/or qemu parts if you already have
+those.
+
+    # about 17 GB of disk space is needed
+    # entire process takes (not including apt-get, which is about 90 seconds on AWS):
+    #   87m10s on i7-8650U Intel NUC with 32 GB RAM (on 30 Mbps VDSL internet in NZ)
+    #   20m40s on server with Xeon E5-2667v4 @3.20GHz (16 cores)
+    #   17m30s on an AWS m5.12xlarge with fresh Ubuntu 16.04 AMI (ami-4e79ed36)
+
+    #harmless if things are already installed. Obviously you can't do it if
+    #you're not an admin
+    sudo apt-get update
+    sudo apt-get -y dist-upgrade
+    sudo apt-get -y install \
+      binutils build-essential libtool texinfo \
+      gzip zip unzip patchutils curl git \
+      make cmake ninja-build automake bison flex gperf \
+      grep sed gawk python bc \
+      zlib1g-dev libexpat1-dev libmpc-dev \
+      libglib2.0-dev libfdt-dev libpixman-1-dev 
+
+    mkdir riscv
+    cd riscv
+    mkdir _install
+    export PATH=`pwd`/_install/bin:$PATH
+
+    git clone --recursive https://github.com/riscv/riscv-gnu-toolchain
+    pushd riscv-gnu-toolchain
+    ./configure --prefix=`pwd`/../_install --with-arch=rv32gc --with-abi=ilp32
+    make -j`nproc`
+    popd
+
+    git clone https://github.com/riscv/riscv-qemu
+    pushd riscv-qemu
+    ./configure --prefix=`pwd`/../_install --target-list=riscv32-linux-user
+    make -j`nproc` install
+    popd
+
+    git clone https://github.com/llvm-project/llvm-project-20170507 llvm
+    pushd llvm
+    (cd llvm/tools; ln -s ../../clang .) 
+    mkdir _build
+    cd _build
+    cmake -G Ninja -DCMAKE_BUILD_TYPE="Release" \
+      -DBUILD_SHARED_LIBS=True -DLLVM_USE_SPLIT_DWARF=True \
+      -DLLVM_OPTIMIZED_TABLEGEN=True -DLLVM_BUILD_TESTS=False \
+      -DDEFAULT_SYSROOT="../../_install/riscv32-unknown-elf" \
+      -DGCC_INSTALL_PREFIX="../../_install" \
+      -DLLVM_DEFAULT_TARGET_TRIPLE="riscv32-unknown-elf" \
+      -DLLVM_TARGETS_TO_BUILD="" \
+      -DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD="RISCV" \
+      ../llvm
+    cmake --build .
+    alias clang-rv32="`pwd`/bin/clang -Xclang -iwithsysroot -Xclang /include \
+      -ccc-gcc-name riscv32-unknown-elf-gcc \
+      -target riscv32 -march=rv32imc"
+    popd
+
+    cat >hello.c <<END
+    #include <stdio.h>
+
+    int main(){
+      printf("Hello RISCV!\n");
+      return 0;
+    }
+    END
+
+    clang-rv32 -O1 hello.c -o hello
+    qemu-riscv32 hello
+
