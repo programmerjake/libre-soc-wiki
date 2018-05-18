@@ -608,6 +608,11 @@ XLEN bits.
 The second minor change is that when VSETVL is requested to be stored
 into x0, it is *ignored* silently.
 
+Unlike RVV, implementors *must* provide pseudo-parallelism (using sequential
+loops in hardware) if actual hardware-parallelism in the ALUs is not deployed.
+A hybrid is also permitted (as used in Broadcom's VideoCore-IV) however this
+must be *entirely* transparent to the ISA.
+
 ## Branch Instruction:
 
 Branch operations use standard RV opcodes that are reinterpreted to be
