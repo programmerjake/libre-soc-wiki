@@ -367,6 +367,11 @@ precedent in the setting of MISA to enable / disable extensions).
 * Integer Register N is a Predication Register (note: a key-value store)
 * Vector Length CSR (VSETVL, VGETVL)
 
+Also (see Appendix, "Context Switch Example") it may turn out to be important
+to have a separate (smaller) set of CSRs for M-Mode (and S-Mode) so that
+Vectorised LOAD / STORE may be used to load and store multiple registers:
+something that is missing from the Base RV ISA.
+
 Notes:
 
 * for the purposes of LOAD / STORE, Integer Registers which are
@@ -1502,6 +1507,112 @@ However despite RVV having made room for floating-point exceptions, neither
 RVV nor base RV have taken integer-overflow (carry) into account, which
 makes proposing it quite challenging given that the relevant (Base) RV
 sections are frozen.  Consequently it makes sense to forgo this feature.
+
+## Context Switch Example <a name="context_switch"></a>
+
+An unusual side-effect of Simple-V mapping onto the standard register files
+is that LOAD-multiple and STORE-multiple are accidentally available, as long
+as it is acceptable that the register(s) to be loaded/stored are contiguous
+(per instruction).  An additional accidental benefit is that Compressed LD/ST
+may also be used.
+
+To illustrate how this works, here is some example code from FreeRTOS
+(GPLv2 licensed, portasm.S):
+
+    /* Macro for saving task context */
+    .macro portSAVE_CONTEXT
+        .global	pxCurrentTCB
+        /* make room in stack */
+        addi	sp, sp, -REGBYTES * 32
+
+        /* Save Context */
+        STORE	x1, 0x0(sp)
+        STORE	x2, 1 * REGBYTES(sp)
+        STORE	x3, 2 * REGBYTES(sp)
+        ...
+        ...
+        STORE	x30, 29 * REGBYTES(sp)
+        STORE	x31, 30 * REGBYTES(sp)
+        
+        /* Store current stackpointer in task control block (TCB) */
+        LOAD	t0, pxCurrentTCB	//pointer
+        STORE	sp, 0x0(t0)
+        .endm
+
+    /* Saves current error program counter (EPC) as task program counter */
+    .macro portSAVE_EPC
+        csrr	t0, mepc
+        STORE	t0, 31 * REGBYTES(sp)
+        .endm
+
+    /* Saves current return adress (RA) as task program counter */
+    .macro portSAVE_RA
+        STORE	ra, 31 * REGBYTES(sp)
+        .endm
+
+    /* Macro for restoring task context */
+    .macro portRESTORE_CONTEXT
+
+        .global	pxCurrentTCB
+        /* Load stack pointer from the current TCB */
+        LOAD	sp, pxCurrentTCB
+        LOAD	sp, 0x0(sp)
+
+        /* Load task program counter */
+        LOAD	t0, 31 * REGBYTES(sp)
+        csrw	mepc, t0
+
+        /* Run in machine mode */
+        li 		t0, MSTATUS_PRV1
+        csrs	mstatus, t0
+
+        /* Restore registers,
+           Skip global pointer because that does not change */
+        LOAD	x1, 0x0(sp)
+        LOAD	x4, 3 * REGBYTES(sp)
+        LOAD	x5, 4 * REGBYTES(sp)
+        ...
+        ...
+        LOAD	x30, 29 * REGBYTES(sp)
+        LOAD	x31, 30 * REGBYTES(sp)
+
+        addi	sp, sp, REGBYTES * 32
+        mret
+        .endm
+
+The important bits are the Load / Save context, which may be replaced
+with firstly setting up the Vectors and secondly using a *single* STORE
+(or LOAD) including using C.ST or C.LD, to indicate that the entire
+bank of registers is to be loaded/saved:
+
+    /* a few things are assumed here: (a) that when switching to
+       M-Mode an entirely different set of CSRs is used from that
+       which is used in U-Mode and (b) that the M-Mode x1 and x4
+       vectors are also not used anywhere else in M-Mode, consequently
+       only need to be set up just the once.
+     */
+    .macroVectorSetup
+        MVECTORCSRx1 = 31, defaultlen
+        MVECTORCSRx4 = 28, defaultlen
+    
+        /* Save Context */
+        SETVL x0, x0, 31 /* x0 ignored silently */
+        STORE	x1, 0x0(sp) // x1 marked as 31-long vector of default bitwidth 
+        
+        /* Restore registers,
+           Skip global pointer because that does not change */
+        LOAD	x1, 0x0(sp)
+        SETVL x0, x0, 28 /* x0 ignored silently */
+        LOAD	x4, 3 * REGBYTES(sp) // x4 marked as 28-long default bitwidth
+
+Note that although it may just be a bug in portasm.S, x2 and x3 appear not
+to be being restored.  If however this is a bug and they *do* need to be
+restored, then the SETVL call may be moved to *outside* the Save / Restore
+Context assembly code, into the macroVectorSetup, as long as vectors are
+never used anywhere else (i.e. VL is never altered by M-Mode).
+
+In effect the entire bank of repeated LOAD / STORE instructions is replaced
+by one single (compressed if it is available) instruction.
 
 ## Virtual Memory page-faults on LOAD/STORE
 
