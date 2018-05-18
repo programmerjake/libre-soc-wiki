@@ -462,6 +462,10 @@ and so on).
 The reason for setting this limit is so that predication registers, when
 marked as such, may fit into a single register as opposed to fanning out
 over several registers.  This keeps the implementation a little simpler.
+Note also (as also described in the VSETVL section) that the *minimum*
+for MAXVECTORDEPTH must be the total number of registers (15 for RV32E
+and 31 for RV32 or RV64).
+
 Note that RVV on top of Simple-V may choose to over-ride this decision.
 
 ## Vector-length CSRs
@@ -590,6 +594,19 @@ Also to consider is whether one or both of the last two remaining Compressed
 instruction codes in Quadrant 1 could be used as a parallelism prefix,
 bringing parallelised opcodes down to 32-bit (when combined with C)
 and having the benefit of being explicit.*
+
+## VSETVL
+
+VSETVL is slightly different from RVV in that the minimum vector length
+is required to be at least the number of registers in the register file,
+and no more than XLEN.  This allows vector LOAD/STORE to be used to switch
+the entire bank of registers using a single instruction (see Appendix,
+"Context Switch Example").  The reason for limiting VSETVL to XLEN is
+down to the fact that predication bits fit into a single register of length
+XLEN bits.
+
+The second minor change is that when VSETVL is requested to be stored
+into x0, it is *ignored* silently.
 
 ## Branch Instruction:
 
