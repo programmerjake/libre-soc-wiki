@@ -1797,6 +1797,20 @@ Also to be taken into consideration:
 * Comphrensive vectorisation: FIFOs and internal parallelism
 * Hybrid Parallelism
 
+### Full or partial software-emulation
+
+The absolute, absolute minimal implementation is to provide the full
+set of CSRs and detection logic for when any of the source or destination
+registers are vectorised.  On detection, a trap is thrown, whether it's
+a branch, LOAD, STORE, or an arithmetic operation.
+
+Implementors are entirely free to choose whether to allow absolutely every
+single operation to be software-emulated, or whether to provide some emulation
+and some hardware support.  In particular, for an RV32E implementation
+where fast context-switching is a requirement (see "Context Switch Example"),
+it makes no sense to allow Vectorised-LOAD/STORE to be implemented as an
+exception, as every context-switch will result in double-traps.
+
 # TODO Research
 
 > For great floating point DSPs check TI’s C3x, C4X, and C6xx DSPs
