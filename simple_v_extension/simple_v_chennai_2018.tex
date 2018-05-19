@@ -52,19 +52,49 @@
   \end{itemize}
 }
 
+\frame{\frametitle{Quick refresher on RVV}
+
+ \begin{itemize}
+   \item Extremely powerful (extensible to 256 registers)\vspace{10pt}
+   \item Supports polymorphism, several datatypes (inc. FP16)\vspace{10pt}
+   \item Requires a separate Register File\vspace{10pt}
+   \item Can be implemented as a separate pipeline\vspace{10pt}
+  \end{itemize}
+  However...\vspace{12pt}
+   \begin{itemize}
+   \item 98 percent opcode duplication with rest of RV (CLIP)\vspace{12pt}
+   \item Extending RVV requires customisation\vspace{12pt}
+  \end{itemize}
+}
 
 
 \frame{\frametitle{How is Parallelism abstracted?}
 
  \begin{itemize}
-   \item Simple-V abstracts parallelism (based on best of RVV)\vspace{10pt}
-   \item Graded levels: hardware or software-emulation\vspace{10pt}
-   \item Even Compressed instructions become vectorised\vspace{10pt}
-  \end{itemize}
+   \item Almost all opcodes removed in favour of implicit "typing"\vspace{10pt}
+   \item Primarily at the Instruction issue phase (except SIMD)\vspace{10pt}
+   \item Standard (and future, and custom) opcodes now parallel\vspace{10pt}
+     \end{itemize}
   What Simple-V is not:\vspace{12pt}
    \begin{itemize}
    \item A full supercomputer-level Vector Proposal\vspace{12pt}
    \item A replacement for RVV (designed to be augmented)\vspace{12pt}
+  \end{itemize}
+}
+
+
+\frame{\frametitle{How are SIMD Instructions Vectorised?}
+
+ \begin{itemize}
+   \item SIMD ALU(s) primarily unchanged\vspace{10pt}
+   \item Predication is added to each SIMD element\vspace{10pt}
+   \item End of Vector implicitly enables predication\vspace{10pt}
+     \end{itemize}
+  Considerations:\vspace{12pt}
+   \begin{itemize}
+   \item Many SIMD ALUs possible (parallel execution)\vspace{12pt}
+   \item Very long SIMD ALUs could waste die area (short vectors)\vspace{12pt}
+   \item Implementor free to choose (API remains the same)\vspace{12pt}
   \end{itemize}
 }
 
