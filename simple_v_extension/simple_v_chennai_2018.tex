@@ -1,0 +1,98 @@
+
+\documentclass[slidestop]{beamer}
+\usepackage{beamerthemesplit}
+\usepackage{graphics}
+\usepackage{pstricks}
+
+
+\title{Simple-V RISC-V Extension for Vectorisation and SIMD}
+\author{Luke Kenneth Casson Leighton}
+
+
+\begin{document}
+
+\frame{
+   \begin{center}
+    \huge{Simple-V RISC-V Extension for Vectors and SIMD}\\
+    \vspace{48pt}
+    \Large{Flexible Vectorisation}\\
+    \Large{Chennai 9th Workshop}\\
+    \vspace{24pt}
+    \large{\today}
+  \end{center}
+}
+
+\frame{\frametitle{Why another Vector Extension?}
+
+ \begin{itemize}
+   \item RVV very heavy-duty (excellent for supercomputing)\vspace{10pt}
+   \item Simple-V abstracts parallelism (based on best of RVV)\vspace{10pt}
+   \item Graded levels: hardware or software-emulation\vspace{10pt}
+   \item Even Compressed instructions become vectorised\vspace{10pt}
+  \end{itemize}
+  What Simple-V is not:\vspace{12pt}
+   \begin{itemize}
+   \item A full supercomputer-level Vector Proposal\vspace{12pt}
+   \item A replacement for RVV (designed to be augmented)\vspace{12pt}
+  \end{itemize}
+}
+
+\frame{\frametitle{Quick refresher on SIMD}
+
+ \begin{itemize}
+   \item SIMD very easy to implement\vspace{10pt}
+   \item Parallelism is in the ALU\vspace{10pt}
+   \item Negligeable impact for rest of core\vspace{10pt}
+  \end{itemize}
+  Where SIMD Goes Wrong:\vspace{12pt}
+   \begin{itemize}
+   \item See "Why SIMD considered harmful"\vspace{12pt}
+   \item (Corner-cases alone are extremely complex)\vspace{12pt}
+   \item O($N^{6}$) ISA proliferation\vspace{12pt}
+  \end{itemize}
+}
+
+
+
+\frame{\frametitle{How is Parallelism abstracted?}
+
+ \begin{itemize}
+   \item Simple-V abstracts parallelism (based on best of RVV)\vspace{10pt}
+   \item Graded levels: hardware or software-emulation\vspace{10pt}
+   \item Even Compressed instructions become vectorised\vspace{10pt}
+  \end{itemize}
+  What Simple-V is not:\vspace{12pt}
+   \begin{itemize}
+   \item A full supercomputer-level Vector Proposal\vspace{12pt}
+   \item A replacement for RVV (designed to be augmented)\vspace{12pt}
+  \end{itemize}
+}
+
+\frame{\frametitle{Including a plot}
+ \begin{center}
+%  \includegraphics[height=2in]{dental.ps}\\
+  {\bf \red Dental trajectories for 27 children:}
+ \end{center}
+}
+
+\frame{\frametitle{Creating .pdf slides in WinEdt}
+
+ \begin{itemize}
+   \item LaTeX [Shift-Control-L]\vspace{12pt}
+   \item dvi2pdf [click the button]\vspace{24pt}
+  \end{itemize}
+  To print 4 slides per page in acrobat click\vspace{12pt}
+   \begin{itemize}
+   \item File/print/properties\vspace{12pt}
+   \item Change ``pages per sheet'' to 4\vspace{12pt}
+  \end{itemize}
+}
+
+\frame{
+  \begin{center}
+    {\Huge \red The end}
+  \end{center}
+}
+
+
+\end{document}
