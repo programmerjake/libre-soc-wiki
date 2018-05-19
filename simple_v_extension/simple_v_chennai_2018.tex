@@ -16,7 +16,7 @@
     \huge{Simple-V RISC-V Extension for Vectors and SIMD}\\
     \vspace{32pt}
     \Large{Flexible Vectorisation}\\
-    \Large{(not so Simple-V?)}\\
+    \Large{(aka not so Simple-V?)}\\
     \vspace{24pt}
     \Large{Chennai 9th RISC-V Workshop}\\
     \vspace{24pt}
@@ -32,10 +32,10 @@
    \item Graded levels: hardware or software-emulation\vspace{10pt}
    \item Even Compressed instructions become vectorised\vspace{10pt}
   \end{itemize}
-  What Simple-V is not:\vspace{12pt}
+  What Simple-V is not:\vspace{10pt}
    \begin{itemize}
-   \item A full supercomputer-level Vector Proposal\vspace{12pt}
-   \item A replacement for RVV (designed to be augmented)\vspace{12pt}
+   \item A full supercomputer-level Vector Proposal\vspace{10pt}
+   \item A replacement for RVV (designed to be augmented)\vspace{10pt}
   \end{itemize}
 }
 
@@ -46,11 +46,11 @@
    \item Parallelism is in the ALU\vspace{10pt}
    \item Zero-to-Negligeable impact for rest of core\vspace{10pt}
   \end{itemize}
-  Where SIMD Goes Wrong:\vspace{12pt}
+  Where SIMD Goes Wrong:\vspace{10pt}
    \begin{itemize}
-   \item See "Why SIMD considered harmful"\vspace{12pt}
-   \item (Corner-cases alone are extremely complex)\vspace{12pt}
-   \item O($N^{6}$) ISA proliferation\vspace{12pt}
+   \item See "Why SIMD considered harmful"\vspace{10pt}
+   \item (Corner-cases alone are extremely complex)\vspace{10pt}
+   \item O($N^{6}$) ISA proliferation\vspace{10pt}
   \end{itemize}
 }
 
@@ -62,10 +62,10 @@
    \item Requires a separate Register File\vspace{10pt}
    \item Can be implemented as a separate pipeline\vspace{10pt}
   \end{itemize}
-  However...\vspace{12pt}
+  However...\vspace{10pt}
    \begin{itemize}
-   \item 98 percent opcode duplication with rest of RV (CLIP)\vspace{12pt}
-   \item Extending RVV requires customisation\vspace{12pt}
+   \item 98 percent opcode duplication with rest of RV (CLIP)\vspace{10pt}
+   \item Extending RVV requires customisation\vspace{10pt}
   \end{itemize}
 }
 
@@ -77,11 +77,11 @@
    \item Primarily at the Instruction issue phase (except SIMD)\vspace{10pt}
    \item Standard (and future, and custom) opcodes now parallel\vspace{10pt}
   \end{itemize}
-  Notes:\vspace{12pt}
+  Notes:\vspace{10pt}
    \begin{itemize}
-   \item LOAD/STORE (inc. C.LD and C.ST, LDX: everything)\vspace{12pt}
-   \item All ALU ops (soft / hybrid / full HW, on per-op basis)\vspace{12pt}
-   \item All branch opcodes become predication targets (FNE added)\vspace{12pt}
+   \item LOAD/STORE (inc. C.LD and C.ST, LDX: everything)\vspace{10pt}
+   \item All ALU ops (soft / hybrid / full HW, on per-op basis)\vspace{10pt}
+   \item All branch opcodes become predication targets (FNE added)\vspace{10pt}
   \end{itemize}
 }
 
@@ -93,11 +93,91 @@
    \item Predication is added to each SIMD element (NO ZEROING!)\vspace{10pt}
    \item End of Vector enables predication (NO ZEROING!)\vspace{10pt}
   \end{itemize}
-  Considerations:\vspace{12pt}
+  Considerations:\vspace{10pt}
    \begin{itemize}
-   \item Many SIMD ALUs possible (parallel execution)\vspace{12pt}
-   \item Very long SIMD ALUs could waste die area (short vectors)\vspace{12pt}
-   \item Implementor free to choose (API remains the same)\vspace{12pt}
+   \item Many SIMD ALUs possible (parallel execution)\vspace{10pt}
+   \item Very long SIMD ALUs could waste die area (short vectors)\vspace{10pt}
+   \item Implementor free to choose (API remains the same)\vspace{10pt}
+  \end{itemize}
+}
+
+\frame{\frametitle{What's the deal / juice / score?}
+
+ \begin{itemize}
+   \item Standard Register File(s) overloaded with "vector span"\vspace{10pt}
+   \item Element width and type concepts remains same as RVV\vspace{10pt}
+   \item CSRs are key-value tables (overlaps allowed)\vspace{10pt}
+  \end{itemize}
+  Key differences from RVV:\vspace{10pt}
+   \begin{itemize}
+   \item Predication in INT regs as a BIT field (max VL=XLEN)\vspace{10pt}
+   \item Minimum VL must be Num Regs - 1 (all regs single LD/ST)\vspace{10pt}
+   \item NO ZEROING: non-predicated elements are skipped\vspace{10pt}
+  \end{itemize}
+}
+
+\frame{\frametitle{Why are overlaps allowed in Regfiles?}
+
+ \begin{itemize}
+   \item Same register(s) can have multiple "interpretations"\vspace{10pt}
+   \item xBitManip plus SIMD plus xBitManip = Hi/Lo bitops\vspace{10pt}
+   \item (32-bit GREV plus 4-wide 32-bit SIMD plus 32-bit GREVI)\vspace{10pt}
+   \item 32-bit op followed by 16-bit op w/ 2x VL, 1/2 predicated\vspace{10pt}
+  \end{itemize}
+  Considerations:\vspace{10pt}
+   \begin{itemize}
+   \item \vspace{10pt}
+  \end{itemize}
+}
+
+
+\frame{\frametitle{Why no Zeroing?}
+
+ \begin{itemize}
+   \item Zeroing is an implementation optimisation favouring OoO\vspace{10pt}
+   \item Simple implementations may skip non-predicated operations\vspace{10pt}
+   \item Complex implementations may use reg-renames to save power\vspace{10pt}
+  \end{itemize}
+  Considerations:\vspace{10pt}
+  \begin{itemize}
+   \item \vspace{10pt}
+   \item Please don't use Vectors for "security" (use Sec-Ext)\vspace{10pt}
+  \end{itemize}
+}
+
+
+\frame{\frametitle{slide}
+
+ \begin{itemize}
+   \item \vspace{10pt}
+  \end{itemize}
+  Considerations:\vspace{10pt}
+  \begin{itemize}
+   \item \vspace{10pt}
+  \end{itemize}
+}
+
+
+\frame{\frametitle{slide}
+
+ \begin{itemize}
+   \item \vspace{10pt}
+  \end{itemize}
+  Considerations:\vspace{10pt}
+  \begin{itemize}
+   \item \vspace{10pt}
+  \end{itemize}
+}
+
+
+\frame{\frametitle{slide}
+
+ \begin{itemize}
+   \item \vspace{10pt}
+  \end{itemize}
+  Considerations:\vspace{10pt}
+  \begin{itemize}
+   \item \vspace{10pt}
   \end{itemize}
 }
 
@@ -112,13 +192,13 @@
 \frame{\frametitle{Creating .pdf slides in WinEdt}
 
  \begin{itemize}
-   \item LaTeX [Shift-Control-L]\vspace{12pt}
+   \item LaTeX [Shift-Control-L]\vspace{10pt}
    \item dvi2pdf [click the button]\vspace{24pt}
   \end{itemize}
-  To print 4 slides per page in acrobat click\vspace{12pt}
+  To print 4 slides per page in acrobat click\vspace{10pt}
    \begin{itemize}
-   \item File/print/properties\vspace{12pt}
-   \item Change ``pages per sheet'' to 4\vspace{12pt}
+   \item File/print/properties\vspace{10pt}
+   \item Change ``pages per sheet'' to 4\vspace{10pt}
   \end{itemize}
 }
 
