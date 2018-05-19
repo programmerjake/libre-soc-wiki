@@ -27,7 +27,7 @@
  \begin{itemize}
    \item RVV very heavy-duty (excellent for supercomputing)\vspace{10pt}
    \item Simple-V abstracts parallelism (based on best of RVV)\vspace{10pt}
-   \item Graded levels: hardware or software-emulation\vspace{10pt}
+   \item Graded levels: hardware, hybrid or traps\vspace{10pt}
    \item Even Compressed instructions become vectorised\vspace{10pt}
   \end{itemize}
   What Simple-V is not:\vspace{10pt}
@@ -96,10 +96,50 @@ function op_add(rd, rs1, rs2, predr) # add not VADD!
     if (reg_is_vectorised[rs1]) \{ irs1 += 1; \}
     if (reg_is_vectorised[rs2]) \{ irs2 += 1; \}
 \end{semiverbatim}
+
   \begin{itemize}
-   \item SIMD slightly more complex (case above is elwidth = default)  
+   \item SIMD slightly more complex (case above is elwidth = default)
    \item Scalar-scalar and scalar-vector and vector-vector now all in one
    \item OoO may choose to push ADDs into instr. queue (v. busy!)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Predication-Branch (or trap, or actual hardware loop)}
+
+\begin{semiverbatim}
+s1 = vectorlen[src1] > 1;
+s2 = vectorlen[src2] > 1;
+for (int i = 0; i < VL; ++i)
+   preg[rs3] |= 1 << cmp(s1 ? reg[src1+i] : reg[src1],
+                         s2 ? reg[src2+i] : reg[src2]);
+\end{semiverbatim}
+
+  \begin{itemize}
+   \item SIMD slightly more complex (case above is elwidth = default)  
+   \item If s1 and s2 both scalars, Standard branch occurs
+   \item Predication stored in integer regfile as a bitfield
+   \item x
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{LD/LD.S/LD.X (or trap, or actual hardware loop)}
+
+\begin{semiverbatim}
+if (unit-strided) stride = elsize;
+else stride = areg[as2]; // constant-strided
+for (int i = 0; i < VL; ++i)
+  if (preg_enabled[rd] && ([!]preg[rd] & 1<<i))
+    for (int j = 0; j < seglen+1; j++)
+      if (vectorised[rs2]) offs = vreg[rs2][i]
+      else offs = i*(seglen+1)*stride;
+      vreg[rd+j][i] = mem[sreg[base] + offs + j*stride]
+\end{semiverbatim}
+
+  \begin{itemize}
+   \item Again: SIMD slightly more complex
+   \item rs2 vectorised taken to implicitly indicate LD.X
   \end{itemize}
 \end{frame}
 
