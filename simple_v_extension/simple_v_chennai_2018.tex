@@ -42,7 +42,7 @@
 \frame{\frametitle{Quick refresher on SIMD}
 
  \begin{itemize}
-   \item SIMD very easy to implement (very seductive)\vspace{10pt}
+   \item SIMD very easy to implement (and very seductive)\vspace{10pt}
    \item Parallelism is in the ALU\vspace{10pt}
    \item Zero-to-Negligeable impact for rest of core\vspace{10pt}
   \end{itemize}
@@ -50,7 +50,7 @@
    \begin{itemize}
    \item See "Why SIMD considered harmful"\vspace{10pt}
    \item (Corner-cases alone are extremely complex)\vspace{10pt}
-   \item O($N^{6}$) ISA proliferation\vspace{10pt}
+   \item O($N^{6}$) ISA opcode proliferation!\vspace{10pt}
   \end{itemize}
 }
 
@@ -81,7 +81,7 @@
    \begin{itemize}
    \item LOAD/STORE (inc. C.LD and C.ST, LDX: everything)\vspace{10pt}
    \item All ALU ops (soft / hybrid / full HW, on per-op basis)\vspace{10pt}
-   \item All branch opcodes become predication targets (FNE added)\vspace{10pt}
+   \item All branches become predication targets (C.FNE added)\vspace{10pt}
   \end{itemize}
 }
 
@@ -105,7 +105,7 @@
 
  \begin{itemize}
    \item Standard Register File(s) overloaded with "vector span"\vspace{10pt}
-   \item Element width and type concepts remains same as RVV\vspace{10pt}
+   \item Element width and type concepts remain same as RVV\vspace{10pt}
    \item CSRs are key-value tables (overlaps allowed)\vspace{10pt}
   \end{itemize}
   Key differences from RVV:\vspace{10pt}
@@ -124,23 +124,25 @@
    \item (32-bit GREV plus 4-wide 32-bit SIMD plus 32-bit GREVI)\vspace{10pt}
    \item 32-bit op followed by 16-bit op w/ 2x VL, 1/2 predicated\vspace{10pt}
   \end{itemize}
-  Considerations:\vspace{10pt}
+  Note:\vspace{10pt}
    \begin{itemize}
-   \item \vspace{10pt}
+   \item xBitManip reduces O($N^{6}$) SIMD down to O($N^{3}$) \vspace{10pt}
+   \item Hi-Performance: Macro-op fusion (more pipeline stages?)\vspace{10pt}
   \end{itemize}
 }
 
 
-\frame{\frametitle{Why no Zeroing?}
+\frame{\frametitle{Why no Zeroing (place zeros in non-predicated elements)?}
 
  \begin{itemize}
    \item Zeroing is an implementation optimisation favouring OoO\vspace{10pt}
    \item Simple implementations may skip non-predicated operations\vspace{10pt}
+   \item Simple implementations explicitly have to destroy data\vspace{10pt}
    \item Complex implementations may use reg-renames to save power\vspace{10pt}
   \end{itemize}
   Considerations:\vspace{10pt}
   \begin{itemize}
-   \item \vspace{10pt}
+   \item Complex not really impacted, Simple impacted a LOT\vspace{10pt}
    \item Please don't use Vectors for "security" (use Sec-Ext)\vspace{10pt}
   \end{itemize}
 }
