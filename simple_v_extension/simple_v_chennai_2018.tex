@@ -222,15 +222,23 @@ for (int i = 0; i < VL; ++i)
 \frame{\frametitle{Opcodes, compared to RVV}
 
  \begin{itemize}
-   \item All integer and FP opcodes removed (no CLIP!)\vspace{10pt}
+   \item All integer and FP opcodes all removed (no CLIP!)\vspace{10pt}
    \item VMPOP, VFIRST etc. all removed (use xBitManip)\vspace{10pt}
-   \item VSLIDE removed (just redefine vector)\vspace{10pt}
-   \item VSETVL, VGETVL, VMERGE all stay\vspace{10pt}
+   \item VSLIDE, VEXTRACT, VINSERT removed (using regfile)\vspace{10pt}
+   \item VSETVL, VGETVL, VSELECT stay\vspace{10pt}
+   \item Issue: VCLIP is not in RV* (add with custom ext?)\vspace{10pt}
+   \item Vector (or scalar-vector) use C.MV (MV is a pseudo-op)\vspace{10pt}
+   \item VMERGE: twin predicated C.MVs (one inverted. macro-op'd)\vspace{10pt}
   \end{itemize}
-  Issues:\vspace{10pt}
-  \begin{itemize}
-   \item VCLIP is not in RV*\vspace{10pt}
-   \item Vector copy: use C.MV (MV is a pseudo-op)\vspace{10pt}
+}
+
+
+\frame{\frametitle{Under consideration}
+
+ \begin{itemize}
+   \item Can VSELECT be removed (or overloaded onto xBitManip)?\vspace{10pt}
+   \item Can CLIP be done as a CSR (mode, like elwidth)\vspace{10pt}
+   \item SIMD saturation (etc.) also set as a mode?\vspace{10pt}
   \end{itemize}
 }
 
