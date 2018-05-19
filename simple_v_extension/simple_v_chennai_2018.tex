@@ -92,7 +92,7 @@ function op_add(rd, rs1, rs2, predr) # add not VADD!
   for (i=0; i < MIN(VL, vectorlen[rd]); i++)
     if (ireg[predr] & 1<<i) # predication uses intregs
        ireg[rd+id] <= ireg[rs1+irs1] + ireg[rs2+irs2];
-    if (reg_is_vectorised[rd]) \{ id += 1; \}
+    if (reg_is_vectorised[rd]) \{ id += 1; \}
     if (reg_is_vectorised[rs1]) \{ irs1 += 1; \}
     if (reg_is_vectorised[rs2]) \{ irs2 += 1; \}
 \end{semiverbatim}
