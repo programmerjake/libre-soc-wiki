@@ -182,7 +182,7 @@ for (int i = 0; i < VL; ++i)
    \item SIMD slightly more complex (case above is elwidth = default)  
    \item If s1 and s2 both scalars, Standard branch occurs
    \item Predication stored in integer regfile as a bitfield
-   \item x
+   \item Scalar-vector and vector-vector supported
   \end{itemize}
 \end{frame}
 
@@ -215,6 +215,22 @@ for (int i = 0; i < VL; ++i)
   Considerations:\vspace{10pt}
   \begin{itemize}
    \item \vspace{10pt}
+  \end{itemize}
+}
+
+
+\frame{\frametitle{Opcodes, compared to RVV}
+
+ \begin{itemize}
+   \item All integer and FP opcodes removed (no CLIP!)\vspace{10pt}
+   \item VMPOP, VFIRST etc. all removed (use xBitManip)\vspace{10pt}
+   \item VSLIDE removed (just redefine vector)\vspace{10pt}
+   \item VSETVL, VGETVL, VMERGE all stay\vspace{10pt}
+  \end{itemize}
+  Issues:\vspace{10pt}
+  \begin{itemize}
+   \item VCLIP is not in RV*\vspace{10pt}
+   \item Vector copy: use C.MV (MV is a pseudo-op)\vspace{10pt}
   \end{itemize}
 }
 
