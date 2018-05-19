@@ -14,9 +14,11 @@
 \frame{
    \begin{center}
     \huge{Simple-V RISC-V Extension for Vectors and SIMD}\\
-    \vspace{48pt}
+    \vspace{32pt}
     \Large{Flexible Vectorisation}\\
-    \Large{Chennai 9th Workshop}\\
+    \Large{(not so Simple-V?)}\\
+    \vspace{24pt}
+    \Large{Chennai 9th RISC-V Workshop}\\
     \vspace{24pt}
     \large{\today}
   \end{center}
@@ -40,9 +42,9 @@
 \frame{\frametitle{Quick refresher on SIMD}
 
  \begin{itemize}
-   \item SIMD very easy to implement\vspace{10pt}
+   \item SIMD very easy to implement (very seductive)\vspace{10pt}
    \item Parallelism is in the ALU\vspace{10pt}
-   \item Negligeable impact for rest of core\vspace{10pt}
+   \item Zero-to-Negligeable impact for rest of core\vspace{10pt}
   \end{itemize}
   Where SIMD Goes Wrong:\vspace{12pt}
    \begin{itemize}
@@ -74,11 +76,12 @@
    \item Almost all opcodes removed in favour of implicit "typing"\vspace{10pt}
    \item Primarily at the Instruction issue phase (except SIMD)\vspace{10pt}
    \item Standard (and future, and custom) opcodes now parallel\vspace{10pt}
-     \end{itemize}
-  What Simple-V is not:\vspace{12pt}
+  \end{itemize}
+  Notes:\vspace{12pt}
    \begin{itemize}
-   \item A full supercomputer-level Vector Proposal\vspace{12pt}
-   \item A replacement for RVV (designed to be augmented)\vspace{12pt}
+   \item LOAD/STORE (inc. C.LD and C.ST, LDX: everything)\vspace{12pt}
+   \item All ALU ops (soft / hybrid / full HW, on per-op basis)\vspace{12pt}
+   \item All branch opcodes become predication targets (FNE added)\vspace{12pt}
   \end{itemize}
 }
 
@@ -87,9 +90,9 @@
 
  \begin{itemize}
    \item SIMD ALU(s) primarily unchanged\vspace{10pt}
-   \item Predication is added to each SIMD element\vspace{10pt}
-   \item End of Vector implicitly enables predication\vspace{10pt}
-     \end{itemize}
+   \item Predication is added to each SIMD element (NO ZEROING!)\vspace{10pt}
+   \item End of Vector enables predication (NO ZEROING!)\vspace{10pt}
+  \end{itemize}
   Considerations:\vspace{12pt}
    \begin{itemize}
    \item Many SIMD ALUs possible (parallel execution)\vspace{12pt}
@@ -97,6 +100,7 @@
    \item Implementor free to choose (API remains the same)\vspace{12pt}
   \end{itemize}
 }
+
 
 \frame{\frametitle{Including a plot}
  \begin{center}
