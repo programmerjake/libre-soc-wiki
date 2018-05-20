@@ -167,7 +167,12 @@
    \item Please don't use Vectors for "security" (use Sec-Ext)
   \end{itemize}
 }
-
+% with overlapping "vectors" - bearing in mind that "vectors" are
+% just a remap onto the standard register file, if the top bits of
+% predication are zero, and there happens to be a second vector
+% that uses some of the same register file that happens to be
+% predicated out, the second vector op may be issued *at the same time*
+% if there are available parallel ALUs to do so.
 
 \begin{frame}[fragile]
 \frametitle{ADD pseudocode (or trap, or actual hardware loop)}
