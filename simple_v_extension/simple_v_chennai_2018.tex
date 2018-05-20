@@ -175,6 +175,24 @@
 % predicated out, the second vector op may be issued *at the same time*
 % if there are available parallel ALUs to do so.
 
+
+\frame{\frametitle{Predication key-value CSR store}
+
+ \begin{itemize}
+   \item key is int regfile number or FP regfile number (1 bit)\vspace{10pt}
+   \item register to be predicated if referred to (5 bits, key)\vspace{10pt}
+   \item register to store actual predication in (5 bits, value)\vspace{10pt}
+   \item predication is inverted (1 bit)\vspace{10pt}
+  \end{itemize}
+  Notes:\vspace{10pt}
+   \begin{itemize}
+   \item Table should be expanded out for high-speed implementations
+   \item Multiple "keys" (and values) theoretically permitted
+   \item RVV rules about deleting higher-indexed CSRs followed
+  \end{itemize}
+}
+
+
 \begin{frame}[fragile]
 \frametitle{ADD pseudocode (or trap, or actual hardware loop)}
 
@@ -253,9 +271,11 @@ for (int i = 0; i < VL; ++i)
 \frame{\frametitle{Under consideration}
 
  \begin{itemize}
-   \item Can VSELECT be removed (or overloaded onto xBitManip)?\vspace{10pt}
+   \item Can VSELECT be removed? (it's really complex)\vspace{10pt}
    \item Can CLIP be done as a CSR (mode, like elwidth)\vspace{10pt}
    \item SIMD saturation (etc.) also set as a mode?\vspace{10pt}
+   \item 8/16-bit ops is it worthwhile adding a "start offset"? \\
+         (a bit like misaligned addressing... for registers)\vspace{10pt}
   \end{itemize}
 }
 
@@ -265,7 +285,7 @@ for (int i = 0; i < VL; ++i)
  \begin{itemize}
    \item Designed for simplicity (graded levels of complexity)\vspace{10pt}
    \item Fits RISC-V ethos: do more with less\vspace{10pt}
-   \item Reduces SIMD ISA proliferation by 3-4 orders of magnitude
+   \item Reduces SIMD ISA proliferation by 3-4 orders of magnitude \\
 	     (without SIMD downsides or sacrificing speed trade-off)\vspace{10pt}
    \item Covers 98\% of RVV, allows RVV to fit "on top"\vspace{10pt}
    \item Huge range of implementor freedom and flexibility\vspace{10pt}
