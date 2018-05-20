@@ -87,15 +87,16 @@
 \frame{\frametitle{Implementation Options}
 
  \begin{itemize}
-   \item Absolute minimum: Exceptions (CSRs needed)\vspace{10pt}
+   \item Absolute minimum: Exceptions (if CSRs indicate "V", trap)\vspace{10pt}
    \item Hardware loop, single-instruction issue\vspace{10pt}
    \item Hardware loop, parallel (multi-instruction) issue\vspace{10pt}
    \item Hardware loop, full parallel ALU (not recommended)\vspace{10pt}
   \end{itemize}
-  Considerations:\vspace{10pt}
+  Notes:\vspace{10pt}
   \begin{itemize}
-   \item OoO may split off 4+ single-instructions at a time\vspace{10pt}
-   \item Minimum VL MUST be sufficient to cover regfile LD/ST\vspace{10pt}
+   \item 4 (or more?) options above may be deployed on per-op basis
+   \item Minimum MVL MUST be sufficient to cover regfile LD/ST
+   \item OoO may split off 4+ single-instructions at a time
   \end{itemize}
 }
 
@@ -114,7 +115,10 @@
    \item Implementor free to choose (API remains the same)\vspace{10pt}
   \end{itemize}
 }
-
+% With multiple SIMD ALUs at for example 32-bit wide they can be used 
+% to either issue 64-bit or 128-bit or 256-bit wide SIMD operations
+% or they can be used to cover several operations on totally different
+% vectors / registers.
 
 \frame{\frametitle{What's the deal / juice / score?}
 
@@ -158,8 +162,9 @@
   \end{itemize}
   Considerations:\vspace{10pt}
   \begin{itemize}
-   \item Complex not really impacted, Simple impacted a LOT\vspace{10pt}
-   \item Please don't use Vectors for "security" (use Sec-Ext)\vspace{10pt}
+   \item Complex not really impacted, Simple impacted a LOT
+   \item Overlapping "Vectors" may issue overlapping ops
+   \item Please don't use Vectors for "security" (use Sec-Ext)
   \end{itemize}
 }
 
