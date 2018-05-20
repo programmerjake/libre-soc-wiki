@@ -84,6 +84,22 @@
 }
 
 
+\frame{\frametitle{Implementation Options}
+
+ \begin{itemize}
+   \item Absolute minimum: Exceptions (CSRs needed)\vspace{10pt}
+   \item Hardware loop, single-instruction issue\vspace{10pt}
+   \item Hardware loop, parallel (multi-instruction) issue\vspace{10pt}
+   \item Hardware loop, full parallel ALU (not recommended)\vspace{10pt}
+  \end{itemize}
+  Considerations:\vspace{10pt}
+  \begin{itemize}
+   \item OoO may split off 4+ single-instructions at a time\vspace{10pt}
+   \item Minimum VL MUST be sufficient to cover regfile LD/ST\vspace{10pt}
+  \end{itemize}
+}
+
+
 \frame{\frametitle{How are SIMD Instructions Vectorised?}
 
  \begin{itemize}
@@ -98,6 +114,7 @@
    \item Implementor free to choose (API remains the same)\vspace{10pt}
   \end{itemize}
 }
+
 
 \frame{\frametitle{What's the deal / juice / score?}
 
@@ -205,18 +222,6 @@ for (int i = 0; i < VL; ++i)
    \item rs2 vectorised taken to implicitly indicate LD.X
   \end{itemize}
 \end{frame}
-
-
-\frame{\frametitle{slide}
-
- \begin{itemize}
-   \item \vspace{10pt}
-  \end{itemize}
-  Considerations:\vspace{10pt}
-  \begin{itemize}
-   \item \vspace{10pt}
-  \end{itemize}
-}
 
 
 \frame{\frametitle{Opcodes, compared to RVV}
