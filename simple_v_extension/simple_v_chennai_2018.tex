@@ -101,13 +101,13 @@
 \frame{\frametitle{How is Parallelism abstracted?}
 
  \begin{itemize}
-   \item Almost all opcodes removed in favour of implicit "typing"\vspace{10pt}
+   \item Register "typing" turns any op into an implicit Vector op\vspace{10pt}
    \item Primarily at the Instruction issue phase (except SIMD)\vspace{10pt}
    \item Standard (and future, and custom) opcodes now parallel\vspace{10pt}
   \end{itemize}
   Notes:\vspace{10pt}
    \begin{itemize}
-   \item LOAD/STORE (inc. C.LD and C.ST, LDX: everything)
+   \item LOAD/STORE (inc. C.LD and C.ST, LD.X: everything)
    \item All ALU ops (soft / hybrid / full HW, on per-op basis)
    \item All branches become predication targets (C.FNE added)
    \item C.MV of particular interest (s/v, v/v, v/s)
@@ -127,7 +127,7 @@
   \begin{itemize}
    \item 4 (or more?) options above may be deployed on per-op basis
    \item Minimum MVL MUST be sufficient to cover regfile LD/ST
-   \item OoO may split off 4+ single-instructions at a time
+   \item OoO may repeatedly split off 4+ ops at a time into FIFO
   \end{itemize}
 }
 
@@ -172,7 +172,7 @@
  \begin{itemize}
    \item Same register(s) can have multiple "interpretations"\vspace{10pt}
    \item xBitManip plus SIMD plus xBitManip = Hi/Lo bitops\vspace{10pt}
-   \item (32-bit GREV plus 4-wide 32-bit SIMD plus 32-bit GREV)\vspace{10pt}
+   \item (32-bit GREV plus 4x8-bit SIMD plus 32-bit GREV)\vspace{10pt}
    \item Same register(s) can be offset (no need for VSLIDE)\vspace{10pt}
   \end{itemize}
   Note:\vspace{10pt}
@@ -214,6 +214,23 @@
    \item register to be predicated if referred to (5 bits, key)\vspace{10pt}
    \item register to store actual predication in (5 bits, value)\vspace{10pt}
    \item predication is inverted (1 bit)\vspace{10pt}
+  \end{itemize}
+  Notes:\vspace{10pt}
+   \begin{itemize}
+   \item Table should be expanded out for high-speed implementations
+   \item Multiple "keys" (and values) theoretically permitted
+   \item RVV rules about deleting higher-indexed CSRs followed
+  \end{itemize}
+}
+
+
+\frame{\frametitle{Register key-value CSR store}
+
+ \begin{itemize}
+   \item key is int regfile number or FP regfile number (1 bit)\vspace{10pt}
+   \item register to be predicated if referred to (5 bits, key)\vspace{10pt}
+   \item register to store actual predication in (5 bits, value)\vspace{10pt}
+   \item TODO\vspace{10pt}
   \end{itemize}
   Notes:\vspace{10pt}
    \begin{itemize}
@@ -285,6 +302,26 @@ for (int i = 0; i < VL; ++i)
 \end{frame}
 
 
+\frame{\frametitle{C.MV extremely flexible!}
+
+ \begin{itemize}
+   \item scalar-to-vector (w/no pred): VSPLAT
+   \item scalar-to-vector (w/dest-pred): Sparse VSPLAT
+   \item scalar-to-vector (w/single dest-pred): VINSERT
+   \item vector-to-scalar (w/src-pred): VEXTRACT
+   \item vector-to-vector (w/no pred): Vector Copy
+   \item vector-to-vector (w/src xor dest pred): Sparse Vector Copy
+   \item vector-to-vector (w/src and dest pred): Vector Shuffle
+  \end{itemize}
+  \vspace{8pt}
+  Notes:\vspace{10pt}
+   \begin{itemize}
+   \item Really powerful!
+   \item Any other options?
+  \end{itemize}
+}
+
+
 \frame{\frametitle{Opcodes, compared to RVV}
 
  \begin{itemize}
@@ -306,6 +343,8 @@ for (int i = 0; i < VL; ++i)
    \item Can VSELECT be removed? (it's really complex)\vspace{10pt}
    \item Can CLIP be done as a CSR (mode, like elwidth)\vspace{10pt}
    \item SIMD saturation (etc.) also set as a mode?\vspace{10pt}
+   \item C.MV src predication no different from dest predication\\
+         What to do? Make one have different meaning?\vspace{10pt}
    \item 8/16-bit ops is it worthwhile adding a "start offset"? \\
          (a bit like misaligned addressing... for registers)\\
          or just use predication to skip start?\vspace{10pt}
