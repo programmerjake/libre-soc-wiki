@@ -23,6 +23,17 @@
 }
 
 
+\frame{\frametitle{Credits and Acknowledgements}
+
+ \begin{itemize}
+   \item The Designers of RISC-V\vspace{15pt}
+   \item The RVV Working Group and contributors\vspace{15pt}
+   \item Jacob Bachmeyer, Xan Phung, Chuanhua Chang and others\vspace{15pt}
+   \item ISA-Dev Group Members\vspace{10pt}
+  \end{itemize}
+}
+
+
 \frame{\frametitle{The Simon Sinek lowdown (Why, How, What)}
 
  \begin{itemize}
@@ -277,14 +288,14 @@ for (int i = 0; i < VL; ++i)
 \frame{\frametitle{Opcodes, compared to RVV}
 
  \begin{itemize}
-   \item All integer and FP opcodes all removed (no CLIP!)\vspace{10pt}
-   \item VMPOP, VFIRST etc. all removed (use xBitManip)\vspace{10pt}
-   \item VSLIDE removed (use regfile overlaps)\vspace{10pt}
-   \item C.MV covers VEXTRACT VINSERT and VSPLAT (and more)\vspace{10pt}
-   \item VSETVL, VGETVL, VSELECT stay\vspace{10pt}
-   \item Issue: VCLIP is not in RV* (add with custom ext?)\vspace{10pt}
-   \item Vector (or scalar-vector) use C.MV (MV is a pseudo-op)\vspace{10pt}
-   \item VMERGE: twin predicated C.MVs (one inverted. macro-op'd)\vspace{10pt}
+   \item All integer and FP opcodes all removed (no CLIP!)\vspace{8pt}
+   \item VMPOP, VFIRST etc. all removed (use xBitManip)\vspace{8pt}
+   \item VSLIDE removed (use regfile overlaps)\vspace{8pt}
+   \item C.MV covers VEXTRACT VINSERT and VSPLAT (and more)\vspace{8pt}
+   \item VSETVL, VGETVL, VSELECT stay\vspace{8pt}
+   \item Issue: VCLIP is not in RV* (add with custom ext?)\vspace{8pt}
+   \item Vector (or scalar-vector) use C.MV (MV is a pseudo-op)\vspace{8pt}
+   \item VMERGE: twin predicated C.MVs (one inverted. macro-op'd)\vspace{8pt}
   \end{itemize}
 }
 
@@ -296,7 +307,8 @@ for (int i = 0; i < VL; ++i)
    \item Can CLIP be done as a CSR (mode, like elwidth)\vspace{10pt}
    \item SIMD saturation (etc.) also set as a mode?\vspace{10pt}
    \item 8/16-bit ops is it worthwhile adding a "start offset"? \\
-         (a bit like misaligned addressing... for registers)\vspace{10pt}
+         (a bit like misaligned addressing... for registers)\\
+         or just use predication to skip start?\vspace{10pt}
   \end{itemize}
 }
 
