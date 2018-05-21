@@ -26,7 +26,7 @@
 \frame{\frametitle{The Simon Sinek lowdown (Why, How, What)}
 
  \begin{itemize}
-   \item Vectorisation needs to fit an implementor's needs:\\
+   \item Vectorisation needs to fit an implementor's scope:\\
 	     RV32E, Embedded/Mobile, DSP, Servers and more.\vspace{15pt}
    \item By implicitly marking INT/FP regs as "Vectorised",\\
 	     everything else follows from there.\vspace{15pt}
@@ -63,8 +63,10 @@
    \begin{itemize}
    \item See "SIMD instructions considered harmful"
    https://www.sigarch.org/simd-instructions-considered-harmful
-   \item (Corner-cases alone are extremely complex)\vspace{10pt}
-   \item O($N^{6}$) ISA opcode proliferation!\vspace{10pt}
+   \item Corner-cases alone are extremely complex.\\
+	     Hardware is easy, but software is hell.
+   \item O($N^{6}$) ISA opcode proliferation!\\
+	     opcode, elwidth, veclen, src1-src2-dest hi/lo
   \end{itemize}
 }
 
@@ -78,8 +80,9 @@
   \end{itemize}
   However...\vspace{10pt}
    \begin{itemize}
-   \item 98 percent opcode duplication with rest of RV (CLIP)\vspace{10pt}
-   \item Extending RVV requires customisation\vspace{10pt}
+   \item 98 percent opcode duplication with rest of RV (CLIP)
+   \item Extending RVV requires customisation not just of h/w:\\
+	     gcc and s/w also need customisation (and maintenance)
   \end{itemize}
 }
 
@@ -93,9 +96,10 @@
   \end{itemize}
   Notes:\vspace{10pt}
    \begin{itemize}
-   \item LOAD/STORE (inc. C.LD and C.ST, LDX: everything)\vspace{10pt}
-   \item All ALU ops (soft / hybrid / full HW, on per-op basis)\vspace{10pt}
-   \item All branches become predication targets (C.FNE added)\vspace{10pt}
+   \item LOAD/STORE (inc. C.LD and C.ST, LDX: everything)
+   \item All ALU ops (soft / hybrid / full HW, on per-op basis)
+   \item All branches become predication targets (C.FNE added)
+   \item C.MV of particular interest (s/v, v/v, v/s)
   \end{itemize}
 }
 
@@ -171,10 +175,11 @@
 \frame{\frametitle{Why no Zeroing (place zeros in non-predicated elements)?}
 
  \begin{itemize}
-   \item Zeroing is an implementation optimisation favouring OoO\vspace{10pt}
-   \item Simple implementations may skip non-predicated operations\vspace{10pt}
-   \item Simple implementations explicitly have to destroy data\vspace{10pt}
-   \item Complex implementations may use reg-renames to save power\vspace{10pt}
+   \item Zeroing is an implementation optimisation favouring OoO\vspace{8pt}
+   \item Simple implementations may skip non-predicated operations\vspace{8pt}
+   \item Simple implementations explicitly have to destroy data\vspace{8pt}
+   \item Complex implementations may use reg-renames to save power\\
+	     Zeroing on predication chains makes optimisation harder
   \end{itemize}
   Considerations:\vspace{10pt}
   \begin{itemize}
@@ -274,7 +279,8 @@ for (int i = 0; i < VL; ++i)
  \begin{itemize}
    \item All integer and FP opcodes all removed (no CLIP!)\vspace{10pt}
    \item VMPOP, VFIRST etc. all removed (use xBitManip)\vspace{10pt}
-   \item VSLIDE, VEXTRACT, VINSERT removed (using regfile)\vspace{10pt}
+   \item VSLIDE removed (use regfile overlaps)\vspace{10pt}
+   \item C.MV covers VEXTRACT VINSERT and VSPLAT (and more)\vspace{10pt}
    \item VSETVL, VGETVL, VSELECT stay\vspace{10pt}
    \item Issue: VCLIP is not in RV* (add with custom ext?)\vspace{10pt}
    \item Vector (or scalar-vector) use C.MV (MV is a pseudo-op)\vspace{10pt}
