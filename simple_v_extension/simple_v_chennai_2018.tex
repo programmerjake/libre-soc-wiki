@@ -37,8 +37,8 @@
 \frame{\frametitle{The Simon Sinek lowdown (Why, How, What)}
 
  \begin{itemize}
-   \item Vectorisation needs to fit an implementor's scope:\\
-	     RV32E, Embedded/Mobile, DSP, Servers and more.\vspace{15pt}
+   \item Vectorisation needs to fit (be useful within) an implementor's\\ 
+	     scope: RV32E, Embedded/Mobile, DSP, Servers and more.\vspace{15pt}
    \item By implicitly marking INT/FP regs as "Vectorised",\\
 	     everything else follows from there.\vspace{15pt}
    \item A Standard Vector "API" with flexibility for implementors:\\
@@ -52,7 +52,7 @@
  \begin{itemize}
    \item RVV very heavy-duty (excellent for supercomputing)\vspace{10pt}
    \item Simple-V abstracts parallelism (based on best of RVV)\vspace{10pt}
-   \item Graded levels: hardware, hybrid or traps\vspace{10pt}
+   \item Graded levels: hardware, hybrid or traps (fit impl. need)\vspace{10pt}
    \item Even Compressed instructions become vectorised\vspace{10pt}
   \end{itemize}
   What Simple-V is not:\vspace{10pt}
@@ -127,10 +127,15 @@
   \begin{itemize}
    \item 4 (or more?) options above may be deployed on per-op basis
    \item Minimum MVL MUST be sufficient to cover regfile LD/ST
-   \item OoO may repeatedly split off 4+ ops at a time into FIFO
+   \item Instr. FIFO may repeatedly split off N scalar ops at a time
   \end{itemize}
 }
-
+% Instr. FIFO may need its own slide.  Basically, the vectorised op
+% gets pushed into the FIFO, where it is then "processed".  Processing
+% will remove the first set of ops from its vector numbering (taking
+% predication into account) and shoving them **BACK** into the FIFO,
+% but MODIFYING the remaining "vectorised" op, subtracting the now
+% scalar ops from it.
 
 \frame{\frametitle{How are SIMD Instructions Vectorised?}
 
