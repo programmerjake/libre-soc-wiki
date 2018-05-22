@@ -29,37 +29,9 @@
    \item The Designers of RISC-V\vspace{15pt}
    \item The RVV Working Group and contributors\vspace{15pt}
    \item Jacob Bachmeyer, Xan Phung, Chuanhua Chang,\\
-	     Guy Lemurieux and others\vspace{15pt}
+	     Guy Lemurieux, Jonathan Neuschäfer, Roger Bruisse,
+	     and others\vspace{15pt}
    \item ISA-Dev Group Members\vspace{10pt}
-  \end{itemize}
-}
-
-
-\frame{\frametitle{The Simon Sinek lowdown (Why, How, What)}
-
- \begin{itemize}
-   \item Vectorisation needs to fit (be useful within) an implementor's\\ 
-	     scope: RV32E, Embedded/Mobile, DSP, Servers and more.\vspace{15pt}
-   \item By implicitly marking INT/FP regs as "Vectorised",\\
-	     everything else follows from there.\vspace{15pt}
-   \item A Standard Vector "API" with flexibility for implementors:\\
-	     choice to optimise for area or performance as desired\vspace{10pt}
-  \end{itemize}
-}
-
-
-\frame{\frametitle{Why another Vector Extension?}
-
- \begin{itemize}
-   \item RVV very heavy-duty (excellent for supercomputing)\vspace{10pt}
-   \item Simple-V abstracts parallelism (based on best of RVV)\vspace{10pt}
-   \item Graded levels: hardware, hybrid or traps (fit impl. need)\vspace{10pt}
-   \item Even Compressed instructions become vectorised\vspace{10pt}
-  \end{itemize}
-  What Simple-V is not:\vspace{10pt}
-   \begin{itemize}
-   \item A full supercomputer-level Vector Proposal\vspace{10pt}
-   \item A replacement for RVV (designed to be augmented)\vspace{10pt}
   \end{itemize}
 }
 
@@ -99,14 +71,53 @@
 }
 
 
-\frame{\frametitle{How is Parallelism abstracted?}
+\frame{\frametitle{The Simon Sinek lowdown (Why, How, What)}
+
+ \begin{itemize}
+   \item Why?
+         Implementors need flexibility in vectorisation to optimise for
+         area or performance depending on the scope:
+	     embedded DSP, Mobile GPU's, Server CPU's and more.\vspace{4pt}\\
+		 Compilers also need flexibility in vectorisation to optimise for cost 
+		 of pipeline setup, amount of state to context switch
+		 and software portability\vspace{4pt}
+   \item How?
+	     By implicitly marking INT/FP regs as "Vectorised":\\
+	     it expresses how existing instructions should act 
+	     on (contiguous) blocks of registers, in parallel.\vspace{4pt}
+   \item What?
+		 Simple-V is a vectorisation "API" that extends existing
+		 (scalar) instructions with explicit parallelisation. 
+  \end{itemize}
+}
+
+
+\frame{\frametitle{How does Simple-V relate to RVV?}
+
+ \begin{itemize}
+   \item RVV very heavy-duty (excellent for supercomputing)\vspace{10pt}
+   \item Simple-V abstracts parallelism (based on best of RVV)\vspace{10pt}
+   \item Graded levels: hardware, hybrid or traps (fit impl. need)\vspace{10pt}
+   \item Even Compressed instructions become vectorised\vspace{10pt}
+  \end{itemize}
+  What Simple-V is not:\vspace{10pt}
+   \begin{itemize}
+   \item A full supercomputer-level Vector Proposal
+   \item A replacement for RVV (SV is designed to be over-ridden\\
+	     by - or augmented to become - RVV)
+  \end{itemize}
+}
+
+
+\frame{\frametitle{How is Parallelism abstracted in Simple-V?}
 
  \begin{itemize}
    \item Register "typing" turns any op into an implicit Vector op\vspace{10pt}
-   \item Primarily at the Instruction issue phase (except SIMD)\vspace{10pt}
+   \item Primarily at the Instruction issue phase (except SIMD)\\
+         Note: it's ok to pass predication through to ALU (like SIMD)
    \item Standard (and future, and custom) opcodes now parallel\vspace{10pt}
   \end{itemize}
-  Notes:\vspace{10pt}
+  Notes:\vspace{6pt}
    \begin{itemize}
    \item LOAD/STORE (inc. C.LD and C.ST, LD.X: everything)
    \item All ALU ops (soft / hybrid / full HW, on per-op basis)
@@ -119,14 +130,17 @@
 \frame{\frametitle{Implementation Options}
 
  \begin{itemize}
-   \item Absolute minimum: Exceptions (if CSRs indicate "V", trap)\vspace{10pt}
-   \item Hardware loop, single-instruction issue\vspace{10pt}
-   \item Hardware loop, parallel (multi-instruction) issue\vspace{10pt}
-   \item Hardware loop, full parallel ALU (not recommended)\vspace{10pt}
+   \item Absolute minimum: Exceptions (if CSRs indicate "V", trap)
+   \item Hardware loop, single-instruction issue\\
+		 (Do / Don't send through predication to ALU)
+   \item Hardware loop, parallel (multi-instruction) issue\\
+   		 (Do / Don't send through predication to ALU)
+   \item Hardware loop, full parallel ALU (not recommended)
   \end{itemize}
-  Notes:\vspace{10pt}
+  Notes:\vspace{6pt}
   \begin{itemize}
    \item 4 (or more?) options above may be deployed on per-op basis
+   \item SIMD always sends predication bits through to ALU
    \item Minimum MVL MUST be sufficient to cover regfile LD/ST
    \item Instr. FIFO may repeatedly split off N scalar ops at a time
   \end{itemize}
