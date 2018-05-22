@@ -29,7 +29,7 @@
    \item The Designers of RISC-V\vspace{15pt}
    \item The RVV Working Group and contributors\vspace{15pt}
    \item Jacob Bachmeyer, Xan Phung, Chuanhua Chang,\\
-	     Guy Lemurieux, Jonathan Neuschäfer, Roger Bruisse,
+	     Guy Lemurieux, Jonathan Neuschafer, Roger Bruisse,
 	     and others\vspace{15pt}
    \item ISA-Dev Group Members\vspace{10pt}
   \end{itemize}
@@ -82,12 +82,12 @@
 		 of pipeline setup, amount of state to context switch
 		 and software portability\vspace{4pt}
    \item How?
-	     By implicitly marking INT/FP regs as "Vectorised":\\
-	     it expresses how existing instructions should act 
-	     on (contiguous) blocks of registers, in parallel.\vspace{4pt}
+	     By implicitly marking INT/FP regs as "Vectorised",\\
+	     SV expresses how existing instructions should act 
+	     on [contiguous] blocks of registers, in parallel.\vspace{4pt}
    \item What?
-		 Simple-V is a vectorisation "API" that extends existing
-		 (scalar) instructions with explicit parallelisation. 
+		 Simple-V is an "API" that implicitly extends
+		 existing (scalar) instructions with explicit parallelisation. 
   \end{itemize}
 }
 
@@ -104,7 +104,7 @@
    \begin{itemize}
    \item A full supercomputer-level Vector Proposal
    \item A replacement for RVV (SV is designed to be over-ridden\\
-	     by - or augmented to become - RVV)
+	     by - or augmented to become, or just be replaced by  - RVV)
   \end{itemize}
 }
 
@@ -361,6 +361,7 @@ for (int i = 0; i < VL; ++i)
 \frame{\frametitle{Under consideration}
 
  \begin{itemize}
+   \item Is C.FNE actually needed?\vspace{10pt}
    \item Can VSELECT be removed? (it's really complex)\vspace{10pt}
    \item Can CLIP be done as a CSR (mode, like elwidth)\vspace{10pt}
    \item SIMD saturation (etc.) also set as a mode?\vspace{10pt}
