@@ -28,7 +28,8 @@
  \begin{itemize}
    \item The Designers of RISC-V\vspace{15pt}
    \item The RVV Working Group and contributors\vspace{15pt}
-   \item Jacob Bachmeyer, Xan Phung, Chuanhua Chang and others\vspace{15pt}
+   \item Jacob Bachmeyer, Xan Phung, Chuanhua Chang,\\
+	     Guy Lemurieux and others\vspace{15pt}
    \item ISA-Dev Group Members\vspace{10pt}
   \end{itemize}
 }
@@ -165,9 +166,10 @@
   \end{itemize}
   Key differences from RVV:\vspace{10pt}
    \begin{itemize}
-   \item Predication in INT regs as a BIT field (max VL=XLEN)\vspace{10pt}
-   \item Minimum VL must be Num Regs - 1 (all regs single LD/ST)\vspace{10pt}
-   \item NO ZEROING: non-predicated elements are skipped\vspace{10pt}
+   \item Predication in INT regs as a BIT field (max VL=XLEN)
+   \item Minimum VL must be Num Regs - 1 (all regs single LD/ST)
+   \item SV may condense sparse Vecs: RVV lets ALU do predication
+   \item NO ZEROING: non-predicated elements are skipped
   \end{itemize}
 }
 

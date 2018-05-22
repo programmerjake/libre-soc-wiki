@@ -1774,6 +1774,36 @@ discussion then led to the question of OoO architectures
 > relevant, is that the imprecise model increases the size of the context
 > structure, as the microarchitectural guts have to be spilled to memory.)
 
+-----
+
+>> >  it just occurred to me that there's another reason why the data
+>> > should be left instead of zeroed.  if the standard register file is
+>> > used, such that vectorised operations are translated to mean "please
+>> > insert multiple register-contiguous operations into the instruction
+>> > FIFO" and predication is used to *skip* some of those, then if the
+>> > next "vector" operation uses the (standard) registers that were masked
+>> > *out* of the previous operation it may proceed without blocking.
+>> >
+>> >  if however zeroing is made mandatory then that optimisation becomes
+>> > flat-out impossible to deploy.
+>> >
+>> >  whilst i haven't fully thought through the full implications, i
+>> > suspect RVV might also be able to benefit by being able to fit more
+>> > overlapping operations into the available SRAM by doing something
+>> > similar.
+>
+>
+> Luke, this is called density time masking. It doesn’t apply to only your
+> model with the “standard register file” is used. it applies to any
+> architecture that attempts to speed up by skipping computation and writeback
+> of masked elements.
+>
+> That said, the writing of zeros need not be explicit. It is possible to add
+> a “zero bit” per element that, when set, forces a zero to be read from the
+> vector (although the underlying storage may have old data). In this case,
+> there may be a way to implement DTM as well.
+
+
 
 ## Implementation Paradigms <a name="implementation_paradigms"></a>
 
