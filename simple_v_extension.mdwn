@@ -1,5 +1,9 @@
 # Variable-width Variable-packed SIMD / Simple-V / Parallelism Extension Proposal
 
+* TODO 23may2018: CSR-CAM-ify regfile tables
+* TODO 23may2018: zero-mark predication CSR
+* TODO 23may2018: impl. detail on scalar-only ops (see appendix)
+
 Key insight: Simple-V is intended as an abstraction layer to provide
 a consistent "API" to parallelisation of existing *and future* operations.
 *Actual* internal hardware-level parallelism is *not* required, such
@@ -1804,6 +1808,34 @@ discussion then led to the question of OoO architectures
 > there may be a way to implement DTM as well.
 
 
+------
+
+* implementation detail for scalar-only op detection
+
+>> For scalar ops an implementation may choose to compare 2-3 bits through an
+>> AND gate: are src & dest scalar? Yep, ok send straight to ALU  (or instr
+>> FIFO).
+
+> Those bits cannot be known until after the registers are decoded from the
+> instruction and a lookup in the "vector length table" has completed. 
+> Considering that one of the reasons RISC-V keeps registers in invariant
+> positions across all instructions is to simplify register decoding, I expect
+> that inserting an SRAM read would lengthen the critical path in most
+> implementations.
+
+reply:
+
+> briefly: the trick i mentioned about ANDing bits together to check if
+> an op was fully-scalar or not was to be read out of a single 32-bit
+> 3R1W SRAM (64-bit if FPU exists).  the 32/64-bit SRAM contains 1 bit per
+> register indicating "is register vectorised yes no".  3R because you need
+> to check src1, src2 and dest simultaneously.  the entries are *generated*
+> from the CSRs and are an optimisation that on slower embedded systems
+> would likely not be needed.
+
+>  is there anything unreasonable that anyone can foresee about that?
+> what are the down-sides?
+
 
 ## Implementation Paradigms <a name="implementation_paradigms"></a>
 
@@ -1893,3 +1925,4 @@ TBD: floating-point compare and other exception handling
 * Wavefront skipping using BRAMS <http://www.ece.ubc.ca/~lemieux/publications/severance-fpga2015.pdf> 
 * Streaming Pipelines <http://www.ece.ubc.ca/~lemieux/publications/severance-fpga2014.pdf>
 * Barcelona SIMD Presentation <https://content.riscv.org/wp-content/uploads/2018/05/09.05.2018-9.15-9.30am-RISCV201805-Andes-proposed-P-extension.pdf>
+* <http://www.ece.ubc.ca/~lemieux/publications/severance-fpga2015.pdf>
