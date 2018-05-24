@@ -92,6 +92,23 @@
 }
 
 
+\frame{\frametitle{What's the value of SV? Why adopt it even in non-V?}
+
+ \begin{itemize}
+   \item memcpy becomes much smaller (higher bang-per-buck)\vspace{10pt}
+   \item context-switch (LOAD/STORE multiple): 1-2 instructions\vspace{10pt}
+   \item greatly-reduced I-cache load (and less reads)\vspace{10pt}
+   \item parallelisation of C further reduces I-cache (etc.)\vspace{10pt}
+  \end{itemize}
+  Note:\vspace{10pt}
+   \begin{itemize}
+   \item It's not just about Vectors: it's about instruction effectiveness
+   \item Anything implementor is not interested in HW-optimising,\\
+	     let it fall through to exceptions (implement as a trap).
+  \end{itemize}
+}
+
+
 \frame{\frametitle{How does Simple-V relate to RVV?}
 
  \begin{itemize}
