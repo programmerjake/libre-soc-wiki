@@ -361,15 +361,16 @@ for (int i = 0; i < VL; ++i)
 \frame{\frametitle{Under consideration}
 
  \begin{itemize}
-   \item Is C.FNE actually needed?\vspace{10pt}
-   \item Can VSELECT be removed? (it's really complex)\vspace{10pt}
-   \item Can CLIP be done as a CSR (mode, like elwidth)\vspace{10pt}
-   \item SIMD saturation (etc.) also set as a mode?\vspace{10pt}
+   \item Is C.FNE actually needed? Should it be added if it is?
+   \item Is detection of all-scalar ops ok (without slowing pipeline)?
+   \item Can VSELECT be removed? (it's really complex)
+   \item Can CLIP be done as a CSR (mode, like elwidth)
+   \item SIMD saturation (etc.) also set as a mode?
    \item C.MV src predication no different from dest predication\\
-         What to do? Make one have different meaning?\vspace{10pt}
+         What to do? Make one have different meaning?
    \item 8/16-bit ops is it worthwhile adding a "start offset"? \\
          (a bit like misaligned addressing... for registers)\\
-         or just use predication to skip start?\vspace{10pt}
+         or just use predication to skip start?
   \end{itemize}
 }
 
