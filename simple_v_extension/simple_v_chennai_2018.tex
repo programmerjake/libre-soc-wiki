@@ -28,7 +28,7 @@
  \begin{itemize}
    \item The Designers of RISC-V\vspace{15pt}
    \item The RVV Working Group and contributors\vspace{15pt}
-   \item Jacob Bachmeyer, Xan Phung, Chuanhua Chang,\\
+   \item Allen Baum, Jacob Bachmeyer, Xan Phung, Chuanhua Chang,\\
 	     Guy Lemurieux, Jonathan Neuschafer, Roger Bruisse,
 	     and others\vspace{15pt}
    \item ISA-Dev Group Members\vspace{10pt}
@@ -59,8 +59,8 @@
  \begin{itemize}
    \item Extremely powerful (extensible to 256 registers)\vspace{10pt}
    \item Supports polymorphism, several datatypes (inc. FP16)\vspace{10pt}
-   \item Requires a separate Register File\vspace{10pt}
-   \item Can be implemented as a separate pipeline\vspace{10pt}
+   \item Requires a separate Register File (32 w/ext to 256)\vspace{10pt}
+   \item Implemented as a separate pipeline (no impact on scalar)\vspace{10pt}
   \end{itemize}
   However...\vspace{10pt}
    \begin{itemize}
@@ -97,8 +97,8 @@
  \begin{itemize}
    \item memcpy becomes much smaller (higher bang-per-buck)\vspace{10pt}
    \item context-switch (LOAD/STORE multiple): 1-2 instructions\vspace{10pt}
+   \item Compressed instrs further reduces I-cache (etc.)\vspace{10pt}
    \item greatly-reduced I-cache load (and less reads)\vspace{10pt}
-   \item parallelisation of C further reduces I-cache (etc.)\vspace{10pt}
   \end{itemize}
   Note:\vspace{10pt}
    \begin{itemize}
@@ -191,8 +191,10 @@
 \frame{\frametitle{What's the deal / juice / score?}
 
  \begin{itemize}
-   \item Standard Register File(s) overloaded with "vector span"\vspace{10pt}
-   \item Element width and type concepts remain same as RVV\vspace{10pt}
+   \item Standard Register File(s) overloaded with "vector span"\\
+	     (see pseudocode slides for examples)
+   \item Element width and type concepts remain same as RVV\\
+	     (CSRs are used to "interpret" elements in registers)
    \item CSRs are key-value tables (overlaps allowed)\vspace{10pt}
   \end{itemize}
   Key differences from RVV:\vspace{10pt}
@@ -203,6 +205,68 @@
    \item NO ZEROING: non-predicated elements are skipped
   \end{itemize}
 }
+
+
+\begin{frame}[fragile]
+\frametitle{ADD pseudocode (or trap, or actual hardware loop)}
+
+\begin{semiverbatim}
+function op_add(rd, rs1, rs2, predr) # add not VADD!
+  int i, id=0, irs1=0, irs2=0;
+  for (i=0; i < MIN(VL, vectorlen[rd]); i++)
+    if (ireg[predr] & 1<<i) # predication uses intregs
+       ireg[rd+id] <= ireg[rs1+irs1] + ireg[rs2+irs2];
+    if (reg_is_vectorised[rd]) \{ id += 1; \}
+    if (reg_is_vectorised[rs1]) \{ irs1 += 1; \}
+    if (reg_is_vectorised[rs2]) \{ irs2 += 1; \}
+\end{semiverbatim}
+
+  \begin{itemize}
+   \item SIMD slightly more complex (case above is elwidth = default)
+   \item Scalar-scalar and scalar-vector and vector-vector now all in one
+   \item OoO may choose to push ADDs into instr. queue (v. busy!)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Predication-Branch (or trap, or actual hardware loop)}
+
+\begin{semiverbatim}
+s1 = reg_is_vectorised(src1);
+s2 = reg_is_vectorised(src2);
+if (!s2 && !s1) goto branch;
+for (int i = 0; i < VL; ++i)
+   preg[rs3] |= 1 << cmp(s1 ? reg[src1+i] : reg[src1],
+                         s2 ? reg[src2+i] : reg[src2]);
+\end{semiverbatim}
+
+  \begin{itemize}
+   \item SIMD slightly more complex (case above is elwidth = default)  
+   \item If s1 and s2 both scalars, Standard branch occurs
+   \item Predication stored in integer regfile as a bitfield
+   \item Scalar-vector and vector-vector supported
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{VLD/VLD.S/VLD.X (or trap, or actual hardware loop)}
+
+\begin{semiverbatim}
+if (unit-strided) stride = elsize;
+else stride = areg[as2]; // constant-strided
+for (int i = 0; i < VL; ++i)
+  if (preg_enabled[rd] && ([!]preg[rd] & 1<<i))
+    for (int j = 0; j < seglen+1; j++)
+      if (vectorised[rs2]) offs = vreg[rs2][i]
+      else offs = i*(seglen+1)*stride;
+      vreg[rd+j][i] = mem[sreg[base] + offs + j*stride]
+\end{semiverbatim}
+
+  \begin{itemize}
+   \item Again: SIMD slightly more complex
+   \item rs2 vectorised taken to implicitly indicate VLD.X
+  \end{itemize}
+\end{frame}
 
 
 \frame{\frametitle{Why are overlaps allowed in Regfiles?}
@@ -277,67 +341,6 @@
    \item RVV rules about deleting higher-indexed CSRs followed
   \end{itemize}
 }
-
-
-\begin{frame}[fragile]
-\frametitle{ADD pseudocode (or trap, or actual hardware loop)}
-
-\begin{semiverbatim}
-function op_add(rd, rs1, rs2, predr) # add not VADD!
-  int i, id=0, irs1=0, irs2=0;
-  for (i=0; i < MIN(VL, vectorlen[rd]); i++)
-    if (ireg[predr] & 1<<i) # predication uses intregs
-       ireg[rd+id] <= ireg[rs1+irs1] + ireg[rs2+irs2];
-    if (reg_is_vectorised[rd]) \{ id += 1; \}
-    if (reg_is_vectorised[rs1]) \{ irs1 += 1; \}
-    if (reg_is_vectorised[rs2]) \{ irs2 += 1; \}
-\end{semiverbatim}
-
-  \begin{itemize}
-   \item SIMD slightly more complex (case above is elwidth = default)
-   \item Scalar-scalar and scalar-vector and vector-vector now all in one
-   \item OoO may choose to push ADDs into instr. queue (v. busy!)
-  \end{itemize}
-\end{frame}
-
-\begin{frame}[fragile]
-\frametitle{Predication-Branch (or trap, or actual hardware loop)}
-
-\begin{semiverbatim}
-s1 = vectorlen[src1] > 1;
-s2 = vectorlen[src2] > 1;
-for (int i = 0; i < VL; ++i)
-   preg[rs3] |= 1 << cmp(s1 ? reg[src1+i] : reg[src1],
-                         s2 ? reg[src2+i] : reg[src2]);
-\end{semiverbatim}
-
-  \begin{itemize}
-   \item SIMD slightly more complex (case above is elwidth = default)  
-   \item If s1 and s2 both scalars, Standard branch occurs
-   \item Predication stored in integer regfile as a bitfield
-   \item Scalar-vector and vector-vector supported
-  \end{itemize}
-\end{frame}
-
-\begin{frame}[fragile]
-\frametitle{VLD/VLD.S/VLD.X (or trap, or actual hardware loop)}
-
-\begin{semiverbatim}
-if (unit-strided) stride = elsize;
-else stride = areg[as2]; // constant-strided
-for (int i = 0; i < VL; ++i)
-  if (preg_enabled[rd] && ([!]preg[rd] & 1<<i))
-    for (int j = 0; j < seglen+1; j++)
-      if (vectorised[rs2]) offs = vreg[rs2][i]
-      else offs = i*(seglen+1)*stride;
-      vreg[rd+j][i] = mem[sreg[base] + offs + j*stride]
-\end{semiverbatim}
-
-  \begin{itemize}
-   \item Again: SIMD slightly more complex
-   \item rs2 vectorised taken to implicitly indicate VLD.X
-  \end{itemize}
-\end{frame}
 
 
 \frame{\frametitle{C.MV extremely flexible!}
