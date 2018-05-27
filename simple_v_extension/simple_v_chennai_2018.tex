@@ -191,7 +191,7 @@
 \frame{\frametitle{What's the deal / juice / score?}
 
  \begin{itemize}
-   \item Standard Register File(s) overloaded with "vector span"\\
+   \item Standard Register File(s) overloaded with CSR "vector span"\\
 	     (see pseudocode slides for examples)
    \item Element width and type concepts remain same as RVV\\
 	     (CSRs are used to "interpret" elements in registers)
@@ -227,6 +227,11 @@ function op_add(rd, rs1, rs2, predr) # add not VADD!
    \item OoO may choose to push ADDs into instr. queue (v. busy!)
   \end{itemize}
 \end{frame}
+
+% yes it really *is* ADD not VADD.  that's the entire point of
+% this proposal, that *standard* operations are overloaded to
+% become vectorised-on-demand
+
 
 \begin{frame}[fragile]
 \frametitle{Predication-Branch (or trap, or actual hardware loop)}
@@ -382,6 +387,8 @@ for (int i = 0; i < VL; ++i)
 
  \begin{itemize}
    \item Is C.FNE actually needed? Should it be added if it is?
+   \item FP Exceptions: should linear semantics be forced?\\
+	     (requires throwing away perfectly good data)
    \item Is detection of all-scalar ops ok (without slowing pipeline)?
    \item Can VSELECT be removed? (it's really complex)
    \item Can CLIP be done as a CSR (mode, like elwidth)
@@ -395,17 +402,47 @@ for (int i = 0; i < VL; ++i)
 }
 
 
+\frame{\frametitle{Is this OK (low latency)? Detect scalar-ops (only)}
+ \begin{center}
+  \includegraphics[height=2.5in]{scalardetect.png}\\
+  {\bf \red Detect when all registers are scalar for a given op}
+ \end{center}
+}
+
+
+\frame{\frametitle{TODO (break into separate slides)}
+
+ \begin{itemize}
+   \item    Then explain why this proposal is a good way to \\
+   abstract parallelism\\
+   (hopefully also explaining how \\
+   a good compiler can make clever use of this increase parallelism\\
+   Then explain how this can be implemented (at instruction\\
+   issue time???) with\\
+   implementation options, and what these "cost".\\
+   Finally give examples that show simple usage that compares\\   
+   C code\\
+   RVIC\\
+   RVV\\
+   RVICXsimplev
+  \end{itemize}
+}
+
+
 \frame{\frametitle{Summary}
 
  \begin{itemize}
-   \item Designed for simplicity (graded levels of complexity)\vspace{10pt}
-   \item Fits RISC-V ethos: do more with less\vspace{10pt}
+   \item Designed for flexibility (graded levels of complexity)\vspace{6pt}
+   \item Huge range of implementor freedom\vspace{6pt}
+   \item Fits RISC-V ethos: achieve more with less\vspace{6pt}
    \item Reduces SIMD ISA proliferation by 3-4 orders of magnitude \\
-	     (without SIMD downsides or sacrificing speed trade-off)\vspace{10pt}
-   \item Covers 98\% of RVV, allows RVV to fit "on top"\vspace{10pt}
-   \item Huge range of implementor freedom and flexibility\vspace{10pt}
+	     (without SIMD downsides or sacrificing speed trade-off)\vspace{6pt}
+   \item Covers 98\% of RVV, allows RVV to fit "on top"\vspace{6pt}
    \item Not designed for supercomputing (that's RVV), designed for
-         in between: DSPs, RV32E, Embedded 3D GPUs etc.\vspace{10pt}
+         in between: DSPs, RV32E, Embedded 3D GPUs etc.\vspace{6pt}
+   \item Not specifically designed for Vectorisation: designed to\\
+	     reduce code size (increase efficiency, just
+		 like Compressed)\vspace{6pt}
   \end{itemize}
 }
 
@@ -422,29 +459,10 @@ for (int i = 0; i < VL; ++i)
 }
 
 
-\frame{\frametitle{Including a plot}
- \begin{center}
-%  \includegraphics[height=2in]{dental.ps}\\
-  {\bf \red Dental trajectories for 27 children:}
- \end{center}
-}
-
-\frame{\frametitle{Creating .pdf slides in WinEdt}
-
- \begin{itemize}
-   \item LaTeX [Shift-Control-L]\vspace{10pt}
-   \item dvi2pdf [click the button]\vspace{24pt}
-  \end{itemize}
-  To print 4 slides per page in acrobat click\vspace{10pt}
-   \begin{itemize}
-   \item File/print/properties\vspace{10pt}
-   \item Change ``pages per sheet'' to 4\vspace{10pt}
-  \end{itemize}
-}
-
 \frame{
   \begin{center}
-    {\Huge \red The end}
+    {\Huge \red The end\vspace{20pt}\\
+			    Thank you}
   \end{center}
 }
 
