@@ -1810,7 +1810,10 @@ discussion then led to the question of OoO architectures
 
 ## Implementation detail for scalar-only op detection <a name="scalar_detection"></a>
 
-Note: this is just one possible implementation.  Another implementation
+Note 1: this idea is a pipeline-bypass concept, which may *or may not* be
+worthwhile.
+
+Note 2: this is just one possible implementation.  Another implementation
 may choose to treat *all* operations as vectorised (including treating
 scalars as vectors of length 1), choosing to add an extra pipeline stage
 dedicated to *all* instructions.
