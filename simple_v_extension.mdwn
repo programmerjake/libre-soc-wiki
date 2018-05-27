@@ -1778,7 +1778,7 @@ discussion then led to the question of OoO architectures
 > relevant, is that the imprecise model increases the size of the context
 > structure, as the microarchitectural guts have to be spilled to memory.)
 
------
+## Zero/Non-zero Predication
 
 >> >  it just occurred to me that there's another reason why the data
 >> > should be left instead of zeroed.  if the standard register file is
@@ -1808,9 +1808,19 @@ discussion then led to the question of OoO architectures
 > there may be a way to implement DTM as well.
 
 
-------
+## Implementation detail for scalar-only op detection <a name="scalar_detection"></a>
 
-* implementation detail for scalar-only op detection
+Note: this is just one possible implementation.  Another implementation
+may choose to treat *all* operations as vectorised (including treating
+scalars as vectors of length 1), choosing to add an extra pipeline stage
+dedicated to
+
+This section *specifically* covers the implementor's freedom to choose
+that they wish to minimise disruption to an existing design by detecting
+"scalar-only operations", bypassing the vectorisation phase (which may
+or may not require an additional pipeline stage)
+
+[[scalardetect.png]]
 
 >> For scalar ops an implementation may choose to compare 2-3 bits through an
 >> AND gate: are src & dest scalar? Yep, ok send straight to ALU  (or instr
