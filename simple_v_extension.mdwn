@@ -633,6 +633,11 @@ So the issue is as follows:
 * **HOWEVER**... in SV, *EVERY* vector register has its own separate
   length and thus there is no way (at the time that VSETVL is called) to
   know what to set the vector length *to*.
+* At first glance it seems that it would be perfectly fine to just limit
+  the vector operation to the length specified in the destination
+  register's CSR, at the time that each instruction is issued...
+  except that that cannot possibly be guaranteed to match
+  with the value *already loaded into the target register from VSETVL*.
 
 Therefore a different approach is needed.
 
@@ -647,6 +652,9 @@ Possible options include:
 * Other (TBD)
 
 The first option (of the ones brainstormed so far) is a lot simpler.
+It does however mean that the length set in VSETVL will apply across-the-board
+to all src1, src2 and dest vectorised registers until it is otherwise changed
+(by another VSETVL call).  This is probably desirable behaviour.
 
 ## Branch Instruction:
 
