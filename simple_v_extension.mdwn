@@ -2,7 +2,7 @@
 
 * TODO 23may2018: CSR-CAM-ify regfile tables
 * TODO 23may2018: zero-mark predication CSR
-* TODO 23may2018: impl. detail on scalar-only ops (see appendix)
+* TODO 28may2018: sort out VSETVL: CSR length to be removed?
 
 Key insight: Simple-V is intended as an abstraction layer to provide
 a consistent "API" to parallelisation of existing *and future* operations.
@@ -601,6 +601,9 @@ and having the benefit of being explicit.*
 
 ## VSETVL
 
+NOTE TODO: 28may2018: VSETVL may need to be *really* different from RVV,
+with the instruction format remaining the same.
+
 VSETVL is slightly different from RVV in that the minimum vector length
 is required to be at least the number of registers in the register file,
 and no more than XLEN.  This allows vector LOAD/STORE to be used to switch
@@ -616,6 +619,34 @@ Unlike RVV, implementors *must* provide pseudo-parallelism (using sequential
 loops in hardware) if actual hardware-parallelism in the ALUs is not deployed.
 A hybrid is also permitted (as used in Broadcom's VideoCore-IV) however this
 must be *entirely* transparent to the ISA.
+
+### Under review / discussion: remove CSR vector length, use VSETVL <a name="vsetvl"></a>
+
+So the issue is as follows:
+
+* CSRs are used to set the "span" of a vector (how many of the standard
+  register file to contiguously use)
+* VSETVL in RVV works as follows: it sets the vector length (copy of which
+  is placed in a dest register), and if the "required" length is longer
+  than the *available* length, the dest reg is set to the MIN of those
+  two.
+* **HOWEVER**... in SV, *EVERY* vector register has its own separate
+  length and thus there is no way (at the time that VSETVL is called) to
+  know what to set the vector length *to*.
+
+Therefore a different approach is needed.
+
+Possible options include:
+
+* Removing the CSR "Vector Length" and always using the value from
+  VSETVL.  "VSETVL destreg, counterreg, #lenimmed" will set VL *and*
+  destreg equal to MIN(counterreg, lenimmed), with register-based
+  variant "VSETVL destreg, counterreg, lenreg" doing the same.
+* Keeping the CSR "Vector Length" and having the lenreg version have
+  a "twist": "if lengreg is vectorised, read the length from the CSR"
+* Other (TBD)
+
+The first option (of the ones brainstormed so far) is a lot simpler.
 
 ## Branch Instruction:
 
