@@ -277,15 +277,16 @@ for (int i = 0; i < VL; ++i)
 \frame{\frametitle{Why are overlaps allowed in Regfiles?}
 
  \begin{itemize}
-   \item Same register(s) can have multiple "interpretations"\vspace{10pt}
-   \item xBitManip plus SIMD plus xBitManip = Hi/Lo bitops\vspace{10pt}
-   \item (32-bit GREV plus 4x8-bit SIMD plus 32-bit GREV)\vspace{10pt}
-   \item Same register(s) can be offset (no need for VSLIDE)\vspace{10pt}
+   \item Same register(s) can have multiple "interpretations"\vspace{6pt}
+   \item xBitManip plus SIMD plus xBitManip = Hi/Lo bitops\vspace{6pt}
+   \item (32-bit GREV plus 4x8-bit SIMD plus 32-bit GREV)\vspace{6pt}
+   \item RGB 565 (video): BEXTW plus 4x8-bit SIMD plus BDEPW\vspace{6pt}
+   \item Same register(s) can be offset (no need for VSLIDE)\vspace{6pt}
   \end{itemize}
   Note:\vspace{10pt}
    \begin{itemize}
-   \item xBitManip reduces O($N^{6}$) SIMD down to O($N^{3}$) \vspace{10pt}
-   \item Hi-Performance: Macro-op fusion (more pipeline stages?)\vspace{10pt}
+   \item xBitManip reduces O($N^{6}$) SIMD down to O($N^{3}$)
+   \item Hi-Performance: Macro-op fusion (more pipeline stages?)
   \end{itemize}
 }
 
