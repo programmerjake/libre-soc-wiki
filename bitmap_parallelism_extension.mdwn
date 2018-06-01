@@ -1,0 +1,64 @@
+# Parallelism using Bitmaps
+
+If you think about it this way you can combine setvl, and predication,
+and indeed vector length, by always working with bitmaps.
+
+So: you have 32 WARL CSRs , called X0, ... X31 (or perhaps 2 banks of
+32 CSR's and have a set of additional CSR's FX0,... FX31)
+
+Each contains a bitmap of length 32 (assuming we only have the standard
+registers)
+
+By default, X0 contains 1<<0, X1 contains 1<<1, X2 contains  1 << 2, ...
+
+now an instruction like
+
+    add x1 x2 x3 
+
+is reinterpreted as referring to the CSR's rather than individual
+registers.  i.e. under simple V it means
+
+    add X1, X2, X3
+
+and it has the following semantics:
+
+    let rds   = registers in bitmap X1
+    let rs1s = registers in bitmap X2 repeated periodically in order of register number to the length of X1 
+    let rs2s =  registers in bitmap X3 repeated periodically in order of register number to the length of X1
+
+
+    parallelfor (rd, rs1, rs2)  in  (rds[i],rs1s[i], rs2s[i]) where i = 0 to length(rds) - 1
+          add rd rs1 rs2
+
+
+example: 
+
+    X1 <- 0b011111
+    X2 <- 0b1011
+    X3 <-  0b00010
+
+then 
+    rd1s = [x1, x2, x3, x4, x5]
+    rs1s = [x0, x2, x3, x0, x2]
+    rs2s = [x3, x3, x3, x3, x3]
+
+and 
+
+    add X1, X2, X3
+
+is interpreted as
+
+    parallel{
+         add x1, x0, x3
+         add x2, x2, x3
+         add x3, x3, x3
+         add x4, x0, x3   # x2 and x3 have their original values! 
+         add x5, x2, x3   # x2 and x3 have their original values! 
+    }
+
+This means that the analogue of setvl is simply the "write any"  of
+setting the bitmap, and the analogue of the return value of setvl,
+is the "read legal" of the CSR.  Moreover popc would tell you how many
+operations are scheduled in parallel so you know how often you have to
+repeat a sequential loop.
+
