@@ -319,10 +319,11 @@ for (int i = 0; i < VL; ++i)
 \frame{\frametitle{Predication key-value CSR store}
 
  \begin{itemize}
-   \item key is int regfile number or FP regfile number (1 bit)\vspace{10pt}
-   \item register to be predicated if referred to (5 bits, key)\vspace{10pt}
-   \item register to store actual predication in (5 bits, value)\vspace{10pt}
-   \item predication is inverted (1 bit)\vspace{10pt}
+   \item key is int regfile number or FP regfile number (1 bit)\vspace{6pt}
+   \item register to be predicated if referred to (5 bits, key)\vspace{6pt}
+   \item register to store actual predication in (5 bits, value)\vspace{6pt}
+   \item predication is inverted (1 bit)\vspace{6pt}
+   \item non-predicated elements are to be zero'd (1 bit)\vspace{6pt}
   \end{itemize}
   Notes:\vspace{10pt}
    \begin{itemize}
@@ -336,16 +337,16 @@ for (int i = 0; i < VL; ++i)
 \frame{\frametitle{Register key-value CSR store}
 
  \begin{itemize}
-   \item key is int regfile number or FP regfile number (1 bit)\vspace{10pt}
-   \item register to be predicated if referred to (5 bits, key)\vspace{10pt}
-   \item register to store actual predication in (5 bits, value)\vspace{10pt}
-   \item TODO\vspace{10pt}
+   \item key is int regfile number or FP regfile number (1 bit)\vspace{6pt}
+   \item treated as vector if referred to in op (5 bits, key)\vspace{6pt}
+   \item starting register to actually be used (5 bits, value)\vspace{6pt}
+   \item element bitwidth: default/8/16/32/64/rsvd (3 bits)\vspace{6pt}
+   \item element type: still under consideration\vspace{6pt}
   \end{itemize}
   Notes:\vspace{10pt}
    \begin{itemize}
-   \item Table should be expanded out for high-speed implementations
-   \item Multiple "keys" (and values) theoretically permitted
-   \item RVV rules about deleting higher-indexed CSRs followed
+   \item Same notes apply (previous slide) as for predication CSR table
+   \item Level of indirection has implications for pipeline latency
   \end{itemize}
 }
 
@@ -389,6 +390,7 @@ for (int i = 0; i < VL; ++i)
 
  \begin{itemize}
    \item Is C.FNE actually needed? Should it be added if it is?
+   \item Element type implies polymorphism.  Should it be in SV?
    \item Should use of registers be allowed to "wrap" (x30 x31 x1 x2)?
    \item Is detection of all-scalar ops ok (without slowing pipeline)?
    \item Can VSELECT be removed? (it's really complex)
