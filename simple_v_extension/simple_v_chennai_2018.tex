@@ -213,7 +213,7 @@
 \begin{semiverbatim}
 function op_add(rd, rs1, rs2, predr) # add not VADD!
   int i, id=0, irs1=0, irs2=0;
-  for (i=0; i < MIN(VL, vectorlen[rd]); i++)
+  for (i = 0; i < VL; i++)
     if (ireg[predr] & 1<<i) # predication uses intregs
        ireg[rd+id] <= ireg[rs1+irs1] + ireg[rs2+irs2];
     if (reg_is_vectorised[rd]) \{ id += 1; \}
@@ -241,8 +241,9 @@ s1 = reg_is_vectorised(src1);
 s2 = reg_is_vectorised(src2);
 if (!s2 && !s1) goto branch;
 for (int i = 0; i < VL; ++i)
-   preg[rs3] |= 1 << cmp(s1 ? reg[src1+i] : reg[src1],
-                         s2 ? reg[src2+i] : reg[src2]);
+   if cmp(s1 ? reg[src1+i] : reg[src1],
+          s2 ? reg[src2+i] : reg[src2])
+      preg[rs3] |= 1 << i;
 \end{semiverbatim}
 
   \begin{itemize}
@@ -262,13 +263,13 @@ else stride = areg[as2]; // constant-strided
 for (int i = 0; i < VL; ++i)
   if (preg_enabled[rd] && ([!]preg[rd] & 1<<i))
     for (int j = 0; j < seglen+1; j++)
-      if (vectorised[rs2]) offs = vreg[rs2][i]
+      if (reg_is_vectorised[rs2]) offs = vreg[rs2][i]
       else offs = i*(seglen+1)*stride;
       vreg[rd+j][i] = mem[sreg[base] + offs + j*stride]
 \end{semiverbatim}
 
   \begin{itemize}
-   \item Again: SIMD slightly more complex
+   \item Again: elwidth != default slightly more complex
    \item rs2 vectorised taken to implicitly indicate VLD.X
   \end{itemize}
 \end{frame}
