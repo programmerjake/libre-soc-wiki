@@ -389,16 +389,17 @@ for (int i = 0; i < VL; ++i)
 \frame{\frametitle{C.MV extremely flexible!}
 
  \begin{itemize}
-   \item scalar-to-vector (w/no pred): VSPLAT
-   \item scalar-to-vector (w/dest-pred): Sparse VSPLAT
-   \item scalar-to-vector (w/single dest-pred): VINSERT
-   \item vector-to-scalar (w/src-pred): VEXTRACT
-   \item vector-to-vector (w/no pred): Vector Copy
-   \item vector-to-vector (w/src xor dest pred): Sparse Vector Copy
-   \item vector-to-vector (w/src and dest pred): Vector Gather/Scatter
+   \item scalar-to-vector (w/ no pred): VSPLAT
+   \item scalar-to-vector (w/ dest-pred): Sparse VSPLAT
+   \item scalar-to-vector (w/ 1-bit dest-pred): VINSERT
+   \item vector-to-scalar (w/ src-pred): VEXTRACT
+   \item vector-to-vector (w/ no pred): Vector Copy
+   \item vector-to-vector (w/ src pred): Vector Gather
+   \item vector-to-vector (w/ dest pred): Vector Scatter
+   \item vector-to-vector (w/ src \& dest pred): Vector Gather/Scatter
   \end{itemize}
-  \vspace{8pt}
-  Notes:\vspace{10pt}
+  \vspace{4pt}
+  Notes:
    \begin{itemize}
    \item Really powerful!
    \item Any other options?
@@ -431,8 +432,6 @@ for (int i = 0; i < VL; ++i)
    \item Can VSELECT be removed? (it's really complex)
    \item Can CLIP be done as a CSR (mode, like elwidth)
    \item SIMD saturation (etc.) also set as a mode?
-   \item C.MV src predication no different from dest predication\\
-         What to do? Make one have different meaning?
    \item 8/16-bit ops is it worthwhile adding a "start offset"? \\
          (a bit like misaligned addressing... for registers)\\
          or just use predication to skip start?
