@@ -170,7 +170,15 @@
 % but MODIFYING the remaining "vectorised" op, subtracting the now
 % scalar ops from it.
 
-\frame{\frametitle{Predicated 8-parallel ADD: optimised (not masked)}
+\frame{\frametitle{Predicated 8-parallel ADD: 1-wide ALU}
+ \begin{center}
+  \includegraphics[height=2.5in]{padd9_alu1.png}\\
+  {\bf \red Predicated adds are shuffled down: 6 cycles in total}
+ \end{center}
+}
+
+
+\frame{\frametitle{Predicated 8-parallel ADD: 4-wide ALU}
  \begin{center}
   \includegraphics[height=2.5in]{padd9_alu4.png}\\
   {\bf \red Predicated adds are shuffled down: 4 in 1st cycle, 2 in 2nd}
