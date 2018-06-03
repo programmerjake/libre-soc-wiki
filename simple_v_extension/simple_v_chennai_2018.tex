@@ -318,6 +318,7 @@ for (int i = 0; i < VL; ++i)
 
  \begin{itemize}
    \item Same register(s) can have multiple "interpretations"
+   \item Set "real" register (scalar) without needing to set/unset CSRs.
    \item xBitManip plus SIMD plus xBitManip = Hi/Lo bitops
    \item (32-bit GREV plus 4x8-bit SIMD plus 32-bit GREV:\\
 	     GREV @ VL=N,wid=32; SIMD @ VL=Nx4,wid=8)
@@ -325,7 +326,7 @@ for (int i = 0; i < VL; ++i)
 	     (BEXT/BDEP @ VL=N,wid=32; SIMD @ VL=Nx4,wid=8)
    \item Same register(s) can be offset (no need for VSLIDE)\vspace{6pt}
   \end{itemize}
-  Note:\vspace{10pt}
+  Note:
    \begin{itemize}
    \item xBitManip reduces O($N^{6}$) SIMD down to O($N^{3}$)
    \item Hi-Performance: Macro-op fusion (more pipeline stages?)
