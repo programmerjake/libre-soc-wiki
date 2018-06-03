@@ -96,14 +96,17 @@
 \frame{\frametitle{What's the value of SV? Why adopt it even in non-V?}
 
  \begin{itemize}
-   \item memcpy becomes much smaller (higher bang-per-buck)\vspace{10pt}
-   \item context-switch (LOAD/STORE multiple): 1-2 instructions\vspace{10pt}
-   \item Compressed instrs further reduces I-cache (etc.)\vspace{10pt}
-   \item greatly-reduced I-cache load (and less reads)\vspace{10pt}
+   \item memcpy becomes much smaller (higher bang-per-buck)
+   \item context-switch (LOAD/STORE multiple): 1-2 instructions
+   \item Compressed instrs further reduces I-cache (etc.)
+   \item Greatly-reduced I-cache load (and less reads)
+   \item Amazingly, SIMD becomes (more) tolerable\\
+	     (corner-cases for setup and teardown are gone)
   \end{itemize}
-  Note:\vspace{10pt}
+  Note:
    \begin{itemize}
    \item It's not just about Vectors: it's about instruction effectiveness
+   \item Anything that makes SIMD tolerable has to be a good thing
    \item Anything implementor is not interested in HW-optimising,\\
 	     let it fall through to exceptions (implement as a trap).
   \end{itemize}
