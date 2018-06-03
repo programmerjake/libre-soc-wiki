@@ -405,6 +405,21 @@ for (int i = 0; i < VL; ++i)
 }
 
 
+\frame{\frametitle{What's the downside(s) of SV?}
+ \begin{itemize}
+   \item EVERY register operation is inherently parallelised\\
+	     (scalar ops are just vectors of length 1)
+   \item An extra pipeline phase is pretty much essential\\
+         for fast low-latency implementations
+   \item Assuming an instruction FIFO, N ops could be taken off\\
+         of a parallel op per cycle (avoids filling entire FIFO;\\
+         also is less work per cycle: lower complexity / latency)
+   \item With zeroing off, skipping non-predicated elements is hard:\\
+         it is however an optimisation (and could be skipped).
+  \end{itemize}
+}
+
+
 \frame{\frametitle{Is this OK (low latency)? Detect scalar-ops (only)}
  \begin{center}
   \includegraphics[height=2.5in]{scalardetect.png}\\
