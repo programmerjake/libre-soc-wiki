@@ -333,19 +333,22 @@ for (int i = 0; i < VL; ++i)
 }
 
 
-\frame{\frametitle{Why no Zeroing (place zeros in non-predicated elements)?}
+\frame{\frametitle{To Zero or not to place zeros in non-predicated elements?}
 
  \begin{itemize}
-   \item Zeroing is an implementation optimisation favouring OoO\vspace{8pt}
-   \item Simple implementations may skip non-predicated operations\vspace{8pt}
-   \item Simple implementations explicitly have to destroy data\vspace{8pt}
+   \item Zeroing is an implementation optimisation favouring OoO
+   \item Simple implementations may skip non-predicated operations
+   \item Simple implementations explicitly have to destroy data
    \item Complex implementations may use reg-renames to save power\\
 	     Zeroing on predication chains makes optimisation harder
+   \item Compromise: REQUIRE both (specified in predication CSRs).
   \end{itemize}
-  Considerations:\vspace{10pt}
+  Considerations:
   \begin{itemize}
-   \item Complex not really impacted, Simple impacted a LOT
-   \item Overlapping "Vectors" may issue overlapping ops
+   \item Complex not really impacted, simple impacted a LOT\\
+         with Zeroing... however it's useful (memset)
+   \item Non-zero'd overlapping "Vectors" may issue overlapping ops\\
+	     (2nd op's predicated elements slot in 1st's non-predicated ops)
    \item Please don't use Vectors for "security" (use Sec-Ext)
   \end{itemize}
 }
