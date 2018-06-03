@@ -197,15 +197,17 @@
 \frame{\frametitle{How are SIMD Instructions Vectorised?}
 
  \begin{itemize}
-   \item SIMD ALU(s) primarily unchanged\vspace{10pt}
-   \item Predication is added to each SIMD element (NO ZEROING!)\vspace{10pt}
-   \item End of Vector enables predication (NO ZEROING!)\vspace{10pt}
+   \item SIMD ALU(s) primarily unchanged\vspace{6pt}
+   \item Predication is added to each SIMD element\vspace{6pt}
+   \item Predication bits sent in groups to the ALU\vspace{6pt}
+   \item End of Vector enables (additional) predication\vspace{10pt}
   \end{itemize}
-  Considerations:\vspace{10pt}
+  Considerations:\vspace{4pt}
    \begin{itemize}
-   \item Many SIMD ALUs possible (parallel execution)\vspace{10pt}
-   \item Very long SIMD ALUs could waste die area (short vectors)\vspace{10pt}
-   \item Implementor free to choose (API remains the same)\vspace{10pt}
+   \item Many SIMD ALUs possible (parallel execution)
+   \item Implementor free to choose (API remains the same)
+   \item Unused ALU units wasted, but s/w DRASTICALLY simpler 
+   \item Very long SIMD ALUs could waste significant die area
   \end{itemize}
 }
 % With multiple SIMD ALUs at for example 32-bit wide they can be used 
