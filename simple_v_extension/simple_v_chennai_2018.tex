@@ -170,6 +170,22 @@
 % but MODIFYING the remaining "vectorised" op, subtracting the now
 % scalar ops from it.
 
+\frame{\frametitle{Predicated 8-parallel ADD: optimised (not masked)}
+ \begin{center}
+  \includegraphics[height=2.5in]{padd9_alu4.png}\\
+  {\bf \red Predicated adds are shuffled down: 4 in 1st cycle, 2 in 2nd}
+ \end{center}
+}
+
+
+\frame{\frametitle{Predicated 8-parallel ADD: 3 phase FIFO expansion}
+ \begin{center}
+  \includegraphics[height=2.5in]{padd9_fifo.png}\\
+  {\bf \red First cycle takes first four 1s; second takes the rest}
+ \end{center}
+}
+
+
 \frame{\frametitle{How are SIMD Instructions Vectorised?}
 
  \begin{itemize}
@@ -188,6 +204,14 @@
 % to either issue 64-bit or 128-bit or 256-bit wide SIMD operations
 % or they can be used to cover several operations on totally different
 % vectors / registers.
+
+\frame{\frametitle{Predicated 9-parallel SIMD ADD}
+ \begin{center}
+  \includegraphics[height=2.5in]{padd9_simd.png}\\
+  {\bf \red 4-wide 8-bit SIMD, 4 bits of predicate passed to ALU}
+ \end{center}
+}
+
 
 \frame{\frametitle{What's the deal / juice / score?}
 
