@@ -138,12 +138,13 @@
          Note: it's ok to pass predication through to ALU (like SIMD)
    \item Standard (and future, and custom) opcodes now parallel\vspace{10pt}
   \end{itemize}
-  Notes:\vspace{6pt}
+  Note: EVERYTHING is parallelised:
    \begin{itemize}
    \item All LOAD/STORE (inc. Compressed, Int/FP versions)
    \item All ALU ops (soft / hybrid / full HW, on per-op basis)
-   \item All branches become predication targets (C.FNE added)
+   \item All branches become predication targets (C.FNE added?)
    \item C.MV of particular interest (s/v, v/v, v/s)
+   \item FCVT, FMV, FSGNJ etc. very similar to C.MV
   \end{itemize}
 }
 
@@ -229,9 +230,9 @@
 \frame{\frametitle{What's the deal / juice / score?}
 
  \begin{itemize}
-   \item Standard Register File(s) overloaded with CSR "vector span"\\
+   \item Standard Register File(s) overloaded with CSR "reg is vector"\\
 	     (see pseudocode slides for examples)
-   \item Element width and type concepts remain same as RVV\\
+   \item Element width (and type?) concepts remain same as RVV\\
 	     (CSRs are used to "interpret" elements in registers)
    \item CSRs are key-value tables (overlaps allowed)\vspace{10pt}
   \end{itemize}
@@ -397,7 +398,7 @@ for (int i = 0; i < VL; ++i)
    \item scalar-to-vector (w/ no pred): VSPLAT
    \item scalar-to-vector (w/ dest-pred): Sparse VSPLAT
    \item scalar-to-vector (w/ 1-bit dest-pred): VINSERT
-   \item vector-to-scalar (w/ src-pred): VEXTRACT
+   \item vector-to-scalar (w/ [1-bit?] src-pred): VEXTRACT
    \item vector-to-vector (w/ no pred): Vector Copy
    \item vector-to-vector (w/ src pred): Vector Gather
    \item vector-to-vector (w/ dest pred): Vector Scatter
@@ -406,8 +407,8 @@ for (int i = 0; i < VL; ++i)
   \vspace{4pt}
   Notes:
    \begin{itemize}
-   \item Really powerful!
-   \item Any other options?
+   \item Surprisingly powerful!
+   \item Same arrangement for FVCT, FMV, FSGNJ etc.
   \end{itemize}
 }
 
