@@ -302,7 +302,7 @@ else stride = areg[as2]; // constant-strided
 for (int i = 0; i < VL; ++i)
   if (preg_enabled[rd] && ([!]preg[rd] & 1<<i))
     for (int j = 0; j < seglen+1; j++)
-      if (reg_is_vectorised[rs2]) offs = vreg[rs2][i]
+      if (reg_is_vectorised[rs2]) offs = vreg[rs2+i]
       else offs = i*(seglen+1)*stride;
       vreg[rd+j][i] = mem[sreg[base] + offs + j*stride]
 \end{semiverbatim}
