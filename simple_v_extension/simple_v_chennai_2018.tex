@@ -313,10 +313,12 @@ for (int i = 0; i < VL; ++i)
 \frame{\frametitle{Why are overlaps allowed in Regfiles?}
 
  \begin{itemize}
-   \item Same register(s) can have multiple "interpretations"\vspace{6pt}
-   \item xBitManip plus SIMD plus xBitManip = Hi/Lo bitops\vspace{6pt}
-   \item (32-bit GREV plus 4x8-bit SIMD plus 32-bit GREV)\vspace{6pt}
-   \item RGB 565 (video): BEXTW plus 4x8-bit SIMD plus BDEPW\vspace{6pt}
+   \item Same register(s) can have multiple "interpretations"
+   \item xBitManip plus SIMD plus xBitManip = Hi/Lo bitops
+   \item (32-bit GREV plus 4x8-bit SIMD plus 32-bit GREV:\\
+	     GREV @ VL=N,wid=32; SIMD @ VL=Nx4,wid=8)
+   \item RGB 565 (video): BEXTW plus 4x8-bit SIMD plus BDEPW\\
+	     (BEXT/BDEP @ VL=N,wid=32; SIMD @ VL=Nx4,wid=8)
    \item Same register(s) can be offset (no need for VSLIDE)\vspace{6pt}
   \end{itemize}
   Note:\vspace{10pt}
