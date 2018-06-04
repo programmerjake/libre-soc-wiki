@@ -457,7 +457,7 @@ source1 and source2 are vector or scalar):
     for (int i=0; i<vl; ++i)
         if (!preg[rd].enabled)
             continue;
-        predidx = preg[rd].predidx;
+        predidx = preg[rd].predidx; // the indirection takes place HERE
         predicate = intregfile[rd];
         if (preg[rd].inv)
             predicate = ~predicate;
