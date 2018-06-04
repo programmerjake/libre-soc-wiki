@@ -448,14 +448,6 @@ This instead becomes an *indirect* reference using the *internal* state
 table generated from the Predication CSR key-value store, which iwws used
 as follows.
 
-Note:
-
-* d, s1 and s2 are booleans indicating whether destination,
-  source1 and source2 are vector or scalar
-* key-value CSR-redirection of rd, rs1 and rs2 have NOT been included
-  below, for clarity.  rd, rs1 and rs2 all also must ALSO go through
-  register-level redirection (from the Register CSR table) if they are vectors.
-
     if type(iop) == INT:
         preg = int_pred_reg[rd]
     else:
@@ -475,6 +467,15 @@ Note:
                 s2 ? regfile[rs2+i] : regfile[rs2]); // for insts with 2 inputs
         else if (preg[rd].zero)
             // TODO: place zero in dest reg
+
+Note:
+
+* d, s1 and s2 are booleans indicating whether destination,
+  source1 and source2 are vector or scalar
+* key-value CSR-redirection of rd, rs1 and rs2 have NOT been included
+  below, for clarity.  rd, rs1 and rs2 all also must ALSO go through
+  register-level redirection (from the Register CSR table) if they are
+  vectors.
 
 ## MAXVECTORDEPTH
 
