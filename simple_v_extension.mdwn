@@ -426,20 +426,12 @@ equivalent state):
     struct pred int_pred_reg[32];
 
     for (i = 0; i < 16; i++)
+      tb = int_pred_reg if CSRpred[i].type == 0 else fp_pred_reg;
       idx = CSRpred[i].regidx
-      predidx = CSRpred[i].predidx
-      zero    = CSRpred[i].zero
-      inv     = CSRpred[i].inv
-      if CSRpred[i].type == 0: # integer
-        int_pred_reg[idx].zero = zero
-        int_pred_reg[idx].inv  = inv
-        int_pred_reg[idx].predidx  = predidx
-        int_pred_reg[idx].enabled  = true
-      else:
-        fp_pred_reg[idx].zero = zero
-        fp_pred_reg[idx].inv  = inv
-        fp_pred_reg[idx].predidx  = predidx
-        fp_pred_reg[idx].enabled  = true
+      tb[idx].zero = CSRpred[i].zero
+      tb[idx].inv  = CSRpred[i].inv
+      tb[idx].predidx  = CSRpred[i].predidx
+      tb[idx].enabled  = true
 
 So when an operation is to be predicated, it is the internal state that
 is used.  In Section 6.4.2 of Hwacha's Manual (EECS-2015-262) the following
