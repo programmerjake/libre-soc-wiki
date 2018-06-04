@@ -62,3 +62,52 @@ is the "read legal" of the CSR.  Moreover popc would tell you how many
 operations are scheduled in parallel so you know how often you have to
 repeat a sequential loop.
 
+Notes:
+
+> > Thinking about it more, a bitset for X0 seems a bad idea, or equivalently X0
+> > should be
+> > the immutable  bitset {x0}. That suggests FX0, ... FX31 _is_ a good idea.
+
+>  what would it mean, to do ops with x0?  it would mean "always add 0"
+> and so on.  it sounds kinda useful.  like MV being add r1, r2, x0. 
+> it would completely pointless to *have* anything other than "all 1s"
+> in it though i think :)
+
+# pseudocode for decoding ops
+
+    uint32 XB[32];   // global, assume RV32 for now: CSRs for bitmapping
+    uint32 regs[32]; // global, actual (integer) register file
+
+    // gets current ACTUAL register to be used
+    // XB had better not be empty...
+    int regdecode(int rn, int *offs)
+    {
+        int bmap = XB[rn];
+        int _offs = *offs;
+        while (1)
+        {
+            int _newoffs = (_offs + 1) & 0x1f; // 32 regs, modulo
+            if (bmap & (1<<_offs))
+            {
+                *offs = _newoffs;
+                return _offs;
+            }
+            _offs = _newoffs;
+        }
+    }
+
+example usage (pseudo-implementation of add):
+
+    op_add(int rd, int rs1, int rs2) 
+    {
+        int id=0, irs1=0, irs2=0;
+        int VL = pcnt(XB[rd];
+        for (int i = 0; i < VL; i++)
+        {
+            int actualrd  = regdecode(rd , &id);
+            int actualrs1 = regdecode(rs1, &irs1);
+            int actualrs2 = regdecode(rs2, &irs2);
+            regs[actualrd] = regs[actualrs1] + regs[actualrs2];
+        }
+    }
+
