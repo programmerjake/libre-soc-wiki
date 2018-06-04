@@ -82,7 +82,8 @@
 		 of pipeline setup, amount of state to context switch
 		 and software portability\vspace{4pt}
    \item How?
-	     By implicitly marking INT/FP regs as "Vectorised",\\
+	     By marking INT/FP regs as "Vectorised" and
+	     adding a level of indirection,
 	     SV expresses how existing instructions should act 
 	     on [contiguous] blocks of registers, in parallel.\vspace{4pt}
    \item What?
@@ -133,7 +134,8 @@
 \frame{\frametitle{How is Parallelism abstracted in Simple-V?}
 
  \begin{itemize}
-   \item Register "typing" turns any op into an implicit Vector op\vspace{10pt}
+   \item Register "typing" turns any op into an implicit Vector op:\\
+         registers are reinterpreted through a level of indirection
    \item Primarily at the Instruction issue phase (except SIMD)\\
          Note: it's ok to pass predication through to ALU (like SIMD)
    \item Standard (and future, and custom) opcodes now parallel\vspace{10pt}
