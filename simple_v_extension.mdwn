@@ -404,29 +404,42 @@ of that register which is to be predicated (if referred to).  The fourth entry
 is the integer register that is treated as a bitfield, indexable by the
 vector element index.
 
-| RegNo | 6      | 5   | (4..0)  | (4..0)  |
-| ----- | -      | -   | ------- | ------- |
-| r0    | pren0  | i/f | regidx  | predidx |
-| r1    | pren1  | i/f | regidx  | predidx |
-| ..    | pren.. | i/f | regidx  | predidx |
-| r15   | pren15 | i/f | regidx  | predidx |
+| PrCSR | 7      | 6     | 5   | (4..0)  | (4..0)  |
+| ----- | -      | -     | -   | ------- | ------- |
+| 0     | zero0  | inv0  | i/f | regidx  | predidx |
+| 1     | zero1  | inv1  | i/f | regidx  | predidx |
+| ..    | zero.. | inv.. | i/f | regidx  | predidx |
+| 15    | zero15 | inv15 | i/f | regidx  | predidx |
 
 The Predication CSR Table is a key-value store, so implementation-wise
 it will be faster to turn the table around (maintain topologically
 equivalent state):
 
-    fp_pred_enabled[32];
-    int_pred_enabled[32];
+    struct pred {
+        bool zero;
+        bool inv;
+        bool enabled;
+        int predidx; // redirection: actual int register to use 
+    }
+
+    struct pred fp_pred_reg[32];
+    struct pred int_pred_reg[32];
+
     for (i = 0; i < 16; i++)
-       if CSRpred[i].pren:
-          idx = CSRpred[i].regidx
-          predidx = CSRpred[i].predidx
-          if CSRpred[i].type == 0: # integer
-            int_pred_enabled[idx] = 1
-            int_pred_reg[idx] = predidx
-          else:
-            fp_pred_enabled[idx] = 1
-            fp_pred_reg[idx] = predidx
+      idx = CSRpred[i].regidx
+      predidx = CSRpred[i].predidx
+      zero    = CSRpred[i].zero
+      inv     = CSRpred[i].inv
+      if CSRpred[i].type == 0: # integer
+        int_pred_reg[idx].zero = zero
+        int_pred_reg[idx].inv  = inv
+        int_pred_reg[idx].predidx  = predidx
+        int_pred_reg[idx].enabled  = true
+      else:
+        fp_pred_reg[idx].zero = zero
+        fp_pred_reg[idx].inv  = inv
+        fp_pred_reg[idx].predidx  = predidx
+        fp_pred_reg[idx].enabled  = true
 
 So when an operation is to be predicated, it is the internal state that
 is used.  In Section 6.4.2 of Hwacha's Manual (EECS-2015-262) the following
@@ -440,20 +453,28 @@ reference to the predication register to be used:
                 s2 ? vreg[rs2][i] : sreg[rs2]); // for insts with 2 inputs
 
 This instead becomes an *indirect* reference using the *internal* state
-table generated from the Predication CSR key-value store:
+table generated from the Predication CSR key-value store, which is used
+as follows (Note: d, s1 and s2 are booleans indicating whether destination,
+source1 and source2 are vector or scalar):
 
     if type(iop) == INT:
-        pred_enabled = int_pred_enabled
         preg = int_pred_reg[rd]
     else:
-        pred_enabled = fp_pred_enabled
         preg = fp_pred_reg[rd]
 
     for (int i=0; i<vl; ++i)
-        if (preg_enabled[rd] && [!]preg[i])
-           (d ? vreg[rd][i] : sreg[rd]) =
-            iop(s1 ? vreg[rs1][i] : sreg[rs1],
-                s2 ? vreg[rs2][i] : sreg[rs2]); // for insts with 2 inputs
+        if (!preg[rd].enabled)
+            continue;
+        predidx = preg[rd].predidx;
+        predicate = intregfile[rd];
+        if (preg[rd].inv)
+            predicate = ~predicate;
+        if (predicate && (1<<i))
+           (d ? vreg[rd+i] : sreg[rd]) =
+            iop(s1 ? vreg[rs1+i] : sreg[rs1],
+                s2 ? vreg[rs2+i] : sreg[rs2]); // for insts with 2 inputs
+        else if (preg[rd].zero)
+            // TODO: place zero in dest reg
 
 ## MAXVECTORDEPTH
 
