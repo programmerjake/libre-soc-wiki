@@ -252,17 +252,18 @@
 \frametitle{ADD pseudocode (or trap, or actual hardware loop)}
 
 \begin{semiverbatim}
-function op_add(rd, rs1, rs2, predr) # add not VADD!
+function op\_add(rd, rs1, rs2, predr) # add not VADD!
   int i, id=0, irs1=0, irs2=0;
   for (i = 0; i < VL; i++)
     if (ireg[predr] & 1<<i) # predication uses intregs
        ireg[rd+id] <= ireg[rs1+irs1] + ireg[rs2+irs2];
-    if (reg_is_vectorised[rd]) \{ id += 1; \}
-    if (reg_is_vectorised[rs1]) \{ irs1 += 1; \}
-    if (reg_is_vectorised[rs2]) \{ irs2 += 1; \}
+    if (reg\_is\_vectorised[rd]) \{ id += 1; \}
+    if (reg\_is\_vectorised[rs1]) \{ irs1 += 1; \}
+    if (reg\_is\_vectorised[rs2]) \{ irs2 += 1; \}
 \end{semiverbatim}
 
   \begin{itemize}
+   \item Above is oversimplified: Reg. indirection left out (for clarity).
    \item SIMD slightly more complex (case above is elwidth = default)
    \item Scalar-scalar and scalar-vector and vector-vector now all in one
    \item OoO may choose to push ADDs into instr. queue (v. busy!)
@@ -278,8 +279,8 @@ function op_add(rd, rs1, rs2, predr) # add not VADD!
 \frametitle{Predication-Branch (or trap, or actual hardware loop)}
 
 \begin{semiverbatim}
-s1 = reg_is_vectorised(src1);
-s2 = reg_is_vectorised(src2);
+s1 = reg\_is\_vectorised(src1);
+s2 = reg\_is\_vectorised(src2);
 if (!s2 && !s1) goto branch;
 for (int i = 0; i < VL; ++i)
    if cmp(s1 ? reg[src1+i] : reg[src1],
@@ -302,9 +303,9 @@ for (int i = 0; i < VL; ++i)
 if (unit-strided) stride = elsize;
 else stride = areg[as2]; // constant-strided
 for (int i = 0; i < VL; ++i)
-  if (preg_enabled[rd] && ([!]preg[rd] & 1<<i))
+  if (preg\_enabled[rd] && ([!]preg[rd] & 1<<i))
     for (int j = 0; j < seglen+1; j++)
-      if (reg_is_vectorised[rs2]) offs = vreg[rs2+i]
+      if (reg\_is\_vectorised[rs2]) offs = vreg[rs2+i]
       else offs = i*(seglen+1)*stride;
       vreg[rd+j][i] = mem[sreg[base] + offs + j*stride]
 \end{semiverbatim}
@@ -385,8 +386,8 @@ for (int i = 0; i < VL; ++i)
 \frametitle{Predication key-value CSR table decoding pseudocode}
 
 \begin{semiverbatim}
-struct pred fp_pred[32];
-struct pred int_pred[32];
+struct pred fp\_pred[32];
+struct pred int\_pred[32];
 
 for (i = 0; i < 16; i++) // 16 CSRs?
    tb = int\_pred if CSRpred[i].type == 0 else fp\_pred
@@ -400,6 +401,29 @@ for (i = 0; i < 16; i++) // 16 CSRs?
  \begin{itemize}
    \item All 64 (int and FP) Entries zero'd before setting
    \item Might be a bit complex to set up (TBD)
+  \end{itemize}
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Get Predication value pseudocode}
+
+\begin{semiverbatim}
+def get\_pred\_val(bool is\_fp\_op, int reg):
+   tb = int\_pred if is\_fp\_op else fp\_pred
+   if (!tb[reg].enabled):
+      return ~0x0              // all ops enabled
+   predidx = tb[reg].predidx   // redirection occurs HERE
+   predicate = intreg[predidx] // actual predicate HERE
+   if (tb[reg].inv):
+      predicate = ~predicate
+   return predicate
+\end{semiverbatim}
+
+ \begin{itemize}
+   \item References different (internal) mapping table for INT or FP
+   \item Actual predicate bitmask ALWAYS from the INT regfile
   \end{itemize}
 
 \end{frame}
@@ -422,12 +446,51 @@ for (i = 0; i < 16; i++) // 16 CSRs?
 }
 
 
-\frame{\frametitle{Register key-value CSR pseudocode}
+\begin{frame}[fragile]
+\frametitle{Register key-value CSR table decoding pseudocode}
+
+\begin{semiverbatim}
+struct vectorised fp\_vec[32];
+struct vectorised int\_vec[32];
+
+for (i = 0; i < 16; i++) // 16 CSRs?
+   tb = int\_vec if CSRvectortb[i].type == 0 else fp\_vec
+   idx = CSRvectortb[i].regidx
+   tb[idx].elwidth  = CSRpred[i].elwidth
+   tb[idx].regidx   = CSRpred[i].regidx
+   tb[idx].isvector = true
+\end{semiverbatim}
 
  \begin{itemize}
-   \item TODO
+   \item All 64 (int and FP) Entries zero'd before setting
+   \item Might be a bit complex to set up (TBD)
   \end{itemize}
-}
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{ADD pseudocode with redirection, this time}
+
+\begin{semiverbatim}
+function op\_add(rd, rs1, rs2, predr) # add not VADD!
+  int i, id=0, irs1=0, irs2=0;
+  rd  = int_vec[rd ].isvector ? int_vec[rd ].regidx : rd;
+  rs1 = int_vec[rs1].isvector ? int_vec[rs1].regidx : rs1;
+  rs2 = int_vec[rs2].isvector ? int_vec[rs2].regidx : rs2;
+  predval = get\_pred_val(FALSE, rd);
+  for (i = 0; i < VL; i++)
+    if (predval \& 1<<i) # predication uses intregs
+       ireg[rd+id] <= ireg[rs1+irs1] + ireg[rs2+irs2];
+    if (int_vec[rd].isvector) \  \{ id += 1; \}
+    if (int_vec[rs1].isvector)\  \{ irs1 += 1; \}
+    if (int_vec[rs2].isvector) \ \{ irs2 += 1; \}
+\end{semiverbatim}
+
+  \begin{itemize}
+   \item SIMD (elwidth != default) not covered above
+  \end{itemize}
+\end{frame}
 
 
 \frame{\frametitle{C.MV extremely flexible!}
