@@ -445,9 +445,16 @@ reference to the predication register to be used:
                 s2 ? vreg[rs2][i] : sreg[rs2]); // for insts with 2 inputs
 
 This instead becomes an *indirect* reference using the *internal* state
-table generated from the Predication CSR key-value store, which is used
-as follows (Note: d, s1 and s2 are booleans indicating whether destination,
-source1 and source2 are vector or scalar):
+table generated from the Predication CSR key-value store, which iwws used
+as follows.
+
+Note:
+
+* d, s1 and s2 are booleans indicating whether destination,
+  source1 and source2 are vector or scalar
+* key-value CSR-redirection of rd, rs1 and rs2 have NOT been included
+  below, for clarity.  rd, rs1 and rs2 all also must ALSO go through
+  register-level redirection (from the Register CSR table) if they are vectors.
 
     if type(iop) == INT:
         preg = int_pred_reg[rd]
@@ -455,16 +462,17 @@ source1 and source2 are vector or scalar):
         preg = fp_pred_reg[rd]
 
     for (int i=0; i<vl; ++i)
-        if (!preg[rd].enabled)
-            continue;
         predidx = preg[rd].predidx; // the indirection takes place HERE
-        predicate = intregfile[rd];
-        if (preg[rd].inv)
-            predicate = ~predicate;
+        if (!preg[rd].enabled)
+            predicate = ~0x0; // all parallel ops enabled
+        else:
+            predicate = intregfile[predidx]; // get actual reg contents HERE
+            if (preg[rd].inv) // invert if requested
+                predicate = ~predicate;
         if (predicate && (1<<i))
-           (d ? vreg[rd+i] : sreg[rd]) =
-            iop(s1 ? vreg[rs1+i] : sreg[rs1],
-                s2 ? vreg[rs2+i] : sreg[rs2]); // for insts with 2 inputs
+           (d ? regfile[rd+i] : regfile[rd]) =
+            iop(s1 ? regfile[rs1+i] : regfile[rs1],
+                s2 ? regfile[rs2+i] : regfile[rs2]); // for insts with 2 inputs
         else if (preg[rd].zero)
             // TODO: place zero in dest reg
 
