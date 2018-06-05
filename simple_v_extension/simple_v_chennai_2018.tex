@@ -544,7 +544,7 @@ function op\_mv(rd, rs) # MV not VMV!
 \frametitle{VSELECT: stays or goes? Stays if MV.X exists...}
 
 \begin{semiverbatim}
-def op_mv_x(rd, rs): # standard (hypothetical) RV MX.X
+def op_mv_x(rd, rs):         # (hypothetical) RV MX.X
    rs = regfile[rs]          # level of indirection (MV.X)
    regfile[rd] = regfile[rs] # straight regcopy
 \end{semiverbatim}
