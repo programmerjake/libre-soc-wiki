@@ -554,6 +554,66 @@ function op\_mv(rd, rs) # MV not VMV!
 }
 
 
+\begin{frame}[fragile]
+\frametitle{Example c code: DAXPY}
+
+\begin{semiverbatim}
+    void daxpy(size_t n, double a,
+               const double x[], double y[])
+    \{
+     for (size_t i = 0; i < n; i++) \{
+       y[i] = a*x[i] + y[i];
+     \}
+    \}
+\end{semiverbatim}
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{RVV DAXPY assembly}
+
+\begin{semiverbatim}
+# a0 is n, a1 is ptr to x[0], a2 is ptr to y[0], fa0 is a
+ li t0, 2<<25
+ vsetdcfg t0            # enable 2 64b Fl.Pt. registers
+loop:
+ setvl  t0, a0          # vl = t0 = min(mvl, n)
+ vld    v0, a1          # load vector x
+ slli   t1, t0, 3       # t1 = vl * 8 (in bytes)
+ vld    v1, a2          # load vector y
+ add    a1, a1, t1      # increment pointer to x by vl*8
+ vfmadd v1, v0, fa0, v1 # v1 += v0 * fa0 (y = a * x + y)
+ sub    a0, a0, t0      # n -= vl (t0)
+ vst    v1, a2          # store Y
+ add    a2, a2, t1      # increment pointer to y by vl*8
+ bnez   a0, loop        # repeat if n != 0
+\end{semiverbatim}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{SV DAXPY assembly}
+
+\begin{semiverbatim}
+# a0 is n, a1 is ptr to x[0], a2 is ptr to y[0], fa0 is a
+ CSRvect1 = \{type: F, key: a3, val: a3, elwidth: dflt\}
+ CSRvect2 = \{type: F, key: a7, val: a7, elwidth: dflt\}
+loop:
+ setvl t0, a0, 4       # vl = t0 = min(4, n)
+ ld    a3, a1          # load 4 registers a3-6 from x
+ slli  t1, t0, 3       # t1 = vl * 8 (in bytes)
+ ld    a7, a2          # load 4 registers a7-10 from y
+ add   a1, a1, t1      # increment pointer to x by vl*8
+ fmadd a7, a3, fa0, v1 # v1 += v0 * fa0 (y = a * x + y)
+ sub   a0, a0, t0      # n -= vl (t0)
+ st    a7, a2          # store 4 registers a7-10 to y
+ add   a2, a2, t1      # increment pointer to y by vl*8
+ bnez  a0, loop        # repeat if n != 0
+\end{semiverbatim}
+\end{frame}
+
+
 \frame{\frametitle{Under consideration}
 
  \begin{itemize}
