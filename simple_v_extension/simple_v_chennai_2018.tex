@@ -284,9 +284,9 @@ s1 = reg\_is\_vectorised(src1);
 s2 = reg\_is\_vectorised(src2);
 if (!s2 && !s1) goto branch;
 for (int i = 0; i < VL; ++i)
-   if cmp(s1 ? reg[src1+i] : reg[src1],
-          s2 ? reg[src2+i] : reg[src2])
-      preg[rs3] |= 1 << i;
+  if (cmp(s1 ? reg[src1+i]:reg[src1],
+          s2 ? reg[src2+i]:reg[src2])
+         ireg[rs3] |= 1<<i;
 \end{semiverbatim}
 
   \begin{itemize}
@@ -630,6 +630,8 @@ loop:
    \item Can VSELECT be removed? (it's really complex)
    \item Can CLIP be done as a CSR (mode, like elwidth)
    \item SIMD saturation (etc.) also set as a mode?
+   \item Include src1/src2 predication on Comparison Ops?\\
+	     (same arrangement as C.MV, with same flexibility/power)
    \item 8/16-bit ops is it worthwhile adding a "start offset"? \\
          (a bit like misaligned addressing... for registers)\\
          or just use predication to skip start?
