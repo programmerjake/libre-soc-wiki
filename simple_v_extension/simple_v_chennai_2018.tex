@@ -570,15 +570,16 @@ def op_mv_x(rd, rs): # SV version of MX.X
 \frame{\frametitle{Opcodes, compared to RVV}
 
  \begin{itemize}
-   \item All integer and FP opcodes all removed (no CLIP!)\vspace{4pt}
-   \item VMPOP, VFIRST etc. all removed (use xBitManip)\vspace{4pt}
-   \item VSLIDE removed (use regfile overlaps)\vspace{4pt}
-   \item C.MV covers VEXTRACT VINSERT and VSPLAT (and more)\vspace{4pt}
-   \item VSETVL, VGETVL stay\vspace{4pt}
-   \item VSELECT stays? no MV.X (add with custom ext?)\vspace{4pt}
-   \item Issue: VCLIP is not in RV* (add with custom ext?)\vspace{4pt}
-   \item Vector (or scalar-vector) use C.MV (MV is a pseudo-op)\vspace{4pt}
-   \item VMERGE: twin predicated C.MVs (one inverted. macro-op'd)\vspace{4pt}
+   \item All integer and FP opcodes all removed (no CLIP, FNE)
+   \item VMPOP, VFIRST etc. all removed (use xBitManip)
+   \item VSLIDE removed (use regfile overlaps)
+   \item C.MV covers VEXTRACT VINSERT and VSPLAT (and more)
+   \item VSETVL, VGETVL stay (the only ones that do!)
+   \item VSELECT stays? no MV.X (add with custom ext?)
+   \item VSNE exists, but no FNE (use predication inversion?)
+   \item Issue: VCLIP is not in RV* (add with custom ext?)
+   \item Vector (or scalar-vector) use C.MV (MV is a pseudo-op)
+   \item VMERGE: twin predicated C.MVs (one inverted. macro-op'd)
   \end{itemize}
 }
 
