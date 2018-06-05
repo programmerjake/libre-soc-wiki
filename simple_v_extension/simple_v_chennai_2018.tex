@@ -611,7 +611,7 @@ loop:
  slli  t1, t0, 3       # t1 = vl * 8 (in bytes)
  ld    a7, a2          # load 4 registers a7-10 from y
  add   a1, a1, t1      # increment pointer to x by vl*8
- fmadd a7, a3, fa0, v1 # v1 += v0 * fa0 (y = a * x + y)
+ fmadd a7, a3, fa0, a7 # v1 += v0 * fa0 (y = a * x + y)
  sub   a0, a0, t0      # n -= vl (t0)
  st    a7, a2          # store 4 registers a7-10 to y
  add   a2, a2, t1      # increment pointer to y by vl*8
