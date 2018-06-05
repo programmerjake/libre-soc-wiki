@@ -473,7 +473,7 @@ for (i = 0; i < 16; i++) // 16 CSRs?
 \frametitle{ADD pseudocode with redirection, this time}
 
 \begin{semiverbatim}
-function op\_add(rd, rs1, rs2, predr) # add not VADD!
+function op\_add(rd, rs1, rs2) # add not VADD!
   int i, id=0, irs1=0, irs2=0;
   rd  = int\_vec[rd ].isvector ? int\_vec[rd ].regidx : rd;
   rs1 = int\_vec[rs1].isvector ? int\_vec[rs1].regidx : rs1;
@@ -512,6 +512,30 @@ function op\_add(rd, rs1, rs2, predr) # add not VADD!
    \item Same arrangement for FVCT, FMV, FSGNJ etc.
   \end{itemize}
 }
+
+
+\begin{frame}[fragile]
+\frametitle{MV pseudocode with predication}
+
+\begin{semiverbatim}
+function op\_mv(rd, rs) # MV not VMV!
+  rd = int\_vec[rd].isvector ? int\_vec[rd].regidx : rd;
+  rs = int\_vec[rs].isvector ? int\_vec[rs].regidx : rs;
+  ps = get\_pred\_val(FALSE, rs); # predication on src
+  pd = get\_pred\_val(FALSE, rd); # ... AND on dest
+  for (int i = 0, int j = 0; i < VL && j < VL;):
+    if (int\_vec[rs].isvec) while (!(ps \& 1<<i)) i++;
+    if (int\_vec[rd].isvec) while (!(pd \& 1<<j)) j++;
+    ireg[rd+j] <= ireg[rs+i];
+    if (int\_vec[rs].isvec) i++;
+    if (int\_vec[rd].isvec) j++;
+\end{semiverbatim}
+
+  \begin{itemize}
+   \item elwidth != default not covered above (might be a bit hairy)
+   \item Ending early with 1-bit predication not included (VINSERT)
+  \end{itemize}
+\end{frame}
 
 
 \frame{\frametitle{Opcodes, compared to RVV}
