@@ -574,12 +574,15 @@ def op_mv_x(rd, rs): # SV version of MX.X
    \item VMPOP, VFIRST etc. all removed (use xBitManip)
    \item VSLIDE removed (use regfile overlaps)
    \item C.MV covers VEXTRACT VINSERT and VSPLAT (and more)
-   \item VSETVL, VGETVL stay (the only ones that do!)
-   \item VSELECT stays? no MV.X (add with custom ext?)
-   \item VSNE exists, but no FNE (use predication inversion?)
-   \item Issue: VCLIP is not in RV* (add with custom ext?)
-   \item Vector (or scalar-vector) use C.MV (MV is a pseudo-op)
+   \item Vector (or scalar-vector) copy: use C.MV (MV is a pseudo-op)
    \item VMERGE: twin predicated C.MVs (one inverted. macro-op'd)
+   \item VSETVL, VGETVL stay (the only ops that do!)
+  \end{itemize}
+  Issues:
+ \begin{itemize}
+   \item VSELECT stays? no MV.X, so no (add with custom ext?)
+   \item VSNE exists, but no FNE (use predication inversion?)
+   \item VCLIP is not in RV* (add with custom ext?)
   \end{itemize}
 }
 
