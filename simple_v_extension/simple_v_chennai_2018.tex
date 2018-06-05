@@ -237,7 +237,7 @@
    \item Standard Register File(s) overloaded with CSR "reg is vector"\\
 	     (see pseudocode slides for examples)
    \item Element width (and type?) concepts remain same as RVV\\
-	     (CSRs are used to "interpret" elements in registers)
+	     (CSRs give new size (and meaning?) to elements in registers)
    \item CSRs are key-value tables (overlaps allowed)\vspace{10pt}
   \end{itemize}
   Key differences from RVV:\vspace{10pt}
@@ -607,16 +607,16 @@ loop:
  CSRvect1 = \{type: F, key: a3, val: a3, elwidth: dflt\}
  CSRvect2 = \{type: F, key: a7, val: a7, elwidth: dflt\}
 loop:
- setvl t0, a0, 4       # vl = t0 = min(4, n)
- ld    a3, a1          # load 4 registers a3-6 from x
- slli  t1, t0, 3       # t1 = vl * 8 (in bytes)
- ld    a7, a2          # load 4 registers a7-10 from y
- add   a1, a1, t1      # increment pointer to x by vl*8
- fmadd a7, a3, fa0, a7 # v1 += v0 * fa0 (y = a * x + y)
- sub   a0, a0, t0      # n -= vl (t0)
- st    a7, a2          # store 4 registers a7-10 to y
- add   a2, a2, t1      # increment pointer to y by vl*8
- bnez  a0, loop        # repeat if n != 0
+ setvl  t0, a0, 4       # vl = t0 = min(4, n)
+ ld     a3, a1          # load 4 registers a3-6 from x
+ slli   t1, t0, 3       # t1 = vl * 8 (in bytes)
+ ld     a7, a2          # load 4 registers a7-10 from y
+ add    a1, a1, t1      # increment pointer to x by vl*8
+ fmadd  a7, a3, fa0, a7 # v1 += v0 * fa0 (y = a * x + y)
+ sub    a0, a0, t0      # n -= vl (t0)
+ st     a7, a2          # store 4 registers a7-10 to y
+ add    a2, a2, t1      # increment pointer to y by vl*8
+ bnez   a0, loop        # repeat if n != 0
 \end{semiverbatim}
 \end{frame}
 
