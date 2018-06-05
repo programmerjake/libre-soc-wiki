@@ -559,8 +559,8 @@ def op_mv_x(rd, rs): # SV version of MX.X
 \end{semiverbatim}
 
   \begin{itemize}
-   \item However... MV.X does not exist in RV
-   \item If MX.X was added, SV would have VSELECT
+   \item However MV.X does not exist in RV, so neither can VSELECT
+   \item SV is not about adding new functionality, only parallelism
   \end{itemize}
 
 
@@ -697,8 +697,9 @@ loop:
 \frame{\frametitle{Summary}
 
  \begin{itemize}
-   \item Actually about parallelism, not Vectors (or SIMD) per se
-   \item Only needs 3 actual instructions (plus CSRs)\\
+   \item Actually about parallelism, not Vectors (or SIMD) per se\\
+         and NOT about adding new ALU/logic/functionality.
+   \item Only needs 2 actual instructions (plus the CSRs).\\
          RVV - and "standard" SIMD - require ISA duplication
    \item Designed for flexibility (graded levels of complexity)
    \item Huge range of implementor freedom
@@ -706,20 +707,24 @@ loop:
    \item Reduces SIMD ISA proliferation by 3-4 orders of magnitude \\
 	     (without SIMD downsides or sacrificing speed trade-off)
    \item Covers 98\% of RVV, allows RVV to fit "on top"
-   \item Not designed for supercomputing (that's RVV), designed for
-         in between: DSPs, RV32E, Embedded 3D GPUs etc.
-   \item Not specifically designed for Vectorisation: designed to\\
-	     reduce code size (increase efficiency, just
-		 like Compressed)
+   \item Byproduct of SV is a reduction in code size, power usage
+	     etc. (increase efficiency, just like Compressed)
   \end{itemize}
 }
 
 
 \frame{
   \begin{center}
-    {\Huge \red The end\vspace{20pt}\\
-			    Thank you}
+    {\Huge The end\vspace{20pt}\\
+		   Thank you\vspace{20pt}\\
+		   Questions?\vspace{20pt}
+	}
   \end{center}
+  
+  \begin{itemize}
+	\item Discussion: ISA-DEV mailing list
+	\item http://libre-riscv.org/simple\_v\_extension/
+  \end{itemize}
 }
 
 
