@@ -567,11 +567,17 @@ function op\_mv(rd, rs) # MV not VMV!
     \}
 \end{semiverbatim}
 
+  \begin{itemize}
+   \item See "SIMD Considered Harmful" for SIMD/RVV analysis\\
+	   https://www.sigarch.org/simd-instructions-considered-harmful/
+  \end{itemize}
+
+
 \end{frame}
 
 
 \begin{frame}[fragile]
-\frametitle{RVV DAXPY assembly}
+\frametitle{RVV DAXPY assembly (RV32V)}
 
 \begin{semiverbatim}
 # a0 is n, a1 is ptr to x[0], a2 is ptr to y[0], fa0 is a
@@ -593,7 +599,7 @@ loop:
 
 
 \begin{frame}[fragile]
-\frametitle{SV DAXPY assembly}
+\frametitle{SV DAXPY assembly (RV64G)}
 
 \begin{semiverbatim}
 # a0 is n, a1 is ptr to x[0], a2 is ptr to y[0], fa0 is a
@@ -666,12 +672,7 @@ loop:
    a good compiler can make clever use of this increase parallelism\\
    Then explain how this can be implemented (at instruction\\
    issue time???) with\\
-   implementation options, and what these "cost".\\
-   Finally give examples that show simple usage that compares\\   
-   C code\\
-   RVIC\\
-   RVV\\
-   RVICXsimplev
+   implementation options, and what these "cost".
   \end{itemize}
 }
 
