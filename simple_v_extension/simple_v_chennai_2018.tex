@@ -48,7 +48,7 @@
    \begin{itemize}
    \item See "SIMD instructions considered harmful"
    https://sigarch.org/simd-instructions-considered-harmful
-   \item Corner-cases alone are extremely complex.\\
+   \item Setup and corner-cases alone are extremely complex.\\
 	     Hardware is easy, but software is hell.
    \item O($N^{6}$) ISA opcode proliferation!\\
 	     opcode, elwidth, veclen, src1-src2-dest hi/lo
@@ -60,14 +60,14 @@
  \begin{itemize}
    \item Extremely powerful (extensible to 256 registers)\vspace{10pt}
    \item Supports polymorphism, several datatypes (inc. FP16)\vspace{10pt}
-   \item Requires a separate Register File (32 w/ext to 256)\vspace{10pt}
+   \item Requires a separate Register File (16 w/ext to 256)\vspace{10pt}
    \item Implemented as a separate pipeline (no impact on scalar)\vspace{10pt}
   \end{itemize}
   However...\vspace{10pt}
    \begin{itemize}
    \item 98 percent opcode duplication with rest of RV (CLIP)
    \item Extending RVV requires customisation not just of h/w:\\
-	     gcc and s/w also need customisation (and maintenance)
+	     gcc, binutils also need customisation (and maintenance)
   \end{itemize}
 }
 
@@ -89,7 +89,7 @@
 	     on [contiguous] blocks of registers, in parallel.\vspace{4pt}
    \item What?
 		 Simple-V is an "API" that implicitly extends
-		 existing (scalar) instructions with explicit parallelisation
+		 existing (scalar) instructions with explicit parallelisation\\
 		 (i.e. SV is actually about parallelism NOT vectors per se)
   \end{itemize}
 }
@@ -127,7 +127,7 @@
    \begin{itemize}
    \item A full supercomputer-level Vector Proposal
    \item A replacement for RVV (SV is designed to be over-ridden\\
-	     by - or augmented to become, or just be replaced by  - RVV)
+	     by - or augmented to become - RVV)
   \end{itemize}
 }
 
