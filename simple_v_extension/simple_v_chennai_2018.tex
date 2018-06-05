@@ -540,17 +540,45 @@ function op\_mv(rd, rs) # MV not VMV!
 \end{frame}
 
 
+\begin{frame}[fragile]
+\frametitle{VSELECT: stays or goes? Stays if MV.X exists...}
+
+\begin{semiverbatim}
+def op_mv_x(rd, rs): # standard (hypothetical) RV MX.X
+   rs = regfile[rs]          # level of indirection (MV.X)
+   regfile[rd] = regfile[rs] # straight regcopy
+\end{semiverbatim}
+
+Vectorised version aka "VSELECT":
+
+\begin{semiverbatim}
+def op_mv_x(rd, rs): # SV version of MX.X
+   for i in range(VL):
+      rs1 = regfile[rs+i]         # indirection
+      regfile[rd+i] = regfile[rs] # straight regcopy
+\end{semiverbatim}
+
+  \begin{itemize}
+   \item However... MV.X does not exist in RV
+   \item If MX.X was added, SV would have VSELECT
+  \end{itemize}
+
+
+\end{frame}
+
+
 \frame{\frametitle{Opcodes, compared to RVV}
 
  \begin{itemize}
-   \item All integer and FP opcodes all removed (no CLIP!)\vspace{8pt}
-   \item VMPOP, VFIRST etc. all removed (use xBitManip)\vspace{8pt}
-   \item VSLIDE removed (use regfile overlaps)\vspace{8pt}
-   \item C.MV covers VEXTRACT VINSERT and VSPLAT (and more)\vspace{8pt}
-   \item VSETVL, VGETVL, VSELECT stay\vspace{8pt}
-   \item Issue: VCLIP is not in RV* (add with custom ext?)\vspace{8pt}
-   \item Vector (or scalar-vector) use C.MV (MV is a pseudo-op)\vspace{8pt}
-   \item VMERGE: twin predicated C.MVs (one inverted. macro-op'd)\vspace{8pt}
+   \item All integer and FP opcodes all removed (no CLIP!)\vspace{4pt}
+   \item VMPOP, VFIRST etc. all removed (use xBitManip)\vspace{4pt}
+   \item VSLIDE removed (use regfile overlaps)\vspace{4pt}
+   \item C.MV covers VEXTRACT VINSERT and VSPLAT (and more)\vspace{4pt}
+   \item VSETVL, VGETVL stay\vspace{4pt}
+   \item VSELECT stays? no MV.X (add with custom ext?)\vspace{4pt}
+   \item Issue: VCLIP is not in RV* (add with custom ext?)\vspace{4pt}
+   \item Vector (or scalar-vector) use C.MV (MV is a pseudo-op)\vspace{4pt}
+   \item VMERGE: twin predicated C.MVs (one inverted. macro-op'd)\vspace{4pt}
   \end{itemize}
 }
 
