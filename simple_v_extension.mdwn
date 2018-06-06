@@ -1910,6 +1910,12 @@ reply:
 >  is there anything unreasonable that anyone can foresee about that?
 > what are the down-sides?
 
+## C.MV predicated src, predicated dest
+
+> Can this be usefully defined in such a way that it is
+> equivalent to vector gather-scatter on each source, followed by a
+> non-predicated vector-compare, followed by vector gather-scatter on the
+> result?
 
 ## Implementation Paradigms <a name="implementation_paradigms"></a>
 
@@ -2000,3 +2006,5 @@ TBD: floating-point compare and other exception handling
 * Streaming Pipelines <http://www.ece.ubc.ca/~lemieux/publications/severance-fpga2014.pdf>
 * Barcelona SIMD Presentation <https://content.riscv.org/wp-content/uploads/2018/05/09.05.2018-9.15-9.30am-RISCV201805-Andes-proposed-P-extension.pdf>
 * <http://www.ece.ubc.ca/~lemieux/publications/severance-fpga2015.pdf>
+* Full Description (last page) of RVV instructions
+  <https://inst.eecs.berkeley.edu/~cs152/sp18/handouts/lab4-1.0.pdf>
