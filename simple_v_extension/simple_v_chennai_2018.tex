@@ -60,7 +60,7 @@
  \begin{itemize}
    \item Extremely powerful (extensible to 256 registers)\vspace{10pt}
    \item Supports polymorphism, several datatypes (inc. FP16)\vspace{10pt}
-   \item Requires a separate Register File (16 w/ext to 256)\vspace{10pt}
+   \item Requires a separate Register File (32 w/ext to 256)\vspace{10pt}
    \item Implemented as a separate pipeline (no impact on scalar)\vspace{10pt}
   \end{itemize}
   However...\vspace{10pt}
@@ -145,7 +145,7 @@
   Note: EVERYTHING is parallelised:
    \begin{itemize}
    \item All LOAD/STORE (inc. Compressed, Int/FP versions)
-   \item All ALU ops (soft / hybrid / full HW, on per-op basis)
+   \item All ALU ops (Int, FP, SIMD, DSP, everything)
    \item All branches become predication targets (C.FNE added?)
    \item C.MV of particular interest (s/v, v/v, v/s)
    \item FCVT, FMV, FSGNJ etc. very similar to C.MV
