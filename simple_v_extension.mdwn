@@ -1917,6 +1917,23 @@ reply:
 > non-predicated vector-compare, followed by vector gather-scatter on the
 > result?
 
+## element width conversion: restrict or remove?
+
+summary: don't restrict / remove.  it's fine.
+
+> > it has virtually no cost/overhead as long as you specify
+> > that inputs can only upconvert, and operations are always done at the
+> > largest size, and downconversion only happens at the output.
+>
+> okaaay.  so that's a really good piece of implementation advice.
+> algorithms do require data size conversion, so at some point you need to
+> introduce the feature of upconverting and downconverting.
+>
+> > for int and uint, this is dead simple and fits well within the RVV pipeline
+> > without any critical path, pipeline depth, or area implications.
+
+<https://groups.google.com/a/groups.riscv.org/forum/#!topic/isa-dev/g3feFnAoKIM>
+
 ## Implementation Paradigms <a name="implementation_paradigms"></a>
 
 TODO: assess various implementation paradigms.  These are listed roughly
