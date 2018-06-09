@@ -209,11 +209,14 @@
 \frame{\frametitle{How are SIMD Instructions Vectorised?}
 
  \begin{itemize}
-   \item SIMD ALU(s) primarily unchanged\vspace{6pt}
-   \item Predication is added to each SIMD element\vspace{6pt}
-   \item Predication bits sent in groups to the ALU\vspace{6pt}
-   \item End of Vector enables (additional) predication\\
-	     (completely nullifies need for end-case code)
+   \item SIMD ALU(s) primarily unchanged
+   \item Predication is added down each SIMD element (if requested,
+         otherwise the entire block will be predicated)
+   \item Predication bits sent in groups to the ALU (if requested,
+         otherwise just one bit for the entire packed block)
+   \item End of Vector enables (additional) predication:
+	     completely nullifies end-case code (but only in group
+	     predication mode)
   \end{itemize}
   Considerations:\vspace{4pt}
    \begin{itemize}
@@ -242,8 +245,8 @@
    \item Standard Register File(s) overloaded with CSR "reg is vector"\\
 	     (see pseudocode slides for examples)
    \item "2nd FP\&INT register bank" possibility (reserved for future)
-   \item Element width (and type?) concepts remain same as RVV\\
-	     (CSRs give new size (and meaning?) to elements in registers)
+   \item Element width concept remain same as RVV\\
+	     (CSRs give new size to elements in registers)
    \item CSRs are key-value tables (overlaps allowed: v. important)
   \end{itemize}
   Key differences from RVV:
