@@ -244,7 +244,8 @@
  \begin{itemize}
    \item Standard Register File(s) overloaded with CSR "reg is vector"\\
 	     (see pseudocode slides for examples)
-   \item "2nd FP\&INT register bank" possibility (reserved for future)
+   \item "2nd FP\&INT register bank" possibility, reserved for future\\
+         (would allow standard regfiles to remain unmodified)
    \item Element width concept remain same as RVV\\
 	     (CSRs give new size to elements in registers)
    \item CSRs are key-value tables (overlaps allowed: v. important)
@@ -389,6 +390,7 @@ def get\_pred\_val(bool is\_fp\_op, int reg):
  \begin{itemize}
    \item References different (internal) mapping table for INT or FP
    \item Actual predicate bitmask ALWAYS from the INT regfile
+   \item Hard-limit on MVL of XLEN (predication only 1 intreg)
   \end{itemize}
 
 \end{frame}
