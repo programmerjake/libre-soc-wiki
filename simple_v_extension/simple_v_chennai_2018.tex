@@ -423,13 +423,37 @@ def get\_pred\_val(bool is\_fp\_op, int reg):
    \item starting register to actually be used (5 bits, value)
    \item element bitwidth: default, dflt/2, 8, 16 (2 bits)
    \item is vector: Y/N (1 bit)
-   \item packed SIMD: Y/N (1 bit)
+   \item is packed SIMD: Y/N (1 bit)
    \item register bank: 0/reserved for future ext. (1 bit)
   \end{itemize}
-  Notes:\vspace{10pt}
+  Notes:
    \begin{itemize}
    \item References different (internal) mapping table for INT or FP
    \item Level of indirection has implications for pipeline latency
+   \item Extra (future) bank 
+  \end{itemize}
+}
+
+
+\frame{\frametitle{Register element width and packed SIMD}
+
+  Packed SIMD = N:
+ \begin{itemize}
+   \item default: RV32/64/128 opcodes define elwidth = 32/64/128
+   \item default/2: RV32/64/128 opcodes, elwidth = 16/32/64 with
+         top half of register ignored (src), zero'd/s-ext (dest)
+   \item 8 or 16: elwidth = 8 (or 16), similar to default/2
+  \end{itemize}
+  Packed SIMD = Y (default is moot, packing is 1:1)
+ \begin{itemize}
+   \item default/2: 2 elements per register @ opcode-defined bitwidth
+   \item 8 or 16: standard 8 (or 16) packed SIMD
+  \end{itemize}
+  Notes:
+ \begin{itemize}
+   \item Different src/dest widths (and packs) PERMITTED
+   \item RV* already allows (and defines) how RV32 ops work in RV64\\
+         so just logically follow that lead/example.
   \end{itemize}
 }
 
