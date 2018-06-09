@@ -472,11 +472,11 @@ for (i = 0; i < 16; i++) // 16 CSRs?
    tb[idx].regidx   = CSRpred[i].regidx  // indirection
    tb[idx].isvector = CSRpred[i].isvector
    tb[idx].packed   = CSRpred[i].packed  // SIMD or not
-   tb[idx].bank     = CSRpred[i].bank    // 0 (1=reserved)
+   tb[idx].bank     = CSRpred[i].bank    // 0 (1=rsvd)
 \end{semiverbatim}
 
  \begin{itemize}
-   \item All 64 (int and FP) Entries zero'd before setting
+   \item All 32 int (and 32 FP) entries zero'd before setup
    \item Might be a bit complex to set up (TBD)
   \end{itemize}
 
