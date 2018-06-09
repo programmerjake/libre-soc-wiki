@@ -238,11 +238,12 @@
  \begin{itemize}
    \item Standard Register File(s) overloaded with CSR "reg is vector"\\
 	     (see pseudocode slides for examples)
+   \item "2nd FP\&INT register bank" possibility (reserved for future)
    \item Element width (and type?) concepts remain same as RVV\\
 	     (CSRs give new size (and meaning?) to elements in registers)
-   \item CSRs are key-value tables (overlaps allowed)\vspace{10pt}
+   \item CSRs are key-value tables (overlaps allowed: v. important)
   \end{itemize}
-  Key differences from RVV:\vspace{10pt}
+  Key differences from RVV:
    \begin{itemize}
    \item Predication in INT regs as a BIT field (max VL=XLEN)
    \item Minimum VL must be Num Regs - 1 (all regs single LD/ST)
@@ -322,53 +323,6 @@ for (int i = 0; i < VL; ++i)
 \end{frame}
 
 
-\frame{\frametitle{Why are overlaps allowed in Regfiles?}
-
- \begin{itemize}
-   \item Same register(s) can have multiple "interpretations"
-   \item Set "real" register (scalar) without needing to set/unset CSRs.
-   \item xBitManip plus SIMD plus xBitManip = Hi/Lo bitops
-   \item (32-bit GREV plus 4x8-bit SIMD plus 32-bit GREV:\\
-	     GREV @ VL=N,wid=32; SIMD @ VL=Nx4,wid=8)
-   \item RGB 565 (video): BEXTW plus 4x8-bit SIMD plus BDEPW\\
-	     (BEXT/BDEP @ VL=N,wid=32; SIMD @ VL=Nx4,wid=8)
-   \item Same register(s) can be offset (no need for VSLIDE)\vspace{6pt}
-  \end{itemize}
-  Note:
-   \begin{itemize}
-   \item xBitManip reduces O($N^{6}$) SIMD down to O($N^{3}$)
-   \item Hi-Performance: Macro-op fusion (more pipeline stages?)
-  \end{itemize}
-}
-
-
-\frame{\frametitle{To Zero or not to place zeros in non-predicated elements?}
-
- \begin{itemize}
-   \item Zeroing is an implementation optimisation favouring OoO
-   \item Simple implementations may skip non-predicated operations
-   \item Simple implementations explicitly have to destroy data
-   \item Complex implementations may use reg-renames to save power\\
-	     Zeroing on predication chains makes optimisation harder
-   \item Compromise: REQUIRE both (specified in predication CSRs).
-  \end{itemize}
-  Considerations:
-  \begin{itemize}
-   \item Complex not really impacted, simple impacted a LOT\\
-         with Zeroing... however it's useful (memzero)
-   \item Non-zero'd overlapping "Vectors" may issue overlapping ops\\
-	     (2nd op's predicated elements slot in 1st's non-predicated ops)
-   \item Please don't use Vectors for "security" (use Sec-Ext)
-  \end{itemize}
-}
-% with overlapping "vectors" - bearing in mind that "vectors" are
-% just a remap onto the standard register file, if the top bits of
-% predication are zero, and there happens to be a second vector
-% that uses some of the same register file that happens to be
-% predicated out, the second vector op may be issued *at the same time*
-% if there are available parallel ALUs to do so.
-
-
 \frame{\frametitle{Predication key-value CSR store}
 
  \begin{itemize}
@@ -422,7 +376,7 @@ def get\_pred\_val(bool is\_fp\_op, int reg):
    predidx = tb[reg].predidx   // redirection occurs HERE
    predicate = intreg[predidx] // actual predicate HERE
    if (tb[reg].inv):
-      predicate = ~predicate
+      predicate = ~predicate   // invert ALL bits
    return predicate
 \end{semiverbatim}
 
@@ -434,14 +388,43 @@ def get\_pred\_val(bool is\_fp\_op, int reg):
 \end{frame}
 
 
+\frame{\frametitle{To Zero or not to place zeros in non-predicated elements?}
+
+ \begin{itemize}
+   \item Zeroing is an implementation optimisation favouring OoO
+   \item Simple implementations may skip non-predicated operations
+   \item Simple implementations explicitly have to destroy data
+   \item Complex implementations may use reg-renames to save power\\
+	     Zeroing on predication chains makes optimisation harder
+   \item Compromise: REQUIRE both (specified in predication CSRs).
+  \end{itemize}
+  Considerations:
+  \begin{itemize}
+   \item Complex not really impacted, simple impacted a LOT\\
+         with Zeroing... however it's useful (memzero)
+   \item Non-zero'd overlapping "Vectors" may issue overlapping ops\\
+	     (2nd op's predicated elements slot in 1st's non-predicated ops)
+   \item Please don't use Vectors for "security" (use Sec-Ext)
+  \end{itemize}
+}
+% with overlapping "vectors" - bearing in mind that "vectors" are
+% just a remap onto the standard register file, if the top bits of
+% predication are zero, and there happens to be a second vector
+% that uses some of the same register file that happens to be
+% predicated out, the second vector op may be issued *at the same time*
+% if there are available parallel ALUs to do so.
+
+
 \frame{\frametitle{Register key-value CSR store}
 
  \begin{itemize}
-   \item key is int regfile number or FP regfile number (1 bit)\vspace{6pt}
-   \item treated as vector if referred to in op (5 bits, key)\vspace{6pt}
-   \item starting register to actually be used (5 bits, value)\vspace{6pt}
-   \item element bitwidth: default/8/16/32/64/rsvd (3 bits)\vspace{6pt}
-   \item element type: still under consideration\vspace{6pt}
+   \item key is int regfile number or FP regfile number (1 bit)
+   \item treated as vector if referred to in op (5 bits, key)
+   \item starting register to actually be used (5 bits, value)
+   \item element bitwidth: default, dflt/2, 8, 16 (2 bits)
+   \item is vector: Y/N (1 bit)
+   \item packed SIMD: Y/N (1 bit)
+   \item register bank: 0/reserved for future ext. (1 bit)
   \end{itemize}
   Notes:\vspace{10pt}
    \begin{itemize}
@@ -455,15 +438,16 @@ def get\_pred\_val(bool is\_fp\_op, int reg):
 \frametitle{Register key-value CSR table decoding pseudocode}
 
 \begin{semiverbatim}
-struct vectorised fp\_vec[32];
-struct vectorised int\_vec[32];
+struct vectorised fp\_vec[32], int\_vec[32];
 
 for (i = 0; i < 16; i++) // 16 CSRs?
    tb = int\_vec if CSRvectortb[i].type == 0 else fp\_vec
    idx = CSRvectortb[i].regidx
    tb[idx].elwidth  = CSRpred[i].elwidth
    tb[idx].regidx   = CSRpred[i].regidx
-   tb[idx].isvector = true
+   tb[idx].isvector = CSRpred[i].isvector
+   tb[idx].packed   = CSRpred[i].packed
+   tb[idx].bank     = CSRpred[i].bank
 \end{semiverbatim}
 
  \begin{itemize}
@@ -472,6 +456,26 @@ for (i = 0; i < 16; i++) // 16 CSRs?
   \end{itemize}
 
 \end{frame}
+
+
+\frame{\frametitle{Why are overlaps allowed in Regfiles?}
+
+ \begin{itemize}
+   \item Same register(s) can have multiple "interpretations"
+   \item Set "real" register (scalar) without needing to set/unset CSRs.
+   \item xBitManip plus SIMD plus xBitManip = Hi/Lo bitops
+   \item (32-bit GREV plus 4x8-bit SIMD plus 32-bit GREV:\\
+	     GREV @ VL=N,wid=32; SIMD @ VL=Nx4,wid=8)
+   \item RGB 565 (video): BEXTW plus 4x8-bit SIMD plus BDEPW\\
+	     (BEXT/BDEP @ VL=N,wid=32; SIMD @ VL=Nx4,wid=8)
+   \item Same register(s) can be offset (no need for VSLIDE)\vspace{6pt}
+  \end{itemize}
+  Note:
+   \begin{itemize}
+   \item xBitManip reduces O($N^{6}$) SIMD down to O($N^{3}$)
+   \item Hi-Performance: Macro-op fusion (more pipeline stages?)
+  \end{itemize}
+}
 
 
 \begin{frame}[fragile]
