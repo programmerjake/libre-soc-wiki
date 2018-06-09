@@ -156,89 +156,6 @@
 }
 
 
-\frame{\frametitle{Implementation Options}
-
- \begin{itemize}
-   \item Absolute minimum: Exceptions: if CSRs indicate "V", trap.\\
-         (Requires as absolute minimum that CSRs be in H/W)
-   \item Hardware loop, single-instruction issue\\
-		 (Do / Don't send through predication to ALU)
-   \item Hardware loop, parallel (multi-instruction) issue\\
-   		 (Do / Don't send through predication to ALU)
-   \item Hardware loop, full parallel ALU (not recommended)
-  \end{itemize}
-  Notes:\vspace{4pt}
-  \begin{itemize}
-   \item 4 (or more?) options above may be deployed on per-op basis
-   \item SIMD always sends predication bits through to ALU
-   \item Minimum MVL MUST be sufficient to cover regfile LD/ST
-   \item Instr. FIFO may repeatedly split off N scalar ops at a time
-  \end{itemize}
-}
-% Instr. FIFO may need its own slide.  Basically, the vectorised op
-% gets pushed into the FIFO, where it is then "processed".  Processing
-% will remove the first set of ops from its vector numbering (taking
-% predication into account) and shoving them **BACK** into the FIFO,
-% but MODIFYING the remaining "vectorised" op, subtracting the now
-% scalar ops from it.
-
-\frame{\frametitle{Predicated 8-parallel ADD: 1-wide ALU}
- \begin{center}
-  \includegraphics[height=2.5in]{padd9_alu1.png}\\
-  {\bf \red Predicated adds are shuffled down: 6 cycles in total}
- \end{center}
-}
-
-
-\frame{\frametitle{Predicated 8-parallel ADD: 4-wide ALU}
- \begin{center}
-  \includegraphics[height=2.5in]{padd9_alu4.png}\\
-  {\bf \red Predicated adds are shuffled down: 4 in 1st cycle, 2 in 2nd}
- \end{center}
-}
-
-
-\frame{\frametitle{Predicated 8-parallel ADD: 3 phase FIFO expansion}
- \begin{center}
-  \includegraphics[height=2.5in]{padd9_fifo.png}\\
-  {\bf \red First cycle takes first four 1s; second takes the rest}
- \end{center}
-}
-
-
-\frame{\frametitle{How are SIMD Instructions Vectorised?}
-
- \begin{itemize}
-   \item SIMD ALU(s) primarily unchanged
-   \item Predication is added down each SIMD element (if requested,
-         otherwise the entire block will be predicated)
-   \item Predication bits sent in groups to the ALU (if requested,
-         otherwise just one bit for the entire packed block)
-   \item End of Vector enables (additional) predication:
-	     completely nullifies end-case code (but only in group
-	     predication mode)
-  \end{itemize}
-  Considerations:\vspace{4pt}
-   \begin{itemize}
-   \item Many SIMD ALUs possible (parallel execution)
-   \item Implementor free to choose (API remains the same)
-   \item Unused ALU units wasted, but s/w DRASTICALLY simpler 
-   \item Very long SIMD ALUs could waste significant die area
-  \end{itemize}
-}
-% With multiple SIMD ALUs at for example 32-bit wide they can be used 
-% to either issue 64-bit or 128-bit or 256-bit wide SIMD operations
-% or they can be used to cover several operations on totally different
-% vectors / registers.
-
-\frame{\frametitle{Predicated 9-parallel SIMD ADD}
- \begin{center}
-  \includegraphics[height=2.5in]{padd9_simd.png}\\
-  {\bf \red 4-wide 8-bit SIMD, 4 bits of predicate passed to ALU}
- \end{center}
-}
-
-
 \frame{\frametitle{What's the deal / juice / score?}
 
  \begin{itemize}
@@ -252,7 +169,7 @@
   \end{itemize}
   Key differences from RVV:
    \begin{itemize}
-   \item Predication in INT regs as a BIT field (max VL=XLEN)
+   \item Predication in INT reg as a BIT field (max VL=XLEN)
    \item Minimum VL must be Num Regs - 1 (all regs single LD/ST)
    \item SV may condense sparse Vecs: RVV lets ALU do predication
    \item Choice to Zero or skip non-predicated elements
@@ -330,12 +247,80 @@ for (int i = 0; i < VL; ++i)
 \end{frame}
 
 
+\frame{\frametitle{Register key-value CSR store}
+
+ \begin{itemize}
+   \item key is int regfile number or FP regfile number (1 bit)
+   \item treated as vector if referred to in op (5 bits, key)
+   \item starting register to actually be used (5 bits, value)
+   \item element bitwidth: default, dflt/2, 8, 16 (2 bits)
+   \item is vector: Y/N (1 bit)
+   \item is packed SIMD: Y/N (1 bit)
+   \item register bank: 0/reserved for future ext. (1 bit)
+  \end{itemize}
+  Notes:
+   \begin{itemize}
+   \item References different (internal) mapping table for INT or FP
+   \item Level of indirection has implications for pipeline latency
+   \item (future) bank bit, no need to extend opcodes: set bank=1,
+         just use normal 5-bit regs, indirection takes care of the rest.
+  \end{itemize}
+}
+
+
+\frame{\frametitle{Register element width and packed SIMD}
+
+  Packed SIMD = N:
+ \begin{itemize}
+   \item default: RV32/64/128 opcodes define elwidth = 32/64/128
+   \item default/2: RV32/64/128 opcodes, elwidth = 16/32/64 with
+         top half of register ignored (src), zero'd/s-ext (dest)
+   \item 8 or 16: elwidth = 8 (or 16), similar to default/2
+  \end{itemize}
+  Packed SIMD = Y (default is moot, packing is 1:1)
+ \begin{itemize}
+   \item default/2: 2 elements per register @ opcode-defined bitwidth
+   \item 8 or 16: standard 8 (or 16) packed SIMD
+  \end{itemize}
+  Notes:
+ \begin{itemize}
+   \item Different src/dest widths (and packs) PERMITTED
+   \item RV* already allows (and defines) how RV32 ops work in RV64\\
+         so just logically follow that lead/example.
+  \end{itemize}
+}
+
+
+\begin{frame}[fragile]
+\frametitle{Register key-value CSR table decoding pseudocode}
+
+\begin{semiverbatim}
+struct vectorised fp\_vec[32], int\_vec[32]; // 64 in future
+
+for (i = 0; i < 16; i++) // 16 CSRs?
+   tb = int\_vec if CSRvec[i].type == 0 else fp\_vec
+   idx = CSRvec[i].regkey // INT/FP src/dst reg in opcode
+   tb[idx].elwidth  = CSRvec[i].elwidth
+   tb[idx].regidx   = CSRvec[i].regidx  // indirection
+   tb[idx].isvector = CSRvec[i].isvector
+   tb[idx].packed   = CSRvec[i].packed  // SIMD or not
+   tb[idx].bank     = CSRvec[i].bank    // 0 (1=rsvd)
+\end{semiverbatim}
+
+ \begin{itemize}
+   \item All 32 int (and 32 FP) entries zero'd before setup
+   \item Might be a bit complex to set up in hardware (TBD)
+  \end{itemize}
+
+\end{frame}
+
+
 \frame{\frametitle{Predication key-value CSR store}
 
  \begin{itemize}
    \item key is int regfile number or FP regfile number (1 bit)\vspace{6pt}
    \item register to be predicated if referred to (5 bits, key)\vspace{6pt}
-   \item register to store actual predication in (5 bits, value)\vspace{6pt}
+   \item INT reg with actual predication mask (5 bits, value)\vspace{6pt}
    \item predication is inverted Y/N (1 bit)\vspace{6pt}
    \item non-predicated elements are to be zero'd Y/N (1 bit)\vspace{6pt}
   \end{itemize}
@@ -352,12 +337,11 @@ for (int i = 0; i < VL; ++i)
 \frametitle{Predication key-value CSR table decoding pseudocode}
 
 \begin{semiverbatim}
-struct pred fp\_pred[32];
-struct pred int\_pred[32];
+struct pred fp\_pred[32], int\_pred[32];
 
 for (i = 0; i < 16; i++) // 16 CSRs?
    tb = int\_pred if CSRpred[i].type == 0 else fp\_pred
-   idx = CSRpred[i].regidx
+   idx = CSRpred[i].regkey
    tb[idx].zero     = CSRpred[i].zero
    tb[idx].inv      = CSRpred[i].inv
    tb[idx].predidx  = CSRpred[i].predidx
@@ -365,8 +349,8 @@ for (i = 0; i < 16; i++) // 16 CSRs?
 \end{semiverbatim}
 
  \begin{itemize}
-   \item All 64 (int and FP) Entries zero'd before setting
-   \item Might be a bit complex to set up (TBD)
+   \item All 32 int and 32 FP entries zero'd before setting
+   \item Might be a bit complex to set up in hardware (TBD)
   \end{itemize}
 
 \end{frame}
@@ -423,76 +407,8 @@ def get\_pred\_val(bool is\_fp\_op, int reg):
 % if there are available parallel ALUs to do so.
 
 
-\frame{\frametitle{Register key-value CSR store}
-
- \begin{itemize}
-   \item key is int regfile number or FP regfile number (1 bit)
-   \item treated as vector if referred to in op (5 bits, key)
-   \item starting register to actually be used (5 bits, value)
-   \item element bitwidth: default, dflt/2, 8, 16 (2 bits)
-   \item is vector: Y/N (1 bit)
-   \item is packed SIMD: Y/N (1 bit)
-   \item register bank: 0/reserved for future ext. (1 bit)
-  \end{itemize}
-  Notes:
-   \begin{itemize}
-   \item References different (internal) mapping table for INT or FP
-   \item Level of indirection has implications for pipeline latency
-   \item (future) bank bit, no need to extend opcodes: set bank=1,
-         just use normal 5-bit regs, indirection takes care of the rest.
-  \end{itemize}
-}
-
-
-\frame{\frametitle{Register element width and packed SIMD}
-
-  Packed SIMD = N:
- \begin{itemize}
-   \item default: RV32/64/128 opcodes define elwidth = 32/64/128
-   \item default/2: RV32/64/128 opcodes, elwidth = 16/32/64 with
-         top half of register ignored (src), zero'd/s-ext (dest)
-   \item 8 or 16: elwidth = 8 (or 16), similar to default/2
-  \end{itemize}
-  Packed SIMD = Y (default is moot, packing is 1:1)
- \begin{itemize}
-   \item default/2: 2 elements per register @ opcode-defined bitwidth
-   \item 8 or 16: standard 8 (or 16) packed SIMD
-  \end{itemize}
-  Notes:
- \begin{itemize}
-   \item Different src/dest widths (and packs) PERMITTED
-   \item RV* already allows (and defines) how RV32 ops work in RV64\\
-         so just logically follow that lead/example.
-  \end{itemize}
-}
-
-
 \begin{frame}[fragile]
-\frametitle{Register key-value CSR table decoding pseudocode}
-
-\begin{semiverbatim}
-struct vectorised fp\_vec[32], int\_vec[32]; // 64 in future
-
-for (i = 0; i < 16; i++) // 16 CSRs?
-   tb = int\_vec if CSRvectortb[i].type == 0 else fp\_vec
-   idx = CSRvectortb[i].regidx
-   tb[idx].elwidth  = CSRpred[i].elwidth
-   tb[idx].regidx   = CSRpred[i].regidx  // indirection
-   tb[idx].isvector = CSRpred[i].isvector
-   tb[idx].packed   = CSRpred[i].packed  // SIMD or not
-   tb[idx].bank     = CSRpred[i].bank    // 0 (1=rsvd)
-\end{semiverbatim}
-
- \begin{itemize}
-   \item All 32 int (and 32 FP) entries zero'd before setup
-   \item Might be a bit complex to set up (TBD)
-  \end{itemize}
-
-\end{frame}
-
-
-\begin{frame}[fragile]
-\frametitle{ADD pseudocode with redirection, this time}
+\frametitle{ADD pseudocode with redirection (and proper predication)}
 
 \begin{semiverbatim}
 function op\_add(rd, rs1, rs2) # add not VADD!
@@ -513,6 +429,89 @@ function op\_add(rd, rs1, rs2) # add not VADD!
    \item SIMD (elwidth != default) not covered above
   \end{itemize}
 \end{frame}
+
+
+\frame{\frametitle{Implementation Options}
+
+ \begin{itemize}
+   \item Absolute minimum: Exceptions: if CSRs indicate "V", trap.\\
+         (Requires as absolute minimum that CSRs be in H/W)
+   \item Hardware loop, single-instruction issue\\
+		 (Do / Don't send through predication to ALU)
+   \item Hardware loop, parallel (multi-instruction) issue\\
+         (Do / Don't send through predication to ALU)
+   \item Hardware loop, full parallel ALU (not recommended)
+  \end{itemize}
+  Notes:\vspace{4pt}
+  \begin{itemize}
+   \item 4 (or more?) options above may be deployed on per-op basis
+   \item SIMD always sends predication bits through to ALU
+   \item Minimum MVL MUST be sufficient to cover regfile LD/ST
+   \item Instr. FIFO may repeatedly split off N scalar ops at a time
+  \end{itemize}
+}
+% Instr. FIFO may need its own slide.  Basically, the vectorised op
+% gets pushed into the FIFO, where it is then "processed".  Processing
+% will remove the first set of ops from its vector numbering (taking
+% predication into account) and shoving them **BACK** into the FIFO,
+% but MODIFYING the remaining "vectorised" op, subtracting the now
+% scalar ops from it.
+
+\frame{\frametitle{Predicated 8-parallel ADD: 1-wide ALU}
+ \begin{center}
+  \includegraphics[height=2.5in]{padd9_alu1.png}\\
+  {\bf \red Predicated adds are shuffled down: 6 cycles in total}
+ \end{center}
+}
+
+
+\frame{\frametitle{Predicated 8-parallel ADD: 4-wide ALU}
+ \begin{center}
+  \includegraphics[height=2.5in]{padd9_alu4.png}\\
+  {\bf \red Predicated adds are shuffled down: 4 in 1st cycle, 2 in 2nd}
+ \end{center}
+}
+
+
+\frame{\frametitle{Predicated 8-parallel ADD: 3 phase FIFO expansion}
+ \begin{center}
+  \includegraphics[height=2.5in]{padd9_fifo.png}\\
+  {\bf \red First cycle takes first four 1s; second takes the rest}
+ \end{center}
+}
+
+
+\frame{\frametitle{How are SIMD Instructions Vectorised?}
+
+ \begin{itemize}
+   \item SIMD ALU(s) primarily unchanged
+   \item Predication is added down each SIMD element (if requested,
+         otherwise entire block will be predicated as a group)
+   \item Predication bits sent in groups to the ALU (if requested,
+         otherwise just one bit for the entire packed block)
+   \item End of Vector enables (additional) predication:
+	     completely nullifies end-case code (ONLY in multi-bit
+	     predication mode)
+  \end{itemize}
+  Considerations:\vspace{4pt}
+   \begin{itemize}
+   \item Many SIMD ALUs possible (parallel execution)
+   \item Implementor free to choose (API remains the same)
+   \item Unused ALU units wasted, but s/w DRASTICALLY simpler
+   \item Very long SIMD ALUs could waste significant die area
+  \end{itemize}
+}
+% With multiple SIMD ALUs at for example 32-bit wide they can be used
+% to either issue 64-bit or 128-bit or 256-bit wide SIMD operations
+% or they can be used to cover several operations on totally different
+% vectors / registers.
+
+\frame{\frametitle{Predicated 9-parallel SIMD ADD}
+ \begin{center}
+  \includegraphics[height=2.5in]{padd9_simd.png}\\
+  {\bf \red 4-wide 8-bit SIMD, 4 bits of predicate passed to ALU}
+ \end{center}
+}
 
 
 \frame{\frametitle{Why are overlaps allowed in Regfiles?}
@@ -592,7 +591,7 @@ def op_mv_x(rd, rs):         # (hypothetical) RV MX.X
 Vectorised version aka "VSELECT":
 
 \begin{semiverbatim}
-def op_mv_x(rd, rs): # SV version of MX.X
+def op_mv_x(rd, rs):              # SV version of MX.X
    for i in range(VL):
       rs1 = regfile[rs+i]         # indirection
       regfile[rd+i] = regfile[rs] # straight regcopy
@@ -622,7 +621,7 @@ def op_mv_x(rd, rs): # SV version of MX.X
  \begin{itemize}
    \item VSELECT stays? no MV.X, so no (add with custom ext?)
    \item VSNE exists, but no FNE (use predication inversion?)
-   \item VCLIP is not in RV* (add with custom ext?)
+   \item VCLIP is not in RV* (add with custom ext? or CSR?)
   \end{itemize}
 }
 
