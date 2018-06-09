@@ -107,7 +107,7 @@
    \item Amazingly, SIMD becomes (more) tolerable (no corner-cases)
    \item Modularity/Abstraction in both the h/w and the toolchain.
    \item "Reach" of registers accessible by Compressed is enhanced
-   \item Future: double the standard register file size(s).
+   \item Future: double the standard INT/FP register file sizes.
   \end{itemize}
   Note:
    \begin{itemize}
@@ -121,12 +121,13 @@
 \frame{\frametitle{How does Simple-V relate to RVV? What's different?}
 
  \begin{itemize}
-   \item RVV very heavy-duty (excellent for supercomputing)\vspace{10pt}
-   \item Simple-V abstracts parallelism (based on best of RVV)\vspace{10pt}
-   \item Graded levels: hardware, hybrid or traps (fit impl. need)\vspace{10pt}
-   \item Even Compressed become vectorised (RVV can't)\vspace{10pt}
+   \item RVV very heavy-duty (excellent for supercomputing)\vspace{8pt}
+   \item Simple-V abstracts parallelism (based on best of RVV)\vspace{8pt}
+   \item Graded levels: hardware, hybrid or traps (fit impl. need)\vspace{8pt}
+   \item Even Compressed become vectorised (RVV can't)\vspace{8pt}
+   \item No polymorphism in SV (too complex)\vspace{8pt}
   \end{itemize}
-  What Simple-V is not:\vspace{10pt}
+  What Simple-V is not:\vspace{4pt}
    \begin{itemize}
    \item A full supercomputer-level Vector Proposal
    \item A replacement for RVV (SV is designed to be over-ridden\\
