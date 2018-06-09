@@ -78,19 +78,21 @@
    \item Why?
          Implementors need flexibility in vectorisation to optimise for
          area or performance depending on the scope:
-	     embedded DSP, Mobile GPU's, Server CPU's and more.\vspace{4pt}\\
+	     embedded DSP, Mobile GPU's, Server CPU's and more.\\
 		 Compilers also need flexibility in vectorisation to optimise for cost 
 		 of pipeline setup, amount of state to context switch
-		 and software portability\vspace{4pt}
+		 and software portability
    \item How?
 	     By marking INT/FP regs as "Vectorised" and
 	     adding a level of indirection,
 	     SV expresses how existing instructions should act 
-	     on [contiguous] blocks of registers, in parallel.\vspace{4pt}
+	     on [contiguous] blocks of registers, in parallel, WITHOUT
+	     needing new any actual extra arithmetic opcodes.
    \item What?
 		 Simple-V is an "API" that implicitly extends
 		 existing (scalar) instructions with explicit parallelisation\\
-		 (i.e. SV is actually about parallelism NOT vectors per se)
+		 i.e. SV is actually about parallelism NOT vectors per se.\\
+		 Has a lot in common with VLIW (without the actual VLIW).
   \end{itemize}
 }
 
@@ -102,10 +104,10 @@
    \item context-switch (LOAD/STORE multiple): 1-2 instructions
    \item Compressed instrs further reduces I-cache (etc.)
    \item Greatly-reduced I-cache load (and less reads)
-   \item Amazingly, SIMD becomes (more) tolerable\\
-	     (corner-cases for setup and teardown are gone)
+   \item Amazingly, SIMD becomes (more) tolerable (no corner-cases)
    \item Modularity/Abstraction in both the h/w and the toolchain.
    \item "Reach" of registers accessible by Compressed is enhanced
+   \item Future: double the standard register file size(s).
   \end{itemize}
   Note:
    \begin{itemize}
