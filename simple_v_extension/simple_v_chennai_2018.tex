@@ -430,7 +430,8 @@ def get\_pred\_val(bool is\_fp\_op, int reg):
    \begin{itemize}
    \item References different (internal) mapping table for INT or FP
    \item Level of indirection has implications for pipeline latency
-   \item Extra (future) bank 
+   \item (future) bank bit, no need to extend opcodes: set bank=1,
+         just use normal 5-bit regs, indirection takes care of the rest.
   \end{itemize}
 }
 
@@ -462,16 +463,16 @@ def get\_pred\_val(bool is\_fp\_op, int reg):
 \frametitle{Register key-value CSR table decoding pseudocode}
 
 \begin{semiverbatim}
-struct vectorised fp\_vec[32], int\_vec[32];
+struct vectorised fp\_vec[32], int\_vec[32]; // 64 in future
 
 for (i = 0; i < 16; i++) // 16 CSRs?
    tb = int\_vec if CSRvectortb[i].type == 0 else fp\_vec
    idx = CSRvectortb[i].regidx
    tb[idx].elwidth  = CSRpred[i].elwidth
-   tb[idx].regidx   = CSRpred[i].regidx
+   tb[idx].regidx   = CSRpred[i].regidx  // indirection
    tb[idx].isvector = CSRpred[i].isvector
-   tb[idx].packed   = CSRpred[i].packed
-   tb[idx].bank     = CSRpred[i].bank
+   tb[idx].packed   = CSRpred[i].packed  // SIMD or not
+   tb[idx].bank     = CSRpred[i].bank    // 0 (1=reserved)
 \end{semiverbatim}
 
  \begin{itemize}
@@ -480,26 +481,6 @@ for (i = 0; i < 16; i++) // 16 CSRs?
   \end{itemize}
 
 \end{frame}
-
-
-\frame{\frametitle{Why are overlaps allowed in Regfiles?}
-
- \begin{itemize}
-   \item Same register(s) can have multiple "interpretations"
-   \item Set "real" register (scalar) without needing to set/unset CSRs.
-   \item xBitManip plus SIMD plus xBitManip = Hi/Lo bitops
-   \item (32-bit GREV plus 4x8-bit SIMD plus 32-bit GREV:\\
-	     GREV @ VL=N,wid=32; SIMD @ VL=Nx4,wid=8)
-   \item RGB 565 (video): BEXTW plus 4x8-bit SIMD plus BDEPW\\
-	     (BEXT/BDEP @ VL=N,wid=32; SIMD @ VL=Nx4,wid=8)
-   \item Same register(s) can be offset (no need for VSLIDE)\vspace{6pt}
-  \end{itemize}
-  Note:
-   \begin{itemize}
-   \item xBitManip reduces O($N^{6}$) SIMD down to O($N^{3}$)
-   \item Hi-Performance: Macro-op fusion (more pipeline stages?)
-  \end{itemize}
-}
 
 
 \begin{frame}[fragile]
@@ -524,6 +505,26 @@ function op\_add(rd, rs1, rs2) # add not VADD!
    \item SIMD (elwidth != default) not covered above
   \end{itemize}
 \end{frame}
+
+
+\frame{\frametitle{Why are overlaps allowed in Regfiles?}
+
+ \begin{itemize}
+   \item Same register(s) can have multiple "interpretations"
+   \item Set "real" register (scalar) without needing to set/unset CSRs.
+   \item xBitManip plus SIMD plus xBitManip = Hi/Lo bitops
+   \item (32-bit GREV plus 4x8-bit SIMD plus 32-bit GREV:\\
+	     GREV @ VL=N,wid=32; SIMD @ VL=Nx4,wid=8)
+   \item RGB 565 (video): BEXTW plus 4x8-bit SIMD plus BDEPW\\
+	     (BEXT/BDEP @ VL=N,wid=32; SIMD @ VL=Nx4,wid=8)
+   \item Same register(s) can be offset (no need for VSLIDE)\vspace{6pt}
+  \end{itemize}
+  Note:
+   \begin{itemize}
+   \item xBitManip reduces O($N^{6}$) SIMD down to O($N^{3}$)
+   \item Hi-Performance: Macro-op fusion (more pipeline stages?)
+  \end{itemize}
+}
 
 
 \frame{\frametitle{C.MV extremely flexible!}
