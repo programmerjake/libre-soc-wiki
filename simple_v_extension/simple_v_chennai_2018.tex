@@ -407,30 +407,6 @@ def get\_pred\_val(bool is\_fp\_op, int reg):
 % if there are available parallel ALUs to do so.
 
 
-\begin{frame}[fragile]
-\frametitle{ADD pseudocode with redirection (and proper predication)}
-
-\begin{semiverbatim}
-function op\_add(rd, rs1, rs2) # add not VADD!
-  int i, id=0, irs1=0, irs2=0;
-  rd  = int\_vec[rd ].isvector ? int\_vec[rd ].regidx : rd;
-  rs1 = int\_vec[rs1].isvector ? int\_vec[rs1].regidx : rs1;
-  rs2 = int\_vec[rs2].isvector ? int\_vec[rs2].regidx : rs2;
-  predval = get\_pred\_val(FALSE, rd);
-  for (i = 0; i < VL; i++)
-    if (predval \& 1<<i) # predication uses intregs
-       ireg[rd+id] <= ireg[rs1+irs1] + ireg[rs2+irs2];
-    if (int\_vec[rd ].isvector)  \{ id += 1; \}
-    if (int\_vec[rs1].isvector)  \{ irs1 += 1; \}
-    if (int\_vec[rs2].isvector)  \{ irs2 += 1; \}
-\end{semiverbatim}
-
-  \begin{itemize}
-   \item SIMD (elwidth != default) not covered above
-  \end{itemize}
-\end{frame}
-
-
 \frame{\frametitle{Implementation Options}
 
  \begin{itemize}
@@ -479,6 +455,30 @@ function op\_add(rd, rs1, rs2) # add not VADD!
   {\bf \red First cycle takes first four 1s; second takes the rest}
  \end{center}
 }
+
+
+\begin{frame}[fragile]
+\frametitle{ADD pseudocode with redirection (and proper predication)}
+
+\begin{semiverbatim}
+function op\_add(rd, rs1, rs2) # add not VADD!
+  int i, id=0, irs1=0, irs2=0;
+  rd  = int\_vec[rd ].isvector ? int\_vec[rd ].regidx : rd;
+  rs1 = int\_vec[rs1].isvector ? int\_vec[rs1].regidx : rs1;
+  rs2 = int\_vec[rs2].isvector ? int\_vec[rs2].regidx : rs2;
+  predval = get\_pred\_val(FALSE, rd);
+  for (i = 0; i < VL; i++)
+    if (predval \& 1<<i) # predication uses intregs
+       ireg[rd+id] <= ireg[rs1+irs1] + ireg[rs2+irs2];
+    if (int\_vec[rd ].isvector)  \{ id += 1; \}
+    if (int\_vec[rs1].isvector)  \{ irs1 += 1; \}
+    if (int\_vec[rs2].isvector)  \{ irs2 += 1; \}
+\end{semiverbatim}
+
+  \begin{itemize}
+   \item SIMD (elwidth != default) not covered above
+  \end{itemize}
+\end{frame}
 
 
 \frame{\frametitle{How are SIMD Instructions Vectorised?}
