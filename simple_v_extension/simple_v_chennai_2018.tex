@@ -11,7 +11,7 @@
 
 \frame{
    \begin{center}
-    \huge{Simple-V RISC-V Extension for Vectors and SIMD}\\
+    \huge{Simple-V RISC-V Parallelism Abstraction Extension}\\
     \vspace{32pt}
     \Large{Flexible Vectorisation}\\
     \Large{(aka not so Simple-V?)}\\
@@ -58,10 +58,11 @@
 \frame{\frametitle{Quick refresher on RVV}
 
  \begin{itemize}
-   \item Extremely powerful (extensible to 256 registers)\vspace{10pt}
-   \item Supports polymorphism, several datatypes (inc. FP16)\vspace{10pt}
-   \item Requires a separate Register File (32 w/ext to 256)\vspace{10pt}
-   \item Implemented as a separate pipeline (no impact on scalar)\vspace{10pt}
+   \item Effectively a variant of SIMD / SIMT (arbitrary length)\vspace{6pt}
+   \item Extremely powerful (extensible to 256 registers)\vspace{6pt}
+   \item Supports polymorphism, several datatypes (inc. FP16)\vspace{6pt}
+   \item Requires a separate Register File (32 w/ext to 256)\vspace{6pt}
+   \item Implemented as a separate pipeline (no impact on scalar)\vspace{6pt}
   \end{itemize}
   However...\vspace{10pt}
    \begin{itemize}
@@ -143,7 +144,8 @@
          registers are reinterpreted through a level of indirection
    \item Primarily at the Instruction issue phase (except SIMD)\\
          Note: it's ok to pass predication through to ALU (like SIMD)
-   \item Standard (and future, and custom) opcodes now parallel\vspace{10pt}
+   \item Standard and future and custom opcodes now parallel\\
+         (crucially: with NO extra instructions needing to be added)
   \end{itemize}
   Note: EVERYTHING is parallelised:
    \begin{itemize}
@@ -171,8 +173,9 @@
    \begin{itemize}
    \item Predication in INT reg as a BIT field (max VL=XLEN)
    \item Minimum VL must be Num Regs - 1 (all regs single LD/ST)
-   \item SV may condense sparse Vecs: RVV lets ALU do predication
-   \item Choice to Zero or skip non-predicated elements
+   \item SV may condense sparse Vecs: RVV cannot (SIMD-like):\\
+         SV gives choice to Zero or skip non-predicated elements\\
+         (no such choice in RVV: zeroing-only)
   \end{itemize}
 }
 
@@ -247,7 +250,7 @@ for (int i = 0; i < VL; ++i)
 \end{frame}
 
 
-\frame{\frametitle{Register key-value CSR store}
+\frame{\frametitle{Register key-value CSR store (lookup table / CAM)}
 
  \begin{itemize}
    \item key is int regfile number or FP regfile number (1 bit)
@@ -435,7 +438,7 @@ def get\_pred\_val(bool is\_fp\_op, int reg):
 % but MODIFYING the remaining "vectorised" op, subtracting the now
 % scalar ops from it.
 
-\frame{\frametitle{Predicated 8-parallel ADD: 1-wide ALU}
+\frame{\frametitle{Predicated 8-parallel ADD: 1-wide ALU (no zeroing)}
  \begin{center}
   \includegraphics[height=2.5in]{padd9_alu1.png}\\
   {\bf \red Predicated adds are shuffled down: 6 cycles in total}
@@ -443,7 +446,7 @@ def get\_pred\_val(bool is\_fp\_op, int reg):
 }
 
 
-\frame{\frametitle{Predicated 8-parallel ADD: 4-wide ALU}
+\frame{\frametitle{Predicated 8-parallel ADD: 4-wide ALU (no zeroing)}
  \begin{center}
   \includegraphics[height=2.5in]{padd9_alu4.png}\\
   {\bf \red Predicated adds are shuffled down: 4 in 1st cycle, 2 in 2nd}
@@ -520,6 +523,7 @@ function op\_add(rd, rs1, rs2) # add not VADD!
 
  \begin{itemize}
    \item Same register(s) can have multiple "interpretations"
+   \item CSRs are costly to write to (do it once)
    \item Set "real" register (scalar) without needing to set/unset CSRs.
    \item xBitManip plus SIMD plus xBitManip = Hi/Lo bitops
    \item (32-bit GREV plus 4x8-bit SIMD plus 32-bit GREV:\\
