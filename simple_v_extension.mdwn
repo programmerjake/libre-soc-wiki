@@ -135,7 +135,8 @@ reducing power consumption for the same.
 SIMD again has a severe disadvantage here, over Vector: huge proliferation
 of specialist instructions that target 8-bit, 16-bit, 32-bit, 64-bit, and
 have to then have operations *for each and between each*.  It gets very
-messy, very quickly.
+messy, very quickly: *six* separate dimensions giving an O(N^6) instruction
+proliferation profile.
 
 The V-Extension on the other hand proposes to set the bit-width of
 future instructions on a per-register basis, such that subsequent instructions
@@ -365,16 +366,14 @@ level all-hardware parallelism.  Options are covered in the Appendix.
 
 # CSRs <a name="csrs"></a>
 
-There are a number of CSRs needed, which are used at the instruction
-decode phase to re-interpret RV opcodes (a practice that has
-precedent in the setting of MISA to enable / disable extensions).
+There are two CSR tables needed to create lookup tables which are used at
+the register decode phase.
 
-* Integer Register N is Vector of length M: r(N) -> r(N..N+M-1)
+* Integer Register N is Vector
 * Integer Register N is of implicit bitwidth M (M=default,8,16,32,64)
 * Floating-point Register N is Vector of length M: r(N) -> r(N..N+M-1)
 * Floating-point Register N is of implicit bitwidth M (M=default,8,16,32,64)
 * Integer Register N is a Predication Register (note: a key-value store)
-* Vector Length CSR (VSETVL, VGETVL)
 
 Also (see Appendix, "Context Switch Example") it may turn out to be important
 to have a separate (smaller) set of CSRs for M-Mode (and S-Mode) so that
@@ -402,19 +401,40 @@ Notes:
 
 The Predication CSR is a key-value store indicating whether, if a given
 destination register (integer or floating-point) is referred to in an
-instruction, it is to be predicated.  The first entry is whether predication
-is enabled.  The second entry is whether the register index refers to a
-floating-point or an integer register.  The third entry is the index
-of that register which is to be predicated (if referred to).  The fourth entry
-is the integer register that is treated as a bitfield, indexable by the
-vector element index.
+instruction, it is to be predicated.  However it is important to note
+that the *actual* register is *different* from the one that ends up
+being used, due to the level of indirection through the lookup table.
+This includes (in the future) redirecting to a *second* bank of
+integer registers (as a future option)
 
-| PrCSR | 7      | 6     | 5   | (4..0)  | (4..0)  |
-| ----- | -      | -     | -   | ------- | ------- |
-| 0     | zero0  | inv0  | i/f | regidx  | predidx |
-| 1     | zero1  | inv1  | i/f | regidx  | predidx |
-| ..    | zero.. | inv.. | i/f | regidx  | predidx |
-| 15    | zero15 | inv15 | i/f | regidx  | predidx |
+* regidx is the actual register that in combination with the
+  i/f flag, if that integer or floating-point register is referred to,
+  results in the lookup table being referenced to find the predication
+  mask to use on the operation in which that (regidx) register has
+  been used
+* predidx (in combination with the bank bit in the future) is the
+  *actual* register to be used for the predication mask.  Note:
+  in effect predidx is actually a 6-bit register address, as the bank
+  bit is the MSB (and is nominally set to zero for now).
+* inv indicates that the predication mask bits are to be inverted
+  prior to use *without* actually modifying the contents of the
+  register itself.
+* zeroing is either 1 or 0, and if set to 1, the operation must
+  place zeros in any element position where the predication mask is
+  set to zero.  If zeroing is set to 1, unpredicated elements *must*
+  be left alone.  Some microarchitectures may choose to interpret
+  this as skipping the operation entirely.  Others which wish to
+  stick more closely to a SIMD architecture may choose instead to
+  interpret unpredicated elements as an internal "copy element"
+  operation (which would be necessary in SIMD microarchitectures
+  that perform register-renaming)
+
+| PrCSR | 13     | 12     | 11    | 10  | (9..5)  | (4..0)  |
+| ----- | -      | -      | -     | -   | ------- | ------- |
+| 0     | bank0  | zero0  | inv0  | i/f | regidx  | predidx |
+| 1     | bank1  | zero1  | inv1  | i/f | regidx  | predidx |
+| ..    | bank.. | zero.. | inv.. | i/f | regidx  | predidx |
+| 15    | bank15 | zero15 | inv15 | i/f | regidx  | predidx |
 
 The Predication CSR Table is a key-value store, so implementation-wise
 it will be faster to turn the table around (maintain topologically
@@ -423,18 +443,20 @@ equivalent state):
     struct pred {
         bool zero;
         bool inv;
+        bool bank;   // 0 for now, 1=rsvd
         bool enabled;
-        int predidx; // redirection: actual int register to use 
+        int predidx; // redirection: actual int register to use
     }
 
-    struct pred fp_pred_reg[32];
-    struct pred int_pred_reg[32];
+    struct pred fp_pred_reg[32];   // 64 in future (bank=1)
+    struct pred int_pred_reg[32];  // 64 in future (bank=1)
 
     for (i = 0; i < 16; i++)
       tb = int_pred_reg if CSRpred[i].type == 0 else fp_pred_reg;
       idx = CSRpred[i].regidx
       tb[idx].zero = CSRpred[i].zero
       tb[idx].inv  = CSRpred[i].inv
+      tb[idx].bank = CSRpred[i].bank
       tb[idx].predidx  = CSRpred[i].predidx
       tb[idx].enabled  = true
 
@@ -482,9 +504,22 @@ Note:
   register-level redirection (from the Register CSR table) if they are
   vectors.
 
-## MAXVECTORDEPTH
+If written as a function, obtaining the predication mask (but not whether
+zeroing takes place) may be done as follows:
 
-MAXVECTORDEPTH is the same concept as MVL in RVV.  However in Simple-V,
+    def get_pred_val(bool is_fp_op, int reg):
+       tb = int_pred if is_fp_op else fp_pred
+       if (!tb[reg].enabled):
+          return ~0x0              // all ops enabled
+       predidx = tb[reg].predidx   // redirection occurs HERE
+       predicate = intreg[predidx] // actual predicate HERE
+       if (tb[reg].inv):
+          predicate = ~predicate   // invert ALL bits
+       return predicate
+
+## MAXVECTORLENGTH
+
+MAXVECTORLENGTH is the same concept as MVL in RVV.  However in Simple-V,
 given that its primary (base, unextended) purpose is for 3D, Video and
 other purposes (not requiring supercomputing capability), it makes sense
 to limit MAXVECTORDEPTH to the regfile bitwidth (32 for RV32, 64 for RV64
@@ -499,52 +534,7 @@ and 31 for RV32 or RV64).
 
 Note that RVV on top of Simple-V may choose to over-ride this decision.
 
-## Vector-length CSRs
-
-Vector lengths are interpreted as meaning "any instruction referring to
-r(N) generates implicit identical instructions referring to registers
-r(N+M-1) where M is the Vector Length".  Vector Lengths may be set to
-use up to 16 registers in the register file.
-
-One separate CSR table is needed for each of the integer and floating-point
-register files:
-
-| RegNo | (3..0) |
-| ----- | ------ |
-| r0    | vlen0  |
-| r1    | vlen1  |
-| ..    | vlen.. |
-| r31   | vlen31 |
-
-An array of 32 4-bit CSRs is needed (4 bits per register) to indicate
-whether a register was, if referred to in any standard instructions,
-implicitly to be treated as a vector.
-
-Note:
-
-* A vector length of 1 indicates that it is to be treated as a scalar.
-  Bitwidths (on the same register) are interpreted and meaningful.
-* A vector length of 0 indicates that the parallelism is to be switched
-  off for this register (treated as a scalar).  When length is 0,
-  the bitwidth CSR for the register is *ignored*.
-
-Internally, implementations may choose to use the non-zero vector length
-to set a bit-field per register, to be used in the instruction decode phase.
-In this way any standard (current or future) operation involving
-register operands may detect if the operation is to be vector-vector,
-vector-scalar or scalar-scalar (standard) simply through a single
-bit test.
-
-Note that when using the "vsetl rs1, rs2" instruction (caveat: when the
-bitwidth is specifically not set) it becomes:
-
-    CSRvlength = MIN(MIN(CSRvectorlen[rs1], MAXVECTORDEPTH), rs2)
-
-This is in contrast to RVV:
-
-    CSRvlength = MIN(MIN(rs1, MAXVECTORDEPTH), rs2)
-
-## Element (SIMD) bitwidth CSRs
+## Register CSR key-value table
 
 Element bitwidths may be specified with a per-register CSR, and indicate
 how a register (integer or floating-point) is to be subdivided.
@@ -558,16 +548,12 @@ how a register (integer or floating-point) is to be subdivided.
 
 vew may be one of the following (giving a table "bytestable", used below):
 
-| vew | bitwidth |
-| --- | -------- |
-| 000 | default  |
-| 001 | 8        |
-| 010 | 16       |
-| 011 | 32       |
-| 100 | 64       |
-| 101 | 128      |
-| 110 | rsvd     |
-| 111 | rsvd     |
+| vew | bitwidth  |
+| --- | --------- |
+| 00  | default   |
+| 01  | default/2 |
+| 10  | 8         |
+| 11  | 16        |
 
 Extending this table (with extra bits) is covered in the section
 "Implementing RVV on top of Simple-V".
@@ -1625,7 +1611,7 @@ To illustrate how this works, here is some example code from FreeRTOS
         ...
         STORE	x30, 29 * REGBYTES(sp)
         STORE	x31, 30 * REGBYTES(sp)
-        
+
         /* Store current stackpointer in task control block (TCB) */
         LOAD	t0, pxCurrentTCB	//pointer
         STORE	sp, 0x0(t0)
@@ -1686,11 +1672,11 @@ bank of registers is to be loaded/saved:
     .macroVectorSetup
         MVECTORCSRx1 = 31, defaultlen
         MVECTORCSRx4 = 28, defaultlen
-    
+
         /* Save Context */
         SETVL x0, x0, 31 /* x0 ignored silently */
-        STORE	x1, 0x0(sp) // x1 marked as 31-long vector of default bitwidth 
-        
+        STORE	x1, 0x0(sp) // x1 marked as 31-long vector of default bitwidth
+
         /* Restore registers,
            Skip global pointer because that does not change */
         LOAD	x1, 0x0(sp)
@@ -1896,7 +1882,7 @@ or may not require an additional pipeline stage)
 >> FIFO).
 
 > Those bits cannot be known until after the registers are decoded from the
-> instruction and a lookup in the "vector length table" has completed. 
+> instruction and a lookup in the "vector length table" has completed.
 > Considering that one of the reasons RISC-V keeps registers in invariant
 > positions across all instructions is to simplify register decoding, I expect
 > that inserting an SRAM read would lengthen the critical path in most
@@ -2024,7 +2010,7 @@ TBD: floating-point compare and other exception handling
   <https://groups.google.com/a/groups.riscv.org/d/msg/isa-dev/IuNFitTw9fM/CCKBUlzsAAAJ>
 * Dot Product Vector <https://people.eecs.berkeley.edu/~biancolin/papers/arith17.pdf>
 * RVV slides 2017 <https://content.riscv.org/wp-content/uploads/2017/12/Wed-1330-RISCVRogerEspasaVEXT-v4.pdf>
-* Wavefront skipping using BRAMS <http://www.ece.ubc.ca/~lemieux/publications/severance-fpga2015.pdf> 
+* Wavefront skipping using BRAMS <http://www.ece.ubc.ca/~lemieux/publications/severance-fpga2015.pdf>
 * Streaming Pipelines <http://www.ece.ubc.ca/~lemieux/publications/severance-fpga2014.pdf>
 * Barcelona SIMD Presentation <https://content.riscv.org/wp-content/uploads/2018/05/09.05.2018-9.15-9.30am-RISCV201805-Andes-proposed-P-extension.pdf>
 * <http://www.ece.ubc.ca/~lemieux/publications/severance-fpga2015.pdf>
