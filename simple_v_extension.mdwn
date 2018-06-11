@@ -695,12 +695,13 @@ permitted (as used in Broadcom's VideoCore-IV) however this must be
 
 ## Branch Instruction:
 
-Branch operations use standard RV opcodes that are reinterpreted to be
-"predicate variants" in the instance where either of the two src registers
-have their corresponding CSRvectorlen[src] entry as non-zero.  When this
-reinterpretation is enabled the predicate target register rs3 is to be
-treated as a bitfield (up to a maximum of XLEN bits corresponding to a
-maximum of XLEN elements).
+Branch operations use standard RV opcodes that are reinterpreted to
+be "predicate variants" in the instance where either of the two src
+registers are marked as vectors (isvector=1).  When this reinterpretation
+is enabled the "immediate" field of the branch operation is taken to be a
+predication target register, rs3.  The predicate target register rs3 is
+to be treated as a bitfield (up to a maximum of XLEN bits corresponding
+to a maximum of XLEN elements).
 
 If either of src1 or src2 are scalars (CSRvectorlen[src] == 0) the comparison
 goes ahead as vector-scalar or scalar-vector.  Implementors should note that
@@ -784,19 +785,19 @@ and temporarily ignoring bitwidth (which makes the comparisons more
 complex), this becomes:
 
     if I/F == INT: # integer type cmp
-        pred_enabled = int_pred_enabled # TODO: exception if not set!
         preg = int_pred_reg[rd]
         reg = int_regfile
     else:
-        pred_enabled = fp_pred_enabled # TODO: exception if not set!
         preg = fp_pred_reg[rd]
         reg = fp_regfile
 
-    s1 = CSRvectorlen[src1] > 1;
-    s2 = CSRvectorlen[src2] > 1;
-    for (int i=0; i<vl; ++i)
-       preg[rs3][i] = cmp(s1 ? reg[src1+i] : reg[src1],
-                          s2 ? reg[src2+i] : reg[src2]);
+    s1 = reg_is_vectorised(src1);
+    s2 = reg_is_vectorised(src2);
+    if (!s2 && !s1) goto branch;
+    for (int i = 0; i < VL; ++i)
+      if (cmp(s1 ? reg[src1+i]:reg[src1],
+              s2 ? reg[src2+i]:reg[src2])
+             preg[rs3] |= 1<<i;  # bitfield not vector
 
 Notes:
 
