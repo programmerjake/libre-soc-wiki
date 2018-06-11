@@ -540,6 +540,8 @@ The purpose of the Register CSR table is four-fold:
 
 * To mark integer and floating-point registers as requiring "redirection"
   if it is ever used as a source or destination in any given operation.
+  This involves a level of indirection through a 5-to-6-bit lookup table
+  (where the 6th bit - bank - is always set to 0 for now).
 * To indicate whether, after redirection through the lookup table, the
   register is a vector (or remains a scalar).
 * To over-ride the implicit or explicit bitwidth that the operation would
@@ -580,10 +582,6 @@ to expand it as follows:
        tb[idx].packed   = CSRvec[i].packed  // SIMD or not
        tb[idx].bank     = CSRvec[i].bank    // 0 (1=rsvd)
 
-Note that when using the "vsetl rs1, rs2, vlen" instruction, it becomes:
-
-    VL = MIN(MIN(vlen, MAXVECTORDEPTH), rs2)
-
 TODO: move elsewhere
 
     # TODO: use elsewhere (retire for now)
@@ -607,18 +605,21 @@ is given in the section "Bitwidth Virtual Register Reordering".
 
 # Instructions
 
-Despite being a topological remap of RVV concepts, the only instructions
-needed are VSETVL and VGETVL.  *All* RVV instructions can be re-mapped,
-however xBitManip becomes a critical dependency for efficient manipulation
-of predication masks (as a bit-field).
-Despite this, *all instructions from RVV are topologically re-mapped and retain
-their complete functionality, intact*.
+Despite being a 98% complete and accurate topological remap of RVV
+concepts and functionality, the only instructions needed are VSETVL
+and VGETVL.  *All* RVV instructions can be re-mapped, however xBitManip
+becomes a critical dependency for efficient manipulation of predication
+masks (as a bit-field).  Despite the removal of all but VSETVL and VGETVL,
+*all instructions from RVV are topologically re-mapped and retain their
+complete functionality, intact*.
 
 Three instructions, VSELECT, VCLIP and VCLIPI, do not have RV Standard
 equivalents, so are left out of Simple-V.  VSELECT could be included if
 there existed a MV.X instruction in RV (MV.X is a hypothetical
 non-immediate variant of MV that would allow another register to
-specify which register was to be copied).
+specify which register was to be copied).  Note that if any of these three
+instructions are added to any given RV extension, their functionality
+will be inherently parallelised.
 
 ## Instruction Format
 
@@ -626,9 +627,11 @@ The instruction format for Simple-V does not actually have *any* explicit
 compare operations, *any* arithmetic, floating point or *any*
 memory instructions.
 Instead it *overloads* pre-existing branch operations into predicated
-variants, and implicitly overloads arithmetic operations and LOAD/STORE
-depending on CSR configurations for vector length, bitwidth and
-predication.  *This includes Compressed instructions* as well as any
+variants, and implicitly overloads arithmetic operations, MV,
+FCVT, and LOAD/STORE
+depending on CSR configurations for bitwidth and
+predication.  **Everything** becomes parallelised.  *This includes
+Compressed instructions* as well as any
 future instructions and Custom Extensions.
 
 * For analysis of RVV see [[v_comparative_analysis]] which begins to
@@ -659,15 +662,40 @@ the entire bank of registers using a single instruction (see Appendix,
 down to the fact that predication bits fit into a single register of length
 XLEN bits.
 
-The second minor change is that when VSETVL is requested to be stored
-into x0, it is *ignored* silently.
+The second change is that when VSETVL is requested to be stored
+into x0, it is *ignored* silently (VSETVL x0, x5, #4)
 
-Unlike RVV, implementors *must* provide pseudo-parallelism (using sequential
-loops in hardware) if actual hardware-parallelism in the ALUs is not deployed.
-A hybrid is also permitted (as used in Broadcom's VideoCore-IV) however this
-must be *entirely* transparent to the ISA.
+The third change is that there is an additional immediate added to VSETVL,
+to which VL is set after first going through MIN-filtering.
+So When using the "vsetl rs1, rs2, #vlen" instruction, it becomes:
+
+    VL = MIN(MIN(vlen, MAXVECTORDEPTH), rs2)
+
+where RegfileLen <= MAXVECTORDEPTH < XLEN
+
+This has implication for the microarchitecture, as VL is required to be
+set (limits from MAXVECTORDEPTH notwithstanding) to the actual value
+requested in the #immediate parameter.  RVV has the option to set VL
+to an arbitrary value that suits the conditions and the micro-architecture:
+SV does *not* permit that.
+
+The reason is so that if SV is to be used for a context-switch or as a
+substitute for LOAD/STORE-Multiple, the operation can be done with only
+2-3 instructions (setup of the CSRs, VSETVL x0, x0, #{regfilelen-1},
+single LD/ST operation).  If VL does *not* get set to the register file
+length when VSETVL is called, then a software-loop would be needed.
+To avoid this need, VL *must* be set to exactly what is requested
+(limits notwithstanding).
+
+Therefore, in turn, unlike RVV, implementors *must* provide
+pseudo-parallelism (using sequential loops in hardware) if actual
+hardware-parallelism in the ALUs is not deployed.  A hybrid is also
+permitted (as used in Broadcom's VideoCore-IV) however this must be
+*entirely* transparent to the ISA.
 
 ### Under review / discussion: remove CSR vector length, use VSETVL <a name="vsetvl"></a>
+
+**DECISION: CSR vector length removed, VSETVL determines length on all regs**
 
 So the issue is as follows:
 
