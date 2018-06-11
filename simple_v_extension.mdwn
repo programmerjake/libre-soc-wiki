@@ -534,17 +534,25 @@ and 31 for RV32 or RV64).
 
 Note that RVV on top of Simple-V may choose to over-ride this decision.
 
-## Register CSR key-value table
+## Register CSR key-value (CAM) table
 
-Element bitwidths may be specified with a per-register CSR, and indicate
-how a register (integer or floating-point) is to be subdivided.
+The purpose of the Register CSR table is four-fold:
 
-| RegNo | (2..0) |
-| ----- | ------ |
-| r0    | vew0   |
-| r1    | vew1   |
-| ..    | vew..  |
-| r31   | vew31  |
+* To mark integer and floating-point registers as requiring "redirection"
+  if it is ever used as a source or destination in any given operation.
+* To indicate whether, after redirection through the lookup table, the
+  register is a vector (or remains a scalar).
+* To over-ride the implicit or explicit bitwidth that the operation would
+  normally give the register.
+* To indicate if the register is to be interpreted as "packed" (SIMD)
+  i.e. containing multiple contiguous elements of size equal to "bitwidth".
+
+| RgCSR | 15     | 14     | 13       | (12..11) | 10  | (9..5)  | (4..0)  |
+| ----- | -      | -      | -        | -        | -   | ------- | ------- |
+| 0     | simd0  | bank0  | isvec0   | vew0     | i/f | regidx  | predidx |
+| 1     | simd1  | bank1  | isvec1   | vew1     | i/f | regidx  | predidx |
+| ..    | simd.. | bank.. | isvec..  | vew..    | i/f | regidx  | predidx |
+| 15    | simd15 | bank15 | isvec15  | vew15    | i/f | regidx  | predidx |
 
 vew may be one of the following (giving a table "bytestable", used below):
 
@@ -558,14 +566,34 @@ vew may be one of the following (giving a table "bytestable", used below):
 Extending this table (with extra bits) is covered in the section
 "Implementing RVV on top of Simple-V".
 
-Note that when using the "vsetl rs1, rs2" instruction, taking bitwidth
-into account, it becomes:
+As the above table is a CAM (key-value store) it may be appropriate
+to expand it as follows:
 
+    struct vectorised fp_vec[32], int_vec[32]; // 64 in future
+
+    for (i = 0; i < 16; i++) // 16 CSRs?
+       tb = int_vec if CSRvec[i].type == 0 else fp_vec
+       idx = CSRvec[i].regkey // INT/FP src/dst reg in opcode
+       tb[idx].elwidth  = CSRvec[i].elwidth
+       tb[idx].regidx   = CSRvec[i].regidx  // indirection
+       tb[idx].isvector = CSRvec[i].isvector // 0=scalar
+       tb[idx].packed   = CSRvec[i].packed  // SIMD or not
+       tb[idx].bank     = CSRvec[i].bank    // 0 (1=rsvd)
+
+Note that when using the "vsetl rs1, rs2, vlen" instruction, it becomes:
+
+    VL = MIN(MIN(vlen, MAXVECTORDEPTH), rs2)
+
+TODO: move elsewhere
+
+    # TODO: use elsewhere (retire for now)
     vew = CSRbitwidth[rs1]
     if (vew == 0)
         bytesperreg = (XLEN/8) # or FLEN as appropriate
+    elif (vew == 1)
+        bytesperreg = (XLEN/4) # or FLEN/2 as appropriate
     else:
-        bytesperreg = bytestable[vew] # 1 2 4 8 16
+        bytesperreg = bytestable[vew] # 8 or 16
     simdmult = (XLEN/8) / bytesperreg # or FLEN as appropriate
     vlen = CSRvectorlen[rs1] * simdmult
     CSRvlength = MIN(MIN(vlen, MAXVECTORDEPTH), rs2)
@@ -579,12 +607,18 @@ is given in the section "Bitwidth Virtual Register Reordering".
 
 # Instructions
 
-By being a topological remap of RVV concepts, the following RVV instructions
-remain exactly the same: VMPOP, VMFIRST, VEXTRACT, VINSERT, VMERGE, VSELECT,
-VSLIDE, VCLASS and VPOPC.  Two instructions, VCLIP and VCLIPI, do not
-have RV Standard equivalents, so are left out of Simple-V.
-All other instructions from RVV are topologically re-mapped and retain
-their complete functionality, intact.
+Despite being a topological remap of RVV concepts, the only instructions
+needed are VSETVL and VGETVL.  *All* RVV instructions can be re-mapped,
+however xBitManip becomes a critical dependency for efficient manipulation
+of predication masks (as a bit-field).
+Despite this, *all instructions from RVV are topologically re-mapped and retain
+their complete functionality, intact*.
+
+Three instructions, VSELECT, VCLIP and VCLIPI, do not have RV Standard
+equivalents, so are left out of Simple-V.  VSELECT could be included if
+there existed a MV.X instruction in RV (MV.X is a hypothetical
+non-immediate variant of MV that would allow another register to
+specify which register was to be copied).
 
 ## Instruction Format
 
