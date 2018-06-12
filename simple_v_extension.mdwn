@@ -945,6 +945,115 @@ of detecting early page / segmentation faults and adjusting the TLB
 in advance, accordingly: other strategies are explored in the Appendix
 Section "Virtual Memory Page Faults".
 
+## Vectorised Copy/Move instructions
+
+There is a series of 2-operand instructions involving copying (and
+alteration): C.MV, FMV, FNEG, FABS, FCVT, FSGNJ.  These operations all
+follow the same pattern, as it is *both* the source *and* destination
+predication masks that are taken into account.  This is different from
+the three-operand arithmetic instructions, where the predication mask
+is taken from the *destination* register, and applied uniformly to the
+elements of the source register(s), element-for-element.
+
+### C.MV Instruction <a name="c_mv"></a>
+
+There is no MV instruction in RV however there is a C.MV instruction.
+It is used for copying integer-to-integer registers (vectorised FMV
+is used for copying floating-point).
+
+If either the source or the destination register are marked as vectors
+C.MV is reinterpreted to be a vectorised (multi-register) predicated
+move operation.  The actual instruction's format does not change:
+
+[[!table  data="""
+15  12 | 11   7 | 6  2 | 1  0 |
+funct4 | rd     | rs   | op   |
+4      | 5      | 5    | 2    |
+C.MV   | dest   | src  | C0   |
+"""]]
+
+A simplified version of the pseudocode for this operation is as follows:
+
+    function op_mv(rd, rs) # MV not VMV!
+      rd = int_vec[rd].isvector ? int_vec[rd].regidx : rd;
+      rs = int_vec[rs].isvector ? int_vec[rs].regidx : rs;
+      ps = get_pred_val(FALSE, rs); # predication on src
+      pd = get_pred_val(FALSE, rd); # ... AND on dest
+      for (int i = 0, int j = 0; i < VL && j < VL;):
+        if (int_vec[rs].isvec) while (!(ps & 1<<i)) i++;
+        if (int_vec[rd].isvec) while (!(pd & 1<<j)) j++;
+        ireg[rd+j] <= ireg[rs+i];
+        if (int_vec[rs].isvec) i++;
+        if (int_vec[rd].isvec) j++;
+
+Note that:
+
+* elwidth (SIMD) is not covered above
+* ending the loop early in scalar cases (VINSERT, VEXTRACT) is also
+  not covered
+
+There are several different instructions from RVV that are covered by
+this one opcode:
+
+[[!table  data="""
+src    | dest    | predication   | op             |
+scalar | vector  | none          | VSPLAT         |
+scalar | vector  | destination   | sparse VSPLAT  |
+scalar | vector  | 1-bit dest    | VINSERT        |
+vector | scalar  | 1-bit? src    | VEXTRACT       |
+vector | vector  | none          | VCOPY          |
+vector | vector  | src           | Vector Gather  |
+vector | vector  | dest          | Vector Scatter |
+vector | vector  | src & dest    | Gather/Scatter |
+vector | vector  | src == dest   | sparse VCOPY   |
+"""]]
+
+Also, VMERGE may be implemented as back-to-back (macro-op fused) C.MV
+operations with inversion on the src and dest predication for one of the
+two C.MV operations.
+
+Note that in the instance where the Compressed Extension is not implemented,
+MV may be used, but that is a pseudo-operation mapping to addi rd, x0, rs.
+Note that the behaviour is **different** from C.MV because with addi the
+predication mask to use is taken **only** from rd and is applied against
+all elements: rs[i] = rd[i].
+
+### FMV, FNEG and FABS Instructions
+
+These are identical in form to C.MV, except covering floating-point
+register copying.  The same double-predication rules also apply.
+However when elwidth is not set to default the instruction is implicitly
+and automatic converted to a (vectorised) floating-point type conversion
+operation of the appropriate size covering the source and destination
+register bitwidths.
+
+(Note that FMV, FNEG and FABS are all actually pseudo-instructions)
+
+### FVCT Instructions
+
+These are again identical in form to C.MV, except that they cover
+floating-point to integer and integer to floating-point.  When element
+width in each vector is set to default, the instructions behave exactly
+as they are defined for standard RV (scalar) operations, except vectorised
+in exactly the same fashion as outlined in C.MV.
+
+However when the source or destination element width is not set to default,
+the opcode's explicit element widths are *over-ridden* to new definitions,
+and the opcode's element width is taken as indicative of the SIMD width
+(if applicable i.e. if packed SIMD is requested) instead.
+
+For example FCVT.S.L would normally be used to convert a 64-bit
+integer in register rs1 to a 64-bit floating-point number in rd.
+If however the source rs1 is set to be a vector, where elwidth is set to
+default/2 and "packed SIMD" is enabled, then the first 32 bits of
+rs1 are converted to a floating-point number to be stored in rd's
+first element and the higher 32-bits *also* converted to floating-point
+and stored in the second.  The 32 bit size comes from the fact that
+FCVT.S.L's integer width is 64 bit, and with elwidth on rs1 set to
+divide that by two it means that rs1 element width is to be taken as 32.
+
+Similar rules apply to the destination register.
+
 # Exceptions
 
 > What does an ADD of two different-sized vectors do in simple-V?
