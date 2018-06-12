@@ -752,16 +752,15 @@ It is however noted that an entry "FNE" (the opposite of FEQ) is missing,
 and whilst in ordinary branch code this is fine because the standard
 RVF compare can always be followed up with an integer BEQ or a BNE (or
 a compressed comparison to zero or non-zero), in predication terms that
-becomes more of an impact as an explicit (scalar) instruction is needed
-to invert the predicate bitmask.  An additional encoding funct3=011 is
-therefore proposed to cater for this.
+becomes more of an impact.  To deal with this, SV's predication has
+had "invert" added to it.
 
 [[!table  data="""
 31 .. 27| 26 .. 25 |24 ... 20 | 19 15 | 14  12 | 11 .. 7  | 6 ... 0 |
 funct5  | fmt      | rs2      | rs1   | funct3 | rd       | opcode  |
 5       | 2        | 5        | 5     | 3      | 4        | 7       |
 10100   | 00/01/11 | src2     | src1  | 010    | pred rs3 | FEQ     |
-10100   | 00/01/11 | src2     | src1  | **011**| pred rs3 | FNE     |
+10100   | 00/01/11 | src2     | src1  | **011**| pred rs3 | rsvd    |
 10100   | 00/01/11 | src2     | src1  | 001    | pred rs3 | FLT     |
 10100   | 00/01/11 | src2     | src1  | 000    | pred rs3 | FLE     |
 """]]
@@ -809,12 +808,16 @@ Notes:
   Counter, so all of bits 25 through 30 in every case are not needed.
 * There are plenty of reserved opcodes for which bits 25 through 30 could
   be put to good use if there is a suitable use-case.
-* FEQ and FNE (and BEQ and BNE) are included in order to save one
-  instruction having to invert the resultant predicate bitfield.
   FLT and FLE may be inverted to FGT and FGE if needed by swapping
   src1 and src2 (likewise the integer counterparts).
 
 ## Compressed Branch Instruction:
+
+Compressed Branch instructions are likewise re-interpreted as predicated
+2-register operations, with the result going into rs3.  All the bits of
+the immediatee are re-interpreted for different purposes, to extend the
+number of comparator operations to beyond the original specification,
+but also to cater for floating-point comparisons as well as integer ones.
 
 [[!table  data="""
 15..13 | 12...10  | 9..7 | 6..5  | 4..2 | 1..0 | name |
@@ -875,15 +878,14 @@ Pseudo-code (excludes CSR SIMD bitwidth for simplicity):
     if (unit-strided) stride = elsize;
     else stride = areg[as2]; // constant-strided
 
-    pred_enabled = int_pred_enabled
     preg = int_pred_reg[rd]
 
     for (int i=0; i<vl; ++i)
-      if (preg_enabled[rd] && [!]preg[i])
+      if ([!]preg[rd] & 1<<i)
         for (int j=0; j<seglen+1; j++)
         {
           if CSRvectorised[rs2])
-             offs = vreg[rs2][i]
+             offs = vreg[rs2+i]
           else
              offs = i*(seglen+1)*stride;
           vreg[rd+j][i] = mem[sreg[base] + offs + j*stride];
