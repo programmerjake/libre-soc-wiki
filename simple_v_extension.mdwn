@@ -1191,7 +1191,44 @@ It is quite complex, in other words, and needs careful consideration.
 
 ## 8/16-bit ops is it worthwhile adding a "start offset"?
 
-TBD
+The idea here is to make it possible, particularly in a "Packed SIMD"
+case, to be able to avoid doing unaligned Load/Store operations
+by specifying that operations, instead of being carried out
+element-for-element, are offset by a fixed amount *even* in 8 and 16-bit
+element Packed SIMD cases.
+
+For example rather than take 2 32-bit registers divided into 4 8-bit
+elements and have them ADDed element-for-element as follows:
+
+    r3[0] = add r4[0], r6[0]
+    r3[1] = add r4[1], r6[1]
+    r3[2] = add r4[2], r6[2]
+    r3[3] = add r4[3], r6[3]
+
+an offset of 1 would result in four operations as follows, instead:
+
+    r3[0] = add r4[1], r6[0]
+    r3[1] = add r4[2], r6[1]
+    r3[2] = add r4[3], r6[2]
+    r3[3] = add r5[0], r6[3]
+
+In non-packed-SIMD mode there is no benefit at all, as a vector may
+be created using a different CSR that has the offset built-in.  So this
+leaves just the packed-SIMD case to consider.
+
+Two ways in which this could be implemented / emulated (without special
+hardware):
+
+* bit-manipulation that shuffles the data along by one byte (or one word)
+  either prior to or as part of the operation requiring the offset.
+* just use an unaligned Load/Store sequence, even if there are performance
+  penalties for doing so.
+
+The question then is whether the performance hit is worth the extra hardware
+involving byte-shuffling/shifting the data by an arbitrary offset.  On
+balance given that there are two reasonable instruction-based options, the
+hardware-offset option should be left out for the initial version of SV,
+with the option to consider it in an "advanced" version of the specification.
 
 # Impementing V on top of Simple-V
 
