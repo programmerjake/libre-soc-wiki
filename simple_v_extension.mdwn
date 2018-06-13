@@ -1133,19 +1133,61 @@ Conclusion: all needs careful analysis and future work.
 
 ## Should use of registers be allowed to "wrap" (x30 x31 x1 x2)?
 
-TBD
+On balance it's a neat idea however it does seem to be one where the
+benefits are not really clear.  It would however obviate the need for
+an exception to be raised if the VL runs out of registers to put
+things in (gets to x31, tries a non-existent x32 and fails), however
+the "fly in the ointment" is that x0 is hard-coded to "zero".  The
+increment therefore would need to be double-stepped to skip over x0.
+Some microarchitectures could run into difficulties (SIMD-like ones
+in particular) so it needs a lot more thought.
 
 ## Can CLIP be done as a CSR (mode, like elwidth)
 
-TBD
+RVV appears to be going this way.  At the time of writing (12jun2018)
+it's noted that in V2.3-Draft V0.4 RVV Chapter, RVV intends to do
+clip by way of exactly this method: setting a "clip mode" in a CSR.
+
+No details are given however the most sensible thing to have would be
+to extend the 16-bit Register CSR table to 24-bit (or 32-bit) and have
+extra bits specifying the type of clipping to be carried out, on
+a per-register basis.  Other bits may be used for other purposes
+(see SIMD saturation below)
 
 ## SIMD saturation (etc.) also set as a mode?
 
-TBD
+Similar to "CLIP" as an extension to the CSR key-value store, "saturate"
+may also need extra details (what the saturation maximum is for example).
 
 ## Include src1/src2 predication on Comparison Ops?
 
-TBD
+In the C.MV (and other ops - see "C.MV Instruction"), the decision
+was taken, unlike in ADD (etc.) which are 3-operand ops, to use
+*both* the src *and* dest predication masks to give an extremely
+powerful and flexible instruction that covers a huge number of
+"traditional" vector opcodes.
+
+The natural question therefore to ask is: where else could this
+flexibility be deployed?  What about comparison operations?
+
+Unfortunately, C.MV is basically "regs[dest] = regs[src]" whilst
+predicated comparison operations are actually a *three* operand
+instruction:
+
+    regs[pred] |= 1<< (cmp(regs[src1], regs[src2]) ? 1 : 0)
+
+Therefore at first glance it does not make sense to use src1 and src2
+predication masks, as it breaks the rule of 3-operand instructions
+to use the *destination* predication register.
+
+In this case however, the destination *is* a predication register
+as opposed to being a predication mask that is applied *to* the
+(vectorised) operation, element-at-a-time on src1 and src2.
+
+Thus the question is directly inter-related to whether the modification
+of the predication mask should *itself* be predicated.
+
+It is quite complex, in other words, and needs careful consideration.
 
 ## 8/16-bit ops is it worthwhile adding a "start offset"?
 
