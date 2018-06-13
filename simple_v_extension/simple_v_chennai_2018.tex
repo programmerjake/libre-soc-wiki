@@ -70,7 +70,7 @@
    \item Extending RVV requires customisation not just of h/w:\\
 	     gcc, binutils also need customisation (and maintenance)
    \item Fascinatingly, despite being a SIMD-variant, RVV only has
-         O(1) opcode proliferation! (extremely well designed)
+         O(N) opcode proliferation! (extremely well designed)
   \end{itemize}
 }
 
@@ -301,7 +301,6 @@ for (int i = 0; i < VL; ++i)
 
 \begin{semiverbatim}
 struct vectorised fp\_vec[32], int\_vec[32]; // 64 in future
-
 for (i = 0; i < 16; i++) // 16 CSRs?
    tb = int\_vec if CSRvec[i].type == 0 else fp\_vec
    idx = CSRvec[i].regkey // INT/FP src/dst reg in opcode
@@ -310,6 +309,7 @@ for (i = 0; i < 16; i++) // 16 CSRs?
    tb[idx].isvector = CSRvec[i].isvector
    tb[idx].packed   = CSRvec[i].packed  // SIMD or not
    tb[idx].bank     = CSRvec[i].bank    // 0 (1=rsvd)
+   tb[idx].enabled  = true
 \end{semiverbatim}
 
  \begin{itemize}
@@ -344,7 +344,6 @@ for (i = 0; i < 16; i++) // 16 CSRs?
 
 \begin{semiverbatim}
 struct pred fp\_pred[32], int\_pred[32]; // 64 in future
-
 for (i = 0; i < 16; i++) // 16 CSRs?
    tb = int\_pred if CSRpred[i].type == 0 else fp\_pred
    idx = CSRpred[i].regkey
@@ -356,7 +355,8 @@ for (i = 0; i < 16; i++) // 16 CSRs?
 \end{semiverbatim}
 
  \begin{itemize}
-   \item All 32 int and 32 FP entries zero'd before setting
+   \item All 32 int and 32 FP entries zero'd before setting\\
+	     (predication disabled)
    \item Might be a bit complex to set up in hardware (keep as CAM?)
   \end{itemize}
 
@@ -524,7 +524,7 @@ function op\_add(rd, rs1, rs2) # add not VADD!
 \frame{\frametitle{Why are overlaps allowed in Regfiles?}
 
  \begin{itemize}
-   \item Same register(s) can have multiple "interpretations"
+   \item Same target register(s) can have multiple "interpretations"
    \item CSRs are costly to write to (do it once)
    \item Set "real" register (scalar) without needing to set/unset CSRs.
    \item xBitManip plus SIMD plus xBitManip = Hi/Lo bitops
@@ -536,7 +536,7 @@ function op\_add(rd, rs1, rs2) # add not VADD!
   \end{itemize}
   Note:
    \begin{itemize}
-   \item xBitManip reduces O($N^{6}$) SIMD down to O($N^{3}$)
+   \item xBitManip reduces O($N^{6}$) SIMD down to O($N^{3}$) on its own.
    \item Hi-Performance: Macro-op fusion (more pipeline stages?)
   \end{itemize}
 }
@@ -550,8 +550,8 @@ function op\_add(rd, rs1, rs2) # add not VADD!
    \item scalar-to-vector (w/ 1-bit dest-pred): VINSERT
    \item vector-to-scalar (w/ [1-bit?] src-pred): VEXTRACT
    \item vector-to-vector (w/ no pred): Vector Copy
-   \item vector-to-vector (w/ src pred): Vector Gather
-   \item vector-to-vector (w/ dest pred): Vector Scatter
+   \item vector-to-vector (w/ src pred): Vector Gather (inc VSLIDE)
+   \item vector-to-vector (w/ dest pred): Vector Scatter (inc. VSLIDE)
    \item vector-to-vector (w/ src \& dest pred): Vector Gather/Scatter
   \end{itemize}
   \vspace{4pt}
@@ -686,7 +686,7 @@ loop:
  CSRvect1 = \{type: F, key: a3, val: a3, elwidth: dflt\}
  CSRvect2 = \{type: F, key: a7, val: a7, elwidth: dflt\}
 loop:
- setvl  t0, a0, 4       # vl = t0 = min(4, n)
+ setvl  t0, a0, 4       # vl = t0 = min(min(mvl, 4, n))
  ld     a3, a1          # load 4 registers a3-6 from x
  slli   t1, t0, 3       # t1 = vl * 8 (in bytes)
  ld     a7, a2          # load 4 registers a7-10 from y

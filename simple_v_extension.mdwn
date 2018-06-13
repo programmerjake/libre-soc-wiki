@@ -1068,6 +1068,89 @@ Similar rules apply to the destination register.
 * Throw an exception.  Whether that actually results in spawning threads
   as part of the trap-handling remains to be seen.
 
+# Under consideration
+
+From the Chennai 2018 slides the following issues were raised.
+Efforts to analyse and answer these questions are below.
+
+* Should future extra bank be included now?
+* How many Register and Predication CSRs should there be?
+         (and how many in RV32E)
+* How many in M-Mode (for doing context-switch)?
+* Should use of registers be allowed to "wrap" (x30 x31 x1 x2)?
+* Can CLIP be done as a CSR (mode, like elwidth)
+* SIMD saturation (etc.) also set as a mode?
+* Include src1/src2 predication on Comparison Ops?
+  (same arrangement as C.MV, with same flexibility/power)
+* 8/16-bit ops is it worthwhile adding a "start offset"?
+  (a bit like misaligned addressing... for registers)
+  or just use predication to skip start?
+
+## Future (extra) bank be included (made mandatory)
+
+The implications of expanding the *standard* register file from
+32 entries per bank to 64 per bank is quite an extensive architectural
+change.  Also it has implications for context-switching.
+
+Therefore, on balance, it is not recommended and certainly should
+not be made a *mandatory* requirement for the use of SV.  SV's design
+ethos is to be minimally-disruptive for implementors to shoe-horn
+into an existing design.
+
+## How large should the Register and Predication CSR key-value stores be?
+
+This is something that definitely needs actual evaluation and for
+code to be run and the results analysed.  At the time of writing
+(12jul2018) that is too early to tell.  An approximate best-guess
+however would be 16 entries.
+
+RV32E however is a special case, given that it is highly unlikely
+(but not outside the realm of possibility) that it would be used
+for performance reasons but instead for reducing instruction count.
+The number of CSR entries therefore has to be considered extremely
+carefully.
+
+## How many CSR entries in M-Mode or S-Mode (for context-switching)?
+
+The minimum required CSR entries would be 1 for each register-bank:
+one for integer and one for floating-point.  However, as shown
+in the "Context Switch Example" section, for optimal efficiency
+(minimal instructions in a low-latency situation) the CSRs for
+the context-switch should be set up *and left alone*.
+
+This means that it is not really a good idea to touch the CSRs
+used for context-switching in the M-Mode (or S-Mode) trap, so
+if there is ever demonstrated a need for vectors then there would
+need to be *at least* one more free.  However just one does not make
+much sense (as it one only covers scalar-vector ops) so it is more
+likely that at least two extra would be needed.
+
+This *in addition* - in the RV32E case - if an RV32E implementation
+happens also to support U/S/M modes.  This would be considered quite
+rare but not outside of the realm of possibility.
+
+Conclusion: all needs careful analysis and future work.
+
+## Should use of registers be allowed to "wrap" (x30 x31 x1 x2)?
+
+TBD
+
+## Can CLIP be done as a CSR (mode, like elwidth)
+
+TBD
+
+## SIMD saturation (etc.) also set as a mode?
+
+TBD
+
+## Include src1/src2 predication on Comparison Ops?
+
+TBD
+
+## 8/16-bit ops is it worthwhile adding a "start offset"?
+
+TBD
+
 # Impementing V on top of Simple-V
 
 With Simple-V converting the original RVV draft concept-for-concept
