@@ -32,6 +32,35 @@
 }
 
 
+\frame{\frametitle{Glossary}
+
+ \begin{itemize}
+   \item Pin: an I/O pad.  May be driven (input) or may drive (output).
+   \item FN: term for a single-wire "function", such as UART\_TX,
+	     I2C\_SDA, SDMMC\_D0 etc.  may be an input, output or both
+		 (bi-directional: separate wires are always allocated).
+   \item TODO\vspace{10pt}
+  \end{itemize}
+}
+
+
+\frame{\frametitle{Muxer cases to handle}
+
+ \begin{itemize}
+   \item Many FN outputs to Many Pins: no problem\\
+	     (weird configuration by end-user, but no damage to ASIC)\vspace{10pt}
+   \item One Pin to Many FN inputs: no problem\\
+         (weird configuration by end-user, but no damage to ASIC)\vspace{10pt}
+   \item Many Pins to One FN input {\bf Priority Mux needed}\\
+	     No priority mux: Pin1 = HI, Pin0 = LO, ASIC is damaged\vspace{10pt}
+   \item Some FNs (I2C\_SDA, SD\_D0..3) are I/O Buses\\
+	     Bi-directional control of the Pin must be handed to the
+	     FN\vspace{10pt}
+   \item TODO\vspace{10pt}
+  \end{itemize}
+}
+
+
 \frame{\frametitle{Standard GPIO 4-way in/out Mux and I/O pad}
  \begin{center}
   \includegraphics[height=2.5in]{../shakti/m_class/mygpiomux.jpg}\\
