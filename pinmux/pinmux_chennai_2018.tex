@@ -56,6 +56,41 @@
 }
 
 
+\frame{\frametitle{Simplified I/O pad Block Diagram}
+ \begin{center}
+  \includegraphics[height=2.5in]{reg_gpio_pinblock.jpg}\\
+  {\bf 3 wires: IN, OUT, OUTEN (also = !INEN) }
+ \end{center}
+}
+
+
+\frame{\frametitle{Output (and OUTEN) Wiring. 2 pins, 2 GPIO, 2 Fns}
+ \begin{center}
+  \includegraphics[height=2.5in]{reg_gpio_out_wiring.jpg}\\
+  {\bf Reg0 for Pin0, Reg1 for Pin1, Output and OUTEN same mux }
+ \end{center}
+}
+
+
+\frame{\frametitle{Input Selection and Priority Muxing}
+ \begin{center}
+  \includegraphics[height=0.75in]{reg_gpio_comparator.jpg}\\
+  {\bf Muxer enables input selection}\\
+  \vspace{10pt}
+  \includegraphics[height=1.25in]{reg_gpio_in_prioritymux.jpg}\\
+  {\bf However multiple inputs must be prioritised }
+ \end{center}
+}
+
+
+\frame{\frametitle{Input Mux Wiring}
+ \begin{center}
+  \includegraphics[height=2.5in]{reg_gpio_in_wiring.jpg}\\
+  {\bf Pin Mux selection vals NOT same as FN selection vals}
+ \end{center}
+}
+
+
 \frame{\frametitle{Summary}
 
  \begin{itemize}
