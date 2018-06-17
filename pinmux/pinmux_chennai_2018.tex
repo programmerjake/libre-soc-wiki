@@ -40,13 +40,15 @@
 	     I2C\_SDA, SDMMC\_D0 etc.  may be an input, output or both
 		 (bi-directional case: two wires are always allocated, one
 		  for input to the function and one for output from the function).
-   \item Input Priority Muxer: a multiplexer that has N selector
+   \item Bus: a group of bi-directional functions (SDMMC D0 to D3)
+         where the direction is ganged and under the Bus's control
+   \item Input Priority Muxer: a multiplexer with N selector
 		 wires and N inputs, where the lowest (or highest) indexed
-		 "selector" that is enabled results in its corresponding
+		 "selector" enabled results in its 
 		 input being routed to the output.
    \item Output Demuxer: a one-to-many "redirector" where a single
-	     input is "routed" to any one of a number of outputs, based
-	     on a selection address.
+	     input is "routed" to any one output, based
+	     on a selector.
    \item GPIO: general-purpose reconfigureable I/O (Input/Output).
   \end{itemize}
 }
@@ -118,7 +120,7 @@
    \item Some FNs (I2C\_SDA, SD\_D0..3) are I/O Buses\\
 	     Bi-directional control of the Pin must be handed to the
 	     FN\vspace{10pt}
-   \item TODO\vspace{10pt}
+   \item Nice to have: Bus sets pintype, signal strength etc.\vspace{10pt}
   \end{itemize}
 }
 
