@@ -125,6 +125,26 @@
 }
 
 
+\frame{\frametitle{Pin Configuration, input and output}
+
+ In/out:
+ \begin{itemize}
+   \item Output-Enable (aka Input disable): switches pad to In or Out
+   \item Output (actually an input wire controlling pin's level, HI/LO)
+   \item Input (actually an output wire set based on pin's driven level)
+ \end{itemize}
+ Characteristics:
+ \begin{itemize}
+   \item Output current level: 10mA / 20mA / 30mA / 40mA
+   \item Input hysteresis: low / middle / high. Stops signal noise
+   \item Pin characteristics: CMOS Push-Push / Open-Drain
+   \item Pull-up enable: built-in 10k (50k?) resistor
+   \item Pull-down enable: built-in 10k (50k?) resistor
+   \item Muxing and IRQ Edge-detection not part of the I/O pin
+  \end{itemize}
+}
+
+
 \frame{\frametitle{Standard GPIO 4-way in/out Mux and I/O pad}
  \begin{center}
   \includegraphics[height=2.5in]{../shakti/m_class/mygpiomux.jpg}\\
