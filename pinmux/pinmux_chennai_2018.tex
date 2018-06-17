@@ -57,17 +57,54 @@
  \begin{itemize}
    \item Why? To save cost, increase yield, and to target multiple
          markets with the same design, thereby increasing uptake
-         and consequently taking advantage of volume pricing.\vspace{10pt}
+         and consequently taking advantage of volume pricing.\vspace{4pt}
          \\
-         Summary: it's all about making more money!\vspace{10pt}
+         Summary: it's all about making more money!\vspace{4pt}
    \item How? By multiplexing many more functions (100 to 1,200) than there
          are actual available pins (48 to 500), the required chip package
-	     is far less costly and the chip more desirable\vspace{10pt}
+	     is far less costly and the chip more desirable\vspace{4pt}
    \item What? A many-to-many dynamically-configureable router of
-         I/O functions to I/O pins\vspace{10pt}
+         I/O functions to I/O pins\vspace{4pt}
+   \item \bf{Note: actual muxing is deceptively simple, but like
+         a DRAM cell it's actually about the ancillaries / extras}
   \end{itemize}
 }
 
+
+\frame{\frametitle{Associated Extras}
+
+ \begin{itemize}
+   \item Design Specification
+   \item Scenario analysis (whether the chip will fit "markets")
+   \item Documentation: Summary sheet, Technical Reference Manual.
+   \item Test suites
+   \item Control Interface
+   \item Simulation
+   \item Linux kernel drivers, DTB, libopencm3, Arduino
+  \end{itemize}
+ Example context:
+ \begin{itemize}
+   \item Shakti M-Class has 160 pins with a 99.5\% full 4-way mux
+   \item Almost 640-way routing, 6 "scenarios" (7th TBD),
+         100+ page Manual needed,
+         \bf{17,500 lines of auto-generated code}
+  \end{itemize}
+}
+
+
+\frame{
+  \vspace{30pt}
+  \begin{center}
+    {\Huge 
+		   ALL of these\vspace{20pt}\\
+		   can be\vspace{20pt}\\
+		   auto-generated\vspace{30pt}
+	}
+	\\
+	(translation: it would be insanely costly to do them by hand)
+  \end{center}
+  
+}
 
 \frame{\frametitle{Muxer cases to handle}
 
