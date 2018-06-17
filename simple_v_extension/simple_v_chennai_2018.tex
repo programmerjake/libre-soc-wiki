@@ -124,15 +124,16 @@
 \frame{\frametitle{How does Simple-V relate to RVV? What's different?}
 
  \begin{itemize}
-   \item RVV very heavy-duty (excellent for supercomputing)\vspace{8pt}
-   \item Simple-V abstracts parallelism (based on best of RVV)\vspace{8pt}
-   \item Graded levels: hardware, hybrid or traps (fit impl. need)\vspace{8pt}
-   \item Even Compressed become vectorised (RVV can't)\vspace{8pt}
-   \item No polymorphism in SV (too complex)\vspace{8pt}
+   \item RVV very heavy-duty (excellent for supercomputing)\vspace{4pt}
+   \item Simple-V abstracts parallelism (based on best of RVV)\vspace{4pt}
+   \item Graded levels: hardware, hybrid or traps (fit impl. need)\vspace{4pt}
+   \item Even Compressed become vectorised (RVV can't)\vspace{4pt}
+   \item No polymorphism in SV (too complex)\vspace{4pt}
   \end{itemize}
   What Simple-V is not:\vspace{4pt}
    \begin{itemize}
-   \item A full supercomputer-level Vector Proposal
+   \item A full supercomputer-level Vector Proposal\\
+	     (it's not actually a Vector Proposal at all!)
    \item A replacement for RVV (SV is designed to be over-ridden\\
 	     by - or augmented to become - RVV)
   \end{itemize}
@@ -153,7 +154,7 @@
    \begin{itemize}
    \item All LOAD/STORE (inc. Compressed, Int/FP versions)
    \item All ALU ops (Int, FP, SIMD, DSP, everything)
-   \item All branches become predication targets (C.FNE added?)
+   \item All branches become predication targets (note: no FNE)
    \item C.MV of particular interest (s/v, v/v, v/s)
    \item FCVT, FMV, FSGNJ etc. very similar to C.MV
   \end{itemize}
