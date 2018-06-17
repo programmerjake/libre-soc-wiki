@@ -112,16 +112,17 @@
 
  \begin{itemize}
    \item Many FN outputs to Many Pins: no problem\\
-	     (weird configuration by end-user, but no damage to ASIC)\vspace{8pt}
+	     (weird configuration by end-user, but no damage to ASIC)\vspace{6pt}
    \item One Pin to Many FN inputs: no problem\\
-         (weird configuration by end-user, but no damage to ASIC)\vspace{8pt}
+         (weird configuration by end-user, but no damage to ASIC)\vspace{6pt}
    \item Many Pins to One FN input: {\bf Priority Mux needed}\\
-	     No priority mux: Pin1 = HI, Pin0 = LO, ASIC is damaged\vspace{8pt}
+	     No priority mux: Pin1 = HI, Pin0 = LO, ASIC is damaged\vspace{6pt}
    \item Some FNs (I2C\_SDA, SD\_D0..3) are I/O Buses\\
 	     Bi-directional control of the Pin must be handed to the
-	     FN\vspace{8pt}
+	     FN\vspace{6pt}
    \item Nice to have: Bus sets pintype, signal strength etc.\\
-	     e.g. selecting SD/MMC doesn't need manual pin-config.
+	     e.g. selecting SD/MMC doesn't need manual pin-config.\\
+	     \bf{caveat: get that wrong and the ASIC can't be sold}
   \end{itemize}
 }
 
