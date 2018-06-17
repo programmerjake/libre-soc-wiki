@@ -128,18 +128,20 @@
   \end{itemize}
 }
 
-\frame{\frametitle{Muxer cases to handle}
+\frame{\frametitle{Muxer cases to handle (One/Many to One/Many) etc.}
 
  \begin{itemize}
-   \item Many FN outputs to Many Pins: no problem\\
-	     (weird configuration by end-user, but no damage to ASIC)\vspace{6pt}
+   \item One FN outputs to Many Pins: no problem\\
+	     (weird configuration by end-user, but no damage to ASIC)
    \item One Pin to Many FN inputs: no problem\\
-         (weird configuration by end-user, but no damage to ASIC)\vspace{6pt}
+         (weird configuration by end-user, but no damage to ASIC)
    \item Many Pins to One FN input: {\bf Priority Mux needed}\\
-	     No priority mux: Pin1 = HI, Pin0 = LO, ASIC is damaged\vspace{6pt}
+	     No priority mux: Pin1 = HI, Pin0 = LO, ASIC is damaged
+   \item Many FN outputs simultaneously to one Pin: {\bf does not occur}\\
+	     (not desirable and not possible, as part of the pinmux design)
    \item Some FNs (I2C\_SDA, SD\_D0..3) are I/O Buses\\
 	     Bi-directional control of the Pin must be handed to the
-	     FN\vspace{6pt}
+	     FN
    \item Nice to have: Bus sets pintype, signal strength etc.\\
 	     e.g. selecting SD/MMC doesn't need manual pin-config.\\
 	     \bf{caveat: get that wrong and the ASIC can't be sold}
