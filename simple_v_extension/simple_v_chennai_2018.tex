@@ -301,15 +301,15 @@ for (int i = 0; i < VL; ++i)
 \frametitle{Register key-value CSR table decoding pseudocode}
 
 \begin{semiverbatim}
-struct vectorised fp\_vec[32], int\_vec[32]; // 64 in future
+struct vectorised fp\_vec[32], int\_vec[32];
 for (i = 0; i < 16; i++) // 16 CSRs?
    tb = int\_vec if CSRvec[i].type == 0 else fp\_vec
    idx = CSRvec[i].regkey // INT/FP src/dst reg in opcode
    tb[idx].elwidth  = CSRvec[i].elwidth
    tb[idx].regidx   = CSRvec[i].regidx  // indirection
+   tb[idx].regidx  += CSRvec[i].bank << 5 // 0 (1=rsvd)
    tb[idx].isvector = CSRvec[i].isvector
    tb[idx].packed   = CSRvec[i].packed  // SIMD or not
-   tb[idx].bank     = CSRvec[i].bank    // 0 (1=rsvd)
    tb[idx].enabled  = true
 \end{semiverbatim}
 
@@ -344,14 +344,14 @@ for (i = 0; i < 16; i++) // 16 CSRs?
 \frametitle{Predication key-value CSR table decoding pseudocode}
 
 \begin{semiverbatim}
-struct pred fp\_pred[32], int\_pred[32]; // 64 in future
+struct pred fp\_pred[32], int\_pred[32];
 for (i = 0; i < 16; i++) // 16 CSRs?
    tb = int\_pred if CSRpred[i].type == 0 else fp\_pred
    idx = CSRpred[i].regkey
    tb[idx].zero     = CSRpred[i].zero    // zeroing
    tb[idx].inv      = CSRpred[i].inv     // inverted
    tb[idx].predidx  = CSRpred[i].predidx // actual reg
-   tb[idx].bank     = CSRpred[i].bank    // 0 for now
+   tb[idx].predidx += CSRvec[i].bank << 5 // 0 (1=rsvd)
    tb[idx].enabled  = true
 \end{semiverbatim}
 

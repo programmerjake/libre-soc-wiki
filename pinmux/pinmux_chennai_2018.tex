@@ -176,6 +176,24 @@
  \end{center}
 }
 
+\frame{\frametitle{Pin Configuration, input and output}
+
+ \begin{itemize}
+   \item Standard Mux design {\bf cannot deal with many-to-one inputs}\\
+	     (SiFive IOF source code from Freedom U310 cannot, either)
+	     \vspace{4pt}
+   \item I/O pad configuration conflated with Muxer conflated with GPIO
+         conflated with EINT
+         	     \vspace{4pt}
+   \item Need to separate all of these out
+            	     \vspace{4pt}
+   \item EINTs to be separate FNs (managed by RISC-V PLIC)
+            	     \vspace{4pt}
+   \item GPIO In/Out/Direction treated just like any other FN
+            	     \vspace{4pt}
+   \item Pad configuration separated and given one-to-one Registers
+ \end{itemize}
+}
 
 \frame{\frametitle{Register-to-pad "control" settings}
  \begin{center}
