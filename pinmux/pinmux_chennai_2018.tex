@@ -103,7 +103,7 @@
 		   auto-generated\vspace{30pt}
 	}
 	\\
-	(i.e. it would be insanely costly to do them by hand)
+	(from the Design Specification, after Scenario Analysis)
   \end{center}
   
 }
@@ -127,6 +127,30 @@
    		 \vspace{10pt}
   \end{itemize}
 }
+
+
+\frame{\frametitle{Design Spec and Scenario Analysis}
+
+ \begin{itemize}
+   \item Analyse the target markets that the chip will sell in\\
+	     (multiple markets increases sales volume, reduces chip cost)
+	     \vspace{4pt}
+   \item Create a formal (python-based) specification for the pinmux
+	     \vspace{4pt}
+   \item Add scenarios then check that they meet the requirements\\
+	     { \bf (before spending money on hardware engineers!) }
+	     \vspace{4pt}
+   \item Scenarios represent target markets: ICs to be connected\\
+         (GPS, NAND IC, WIFI etc.  May require preliminary schematics
+         drawn up, or client-supplied schematics analysed).
+		 \vspace{4pt}
+   \item Analyse the scenarios: if pins are missing, alter and repeat.\\
+		 \vspace{4pt}
+   \item Eventually the pinmux meets all requirements...\\
+	     { \bf without spending USD \$5m to \$50m to find out }
+  \end{itemize}
+}
+
 
 \frame{\frametitle{Muxer cases to handle (One/Many to One/Many) etc.}
 
