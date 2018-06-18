@@ -185,13 +185,18 @@
    \item I/O pad configuration conflated with Muxer conflated with GPIO
          conflated with EINT
          	     \vspace{4pt}
-   \item Need to separate all of these out
+ \end{itemize}
+   {\bf IMPORTANT to separate all of these out:
+            	     \vspace{4pt}}
+ \begin{itemize}
+   \item EINTs to be totally separate FNs. managed by RISC-V PLIC\\
+         (If every GPIO was an EINT it would mean 100+ IRQs)
             	     \vspace{4pt}
-   \item EINTs to be separate FNs (managed by RISC-V PLIC)
+   \item GPIO In/Out/Direction treated just like any other FN\\
+	     (but happen to have AXI4 memory-mapping)
             	     \vspace{4pt}
-   \item GPIO In/Out/Direction treated just like any other FN
-            	     \vspace{4pt}
-   \item Pad configuration separated and given one-to-one Registers
+   \item Pad configuration separated and given one-to-one Registers\\
+	     (SRAMs set by AXI4 to control mux, pullup, current etc.)
  \end{itemize}
 }
 
