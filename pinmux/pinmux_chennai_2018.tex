@@ -243,6 +243,21 @@
 }
 
 
+\frame{\frametitle{Output Muxer (very simple)}
+ \begin{center}
+  \includegraphics[height=1.1in]{reg_gpio_out_mux.jpg}\\
+  {\bf Ouput Muxer using 2-bit address selection}\\
+ \end{center}
+ \begin{itemize}
+   \item Very straightforward (deceptively so, like SRAM cells)
+   \item Used in both OUT routing and Direction-control routing\\
+	     (same address for each, connected to same FNs)
+   \item More complex pinmux will have 3-bit addressing (8 FNs)\\
+		 (Note: not all outputs will be connected, depends on pinmux)
+ \end{itemize}
+}
+
+
 \frame{\frametitle{In/Out muxing, direction control: GPIO just a FN}
  \begin{center}
   \includegraphics[height=2.5in]{reg_gpio_fn_ctrl.jpg}\\
