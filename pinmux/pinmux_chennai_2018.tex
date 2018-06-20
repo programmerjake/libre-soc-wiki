@@ -276,11 +276,34 @@
 }
 
 
-\frame{\frametitle{Input Mux Wiring}
+\frame{\frametitle{Input Priority-Mux Wiring: very different from Out-Mux}
  \begin{center}
   \includegraphics[height=2.5in]{reg_gpio_in_wiring.jpg}\\
   {\bf Pin Mux selection vals NOT same as FN selection vals}
  \end{center}
+}
+
+
+\frame{\frametitle{Input Priority-Mux Wiring}
+
+ \begin{itemize}
+   \item In-Muxer selection number (0,1,2,3) obviously has to match
+         with Out-Muxer order (otherwise a bi-directional FN
+         needs different Mux-register settings for
+          selecting either IN or OUT)
+	     \vspace{6pt}
+   \item Priority-mux selection values do not actually matter,
+         and have nothing to do with the actual Muxer settings.
+	     \vspace{6pt}
+   \item GPIO FN's input muxer is nothing more than an AND gate\\
+         (you never route more than one pin to one GPIO)
+	     \vspace{6pt}
+   \item Any other FN with only 1:1 In also an AND gate \\
+	     (this just always happens to be true for GPIO)
+	     \vspace{6pt}
+   \item Not all FNs have input capability: clearly they will not
+	     be included in the In-Muxing. 
+  \end{itemize}
 }
 
 
