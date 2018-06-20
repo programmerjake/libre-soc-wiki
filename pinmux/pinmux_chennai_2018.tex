@@ -329,7 +329,7 @@
    \item GPIO FN's input muxer is nothing more than an AND gate\\
          (you never route more than one pin to one GPIO)
 	     \vspace{6pt}
-   \item Any other FN with only 1:1 In also an AND gate \\
+   \item Any other FN with only 1:1 on its IN also just an AND gate \\
 	     (this just always happens to be true for GPIO)
 	     \vspace{6pt}
    \item Not all FNs have input capability: clearly they will not
@@ -342,7 +342,7 @@
 
  \begin{itemize}
    \item Value of Libre/Open pimux dramatically underestimated\\
-	     (and does not presently exist: SiFive IOF not suitable)
+	     (and does not presently exist: SiFive IOF not suitable as-is)
    \item {\bf Only current option: license a commercial Pinmux }
    \item Actual muxing, like SRAM cells, is deceptively simple
    \item Actual pinmuxes are enormous: auto-generation essential
