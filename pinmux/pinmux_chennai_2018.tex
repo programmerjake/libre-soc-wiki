@@ -141,7 +141,7 @@
 \frame{\frametitle{Associated Extras}
 
  \begin{itemize}
-   \item Design Specification (what markets to target)
+   \item Design Specification ({\bf what} markets to target)
    \item Scenario analysis ({\bf whether} the chip will fit "markets")
    \item Documentation: Summary sheet, Technical Reference Manual.
    \item Test suites
@@ -190,21 +190,23 @@
 \frame{\frametitle{Reduce workload, reduce duplication, reduce risk and cost}
 
  \begin{itemize}
-   \item Auto-generate everything: documentation, code, libraries etc.
-	     \vspace{10pt}
+   \item Auto-generate everything: documentation, code, libraries etc.\\
+	     (including device-tree files, FreeBSD / Linux / RTOS kernel
+	     drivers, Arduino, libopencm3 and other EC firmware libraries)
+	     \vspace{4pt}
    \item Standardise: similar to PLIC, propose GPIO and Pinmux\\
 	     saves engineering effort, design effort and much more
-	     \vspace{10pt}
+	     \vspace{4pt}
    \item Standardise format of configuration registers:
 	     saves code duplication effort (multiple software environments)
-		 \vspace{10pt}
+		 \vspace{4pt}
    \item Add support for multiple code formats: Chisel3 (SiFive IOF),
 	     BSV (Bluespec), Verilog, VHDL, MyHDL.
-		 \vspace{10pt}
+		 \vspace{4pt}
    \item Multiple auto-generated code-formats permits cross-validation:\\
 	     auto-generated test suite in one HDL can validate a muxer
 	     generated for a different target HDL.
-   		 \vspace{10pt}
+   		 \vspace{4pt}
   \end{itemize}
 }
 
