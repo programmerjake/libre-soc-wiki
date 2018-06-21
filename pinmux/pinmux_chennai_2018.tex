@@ -75,29 +75,59 @@
 }
 
 
-\frame{\frametitle{What options are available (at time of writing)?}
+\frame{\frametitle{What options are available (at time of writing)? [1]}
 
+ \vspace{6pt}
+ {\bf Commercial licensed}:
+ \vspace{4pt}
  \begin{itemize}
-   \item Commercial licensed.  Cost: unknown. Flexibility: unknown.
-	     Language: unknown.  Capability for auto-generation of Docs:
-		 unknown.  Capability for auto-generation of ancillary
-		 resources: unknown.
-		 Suitability for wide range of systems: unknown.
-	     \vspace{4pt}
-         \\
-         Suitability for saving RISC-V ecosystem money: { \bf NONE }\\
-         Suitability for collaboration: {\bf ZERO} (i.e. don't bother)
-   \item SiFive IOF.  License: Good!  Flexibility: not so good.
-	     Language: chisel3.  Capability for auto-generation of Docs:
-	     none.  Capability for auto-generation of ancillary resources: partial.
-	     Suitability for wide range of systems: not so good.
-	     \vspace{4pt}
-	     \\
-         Suitability for saving RISC-V ecosystem money: { \bf Low }\\
-         Suitability for collaboration: {\bf GOOD} (but: written in Chisel3)
-   \item \bf{Summary: NO suitable Libre-licensed pinmux code exists}
-	   
+   \item Cost: unknown.
+   \item Flexibility: unknown.
+   \item Language: unknown.
+   \item Capability for auto-generation of Docs: unknown.
+   \item Capability for auto-generation of ancillary resources: unknown.
+   \item Suitability for wide range of systems: unknown.
+	     \vspace{10pt}
+   \item Suitability for saving RISC-V ecosystem money: {\bf NONE }
+   \item Suitability for collaboration: {\bf ZERO} (i.e. don't bother)
   \end{itemize}
+}
+
+
+\frame{\frametitle{What options are available (at time of writing)? [2]}
+
+ \vspace{6pt}
+ {\bf SiFive IOF (Freedom E310, Unleashed U540)}:
+ \vspace{4pt}
+ \begin{itemize}
+   \item License: Good!  
+   \item Flexibility: not so good.
+   \item Language: chisel3.  
+   \item Capability for auto-generation of Docs: none.  
+   \item Capability for auto-generation of ancillary resources: partial.
+   \item Suitability for wide range of systems: not so good.
+	     \vspace{10pt}
+   \item Suitability for saving RISC-V ecosystem money: {\bf Low }\\
+   \item Suitability for collaboration: {\bf GOOD} (but: written in Chisel3)
+  \end{itemize}
+}
+
+
+\frame{\frametitle{What options are available (at time of writing)? [3]}
+
+  \vspace{10pt}
+  \begin{center}
+    {\Huge 
+		   None.  No suitable\vspace{20pt}\\
+		   Libre-licensed\vspace{20pt}\\
+		   pinmux exists\vspace{20pt}
+	}
+	\\
+	(which is really weird, given how there's so many libre UART, 
+	SPI and other peripheral libraries, even libre-licensed PCIe and
+	SATA PHYs and even USB3 Pipe, hence the reason for this initiative)
+  \end{center}
+
 }
 
 
