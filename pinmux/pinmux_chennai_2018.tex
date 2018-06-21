@@ -42,16 +42,16 @@
    \item Pin: an I/O pad.  May be driven (input) or may drive (output).
    \item FN: term for a single-wire "function", such as UART\_TX,
 	     I2C\_SDA, SDMMC\_D0 etc.  may be an input, output or both
-		 (bi-directional case: two wires are {\bf always} allocated, one
+		 (bi-directional case: two wires are {\it always} allocated, one
 		  for input to the function and one for output from the function).
    \item Bus: a group of bi-directional functions (SDMMC D0 to D3)
-         where the direction is ganged and {\bf under the Bus's control}
+         where the direction is ganged and {\it under the Bus's control}
    \item Input Priority Muxer: a multiplexer with N selector
 		 wires and N associated inputs.  The lowest (highest?) indexed
 		 "selector" enabled results in its 
 		 input being routed to the output.
    \item Output Muxer: a many-to-one "redirector" where any one
-	     output "routed" to the input, based on a selector "address".
+	     input is "routed" to the output, based on a selector "address".
   \end{itemize}
 }
 
