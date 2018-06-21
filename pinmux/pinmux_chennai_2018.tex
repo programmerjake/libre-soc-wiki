@@ -86,7 +86,7 @@
 	     \vspace{4pt}
          \\
          Suitability for saving RISC-V ecosystem money: { \bf NONE }\\
-         Suitability for collaboration: { \bf ZERO }
+         Suitability for collaboration: {\bf ZERO} (i.e. don't bother)
    \item SiFive IOF.  License: Good!  Flexibility: not so good.
 	     Language: chisel3.  Capability for auto-generation of Docs:
 	     none.  Capability for auto-generation of ancillary resources: partial.
@@ -94,7 +94,7 @@
 	     \vspace{4pt}
 	     \\
          Suitability for saving RISC-V ecosystem money: { \bf Low }\\
-         Suitability for collaboration: { \bf GOOD }
+         Suitability for collaboration: {\bf GOOD} (but: written in Chisel3)
    \item \bf{Summary: NO suitable Libre-licensed pinmux code exists}
 	   
   \end{itemize}
@@ -122,18 +122,6 @@
 }
 
 
-\frame{\frametitle{Example: 7 banks, 4-way mux, 160 pins}
- \begin{center}
-  \includegraphics[height=1.7in]{example_pinmux.jpg}
- \end{center}
- \begin{itemize}
-   \item { \bf 17,500 lines of auto-generated HDL (and climbing)}
-   \item { \bf 12,500 lines of auto-generated Summary/Analysis}
-   \item Technical Reference Manual expected to be 100+ pages
- \end{itemize}
-}
-
-
 \frame{
   \vspace{30pt}
   \begin{center}
@@ -147,6 +135,19 @@
   \end{center}
   
 }
+
+
+\frame{\frametitle{Example: 7 banks, 4-way mux, 160 pins}
+ \begin{center}
+  \includegraphics[height=1.7in]{example_pinmux.jpg}
+ \end{center}
+ \begin{itemize}
+   \item { \bf 17,500 lines of auto-generated HDL (and climbing)}
+   \item { \bf 12,500 lines of auto-generated Summary/Analysis}
+   \item Technical Reference Manual expected to be 100+ pages
+ \end{itemize}
+}
+
 
 \frame{\frametitle{Reduce workload, reduce duplication, reduce risk and cost}
 
