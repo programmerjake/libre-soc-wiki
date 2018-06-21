@@ -260,7 +260,7 @@
 
  In/out: {\bf Note: these all require multiplexing }
  \begin{itemize}
-   \item Output-Enable (aka Input disable): switches pad to In or Out
+   \item Output-Enable (aka Input disable): switches pad to Out or In
    \item Output (actually an input wire controlling pin's level, HI/LO)
    \item Input (actually an output wire set based on pin's driven level)
  \end{itemize}
@@ -288,7 +288,7 @@
 
  \begin{itemize}
    \item Standard Mux design {\bf cannot deal with many-to-one inputs}\\
-	     (SiFive IOF source code from Freedom U310 cannot, either)
+	     (SiFive IOF source code from Freedom E310 cannot, either)
 	     \vspace{4pt}
    \item I/O pad configuration conflated with In-Muxer conflated with
 		 Out-Muxer conflated with GPIO conflated with EINT.
@@ -318,9 +318,15 @@
 
 \frame{\frametitle{GPIO (only): Simplified I/O pad Diagram (FN only)}
  \begin{center}
-  \includegraphics[height=2.5in]{reg_gpio_pinblock.jpg}\\
-  {\bf 3 wires: IN, OUT, OUTEN (also = !INEN) }
+  \includegraphics[height=1.3in]{reg_gpio_pinblock.jpg}
  \end{center}
+ \begin{itemize}
+   \item GPIO In/Out/Direction is just another FN (effectively)
+   \item 3 wires: IN, OUT, OUTEN (=INEN\#)
+   \item FN however may be output-only (UART\_TX), input-only (UART\_RX)
+         or bi-directional (I2C\_SDA) and Bus-controlled.
+   \item GPIO is definitely bi-directional and under Register control
+ \end{itemize}
 }
 
 
