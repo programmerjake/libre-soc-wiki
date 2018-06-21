@@ -139,7 +139,8 @@
 
 \frame{\frametitle{Example: 7 banks, 4-way mux, 160 pins}
  \begin{center}
-  \includegraphics[height=1.7in]{example_pinmux.jpg}
+  \includegraphics[height=1.5in]{example_pinmux.jpg}\\
+    7 "banks" with separate VCC. Each no more than 32 bits
  \end{center}
  \begin{itemize}
    \item { \bf 17,500 lines of auto-generated HDL (and climbing)}
@@ -174,18 +175,18 @@
 \frame{\frametitle{Design Spec and Scenario Analysis}
 
  \begin{itemize}
-   \item Analyse the target markets that the chip will sell in\\
+   \item Analyse the target markets (scenarios) that the chip will sell in\\
 	     (multiple markets increases sales volume, reduces chip cost)
 	     \vspace{4pt}
-   \item Create a formal (python-based) specification for the pinmux
-	     \vspace{4pt}
-   \item Add scenarios then check that they meet the requirements\\
-	     { \bf (before spending money on hardware engineers!) }
-	     \vspace{4pt}
    \item Scenarios represent target markets: ICs to be connected\\
-         (GPS, NAND IC, WIFI etc.  May require draft schematics
+         (GPS, NAND IC, WIFI etc.  May require prototype schematics
          drawn up, or client-supplied schematics analysed).
 		 \vspace{4pt}
+   \item Create a formal (python-based) specification for the pinmux
+	     \vspace{4pt}
+   \item Add scenarios (in python), check that they meet requirements\\
+	     { \bf (before spending money on hardware engineers!) }
+	     \vspace{4pt}
    \item Analyse the scenarios: if pins are missing, alter and repeat.\\
 		 \vspace{4pt}
    \item Eventually the pinmux meets all requirements...\\
