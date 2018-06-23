@@ -7,7 +7,7 @@ i've looked for that effort, and have not been able to find it [jon is
 getting quite old, now, bless him.  he had to have an operation last
 year.  he's recovered well].
 
- also at the Barcelona Conference i mentioned in the
+also at the Barcelona Conference i mentioned in the
 very-very-very-rapid talk on the Libre RISC-V chip that i have been
 tasked with, that if there is absolutely absolutely no other option,
 it will use Vivante GC800 (and, obviously, use etnaviv).  what *that*
@@ -16,67 +16,67 @@ which the (anonymous) sponsor is definitely willing to spend... so if
 anyone can come up with an alternative that is entirely libre and
 open, i can put that initiative to the sponsor for evaluation.
 
- basically i've been looking at this for several months, so have been
+basically i've been looking at this for several months, so have been
 talking to various people (jeff bush from nyuzi [1] and chiselgpu [2],
 frank from gplgpu [3], VRG for MIAOW [4]) to get a feel for what would
 be involved.
 
- * miaow is just an OpenCL engine that is compatible with a subset of
-AMD/ATI's OpenCL assembly code.  it is NOT a GPU.  they have
-preliminary plans to *make* one... however the development process is
-not open.  we'll hear about it if and when it succeeds, probably as
-part of a published research paper.
+* miaow is just an OpenCL engine that is compatible with a subset of
+  AMD/ATI's OpenCL assembly code.  it is NOT a GPU.  they have
+  preliminary plans to *make* one... however the development process is
+  not open.  we'll hear about it if and when it succeeds, probably as
+  part of a published research paper.
 
- * nyuzi is a *modern* "software shader / renderer" and is a
-replication of the intel larrabee architecture.  it explored the
-concept of doing recursive software-driven rasterisation (as did
-larrabee) where hardware rasterisation uses brute force and often
-wastes time and power.  jeff went to a lot of trouble to find out
-*why* intel's researchers were um "not permitted" to actually put
-performance numbers into their published papers.  he found out why :)
-one of the main facts that jeff's research reveals (and there are a
-lot of them) is that most of the energy of a GPU is spent getting data
-each way past the L2/L1 cache barrier, and secondly much of the time
-(if doing software-only rendering) you have several instruction cycles
-where in a hardware design you issue one and a separate pipeline takes
-over (see videocore-iv below)
+* nyuzi is a *modern* "software shader / renderer" and is a
+  replication of the intel larrabee architecture.  it explored the
+  concept of doing recursive software-driven rasterisation (as did
+  larrabee) where hardware rasterisation uses brute force and often
+  wastes time and power.  jeff went to a lot of trouble to find out
+  *why* intel's researchers were um "not permitted" to actually put
+  performance numbers into their published papers.  he found out why :)
+  one of the main facts that jeff's research reveals (and there are a
+  lot of them) is that most of the energy of a GPU is spent getting data
+  each way past the L2/L1 cache barrier, and secondly much of the time
+  (if doing software-only rendering) you have several instruction cycles
+  where in a hardware design you issue one and a separate pipeline takes
+  over (see videocore-iv below)
 
- * chiselgpu was an additional effort by jeff to create the absolute
-minimum required tile-based "triangle renderer" in hardware, for
-comparative purposes in the nyuzi raster engine research.  synthesis
-of such a block he pointed out to me would actually be *enormous*,
-despite appearances from how little code there is in the chiselgpu
-repository.  in his paper he mentions that the majority of the time
-when such hardware-renderers are deployed, the rest of the GPU is
-really struggling to keep up feeding the hardware-rasteriser, so you
-have to put in multiple threads, and that brings its own problems.
-it's all in the paper, it's fascinating stuff.
+* chiselgpu was an additional effort by jeff to create the absolute
+  minimum required tile-based "triangle renderer" in hardware, for
+  comparative purposes in the nyuzi raster engine research.  synthesis
+  of such a block he pointed out to me would actually be *enormous*,
+  despite appearances from how little code there is in the chiselgpu
+  repository.  in his paper he mentions that the majority of the time
+  when such hardware-renderers are deployed, the rest of the GPU is
+  really struggling to keep up feeding the hardware-rasteriser, so you
+  have to put in multiple threads, and that brings its own problems.
+  it's all in the paper, it's fascinating stuff.
 
- * gplgpu was done by one of the original developers of the "Number
-Nine" GPU, and is based around a "fixed function" design and as such
-is no longer considered suitable for use in the modern 3D developer
-community (they hate having to code for it), and its performance would
-be *really* hard to optimise and extend.  however in speaking to jeff,
-who analysed it quite comprehensively, he said that there were a large
-number of features (4-tuple floating-point colour to 16/32-bit ARGB
-fixed functions) that have retained a presence in modern designs, so
-it's still useful for inspiration and analysis purposes.  you can see
-jeff's analysis here [7]
+* gplgpu was done by one of the original developers of the "Number
+  Nine" GPU, and is based around a "fixed function" design and as such
+  is no longer considered suitable for use in the modern 3D developer
+  community (they hate having to code for it), and its performance would
+  be *really* hard to optimise and extend.  however in speaking to jeff,
+  who analysed it quite comprehensively, he said that there were a large
+  number of features (4-tuple floating-point colour to 16/32-bit ARGB
+  fixed functions) that have retained a presence in modern designs, so
+  it's still useful for inspiration and analysis purposes.  you can see
+  jeff's analysis here [7]
 
- * an extremely useful resource has been the videocore-iv project [8]
-which has collected documentation and part-implemented compiler tools.
-the architecture is quite interesting, it's a hybrid of a
-Software-driven Vector architecture similar to Nyuzi plus
-fixed-functions on separate pipelines such as that "take 4-tuple FP,
-turn it into fixed-point ARGB and overlay it into the tile"
-instruction.  that's done as a *single* instruction to cover i think 4
-pixels, where Nyuzi requires an average of 4 cycles per pixel.  the
-other thing about videocore-iv is that there is a separate internal
-"scratch" memory area of size 4x4 (x32-bit) which is the "tile" area,
-and focussing on filling just that is one of the things that saves
-power.  jeff did a walkthrough, you can read it here [10] [11]
+* an extremely useful resource has been the videocore-iv project [8]
+  which has collected documentation and part-implemented compiler tools.
+  the architecture is quite interesting, it's a hybrid of a
+  Software-driven Vector architecture similar to Nyuzi plus
+  fixed-functions on separate pipelines such as that "take 4-tuple FP,
+  turn it into fixed-point ARGB and overlay it into the tile"
+  instruction.  that's done as a *single* instruction to cover i think 4
+  pixels, where Nyuzi requires an average of 4 cycles per pixel.  the
+  other thing about videocore-iv is that there is a separate internal
+  "scratch" memory area of size 4x4 (x32-bit) which is the "tile" area,
+  and focussing on filling just that is one of the things that saves
+  power.  jeff did a walkthrough, you can read it here [10] [11]
 
- so on this basis i have been investigating a couple of proposals for
+so on this basis i have been investigating a couple of proposals for
 RISC-V extensions: one is Simple-V [9] and the other is a *small*
 general-purpose memory-scratch area extension, which would be
 accessible only on the *other* side of the L1/L2 cache area and *ONLY*
@@ -86,7 +86,7 @@ to swap the scratch-area out to main memory (and back).
 general-purpose so that it's useful and useable in other contexts and
 situations.
 
- whilst there are many additional reasons - justifications that make
+whilst there are many additional reasons - justifications that make
 it attractive for *general-purpose* usage (such as accidentally
 providing LD.MULTI and ST.MULTI for context-switching and efficient
 function call parameter stack storing, and an accidental
@@ -94,13 +94,13 @@ single-instruction "memcpy" and "memzero") - the primary driver behind
 Simple-V has been as the basis for turning RISC-V into an
 embedded-style (low-power) GPU (and also a VPU).
 
- one of the things that's lacking from RVV is parallelisation of
+one of the things that's lacking from RVV is parallelisation of
 Bit-Manipulation.  RVV has been primarily designed based on input from
 the Supercomputer community, and as such it's *incredible*.
 absolutely amazing... but only desirable to implementt if you need to
 build a Supercomputer.
 
- Simple-V i therefore designed to parallelise *everything*.  custom
+Simple-V i therefore designed to parallelise *everything*.  custom
 extensions, future extensions, current extensions, current
 instructions, *everything*.  RVV, once it's been implemented in gcc
 for example, would require heavy-customisation to support e.g.
@@ -111,23 +111,23 @@ would go, and the subsequent cost of maintenance of gcc, binutils and
 so on as a long-term preliminary (or if the extension to RVV is not
 accepted, after all the hard work) even a permanent hard-fork.
 
- in other words once you've been through the "Extension Proposal
+in other words once you've been through the "Extension Proposal
 Process" with Simple-V, it need never be done again, not for one
 single parallel / vector / SIMD instruction, ever again.
 
- that would include for example creating a fixed-function 3D "FP to
+that would include for example creating a fixed-function 3D "FP to
 ARGB" custom instruction.  a custom extension with special 3D
 pipelines would, with Simple-V, not need to also have to worry about
 how those operations would be parallelised.
 
- this is not a new concept: it's borrowed directly from videocore-iv
+this is not a new concept: it's borrowed directly from videocore-iv
 (which in turn probably borrowed it from somewhere else).
 videocore-iv call it "virtual parallelism".  the Vector Unit
 *actually* has a 4-wide FPU for certain heavily-used operations such
 as ADD, and a ***ONE*** wide FPU for less-used operations such as
 RECIPSQRT.
 
- however at the *instruction* level each of those operations,
+however at the *instruction* level each of those operations,
 regardless of whether they're heavily-used or less-used they *appear*
 to be 16 parallel operations all at once, as far as the compiler and
 assembly writers are concerned.  Simple-V just borrows this exact same
@@ -138,7 +138,7 @@ advantage.
 > 2. If it’s a good idea to implement, are there any projects currently
 > working on it?
 
- i haven't been able to find any: if you do please do let me know, i
+i haven't been able to find any: if you do please do let me know, i
 would like to speak to them and find out how much time and money they
 would need to complete the work.
 
@@ -148,13 +148,13 @@ would need to complete the work.
 >       If the answer is no, are there any special reasons that nobody not
 > implement it yet?
 
- it's damn hard, it requires a *lot* of resources, and if the idea is
+it's damn hard, it requires a *lot* of resources, and if the idea is
 to make it entirely libre-licensed and royalty-free there is an extra
 step required which a proprietary GPU company would not normally do,
 and that is to follow the example of the BBC when they created their
 own Video CODEC called Dirac [5].
 
- what the BBC did there was create the algorithm *exclusively* from
+what the BBC did there was create the algorithm *exclusively* from
 prior art and expired patents... they applied for their own patents...
 and then *DELIBERATELY* let them lapse.  the way that the patent
 system works, the patents will *still be published*, there will be an
