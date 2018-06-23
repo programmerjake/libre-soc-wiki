@@ -59,6 +59,8 @@
 
  \begin{itemize}
    \item Effectively a variant of SIMD / SIMT (arbitrary length)\vspace{4pt}
+   \item Fascinatingly, despite being a SIMD-variant, RVV only has
+         O(N) opcode proliferation! (extremely well designed)
    \item Extremely powerful (extensible to 256 registers)\vspace{4pt}
    \item Supports polymorphism, several datatypes (inc. FP16)\vspace{4pt}
    \item Requires a separate Register File (32 w/ext to 256)\vspace{4pt}
@@ -69,8 +71,6 @@
    \item 98 percent opcode duplication with rest of RV
    \item Extending RVV requires customisation not just of h/w:\\
 	     gcc, binutils also need customisation (and maintenance)
-   \item Fascinatingly, despite being a SIMD-variant, RVV only has
-         O(N) opcode proliferation! (extremely well designed)
   \end{itemize}
 }
 
