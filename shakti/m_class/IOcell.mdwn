@@ -1,0 +1,54 @@
+# IOcell
+
+here is a list of requirements:
+
+* pull-up control which switches in a 10k (50k?) resistor
+
+* pull-down control which switches in a 10k (50k?) resistor
+
+* a "mode" setting that flips it between Open-Drain (floating if
+  LO, and pulled to GND if HI) and CMOS (MOSFET) Push-Push modes.
+  see https://en.wikipedia.org/wiki/Open_collector#MOSFET for details on
+  Open Drain (requires a MOSFET).
+
+* a "hysteresis" setting that controls the input schottky filter's
+  sensitivity.  this is important for push-buttons for example,
+  to stop spiking (bounce) that would be amplified and result in
+  massive noise spikes onto all wires throughout that entire area
+  of the chip.  low middle and high settings are needed to cover
+  filtering ranges of say 2mhz, 5mhz, 10mhz and unlimited (disabling
+  hysteresis).  looking at STM32F documentation helps here as does this
+  https://electronics.stackexchange.com/questions/156930/stm32-understanding-gpio-settings
+
+* an input-enable selector
+
+* an output-enable selector
+
+* also required is a means to change the current output: 10mA, 20mA,
+30mA and 40mA are reasonable
+
+* also the input and output really need *automatic* level-shifting,
+  built-in to the IO cell.  so whilst there is a VDD for driving the pad
+  (and setting the CMOS threshold levels for input), there is *also* a need
+  for an IO VREF.  this is *important*.  the input and output needs to be
+  CMOS push-push (standard logic) whilst the IO pad needs to be switchable
+  between OD and PP.
+
+* input threshold voltages that trigger the input from HI to LO should
+  be standard CMOS voltage levels (even in OD mode), which i believe is
+  below 0.3 * VDD for "LO" and 0.7 * VDD for "HI"
+
+* output voltage levels should be as close to 0 as possible for LO (0.3v
+  or below @ nominal temperature) and as close to VDD as possible for HI
+  (VDD-0.3v or above @ nominal temperature).
+
+* some ability to protect itself from over-driving (current fights)
+  when in output mode are a must.
+
+* the ability to protect itself from *being* over-driven when in input
+  mode is not strictly necessary (over-voltage tolerance e.g. 5V tolerance
+  when VDD is well below that) but would be nice to have as an option
+  (two variants: one for ECs which need 5V tolerance and one for SoCs
+  where it's not).
+
+
