@@ -2,7 +2,8 @@
 
 ## GPU capabilities
 
-Based on GC800 the following would be acceptable performance (as would Mali-400):
+Based on GC800 the following would be acceptable performance (as would
+Mali-400):
 
 * 35 million triangles/sec
 * 325 milllion pixels/sec
@@ -10,7 +11,8 @@ Based on GC800 the following would be acceptable performance (as would Mali-400)
 
 ## GPU size and power
 
-* Basically the power requirement should be at or below around 1 watt in 40nm. Beyond 1 watt it becomes... difficult.
+* Basically the power requirement should be at or below around 1 watt
+  in 40nm. Beyond 1 watt it becomes... difficult.
 * Size is not particularly critical as such but should not be insane.
 
 Based on GC800 the following would be acceptable area in 40nm:
@@ -42,39 +44,77 @@ same silicon area).
 * Hardware (RTL) must be licensed under BSD or MIT with no
   "NON-COMMERCIAL" CLAUSES.
 * Any proposals will be competing against Vivante GC800 (using Etnaviv driver).
-* The GPU is integrated (like Mali-400). So all that the GPU needs to do is write to an area of memory (framebuffer or area of the framebuffer). The SoC - which in this case has a RISC-V core and has peripherals such as the LCD controller - will take care of the rest.
-* In this arcitecture, the GPU, the CPU and the peripherals are all on the same AXI4 shared memory bus. They all have access to the same shared DDR3/DDR4 RAM. So as a result the GPU will use AXI4 to write directly to the framebuffer and the rest will be handle by SoC.
-* The job must be done by a team that shows sufficient expertise to reduce the risk.
+* The GPU is integrated (like Mali-400). So all that the GPU needs
+  to do is write to an area of memory (framebuffer or area of the
+  framebuffer). The SoC - which in this case has a RISC-V core and has
+  peripherals such as the LCD controller - will take care of the rest.
+* In this arcitecture, the GPU, the CPU and the peripherals are all on
+  the same AXI4 shared memory bus. They all have access to the same shared
+  DDR3/DDR4 RAM. So as a result the GPU will use AXI4 to write directly
+  to the framebuffer and the rest will be handle by SoC.
+* The job must be done by a team that shows sufficient expertise to
+  reduce the risk.
 
 ## Notes
 
-* The deadline is really tight. If an FPGA (or simulation) plus the basics of the software driver are at least prototyped by then it *might* be ok. 
-* If using Nyuzi as the basis it *might* be possible to begin the software port in parallel because Jeff went to the trouble of writing a cycle-accurate simulation.
-* I *suspect* it will result in less work to use Gallium3D than, for example, writing an entire OpenGL stack from scratch.
-* A *demo* should run on an FPGA as an initial. The FPGA is not a priority for assessment, but it would be *nice* if
-it could fit into a ZC706.
-* Also if there is parallel hardware obviously it would be nice to be able to demonstrate parallelism to the maximum extend possible. But again, being reasonable, if the GPU is so big that only a single core can fit into even a large FPGA then for an initial demo that would be fine.
-* Note that no other licenses are acceptable. GPLv2+ is out.
+* The deadline is really tight. If an FPGA (or simulation) plus the basics
+  of the software driver are at least prototyped by then it *might* be ok.
+* If using Nyuzi as the basis it *might* be possible to begin the
+  software port in parallel because Jeff went to the trouble of writing
+  a cycle-accurate simulation.
+* I *suspect* it will result in less work to use Gallium3D than, for
+  example, writing an entire OpenGL stack from scratch.
+* A *demo* should run on an FPGA as an initial. The FPGA is not a priority
+  for assessment, but it would be *nice* if it could fit into a ZC706.
+* Also if there is parallel hardware obviously it would be nice to be able
+  to demonstrate parallelism to the maximum extend possible. But again,
+  being reasonable, if the GPU is so big that only a single core can fit
+  into even a large FPGA then for an initial demo that would be fine.
+* Note that no other licenses are acceptable for the hardware: all GPL
+  licenses (GPL, AGPL, LGPL) are out.  GPL (all revisions v2, v3, v2+, v3+)
+  are out for software, with the exception of the LGPL (v2+ or v3+ acceptable).
 
 ## Design decisions and considerations
 
-Whilst Nyuzi has a big advantage in that it has simuations and also a llvm port and so on, if utilised for this particular RISC-V chip it would mean needing to write a "memory shim" between the general-purpose Nyuzi core and the main processor, i.e. all the shader info, state etc. needs synchronisation hardware (and software). That could significantly complicate design, especially of software.
+Whilst Nyuzi has a big advantage in that it has simuations and also a
+llvm port and so on, if utilised for this particular RISC-V chip it would
+mean needing to write a "memory shim" between the general-purpose Nyuzi
+core and the main processor, i.e. all the shader info, state etc. needs
+synchronisation hardware (and software). That could significantly
+complicate design, especially of software.
 
-Whilst i *recommended* Gallium3D there is actually another possible approach: 
+Whilst i *recommended* Gallium3D there is actually another possible approach:
 
-A RISC-V multi-core design which accelerates *software* rendering... including potentially utilising the fact that Gallium3D has a *software* (LLVM) renderer:
+A RISC-V multi-core design which accelerates *software*
+rendering... including potentially utilising the fact that Gallium3D
+has a *software* (LLVM) renderer:
 
 <https://mesa3d.org/llvmpipe.html>
 
-The general aim of this approach is *not* to have the complexity of transferring significant amounts of data structures to and from disparate cores (one Nyuzi, one RISC-V) but to STAY WITHIN THE RISC-V ARCHITECTURE and simply compile Mesa3D (for RISC-V), gallium3d-llvm (for RISC-V), modifying llvm for RISC-V to do the heavy-lifting instead.
+The general aim of this approach is *not* to have the complexity of
+transferring significant amounts of data structures to and from disparate
+cores (one Nyuzi, one RISC-V) but to STAY WITHIN THE RISC-V ARCHITECTURE
+and simply compile Mesa3D (for RISC-V), gallium3d-llvm (for RISC-V),
+modifying llvm for RISC-V to do the heavy-lifting instead.
 
-Then it just becomes a matter of adding Vector/SIMD/Parallelization extensions to RISC-V, and adding support in LLVM for the same:
+Then it just becomes a matter of adding Vector/SIMD/Parallelization
+extensions to RISC-V, and adding support in LLVM for the same:
 
 <https://lists.llvm.org/pipermail/llvm-dev/2018-April/122517.html>
 
-So if considering to base the design on RISC-V, that means turning RISC-V into a vector processor. Now, whilst Hwacha has been located (finally), it's a design that is specifically targetted at supercomputers. I have been taking an alternative approach to vectorisation which is more about *parallelization* than it is about *vectorization*.
+So if considering to base the design on RISC-V, that means turning RISC-V
+into a vector processor. Now, whilst Hwacha has been located (finally),
+it's a design that is specifically targetted at supercomputers. I have
+been taking an alternative approach to vectorisation which is more about
+*parallelization* than it is about *vectorization*.
 
-It would be great for Simple-V to be given consideration for implementation as the abstraction "API" of Simple-V would greatly simplify the addition process of Custom features such as fixed-function pixel conversion and rasterization instructions (if those are chosen to be added) and so on. Bear in mind that a high-speed clock rate is NOT a good idea for GPUs (power being a square law), multi-core parallelism and longer SIMD/vectors are much better to consider, instead.
+It would be great for Simple-V to be given consideration for
+implementation as the abstraction "API" of Simple-V would greatly simplify
+the addition process of Custom features such as fixed-function pixel
+conversion and rasterization instructions (if those are chosen to be
+added) and so on. Bear in mind that a high-speed clock rate is NOT a
+good idea for GPUs (power being a square law), multi-core parallelism
+and longer SIMD/vectors are much better to consider, instead.
 
 The PDF/slides on Simple-V is here:
 
@@ -88,26 +128,49 @@ And the assessment, design and implementation is being done here:
 
 My feeling on this is therefore that the following approach is one which involve minimal work:
 
-* Investigate the ChiselGPU code to see if it can be leveraged (an "image" added instead of straight ARGB color).
-* OR... add sufficient fixed-function 3D instructions (plus a memory scratch area) to RISC-V to do the equivalent job.
-* Implement the Simple-V RISC-V "parallelism" extension (which can parallelize xBitManip *and* the above-suggested 3D fixed-function instructions).
+* Investigate the ChiselGPU code to see if it can be leveraged (an
+  "image" added instead of straight ARGB color).
+* OR... add sufficient fixed-function 3D instructions (plus a memory
+  scratch area) to RISC-V to do the equivalent job.
+* Implement the Simple-V RISC-V "parallelism" extension (which can
+  parallelize xBitManip *and* the above-suggested 3D fixed-function
+  instructions).
 * Wait for RISC-V LLVM to have vectorization support added to it.
 * MODIFY the resultant RISC-V LLVM code so that it supports Simple-V.
 * Grab the gallium3d-llvm source code and hit the "compile" button.
 * Grab the *standard* Mesa3D library, tell it to use the gallium3d-llvm library and hit the "compile" button.
 * see what happens.
 
-Now, interestingly, if spike is thrown into the mix there (as a cycle-accurate RISC-V simulator) it should be perfectly well possible to get an idea of where performance of the above would need optimization, just like Jeff did with the Nyuzi paper.
+Now, interestingly, if spike is thrown into the mix there (as a
+cycle-accurate RISC-V simulator) it should be perfectly well possible to
+get an idea of where performance of the above would need optimization,
+just like Jeff did with the Nyuzi paper.
 
-He focussed on specific algorithms and checked the assembly code, and worked out how many instruction cycles per pixel were needed, which is an invaluable measure.
+He focussed on specific algorithms and checked the assembly code, and
+worked out how many instruction cycles per pixel were needed, which is
+an invaluable measure.
 
-As I mention in the above page, one of the problems with doing a completely separate engine (Nyuzi is actually a general-purpose RISC-based vector processor) is that when it comes to using it, you need to transfer all the "state" data structures from the main core over to the GPU's core.
+As I mention in the above page, one of the problems with doing a
+completely separate engine (Nyuzi is actually a general-purpose RISC-based
+vector processor) is that when it comes to using it, you need to transfer
+all the "state" data structures from the main core over to the GPU's core.
 
-... But if the main core is RISC-V *and the GPU is RISC-V as well* and they are SMP cores then transferring the state is a simple matter of doing a context-switch... or if *all* cores have vector and 3D instruction extensions, a context-switch is not needed at all.
+... But if the main core is RISC-V *and the GPU is RISC-V as well*
+and they are SMP cores then transferring the state is a simple matter of
+doing a context-switch... or if *all* cores have vector and 3D instruction
+extensions, a context-switch is not needed at all.
 
-Will that approach work? Honestly I have absolutely no idea, but it would be a fascinating and extremely ambitious research project.
+Will that approach work? Honestly I have absolutely no idea, but it
+would be a fascinating and extremely ambitious research project.
 
-Can we get people to fund it?  Yeah I do.  there's a lot of buzz about RISC-V, and a lot of buzz can be created about a libre 3D GPU. If that same GPU happens to be good at doing crypto-currency mining there will be a LOT more attention paid, particularly given that people have noticed that relying on proprietary GPUs and CPUs to manage billions of dollars worth of crypto-currency, when the NSA is *known* to have blackmailed intel into putting a spying back-door co-processor in to x86, and that it miiight not be a good idea to trust proprietary hardware:
+Can we get people to fund it?  Yeah I do.  there's a lot of buzz about
+RISC-V, and a lot of buzz can be created about a libre 3D GPU. If that
+same GPU happens to be good at doing crypto-currency mining there will be
+a LOT more attention paid, particularly given that people have noticed
+that relying on proprietary GPUs and CPUs to manage billions of dollars
+worth of crypto-currency, when the NSA is *known* to have blackmailed
+intel into putting a spying back-door co-processor in to x86, and that
+it miiight not be a good idea to trust proprietary hardware:
 
 <http://libreboot.org/faq#intelme>
 
@@ -115,11 +178,16 @@ Can we get people to fund it?  Yeah I do.  there's a lot of buzz about RISC-V, a
 
 > Q:
 >
-> Do you need a team with good CVs? What about if the team shows you an acceptable FPGA prototype? I’m talking about a team of students which do not have big industrial CVs but they know how to handle this job (just like RocketChip or MIAOW or etc…).
+> Do you need a team with good CVs? What about if the team shows you
+> an acceptable FPGA prototype? I’m talking about a team of students
+> which do not have big industrial CVs but they know how to handle this
+> job (just like RocketChip or MIAOW or etc…).
 
 A:
 
-That would be fantastic as it would demonstrate not only competence but also commitment. And will have taken out the "risk" of being "unknown", entirely. So that works perfectly for me :) .
+That would be fantastic as it would demonstrate not only competence but
+also commitment. And will have taken out the "risk" of being "unknown",
+entirely. So that works perfectly for me :) .
 
 > Q:
 >
@@ -129,6 +197,16 @@ A:
 
 Please please let's be absolutely clear:
 
-I can put the *business case* to the anonymous sponsor to *consider* sponsoring a libre GPU, *only* and purely on the basis of a *commercial* decision based on cost and risk analysis, comparing against the best alternative option which is USD $250,000 for a one-time proprietary license for Vivante GC800 using etnaviv. So as a result we need to be *really clear* that *there is no "guaranteed sponsorship"*.  this is a pure commercial *business* assessment.
+I can put the *business case* to the anonymous sponsor to *consider*
+sponsoring a libre GPU, *only* and purely on the basis of a *commercial*
+decision based on cost and risk analysis, comparing against the best
+alternative option which is USD $250,000 for a one-time proprietary
+license for Vivante GC800 using etnaviv. So as a result we need to be
+*really clear* that *there is no "guaranteed sponsorship"*.  this is a
+pure commercial *business* assessment.
 
-However, it just so happens that there's quite a lot of people who are pissed at how things go in the 3D embedded space. That can be leveraged, by way of a crowd-funding campaign, to invite people to help, put money behind this that has *nothing to do with the libre-riscv anonymous sponsor*.
+However, it just so happens that there's quite a lot of people who are
+pissed at how things go in the 3D embedded space. That can be leveraged,
+by way of a crowd-funding campaign, to invite people to help, put money
+behind this that has *nothing to do with the libre-riscv anonymous
+sponsor*.
