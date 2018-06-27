@@ -83,6 +83,57 @@ And the assessment, design and implementation is being done here:
 
 <http://libre-riscv.org/simple_v_extension/>
 
+----
+
+my feeling on this is therefore that the following approach is one
+which involve minimal work:
+
+* investigate the ChiselGPU code to see if it can be leveraged (an
+"image" added instead of straight ARGB colour)
+* OR... add sufficient fixed-function 3D instructions (plus a memory
+scratch area) to RISC-V to do the equivalent job
+* implement the Simple-V RISC-V "parallelism" extension (which can
+parallelise xBitManip *and* the above-suggested 3D fixed-function
+instructions)
+* wait for RISC-V LLVM to have vectorisation support added to it
+* MODIFY the resultant RISC-V LLVM code so that it supports Simple-V
+* grab the gallium3d-llvm source code and hit the "compile" button
+* grab the *standard* mesa3d library, tell it to use the
+gallium3d-llvm library and hit the "compile" button
+* see what happens.
+
+now, interestingly, if spike is thrown into the mix there (as a
+cycle-accurate RISC-V simulator) it should be perfectly well possible
+to get an idea of where performance of the above would need
+optimisation, just like jeff did with the nyuzi paper.  he focussed on
+specific algorithms and checked the assembly code, and worked out how
+many instruction cycles per pixel were needed, which is an invaluable
+measure.
+
+as i mention in the above page, one of the problems with doing a
+completely separate engine (Nyuzi is actually a general-purpose
+RISC-based vector processor) is that when it comes to using it, you
+need to transfer all the "state" data structures from the main core
+over to the GPU's core.
+
+... but if the main core is RISC-V *and the GPU is RISC-V as well* and
+they are SMP cores then transferring the state is a simple matter of
+doing a context-switch... or if *all* cores have vector and 3D
+instruction extensions, a context-switch is not needed at all.
+
+will that approach work?  honestly i have absolutely no idea, but it
+would be a fascinating and extremely ambitious research project.
+
+can we get people to fund it?  yeah i do.  there's a lot of buzz about
+RISC-V, and a lot of buzz can be created about a libre 3D GPU.  if
+that same GPU happens to be good at doing crypto-currency mining there
+will be a LOT more attention paid, particularly given that people have
+noticed that relying on proprietary GPUs and CPUs to manage billions
+of dollars worth of crypto-currency, when the NSA is *known* to have
+blackmailed intel into putting a spying back-door co-processor in to
+x86, and that it miiight not be a good idea to trust proprietary
+hardware  libreboot.org/faq#intelme
+
 ## Q & A
 
 > Q:
