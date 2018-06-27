@@ -115,3 +115,45 @@ but also committment.  and will have taken out the "risk" of being
 
  works perfectly for me :)
 
+## Design decisions and considerations
+
+whilst Nyuzi has a big advantage in that it has simuations and also a
+llvm port and so on, if utilised for this particular RISC-V chip it would
+mean needing to write a "memory shim" between the general-purpose Nyuzi
+core and the main processor, i.e. all the shader info, state etc. needs
+synchronisation hardware (and software).
+
+that could significantly complicate design, especially of software.
+
+whilst i *recommended* Gallium3D there is actually another possible
+approach: a RISC-V multi-core design which accelerates *software*
+rendering... including potentially utilising the fact that gallium3d
+has a *software* (LLVM) renderer:
+
+<https://mesa3d.org/llvmpipe.html>
+
+the general aim of this approach is *not* to have the complexity of
+transferring significant amounts of data structures to and from disparate
+cores (one Nyuzi, one RISC-V) but to STAY WITHIN THE RISC-V ARCHITECTURE
+and simply compile mesa3d (for RISC-V), gallium3d-llvm (for RISC-V).
+
+so if considering to base the design on RISC-V, that means turning RISC-V
+into a vector processor.  now, whilst hwacha has been located (finally),
+it's a design that is specifically targetted at supercomputers.  i have
+been taking an alternative approach to vectorisation which is more about
+*parallelisation* than it is about *vectorisation*.
+
+it would be great for Simple-V to be given consideration for
+implementation as the abstraction "API" of Simple-V would greatly simplify
+the addition process of Custom features such as fixed-function pixel
+conversion and rasterisation instructions (if those are chosen to be
+added) and so on.  bear in mind that a high-speed clock rate is NOT a
+good idea for GPUs (power being a square law), multi-core parallelism
+and longer SIMD/vectors are much better to consider, instead.
+
+the PDF / slides on Simple-V is here:
+<http://hands.com/~lkcl/simple_v_chennai_2018.pdf>
+
+and the assessment, design and implementation is being done here:
+<http://libre-riscv.org/simple_v_extension/>
+
