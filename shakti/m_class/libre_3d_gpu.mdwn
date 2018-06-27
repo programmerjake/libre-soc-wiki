@@ -75,7 +75,12 @@ has a *software* (LLVM) renderer:
 The general aim of this approach is *not* to have the complexity of
 transferring significant amounts of data structures to and from disparate
 cores (one Nyuzi, one RISC-V) but to STAY WITHIN THE RISC-V ARCHITECTURE
-and simply compile Mesa3D (for RISC-V), gallium3d-llvm (for RISC-V).
+and simply compile Mesa3D (for RISC-V), gallium3d-llvm (for RISC-V),
+modifying llvm for RISC-V to do the heavy-lifting instead.
+
+Then it just becomes a matter of adding vector / SIMD / parallelisation
+extensions to RISC-V, and adding support in LLVM for the same:
+
 
 So if considering to base the design on RISC-V, that means turning RISC-V
 into a vector processor. Now, whilst Hwacha has been located (finally),
