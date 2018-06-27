@@ -2,8 +2,7 @@
 
 ## GPU 3D capabilities
 
-Based on GC800 the following would be acceptable performance
-(as would MALI400).
+Based on GC800 the following would be acceptable performance (as would Mali-400):
 
 * 35 million triangles/sec
 * 325 milllion pixels/sec
@@ -11,149 +10,106 @@ Based on GC800 the following would be acceptable performance
 
 ## GPU size and power
 
-> 1.1. GPU size MUST be < 0.XX mm for ASICs after synthesis with
-> DesignCompiler tool using YY cell library at ZZ nm tech.
+* Basically the power requirement should be at or below around 1 watt in 40nm. Beyond 1 watt it becomes... difficult.
+* Size is not particularly critical as such but should not be insane.
 
-basically the power requirement should be at or below around 1 watt
-in 40nm.  beyond 1 watt it becomes... difficult.   size is not
-particularly critical as such but should not be insane.
+Based on GC800 the following would be acceptable area in 40nm:
 
-so here's a table showing embedded cores:
-<https://www.cnx-software.com/2013/01/19/gpus-comparison-arm-mali-vs-vivante-gcxxx-vs-powervr-sgx-vs-nvidia-geforce-ulp/>
-
-GC800 has (in 40nm):
-
-* 35 million triangles/sec
-* 325 milllion pixels/sec
-* 6 GFLOPS
 * 1.9mm^2 synthesis area
 * 2.5mm^2 silicon area.
 
-silicon area corresponds *ROUGHLY* with power usage, but PLEASE do
-not take that as absolute, because if you read jeff's nyuzi 2016 paper
+So here's a table showing embedded cores:
+
+<https://www.cnx-software.com/2013/01/19/gpus-comparison-arm-mali-vs-vivante-gcxxx-vs-powervr-sgx-vs-nvidia-geforce-ulp/>
+
+Silicon area corresponds *ROUGHLY* with power usage, but PLEASE do
+not take that as absolute, because if you read Jeff's Nyuzi 2016 paper
 you'll see that getting data through the L1/L2 cache barrier is by far
 and above the biggest eater of power.
 
-note lower down that the numbers for MALI400 are for the *4* core
-version - MALI400-MP4 - where jeff and i compared MALI400 SINGLE CORE
-and discovered that nyuzi, if 4 parallel nyuzi cores were put
-together, would reach only 25% of MALI400's performance (in about the
-same silicon area)
+Note lower down that the numbers for Mali-400 are for the *4* core
+version - Mali-400 (MP4) - where Jeff and I compared Mali-400 SINGLE CORE
+and discovered that Nyuzi, if 4 parallel Nyuzi cores were put
+together, would reach only 25% of Mali-400's performance (in about the
+same silicon area).
 
 ## Other
 
-* Deadline = 12-18 months
-* The GPU is matched by the Gallium3D driver
-* RTL must be sufficient to run on an FPGA.
+* The deadline is about 12-18 months.
+* It is highly recommended to use Gallium3D for the software stack.
 * Software must be licensed under LGPLv2+ or BSD/MIT.
 * Hardware (RTL) must be licensed under BSD or MIT with no
   "NON-COMMERCIAL" CLAUSES.
 * Any proposals will be competing against Vivante GC800 (using Etnaviv driver).
-* The GPU is integrated (like Mali400). So all that the GPU needs to do
-  is write to an area of memory (framebuffer or area of the framebuffer).
-  the SoC - which in this case has a RISC-V core and has peripherals such
-  as the LCD controller - will take care of the rest.
-* In this arcitecture, the GPU, the CPU and the peripherals are all on
-  the same AXI4 shared memory bus. They all have access to the same shared
-  DDR3/DDR4 RAM. So as a result the GPU will use AXI4 to write directly
-  to the framebuffer and the rest will be handle by SoC.
-* The job must be done by a team that shows sufficient expertise to
-  reduce the risk. (Do you mean a team with good CVs? What about if the
-  team shows you an acceptable FPGA prototype? I’m talking about a team
-  of students which do not have big industrial CVs but they know how to
-  handle this job (just like RocketChip or MIAOW or etc…).
+* The GPU is integrated (like Mali400). So all that the GPU needs to do is write to an area of memory (framebuffer or area of the framebuffer). The SoC - which in this case has a RISC-V core and has peripherals such as the LCD controller - will take care of the rest.
+* In this arcitecture, the GPU, the CPU and the peripherals are all on the same AXI4 shared memory bus. They all have access to the same shared DDR3/DDR4 RAM. So as a result the GPU will use AXI4 to write directly to the framebuffer and the rest will be handle by SoC.
+* The job must be done by a team that shows sufficient expertise to reduce the risk.
 
-response:
+## Notes
 
-> Deadline = ?
-
-about 12-18 months which is really tight.  if an FPGA (or simulation)
-plus the basics of the software driver are at least prototyped by then
-it *might* be ok.
-
-if using nyuzi as the basis it *might* be possible to begin the
-software port in parallel because jeff went to the trouble of writing
-a cycle-accurate simulation.
-
-
-> The GPU must be matched by the Gallium3D driver
-
-that's the *recommended* approach, as i *suspect* it will result in less
-work than, for example, writing an entire OpenGL stack from scratch.
-
-
-> RTL must be sufficient to run on an FPGA.
-
-a *demo* must run on an FPGA as an initial
-
-> Software must be licensed under LGPLv2+ or BSD/MIT.
-
-and no other licenses.  GPLv2+ is out.
-
-> Hardware (RTL) must be licensed under BSD or MIT with no “NON-COMMERCIAL
-> CLAUSES”.
-> Any proposals will be competing against Vivante GC800 (using Etnaviv
-> driver).
-
-in terms of price, performance and power budget, yes.  if you look up
-the numbers (triangles/sec, pixels/sec, power usage, die area) you'll
-find it's really quite modest.  nyuzi right now requires FOUR times the
-silicon area of e.g. MALI400 to achieve the same performance as MALI400,
-meaning that the power usage alone would be well in excess of the budget.
-
-> The job must be done by a team that shows sufficient expertise to reduce the
-> risk. (Do you mean a team with good CVs? What about if the team shows you an
-> acceptable FPGA prototype?
-
-that would be fantastic as it would demonstrate not only competence
-but also committment.  and will have taken out the "risk" of being
-"unknown", entirely.
-
-> I’m talking about a team of students which do not
-> have big industrial CVs but they know how to handle this job (just like
-> RocketChip or MIAOW or etc…).
-
- works perfectly for me :)
+* The deadline is really tight. If an FPGA (or simulation) plus the basics of the software driver are at least prototyped by then it *might* be ok. 
+* If using Nyuzi as the basis it *might* be possible to begin the software port in parallel because Jeff went to the trouble of writing a cycle-accurate simulation.
+* I *suspect* it will result in less work to use Gallium3D than, for example, writing an entire OpenGL stack from scratch.
+* A *demo* should run on an FPGA as an initial. The FPGA is not a priority for assessment, but it would be *nice* if
+it could fit into a ZC706.
+* Also if there is parallel hardware obviously it would be nice to be able to demonstrate parallelism to the maximum extend possible. But again, being reasonable, if the GPU is so big that only a single core can fit into even a large FPGA then for an initial demo that would be fine.
+* Note that no other licenses are acceptable. GPLv2+ is out.
 
 ## Design decisions and considerations
 
-whilst Nyuzi has a big advantage in that it has simuations and also a
+Whilst Nyuzi has a big advantage in that it has simuations and also a
 llvm port and so on, if utilised for this particular RISC-V chip it would
 mean needing to write a "memory shim" between the general-purpose Nyuzi
 core and the main processor, i.e. all the shader info, state etc. needs
 synchronisation hardware (and software).
 
-that could significantly complicate design, especially of software.
+That could significantly complicate design, especially of software.
 
-whilst i *recommended* Gallium3D there is actually another possible
+Whilst i *recommended* Gallium3D there is actually another possible
 approach: a RISC-V multi-core design which accelerates *software*
-rendering... including potentially utilising the fact that gallium3d
+rendering... including potentially utilising the fact that Gallium3D
 has a *software* (LLVM) renderer:
 
 <https://mesa3d.org/llvmpipe.html>
 
-the general aim of this approach is *not* to have the complexity of
+The general aim of this approach is *not* to have the complexity of
 transferring significant amounts of data structures to and from disparate
 cores (one Nyuzi, one RISC-V) but to STAY WITHIN THE RISC-V ARCHITECTURE
-and simply compile mesa3d (for RISC-V), gallium3d-llvm (for RISC-V).
+and simply compile Mesa3D (for RISC-V), gallium3d-llvm (for RISC-V).
 
-so if considering to base the design on RISC-V, that means turning RISC-V
-into a vector processor.  now, whilst hwacha has been located (finally),
-it's a design that is specifically targetted at supercomputers.  i have
+So if considering to base the design on RISC-V, that means turning RISC-V
+into a vector processor. Now, whilst Hwacha has been located (finally),
+it's a design that is specifically targetted at supercomputers. I have
 been taking an alternative approach to vectorisation which is more about
 *parallelisation* than it is about *vectorisation*.
 
-it would be great for Simple-V to be given consideration for
+It would be great for Simple-V to be given consideration for
 implementation as the abstraction "API" of Simple-V would greatly simplify
 the addition process of Custom features such as fixed-function pixel
 conversion and rasterisation instructions (if those are chosen to be
-added) and so on.  bear in mind that a high-speed clock rate is NOT a
+added) and so on. Bear in mind that a high-speed clock rate is NOT a
 good idea for GPUs (power being a square law), multi-core parallelism
 and longer SIMD/vectors are much better to consider, instead.
 
-the PDF / slides on Simple-V is here:
+the PDF/slides on Simple-V is here:
+
 <http://hands.com/~lkcl/simple_v_chennai_2018.pdf>
 
 and the assessment, design and implementation is being done here:
+
 <http://libre-riscv.org/simple_v_extension/>
 
+## Q & A
+
+> Q:
+>
+> Do you need a team with good CVs? What about if the
+> team shows you an acceptable FPGA prototype? I’m talking about a team
+> of students which do not have big industrial CVs but they know how to
+> handle this job (just like RocketChip or MIAOW or etc…).
+
+A:
+
+That would be fantastic as it would demonstrate not only competence
+but also commitment. And will have taken out the "risk" of being
+"unknown", entirely. So that works perfectly for me :) .
