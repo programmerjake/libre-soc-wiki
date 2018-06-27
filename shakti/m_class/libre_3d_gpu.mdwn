@@ -57,51 +57,29 @@ it could fit into a ZC706.
 
 ## Design decisions and considerations
 
-Whilst Nyuzi has a big advantage in that it has simuations and also a
-llvm port and so on, if utilised for this particular RISC-V chip it would
-mean needing to write a "memory shim" between the general-purpose Nyuzi
-core and the main processor, i.e. all the shader info, state etc. needs
-synchronisation hardware (and software).
+Whilst Nyuzi has a big advantage in that it has simuations and also a llvm port and so on, if utilised for this particular RISC-V chip it would mean needing to write a "memory shim" between the general-purpose Nyuzi core and the main processor, i.e. all the shader info, state etc. needs synchronisation hardware (and software). That could significantly complicate design, especially of software.
 
-That could significantly complicate design, especially of software.
+Whilst i *recommended* Gallium3D there is actually another possible approach: 
 
-Whilst i *recommended* Gallium3D there is actually another possible
-approach: a RISC-V multi-core design which accelerates *software*
-rendering... including potentially utilising the fact that Gallium3D
-has a *software* (LLVM) renderer:
+A RISC-V multi-core design which accelerates *software* rendering... including potentially utilising the fact that Gallium3D has a *software* (LLVM) renderer:
 
 <https://mesa3d.org/llvmpipe.html>
 
-The general aim of this approach is *not* to have the complexity of
-transferring significant amounts of data structures to and from disparate
-cores (one Nyuzi, one RISC-V) but to STAY WITHIN THE RISC-V ARCHITECTURE
-and simply compile Mesa3D (for RISC-V), gallium3d-llvm (for RISC-V),
-modifying llvm for RISC-V to do the heavy-lifting instead.
+The general aim of this approach is *not* to have the complexity of transferring significant amounts of data structures to and from disparate cores (one Nyuzi, one RISC-V) but to STAY WITHIN THE RISC-V ARCHITECTURE and simply compile Mesa3D (for RISC-V), gallium3d-llvm (for RISC-V), modifying llvm for RISC-V to do the heavy-lifting instead.
 
-Then it just becomes a matter of adding vector / SIMD / parallelisation
-extensions to RISC-V, and adding support in LLVM for the same:
+Then it just becomes a matter of adding Vector/SIMD/Parallelization extensions to RISC-V, and adding support in LLVM for the same:
 
 <https://lists.llvm.org/pipermail/llvm-dev/2018-April/122517.html>
 
-So if considering to base the design on RISC-V, that means turning RISC-V
-into a vector processor. Now, whilst Hwacha has been located (finally),
-it's a design that is specifically targetted at supercomputers. I have
-been taking an alternative approach to vectorisation which is more about
-*parallelisation* than it is about *vectorisation*.
+So if considering to base the design on RISC-V, that means turning RISC-V into a vector processor. Now, whilst Hwacha has been located (finally), it's a design that is specifically targetted at supercomputers. I have been taking an alternative approach to vectorisation which is more about *parallelization* than it is about *vectorization*.
 
-It would be great for Simple-V to be given consideration for
-implementation as the abstraction "API" of Simple-V would greatly simplify
-the addition process of Custom features such as fixed-function pixel
-conversion and rasterisation instructions (if those are chosen to be
-added) and so on. Bear in mind that a high-speed clock rate is NOT a
-good idea for GPUs (power being a square law), multi-core parallelism
-and longer SIMD/vectors are much better to consider, instead.
+It would be great for Simple-V to be given consideration for implementation as the abstraction "API" of Simple-V would greatly simplify the addition process of Custom features such as fixed-function pixel conversion and rasterization instructions (if those are chosen to be added) and so on. Bear in mind that a high-speed clock rate is NOT a good idea for GPUs (power being a square law), multi-core parallelism and longer SIMD/vectors are much better to consider, instead.
 
-the PDF/slides on Simple-V is here:
+The PDF/slides on Simple-V is here:
 
 <http://hands.com/~lkcl/simple_v_chennai_2018.pdf>
 
-and the assessment, design and implementation is being done here:
+And the assessment, design and implementation is being done here:
 
 <http://libre-riscv.org/simple_v_extension/>
 
@@ -109,13 +87,19 @@ and the assessment, design and implementation is being done here:
 
 > Q:
 >
-> Do you need a team with good CVs? What about if the
-> team shows you an acceptable FPGA prototype? I’m talking about a team
-> of students which do not have big industrial CVs but they know how to
-> handle this job (just like RocketChip or MIAOW or etc…).
+> Do you need a team with good CVs? What about if the team shows you an acceptable FPGA prototype? I’m talking about a team of students which do not have big industrial CVs but they know how to handle this job (just like RocketChip or MIAOW or etc…).
 
 A:
 
-That would be fantastic as it would demonstrate not only competence
-but also commitment. And will have taken out the "risk" of being
-"unknown", entirely. So that works perfectly for me :) .
+That would be fantastic as it would demonstrate not only competence but also commitment. And will have taken out the "risk" of being "unknown", entirely. So that works perfectly for me :) .
+
+> Q:
+> Is there any guarantee that there would be a sponsorship for the GPU?
+
+A:
+
+Please please let's be absolutely clear:
+
+I can put the *business case* to the anonymous sponsor to *consider* sponsoring a libre GPU, *only* and purely on the basis of a *commercial* decision based on cost and risk analysis, comparing against the best alternative option which is USD $250,000 for a one-time proprietary license for Vivante GC800 using etnaviv. So as a result we need to be *really clear* that *there is no "guaranteed sponsorship"*.  this is a pure commercial *business* assessment.
+
+However, it just so happens that there's quite a lot of people who are pissed at how things go in the 3D embedded space. That can be leveraged, by way of a crowd-funding campaign, to invite people to help, put money behind this that has *nothing to do with the libre-riscv anonymous sponsor*.
