@@ -370,9 +370,9 @@ for (i = 0; i < 16; i++) // 16 CSRs?
 \begin{semiverbatim}
 def get\_pred\_val(bool is\_fp\_op, int reg):
    tb = int\_pred if is\_fp\_op else fp\_pred
-   if (!tb[reg].enabled):
-      return ~0x0              // all ops enabled
-   predidx = tb[reg].predidx   // redirection occurs HERE
+   if (!tb[reg].enabled): return ~0x0 // all ops enabled
+   predidx  = tb[reg].predidx  // redirection occurs HERE
+   predidx += tb[reg].bank << 5 // 0 (1=rsvd)
    predicate = intreg[predidx] // actual predicate HERE
    if (tb[reg].inv):
       predicate = ~predicate   // invert ALL bits
