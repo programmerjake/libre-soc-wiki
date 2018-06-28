@@ -1502,37 +1502,35 @@ the question is asked "How can each of the proposals effectively implement
 
 ### Example Instruction translation: <a name="example_translation"></a>
 
-Instructions "ADD r2 r4 r4" would result in three instructions being
-generated and placed into the FIFO:
+Instructions "ADD r7 r4 r4" would result in three instructions being
+generated and placed into the FIFO.  r7 and r4 are marked as "vectorised":
 
-* ADD r2 r4 r4
-* ADD r2 r5 r5
-* ADD r2 r6 r6
+* ADD r7 r4 r4
+* ADD r8 r5 r5
+* ADD r9 r6 r6
+
+Instructions "ADD r7 r4 r1" would result in three instructions being
+generated and placed into the FIFO.  r7 and r1 are marked as "vectorised"
+whilst r4 is not:
+
+* ADD r7 r4 r1
+* ADD r8 r4 r2
+* ADD r9 r4 r3
 
 ## Example of vector / vector, vector / scalar, scalar / scalar => vector add
 
-    register CSRvectorlen[XLEN][4]; # not quite decided yet about this one...
-    register CSRpredicate[XLEN][4]; # 2^4 is max vector length
-    register CSRreg_is_vectorised[XLEN]; # just for fun support scalars as well
-    register x[32][XLEN];
-
-    function op_add(rd, rs1, rs2, predr)
-    {
-       /* note that this is ADD, not PADD */
-       int i, id, irs1, irs2;
-       # checks CSRvectorlen[rd] == CSRvectorlen[rs] etc. ignored
-       # also destination makes no sense as a scalar but what the hell...
-       for (i = 0, id=0, irs1=0, irs2=0; i<CSRvectorlen[rd]; i++)
-          if (CSRpredicate[predr][i]) # i *think* this is right...
-             x[rd+id] <= x[rs1+irs1] + x[rs2+irs2];
-          # now increment the idxs
-          if (CSRreg_is_vectorised[rd]) # bitfield check rd, scalar/vector?
-             id += 1;
-          if (CSRreg_is_vectorised[rs1]) # bitfield check rs1, scalar/vector?
-             irs1 += 1;
-          if (CSRreg_is_vectorised[rs2]) # bitfield check rs2, scalar/vector?
-             irs2 += 1;
-    }
+    function op_add(rd, rs1, rs2) # add not VADD!
+      int i, id=0, irs1=0, irs2=0;
+      rd  = int_vec[rd ].isvector ? int_vec[rd ].regidx : rd;
+      rs1 = int_vec[rs1].isvector ? int_vec[rs1].regidx : rs1;
+      rs2 = int_vec[rs2].isvector ? int_vec[rs2].regidx : rs2;
+      predval = get_pred_val(FALSE, rd);
+      for (i = 0; i < VL; i++)
+        if (predval & 1<<i) # predication uses intregs
+           ireg[rd+id] <= ireg[rs1+irs1] + ireg[rs2+irs2];
+        if (int_vec[rd ].isvector)  { id += 1; }
+        if (int_vec[rs1].isvector)  { irs1 += 1; }
+        if (int_vec[rs2].isvector)  { irs2 += 1; }
 
 ## Retro-fitting Predication into branch-explicit ISA <a name="predication_retrofit"></a>
 
