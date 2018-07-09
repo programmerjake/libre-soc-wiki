@@ -1,0 +1,181 @@
+# Beyond 39-bit instruction virtual address extension
+
+Peter says:
+
+I'd like to propose a spec change and don't know who to contact. My
+suggestion is that the instruction virtual address remain at 39-bits
+(or lower) while moving the data virtual address to 48-bits. These 2
+spaces do not need to be the same size, and the instruction space will
+naturally be a very small subset. The reason we expand is to access
+more data, but the HW cost is primarily from the instruction virtual
+address. I don't believe there are any applications that require nearly
+this much instruction space, so it's possible compilers already abide by
+this restriction. However we would need to formalize it to take advantage
+in HW.
+
+I've participated in many feasibilities to expand the virtual address
+through the years, and the costs (frequency, area, and power) are
+prohibitive and get worse with each process. The main reason it is so
+expensive is that the virtual address is used within the core to track
+each instruction, so it exists in almost every functional block. We try
+to implement address compression where possible, but it is still perhaps
+the costliest group of signals we have. This false dependency between
+instruction and data address space is the reason x86 processors have
+been stuck at 48 bits for more than a decade despite a strong demand
+for expansion from server customers.
+
+This seems like the type of HW/SW collaboration that RISC-V was meant
+to address. Any suggestions how to proceed?
+
+# Discussion with Peter and lkcl
+
+>>  i *believe* that would have implications that only a 32/36/39 bit
+>> *total* application execution space could be fitted into the TLB at
+>> any one time, i.e. that if there were two applications approaching
+>> those limits, that the TLBs would need to be entirely swapped out to
+>> make room for one (and only one) of those insanely-large programs to
+>> execute at any one time.
+>>
+> Yes, one solution would be to restrict the instruction TLB to one (or a few)
+> segments. Our interface to SW is on page misses and when reading from
+> registers (e.g. indirect branches), so we can translate to the different
+> address size at these points. It would be preferable if the corner cases
+> were disallowed by SW.
+
+ ok so just to be clear:
+
+* application instruction space addressing is restricted to
+32/36/39-bit (whatever)
+* virtual address space for applications is restricted to 48-bit (on
+rv64: rv128 has higher?)
+* TLBs for application instruction space can then be restricted to
+32+N/36+N/39+N where 0 <= N <= a small number.
+* the smaller application space results in less virtual instruction
+address routing hardware (the primary goal)
+* an indirect branch, which will always be to an address within the
+32/36/39-bit range, will result in a virtual TLB table miss
+* the miss will be in:
+    -> the 32+N/36+N/39+N space that will be
+    -> redirected to a virtual 48-bit address that will be
+    -> redirected to real RAM through the TLB.
+
+assuming i have that right, in this way:
+
+* you still have up to 48-bit *actual* virtual addressing (and
+potentially even higher, even on RV64)
+* but any one application is limited in instruction addressing range
+to 32/36/39-bit
+* *BUT* you *CAN* actually have multiple such applications running
+simultaneously (depending on whether N is greater than zero or not).
+
+is that about right?
+
+if so, what are the disadvantages?  what is lost (vs what is gained)?
+
+--------
+
+reply:
+
+ ok so just to be clear: 
+
+ * application instruction space addressing is restricted to 
+32/36/39-bit (whatever) 
+
+The address space of a process would ideally be restricted to a range
+such as this. If not, SW would preferably help with corner cases
+(e.g. instruction overlaps segment boundary).
+
+ * virtual address space for applications is restricted to 48-bit (on 
+rv64: rv128 has higher?) 
+
+Anything 64-bits or less would be fine (more of an ISA issue). 
+
+ * TLBs for application instruction space can then be restricted to 
+32+N/36+N/39+N where 0 <= N <= a small number. 
+
+Yes 
+
+ * the smaller application space results in less virtual instruction 
+address routing hardware (the primary goal) 
+ 
+The primary goal is frequency, but routing in key areas is a major
+component of this (and is increasingly important on each new silicon
+process). Area and power are secondary goals.
+
+ * an indirect branch, which will always be to an address within the 
+32/36/39-bit range, will result in a virtual TLB table miss 
+
+Indirect branches would ideally always map to the range, but HW would
+always check.
+ 
+ * the miss will be in: 
+   -> the 32+N/36+N/39+N space that will be 
+   -> redirected to a virtual 48-bit address that will be 
+   -> redirected to real RAM through the TLB. 
+
+Actually a page walk through the page miss handler, but the concept
+is correct.
+
+> if so, what are the disadvantages?  what is lost (vs what is gained)? 
+
+I think the disadvantages are mainly SW implementation costs. The
+advantages are frequency, power, and area. Also a mechanism for expanded
+addressability and security.
+
+[hypothetically, the same scheme could equally be applied to 48-bit
+executables (so 32/36/39/48).)]
+
+# Jacob and Albert discussion
+
+Albert Cahalan wrote:
+
+> The solution is likely to limit the addresses that can be living in the
+> pipeline at any one moment. If that would be exceeded, you wait.
+> 
+> For example, split a 64-bit address into a 40-bit upper part and a
+> 24-bit lower part. Assign 3-bit codes in place of the 40-bit portion,
+> first-come-first-served.  Track just 27 bits (3+24) through the
+> processor. You can do a reference count on the 3-bit codes or just wait
+> for the whole pipeline to clear and then recycle all of the 3-bit codes.
+
+> Adjust all those numbers as determined by benchmarking.
+
+> I must say, this bears a strong resemblance to the TLB. Maybe you could
+> use a TLB entry index for the tracking.
+
+I had thought of a similar solution.
+
+The key is that the pipeline can only care about some subset of the
+virtual address space at any one time.  All that is needed is some way
+to distinguish the instructions that are currently in the pipeline,
+rather than every instruction in the process, as virtual addresses do.
+
+I suggest using cache or TLB coordinates as instruction tags.  This would
+require that the L1 I-cache or ITLB "pin" each cacheline or slot that
+holds a currently-pending instruction until that instruction is retired.
+The L1 I-cache is probably an ideal reference, since the cache tag
+array has the current base virtual address for each cacheline and the
+rest of the pipeline would only need {cacheline number, offset} tuples.
+Evicting the cacheline containing the most-recently-fetched instruction
+would be insane in general, so this should have minimal impact on L1
+I-cache management.  If the virtual address of the instruction is needed
+for any reason, it can be read from the I-cache tag array.
+
+This approach can be trivially extended to multi-ASID or even multi-VMID
+systems by simply adding VMID and ASID fields to the tag tuples.
+
+The L1 I-cache provides an easy solution for assigning "short codes"
+to replace the upper portion of an instruction's virtual address.
+As an example, consider an 8KiB L1 I-cache with 128-byte cachelines.
+Such a cache has 64 cachelines (6 bits) and each cacheline has 64 or
+32 possible instructions (depending on implementation of RVC or other
+odd-alignment ISA extensions).  For an RVC-capable system (the worst
+case), each 128-byte cacheline has 64 possible instruction locations, for
+another 6 bits.  So now the rest of the pipeline need only track 12-bit
+tags that reference the L1 I-cache.  A similar approach could also use
+the ITLB, but the ITLB variant results in larger tags, due both to the
+need to track page offsets (11 bits) and the larger number of slots the
+ITLB is likely to have.
+
+Conceivably, even the program counter could be internally implemented
+in this way.
