@@ -180,6 +180,20 @@ ITLB is likely to have.
 Conceivably, even the program counter could be internally implemented
 in this way.
 
+-----
+
+Jacob replies
+
+The idea is that the internal encoding for (example) sepc could be the cache coordinates, and reading the CSR uses the actual value stored as an address to perform a read from the L1 I-cache tag array.  In other words, cache coordinates do not need to be resolved back to virtual addresses until software does something that requires the virtual address.
+
+Branch target addresses get "interesting" since the implementation must either be able to carry a virtual address for a branch target into the pipeline (JALR needs the ability to transfer to a virtual address anyway) or prefetch all branch targets so the branch address can be written as a cache coordinate.  An implementation could also simply have both "branch to VA" and "branch to CC" macro-ops and probe the cache when a branch is decoded:  if the branch target is already in the cache, decode as "branch to CC", otherwise decode as "branch to VA".  This requires tracking both forms of the program counter, however, and adds a performance-optimization rule:  branch targets should be in the same  or next cacheline when feasible.  (I expect most implementations that implement I-cache prefetch at all to automatically prefetch the next cacheline of the instruction stream.  That is very cheap to implement and the prefetch will hit whenever execution proceeds sequentially, which should be fairly common.)
+
+Limiting which instructions can take traps helps with this model, and interrupts (which can otherwise introduce interrupt traps anywhere) would need to be handled by inserting a "take interrupt trap" macro-op into the decoded instruction stream.
+
+Also, this approach can use coordinates into either the L1 I-cache or the ITLB.  I have been describing the cache version because I find it more interesting and it can use smaller tags than the TLB version.  You mention evaluating TLB pointers and finding them insufficient; do cache pointers reduce or solve those issues?  What were the problems with using TLB coordinates instead of virtual addresses?
+
+More directly addressing lkcl's question, I expect that use of cache coordinates to be completely transparent to software, requiring no change to the ISA spec.  As a purely microarchitectural solution, it also meets Dr. Waterman's goal.
+
 # Microarchitecture design preference
 
 andrew expressed a preference that the spec not require changes, instead that implementors design microarchitectures that solve the problem transparently.
@@ -193,3 +207,4 @@ andrew expressed a preference that the spec not require changes, instead that im
 I had hoped for software proposals, but these HW proposals would not require a specification change. I found that TLB ptrs didn't address our primary design issues (about 10 years ago), but it does simplify areas of the design. At least a partial TLB would be needed at other points in the pipeline when reading the VA from registers or checking branch addresses. 
 
 I still think the spec should recognize that the instruction space has very different requirements and costs. 
+
