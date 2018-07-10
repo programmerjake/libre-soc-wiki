@@ -179,3 +179,17 @@ ITLB is likely to have.
 
 Conceivably, even the program counter could be internally implemented
 in this way.
+
+# Microarchitecture design preference
+
+andrew expressed a preference that the spec not require changes, instead that implementors design microarchitectures that solve the problem transparently.
+
+> so jacob (and peter, and albert, and others), what are your thoughts 
+> on whether these proposals would require a specification change.  are 
+> they entirely transparent or are they guaranteed to have ramifications 
+> that propagate through the hardware and on to the toolchains and OSes, 
+> requiring formal platform-level specification and ratification? 
+
+I had hoped for software proposals, but these HW proposals would not require a specification change. I found that TLB ptrs didn't address our primary design issues (about 10 years ago), but it does simplify areas of the design. At least a partial TLB would be needed at other points in the pipeline when reading the VA from registers or checking branch addresses. 
+
+I still think the spec should recognize that the instruction space has very different requirements and costs. 
