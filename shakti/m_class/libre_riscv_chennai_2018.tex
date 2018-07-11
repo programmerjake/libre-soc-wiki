@@ -80,10 +80,33 @@
 
 \frame{\frametitle{Interfaces, Block Diagram, of the Libre-RISCV SoC}
  \begin{center}
-  \includegraphics[height=2.5in]{../shakti_libre_riscv.jpg}\\
-  {\bf Complexity is in the power management }
+  \includegraphics[height=2.1in]{../shakti_libre_riscv.jpg}\\
+  {\bf Separate Power Domains for GPIO banks, Variable voltages
+    required, low-power sleep states etc.  Quite involved!}
  \end{center}
 }
+
+\frame{\frametitle{Hardware / Development Complexity Comparison}
+
+ \begin{itemize}
+   \item {\bf Server}: relatively easy. PCIe, RapidIO, SATA, (1/10) GbE,
+		 DDR3/4 or HyperRAM. No multiplexing: all interfaces dedicated
+		 and high-speed differential pairs
+		 \vspace{8pt}
+   \item {\bf Desktop}: really just a variant of Server.
+	     Graphics is a PCIe Card (except if integrated).  Peripherals
+	     often done in dedicated external ICs ("Southbridge")
+	     \vspace{8pt}
+   \item {\bf Embedded}: also pretty easy.  Really needs a pinmux.  Low clock
+         rate, low power mode.  Example: Freedom U310.
+         \vspace{8pt}
+   \item {\bf Mobile}: HARD. Performance/Watt matters $=>$ variable core
+		 voltage domains {\it per core}.  Number of pins matters.  Cost
+		 matters.  Pinmux absolutely critical.
+	     \vspace{8pt}
+  \end{itemize}
+}
+
 
 \frame{\frametitle{TODO}
 
