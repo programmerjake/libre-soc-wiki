@@ -79,6 +79,34 @@
 }
 
 
+\frame{\frametitle{Does what we want already exist?}
+ \begin{center}
+  \includegraphics[height=2.4in]{nolibresocs.jpg}\\
+  {\bf Analysis of SoCs over the past 7+ years (answer: no)}
+ \end{center}
+}
+
+
+\frame{\frametitle{What's the problem?}
+
+ \begin{itemize}
+   \item {\bf iMX6}: Libre bootable, Vivante 3D GPU (libre etnaviv)
+            but proprietary VPU (and a power-hungry Cortex A9)
+	\item {\bf Allwinner SoCs}: mostly Libre bootable,
+	      VPU reverse-engineered; GPU: MALI or PowerVR (i.e. proprietary)
+	\item {\bf Rockchip SoCs}: good but using MALI or PowerVR.
+	\item {\bf TI OMAP}: good but using PowerVR.  and expensive.
+	\item {\bf Samsung}: good but using MALI.
+	\item {\bf Ingenic jz4775 }: GREAT! performance
+		  sucks (1ghz MIPS32).
+	\item {\bf Broadcom SoCs }: Cartelled. and boots from the VPU
+  \end{itemize}
+  {\it Basically there does not exist one single commercial SoC that
+   provides full source code for all functions (CPU, GPU, VPU)
+   with modern performance.  Note: All of them sponge off of Open Source}
+}
+
+
 \frame{\frametitle{How on earth does an ethical Libre SoC make money???}
 
  \begin{itemize}
@@ -102,11 +130,11 @@
    \item Customer entrapment (through proprietary software).\\
          Strong business case for not entrapping customers:\\
 	     https://tinyurl.com/most-productive-meeting-ever
-   \item Funding, endorsing, empowering or otherwise supporting
+   \item Funding, endorsing, supporting or otherwise empowering
 	      unethical Companies, Organisations and Individuals.\\
 	     (cf: definition of an ethical act).
 	\item Being totally inflexible / unrealistic.  Goals have
-	     to be met: it's no good being an idiot about that. If
+	     to be met: it's no good being an idiot about that. e.g. if
 	     a Libre 3D GPU really can't be made, use Vivante GC800
 	     (with etnaviv).
   \end{itemize}
@@ -124,10 +152,11 @@
  \end{center}
 }
 
+
 \frame{\frametitle{Hardware / Development Complexity Comparison}
 
  \begin{itemize}
-   \item {\bf Server}: relatively easy. PCIe, RapidIO, XAUI, SATA, (1/10) GbE,
+   \item {\bf Server}: relatively easy. PCIe, RapidIO, XAUI, SATA, GbE, 10GE,
 		 DDR3/4 (or HMC) etc. etc. No multiplexing: all interfaces dedicated
 		 and high-speed differential pairs.
    \item {\bf Desktop}: really just a variant of Server.
