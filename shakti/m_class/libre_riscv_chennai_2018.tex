@@ -78,33 +78,69 @@
    former motto "don't be evil" is clearly (unintentionally) unethical}
 }
 
+
+\frame{\frametitle{How on earth does an ethical Libre SoC make money???}
+
+ \begin{itemize}
+   \item Simple answer: Mask Rights.
+   \item Without Mask Rights: by having a desirable
+         product, and packaging it for a customer (i.e. by being a middle-man
+         a service is still being provided for which payment etc. etc.)
+   \item Without a desirable product or customer(s): err... you don't.\\
+	     (cf: definition of Business)
+   \item By not having high NREs (leveraging back-to-back deals,
+	     and helping others fulfil their needs)
+  \end{itemize}
+  {\it Detachment from the goal also helps. If someone else makes this
+   product then GREAT! I can go do something else}
+
+}
+
+\frame{\frametitle{Things wot are "off-limits"}
+
+ \begin{itemize}
+   \item Customer entrapment (through proprietary software).\\
+         Strong business case for not entrapping customers:\\
+	     https://tinyurl.com/most-productive-meeting-ever
+   \item Funding, endorsing, empowering or otherwise supporting
+	      unethical Companies, Organisations and Individuals.\\
+	     (cf: definition of an ethical act).
+	\item Being totally inflexible / unrealistic.  Goals have
+	     to be met: it's no good being an idiot about that. If
+	     a Libre 3D GPU really can't be made, use Vivante GC800
+	     (with etnaviv).
+  \end{itemize}
+  {\it Still no real show-stoppers to making money (or product):
+    it's just slightly harder, that's all.  Ultimately it's about
+    confidence. }
+}
+
+
 \frame{\frametitle{Interfaces, Block Diagram, of the Libre-RISCV SoC}
  \begin{center}
   \includegraphics[height=2.1in]{../shakti_libre_riscv.jpg}\\
   {\bf Separate Power Domains for GPIO banks, Variable voltages
-    required, low-power sleep states etc.  Quite involved!}
+    required, low-power sleep states etc.  Quite involved}
  \end{center}
 }
 
 \frame{\frametitle{Hardware / Development Complexity Comparison}
 
  \begin{itemize}
-   \item {\bf Server}: relatively easy. PCIe, RapidIO, SATA, (1/10) GbE,
-		 DDR3/4 or HyperRAM. No multiplexing: all interfaces dedicated
-		 and high-speed differential pairs
-		 \vspace{8pt}
+   \item {\bf Server}: relatively easy. PCIe, RapidIO, XAUI, SATA, (1/10) GbE,
+		 DDR3/4 (or HMC) etc. etc. No multiplexing: all interfaces dedicated
+		 and high-speed differential pairs.
    \item {\bf Desktop}: really just a variant of Server.
 	     Graphics is a PCIe Card (except if integrated).  Peripherals
-	     often done in dedicated external ICs ("Southbridge")
-	     \vspace{8pt}
+	     often done in dedicated external ICs ("Southbridge" concept)
    \item {\bf Embedded}: also pretty easy.  Really needs a pinmux.  Low clock
-         rate, low power mode.  Example: Freedom U310.
-         \vspace{8pt}
+         rate, low power mode.  e.g. SiFive Freedom U310.
    \item {\bf Mobile}: HARD. Performance/Watt matters $=>$ variable core
-		 voltage domains {\it per core}.  Number of pins matters.  Cost
-		 matters.  Pinmux absolutely critical.
-	     \vspace{8pt}
+		 voltage domains {\it per core}.  Number of pins matters (affects
+		 yield and package cost).  Cost
+		 matters.  Pinmux critical.
   \end{itemize}
+  {\it Bottom line: Mobile-class processors are challenging!}
 }
 
 
