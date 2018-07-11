@@ -93,17 +93,37 @@
    \item {\bf iMX6}: Libre bootable, Vivante 3D GPU (libre etnaviv)
             but proprietary VPU (and a power-hungry Cortex A9)
 	\item {\bf Allwinner SoCs}: mostly Libre bootable,
-	      VPU reverse-engineered; GPU: MALI or PowerVR (i.e. proprietary)
+	      VPU reverse engineered; GPU: MALI or PowerVR (i.e. proprietary)
 	\item {\bf Rockchip SoCs}: good but using MALI or PowerVR.
 	\item {\bf TI OMAP}: good but using PowerVR.  and expensive.
 	\item {\bf Samsung}: good but using MALI.
-	\item {\bf Ingenic jz4775 }: GREAT! performance
+	\item {\bf Ingenic jz4775}: GREAT! performance
 		  sucks (1ghz MIPS32).
-	\item {\bf Broadcom SoCs }: Cartelled. and boots from the VPU
+	\item {\bf Broadcom SoCs}: Cartelled. and boots from the GPU
   \end{itemize}
   {\it Basically there does not exist one single commercial SoC that
    provides full source code for all functions (CPU, GPU, VPU)
-   with modern performance.  Note: All of them sponge off of Open Source}
+   with modern performance. Which is kinda bizarre if you think about it}
+}
+
+
+\frame{\frametitle{So what's needed? What would a good (Libre) SoC have?}
+
+ \begin{itemize}
+   \item Cover a lot of different scenarios (embedded, tablets, industrial,
+         netbooks, crypto-currency mining).
+	\item Decent performance with high efficiency.  RISC-V: 40 \%
+		  more efficient than ARM / Intel.  Shakti a good
+	      candidate: 2.5ghz and 120mW per core @ 22nm.
+	\item 1080p video: y'all gotta watch cute kittens on youtube, right?
+	\item 3D GPU: y'all gotta play Angri Burds, right? (or Minecraft)
+	\item No spying back-door co-processors (to steal crypto-wallets)
+	\item No Spectres, no Meltdowns.
+  \end{itemize}
+  {\it Basically quite boring and mundane.  No Monster Performance,
+   no AI stuff, no special sauce. Just a plain-old SoC,
+   40\% more power efficient than ARM/Intel,
+   and not spying on end-users, that's all}
 }
 
 
