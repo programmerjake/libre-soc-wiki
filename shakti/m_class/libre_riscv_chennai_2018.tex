@@ -115,7 +115,7 @@
  \begin{itemize}
    \item Cover a lot of different scenarios (embedded, tablets, industrial,
          netbooks, crypto-currency mining).
-	\item Decent performance with high efficiency.  RISC-V: 40 \%
+	\item Decent performance with high efficiency.  RISC-V: 40\%
 		  more efficient than ARM / Intel.  Shakti a good
 	      candidate: 2.5ghz and 120mW per core @ 22nm.
 	\item 1080p video: y'all gotta watch cute kittens on youtube, right?
@@ -277,6 +277,30 @@
    {\it Jacob Bachmeyer's Cache-control proposal turns L1 Cache into
    scratchpad RAM.  RVV is just too heavy (sorry!), Simple-V much
    more light-weight and flexible ($O(1)$ ISA proliferation)
+   }
+}
+
+
+\frame{\frametitle{Challenging Stuff [4] - Power Management}
+
+ \begin{itemize}
+   \item Been done before, but not as a Libre Design.
+	   \vspace{4pt}
+   \item GPIO Banks need per-bank VREF (1.8v? to 3.3v)\\
+	      IO pads need built-in
+	     level-shifting to convert to CPU VCORE
+	   \vspace{4pt}
+   \item Each core needs independent variable-voltage capability
+	     and independent shut-down (PMIC supplies external voltage)
+	   \vspace{4pt}
+   \item DDR RAM still needs refreshing (even in sleep mode)
+	   \vspace{4pt}
+   \item Extra RV32 (PicoRV32?) always-on core for wake-up / RTC?
+	   \vspace{4pt}
+   \item PLLs are Analog.  fun fun fun in the sun sun sun...
+  \end{itemize}
+   {\it Really need help here.  PLLs, Analog stuff: very specific
+	   domain expertise.  Fall-back: license proprietary HDL.
    }
 }
 
