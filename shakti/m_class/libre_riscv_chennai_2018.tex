@@ -212,6 +212,28 @@
 }
 
 
+\frame{\frametitle{Challenging Stuff [1] - Memory Interfaces}
+
+ \begin{itemize}
+   \item DDR3/4 PHYs are analog and very high speed.
+		   Impedance training.  Extreme timing tolerances on parallel buses.\\
+		   No surprise they cost USD \$1m and above.
+   \item Symbiotic EDA will do (Libre) PHY layout for USD \$300k,
+	     time to completion for chosen geometry: 8-12 months.
+  \end{itemize}
+   {\it Silicon-proven but still risky.  What are the alternatives?}
+   \vspace{4pt}
+ \begin{itemize}
+   \item 133mhz 32-bit SDRAM (um...) maybe even FlexBus?
+   \item HyperRAM (aka JEDEC xSPI) 8-bit SPI 166mhz or DDR-300.\\
+	   300mbyte/sec for only 13 wires, not bad!  (We'll take several)\\
+	   http://libre-riscv.org/shakti/m\_class/HyperRAM/
+   \item HMC: insanely fast, very low power.  OpenHMC (LGPL)
+	   https://opencores.org/project/openhmc
+  \end{itemize}
+}
+
+
 \frame{\frametitle{TODO}
 
  \begin{itemize}
