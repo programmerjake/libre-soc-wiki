@@ -308,11 +308,10 @@
  \begin{itemize}
    \item GPUs are usually done with incompatible ISAs and effectively
 	     doing OpenGL over IPC / RPC (Remote Procedure Calls)
-   \item Much simpler: GPGPU approach.  Custom-extend the 
-	     main core ISA to handle 3D, and accelerate
-		 Gallium3D-LLVM. 
-   \item Now add Video Extensions. and SIMD. and, and, and...\\
-	   {\bf we are well beyond the 2 32-bit custom opcodes}
+   \item Much simpler: GPGPU "one ISA" approach.  Custom-extend the 
+	     core ISA to handle 3D, use Gallium3D-LLVM. 
+   \item Now add Video Extensions. and SIMD etc and
+	   {\bf we are well beyond the only 2 available 32-bit custom opcodes}
    \item Due to the Libre nature of this project, the custom opcode
 	     space will be "dominated" by 
 	     high-profile public hard-forks of gcc, binutils, llvm etc.
