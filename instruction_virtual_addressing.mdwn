@@ -208,3 +208,23 @@ I had hoped for software proposals, but these HW proposals would not require a s
 
 I still think the spec should recognize that the instruction space has very different requirements and costs. 
 
+----
+
+" sepc could be the cache coordinates [set,way?], and reading the CSR uses the actual value stored as an address to perform a read from the L1 I-cache tag array"
+This makes no sense to me. First, reading the CSR move the CSR into a GPR, it doesn't look up anything in the cache.
+
+In an implementation using cache coordinates for *epc, reading *epc _does_ perform a cache tag lookup.
+
+In case you instead meant that it is then used to index into the cache, then either:
+ - Reading the CSR into a GPR resolves to a VA, or
+
+This is correct.
+
+[...]
+Neither of those explanations makes sense- could you explain better?
+
+In this case, where sepc stores a (cache row, offset) tuple, reading sepc requires resolving that tuple into a virtual address, which is done by reading the high bits from the cache tag array and carrying over the offset within the cacheline.  CPU-internal "magic cookie" cache coordinates are not software-visible.  In this specific case, at entry to the trap handler, the relevant cacheline must be present -- it holds the most-recently executed instruction before the trap.
+
+In general, the cacheline can be guaranteed to remain present using interlock logic that prevents its eviction unless no part of the processor is "looking at" it.  Reference counting is a solved problem and should be sufficient for this.  This gets a bit more complex with speculative execution and multiple privilege levels, although a cache-per-privilege-level model (needed to avoid side channels) also solves the problem of the cacheline being evicted -- the user cache is frozen while the supervisor runs and vice versa.  I have an outline for a solution to this problem involving shadow cachelines (enabling speculative prefetch/eviction in a VIPT cache) and a "trace scoreboard" (multi-column reference counter array -- each column tracks references from pending execution traces:  issuing an instruction increments a cell, retiring an instruction decrements a cell, dropping a speculative trace (resolving predicate as false) zeros an entire column, and a cacheline may be selected for eviction iff its entire row is zero).
+
+CSR reads are allowed to have software-visible side effects in RISC-V, although none of the current standard CSRs have side-effects on read.  Looking at it this way, resolving cache coordinates to a virtual address upon reading sepc is simply a side effect that is not visible to software.
