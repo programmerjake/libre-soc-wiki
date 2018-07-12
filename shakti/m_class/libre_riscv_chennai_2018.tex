@@ -234,6 +234,47 @@
 }
 
 
+\frame{\frametitle{Challenging Stuff [2] - Video Decode Engine}
+
+ \begin{itemize}
+   \item Richard Herveille's Video Core Blocks\\
+    	    https://opencores.org/project/video\_systems
+   \item Symbiotic EDA MP4 decoder in FPGA
+   \item H.264 seems to have been done...\\
+         https://github.com/adsc-hls/synthesizable\_h264
+   \item Really needs SIMD (or better, not-SIMD)\\
+         {http://libre-riscv.org/simple\_v\_extension/}
+   \item Definitely needs xBitManip (parallelised by Simple-V)\\
+         https://github.com/cliffordwolf/xbitmanip
+  \end{itemize}
+   {\it SIMD is insane. $O(N^6)$ opcode proliferation.  See\\
+     https://www.sigarch.org/simd-instructions-considered-harmful/ \\
+     (1): P-Ext designed for Audio. (2): Investigate RI5CY's SIMD
+   }
+}
+
+
+\frame{\frametitle{Challenging Stuff [3] - 3D GPU.  Sigh.}
+
+ \begin{itemize}
+   \item Actual requirements quite modest: 30MP/s 100MT/s 5GFLOPS
+         but power/area is crucial ($2mm^2$ @ 40nm)
+   \item Nyuzi, MIAOW, GPLGPU (Number Nine), OGP.
+   \item Nyuzi based on Larrabee. Jeff Bush really helpful.
+   \item MIAOW is an OpenCL engine.  GPLGPU is fixed-function
+   \item Nyuzi lessons: Software-only rendering not enough.
+	     Getting through L1 cache takes most power. Fixed functions
+	     such as parallel FP-Quad to ARGB Pixel, and Z-Buffer
+	     needed.
+   \item Fallback is GC800 (\$250k) {\it contact me if you can do better!}
+  \end{itemize}
+   {\it Jacob Bachmeyer's Cache-control proposal turns L1 Cache into
+   scratchpad RAM.  RVV is just too heavy (sorry!), Simple-V much
+   more light-weight and flexible.
+   }
+}
+
+
 \frame{\frametitle{TODO}
 
  \begin{itemize}
