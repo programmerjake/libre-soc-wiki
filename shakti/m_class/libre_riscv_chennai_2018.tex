@@ -27,14 +27,18 @@
 \frame{\frametitle{Credits and Acknowledgements}
 
  \begin{itemize}
-   \item The Designers of RISC-V\vspace{8pt}
-   \item The RISC-V Foundation\vspace{8pt}
-   \item The Shakti Group, and IIT Madras RISE Group\vspace{8pt}
-   \item Prof. G S Madhusudan\vspace{8pt}
-   \item Neel Gala\vspace{8pt}
-   \item Rishabh Jain\vspace{8pt}
-   \item Members of the RISC-V Open Groups (SW/HW/ISA)\vspace{8pt}
+   \item The Designers of RISC-V
+   \item The RISC-V Foundation
+   \item The Shakti Group, and IIT Madras RISE Group
+   \item Prof. G S Madhusudan
+   \item Neel Gala
+   \item Rishabh Jain
+   \item Members of the RISC-V Open Groups (SW/HW/ISA)
    \item Libre and Open Software and Hardware Communities
+   \item Richard Herveille (RoaLogic), Edmund Humenberger, Clifford Wolf
+	     (Symbiotica EDA), Rudi (Asics.ws),
+	     Alex Forenchich, LowRISC Team
+    \item Anonymous Sponsor
   \end{itemize}
 }
 
@@ -341,6 +345,25 @@
    \item Corporations with their own pinmux unlikely to be interested.
    \item http://git.libre-riscv.org/?p=pinmux.git \\
          http://hands.com/~lkcl/pinmux\_chennai\_2018.pdf
+  \end{itemize}
+}
+
+
+\frame{\frametitle{Interesting Missing Stuff [2] - AC97/I2S, USB2 PHY}
+
+
+\begin{itemize}
+   \item Rudi (Asics.ws) donating time to create a Multi-Protocol
+	     Audio Controller: AC97, PCM, PDM, I2S\\
+	   http://libre-riscv.org/shakti/m\_class/AC97/
+	\item USB2 is... convoluted.  UTMI-ULPI-USB2 PHY\\
+		USB2-PHY not confirmed (Rudi has one)\\
+		Also Rudi has DDR (8-pin) variant of ULPI
+	   http://libre-riscv.org/shakti/m\_class/ULPI/
+	\item USB3 not necessarily a good idea to put into Libre-RISCV\\
+		Daisho USB3 Pipe exists, TUSB1310a PHY is 175 pin FBGA!
+	\item Libre SD/MMC typically at "Open" Level 20MB/sec appx.
+		Full spec and eMMC requires membership.
   \end{itemize}
 }
 
