@@ -260,7 +260,29 @@
 }
 
 
-\frame{\frametitle{Challenging Stuff [3] - Libre 3D GPU.  Sigh.}
+\frame{\frametitle{Challenging Stuff [3] - Power Management}
+
+ \begin{itemize}
+   \item Been done before (many times), but not as a Libre Design.
+   \item Sanjay Charagulla: GlobalFoundries 22nm mobile process
+	     can reach as low as 0.4v
+   \item GPIO Banks need per-bank VREF (1.8v? to 3.3v)\\
+	      IO pads need built-in
+	     level-shifting to convert to CPU VCORE
+   \item Each core needs independent variable-voltage capability
+	     and independent shut-down (PMIC supplies external voltage)
+   \item DDR RAM still needs refreshing (even in sleep mode)
+   \item Extra RV32 (PicoRV32?) always-on core for wake-up / RTC?
+   \item PLLs are Analog.  fun fun fun in the sun sun sun...
+  \end{itemize}
+   {\it Really need help.  PLLs, Analog stuff: specific
+	   domain expertise.  Fall-back example:
+	   https://www.dolphin-integration.com?
+   }
+}
+
+
+\frame{\frametitle{Challenging Stuff [4] - Libre 3D GPU.  Sigh.}
 
  \begin{itemize}
    \item Actual requirements quite modest: 30MP/s 100MT/s 5GFLOPS
@@ -281,24 +303,24 @@
 }
 
 
-\frame{\frametitle{Challenging Stuff [4] - Power Management}
+\frame{\frametitle{Challenging Stuff [5] - Custom Extensions}
 
  \begin{itemize}
-   \item Been done before (many times), but not as a Libre Design.
-   \item Sanjay Charagulla: GlobalFoundries 22nm mobile process
-	     can reach as low as 0.4v
-   \item GPIO Banks need per-bank VREF (1.8v? to 3.3v)\\
-	      IO pads need built-in
-	     level-shifting to convert to CPU VCORE
-   \item Each core needs independent variable-voltage capability
-	     and independent shut-down (PMIC supplies external voltage)
-   \item DDR RAM still needs refreshing (even in sleep mode)
-   \item Extra RV32 (PicoRV32?) always-on core for wake-up / RTC?
-   \item PLLs are Analog.  fun fun fun in the sun sun sun...
+   \item GPUs are usually done with incompatible ISAs and effectively
+	     doing OpenGL over IPC / RPC (Remote Procedure Calls)
+   \item Much simpler: GPGPU approach.  Custom-extend the 
+	     main core ISA to handle 3D, and accelerate
+		 Gallium3D-LLVM. 
+   \item Now add Video Extensions. and SIMD. and, and, and...\\
+	   {\bf we are well beyond the 2 32-bit custom opcodes}
+   \item Due to the Libre nature of this project, the custom opcode
+	     space will be "dominated" by 
+	     high-profile public hard-forks of gcc, binutils, llvm etc.
+	     Which isn't going to go down well.
+   \item Instruction-set "Conflict Resolution" is therefore critical\\
+	     http://libre-riscv.org/isa\_conflict\_resolution/
   \end{itemize}
-   {\it Really need help.  PLLs, Analog stuff: specific
-	   domain expertise.  Fall-back example:
-	   https://www.dolphin-integration.com?
+   {\it Remember Altivec. Learn from Intel. This is everyone's problem.
    }
 }
 
