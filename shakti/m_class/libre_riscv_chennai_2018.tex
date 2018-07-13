@@ -159,7 +159,7 @@
  \begin{itemize}
    \item Customer entrapment (through proprietary software).\\
          Strong business case for not entrapping customers:\\
-	     https://tinyurl.com/most-productive-meeting-ever
+	     \url{https://tinyurl.com/most-productive-meeting-ever}
    \item Funding, endorsing, supporting or empowering unethical
          Companies, Organisations, Cartels and Individuals.\\
 	     (cf: definition of an ethical act).
@@ -211,11 +211,11 @@
  \begin{itemize}
    \item DDR3/4: challenging! \$1m for single-use, single instance.\\
          Symbiotic EDA: \$600k for PHY; CERN developed a Controller\\
-         http://libre-riscv.org/shakti/m\_class/DDR/
+         \url{http://libre-riscv.org/shakti/m_class/DDR/}
    \item HyperRAM (JEDEC xSPI): lower risk than DDR3/4\\
-	   http://libre-riscv.org/shakti/m\_class/HyperRAM/
+	   \url{http://libre-riscv.org/shakti/m_class/HyperRAM/}
    \item RGMII: several available (saves \$50k)\\
-	   http://libre-riscv.org/shakti/m\_class/RGMII/
+	   \url{http://libre-riscv.org/shakti/m_class/RGMII/}
    \item UART, SPI, I2C, PWM, SD/MMC: all libre (except eMMC).
    \item Shakti Group has FlexBus, QuadSPI, SRAM, many more.
    \item RGB/TTL: R. Herveille (SSD2828, SN75LVDS83b, TFP410a)
@@ -237,12 +237,12 @@
    {\it Silicon-proven but still risky.  What are the alternatives?}
    \vspace{4pt}
  \begin{itemize}
-   \item 133mhz 32-bit SDRAM (um...) maybe even FlexBus?
+   \item FlexBus/SDRAM (low clock, lots of pins, single-data-rate).
    \item HyperRAM (aka JEDEC xSPI) 8-bit SPI 166mhz or DDR-300.\\
 	   300mbyte/sec for only 13 wires, not bad!  (We'll take several)\\
-	   http://libre-riscv.org/shakti/m\_class/HyperRAM/
+	   \url{http://libre-riscv.org/shakti/m_class/HyperRAM/}
    \item HMC: insanely fast, very low power.  OpenHMC (LGPL)
-	   https://opencores.org/project/openhmc
+	   \url{https://opencores.org/project/openhmc}
   \end{itemize}
 }
 
@@ -256,9 +256,9 @@
    \item H.264 seems to have been done...\\
          https://github.com/adsc-hls/synthesizable\_h264
    \item Really needs SIMD (or better, not-SIMD)\\
-         {http://libre-riscv.org/simple\_v\_extension/}
+         \url{http://libre-riscv.org/simple_v_extension/}
    \item Definitely needs xBitManip (parallelised by Simple-V)\\
-         https://github.com/cliffordwolf/xbitmanip
+         \url{https://github.com/cliffordwolf/xbitmanip}
   \end{itemize}
    {\it SIMD is insane. $O(N^6)$ opcode proliferation.  See\\
      https://www.sigarch.org/simd-instructions-considered-harmful/ \\
@@ -279,13 +279,13 @@
    \item Each core needs independent variable-voltage capability
 	     and independent shut-down (PMIC supplies external voltage)
    \item DDR RAM still needs refreshing (even in sleep mode)
-   \item Extra RV32 (PicoRV32?) always-on core for wake-up / RTC?
+   \item Extra RV32 (PicoRV32?) always-on core for wake-up / RTC
    \item PLLs are Analog.  fun fun fun in the sun sun sun...
   \end{itemize}
    {\it Really need help.  PLLs, Analog stuff: specific
-	   domain expertise.  Fall-back example:
-	   https://www.dolphin-integration.com?
-   }
+	   domain expertise.  Fall-back example:}
+	   \url{https://www.dolphin-integration.com}?
+   
 }
 
 
@@ -293,7 +293,7 @@
 
  \begin{itemize}
    \item Actual requirements quite modest: 30MP/s 100MT/s 5GFLOPS
-         but power/area is crucial ($2mm^2$ @ 40nm)
+         but power/area is crucial ($2mm^2$ @ 40nm, 1W)
    \item Nyuzi, MIAOW, GPLGPU (Number Nine), OGP.
    \item Nyuzi based on Larrabee. Jeff Bush really helpful.
    \item MIAOW is an OpenCL engine.  GPLGPU is fixed-function
@@ -310,7 +310,7 @@
 }
 
 
-\frame{\frametitle{Challenging Stuff [5] - Custom Extensions}
+\frame{\frametitle{Challenging Stuff [5] - Public Custom Extensions}
 
  \begin{itemize}
    \item GPUs are usually done with incompatible ISAs and effectively
@@ -324,7 +324,7 @@
 	     high-profile public hard-forks of gcc, binutils, llvm etc.
 	     Which isn't going to go down well.
    \item ISA "Conflict Resolution" is therefore absolutely critical\\
-	     http://libre-riscv.org/isa\_conflict\_resolution/
+	     \url{http://libre-riscv.org/isa_conflict_resolution/}
   \end{itemize}
    {\it Remember Altivec. Learn from Intel.
    \underline{This is everyone's problem.}
@@ -338,16 +338,16 @@
    \item Pinmux: multiplexer of functions onto pins\\
 	     {\it DRAM Cell != DDR3/4, Mux Cell != Muxer}
    \item Strategically extremely important to Commercial SoC success\\
-	     STMicro, Rockchip, Freescale, Samsung, {\bf EVERYONE}
+	     STMicro, Rockchip, Freescale, Samsung, TI, {\bf EVERYONE}
    \item Bizarrely, a libre-licensed multi-way Pinmux doesn't exist.\\
          {\it not on anyone's radar. at all.}
          SiFive IOF not enough.
    \item Verification (scenario analysis) and auto-generation of
 		 TRM, header files, device-tree files, pretty much everything
 		 makes sense (to any "lazy" Software Engineer...)
-   \item Corporations with their own pinmux unlikely to be interested.
-   \item http://git.libre-riscv.org/?p=pinmux.git \\
-         http://hands.com/~lkcl/pinmux\_chennai\_2018.pdf
+   \item Corporations with legacy pinmux unlikely to be interested.
+   \item \url{http://git.libre-riscv.org/?p=pinmux.git} \\
+         \url{http://hands.com/~lkcl/pinmux\_chennai\_2018.pdf}
   \end{itemize}
 }
 
@@ -358,11 +358,11 @@
 \begin{itemize}
    \item Rudi (Asics.ws) donating time to create a Multi-Protocol
 	     Audio Controller: AC97, PCM, PDM, I2S\\
-	   http://libre-riscv.org/shakti/m\_class/AC97/
+	   \url{http://libre-riscv.org/shakti/m_class/AC97/}
 	\item USB2 is... convoluted.  UTMI-ULPI-USB2 PHY\\
 		USB2-PHY not confirmed (Rudi has one)\\
 		Also Rudi has DDR (8-pin) variant of ULPI
-	   http://libre-riscv.org/shakti/m\_class/ULPI/
+	   \url{http://libre-riscv.org/shakti/m_class/ULPI/}
 	\item USB3 not necessarily a good idea to put into Libre-RISCV\\
 		Daisho USB3 Pipe exists, TUSB1310a PHY is 175 pin FBGA!
 	\item Libre SD/MMC typically at "Open" Level 20MB/sec appx.
@@ -410,7 +410,7 @@
   
   \begin{itemize}
 	\item Contact: lkcl@lkcl.net 
-	\item http://libre-riscv.org/shakti/m\_class/
+	\item \url{http://libre-riscv.org/shakti/m_class/}
   \end{itemize}
 }
 
