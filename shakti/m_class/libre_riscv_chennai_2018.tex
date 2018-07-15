@@ -375,13 +375,27 @@
 }
 
 
-\frame{\frametitle{}
+\frame{\frametitle{Which Processor Cores to use?}
 
  \begin{itemize}
-   \item 
-   \item 
-   \item 
+   \item Shakti RV64 at the top of the list, not just for technical
+		 reasons, but for the Shakti Group's goals and vision.
+	   \vspace{6pt}
+   \item Libre 3D GPGPU (SMP RV64 plus accelerated custom ISA)
+	     would make things interesting\\
+	   (3D app pinned to a non-uniform but SMP architecture)
+	   \vspace{6pt}
+   \item Video Processing again is reasonable to be a different
+	     RV32/64 Core (SMP or otherwise), possibly not even RV
+	     at all (MIPS, OR1200)
+	   \vspace{6pt}
+   \item RV32 (PicoRV32?) always-on definitely needed (sleep mode)
+	   \vspace{6pt}
   \end{itemize}
+  {\it Ultimately, decisions are flexible, heavily weighted
+	   towards "what does good and doesn't do bad" as
+	   well as cost vs risk
+  }
 }
 
 
