@@ -1,0 +1,15 @@
+# Interrupt Handling for RISC-V
+
+This page is a non-authoritative resource for information and documentation
+about interrupt handling on RISC-V.  An interim page for the discussion
+of interrupt handling is here: [[interrupt_handling]].
+
+# Open PLIC Implementations
+
+* <https://github.com/RoaLogic/plic> - written in verilog, has an
+    AHB3-Lite / AMBA interface.  Documentation is here:
+    <https://github.com/RoaLogic/plic/blob/master/DATASHEET.md>
+* Shakti Peripherals, there is a tested (taped-out) version here
+  in src/peripherals/plic <https://bitbucket.org/casl/c-class/src/>
+  and another version with up to 1024 IRQ lines and a 2-cycle
+  response time here <http://git.libre-riscv.org/?p=shakti-peripherals.git;a=tree;f=src/peripherals/plic>

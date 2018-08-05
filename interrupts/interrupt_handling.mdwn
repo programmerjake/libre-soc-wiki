@@ -1,0 +1,31 @@
+# Interrupt Handling in RISC-V
+
+This is a non-authoritative document for informally capturing the
+requirements for interrupt handling across the spectrum of the entire
+RISC-V ecosystem, with a view to finding common ground.  Following on
+from that will be seeing where collaboration is (and is not) feasible,
+and, crucially, if the existing structures (such as the various PLIC
+implementations that already exist) cover peoples' needs (or not).
+
+# Requirements Discussion
+
+This section is intended for capturing requirements from different sources
+so that they can be viewed and compared in one place.  If you are not
+familiar with markdown or editing of wikis please contact
+luke.leighton@gmail.com, sending the appropriate text, for inclusion here.
+
+* **Libre-RISCV Shakti M-Class**: a 300-400 pin SoC with almost a hundred
+  separate and distinct "slow" (below 160mhz) peripherals that need nothing
+  particularly special in the way of fast latency IRQs, just lots of them.
+  Five UARTs, each requiring one IRQ line; Four I2C peripherals, each
+  requiring two IRQ lines, Multiple Quad SPI interfaces requring **six**
+  IRQ lines (each!), the number of IRQ lines required to cover such
+  a significant number of peripherals begins to add up quite rapidly.
+  However despite this, the PLIC as it stands (privspec-v-1.10 chapter 7)
+  actually covers the requirements quite nicely, as long as it can cope
+  with large numbers *of* IRQ lines (which it can).  Thus the Shakti
+  PLIC Peripheral code has been modified from its original (which could
+  handle up to XLEN separate lines) to a hierarchical arrangement that
+  can handle up to 1024 separate and distinct IRQs
+  <http://git.libre-riscv.org/?p=shakti-peripherals.git;a=blob;f=src/peripherals/plic/plic.bsv>
+
