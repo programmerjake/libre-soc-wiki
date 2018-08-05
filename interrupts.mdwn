@@ -9,6 +9,10 @@ of interrupt handling is here: [[interrupt_handling]].
 * <https://github.com/RoaLogic/plic> - written in verilog, has an
     AHB3-Lite / AMBA interface.  Documentation is here:
     <https://github.com/RoaLogic/plic/blob/master/DATASHEET.md>
+    It has been taped out, it supports virtually unlimited (limited by
+    timing only) IRQ lines.  All registers are dynamically generated. 
+    Currently it only features an AHB3 slave interface, but the BIU is
+    separate. So other interfaces can be easily added.
 * Shakti Peripherals, there is a tested (taped-out) version here
   in src/peripherals/plic <https://bitbucket.org/casl/c-class/src/>
   and another version with up to 1024 IRQ lines and a 2-cycle
