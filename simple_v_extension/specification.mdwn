@@ -197,9 +197,9 @@ is given in the section "Bitwidth Virtual Register Reordering".
 
 The Predication CSR is a key-value store indicating whether, if a given
 destination register (integer or floating-point) is referred to in an
-instruction, it is to be predicated.  However it is important to note
-that the *actual* register is *different* from the one that ends up
-being used, due to the level of indirection through the lookup table.
+instruction, it is to be predicated.  Tt is particularly important to note
+that the *actual* register used can be *different* from the one that is in
+the instruction, due to the redirection through the lookup table.
 
 * regidx is the actual register that in combination with the
   i/f flag, if that integer or floating-point register is referred to,
@@ -317,7 +317,7 @@ concepts and functionality, no new instructions are needed.
 becomes a critical dependency for efficient manipulation of predication
 masks (as a bit-field).  Despite the removal of all operations,
 with the exception of CLIP and VSELECT.X
-*all instructions from RVV are topologically re-mapped and retain their
+*all instructions from RVV Base are topologically re-mapped and retain their
 complete functionality, intact*.  Note that if RV64G ever had
 a MV.X added as well as FCLIP, the full functionality of RVV-Base would
 be obtained in SV.
@@ -356,8 +356,10 @@ predication target register, rs3.  The predicate target register rs3 is
 to be treated as a bitfield (up to a maximum of XLEN bits corresponding
 to a maximum of XLEN elements).
 
-If either of src1 or src2 are scalars (CSRvectorlen[src] == 0) the comparison
-goes ahead as vector-scalar or scalar-vector.
+If either of src1 or src2 are scalars (whether by there being no
+CSR register entry or whether by the CSR entry specifically marking
+the register as "scalar") the comparison goes ahead as vector-scalar
+or scalar-vector.
 
 In instances where no vectorisation is detected on either src registers
 the operation is treated as an absolutely standard scalar branch operation.
