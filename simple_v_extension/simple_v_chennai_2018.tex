@@ -687,7 +687,7 @@ loop:
  CSRvect1 = \{type: F, key: a3, val: a3, elwidth: dflt\}
  CSRvect2 = \{type: F, key: a7, val: a7, elwidth: dflt\}
 loop:
- setvl  t0, a0, 4       # vl = t0 = min(min(mvl, 4, n))
+ setvl  t0, a0, 4       # vl = t0 = min(min(63, 4), a0))
  ld     a3, a1          # load 4 registers a3-6 from x
  slli   t1, t0, 3       # t1 = vl * 8 (in bytes)
  ld     a7, a2          # load 4 registers a7-10 from y
