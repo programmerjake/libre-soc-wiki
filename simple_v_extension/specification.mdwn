@@ -59,17 +59,15 @@ are used at the register decode phase.
 
 There are also three CSRS:
 
-* MAXVECTORLENGTH
-* VL
-* REALVL (a shadow of VL)
+* MAXVECTORLENGTH (the Maximum Vector Length)
+* VL (which has different characteristics from standard CSRs)
+* REALVL (a shadow of VL which has standard CSR behaviour)
 
 ## MAXVECTORLENGTH
 
 MAXVECTORLENGTH is the same concept as MVL in RVV, except that it
-is variable length and may be dynamically set.  However in Simple-V,
-given that its primary (base, unextended) purpose is for 3D, Video and
-other purposes (not requiring supercomputing capability), it makes sense
-to limit MAXVECTORLENGTH to the regfile bitwidth (32 for RV32, 64 for RV64
+is variable length and may be dynamically set.  MAXVECTORLENGTH is
+however limited to the regfile bitwidth (32 for RV32, 64 for RV64
 and so on).
 
 The reason for setting this limit is so that predication registers, when
@@ -78,9 +76,14 @@ over several registers.  This keeps the implementation a little simpler.
 
 ## VSETVL (VL and REALVL CSRs)
 
-VSETVL is slightly different from RVV in that the minimum vector length
-is required to be at least the number of registers in the register file,
-and no more than XLEN.  This allows vector LOAD/STORE to be used to switch
+VSETVL is slightly different from RVV.  Like RVV, VL is set to be limited
+to the MAXVECTORLENGTH, which in turn is limited to XLEN.
+
+    VL = rd = MIN(vlen, MAXVECTORLENGTH)
+
+where MAXVECTORLENGTH <= XLEN
+
+This allows vector LOAD/STORE to be used to switch
 the entire bank of registers using a single instruction (see Appendix,
 "Context Switch Example").  The reason for limiting VSETVL to XLEN is
 down to the fact that predication bits fit into a single register of length
@@ -92,10 +95,6 @@ into x0, it is *ignored* silently (VSETVL x0, x5)
 The third and most important change is that, within the limits set by
 MAXVECTORLENGTH, the value passed in **must** be set in VL (and in the
 destination register).
-
-    VL = rd = MIN(vlen, MAXVECTORLENGTH)
-
-where RegfileLen <= MAXVECTORLENGTH <= XLEN
 
 This has implication for the microarchitecture, as VL is required to be
 set (limits from MAXVECTORLENGTH notwithstanding) to the actual value
@@ -123,6 +122,11 @@ Where context-load/save is to be implemented in the usual fashion
 by using a single CSRRW instruction to obtain the old value, a
 *secondary* CSR must be used, named SVREALVL.  This CSR behaves
 exactly as standard CSRs, yet is the exact same VL register, internally.
+
+One interesting side-effect of using CSRRWI to set VL is that this
+may be done with a single instruction, useful particularly for a
+context-load/save.  There are however limitations: CSRWWI's immediate
+is limited to 0-31.
 
 ## Register CSR key-value (CAM) table
 
