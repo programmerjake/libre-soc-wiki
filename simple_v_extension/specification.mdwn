@@ -5,12 +5,32 @@
 
 [[!toc ]]
 
-# Introduction
+# Summary and Background: Rationale
 
 Simple-V is a uniform parallelism API for RISC-V hardware that has several
-unplanned side-effects including code-size reduction.
+unplanned side-effects including code-size reduction.  The reason for
+creating it is to provide a manageable way to turn a pre-existing design
+into a parallel one, in a step-by-step incremental fashion, allowing
+the implementor to focus on adding hardware where it is needed and necessary.
 
-What Simple-V (SV) is *not*:
+**No new instructions are added**.  The parallelism (if any is implemented)
+is implicitly added by tagging *standard* scalar registers for redirection.
+When such a tagged register is used in any instruction, it indicates
+that the PC shall **not** be incremented; instead a loop is activated
+where *multiple* instructions are issued to the pipeline, with contiguously
+incrementing register numbers starting from the tagged register.
+
+The barrier to entry with SV is therefore very low.  The minimum is
+software-emulation (traps), requiring only the CSRs and CSR tables, and that
+an exception be thrown if an instruction is detected to have been
+parallelised.  The looping that would otherwise be done in hardware is
+thus carried out in software, instead.
+
+Hardware Parallelism, if any, is therefore added at the implementor's
+discretion to turn what would otherwise be a sequential loop into a
+parallel one.
+
+To emphasise that clearly: Simple-V (SV) is *not*:
 
 * A SIMD system
 * A SIMT system
