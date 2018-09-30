@@ -51,6 +51,54 @@ The reason for setting this limit is so that predication registers, when
 marked as such, may fit into a single register as opposed to fanning out
 over several registers.  This keeps the implementation a little simpler.
 
+## VSETVL (VL and REALVL CSRs)
+
+VSETVL is slightly different from RVV in that the minimum vector length
+is required to be at least the number of registers in the register file,
+and no more than XLEN.  This allows vector LOAD/STORE to be used to switch
+the entire bank of registers using a single instruction (see Appendix,
+"Context Switch Example").  The reason for limiting VSETVL to XLEN is
+down to the fact that predication bits fit into a single register of length
+XLEN bits.
+
+The second change is that when VSETVL is requested to be stored
+into x0, it is *ignored* silently (VSETVL x0, x5)
+
+The third and most important change is that, within the limits set by
+MAXVECTORLENGTH, the value passed in **must** be set in VL (and in the
+destination register).
+
+    VL = rd = MIN(vlen, MAXVECTORLENGTH)
+
+where RegfileLen <= MAXVECTORLENGTH <= XLEN
+
+This has implication for the microarchitecture, as VL is required to be
+set (limits from MAXVECTORLENGTH notwithstanding) to the actual value
+requested.  RVV has the option to set VL to an arbitrary value that suits
+the conditions and the micro-architecture: SV does *not* permit this.
+
+The reason is so that if SV is to be used for a context-switch or as a
+substitute for LOAD/STORE-Multiple, the operation can be done with only
+2-3 instructions (setup of the CSRs, VSETVL x0, x0, #{regfilelen-1},
+single LD/ST operation).  If VL does *not* get set to the register file
+length when VSETVL is called, then a software-loop would be needed.
+To avoid this need, VL *must* be set to exactly what is requested
+(limits notwithstanding).
+
+Therefore, in turn, unlike RVV, implementors *must* provide
+pseudo-parallelism (using sequential loops in hardware) if actual
+hardware-parallelism in the ALUs is not deployed.  A hybrid is also
+permitted (as used in Broadcom's VideoCore-IV) however this must be
+*entirely* transparent to the ISA.
+
+The fourth change is that VSETVL is implemented as a CSR, where the
+behaviour of CSRRW (and CSRRWI) must be changed to specifically store
+the *new* value in the destination register, **not** the old value.
+Where context-load/save is to be implemented in the usual fashion
+by using a single CSRRW instruction to obtain the old value, a
+*secondary* CSR must be used, named SVREALVL.  This CSR behaves
+exactly as standard CSRs, yet is the exact same VL register, internally.
+
 ## Register CSR key-value (CAM) table
 
 The purpose of the Register CSR table is four-fold:
@@ -268,54 +316,6 @@ depending on CSR configurations for bitwidth and
 predication.  **Everything** becomes parallelised.  *This includes
 Compressed instructions* as well as any
 future instructions and Custom Extensions.
-
-## VSETVL
-
-VSETVL is slightly different from RVV in that the minimum vector length
-is required to be at least the number of registers in the register file,
-and no more than XLEN.  This allows vector LOAD/STORE to be used to switch
-the entire bank of registers using a single instruction (see Appendix,
-"Context Switch Example").  The reason for limiting VSETVL to XLEN is
-down to the fact that predication bits fit into a single register of length
-XLEN bits.
-
-The second change is that when VSETVL is requested to be stored
-into x0, it is *ignored* silently (VSETVL x0, x5)
-
-The third and most important change is that, within the limits set by
-MAXVECTORLENGTH, the value passed in **must** be set in VL (and in the
-destination register).
-
-    VL = rd = MIN(vlen, MAXVECTORLENGTH)
-
-where RegfileLen <= MAXVECTORLENGTH <= XLEN
-
-This has implication for the microarchitecture, as VL is required to be
-set (limits from MAXVECTORLENGTH notwithstanding) to the actual value
-requested.  RVV has the option to set VL to an arbitrary value that suits
-the conditions and the micro-architecture: SV does *not* permit this.
-
-The reason is so that if SV is to be used for a context-switch or as a
-substitute for LOAD/STORE-Multiple, the operation can be done with only
-2-3 instructions (setup of the CSRs, VSETVL x0, x0, #{regfilelen-1},
-single LD/ST operation).  If VL does *not* get set to the register file
-length when VSETVL is called, then a software-loop would be needed.
-To avoid this need, VL *must* be set to exactly what is requested
-(limits notwithstanding).
-
-Therefore, in turn, unlike RVV, implementors *must* provide
-pseudo-parallelism (using sequential loops in hardware) if actual
-hardware-parallelism in the ALUs is not deployed.  A hybrid is also
-permitted (as used in Broadcom's VideoCore-IV) however this must be
-*entirely* transparent to the ISA.
-
-The fourth change is that VSETVL is implemented as a CSR, where the
-behaviour of CSRRW (and CSRRWI) must be changed to specifically store
-the *new* value in the destination register, **not** the old value.
-Where context-load/save is to be implemented in the usual fashion
-by using a single CSRRW instruction to obtain the old value, a
-*secondary* CSR must be used, named SVREALVL.  This CSR behaves
-exactly as standard CSRs, yet is the exact same VL register, internally.
 
 ## Branch Instruction:
 
