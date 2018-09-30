@@ -17,14 +17,19 @@ the implementor to focus on adding hardware where it is needed and necessary.
 is implicitly added by tagging *standard* scalar registers for redirection.
 When such a tagged register is used in any instruction, it indicates
 that the PC shall **not** be incremented; instead a loop is activated
-where *multiple* instructions are issued to the pipeline, with contiguously
-incrementing register numbers starting from the tagged register.
+where *multiple* instructions are issued to the pipeline (as determined
+by a length CSR), with contiguously incrementing register numbers starting
+from the tagged register.  Thus Simple-V effectively sits (slots) *in between*
+the instruction decode phase and the ALU(s).
 
 The barrier to entry with SV is therefore very low.  The minimum is
 software-emulation (traps), requiring only the CSRs and CSR tables, and that
 an exception be thrown if an instruction is detected to have been
 parallelised.  The looping that would otherwise be done in hardware is
-thus carried out in software, instead.
+thus carried out in software, instead.  Whilst much slower, it is "compliant"
+with the SV specification, and may be suited for implementation in RV32E
+and also in situations where the implementor wishes to focus on certain
+aspects of SV, whilst also conforming strictly with the API.
 
 Hardware Parallelism, if any, is therefore added at the implementor's
 discretion to turn what would otherwise be a sequential loop into a
