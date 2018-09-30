@@ -1,63 +1,120 @@
-# Variable-width Variable-packed SIMD / Simple-V / Parallelism Extension Proposal
+# Simple-V (Parallelism Extension Proposal) Specification
 
-Key insight: Simple-V is intended as an abstraction layer to provide
-a consistent "API" to parallelisation of existing *and future* operations.
-*Actual* internal hardware-level parallelism is *not* required, such
-that Simple-V may be viewed as providing a "compact" or "consolidated"
-means of issuing multiple near-identical arithmetic instructions to an
-instruction queue (FIFO), pending execution.
-
-*Actual* parallelism, if added independently of Simple-V in the form
-of Out-of-order restructuring (including parallel ALU lanes) or VLIW
-implementations, or SIMD, or anything else, would then benefit from
-the uniformity of a consistent API.
-
-**No arithmetic operations are added or required to be added.** SV is purely a parallelism API and consequentially is suitable for use even with RV32E.
-
-Talk slides: <http://hands.com/~lkcl/simple_v_chennai_2018.pdf>
+* Status: DRAFTv0.1
+* Last edited: 30 sep 2018
 
 [[!toc ]]
 
 # Introduction
 
+Simple-V is a uniform parallelism API for RISC-V hardware that has several
+unplanned side-effects including code-size reduction.
+
+What Simple-V (SV) is *not*:
+
+* A SIMD system
+* A SIMT system
+* A Vectorisation Microarchitecture
+* A microarchitecture of any specific kind
+* A supercomputer extension
+
+SV does **not** tell implementors how or even if they should implement
+parallelism: it is a hardware "API" (Application Programming Interface)
+that, if implemented, presents a uniform and consistent way to *express*
+parallelism, at the same time leaving the choice of if, how, how much and
+when to parallelise operations **entirely to the implementor**.
+
 # CSRs <a name="csrs"></a>
 
-There are two CSR tables needed to create lookup tables which are used at
-the register decode phase.
+There are two CSR key-value stores needed to create lookup tables which
+are used at the register decode phase.
+
+* A register CSR key-value table
+* A predication CSR key-value table
+
+There are also three CSRS:
+
+* MAXVECTORLENGTH
+* VL
+* REALVL (a shadow of VL)
 
 ## MAXVECTORLENGTH
 
-MAXVECTORLENGTH is the same concept as MVL in RVV.  However in Simple-V,
+MAXVECTORLENGTH is the same concept as MVL in RVV, except that it
+is variable length and may be dynamically set.  However in Simple-V,
 given that its primary (base, unextended) purpose is for 3D, Video and
 other purposes (not requiring supercomputing capability), it makes sense
-to limit MAXVECTORDEPTH to the regfile bitwidth (32 for RV32, 64 for RV64
+to limit MAXVECTORLENGTH to the regfile bitwidth (32 for RV32, 64 for RV64
 and so on).
 
 The reason for setting this limit is so that predication registers, when
 marked as such, may fit into a single register as opposed to fanning out
 over several registers.  This keeps the implementation a little simpler.
-Note also (as also described in the VSETVL section) that the *minimum*
-for MAXVECTORDEPTH must be the total number of registers (15 for RV32E
-and 31 for RV32 or RV64).
 
-Note that RVV on top of Simple-V may choose to over-ride this decision.
+## Register CSR key-value (CAM) table
 
-## MAXVECTORLENGTH
+The purpose of the Register CSR table is four-fold:
 
-MAXVECTORLENGTH is the same concept as MVL in RVV.  However in Simple-V,
-given that its primary (base, unextended) purpose is for 3D, Video and
-other purposes (not requiring supercomputing capability), it makes sense
-to limit MAXVECTORDEPTH to the regfile bitwidth (32 for RV32, 64 for RV64
-and so on).
+* To mark integer and floating-point registers as requiring "redirection"
+  if it is ever used as a source or destination in any given operation.
+  This involves a level of indirection through a 5-to-6-bit lookup table
+  (where the 6th bit - bank - is always set to 0 for now).
+* To indicate whether, after redirection through the lookup table, the
+  register is a vector (or remains a scalar).
+* To over-ride the implicit or explicit bitwidth that the operation would
+  normally give the register.
+* To indicate if the register is to be interpreted as "packed" (SIMD)
+  i.e. containing multiple contiguous elements of size equal to "bitwidth".
 
-The reason for setting this limit is so that predication registers, when
-marked as such, may fit into a single register as opposed to fanning out
-over several registers.  This keeps the implementation a little simpler.
-Note also (as also described in the VSETVL section) that the *minimum*
-for MAXVECTORDEPTH must be the total number of registers (15 for RV32E
-and 31 for RV32 or RV64).
+| RgCSR | 15     | 14     | 13       | (12..11) | 10  | (9..5)  | (4..0)  |
+| ----- | -      | -      | -        | -        | -   | ------- | ------- |
+| 0     | simd0  | bank0  | isvec0   | vew0     | i/f | regidx  | predidx |
+| 1     | simd1  | bank1  | isvec1   | vew1     | i/f | regidx  | predidx |
+| ..    | simd.. | bank.. | isvec..  | vew..    | i/f | regidx  | predidx |
+| 15    | simd15 | bank15 | isvec15  | vew15    | i/f | regidx  | predidx |
 
-Note that RVV on top of Simple-V may choose to over-ride this decision.
+vew may be one of the following (giving a table "bytestable", used below):
+
+| vew | bitwidth  |
+| --- | --------- |
+| 00  | default   |
+| 01  | default/2 |
+| 10  | default\*2 |
+| 11  | 8         |
+
+As the above table is a CAM (key-value store) it may be appropriate
+to expand it as follows:
+
+    struct vectorised fp_vec[32], int_vec[32]; // 64 in future
+
+    for (i = 0; i < 16; i++) // 16 CSRs?
+       tb = int_vec if CSRvec[i].type == 0 else fp_vec
+       idx = CSRvec[i].regkey // INT/FP src/dst reg in opcode
+       tb[idx].elwidth  = CSRvec[i].elwidth
+       tb[idx].regidx   = CSRvec[i].regidx  // indirection
+       tb[idx].isvector = CSRvec[i].isvector // 0=scalar
+       tb[idx].packed   = CSRvec[i].packed  // SIMD or not
+
+TODO: move elsewhere
+
+    # TODO: use elsewhere (retire for now)
+    vew = CSRbitwidth[rs1]
+    if (vew == 0)
+        bytesperreg = (XLEN/8) # or FLEN as appropriate
+    elif (vew == 1)
+        bytesperreg = (XLEN/4) # or FLEN/2 as appropriate
+    else:
+        bytesperreg = bytestable[vew] # 8 or 16
+    simdmult = (XLEN/8) / bytesperreg # or FLEN as appropriate
+    vlen = CSRvectorlen[rs1] * simdmult
+    CSRvlength = MIN(MIN(vlen, MAXVECTORLENGTH), rs2)
+
+The reason for multiplying the vector length by the number of SIMD elements
+(in each individual register) is so that each SIMD element may optionally be
+predicated.
+
+An example of how to subdivide the register file when bitwidth != default
+is given in the section "Bitwidth Virtual Register Reordering".
 
 ## Predication CSR <a name="predication_csr_table"></a>
 
@@ -103,7 +160,6 @@ equivalent state):
     struct pred {
         bool zero;
         bool inv;
-        bool bank;   // 0 for now, 1=rsvd
         bool enabled;
         int predidx; // redirection: actual int register to use
     }
@@ -116,7 +172,6 @@ equivalent state):
       idx = CSRpred[i].regidx
       tb[idx].zero = CSRpred[i].zero
       tb[idx].inv  = CSRpred[i].inv
-      tb[idx].bank = CSRpred[i].bank
       tb[idx].predidx  = CSRpred[i].predidx
       tb[idx].enabled  = true
 
@@ -177,84 +232,18 @@ zeroing takes place) may be done as follows:
           predicate = ~predicate   // invert ALL bits
        return predicate
 
-## Register CSR key-value (CAM) table
-
-The purpose of the Register CSR table is four-fold:
-
-* To mark integer and floating-point registers as requiring "redirection"
-  if it is ever used as a source or destination in any given operation.
-  This involves a level of indirection through a 5-to-6-bit lookup table
-  (where the 6th bit - bank - is always set to 0 for now).
-* To indicate whether, after redirection through the lookup table, the
-  register is a vector (or remains a scalar).
-* To over-ride the implicit or explicit bitwidth that the operation would
-  normally give the register.
-* To indicate if the register is to be interpreted as "packed" (SIMD)
-  i.e. containing multiple contiguous elements of size equal to "bitwidth".
-
-| RgCSR | 15     | 14     | 13       | (12..11) | 10  | (9..5)  | (4..0)  |
-| ----- | -      | -      | -        | -        | -   | ------- | ------- |
-| 0     | simd0  | bank0  | isvec0   | vew0     | i/f | regidx  | predidx |
-| 1     | simd1  | bank1  | isvec1   | vew1     | i/f | regidx  | predidx |
-| ..    | simd.. | bank.. | isvec..  | vew..    | i/f | regidx  | predidx |
-| 15    | simd15 | bank15 | isvec15  | vew15    | i/f | regidx  | predidx |
-
-vew may be one of the following (giving a table "bytestable", used below):
-
-| vew | bitwidth  |
-| --- | --------- |
-| 00  | default   |
-| 01  | default/2 |
-| 10  | 8         |
-| 11  | 16        |
-
-Extending this table (with extra bits) is covered in the section
-"Implementing RVV on top of Simple-V".
-
-As the above table is a CAM (key-value store) it may be appropriate
-to expand it as follows:
-
-    struct vectorised fp_vec[32], int_vec[32]; // 64 in future
-
-    for (i = 0; i < 16; i++) // 16 CSRs?
-       tb = int_vec if CSRvec[i].type == 0 else fp_vec
-       idx = CSRvec[i].regkey // INT/FP src/dst reg in opcode
-       tb[idx].elwidth  = CSRvec[i].elwidth
-       tb[idx].regidx   = CSRvec[i].regidx  // indirection
-       tb[idx].isvector = CSRvec[i].isvector // 0=scalar
-       tb[idx].packed   = CSRvec[i].packed  // SIMD or not
-       tb[idx].bank     = CSRvec[i].bank    // 0 (1=rsvd)
-
-TODO: move elsewhere
-
-    # TODO: use elsewhere (retire for now)
-    vew = CSRbitwidth[rs1]
-    if (vew == 0)
-        bytesperreg = (XLEN/8) # or FLEN as appropriate
-    elif (vew == 1)
-        bytesperreg = (XLEN/4) # or FLEN/2 as appropriate
-    else:
-        bytesperreg = bytestable[vew] # 8 or 16
-    simdmult = (XLEN/8) / bytesperreg # or FLEN as appropriate
-    vlen = CSRvectorlen[rs1] * simdmult
-    CSRvlength = MIN(MIN(vlen, MAXVECTORDEPTH), rs2)
-
-The reason for multiplying the vector length by the number of SIMD elements
-(in each individual register) is so that each SIMD element may optionally be
-predicated.
-
-An example of how to subdivide the register file when bitwidth != default
-is given in the section "Bitwidth Virtual Register Reordering".
-
 # Instructions
 
 Despite being a 98% complete and accurate topological remap of RVV
 concepts and functionality, no new instructions are needed.
 *All* RVV instructions can be re-mapped, however xBitManip
 becomes a critical dependency for efficient manipulation of predication
-masks (as a bit-field).  Despite the removal of all but VSETVL and VGETVL,
+masks (as a bit-field).  Despite the removal of all operations,
+with the exception of CLIP and VSELECT.X
 *all instructions from RVV are topologically re-mapped and retain their
-complete functionality, intact*.
+complete functionality, intact*.  Note that if RV64G ever had
+a MV.X added as well as FCLIP, the full functionality of RVV-Base would
+be obtained in SV.
 
 Three instructions, VSELECT, VCLIP and VCLIPI, do not have RV Standard
 equivalents, so are left out of Simple-V.  VSELECT could be included if
@@ -264,12 +253,15 @@ specify which register was to be copied).  Note that if any of these three
 instructions are added to any given RV extension, their functionality
 will be inherently parallelised.
 
+CSR instructions, LUI, C.J, C.JR, WFI, AUIPC are not suitable for parallelising
+so are left as scalar.  EBREAK, NOP, FENCE and others do not use registers
+so are not inherently paralleliseable either.  All other operations using
+registers are automatically parallelised.
+
 ## Instruction Format
 
-The instruction format for Simple-V does not actually have *any* explicit
-compare operations, *any* arithmetic, floating point or *any*
-memory instructions.  There are in fact **no operations added at all**.
-Instead it *overloads* pre-existing branch operations into predicated
+There are **no operations added to SV, at all**.
+Instead SV  *overloads* pre-existing branch operations into predicated
 variants, and implicitly overloads arithmetic operations, MV,
 FCVT, and LOAD/STORE
 depending on CSR configurations for bitwidth and
@@ -278,9 +270,6 @@ Compressed instructions* as well as any
 future instructions and Custom Extensions.
 
 ## VSETVL
-
-NOTE TODO: 28may2018: VSETVL may need to be *really* different from RVV,
-with the instruction format remaining the same.
 
 VSETVL is slightly different from RVV in that the minimum vector length
 is required to be at least the number of registers in the register file,
@@ -291,21 +280,20 @@ down to the fact that predication bits fit into a single register of length
 XLEN bits.
 
 The second change is that when VSETVL is requested to be stored
-into x0, it is *ignored* silently (VSETVL x0, x5, #4)
+into x0, it is *ignored* silently (VSETVL x0, x5)
 
-The third change is that there is an additional immediate added to VSETVL,
-to which VL is set after first going through MIN-filtering.
-So When using the "vsetl rs1, rs2, #vlen" instruction, it becomes:
+The third and most important change is that, within the limits set by
+MAXVECTORLENGTH, the value passed in **must** be set in VL (and in the
+destination register).
 
-    VL = MIN(MIN(vlen, MAXVECTORDEPTH), rs2)
+    VL = rd = MIN(vlen, MAXVECTORLENGTH)
 
-where RegfileLen <= MAXVECTORDEPTH < XLEN
+where RegfileLen <= MAXVECTORLENGTH <= XLEN
 
 This has implication for the microarchitecture, as VL is required to be
-set (limits from MAXVECTORDEPTH notwithstanding) to the actual value
-requested in the #immediate parameter.  RVV has the option to set VL
-to an arbitrary value that suits the conditions and the micro-architecture:
-SV does *not* permit that.
+set (limits from MAXVECTORLENGTH notwithstanding) to the actual value
+requested.  RVV has the option to set VL to an arbitrary value that suits
+the conditions and the micro-architecture: SV does *not* permit this.
 
 The reason is so that if SV is to be used for a context-switch or as a
 substitute for LOAD/STORE-Multiple, the operation can be done with only
@@ -321,6 +309,14 @@ hardware-parallelism in the ALUs is not deployed.  A hybrid is also
 permitted (as used in Broadcom's VideoCore-IV) however this must be
 *entirely* transparent to the ISA.
 
+The fourth change is that VSETVL is implemented as a CSR, where the
+behaviour of CSRRW (and CSRRWI) must be changed to specifically store
+the *new* value in the destination register, **not** the old value.
+Where context-load/save is to be implemented in the usual fashion
+by using a single CSRRW instruction to obtain the old value, a
+*secondary* CSR must be used, named SVREALVL.  This CSR behaves
+exactly as standard CSRs, yet is the exact same VL register, internally.
+
 ## Branch Instruction:
 
 Branch operations use standard RV opcodes that are reinterpreted to
@@ -332,11 +328,7 @@ to be treated as a bitfield (up to a maximum of XLEN bits corresponding
 to a maximum of XLEN elements).
 
 If either of src1 or src2 are scalars (CSRvectorlen[src] == 0) the comparison
-goes ahead as vector-scalar or scalar-vector.  Implementors should note that
-this could require considerable multi-porting of the register file in order
-to parallelise properly, so may have to involve the use of register cacheing
-and transparent copying (see Multiple-Banked Register File Architectures
-paper).
+goes ahead as vector-scalar or scalar-vector.
 
 In instances where no vectorisation is detected on either src registers
 the operation is treated as an absolutely standard scalar branch operation.
@@ -392,12 +384,6 @@ funct5  | fmt      | rs2      | rs1   | funct3 | rd       | opcode  |
 10100   | 00/01/11 | src2     | src1  | 001    | pred rs3 | FLT     |
 10100   | 00/01/11 | src2     | src1  | 000    | pred rs3 | FLE     |
 """]]
-
-Note (**TBD**): floating-point exceptions will need to be extended
-to cater for multiple exceptions (and statuses of the same).  The
-usual approach is to have an array of status codes and bit-fields,
-and one exception, rather than throw separate exceptions for each
-Vector element.
 
 In Hwacha EECS-2015-262 Section 6.7.2 the following pseudocode is given
 for predicated compare operations of function "cmp":
@@ -470,7 +456,7 @@ Notes:
 
 For full analysis of topological adaptation of RVV LOAD/STORE
 see [[v_comparative_analysis]].  All three types (LD, LD.S and LD.X)
-may be implicitly overloaded into the one base RV LOAD instruction,
+may be implicitly overloaded into the one base SV LOAD instruction,
 and likewise for STORE.
 
 Revised LOAD:
@@ -540,7 +526,7 @@ C.LW   | offset[5:3] | base   | offset[2|6] | dest | C0   |
 
 Unfortunately it is not possible to fit the full functionality
 of vectorised LOAD / STORE into C.LD / C.ST: the "X" variants (Indexed)
-require another operand (rs2) in addition to the operand width
+would require another operand (rs2) in addition to the operand width
 (which is also missing), offset, base, and src/dest.
 
 However a close approximation may be achieved by taking the top bit
