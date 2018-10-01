@@ -331,7 +331,10 @@ instructions are added to any given RV extension, their functionality
 will be inherently parallelised.
 
 CSR instructions, LUI, C.J, C.JR, WFI, AUIPC are not suitable for parallelising
-so are left as scalar.  EBREAK, NOP, FENCE and others do not use registers
+so are left as scalar.  LR/SC could hypothetically be parallelised
+however their purpose is single (complex) atomic memory operations, and
+it would be unwise to attempt to parallelise them.
+EBREAK, NOP, FENCE and others do not use registers
 so are not inherently paralleliseable either.  All other operations using
 registers are automatically parallelised.
 
