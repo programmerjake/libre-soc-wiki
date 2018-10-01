@@ -3,6 +3,14 @@
 * Status: DRAFTv0.1
 * Last edited: 30 sep 2018
 
+With thanks to:
+
+* Allen Baum
+* Jacob Bachmeyer
+* Guy Lemurieux
+* Jacob Lifshay
+* The RISC-V Founders, without whom this all would not be possible.
+
 [[!toc ]]
 
 # Summary and Background: Rationale
@@ -314,7 +322,7 @@ zeroing takes place) may be done as follows:
 
 Despite being a 98% complete and accurate topological remap of RVV
 concepts and functionality, no new instructions are needed.
-*All* RVV instructions can be re-mapped, however xBitManip
+Compared to RVV: *All* RVV instructions can be re-mapped, however xBitManip
 becomes a critical dependency for efficient manipulation of predication
 masks (as a bit-field).  Despite the removal of all operations,
 with the exception of CLIP and VSELECT.X
@@ -331,13 +339,30 @@ specify which register was to be copied).  Note that if any of these three
 instructions are added to any given RV extension, their functionality
 will be inherently parallelised.
 
-CSR instructions, LUI, C.J, C.JR, WFI, AUIPC are not suitable for parallelising
-so are left as scalar.  LR/SC could hypothetically be parallelised
-however their purpose is single (complex) atomic memory operations, and
-it would be unwise to attempt to parallelise them.
-EBREAK, NOP, FENCE and others do not use registers
-so are not inherently paralleliseable either.  All other operations using
-registers are automatically parallelised.
+With some exceptions, where it does not make sense or is simply too
+challenging, all RV-Base instructions are parallelised:
+
+* CSR instructions, whilst a case could be made for fast-polling of
+  a CSR into multiple registers, would require guarantees of strict
+  sequential ordering that SV does not provide.  Therefore, CSRs are
+  not really suitable and are left out.
+* LUI, C.J, C.JR, WFI, AUIPC are not suitable for parallelising so are
+  left as scalar.
+* LR/SC could hypothetically be parallelised however their purpose is
+  single (complex) atomic memory operations, and it would be unwise to
+  attempt to parallelise them.  Not least: the guarantees of LR/SC
+  would be impossible to provide if emulated in a trap.
+* AMOSWAP, AMOMAX etc., have very specific uses and require guaranteed
+  sequential order of execution if done in groups (if AMOSWAP is used
+  for spinlocks for example), otherwise deadlock occurs.  Whilst two
+  AMOSWAP operations would be useful to parallelise (for queues),
+  SV's setup cost only saves instruction count at three or above AMOSWAP
+  spinlock sequences, and they would need to be done in a guaranteed
+  order.  It therefore does not make sense to parallelise any AMO operations.
+* EBREAK, NOP, FENCE and others do not use registers so are not inherently
+  paralleliseable anyway.
+
+All other operations using registers are automatically parallelised.
 
 ## Instruction Format
 
