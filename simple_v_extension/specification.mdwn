@@ -543,6 +543,17 @@ Reordering" scheme shown in the Appendix (see function "regoffs").
 A similar instruction exists for STORE, with identical topological
 translation of all features.  **TODO**
 
+## Compressed Stack LOAD / STORE Instructions
+
+TODO
+
+[[!table  data="""
+15  13 | 12       10 | 9    7 | 6         5 | 4  2 | 1  0 |
+funct3 | imm         | rs10   | imm         | rd0  | op   |
+3      | 3           | 3      | 2           | 3    | 2    |
+C.LWSP | offset[5:3] | base   | offset[2|6] | dest | C0   |
+"""]]
+
 ## Compressed LOAD / STORE Instructions
 
 Compressed LOAD and STORE are of the same format, where bits 2-4 are
