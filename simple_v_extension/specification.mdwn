@@ -8,19 +8,20 @@
 # Summary and Background: Rationale
 
 Simple-V is a uniform parallelism API for RISC-V hardware that has several
-unplanned side-effects including code-size reduction.  The reason for
+unplanned side-effects including code-size reduction, expansion of
+HINT space and more.  The reason for
 creating it is to provide a manageable way to turn a pre-existing design
 into a parallel one, in a step-by-step incremental fashion, allowing
 the implementor to focus on adding hardware where it is needed and necessary.
 
-**No new instructions are added**.  The parallelism (if any is implemented)
-is implicitly added by tagging *standard* scalar registers for redirection.
-When such a tagged register is used in any instruction, it indicates
-that the PC shall **not** be incremented; instead a loop is activated
-where *multiple* instructions are issued to the pipeline (as determined
-by a length CSR), with contiguously incrementing register numbers starting
-from the tagged register.  Thus Simple-V effectively sits (slots) *in between*
-the instruction decode phase and the ALU(s).
+Critically: **No new instructions are added**.  The parallelism (if any
+is implemented) is implicitly added by tagging *standard* scalar registers
+for redirection.  When such a tagged register is used in any instruction,
+it indicates that the PC shall **not** be incremented; instead a loop
+is activated where *multiple* instructions are issued to the pipeline
+(as determined by a length CSR), with contiguously incrementing register
+numbers starting from the tagged register.  Thus Simple-V effectively sits
+(slots) *in between* the instruction decode phase and the ALU(s).
 
 The barrier to entry with SV is therefore very low.  The minimum is
 software-emulation (traps), requiring only the CSRs and CSR tables, and that
@@ -726,6 +727,21 @@ Similar rules apply to the destination register.
 
 * Throw an exception.  Whether that actually results in spawning threads
   as part of the trap-handling remains to be seen.
+
+# Hints
+
+A "HINT" is an operation that has no effect on architectural state,
+where its use may, by agreed convention, give advance notification
+to the microarchitecture: branch prediction notification would be
+a good example.  Usually HINTs are where rd=x0.
+
+With Simple-V being capable of issuing *parallel* instructions where
+rd=x0, the space for possible HINTs is expanded considerably.  VL
+could be used to indicate different hints.  In addition, if predication
+is set, the predication register itself could hypothetically be passed
+in as a *parameter* to the HINT operation.
+
+No specific hints are yet defined in Simple-V
 
 # Under consideration <a name="issues"></a>
 
