@@ -534,27 +534,29 @@ Notes:
   comparators: EQ/NEQ/LT/LE (with GT and GE being synthesised by inverting
   src1 and src2).
 
-## LOAD / STORE Instructions <a name="load_store"></a>
+## LOAD / STORE Instructions and LOAD-FP/STORE-FP <a name="load_store"></a>
 
 For full analysis of topological adaptation of RVV LOAD/STORE
 see [[v_comparative_analysis]].  All three types (LD, LD.S and LD.X)
-may be implicitly overloaded into the one base SV LOAD instruction,
-and likewise for STORE.
+may be implicitly overloaded into the one base SV LOAD/LOAD-FP instruction,
+and likewise for STORE/STORE-FP.
 
 Revised LOAD:
 
 [[!table  data="""
-31 | 30 | 29 25 | 24    20 | 19 15 | 14   12 | 11 7 | 6    0 |
-imm[11:0]               |||| rs1   | funct3  | rd   | opcode |
-1  | 1  |  5    | 5        | 5     | 3       | 5    | 7      |
-?  | s  |  rs2  | imm[4:0] | base  | width   | dest | LOAD   |
+31 | 30     | 29 24    | 23    20 | 19 15 | 14   12 | 11 7 | 6         0 |
+imm[11:0]                  |||| rs1   | funct3  | rd   | opcode      |
+1  | 1      |  5       | 4        | 5     | 3       | 5    | 7           |
+0  | 0      | imm[9:5] | imm[3:0] | base  | width   | dest | LOAD(-FP)   |
+0  | 1      | rs2      | imm[3:0] | base  | width   | dest | LOAD(-FP)   |
+1  | imm[4] | rs2      | imm[3:0] | base  | width   | dest | LOAD(-FP)   |
 """]]
 
 The exact same corresponding adaptation is also carried out on the single,
-double and quad precision floating-point LOAD-FP and STORE-FP operations,
-which fit the exact same instruction format.  Thus all three types
-(unit, stride and indexed) may be fitted into FLW, FLD and FLQ,
-as well as FSW, FSD and FSQ.
+double and quad precision floating-point LOAD-FP and STORE-FP operations
+(specified from funct3 bits 12-14, "width", exactly as per scalar LOAD).
+Thus precisely as where funct3 would specify LB, LH, LW, LD (and signed
+or unsigned variants) for LOAD, funct3 specifies FLS, FLD and FLQ.
 
 Notes:
 
@@ -562,30 +564,60 @@ Notes:
   (for both integer and floating-point variants).
 * Predication CSR-marking register is not explicitly shown in instruction, it's
   implicit based on the CSR predicate state for the rd (destination) register
-* rs2, the source, may *also be marked as a vector*, which implicitly
-  is taken to indicate "Indexed Load" (LD.X)
-* Bit 30 indicates "element stride" or "constant-stride" (LD or LD.S)
-* Bit 31 is reserved (ideas under consideration: auto-increment)
+* rs1, the "base" source, may be vectorised, such that it refers to a
+  different register on each iteration of the loop.
+* likewise the destination rd may either be scalar or a vector.
+  At first glance it makes no sense if rd is a scalar, however if it is
+  then the "loop" ends on the first successful iteration: thus with
+  predication set, the LOAD stops on the first non-zero predicate bit.
+  If zeroing is set on that predicate, however, an exception is thrown.
+* Bit 31, if set, indicates that the imm (bits 24-29) is to be interpreted
+  as rs2, where rs2 is also added to the memory offset.  Note that rs2 may
+  *also be marked as a vector*, which is how the functionality of
+  "Indexed Load" (LD.X) is achieved.
+* If Bit 31 is zero, then Bit 30 indicates "element stride" or
+  "constant-stride" (LD or LD.S).
+* If Bit 31 is zero and Bit 30 is zero, then "element stride"
+  mode is enabled.  Stride is taken from the element width (from funct3),
+  and multiplied by the current vector loop index.
+* If Bit 31 is zero and Bit 30 is set, then "constant stride" mode
+  is enabled.  The stride is still taken from the element width,
+  and still multiplied by the current vector loop, however it is *also*
+  multiplied by rs2, where rs2 is taken from bits in the immediate.
+  Just as wih LD.X, rs2 may also be optionally marked as vectorised.
 * **TODO**: include CSR SIMD bitwidth in the pseudo-code below.
-* **TODO**: clarify where width maps to elsize
 
 Pseudo-code (excludes CSR SIMD bitwidth for simplicity):
 
-    if (unit-strided) stride = elsize;
-    else stride = areg[as2]; // constant-strided
+    elsize = get_width_bytes(width) # from funct3: 1/2/4/8 for 8/16/32/64
 
-    preg = int_pred_reg[rd]
+    ps = get_pred_val(FALSE, rd);
 
+    get_int_reg(reg, i):
+      if (CSR[reg]->isvec)
+        return intregs[reg+i]
+      else
+        return intregs[reg]
+
+    s1 = reg_is_vectorised(src1);
     for (int i=0; i<vl; ++i)
-      if ([!]preg[rd] & 1<<i)
-        for (int j=0; j<seglen+1; j++)
-        {
-          if CSRvectorised[rs2])
-             offs = vreg[rs2+i]
-          else
-             offs = i*(seglen+1)*stride;
-          vreg[rd+j][i] = mem[sreg[base] + offs + j*stride];
-        }
+      if (ps & 1<<i)
+      {
+          if LDXmode { # bit 31
+              offs = get_int_reg(rs2, i)
+          } else {
+            stride = elsize;
+            if (constant-strided) { # bit 30 = 1 (only if bit 31=0)
+              stride *= get_int_reg(rs2, i)
+            }
+            offs = i * stride;
+          }
+          srcbase = get_int_reg(rs1, i)
+          regs[rd+i] = mem[srcbase + offs + imm]; # LOAD/LOAD-FP here
+          if (!CSR[rd]->isvec) { # destination is marked as scalar
+            break; # stop at first element (remember: predication)
+          }
+      }
 
 Taking CSR (SIMD) bitwidth into account involves using the vector
 length and register encoding according to the "Bitwidth Virtual Register
