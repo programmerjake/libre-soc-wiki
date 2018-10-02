@@ -318,6 +318,31 @@ zeroing takes place) may be done as follows:
           predicate = ~predicate   // invert ALL bits
        return predicate
 
+# Instruction Execution Order
+
+Simple-V behaves as if it is a hardware-level "macro expansion system",
+substituting and expanding a single instruction into multiple sequential
+instructions with contiguous and sequentially-incrementing registers.
+As such, it does **not** modify - or specify - the behaviour and semantics of
+the execution order: that may be deduced from the **existing** RV
+specification in each and every case.
+
+So for example if a particular micro-architecture permits out-of-order
+execution, and it is augmented with Simple-V, then wherever instructions
+may be out-of-order then so may the "post-expansion" SV ones.
+
+If on the other hand there are memory guarantees which specifically
+prevent and prohibit certain instructions from being re-ordered
+(such as the Atomicity Axiom, or FENCE constraints), then clearly
+those constraints **MUST** also be obeyed "post-expansion".
+
+It should be absolutely clear that SV is **not** about providing new
+functionality or changing the existing behaviour of a micro-architetural
+design, or about changing the RISC-V Specification.
+It is **purely** about compacting what would otherwise be contiguous
+instructions that use sequentially-increasing register numbers down
+to the **one** instruction.
+
 # Instructions
 
 Despite being a 98% complete and accurate topological remap of RVV
@@ -349,20 +374,17 @@ challenging, all RV-Base instructions are parallelised:
 * LUI, C.J, C.JR, WFI, AUIPC are not suitable for parallelising so are
   left as scalar.
 * LR/SC could hypothetically be parallelised however their purpose is
-  single (complex) atomic memory operations, and it would be unwise to
-  attempt to parallelise them.  Not least: the guarantees of LR/SC
+  single (complex) atomic memory operations where the LR must be followed
+  up by a matching SC.  A sequence of parallel LR instructions followed
+  by a sequence of parallel SC instructions therefore is guaranteed to
+  not be useful. Not least: the guarantees of LR/SC
   would be impossible to provide if emulated in a trap.
-* AMOSWAP, AMOMAX etc., have very specific uses and require guaranteed
-  sequential order of execution if done in groups (if AMOSWAP is used
-  for spinlocks for example), otherwise deadlock occurs.  Whilst two
-  AMOSWAP operations would be useful to parallelise (for queues),
-  SV's setup cost only saves instruction count at three or above AMOSWAP
-  spinlock sequences, and they would need to be done in a guaranteed
-  order.  It therefore does not make sense to parallelise any AMO operations.
 * EBREAK, NOP, FENCE and others do not use registers so are not inherently
   paralleliseable anyway.
 
 All other operations using registers are automatically parallelised.
+This includes AMOMAX, AMOSWAP and so on, where particular care and
+attention must be paid.
 
 ## Instruction Format
 
