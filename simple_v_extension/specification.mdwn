@@ -534,165 +534,43 @@ Notes:
   comparators: EQ/NEQ/LT/LE (with GT and GE being synthesised by inverting
   src1 and src2).
 
-## LOAD / STORE Instructions and LOAD-FP/STORE-FP <a name="load_store"></a>
-
-For full analysis of topological adaptation of RVV LOAD/STORE
-see [[v_comparative_analysis]].  All three types (LD, LD.S and LD.X)
-may be implicitly overloaded into the one base SV LOAD/LOAD-FP instruction,
-and likewise for STORE/STORE-FP.
-
-Revised LOAD:
-
-[[!table  data="""
-31 | 30     | 29 24    | 23    20 | 19 15 | 14   12 | 11 7 | 6         0 |
-imm[11:0]                  |||| rs1   | funct3  | rd   | opcode      |
-1  | 1      |  5       | 4        | 5     | 3       | 5    | 7           |
-0  | 0      | imm[9:5] | imm[3:0] | base  | width   | dest | LOAD(-FP)   |
-0  | 1      | rs2      | imm[3:0] | base  | width   | dest | LOAD(-FP)   |
-1  | imm[4] | rs2      | imm[3:0] | base  | width   | dest | LOAD(-FP)   |
-"""]]
-
-The exact same corresponding adaptation is also carried out on the single,
-double and quad precision floating-point LOAD-FP and STORE-FP operations
-(specified from funct3 bits 12-14, "width", exactly as per scalar LOAD).
-Thus precisely as where funct3 would specify LB, LH, LW, LD (and signed
-or unsigned variants) for LOAD, funct3 specifies FLS, FLD and FLQ.
-
-Notes:
-
-* LOAD remains functionally (topologically) identical to RVV LOAD
-  (for both integer and floating-point variants).
-* Predication CSR-marking register is not explicitly shown in instruction, it's
-  implicit based on the CSR predicate state for the rd (destination) register
-* rs1, the "base" source, may be vectorised, such that it refers to a
-  different register on each iteration of the loop.
-* likewise the destination rd may either be scalar or a vector.
-  At first glance it makes no sense if rd is a scalar, however if it is
-  then the "loop" ends on the first successful iteration: thus with
-  predication set, the LOAD stops on the first non-zero predicate bit.
-  If zeroing is set on that predicate, however, an exception is thrown.
-* Bit 31, if set, indicates that the imm (bits 24-29) is to be interpreted
-  as rs2, where rs2 is also added to the memory offset.  Note that rs2 may
-  *also be marked as a vector*, which is how the functionality of
-  "Indexed Load" (LD.X) is achieved.
-* If Bit 31 is zero, then Bit 30 indicates "element stride" or
-  "constant-stride" (LD or LD.S).
-* If Bit 31 is zero and Bit 30 is zero, then "element stride"
-  mode is enabled.  Stride is taken from the element width (from funct3),
-  and multiplied by the current vector loop index.
-* If Bit 31 is zero and Bit 30 is set, then "constant stride" mode
-  is enabled.  The stride is still taken from the element width,
-  and still multiplied by the current vector loop, however it is *also*
-  multiplied by rs2, where rs2 is taken from bits in the immediate.
-  Just as wih LD.X, rs2 may also be optionally marked as vectorised.
-* **TODO**: include CSR SIMD bitwidth in the pseudo-code below.
-
-Pseudo-code (excludes CSR SIMD bitwidth for simplicity):
-
-    elsize = get_width_bytes(width) # from funct3: 1/2/4/8 for 8/16/32/64
-
-    ps = get_pred_val(FALSE, rd);
-
-    get_int_reg(reg, i):
-      if (CSR[reg]->isvec)
-        return intregs[reg+i]
-      else
-        return intregs[reg]
-
-    s1 = reg_is_vectorised(src1);
-    for (int i=0; i<vl; ++i)
-      if (ps & 1<<i)
-      {
-          if LDXmode { # bit 31
-              offs = get_int_reg(rs2, i)
-          } else {
-            stride = elsize;
-            if (constant-strided) { # bit 30 = 1 (only if bit 31=0)
-              stride *= get_int_reg(rs2, i)
-            }
-            offs = i * stride;
-          }
-          srcbase = get_int_reg(rs1, i)
-          regs[rd+i] = mem[srcbase + offs + imm]; # LOAD/LOAD-FP here
-          if (!CSR[rd]->isvec) { # destination is marked as scalar
-            break; # stop at first element (remember: predication)
-          }
-      }
-
-Taking CSR (SIMD) bitwidth into account involves using the vector
-length and register encoding according to the "Bitwidth Virtual Register
-Reordering" scheme shown in the Appendix (see function "regoffs").
-
-A similar instruction exists for STORE, with identical topological
-translation of all features.  **TODO**
-
-## Compressed Stack LOAD / STORE Instructions
-
-TODO
-
-[[!table  data="""
-15  13 | 12       10 | 9    7 | 6         5 | 4  2 | 1  0 |
-funct3 | imm         | rs10   | imm         | rd0  | op   |
-3      | 3           | 3      | 2           | 3    | 2    |
-C.LWSP | offset[5:3] | base   | offset[2|6] | dest | C0   |
-"""]]
-
-## Compressed LOAD / STORE Instructions
-
-Compressed LOAD and STORE are of the same format, where bits 2-4 are
-a src register instead of dest:
-
-[[!table  data="""
-15  13 | 12       10 | 9    7 | 6         5 | 4  2 | 1  0 |
-funct3 | imm         | rs10   | imm         | rd0  | op   |
-3      | 3           | 3      | 2           | 3    | 2    |
-C.LW   | offset[5:3] | base   | offset[2|6] | dest | C0   |
-"""]]
-
-Unfortunately it is not possible to fit the full functionality
-of vectorised LOAD / STORE into C.LD / C.ST: the "X" variants (Indexed)
-would require another operand (rs2) in addition to the operand width
-(which is also missing), offset, base, and src/dest.
-
-However a close approximation may be achieved by taking the top bit
-of the offset in each of the five types of LD (and ST), reducing the
-offset to 4 bits and utilising the 5th bit to indicate whether "stride"
-is to be enabled.  In this way it is at least possible to introduce
-that functionality.
-
-(**TODO**: *assess whether the loss of one bit from offset is worth having
-"stride" capability.*)
-
-We also assume (including for the "stride" variant) that the "width"
-parameter, which is missing, is derived and implicit, just as it is
-with the standard Compressed LOAD/STORE instructions.  For C.LW, C.LD
-and C.LQ, the width is implicitly 4, 8 and 16 respectively, whilst for
-C.FLW and C.FLD the width is implicitly 4 and 8 respectively.
-
-Interestingly we note that the Vectorised Simple-V variant of
-LOAD/STORE (Compressed and otherwise), due to it effectively using the
-standard register file(s), is the direct functional equivalent of
-standard load-multiple and store-multiple instructions found in other
-processors.
-
-In Section 12.3 riscv-isa manual V2.3-draft it is noted the comments on
-page 76, "For virtual memory systems some data accesses could be resident
-in physical memory and some not".  The interesting question then arises:
-how does RVV deal with the exact same scenario?
-Expired U.S. Patent 5895501 (Filing Date Sep 3 1996) describes a method
-of detecting early page / segmentation faults and adjusting the TLB
-in advance, accordingly: other strategies are explored in the Appendix
-Section "Virtual Memory Page Faults".
-
-## Vectorised Copy/Move (and conversion) instructions
+## Vectorised Dual-operand instructions
 
 There is a series of 2-operand instructions involving copying (and
-alteration): C.MV, FMV, FNEG, FABS, FCVT, FSGNJ.  These operations all
-follow the same pattern, as it is *both* the source *and* destination
-predication masks that are taken into account.  This is different from
+sometimes alteration): C.MV, FMV, FNEG, FABS, FCVT, FSGNJ, LOAD(-FP)
+and STORE(-FP).  These operations all follow the same pattern, as it is
+*both* the source *and* destination predication masks that are taken into
+account.  This is different from
 the three-operand arithmetic instructions, where the predication mask
 is taken from the *destination* register, and applied uniformly to the
 elements of the source register(s), element-for-element.
+
+The pseudo-code pattern for twin-predicated operations is as
+follows:
+
+    function op(rd, rs):
+      rd = int_csr[rd].active ? int_csr[rd].regidx : rd;
+      rs = int_csr[rs].active ? int_csr[rs].regidx : rs;
+      ps = get_pred_val(FALSE, rs); # predication on src
+      pd = get_pred_val(FALSE, rd); # ... AND on dest
+      for (int i = 0, int j = 0; i < VL && j < VL;):
+        if (int_csr[rs].isvec) while (!(ps & 1<<i)) i++;
+        if (int_csr[rd].isvec) while (!(pd & 1<<j)) j++;
+        reg[rd+j] = SCALAR_OPERATION_ON(reg[rs+i])
+        if (int_csr[rs].isvec) i++;
+        if (int_csr[rd].isvec) j++;
+
+This pattern covers scalar-scalar, scalar-vector, vector-scalar
+and vector-vector, and predicated variants of all of those.
+Zeroing is not presently included (TODO).  As such, it covers
+**all** standard vector operations: VINSERT, VSPLAT, VREDUCE,
+VEXTRACT, VSCATTER, VGATHER, VCOPY, and more.
+
+Note that:
+
+* elwidth (SIMD) is not covered above
+* ending the loop early in scalar cases (VINSERT, VEXTRACT) is also
+  not covered
 
 ### C.MV Instruction <a name="c_mv"></a>
 
@@ -714,22 +592,16 @@ C.MV   | dest   | src  | C0   |
 A simplified version of the pseudocode for this operation is as follows:
 
     function op_mv(rd, rs) # MV not VMV!
-      rd = int_vec[rd].isvector ? int_vec[rd].regidx : rd;
-      rs = int_vec[rs].isvector ? int_vec[rs].regidx : rs;
+      rd = int_csr[rd].active ? int_csr[rd].regidx : rd;
+      rs = int_csr[rs].active ? int_csr[rs].regidx : rs;
       ps = get_pred_val(FALSE, rs); # predication on src
       pd = get_pred_val(FALSE, rd); # ... AND on dest
       for (int i = 0, int j = 0; i < VL && j < VL;):
-        if (int_vec[rs].isvec) while (!(ps & 1<<i)) i++;
-        if (int_vec[rd].isvec) while (!(pd & 1<<j)) j++;
+        if (int_csr[rs].isvec) while (!(ps & 1<<i)) i++;
+        if (int_csr[rd].isvec) while (!(pd & 1<<j)) j++;
         ireg[rd+j] <= ireg[rs+i];
-        if (int_vec[rs].isvec) i++;
-        if (int_vec[rd].isvec) j++;
-
-Note that:
-
-* elwidth (SIMD) is not covered above
-* ending the loop early in scalar cases (VINSERT, VEXTRACT) is also
-  not covered
+        if (int_csr[rs].isvec) i++;
+        if (int_csr[rd].isvec) j++;
 
 There are several different instructions from RVV that are covered by
 this one opcode:
@@ -792,6 +664,79 @@ FCVT.S.L's integer width is 64 bit, and with elwidth on rs1 set to
 divide that by two it means that rs1 element width is to be taken as 32.
 
 Similar rules apply to the destination register.
+
+## LOAD / STORE Instructions and LOAD-FP/STORE-FP <a name="load_store"></a>
+
+The original RISC-V scalar LOAD/STORE and LOAD-FP/STORE-FP functionality
+do not change in SV, however with both the source and destination
+registers being able to indepdendently be marked as scalar, vector
+and also "Packed SIMD", *and*, just as with C.MV, predication to be optionally
+applied to both source **and destination**, it is specifically worthwhile
+writing out the pseudo-code to ensure that implementations are correct.
+
+For the case where both source and destination use the same predication
+register, the following seudo-code applies (excludes "Packed SIMD" for
+simplicity):
+
+    ps = get_pred_val(FALSE, rd);
+
+    get_int_reg(reg, i):
+      if (intcsr[reg]->isvec)
+        return intregs[reg+i]
+      else
+        return intregs[reg]
+
+    for (int i=0; i<vl; ++i)
+      if (ps & 1<<i)
+      {
+          srcbase = get_int_reg(rs1, i)
+          regs[rd+i] = mem[srcbase + imm]; # LOAD/LOAD-FP here
+          if (!CSR[rd]->isvec) { # destination is marked as scalar
+            break; # stop at first element (remember: predication)
+          }
+      }
+
+Taking CSR (SIMD) bitwidth into account involves using the vector
+length and register encoding according to the "Bitwidth Virtual Register
+Reordering" scheme shown in the Appendix (see function "regoffs").
+
+STORE is similarly augmented.
+
+For the case where the src and destination register use different
+predication targets, the pseudocode is similarly modified.  It is
+identical to the pseudocode for C.MV (above):
+
+    function op_load(rd, rs) # LOAD not VLOAD!
+      rd = int_csr[rd].active ? int_csr[rd].regidx : rd;
+      rs = int_csr[rs].active ? int_csr[rs].regidx : rs;
+      ps = get_pred_val(FALSE, rs); # predication on src
+      pd = get_pred_val(FALSE, rd); # ... AND on dest
+      for (int i = 0, int j = 0; i < VL && j < VL;):
+        if (int_csr[rs].isvec) while (!(ps & 1<<i)) i++;
+        if (int_csr[rd].isvec) while (!(pd & 1<<j)) j++;
+        srcbase = ireg[rs+i];
+        ireg[rd+j] <= mem[srcbase + imm]; # LOAD-FP uses freg here
+        if (int_csr[rs].isvec) i++;
+        if (int_csr[rd].isvec) j++;
+
+
+
+## Compressed Stack LOAD / STORE Instructions
+
+TODO
+
+[[!table  data="""
+15  13 | 12       10 | 9    7 | 6         5 | 4  2 | 1  0 |
+funct3 | imm         | rs10   | imm         | rd0  | op   |
+3      | 3           | 3      | 2           | 3    | 2    |
+C.LWSP | offset[5:3] | base   | offset[2|6] | dest | C0   |
+"""]]
+
+## Compressed LOAD / STORE Instructions
+
+Compressed LOAD and STORE are again exactly the same as scalar C.LD/C.ST,
+where the same rules apply and the same pseudo-code apply as for
+non-compressed LOAD/STORE.
 
 # Exceptions
 
