@@ -537,8 +537,14 @@ Notes:
 ## Vectorised Dual-operand instructions
 
 There is a series of 2-operand instructions involving copying (and
-sometimes alteration): C.MV, FMV, FNEG, FABS, FCVT, FSGNJ, LOAD(-FP)
-and STORE(-FP).  These operations all follow the same pattern, as it is
+sometimes alteration):
+
+* C.MV
+* FMV, FNEG, FABS, FCVT, FSGNJ, FSGNJN and FSGNJX
+* C.LWSP, C.SWSP, C.LDSP, C.FLWSP etc.
+* LOAD(-FP) and STORE(-FP)
+
+All of these operations follow the same two-operand pattern, so it is
 *both* the source *and* destination predication masks that are taken into
 account.  This is different from
 the three-operand arithmetic instructions, where the predication mask
@@ -562,15 +568,17 @@ follows:
 
 This pattern covers scalar-scalar, scalar-vector, vector-scalar
 and vector-vector, and predicated variants of all of those.
-Zeroing is not presently included (TODO).  As such, it covers
+Zeroing is not presently included (TODO).  As such, when compared
+to RVV, the twin-predicated variants of C.MV and FMV cover
 **all** standard vector operations: VINSERT, VSPLAT, VREDUCE,
 VEXTRACT, VSCATTER, VGATHER, VCOPY, and more.
 
 Note that:
 
-* elwidth (SIMD) is not covered above
+* elwidth (SIMD) is not covered in the pseudo-code above
 * ending the loop early in scalar cases (VINSERT, VEXTRACT) is also
   not covered
+* zero predication is also not shown (TODO).
 
 ### C.MV Instruction <a name="c_mv"></a>
 
@@ -687,7 +695,7 @@ scalar RV LOAD operation:
 
 ## Compressed Stack LOAD / STORE Instructions
 
-TODO
+
 
 [[!table  data="""
 15  13 | 12       10 | 9    7 | 6         5 | 4  2 | 1  0 |
