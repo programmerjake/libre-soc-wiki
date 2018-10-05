@@ -697,6 +697,22 @@ scalar RV LOAD operation:
 
 C.LWSP / C.SWSP and floating-point etc. are also source-dest twin-predicated,
 where it is implicit in C.LWSP/FLWSP that x2 is the source register.
+It is therefore possible to use predicated C.LWSP to efficiently
+pop registers off the stack (by predicating x2 as the source), cherry-picking
+which registers to store to (by predicating the destination).  Likewise
+for C.SWSP.
+
+It is critical for implementors and compiler writers to note that
+the **real** target register, x2, is predicated.  Ordinarily (with all
+other instructions), redirection through the CSR predication CAM is possible,
+where the "key" refers to "x2" and the "value" may refer to any register,
+such that any instruction such as "addi x2, x2, 1" may be redirected to
+a target register x0 to x63.  With C.LWSP and C.SWSP, this is too troublesome,
+to have to detect whether any of the entries in the CAM have *been* redirected
+to x2.  So instead, it is **specifically** required that the CSR Predication
+CAM entry for x2 have *both* key *and* target value register as x2.
+This avoids confusion as well as simplifies implementations of parallelised
+C.LWSP/C.SWSP.
 
 ## Compressed LOAD / STORE Instructions
 
