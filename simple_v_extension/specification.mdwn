@@ -667,58 +667,22 @@ Similar rules apply to the destination register.
 
 ## LOAD / STORE Instructions and LOAD-FP/STORE-FP <a name="load_store"></a>
 
-The original RISC-V scalar LOAD/STORE and LOAD-FP/STORE-FP functionality
-do not change in SV, however with both the source and destination
-registers being able to indepdendently be marked as scalar, vector
-and also "Packed SIMD", *and*, just as with C.MV, predication to be optionally
-applied to both source **and destination**, it is specifically worthwhile
-writing out the pseudo-code to ensure that implementations are correct.
+An earlier draft of SV modified the behaviour of LOAD/STORE.  This
+actually undermined the fundamental principle of SV, namely that there
+be no modifications to the scalar behaviour (except where absolutely
+necessary), in order to simplify an implementor's task if considering
+converting a pre-existing scalar design to support parallelism.
 
-For the case where both source and destination use the same predication
-register, the following seudo-code applies (excludes "Packed SIMD" for
-simplicity):
+So the original RISC-V scalar LOAD/STORE and LOAD-FP/STORE-FP functionality
+do not change in SV, however just as with C.MV it is important to note
+that dual-predication is possible.  Using the template outlined in
+the section "Vectorised dual-op instructions", the pseudo-code covering
+scalar-scalar, scalar-vector, vector-scalar and vector-vector applies,
+where SCALAR_OPERATION is as follows, exactly as for a standard
+scalar RV LOAD operation:
 
-    ps = get_pred_val(FALSE, rd);
-
-    get_int_reg(reg, i):
-      if (intcsr[reg]->isvec)
-        return intregs[reg+i]
-      else
-        return intregs[reg]
-
-    for (int i=0; i<vl; ++i)
-      if (ps & 1<<i)
-      {
-          srcbase = get_int_reg(rs1, i)
-          regs[rd+i] = mem[srcbase + imm]; # LOAD/LOAD-FP here
-          if (!CSR[rd]->isvec) { # destination is marked as scalar
-            break; # stop at first element (remember: predication)
-          }
-      }
-
-Taking CSR (SIMD) bitwidth into account involves using the vector
-length and register encoding according to the "Bitwidth Virtual Register
-Reordering" scheme shown in the Appendix (see function "regoffs").
-
-STORE is similarly augmented.
-
-For the case where the src and destination register use different
-predication targets, the pseudocode is similarly modified.  It is
-identical to the pseudocode for C.MV (above):
-
-    function op_load(rd, rs) # LOAD not VLOAD!
-      rd = int_csr[rd].active ? int_csr[rd].regidx : rd;
-      rs = int_csr[rs].active ? int_csr[rs].regidx : rs;
-      ps = get_pred_val(FALSE, rs); # predication on src
-      pd = get_pred_val(FALSE, rd); # ... AND on dest
-      for (int i = 0, int j = 0; i < VL && j < VL;):
-        if (int_csr[rs].isvec) while (!(ps & 1<<i)) i++;
-        if (int_csr[rd].isvec) while (!(pd & 1<<j)) j++;
         srcbase = ireg[rs+i];
-        ireg[rd+j] <= mem[srcbase + imm]; # LOAD-FP uses freg here
-        if (int_csr[rs].isvec) i++;
-        if (int_csr[rd].isvec) j++;
-
+        return mem[srcbase + imm];
 
 
 ## Compressed Stack LOAD / STORE Instructions
