@@ -686,7 +686,7 @@ do not change in SV, however just as with C.MV it is important to note
 that dual-predication is possible.  Using the template outlined in
 the section "Vectorised dual-op instructions", the pseudo-code covering
 scalar-scalar, scalar-vector, vector-scalar and vector-vector applies,
-where SCALAR_OPERATION is as follows, exactly as for a standard
+where SCALAR\_OPERATION is as follows, exactly as for a standard
 scalar RV LOAD operation:
 
         srcbase = ireg[rs+i];
@@ -695,14 +695,8 @@ scalar RV LOAD operation:
 
 ## Compressed Stack LOAD / STORE Instructions
 
-
-
-[[!table  data="""
-15  13 | 12       10 | 9    7 | 6         5 | 4  2 | 1  0 |
-funct3 | imm         | rs10   | imm         | rd0  | op   |
-3      | 3           | 3      | 2           | 3    | 2    |
-C.LWSP | offset[5:3] | base   | offset[2|6] | dest | C0   |
-"""]]
+C.LWSP / C.SWSP and floating-point etc. are also source-dest twin-predicated,
+where it is implicit in C.LWSP/FLWSP that x2 is the source register.
 
 ## Compressed LOAD / STORE Instructions
 
