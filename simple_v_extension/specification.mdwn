@@ -202,13 +202,26 @@ predicated.
 An example of how to subdivide the register file when bitwidth != default
 is given in the section "Bitwidth Virtual Register Reordering".
 
+### Register CSR table: special-case for x2 (ABI Stack Pointer)
+
+x2 is by convention used as the Stack Pointer in all standard compiler
+tools.  Its use is specifically hard-coded as the source and destination
+in many of the Compressed instructions: C.LWSP, C.SWSP, and C.ADDI16SP
+are good examples.
+
+This convention is particularly hard to follow for an implicit use of
+a register, so to make implementors' lives easier, x2 is **not** permitted
+to be redirected to any other reigster (for predication, either).
+Specifically: CSR CAM entries for regkey=x2 **must** also set regidx=2.
+
 ## Predication CSR <a name="predication_csr_table"></a>
 
 The Predication CSR is a key-value store indicating whether, if a given
 destination register (integer or floating-point) is referred to in an
 instruction, it is to be predicated.  Tt is particularly important to note
-that the *actual* register used can be *different* from the one that is in
-the instruction, due to the redirection through the lookup table.
+that, with the exception of x2, the *actual* register used can be
+*different* from the one that is in the instruction, due to the redirection
+through the lookup table.
 
 * regidx is the actual register that in combination with the
   i/f flag, if that integer or floating-point register is referred to,
@@ -305,18 +318,19 @@ Note:
   register-level redirection (from the Register CSR table) if they are
   vectors.
 
-If written as a function, obtaining the predication mask (but not whether
+If written as a function, obtaining the predication mask (and whether
 zeroing takes place) may be done as follows:
 
     def get_pred_val(bool is_fp_op, int reg):
        tb = int_pred if is_fp_op else fp_pred
        if (!tb[reg].enabled):
-          return ~0x0              // all ops enabled
+          return ~0x0, False       // all enabled; no zeroing
        predidx = tb[reg].predidx   // redirection occurs HERE
        predicate = intreg[predidx] // actual predicate HERE
        if (tb[reg].inv):
           predicate = ~predicate   // invert ALL bits
-       return predicate
+       return predicate, tb[reg].zero
+
 
 # Instruction Execution Order
 
