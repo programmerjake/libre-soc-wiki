@@ -70,20 +70,20 @@ There are also three CSRS:
 
 * MAXVECTORLENGTH (the Maximum Vector Length)
 * VL (which has different characteristics from standard CSRs)
-* REALVL (a shadow of VL which has standard CSR behaviour)
+* STATE (useful for saving and restoring during context switch)
 
 ## MAXVECTORLENGTH
 
 MAXVECTORLENGTH is the same concept as MVL in RVV, except that it
 is variable length and may be dynamically set.  MAXVECTORLENGTH is
-however limited to the regfile bitwidth (32 for RV32, 64 for RV64
+however limited to the regfile bitwidth minus one (31 for RV32, 63 for RV64
 and so on).
 
 The reason for setting this limit is so that predication registers, when
 marked as such, may fit into a single register as opposed to fanning out
 over several registers.  This keeps the implementation a little simpler.
 
-## VSETVL (VL and REALVL CSRs)
+## VSETVL (VL and CSRs)
 
 VSETVL is slightly different from RVV.  Like RVV, VL is set to be limited
 to the MAXVECTORLENGTH, which in turn is limited to XLEN.
@@ -128,14 +128,38 @@ The fourth change is that VSETVL is implemented as a CSR, where the
 behaviour of CSRRW (and CSRRWI) must be changed to specifically store
 the *new* value in the destination register, **not** the old value.
 Where context-load/save is to be implemented in the usual fashion
-by using a single CSRRW instruction to obtain the old value, a
-*secondary* CSR must be used, named SVREALVL.  This CSR behaves
-exactly as standard CSRs, yet is the exact same VL register, internally.
+by using a single CSRRW instruction to obtain the old value, the
+*secondary* CSR must be used (SVSTATE).  This CSR behaves
+exactly as standard CSRs, and contains more than just VL.
 
 One interesting side-effect of using CSRRWI to set VL is that this
 may be done with a single instruction, useful particularly for a
 context-load/save.  There are however limitations: CSRWWI's immediate
 is limited to 0-31.
+
+## STATE
+
+This is a standard CSR that contains sufficient information for a
+full context save/restore.  It contains (and permits setting of)
+MAXVL, VL, the destination element offset of the current parallel
+instruction being executed, and, for twin-predication, the source
+element offset as well.  Interestingly it may hypothetically
+also be used to get the immediately-following instruction to skip a
+certain number of elements, however the recommended method to do
+this is predication.
+
+The format of the SVSTATE CSR is as follows:
+
+| (23..18) | (17..12) | (11..6) | (5...0) |
+| -------- | -------- | ------- | ------- |
+| destoffs | srcoffs  | vl      | maxvl   |
+
+When setting this CSR, the following characteristics will be enforced:
+
+* **MAXVL** will be truncated to be within the range 0 to XLEN-1
+* **VL** will be truncated to be within the range 0 to MAXVL
+* **srcoffs** will be truncated to be within the range 0 to VL
+* **destoffs** will be truncated to be within the range 0 to VL
 
 ## Register CSR key-value (CAM) table
 
@@ -143,8 +167,9 @@ The purpose of the Register CSR table is four-fold:
 
 * To mark integer and floating-point registers as requiring "redirection"
   if it is ever used as a source or destination in any given operation.
-  This involves a level of indirection through a 5-to-6-bit lookup table
-  (where the 6th bit - bank - is always set to 0 for now).
+  This involves a level of indirection through a 5-to-6-bit lookup table,
+  such that **unmodified** operands with 5 bit (3 for Compressed) may
+  access up to **64** registers.
 * To indicate whether, after redirection through the lookup table, the
   register is a vector (or remains a scalar).
 * To over-ride the implicit or explicit bitwidth that the operation would
@@ -161,12 +186,12 @@ The purpose of the Register CSR table is four-fold:
 
 vew may be one of the following (giving a table "bytestable", used below):
 
-| vew | bitwidth  |
-| --- | --------- |
-| 00  | default   |
-| 01  | default/2 |
+| vew | bitwidth   |
+| --- | ---------- |
+| 00  | default    |
+| 01  | default/2  |
 | 10  | default\*2 |
-| 11  | 8         |
+| 11  | 8          |
 
 As the above table is a CAM (key-value store) it may be appropriate
 to expand it as follows:
@@ -714,9 +739,30 @@ where it is implicit in C.LWSP/FLWSP that x2 is the source register.
 It is therefore possible to use predicated C.LWSP to efficiently
 pop registers off the stack (by predicating x2 as the source), cherry-picking
 which registers to store to (by predicating the destination).  Likewise
-for C.SWSP.
+for C.SWSP.  In this way, LOAD/STORE-Multiple is efficiently achieved.
 
-It is critical for implementors and compiler writers to note that
+However, to do so, the behaviour of C.LWSP/C.SWSP needs to be slightly
+different: where x2 is marked as vectorised, instead of incrementing
+the register on each loop (x2, x3, x4...), instead it is the *immediate*
+that must be incremented.  Pseudo-code follows:
+
+    function lwsp(rd, rs):
+      rd = int_csr[rd].active ? int_csr[rd].regidx : rd;
+      rs = x2 # effectively no redirection on x2.
+      ps = get_pred_val(FALSE, rs); # predication on src
+      pd = get_pred_val(FALSE, rd); # ... AND on dest
+      for (int i = 0, int j = 0; i < VL && j < VL;):
+        if (int_csr[rs].isvec) while (!(ps & 1<<i)) i++;
+        if (int_csr[rd].isvec) while (!(pd & 1<<j)) j++;
+        reg[rd+j] = mem[x2 + ((offset+i) * 4)]
+        if (int_csr[rs].isvec) i++;
+        if (int_csr[rd].isvec) j++;
+
+For C.LDSP, the offset (and loop) multiplier would be 8, and for
+C.LQSP it would be 16.  Effectively this is a Vector "Unit Stride"
+Load instruction.
+
+**Note**: It is critical for implementors and compiler writers to note that
 the **real** target register, x2, is predicated.  Ordinarily (with all
 other instructions), redirection through the CSR predication CAM is possible,
 where the "key" refers to "x2" and the "value" may refer to any register,
@@ -730,7 +776,7 @@ C.LWSP/C.SWSP.
 
 ## Compressed LOAD / STORE Instructions
 
-Compressed LOAD and STORE are again exactly the same as scalar C.LD/C.ST,
+Compressed LOAD and STORE are again exactly the same as scalar LOAD/STORE,
 where the same rules apply and the same pseudo-code apply as for
 non-compressed LOAD/STORE.
 
