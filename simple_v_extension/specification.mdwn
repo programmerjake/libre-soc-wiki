@@ -731,6 +731,12 @@ scalar RV LOAD operation:
         srcbase = ireg[rs+i];
         return mem[srcbase + imm];
 
+Whilst LOAD and STORE remain as-is when compared to their scalar
+counterparts, the incrementing on the source register (for LOAD)
+means that pointers-to-structures can be easily implemented, and
+if contiguous offsets are required, those pointers (the contents
+of the contiguous source registers) may simply be set up to point
+to contiguous locations.  
 
 ## Compressed Stack LOAD / STORE Instructions
 
@@ -759,8 +765,8 @@ that must be incremented.  Pseudo-code follows:
         if (int_csr[rd].isvec) j++;
 
 For C.LDSP, the offset (and loop) multiplier would be 8, and for
-C.LQSP it would be 16.  Effectively this is a Vector "Unit Stride"
-Load instruction.
+C.LQSP it would be 16.  Effectively this makes C.LWSP etc. a Vector
+"Unit Stride" Load instruction.
 
 **Note**: It is critical for implementors and compiler writers to note that
 the **real** target register, x2, is predicated.  Ordinarily (with all
