@@ -763,7 +763,12 @@ general-purpose Vector "Unit Stride" LOAD/STORE operations.
 
 Compressed LOAD and STORE are again exactly the same as scalar LOAD/STORE,
 where the same rules apply and the same pseudo-code apply as for
-non-compressed LOAD/STORE.
+non-compressed LOAD/STORE.  This is **different** from Compressed Stack
+LOAD/STORE (C.LWSP / C.SWSP), which have been augmented to become
+Vector "Unit Stride" capable.
+
+Just as with uncompressed LOAD/STORE C.LD / C.ST increment the *register*
+during the hardware loop, **not** the offset.
 
 # Exceptions
 
