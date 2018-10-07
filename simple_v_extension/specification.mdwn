@@ -523,13 +523,18 @@ complex), this becomes:
         preg = fp_pred_reg[rd]
         reg = fp_regfile
 
+    ps = get_pred_val(I/F==INT, rs);
+
+    preg[rd] = 0; # initialise to zero
     s1 = reg_is_vectorised(src1);
     s2 = reg_is_vectorised(src2);
     if (!s2 && !s1) goto branch;
     for (int i = 0; i < VL; ++i)
-      if (cmp(s1 ? reg[src1+i]:reg[src1],
-              s2 ? reg[src2+i]:reg[src2])
-             preg[rd] |= 1<<i;  # bitfield not vector
+      if (ps & (1<<i)) && (cmp(s1 ? reg[src1+i]:reg[src1],
+                               s2 ? reg[src2+i]:reg[src2])
+          preg[rd] |= 1<<i;  # bitfield not vector
+
+zeroing has been temporarily left out of the above pseudo-code
 
 Notes:
 
