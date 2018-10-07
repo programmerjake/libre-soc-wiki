@@ -429,7 +429,9 @@ Branch operations use standard RV opcodes that are reinterpreted to
 be "predicate variants" in the instance where either of the two src
 registers are marked as vectors (isvector=1).  When this reinterpretation
 is enabled the "immediate" field of the branch operation is taken to be a
-predication target register, rs3.  The predicate target register rs3 is
+predication target register, rd (i.e. the Branch instruction is taken
+to be an R-Type, not a B-type, where funct7 is reserved).
+The predicate target register rd is
 to be treated as a bitfield (up to a maximum of XLEN bits corresponding
 to a maximum of XLEN elements).
 
@@ -440,23 +442,32 @@ or scalar-vector.
 
 In instances where no vectorisation is detected on either src registers
 the operation is treated as an absolutely standard scalar branch operation.
-
-This is the overloaded table for Integer-base Branch operations.  Opcode
-(bits 6..0) is set in all cases to 1100011.
+This is the standard (scalar) B-Type branch instruction:
 
 [[!table  data="""
 31    .. 25 |24 ... 20 | 19 15 | 14  12 | 11 ..  8 | 7       | 6 ... 0 |
 imm[12,10:5]| rs2      | rs1   | funct3 | imm[4:1] | imm[11] | opcode  |
-7           | 5        | 5     | 3      | 4             | 1  | 7       |
-reserved    | src2     | src1  | BPR    | predicate rs3     || BRANCH  |
-reserved    | src2     | src1  | 000    | predicate rs3     || BEQ     |
-reserved    | src2     | src1  | 001    | predicate rs3     || BNE     |
-reserved    | src2     | src1  | 010    | predicate rs3     || rsvd    |
-reserved    | src2     | src1  | 011    | predicate rs3     || rsvd    |
-reserved    | src2     | src1  | 100    | predicate rs3     || BLT     |
-reserved    | src2     | src1  | 101    | predicate rs3     || BGE     |
-reserved    | src2     | src1  | 110    | predicate rs3     || BLTU    |
-reserved    | src2     | src1  | 111    | predicate rs3     || BGEU    |
+7           | 5        | 5     | 3      | 4        | 1       | 7       |
+            | src2     | src1  | BPR    |                    | BRANCH  |
+"""]]
+
+This is the reinterpreted (R-type) table for Integer-based Predicated
+Branch operations.  Opcode (bits 6..0) is set in all cases to 1100011.
+
+
+[[!table  data="""
+31    .. 25 |24 ... 20 | 19 15 | 14  12 | 11 .. 7       | 6 ... 0 |
+funct7      | rs2      | rs1   | funct3 | rd            | opcode  |
+7           | 5        | 5     | 3      | 5             | 7       |
+reserved    | src2     | src1  | BPR    | predicate rd  | BRANCH  |
+reserved    | src2     | src1  | 000    | predicate rd  | BEQ     |
+reserved    | src2     | src1  | 001    | predicate rd  | BNE     |
+reserved    | src2     | src1  | 010    | predicate rd  | rsvd    |
+reserved    | src2     | src1  | 011    | predicate rd  | rsvd    |
+reserved    | src2     | src1  | 100    | predicate rd  | BLT     |
+reserved    | src2     | src1  | 101    | predicate rd  | BGE     |
+reserved    | src2     | src1  | 110    | predicate rd  | BLTU    |
+reserved    | src2     | src1  | 111    | predicate rd  | BGEU    |
 """]]
 
 Note that just as with the standard (scalar, non-predicated) branch
@@ -487,10 +498,10 @@ had "invert" added to it.
 31 .. 27| 26 .. 25 |24 ... 20 | 19 15 | 14  12 | 11 .. 7  | 6 ... 0 |
 funct5  | fmt      | rs2      | rs1   | funct3 | rd       | opcode  |
 5       | 2        | 5        | 5     | 3      | 4        | 7       |
-10100   | 00/01/11 | src2     | src1  | 010    | pred rs3 | FEQ     |
-10100   | 00/01/11 | src2     | src1  | **011**| pred rs3 | rsvd    |
-10100   | 00/01/11 | src2     | src1  | 001    | pred rs3 | FLT     |
-10100   | 00/01/11 | src2     | src1  | 000    | pred rs3 | FLE     |
+10100   | 00/01/11 | src2     | src1  | 010    | pred rd  | FEQ     |
+10100   | 00/01/11 | src2     | src1  | **011**| pred rd  | rsvd    |
+10100   | 00/01/11 | src2     | src1  | 001    | pred rd  | FLT     |
+10100   | 00/01/11 | src2     | src1  | 000    | pred rd  | FLE     |
 """]]
 
 In Hwacha EECS-2015-262 Section 6.7.2 the following pseudocode is given
@@ -518,7 +529,7 @@ complex), this becomes:
     for (int i = 0; i < VL; ++i)
       if (cmp(s1 ? reg[src1+i]:reg[src1],
               s2 ? reg[src2+i]:reg[src2])
-             preg[rs3] |= 1<<i;  # bitfield not vector
+             preg[rd] |= 1<<i;  # bitfield not vector
 
 Notes:
 
@@ -530,13 +541,13 @@ Notes:
   Counter, so all of bits 25 through 30 in every case are not needed.
 * There are plenty of reserved opcodes for which bits 25 through 30 could
   be put to good use if there is a suitable use-case.
-  FLT and FLE may be inverted to FGT and FGE if needed by swapping
+* FLT and FLE may be inverted to FGT and FGE if needed by swapping
   src1 and src2 (likewise the integer counterparts).
 
 ## Compressed Branch Instruction:
 
 Compressed Branch instructions are likewise re-interpreted as predicated
-2-register operations, with the result going into rs3.  All the bits of
+2-register operations, with the result going into rd.  All the bits of
 the immediate are re-interpreted for different purposes, to extend the
 number of comparator operations to beyond the original specification,
 but also to cater for floating-point comparisons as well as integer ones.
