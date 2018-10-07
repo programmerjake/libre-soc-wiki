@@ -227,26 +227,13 @@ predicated.
 An example of how to subdivide the register file when bitwidth != default
 is given in the section "Bitwidth Virtual Register Reordering".
 
-### Register CSR table: special-case for x2 (ABI Stack Pointer)
-
-x2 is by convention used as the Stack Pointer in all standard compiler
-tools.  Its use is specifically hard-coded as the source and destination
-in many of the Compressed instructions: C.LWSP, C.SWSP, and C.ADDI16SP
-are good examples.
-
-This convention is particularly hard to follow for an implicit use of
-a register, so to make implementors' lives easier, x2 is **not** permitted
-to be redirected to any other reigster (for predication, either).
-Specifically: CSR CAM entries for regkey=x2 **must** also set regidx=2.
-
 ## Predication CSR <a name="predication_csr_table"></a>
 
 The Predication CSR is a key-value store indicating whether, if a given
 destination register (integer or floating-point) is referred to in an
 instruction, it is to be predicated.  Tt is particularly important to note
-that, with the exception of x2, the *actual* register used can be
-*different* from the one that is in the instruction, due to the redirection
-through the lookup table.
+that the *actual* register used can be *different* from the one that is
+in the instruction, due to the redirection through the lookup table.
 
 * regidx is the actual register that in combination with the
   i/f flag, if that integer or floating-point register is referred to,
@@ -738,7 +725,7 @@ if contiguous offsets are required, those pointers (the contents
 of the contiguous source registers) may simply be set up to point
 to contiguous locations.  
 
-## Compressed Stack LOAD / STORE Instructions
+## Compressed Stack LOAD / STORE Instructions <a name="c_ld_st"></a>
 
 C.LWSP / C.SWSP and floating-point etc. are also source-dest twin-predicated,
 where it is implicit in C.LWSP/FLWSP that x2 is the source register.
@@ -768,17 +755,9 @@ For C.LDSP, the offset (and loop) multiplier would be 8, and for
 C.LQSP it would be 16.  Effectively this makes C.LWSP etc. a Vector
 "Unit Stride" Load instruction.
 
-**Note**: It is critical for implementors and compiler writers to note that
-the **real** target register, x2, is predicated.  Ordinarily (with all
-other instructions), redirection through the CSR predication CAM is possible,
-where the "key" refers to "x2" and the "value" may refer to any register,
-such that any instruction such as "addi x2, x2, 1" may be redirected to
-a target register x0 to x63.  With C.LWSP and C.SWSP, this is too troublesome,
-to have to detect whether any of the entries in the CAM have *been* redirected
-to x2.  So instead, it is **specifically** required that the CSR Predication
-CAM entry for x2 have *both* key *and* target value register as x2.
-This avoids confusion as well as simplifies implementations of parallelised
-C.LWSP/C.SWSP.
+**Note**: it is still possible to redirect x2 to an alternative target
+register.  With care, this allows C.LWSP / C.SWSP (and C.FLWSP) to be used as
+general-purpose Vector "Unit Stride" LOAD/STORE operations.
 
 ## Compressed LOAD / STORE Instructions
 
