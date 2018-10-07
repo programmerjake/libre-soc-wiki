@@ -772,17 +772,9 @@ during the hardware loop, **not** the offset.
 
 # Exceptions
 
-> What does an ADD of two different-sized vectors do in simple-V?
-
-* if the two source operands are not the same, throw an exception.
-* if the destination operand is also a vector, and the source is longer
-  than the destination, throw an exception.
-
 > And what about instructions like JALR? 
-> What does jumping to a vector do?
 
-* Throw an exception.  Whether that actually results in spawning threads
-  as part of the trap-handling remains to be seen.
+answer: they're not vectorised, so not a problem
 
 # Hints
 
