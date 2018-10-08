@@ -7,5 +7,19 @@ Needs riscv-tools, first
 * git checkout -b sv
 * cd ..
 * git clone https://git.libre-riscv.org/git/riscv-tests.git
-* cd risc-tests
+* cd riscv-tests
 * git checkout -b sv
+
+To run the sv unit tests (requires $RISCV to be set correctly i think, or
+at least riscv32/64-unknown-elf-gcc to be in the path)
+
+* $ cd riscv-tests
+* $ cd isa
+* $ make
+* $ make run
+
+example dev script (riscvdev.sh):
+
+    export RISCV="$HOME/src/riscv"
+    export PATH="$PATH:$RISCV/bin"
+
