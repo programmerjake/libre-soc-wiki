@@ -759,6 +759,23 @@ during the hardware loop, **not** the offset.
 
 # Exceptions
 
+TODO: expand.  Exceptions may occur at any time, in any given underlying
+scalar operation.  This implies that context-switching (traps) may
+occur, and operation must be returned to where it left off.  That in
+turn implies that the full state - including the current parallel
+element being processed - has to be saved and restored.  This is
+what the **STATE** CSR is for.
+
+The implications are that all underlying individual scalar operations
+"issued" by the parallelisation have to appear to be executed sequentially.
+The further implications are that if two or more individual element
+operations are underway, and one with an earlier index causes an exception,
+it may be necessary for the microarchitecture to **discard** or terminate
+operations with higher indices.
+
+This being somewhat dissatisfactory, an "opaque predication" variant
+of the STATE CSR is being considered.
+
 > And what about instructions like JALR? 
 
 answer: they're not vectorised, so not a problem
