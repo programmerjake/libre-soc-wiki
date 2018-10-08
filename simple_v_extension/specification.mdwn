@@ -423,17 +423,17 @@ predication.  **Everything** becomes parallelised.  *This includes
 Compressed instructions* as well as any
 future instructions and Custom Extensions.
 
-## Branch Instruction:
+## Branch Instructions
+
+### Standard Branch <a name="standard_branch"></a>
 
 Branch operations use standard RV opcodes that are reinterpreted to
 be "predicate variants" in the instance where either of the two src
-registers are marked as vectors (isvector=1).  When this reinterpretation
-is enabled the "immediate" field of the branch operation is taken to be a
-predication target register, rd (i.e. the Branch instruction is taken
-to be an R-Type, not a B-type, where funct7 is reserved).
-The predicate target register rd is
-to be treated as a bitfield (up to a maximum of XLEN bits corresponding
-to a maximum of XLEN elements).
+registers are marked as vectors (active=1, vector=1).
+
+Note that he predication register to use (if one is enabled) is taken from
+the *first* src register.  The target (destination) predication register
+to use (if one is enabled) is taken from the *second* src register.
 
 If either of src1 or src2 are scalars (whether by there being no
 CSR register entry or whether by the CSR entry specifically marking
@@ -442,67 +442,13 @@ or scalar-vector.
 
 In instances where no vectorisation is detected on either src registers
 the operation is treated as an absolutely standard scalar branch operation.
-This is the standard (scalar) B-Type branch instruction:
-
-[[!table  data="""
-31    .. 25 |24 ... 20 | 19 15 | 14  12 | 11 ..  8 | 7       | 6 ... 0 |
-imm[12,10:5]| rs2      | rs1   | funct3 | imm[4:1] | imm[11] | opcode  |
-7           | 5        | 5     | 3      | 4        | 1       | 7       |
-            | src2     | src1  | BPR    |                    | BRANCH  |
-"""]]
-
-This is the reinterpreted (R-type) table for Integer-based Predicated
-Branch operations.  Opcode (bits 6..0) is set in all cases to 1100011.
-
-
-[[!table  data="""
-31    .. 25 |24 ... 20 | 19 15 | 14  12 | 11 .. 7       | 6 ... 0 |
-funct7      | rs2      | rs1   | funct3 | rd            | opcode  |
-7           | 5        | 5     | 3      | 5             | 7       |
-reserved    | src2     | src1  | BPR    | predicate rd  | BRANCH  |
-reserved    | src2     | src1  | 000    | predicate rd  | BEQ     |
-reserved    | src2     | src1  | 001    | predicate rd  | BNE     |
-reserved    | src2     | src1  | 010    | predicate rd  | rsvd    |
-reserved    | src2     | src1  | 011    | predicate rd  | rsvd    |
-reserved    | src2     | src1  | 100    | predicate rd  | BLT     |
-reserved    | src2     | src1  | 101    | predicate rd  | BGE     |
-reserved    | src2     | src1  | 110    | predicate rd  | BLTU    |
-reserved    | src2     | src1  | 111    | predicate rd  | BGEU    |
-"""]]
+Where vectorisation is present on either or both src registers, the
+branch may stil go ahead if any only if *all* tests succeed (i.e. excluding
+those tests that are predicated out).
 
 Note that just as with the standard (scalar, non-predicated) branch
 operations, BLE, BGT, BLEU and BTGU may be synthesised by inverting
 src1 and src2.
-
-Below is the overloaded table for Floating-point Predication operations.
-Interestingly no change is needed to the instruction format because
-FP Compare already stores a 1 or a zero in its "rd" integer register
-target, i.e. it's not actually a Branch at all: it's a compare.
-The target needs to simply change to be a predication bitfield (done
-implicitly).
-
-As with
-Standard RVF/D/Q, Opcode (bits 6..0) is set in all cases to 1010011.
-Likewise Single-precision, fmt bits 26..25) is still set to 00.
-Double-precision is still set to 01, whilst Quad-precision
-appears not to have a definition in V2.3-Draft (but should be unaffected).
-
-It is however noted that an entry "FNE" (the opposite of FEQ) is missing,
-and whilst in ordinary branch code this is fine because the standard
-RVF compare can always be followed up with an integer BEQ or a BNE (or
-a compressed comparison to zero or non-zero), in predication terms that
-becomes more of an impact.  To deal with this, SV's predication has
-had "invert" added to it.
-
-[[!table  data="""
-31 .. 27| 26 .. 25 |24 ... 20 | 19 15 | 14  12 | 11 .. 7  | 6 ... 0 |
-funct5  | fmt      | rs2      | rs1   | funct3 | rd       | opcode  |
-5       | 2        | 5        | 5     | 3      | 4        | 7       |
-10100   | 00/01/11 | src2     | src1  | 010    | pred rd  | FEQ     |
-10100   | 00/01/11 | src2     | src1  | **011**| pred rd  | rsvd    |
-10100   | 00/01/11 | src2     | src1  | 001    | pred rd  | FLT     |
-10100   | 00/01/11 | src2     | src1  | 000    | pred rd  | FLE     |
-"""]]
 
 In Hwacha EECS-2015-262 Section 6.7.2 the following pseudocode is given
 for predicated compare operations of function "cmp":
@@ -516,40 +462,65 @@ With associated predication, vector-length adjustments and so on,
 and temporarily ignoring bitwidth (which makes the comparisons more
 complex), this becomes:
 
-    if I/F == INT: # integer type cmp
-        preg = int_pred_reg[rd]
-        reg = int_regfile
-    else:
-        preg = fp_pred_reg[rd]
-        reg = fp_regfile
-
-    ps = get_pred_val(I/F==INT, rs);
-
-    preg[rd] = 0; # initialise to zero
     s1 = reg_is_vectorised(src1);
     s2 = reg_is_vectorised(src2);
-    if (!s2 && !s1) goto branch;
+
+    if not s1 && not s2
+        if cmp(rs1, rs2) # scalar compare
+            goto branch
+        return
+
+    preg = int_pred_reg[rd]
+    reg = int_regfile
+
+    ps = get_pred_val(I/F==INT, rs1);
+    rd = get_pred_val(I/F==INT, rs2); # this may not exist
+
+    if not exists(rd)
+        temporary_result = 0
+    else
+        preg[rd] = 0; # initialise to zero
+
     for (int i = 0; i < VL; ++i)
       if (ps & (1<<i)) && (cmp(s1 ? reg[src1+i]:reg[src1],
                                s2 ? reg[src2+i]:reg[src2])
-          preg[rd] |= 1<<i;  # bitfield not vector
+          if not exists(rd)
+              temporary_result |= 1<<i;
+          else
+              preg[rd] |= 1<<i;  # bitfield not vector
 
-zeroing has been temporarily left out of the above pseudo-code
+     if not exists(rd)
+        if temporary_result == ps
+            goto branch
+     else
+        if preg[rd] == ps
+            goto branch
 
 Notes:
 
+* zeroing has been temporarily left out of the above pseudo-code,
+  for clarity
 * Predicated SIMD comparisons would break src1 and src2 further down
   into bitwidth-sized chunks (see Appendix "Bitwidth Virtual Register
   Reordering") setting Vector-Length times (number of SIMD elements) bits
-  in Predicate Register rs3 as opposed to just Vector-Length bits.
-* Predicated Branches do not actually have an adjustment to the Program
-  Counter, so all of bits 25 through 30 in every case are not needed.
-* There are plenty of reserved opcodes for which bits 25 through 30 could
-  be put to good use if there is a suitable use-case.
-* FLT and FLE may be inverted to FGT and FGE if needed by swapping
-  src1 and src2 (likewise the integer counterparts).
+  in Predicate Register rd, as opposed to just Vector-Length bits.
 
-## Compressed Branch Instruction:
+### Floating-point Comparisons
+
+There does not exist floating-point branch operations, only compare.
+Interestingly no change is needed to the instruction format because
+FP Compare already stores a 1 or a zero in its "rd" integer register
+target, i.e. it's not actually a Branch at all: it's a compare.
+Thus, no change is made to the floating-point comparison, so
+
+It is however noted that an entry "FNE" (the opposite of FEQ) is missing,
+and whilst in ordinary branch code this is fine because the standard
+RVF compare can always be followed up with an integer BEQ or a BNE (or
+a compressed comparison to zero or non-zero), in predication terms that
+becomes more of an impact.  To deal with this, SV's predication has
+had "invert" added to it.
+
+### Compressed Branch Instruction
 
 Compressed Branch instructions are likewise re-interpreted as predicated
 2-register operations, with the result going into rd.  All the bits of
@@ -739,7 +710,7 @@ counterparts, the incrementing on the source register (for LOAD)
 means that pointers-to-structures can be easily implemented, and
 if contiguous offsets are required, those pointers (the contents
 of the contiguous source registers) may simply be set up to point
-to contiguous locations.  
+to contiguous locations.
 
 ## Compressed Stack LOAD / STORE Instructions <a name="c_ld_st"></a>
 
