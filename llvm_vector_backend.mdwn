@@ -1,5 +1,18 @@
 # LLVM Backend Array Register Files
 
+This backend is for expressing scenarios where registers have multiple
+potential overlapping meanings and uses, including but not limited to:
+
+* **MMX / SSE / SIMD**: same registers of fixed length can be subdivided into
+  multiple different SIMD elements, depending on the opcode used (or
+  special CSRs - Control Status Registers)
+* **Virtual register redirection**: setting a CSR changes
+  the meaning of instruction opcodes to access different "banks".
+* **Special register types**: expression of special register types,
+  not just integer and float, but shader types for use in 3D, or
+  Galois Field (GF).
+* Variations and combinations of the above
+
 # Data Structures
 
 ## Array Register File
@@ -60,23 +73,17 @@ and uses to which registers may be put can be expressed in one structure.
 
 ### SimpleV
 
-### RVV
-
 ### AMDGPU
 
 ## Base Register Class
 
 ### SimpleV
 
-### RVV
-
 ### AMDGPU
 
 ## Register Class Unions
 
 ### SimpleV
-
-### RVV
 
 ### AMDGPU
 
