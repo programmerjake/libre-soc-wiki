@@ -163,6 +163,8 @@ When setting this CSR, the following characteristics will be enforced:
 
 ## Register CSR key-value (CAM) table
 
+TODO: update CSR tables, now 7-bit for regidx
+
 The purpose of the Register CSR table is four-fold:
 
 * To mark integer and floating-point registers as requiring "redirection"
@@ -228,6 +230,8 @@ An example of how to subdivide the register file when bitwidth != default
 is given in the section "Bitwidth Virtual Register Reordering".
 
 ## Predication CSR <a name="predication_csr_table"></a>
+
+TODO: update CSR tables, now 7-bit for regidx
 
 The Predication CSR is a key-value store indicating whether, if a given
 destination register (integer or floating-point) is referred to in an
@@ -504,6 +508,9 @@ Notes:
   into bitwidth-sized chunks (see Appendix "Bitwidth Virtual Register
   Reordering") setting Vector-Length times (number of SIMD elements) bits
   in Predicate Register rd, as opposed to just Vector-Length bits.
+
+TODO: predication now taken from src2.  also branch goes ahead
+if all compares are successful.
 
 ### Floating-point Comparisons
 
