@@ -1,0 +1,66 @@
+# LLVM Backend Array Register Files
+
+# Data Structures
+
+## Array Register File
+
+This is for being able to express remapping / retargetting / redirection
+schemes that a microarchitecture has.
+
+    typedef struct {
+        start: 12; // starting index of the "register"
+        end: 12; // ending index of the "register" (inclusive)
+        id: 8; // type of register: e.g 0=float, 1=int, 2=...
+    } ARF;
+
+Examples:
+
+    ARF1 = 0x01009005
+    ARF2 = 0x0100a006
+
+These would indicate that when the (virtual) register ARF1 is used,
+it is of type "integer", and it requires the reservation of the **real**
+registers 5 through 9 at the hardware level.
+
+## Base Register Class
+
+    typedef struct {
+        ARF: arf;  // the Array Register File identifier
+        min: 12;   // if an opcode restricts the available range, use this
+        max: 12;   // ... and this
+        size: 8;   // the element bitwidth. e.g. 0=8, 1=16, 2=32.. TBD
+        align: 4;  // an aligment restriction, in powers of 2.
+    } BRC;
+
+## Register Class Unions
+
+Register Classes are the union of multiple Base Register Classes
+and traditional register classes.  In this way, all possible meanings
+and uses to which registers may be put can be expressed in one structure.
+
+# Examples per Implementor
+
+## Array Register File
+
+### SimpleV
+
+### RVV
+
+### AMDGPU
+
+## Base Register Class
+
+### SimpleV
+
+### RVV
+
+### AMDGPU
+
+## Register Class Unions
+
+### SimpleV
+
+### RVV
+
+### AMDGPU
+
