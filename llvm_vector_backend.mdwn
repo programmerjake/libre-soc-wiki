@@ -17,6 +17,7 @@ Examples:
 
     ARF1 = 0x01009005
     ARF2 = 0x0100a006
+    ARF3 = 0x0100b008
 
 These would indicate that when the (virtual) register ARF1 is used,
 it is of type "integer", and it requires the reservation of the **real**
@@ -31,6 +32,21 @@ registers 5 through 9 at the hardware level.
         size: 8;   // the element bitwidth. e.g. 0=8, 1=16, 2=32.. TBD
         align: 4;  // an aligment restriction, in powers of 2.
     } BRC;
+
+Examples:
+
+    A Compressed instruction from SV has restrictions on the
+    range it may cover (unless redirection is taken into account).
+    It is also possible to specify a bitwidth of 16, and if that is
+    done, alignment has to be restricted to 4.  So:
+
+    brc1 = {
+        arf = 0x0100b008; // integer register, using "real" regs 8-11 inclusive
+        min = 8;          // C-type instructions go from 8-15 in the opcode
+        max = 15;
+        size = 0x1        // 1=16-bit (?)
+        align: 2          // 2= 1<<2 (=4) because the "real" regs are 64-bit.
+    };
 
 ## Register Class Unions
 
