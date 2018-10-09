@@ -1,0 +1,18 @@
+I don't know about power, however I have done some research and a 4Kbyte
+(or 16, icr) SRAM (what I was thinking of for a tile buffer) takes in the
+ballpark of 1000 um^2 in 28nm.
+Using a 4xFMA with a banked register file where the bank is selected by the
+lower order register number means we could probably get away with 1Rx1W
+SRAM as the backing memory for the register file, similarly to Hwacha. I
+would suggest 8 banks allowing us to do more in parallel since we could run
+other units in parallel with a 4xFMA. 8 banks would also allow us to clock
+gate the SRAM banks that are not in use for the current clock cycle
+allowing us to save more power. Note that the 4xFMA could be 4 separately
+allocated FMA units, it doesn't have to be SIMD style. If we have enough hw
+parallelism, we can under-volt and under-clock the GPU cores allowing for a
+more efficient GPU. If we are using the GPU cores as CPU cores as well, I
+think it would be important to be able to use a faster clock speed when not
+using the extended registers (similar to how Intel processors use a lower
+clock rate when AVX512 is in use) so that scalar code is not slowed down
+too much.
+
