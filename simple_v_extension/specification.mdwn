@@ -804,4 +804,13 @@ No specific hints are yet defined in Simple-V
 
 # Under consideration <a name="issues"></a>
 
-placeholder
+for element-grouping, if there is unused space within a register
+(3 16-bit elements in a 64-bit register for example), recommend:
+
+* For the unused elements in an integer register, the used element
+  closest to the MSB is sign-extended on write and the unused elements
+  are ignored on read.
+* The unused elements in a floating-point register are treated as-if
+  they are set to all ones on write and are ignored on read, matching the
+  existing standard for storing smaller FP values in larger registers.
+
