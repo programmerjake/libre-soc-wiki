@@ -16,3 +16,14 @@ using the extended registers (similar to how Intel processors use a lower
 clock rate when AVX512 is in use) so that scalar code is not slowed down
 too much.
 
+> > Using a 4xFMA with a banked register file where the bank is selected by
+> the
+> > lower order register number means we could probably get away with 1Rx1W
+> > SRAM as the backing memory for the register file, similarly to Hwacha.
+>
+>  okaaay.... sooo... we make an assumption that the top higher "banks"
+> are pretty much always going to be "vectorised", such that, actually,
+> they genuinely don't need to be 6R-4W (or whatever).
+>
+Yeah pretty much, though I had meant the bank number comes from the
+least-significant bits of the 7-bit register number.
