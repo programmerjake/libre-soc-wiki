@@ -814,3 +814,9 @@ for element-grouping, if there is unused space within a register
   they are set to all ones on write and are ignored on read, matching the
   existing standard for storing smaller FP values in larger registers.
 
+## 2D remapping
+
+idea: have an additional set of register CSRs that indicate that, instead of
+a straight 1D linear relationship, the element index is put through
+a (reasonably simple) 2D processing algorithm.  in this way, 4x3 blocks
+of registers can have the ordering changed to 3x4 for example.
