@@ -29,3 +29,9 @@ at least riscv32/64-unknown-elf-gcc to be in the path)
 * $ make
 * $ make run
 
+To override the fact that spike loads libspike\_main.so and other dynamic
+libraries from /usr/local/lib (or other location in the path):
+
+    $ export LD_LIBRARY_PATH=`pwd`
+    $ ./spike pk ./a.out
+
