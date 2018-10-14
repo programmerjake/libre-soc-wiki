@@ -3,10 +3,10 @@
 
 | (23..18) | (17..12) | (11..6) | (5...0) |
 | -------- | -------- | ------- | ------- |
-|lui      | rd imm20        | u     | rv32i rv64i rv128i |   |
-|auipc    | rd oimm20       | u+o  | rv32i rv64i rv128i |   |
-|jal      | rd jimm20       | uj   | rv32i rv64i rv128i |   |
-|jalr     | rd rs1 oimm12   | i+o  | rv32i rv64i rv128i |   |
+|lui      | rd imm20        | u     | rv32i rv64i rv128i | -  |
+|auipc    | rd oimm20       | u+o  | rv32i rv64i rv128i | -  |
+|jal      | rd jimm20       | uj   | rv32i rv64i rv128i | -  |
+|jalr     | rd rs1 oimm12   | i+o  | rv32i rv64i rv128i | -  |
 |beq      | rs1 rs2 sbimm12 | sb   | rv32i rv64i rv128i |   |
 |bne      | rs1 rs2 sbimm12 | sb   | rv32i rv64i rv128i |   |
 |blt      | rs1 rs2 sbimm12 | sb   | rv32i rv64i rv128i |   |
@@ -21,27 +21,27 @@
 |sb       | rs1 rs2 simm12  | s    | rv32i rv64i rv128i |   |
 |sh       | rs1 rs2 simm12  | s    | rv32i rv64i rv128i |   |
 |sw       | rs1 rs2 simm12  | s    | rv32i rv64i rv128i |   |
-|addi     | rd rs1 imm12    | i    | rv32i rv64i rv128i |   |
-|slti     | rd rs1 imm12    | i    | rv32i rv64i rv128i |   |
-|sltiu    | rd rs1 imm12    | i    | rv32i rv64i rv128i |   |
-|xori     | rd rs1 imm12    | i    | rv32i rv64i rv128i |   |
-|ori      | rd rs1 imm12    | i    | rv32i rv64i rv128i |   |
-|andi     | rd rs1 imm12    | i    | rv32i rv64i rv128i |   |
-|slli     | rd rs1 shamt5   | i·sh5             | rv32i |   |
-|srli     | rd rs1 shamt5   | i·sh5             | rv32i |   |
-|srai     | rd rs1 shamt5   | i·sh5             | rv32i |   |
-|add      | rd rs1 rs2      | r    | rv32i rv64i rv128i |   |
-|sub      | rd rs1 rs2      | r    | rv32i rv64i rv128i |   |
-|sll      | rd rs1 rs2      | r    | rv32i rv64i rv128i |   |
-|slt      | rd rs1 rs2      | r    | rv32i rv64i rv128i |   |
-|sltu     | rd rs1 rs2      | r    | rv32i rv64i rv128i |   |
-|xor      | rd rs1 rs2      | r    | rv32i rv64i rv128i |   |
-|srl      | rd rs1 rs2      | r    | rv32i rv64i rv128i |   |
-|sra      | rd rs1 rs2      | r    | rv32i rv64i rv128i |   |
-|or       | rd rs1 rs2      | r    | rv32i rv64i rv128i |   |
-|and      | rd rs1 rs2      | r    | rv32i rv64i rv128i |   |
-|fence    |                 | r·f | rv32i rv64i rv128i |   |
-|fence.i  |                 | none | rv32i rv64i rv128i |   |
+|addi     | rd rs1 imm12    | i    | rv32i rv64i rv128i | sv  |
+|slti     | rd rs1 imm12    | i    | rv32i rv64i rv128i | sv  |
+|sltiu    | rd rs1 imm12    | i    | rv32i rv64i rv128i | sv  |
+|xori     | rd rs1 imm12    | i    | rv32i rv64i rv128i | sv  |
+|ori      | rd rs1 imm12    | i    | rv32i rv64i rv128i | sv  |
+|andi     | rd rs1 imm12    | i    | rv32i rv64i rv128i | sv  |
+|slli     | rd rs1 shamt5   | i·sh5             | rv32i | sv  |
+|srli     | rd rs1 shamt5   | i·sh5             | rv32i | sv  |
+|srai     | rd rs1 shamt5   | i·sh5             | rv32i | sv  |
+|add      | rd rs1 rs2      | r    | rv32i rv64i rv128i | sv  |
+|sub      | rd rs1 rs2      | r    | rv32i rv64i rv128i | sv  |
+|sll      | rd rs1 rs2      | r    | rv32i rv64i rv128i | sv  |
+|slt      | rd rs1 rs2      | r    | rv32i rv64i rv128i | sv  |
+|sltu     | rd rs1 rs2      | r    | rv32i rv64i rv128i | sv  |
+|xor      | rd rs1 rs2      | r    | rv32i rv64i rv128i | sv  |
+|srl      | rd rs1 rs2      | r    | rv32i rv64i rv128i | sv  |
+|sra      | rd rs1 rs2      | r    | rv32i rv64i rv128i | sv  |
+|or       | rd rs1 rs2      | r    | rv32i rv64i rv128i | sv  |
+|and      | rd rs1 rs2      | r    | rv32i rv64i rv128i | sv  |
+|fence    |                 | r·f | rv32i rv64i rv128i | -  |
+|fence.i  |                 | none | rv32i rv64i rv128i | -  |
 
 # RV64I    "RV64I Base Integer Instruction Set (in addition to RV32I)"
 
