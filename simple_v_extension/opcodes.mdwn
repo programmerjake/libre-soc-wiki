@@ -21,13 +21,17 @@ see [[specification]] for full details.
 * **vld** - a standard contiguous (optionally twin-predicated, optionally
   indirected) multi-register load operation where either or both of
   destination register or load-from-address register may be redirected,
-  vectorised or **independently** predicated.
-* **vst** - a matching multi-register store operation matching **vld**.
+  vectorised or **independently** predicated (LD.X style functionality).
+  (*Note: Vector "Unit Stride" and "Constant Stride" may be emulated by
+  pre-prepping a contiguous block of load-from-address registers with
+  the appropriate address offsets*)
+* **vst** - a matching multi-register store operation with orthogonal
+  functionality to  **vld**.
 * **VLU** - a "Unit Stride" variant of **vld** where instead of the
   source-address register number being (optionally) incremented
   (and redirected, and predicated) it is the **immediate offset**
   that is incremented (by the element width of the **source** register)
-* **VSU** - a similarly "Unit Stride" variant of **vst**.
+* **VSU** - a similarly "Unit Strided" variant of **vst**.
 * **VBR** - a standard branch operation (optionally predicated, optionally
   indirected) multi-register operation where the (optional) predication for the
   compare is taken from the destination register, and where (optionally)
