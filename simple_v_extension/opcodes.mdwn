@@ -1,12 +1,14 @@
 
-# RV32I    "RV32I Base Integer Instruction Set"
+# RV32I/RV64I/RV128I    "RV32I/RV64I/RV128I Base Integer Instruction Set"
 
 | (23..18) | (17..12) | (11..6) | (5...0) |  |
 | -------- | -------- | ------- | ------- |  |
-|lui      | rd imm20        | u     | rv32i rv64i rv128i | sv  |
 |auipc    | rd oimm20       | u+o  | rv32i rv64i rv128i | -  |
 |jal      | rd jimm20       | uj   | rv32i rv64i rv128i | -  |
 |jalr     | rd rs1 oimm12   | i+o  | rv32i rv64i rv128i | -  |
+|fence    |                 | r·f | rv32i rv64i rv128i | -  |
+|fence.i  |                 | none | rv32i rv64i rv128i | -  |
+|lui      | rd imm20        | u     | rv32i rv64i rv128i | sv  |
 |beq      | rs1 rs2 sbimm12 | sb   | rv32i rv64i rv128i | VBR  |
 |bne      | rs1 rs2 sbimm12 | sb   | rv32i rv64i rv128i | VBR  |
 |blt      | rs1 rs2 sbimm12 | sb   | rv32i rv64i rv128i | VBR  |
@@ -21,6 +23,12 @@
 |sb       | rs1 rs2 simm12  | s    | rv32i rv64i rv128i | vls  |
 |sh       | rs1 rs2 simm12  | s    | rv32i rv64i rv128i | vls  |
 |sw       | rs1 rs2 simm12  | s    | rv32i rv64i rv128i | vls  |
+|lwu      | rd rs1 oimm12   |  i+l        | rv64i rv128i | vls  |
+|ld       | rd rs1 oimm12   |  i+l        | rv64i rv128i | vls  |
+|sd       | rs1 rs2 simm12  |  s          | rv64i rv128i | vls  |
+|ldu      | rd rs1 oimm12  |   i+l              | rv128i | vls  |
+|lq       | rd rs1 oimm12  |   i+l              | rv128i | vls  |
+|sq       | rs1 rs2 simm12 |   s                | rv128i | vls  |
 |addi     | rd rs1 imm12    | i    | rv32i rv64i rv128i | sv  |
 |slti     | rd rs1 imm12    | i    | rv32i rv64i rv128i | sv  |
 |sltiu    | rd rs1 imm12    | i    | rv32i rv64i rv128i | sv  |
@@ -40,16 +48,6 @@
 |sra      | rd rs1 rs2      | r    | rv32i rv64i rv128i | sv  |
 |or       | rd rs1 rs2      | r    | rv32i rv64i rv128i | sv  |
 |and      | rd rs1 rs2      | r    | rv32i rv64i rv128i | sv  |
-|fence    |                 | r·f | rv32i rv64i rv128i | -  |
-|fence.i  |                 | none | rv32i rv64i rv128i | -  |
-
-# RV64I    "RV64I Base Integer Instruction Set (in addition to RV32I)"
-
-| (23..18) | (17..12) | (11..6) | (5...0) |  |
-| -------- | -------- | ------- | ------- |  |
-|lwu      | rd rs1 oimm12   |  i+l        | rv64i rv128i | vls  |
-|ld       | rd rs1 oimm12   |  i+l        | rv64i rv128i | vls  |
-|sd       | rs1 rs2 simm12  |  s          | rv64i rv128i | vls  |
 |slli     | rd rs1 shamt6   |  i·sh6             | rv64i | sv  |
 |srli     | rd rs1 shamt6   |  i·sh6             | rv64i | sv  |
 |srai     | rd rs1 shamt6   |  i·sh6             | rv64i | sv  |
@@ -62,14 +60,6 @@
 |sllw     | rd rs1 rs2      |  r          | rv64i rv128i | sv  |
 |srlw     | rd rs1 rs2      |  r          | rv64i rv128i | sv  |
 |sraw     | rd rs1 rs2      |  r          | rv64i rv128i | sv  |
-
-# RV128I   "RV128I Base Integer Instruction Set (in addition to RV64I)"
-
-| (23..18) | (17..12) | (11..6) | (5...0) |  |
-| -------- | -------- | ------- | ------- |  |
-|ldu      | rd rs1 oimm12  |   i+l              | rv128i | vls  |
-|lq       | rd rs1 oimm12  |   i+l              | rv128i | vls  |
-|sq       | rs1 rs2 simm12 |   s                | rv128i | vls  |
 |slli     | rd rs1 shamt7  |   i·sh7            | rv128i | sv  |
 |srli     | rd rs1 shamt7  |   i·sh7            | rv128i | sv  |
 |srai     | rd rs1 shamt7  |   i·sh7            | rv128i | sv  |
