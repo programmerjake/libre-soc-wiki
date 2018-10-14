@@ -36,9 +36,12 @@ see [[specification]] for full details.
   indirected) multi-register operation where the (optional) predication for the
   compare is taken from the destination register, and where (optionally)
   if the results of the multi-comparison are to be recorded, the **source**
-  register's predication target is used.  On completion of all compares,
-  if the tests carried out succeeded (de-predicated compares not being included
-  in this assessment), the branch operation is carried out.
+  register's predication table entry is used as the means to specify
+  (in a bitfield format that is directly compatible for follow-up use as a
+  predicate) the register in which the comparison results are stored.
+  On completion of all compares, if the tests carried out succeeded
+  (de-predicated compares not being included in this assessment, evidently),
+  the branch operation is carried out.
 
 # RV32I/RV64I/RV128I    "RV32I/RV64I/RV128I Base Integer Instruction Set"
 
