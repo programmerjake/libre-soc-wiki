@@ -1,3 +1,36 @@
+# SimpleV Instruction Categorisation
+
+Based on information from Michael Clark's riscv-meta opcodes table, this
+page categorises and identifies the type of parallelism that SimpleV
+indirectly adds on each RISC-V **standard** opcode.
+
+* **-** - no action
+* **sv** - a standard contiguous (optionally predicated, optionally
+  indirected) multi-register operation where the predication for
+  the operation is taken from the **destination** register
+* **2v** - a standard contiguous (optionally twin-predicated, optionally
+  indirected) twin-register operation (distinct source and destination)
+  where either or both of source or destination may be redirected,
+  vectorised, or **independently** predicated.  This behaviour
+  covers the **entire** VMV, VSPLAT, VINSERT, VREDUCE, VSCATTER, VGATHER
+  paradigm.
+* **vld** - a standard contiguous (optionally twin-predicated, optionally
+  indirected) multi-register load operation where either or both of
+  destination register or load-from-address register may be redirected,
+  vectorised or **independently** predicated.
+* **vst**
+* **VLU** - a "Unit Stride" variant of **vld** where instead of the
+  source-address register number being (optionally) incremented
+  (and redirected, and predicated) it is the **immediate offset**
+  that is incremented (by the element width of the **source** register)
+* **VSU** - a similarly "Unit Stride" variant of **vst**.
+* **VBR** - a standard branch operation (optionally predicated, optionally
+  indirected) multi-register option where the (optional) predication for the
+  compare is taken from the destination register, and where (optionally)
+  if the results of the multi-comparison are to be recorded, the **source**
+  register's predication target is used.  On completion of all compares,
+  if the tests carried out succeeded (de-predicated compares not being included
+  in this assessment), the branch operation is carried out.
 
 # RV32I/RV64I/RV128I    "RV32I/RV64I/RV128I Base Integer Instruction Set"
 
@@ -349,13 +382,13 @@
 |c.slli   | crs1rd      cimmsh6  | ci·sh6          | rv64c | sv  |
 |c.beqz   | crs1q         cimmb  | cb        | rv32c rv64c | VBR  |
 |c.bnez   | crs1q         cimmb  | cb        | rv32c rv64c | VBR  |
-|c.fldsp  | cfrd       cimmldsp  | ci·ldsp+f | rv32c rv64c | VU  |
-|c.lwsp   | crd        cimmlwsp  | ci·lwsp   | rv32c rv64c | VU  |
-|c.flwsp  | cfrd       cimmlwsp  | ci·lwsp+f | rv32c       | VU  |
-|c.fsdsp  | cfrs2      cimmsdsp  | css·sdsp+f | rv32c rv64c | VU  |
-|c.swsp   | crs2       cimmswsp  | css·swsp  | rv32c rv64c | VU  |
-|c.fswsp  | cfrs2      cimmswsp  | css·swsp+f | rv32c      | VU  |
-|c.ldsp   | crd        cimmldsp  | ci·ldsp         | rv64c | VU  |
-|c.sdsp   | crs2       cimmsdsp  | css·sdsp        | rv64c | VU  |
-|c.lqsp   | crd        cimmlqsp  | ci·lqsp         | rv128c | VU  |
-|c.sqsp   | crs2       cimmsqsp  | css·sqsp        | rv128c | VU  |
+|c.fldsp  | cfrd       cimmldsp  | ci·ldsp+f | rv32c rv64c | VLU  |
+|c.lwsp   | crd        cimmlwsp  | ci·lwsp   | rv32c rv64c | VLU  |
+|c.flwsp  | cfrd       cimmlwsp  | ci·lwsp+f | rv32c       | VLU  |
+|c.ldsp   | crd        cimmldsp  | ci·ldsp         | rv64c | VLU  |
+|c.lqsp   | crd        cimmlqsp  | ci·lqsp         | rv128c | VLU  |
+|c.fsdsp  | cfrs2      cimmsdsp  | css·sdsp+f | rv32c rv64c | VSU  |
+|c.swsp   | crs2       cimmswsp  | css·swsp  | rv32c rv64c | VSU  |
+|c.fswsp  | cfrs2      cimmswsp  | css·swsp+f | rv32c      | VSU  |
+|c.sdsp   | crs2       cimmsdsp  | css·sdsp        | rv64c | VSU  |
+|c.sqsp   | crs2       cimmsqsp  | css·sqsp        | rv128c | VSU  |
