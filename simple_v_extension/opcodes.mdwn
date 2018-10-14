@@ -2,18 +2,21 @@
 
 Based on information from Michael Clark's riscv-meta opcodes table, this
 page categorises and identifies the type of parallelism that SimpleV
-indirectly adds on each RISC-V **standard** opcode.
+indirectly adds on each RISC-V **standard** opcode.  These are note-form:
+see [[specification]] for full details.
 
 * **-** no change of behaviour takes place: operation remains
-  **completely scalar** even if it has registers.
+  **completely scalar** as an **unmodified**, unaugmented standard RISC-V
+  opcode, even if it has registers.
 * **sv** - a standard contiguous (optionally predicated, optionally
-  indirected) multi-register operation where the predication for
-  the operation is taken from the **destination** register
+  indirected) multi-register operation where the predication register
+  to be used for the sequence of contiguous operations is taken from the
+  **destination** register's predication lookup entry.
 * **2v** - a standard contiguous (optionally twin-predicated, optionally
   indirected) twin-register operation (distinct source and destination)
   where either or both of source or destination may be redirected,
   vectorised, or **independently** predicated.  This behaviour
-  covers the **entire** VMV, VSPLAT, VINSERT, VREDUCE, VSCATTER, VGATHER
+  covers the *entire* MV, VSPLAT, VINSERT, VREDUCE, VSCATTER, VGATHER
   paradigm.
 * **vld** - a standard contiguous (optionally twin-predicated, optionally
   indirected) multi-register load operation where either or both of
@@ -26,7 +29,7 @@ indirectly adds on each RISC-V **standard** opcode.
   that is incremented (by the element width of the **source** register)
 * **VSU** - a similarly "Unit Stride" variant of **vst**.
 * **VBR** - a standard branch operation (optionally predicated, optionally
-  indirected) multi-register option where the (optional) predication for the
+  indirected) multi-register operation where the (optional) predication for the
   compare is taken from the destination register, and where (optionally)
   if the results of the multi-comparison are to be recorded, the **source**
   register's predication target is used.  On completion of all compares,
