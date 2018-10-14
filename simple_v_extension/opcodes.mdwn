@@ -15,20 +15,20 @@
 |bge      | rs1 rs2 sbimm12 | sb   | rv32i rv64i rv128i | VBR  |
 |bltu     | rs1 rs2 sbimm12 | sb   | rv32i rv64i rv128i | VBR  |
 |bgeu     | rs1 rs2 sbimm12 | sb   | rv32i rv64i rv128i | VBR  |
-|lb       | rd rs1 oimm12   | i+l  | rv32i rv64i rv128i | vls  |
-|lh       | rd rs1 oimm12   | i+l  | rv32i rv64i rv128i | vls  |
-|lw       | rd rs1 oimm12   | i+l  | rv32i rv64i rv128i | vls  |
-|lbu      | rd rs1 oimm12   | i+l  | rv32i rv64i rv128i | vls  |
-|lhu      | rd rs1 oimm12   | i+l  | rv32i rv64i rv128i | vls  |
-|sb       | rs1 rs2 simm12  | s    | rv32i rv64i rv128i | vls  |
-|sh       | rs1 rs2 simm12  | s    | rv32i rv64i rv128i | vls  |
-|sw       | rs1 rs2 simm12  | s    | rv32i rv64i rv128i | vls  |
-|lwu      | rd rs1 oimm12   |  i+l        | rv64i rv128i | vls  |
-|ld       | rd rs1 oimm12   |  i+l        | rv64i rv128i | vls  |
-|sd       | rs1 rs2 simm12  |  s          | rv64i rv128i | vls  |
-|ldu      | rd rs1 oimm12  |   i+l              | rv128i | vls  |
-|lq       | rd rs1 oimm12  |   i+l              | rv128i | vls  |
-|sq       | rs1 rs2 simm12 |   s                | rv128i | vls  |
+|lb       | rd rs1 oimm12   | i+l  | rv32i rv64i rv128i | vld  |
+|lh       | rd rs1 oimm12   | i+l  | rv32i rv64i rv128i | vld  |
+|lw       | rd rs1 oimm12   | i+l  | rv32i rv64i rv128i | vld  |
+|lbu      | rd rs1 oimm12   | i+l  | rv32i rv64i rv128i | vld  |
+|lhu      | rd rs1 oimm12   | i+l  | rv32i rv64i rv128i | vld  |
+|lwu      | rd rs1 oimm12   |  i+l        | rv64i rv128i | vld  |
+|ld       | rd rs1 oimm12   |  i+l        | rv64i rv128i | vld  |
+|ldu      | rd rs1 oimm12  |   i+l              | rv128i | vld  |
+|lq       | rd rs1 oimm12  |   i+l              | rv128i | vld  |
+|sb       | rs1 rs2 simm12  | s    | rv32i rv64i rv128i | vst  |
+|sh       | rs1 rs2 simm12  | s    | rv32i rv64i rv128i | vst  |
+|sw       | rs1 rs2 simm12  | s    | rv32i rv64i rv128i | vst  |
+|sd       | rs1 rs2 simm12  |  s          | rv64i rv128i | vst  |
+|sq       | rs1 rs2 simm12 |   s                | rv128i | vst  |
 |addi     | rd rs1 imm12    | i    | rv32i rv64i rv128i | sv  |
 |slti     | rd rs1 imm12    | i    | rv32i rv64i rv128i | sv  |
 |sltiu    | rd rs1 imm12    | i    | rv32i rv64i rv128i | sv  |
@@ -189,21 +189,21 @@
 |fsub.s   | frd frs1 frs2              rm | r·m+3f | rv32f rv64f rv128f | sv  |
 |fmul.s   | frd frs1 frs2              rm | r·m+3f | rv32f rv64f rv128f | sv  |
 |fdiv.s   | frd frs1 frs2              rm | r·m+3f | rv32f rv64f rv128f | sv  |
-|fsgnj.s  | frd frs1 frs2                 | r+3f  | rv32f rv64f rv128f | 2v  |
-|fsgnjn.s | frd frs1 frs2                 | r+3f  | rv32f rv64f rv128f | 2v  |
-|fsgnjx.s | frd frs1 frs2                 | r+3f  | rv32f rv64f rv128f | sv  |
 |fmin.s   | frd frs1 frs2                 | r+3f  | rv32f rv64f rv128f | sv  |
 |fmax.s   | frd frs1 frs2                 | r+3f  | rv32f rv64f rv128f | sv  |
 |fsqrt.s  | frd frs1                   rm | r·m+ff | rv32f rv64f rv128f | sv  |
 |fle.s    | rd frs1 frs2                  | r+rff | rv32f rv64f rv128f | sv  |
 |flt.s    | rd frs1 frs2                  | r+rff | rv32f rv64f rv128f | sv  |
 |feq.s    | rd frs1 frs2                  | r+rff | rv32f rv64f rv128f | sv  |
+|fclass.s | rd frs1                       | r+rf  | rv32f rv64f rv128f | sv  |
+|fsgnj.s  | frd frs1 frs2                 | r+3f  | rv32f rv64f rv128f | 2v  |
+|fsgnjn.s | frd frs1 frs2                 | r+3f  | rv32f rv64f rv128f | 2v  |
+|fsgnjx.s | frd frs1 frs2                 | r+3f  | rv32f rv64f rv128f | 2v  |
 |fcvt.w.s | rd frs1                    rm | r·m+rf | rv32f rv64f rv128f | 2v  |
 |fcvt.wu.s| rd frs1                    rm | r·m+rf | rv32f rv64f rv128f | 2v  |
 |fcvt.s.w | frd rs1                    rm | r·m+fr | rv32f rv64f rv128f | 2v  |
 |fcvt.s.wu| frd rs1                    rm | r·m+fr | rv32f rv64f rv128f | 2v  |
 |fmv.x.s  | rd frs1                       | r+rf  | rv32f rv64f rv128f | 2v  |
-|fclass.s | rd frs1                       | r+rf  | rv32f rv64f rv128f | sv  |
 |fmv.s.x  | frd rs1                       | r+fr  | rv32f rv64f rv128f | 2v  |
 
 # RV64F    "RV64F Standard Extension for Single-Precision Floating-Point (in addition to RV32F)"
@@ -229,22 +229,22 @@
 |fsub.d   | frd frs1 frs2      rm | r·m+3f | rv32d rv64d rv128d | sv  |
 |fmul.d   | frd frs1 frs2      rm | r·m+3f | rv32d rv64d rv128d | sv  |
 |fdiv.d   | frd frs1 frs2      rm | r·m+3f | rv32d rv64d rv128d | sv  |
-|fsgnj.d  | frd frs1 frs2         | r+3f  | rv32d rv64d rv128d | 2v  |
-|fsgnjn.d | frd frs1 frs2         | r+3f  | rv32d rv64d rv128d | 2v  |
-|fsgnjx.d | frd frs1 frs2         | r+3f  | rv32d rv64d rv128d | 2v  |
 |fmin.d   | frd frs1 frs2         | r+3f  | rv32d rv64d rv128d | sv  |
 |fmax.d   | frd frs1 frs2         | r+3f  | rv32d rv64d rv128d | sv  |
-|fcvt.s.d | frd frs1 rm           | r·m+ff | rv32d rv64d rv128d | 2v  |
-|fcvt.d.s | frd frs1 rm           | r·m+ff | rv32d rv64d rv128d | 2v  |
 |fsqrt.d  | frd frs1 rm           | r·m+ff | rv32d rv64d rv128d | sv  |
 |fle.d    | rd frs1 frs2          | r+rff | rv32d rv64d rv128d | sv  |
 |flt.d    | rd frs1 frs2          | r+rff | rv32d rv64d rv128d | sv  |
 |feq.d    | rd frs1 frs2          | r+rff | rv32d rv64d rv128d | sv  |
+|fclass.d | rd frs1               | r+rf  | rv32d rv64d rv128d | sv  |
+|fsgnj.d  | frd frs1 frs2         | r+3f  | rv32d rv64d rv128d | 2v  |
+|fsgnjn.d | frd frs1 frs2         | r+3f  | rv32d rv64d rv128d | 2v  |
+|fsgnjx.d | frd frs1 frs2         | r+3f  | rv32d rv64d rv128d | 2v  |
+|fcvt.s.d | frd frs1 rm           | r·m+ff | rv32d rv64d rv128d | 2v  |
+|fcvt.d.s | frd frs1 rm           | r·m+ff | rv32d rv64d rv128d | 2v  |
 |fcvt.w.d | rd frs1  rm           | r·m+rf | rv32d rv64d rv128d | 2v  |
 |fcvt.wu.d| rd frs1  rm           | r·m+rf | rv32d rv64d rv128d | 2v  |
 |fcvt.d.w | frd rs1  rm           | r·m+fr | rv32d rv64d rv128d | 2v  |
 |fcvt.d.wu| frd rs1  rm           | r·m+fr | rv32d rv64d rv128d | 2v  |
-|fclass.d | rd frs1               | r+rf  | rv32d rv64d rv128d | sv  |
 
 # RV64D    "RV64D Standard Extension for Double-Precision Floating-Point (in addition to RV32D)"
 
@@ -261,8 +261,8 @@
 
 | (23..18) | (17..12) | (11..6) | (5...0) |  |
 | -------- | -------- | ------- | ------- |  |
-|flq      | frd rs1       oimm12  | i+lf   | rv32q rv64q rv128q | vls  |
-|fsq      | rs1 frs2      simm12  | s+f    | rv32q rv64q rv128q | vls  |
+|flq      | frd rs1       oimm12  | i+lf   | rv32q rv64q rv128q | vld  |
+|fsq      | rs1 frs2      simm12  | s+f    | rv32q rv64q rv128q | vst  |
 |fmadd.q  | frd frs1 frs2 frs3 rm | r4·m   | rv32q rv64q rv128q | sv  |
 |fmsub.q  | frd frs1 frs2 frs3 rm | r4·m   | rv32q rv64q rv128q | sv  |
 |fnmsub.q | frd frs1 frs2 frs3 rm | r4·m   | rv32q rv64q rv128q | sv  |
@@ -271,24 +271,24 @@
 |fsub.q   | frd frs1 frs2     rm  | r·m+3f | rv32q rv64q rv128q | sv  |
 |fmul.q   | frd frs1 frs2     rm  | r·m+3f | rv32q rv64q rv128q | sv  |
 |fdiv.q   | frd frs1 frs2     rm  | r·m+3f | rv32q rv64q rv128q | sv  |
-|fsgnj.q  | frd frs1 frs2         | r+3f   | rv32q rv64q rv128q | 2v  |
-|fsgnjn.q | frd frs1 frs2         | r+3f   | rv32q rv64q rv128q | 2v  |
-|fsgnjx.q | frd frs1 frs2         | r+3f   | rv32q rv64q rv128q | 2v  |
 |fmin.q   | frd frs1 frs2         | r+3f   | rv32q rv64q rv128q | sv  |
 |fmax.q   | frd frs1 frs2         | r+3f   | rv32q rv64q rv128q | sv  |
-|fcvt.s.q | frd frs1 rm           | r·m+ff | rv32q rv64q rv128q | 2v  |
-|fcvt.q.s | frd frs1 rm           | r·m+ff | rv32q rv64q rv128q | 2v  |
-|fcvt.d.q | frd frs1 rm           | r·m+ff | rv32q rv64q rv128q | 2v  |
-|fcvt.q.d | frd frs1 rm           | r·m+ff | rv32q rv64q rv128q | 2v  |
 |fsqrt.q  | frd frs1 rm           | r·m+ff | rv32q rv64q rv128q | sv  |
 |fle.q    | rd frs1 frs2          | r+rff  | rv32q rv64q rv128q | sv  |
 |flt.q    | rd frs1 frs2          | r+rff  | rv32q rv64q rv128q | sv  |
 |feq.q    | rd frs1 frs2          | r+rff  | rv32q rv64q rv128q | sv  |
+|fclass.q | rd frs1               | r+rf   | rv32q rv64q rv128q | sv  |
+|fsgnj.q  | frd frs1 frs2         | r+3f   | rv32q rv64q rv128q | 2v  |
+|fsgnjn.q | frd frs1 frs2         | r+3f   | rv32q rv64q rv128q | 2v  |
+|fsgnjx.q | frd frs1 frs2         | r+3f   | rv32q rv64q rv128q | 2v  |
+|fcvt.s.q | frd frs1 rm           | r·m+ff | rv32q rv64q rv128q | 2v  |
+|fcvt.q.s | frd frs1 rm           | r·m+ff | rv32q rv64q rv128q | 2v  |
+|fcvt.d.q | frd frs1 rm           | r·m+ff | rv32q rv64q rv128q | 2v  |
+|fcvt.q.d | frd frs1 rm           | r·m+ff | rv32q rv64q rv128q | 2v  |
 |fcvt.w.q | rd frs1  rm           | r·m+rf | rv32q rv64q rv128q | 2v  |
 |fcvt.wu.q| rd frs1  rm           | r·m+rf | rv32q rv64q rv128q | 2v  |
 |fcvt.q.w | frd rs1  rm           | r·m+fr | rv32q rv64q rv128q | 2v  |
 |fcvt.q.wu| frd rs1  rm           | r·m+fr | rv32q rv64q rv128q | 2v  |
-|fclass.q | rd frs1               | r+rf   | rv32q rv64q rv128q | sv  |
 
 # RV64Q    "RV64Q Standard Extension for Quad-Precision Floating-Point (in addition to RV32Q)"
 
@@ -306,25 +306,35 @@
 |fmv.x.q  | rd frs1  | r+rf          | rv64q rv128q | 2v  |
 |fmv.q.x  | frd rs1  | r+fr          | rv64q rv128q | 2v  |
 
-# RV32C    "RV32C Standard Extension for Compressed Instructions"
+# RV32C/RV64C/RV128C    "RV32C/RV64C/RV128C Standard Extension for Compressed Instructions"
 
 | (23..18) | (17..12) | (11..6) | (5...0) |  |
 | -------- | -------- | ------- | ------- |  |
 |c.addi4spn|crdq       cimm4spn  | ciw·4spn  | rv32c rv64c | - |
-|c.fld    | cfrdq crs1q   cimmd  | cl·ld+f   | rv32c rv64c | vls  |
-|c.lw     | crdq  crs1q   cimmw  | cl·lw     | rv32c rv64c | vls  |
-|c.flw    | cfrdq crs1q   cimmw  | cl·lw+f   | rv32c       | vls  |
-|c.fsd    | crs1q cfrs2q  cimmd  | cs·sd+f   | rv32c rv64c | vls  |
-|c.sw     | crs1q crs2q   cimmw  | cs·sw     | rv32c rv64c | vls  |
-|c.fsw    | crs1q cfrs2q  cimmw  | cs·sw+f   | rv32c       | vls  |
 |c.nop    |                      | ci·none   | rv32c rv64c | - |
-|c.addi   | crs1rd      cnzimmi  | ci        | rv32c rv64c | sv  |
 |c.jal    |               cimmj  | cj·jal    | rv32c       | - |
-|c.li     | crs1rd        cimmi  | ci·li     | rv32c rv64c | sv  |
+|c.j      |               cimmj  | cj        | rv32c rv64c | - |
+|c.jr     | crd0 crs1            | cr·jr     | rv32c rv64c | - |
+|c.ebreak |                      | ci·none   | rv32c rv64c | - |
+|c.jalr   | crd0 crs1            | cr·jalr   | rv32c rv64c | - |
+|c.mv     | crd crs2             | cr·mv     | rv32c rv64c | 2v  |
+|c.fld    | cfrdq crs1q   cimmd  | cl·ld+f   | rv32c rv64c | vld  |
+|c.lw     | crdq  crs1q   cimmw  | cl·lw     | rv32c rv64c | vld  |
+|c.flw    | cfrdq crs1q   cimmw  | cl·lw+f   | rv32c       | vld  |
+|c.ld     | crdq  crs1q   cimmd  | cl·ld           | rv64c | vld  |
+|c.lq     | crdq crs1q    cimmq  | cl·lq           | rv128c | vld  |
+|c.fsd    | crs1q cfrs2q  cimmd  | cs·sd+f   | rv32c rv64c | vst  |
+|c.sw     | crs1q crs2q   cimmw  | cs·sw     | rv32c rv64c | vst  |
+|c.fsw    | crs1q cfrs2q  cimmw  | cs·sw+f   | rv32c       | vst  |
+|c.sd     | crs1q crs2q   cimmd  | cs·sd           | rv64c | vst  |
+|c.sq     | crs1q crs2q   cimmq  | cs·sq           | rv128c | vst  |
 |c.addi16sp|crs1rd     cimm16sp  | ci·16sp   | rv32c rv64c | TODO: special-case in spike-sv (disable SV mode) |
+|c.addi   | crs1rd      cnzimmi  | ci        | rv32c rv64c | sv  |
+|c.li     | crs1rd        cimmi  | ci·li     | rv32c rv64c | sv  |
 |c.lui    | crd          cimmui  | ci·lui    | rv32c rv64c | sv |
 |c.srli   | crs1rdq     cimmsh5  | cb·sh5    | rv32c       | sv  |
 |c.srai   | crs1rdq     cimmsh5  | cb·sh5    | rv32c       | sv  |
+|c.slli   | crs1rd      cimmsh5  | ci·sh5    | rv32c       | sv  |
 |c.andi   | crs1rdq     cnzimmi  | cb·imm    | rv32c rv64c | sv  |
 |c.sub    | crs1rdq crs2q        | cs        | rv32c rv64c | sv  |
 |c.xor    | crs1rdq crs2q        | cs        | rv32c rv64c | sv  |
@@ -332,40 +342,20 @@
 |c.and    | crs1rdq crs2q        | cs        | rv32c rv64c | sv  |
 |c.subw   | crs1rdq crs2q        | cs        | rv32c rv64c | sv  |
 |c.addw   | crs1rdq crs2q        | cs        | rv32c rv64c | sv  |
-|c.j      |               cimmj  | cj        | rv32c rv64c | - |
-|c.beqz   | crs1q         cimmb  | cb        | rv32c rv64c | VBR  |
-|c.bnez   | crs1q         cimmb  | cb        | rv32c rv64c | VBR  |
-|c.slli   | crs1rd      cimmsh5  | ci·sh5    | rv32c       | sv  |
-|c.fldsp  | cfrd       cimmldsp  | ci·ldsp+f | rv32c rv64c | VU  |
-|c.lwsp   | crd        cimmlwsp  | ci·lwsp   | rv32c rv64c | VU  |
-|c.flwsp  | cfrd       cimmlwsp  | ci·lwsp+f | rv32c       | VU  |
-|c.jr     | crd0 crs1            | cr·jr     | rv32c rv64c | - |
-|c.mv     | crd crs2             | cr·mv     | rv32c rv64c | 2v  |
-|c.ebreak |                      | ci·none   | rv32c rv64c | - |
-|c.jalr   | crd0 crs1            | cr·jalr   | rv32c rv64c | - |
 |c.add    | crs1rd crs2          | cr        | rv32c rv64c | sv  |
-|c.fsdsp  | cfrs2      cimmsdsp  | css·sdsp+f | rv32c rv64c | VU  |
-|c.swsp   | crs2       cimmswsp  | css·swsp  | rv32c rv64c | VU  |
-|c.fswsp  | cfrs2      cimmswsp  | css·swsp+f | rv32c      | VU  |
-
-# RV64C    "RV64C Standard Extension for Compressed Instructions (in addition to RV32C)"
-
-| (23..18) | (17..12) | (11..6) | (5...0) |  |
-| -------- | -------- | ------- | ------- |  |
-|c.ld     | crdq  crs1q   cimmd  | cl·ld           | rv64c | vls  |
-|c.sd     | crs1q crs2q   cimmd  | cs·sd           | rv64c | vls  |
 |c.addiw  | crs1rd        cimmi  | ci              | rv64c | sv  |
 |c.srli   | crs1rdq     cimmsh6  | cb·sh6          | rv64c | sv  |
 |c.srai   | crs1rdq     cimmsh6  | cb·sh6          | rv64c | sv  |
 |c.slli   | crs1rd      cimmsh6  | ci·sh6          | rv64c | sv  |
+|c.beqz   | crs1q         cimmb  | cb        | rv32c rv64c | VBR  |
+|c.bnez   | crs1q         cimmb  | cb        | rv32c rv64c | VBR  |
+|c.fldsp  | cfrd       cimmldsp  | ci·ldsp+f | rv32c rv64c | VU  |
+|c.lwsp   | crd        cimmlwsp  | ci·lwsp   | rv32c rv64c | VU  |
+|c.flwsp  | cfrd       cimmlwsp  | ci·lwsp+f | rv32c       | VU  |
+|c.fsdsp  | cfrs2      cimmsdsp  | css·sdsp+f | rv32c rv64c | VU  |
+|c.swsp   | crs2       cimmswsp  | css·swsp  | rv32c rv64c | VU  |
+|c.fswsp  | cfrs2      cimmswsp  | css·swsp+f | rv32c      | VU  |
 |c.ldsp   | crd        cimmldsp  | ci·ldsp         | rv64c | VU  |
 |c.sdsp   | crs2       cimmsdsp  | css·sdsp        | rv64c | VU  |
-
-# RV128C   "RV128C Standard Extension for Compressed Instructions (in addition to RV64C)"
-
-| (23..18) | (17..12) | (11..6) | (5...0) |  |
-| -------- | -------- | ------- | ------- |  |
-|c.lq     | crdq crs1q    cimmq  | cl·lq           | rv128c | vls  |
-|c.sq     | crs1q crs2q   cimmq  | cs·sq           | rv128c | vls  |
 |c.lqsp   | crd        cimmlqsp  | ci·lqsp         | rv128c | VU  |
 |c.sqsp   | crs2       cimmsqsp  | css·sqsp        | rv128c | VU  |
