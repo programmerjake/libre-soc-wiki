@@ -304,78 +304,78 @@
 
 | (23..18) | (17..12) | (11..6) | (5...0) |
 | -------- | -------- | ------- | ------- |
-|fcvt.l.q | rd frs1 24..20=2 31..27=0x18 rm        r·m+rf         rv64q rv128q
-|fcvt.lu.q| rd frs1 24..20=3 31..27=0x18 rm        r·m+rf         rv64q rv128q
-|fcvt.q.l | frd rs1 24..20=2 31..27=0x1A rm        r·m+fr         rv64q rv128q
-|fcvt.q.lu| frd rs1 24..20=3 31..27=0x1A rm        r·m+fr         rv64q rv128q
+|fcvt.l.q | rd frs1  rm       | r·m+rf         rv64q rv128q
+|fcvt.lu.q| rd frs1  rm       | r·m+rf         rv64q rv128q
+|fcvt.q.l | frd rs1  rm       | r·m+fr         rv64q rv128q
+|fcvt.q.lu| frd rs1  rm       | r·m+fr         rv64q rv128q
 
 # RV128Q   "RV128Q Standard Extension for Quadruple-Precision Floating-Point (in addition to RV64Q)"
 
 | (23..18) | (17..12) | (11..6) | (5...0) |
 | -------- | -------- | ------- | ------- |
-|fmv.x.q  | rd frs1 24..20=0 31..27=0x1C 14..12=0  r+rf           rv64q rv128q
-|fmv.q.x  | frd rs1 24..20=0 31..27=0x1E 14..12=0  r+fr           rv64q rv128q
+|fmv.x.q  | rd frs1  | r+rf           rv64q rv128q
+|fmv.q.x  | frd rs1  | r+fr           rv64q rv128q
 
 # RV32C    "RV32C Standard Extension for Compressed Instructions"
 
 | (23..18) | (17..12) | (11..6) | (5...0) |
 | -------- | -------- | ------- | ------- |
-|c.addi4spn|crdq       cimm4spn  ciw·4spn   rv32c rv64c
-|c.fld    | cfrdq crs1q   cimmd  cl·ld+f    rv32c rv64c
-|c.lw     | crdq  crs1q   cimmw  cl·lw      rv32c rv64c
-|c.flw    | cfrdq crs1q   cimmw  cl·lw+f    rv32c
-|c.fsd    | crs1q cfrs2q  cimmd  cs·sd+f    rv32c rv64c
-|c.sw     | crs1q crs2q   cimmw  cs·sw      rv32c rv64c
-|c.fsw    | crs1q cfrs2q  cimmw  cs·sw+f    rv32c
-|c.nop    |                      ci·none    rv32c rv64c
-|c.addi   | crs1rd      cnzimmi  ci         rv32c rv64c
-|c.jal    |               cimmj  cj·jal     rv32c
-|c.li     | crs1rd        cimmi  ci·li      rv32c rv64c
-|c.addi16sp|crs1rd     cimm16sp  ci·16sp    rv32c rv64c
-|c.lui    | crd          cimmui  ci·lui     rv32c rv64c
-|c.srli   | crs1rdq     cimmsh5  cb·sh5     rv32c
-|c.srai   | crs1rdq     cimmsh5  cb·sh5     rv32c
-|c.andi   | crs1rdq     cnzimmi  cb·imm     rv32c rv64c
-|c.sub    | crs1rdq crs2q        cs         rv32c rv64c
-|c.xor    | crs1rdq crs2q        cs         rv32c rv64c
-|c.or     | crs1rdq crs2q        cs         rv32c rv64c
-|c.and    | crs1rdq crs2q        cs         rv32c rv64c
-|c.subw   | crs1rdq crs2q        cs         rv32c rv64c
-|c.addw   | crs1rdq crs2q        cs         rv32c rv64c
-|c.j      |               cimmj  cj         rv32c rv64c
-|c.beqz   | crs1q         cimmb  cb         rv32c rv64c
-|c.bnez   | crs1q         cimmb  cb         rv32c rv64c
-|c.slli   | crs1rd      cimmsh5  ci·sh5     rv32c
-|c.fldsp  | cfrd       cimmldsp  ci·ldsp+f  rv32c rv64c
-|c.lwsp   | crd        cimmlwsp  ci·lwsp    rv32c rv64c
-|c.flwsp  | cfrd       cimmlwsp  ci·lwsp+f  rv32c
-|c.jr     | crd0 crs1            cr·jr      rv32c rv64c
-|c.mv     | crd crs2             cr·mv      rv32c rv64c
-|c.ebreak |                      ci·none    rv32c rv64c
-|c.jalr   | crd0 crs1            cr·jalr    rv32c rv64c
-|c.add    | crs1rd crs2          cr         rv32c rv64c
-|c.fsdsp  | cfrs2      cimmsdsp  css·sdsp+f rv32c rv64c
-|c.swsp   | crs2       cimmswsp  css·swsp   rv32c rv64c
-|c.fswsp  | cfrs2      cimmswsp  css·swsp+f rv32c
+|c.addi4spn|crdq       cimm4spn  | ciw·4spn   rv32c rv64c
+|c.fld    | cfrdq crs1q   cimmd  | cl·ld+f    rv32c rv64c
+|c.lw     | crdq  crs1q   cimmw  | cl·lw      rv32c rv64c
+|c.flw    | cfrdq crs1q   cimmw  | cl·lw+f    rv32c
+|c.fsd    | crs1q cfrs2q  cimmd  | cs·sd+f    rv32c rv64c
+|c.sw     | crs1q crs2q   cimmw  | cs·sw      rv32c rv64c
+|c.fsw    | crs1q cfrs2q  cimmw  | cs·sw+f    rv32c
+|c.nop    |                      | ci·none    rv32c rv64c
+|c.addi   | crs1rd      cnzimmi  | ci         rv32c rv64c
+|c.jal    |               cimmj  | cj·jal     rv32c
+|c.li     | crs1rd        cimmi  | ci·li      rv32c rv64c
+|c.addi16sp|crs1rd     cimm16sp  | ci·16sp    rv32c rv64c
+|c.lui    | crd          cimmui  | ci·lui     rv32c rv64c
+|c.srli   | crs1rdq     cimmsh5  | cb·sh5     rv32c
+|c.srai   | crs1rdq     cimmsh5  | cb·sh5     rv32c
+|c.andi   | crs1rdq     cnzimmi  | cb·imm     rv32c rv64c
+|c.sub    | crs1rdq crs2q        | cs         rv32c rv64c
+|c.xor    | crs1rdq crs2q        | cs         rv32c rv64c
+|c.or     | crs1rdq crs2q        | cs         rv32c rv64c
+|c.and    | crs1rdq crs2q        | cs         rv32c rv64c
+|c.subw   | crs1rdq crs2q        | cs         rv32c rv64c
+|c.addw   | crs1rdq crs2q        | cs         rv32c rv64c
+|c.j      |               cimmj  | cj         rv32c rv64c
+|c.beqz   | crs1q         cimmb  | cb         rv32c rv64c
+|c.bnez   | crs1q         cimmb  | cb         rv32c rv64c
+|c.slli   | crs1rd      cimmsh5  | ci·sh5     rv32c
+|c.fldsp  | cfrd       cimmldsp  | ci·ldsp+f  rv32c rv64c
+|c.lwsp   | crd        cimmlwsp  | ci·lwsp    rv32c rv64c
+|c.flwsp  | cfrd       cimmlwsp  | ci·lwsp+f  rv32c
+|c.jr     | crd0 crs1            | cr·jr      rv32c rv64c
+|c.mv     | crd crs2             | cr·mv      rv32c rv64c
+|c.ebreak |                      | ci·none    rv32c rv64c
+|c.jalr   | crd0 crs1            | cr·jalr    rv32c rv64c
+|c.add    | crs1rd crs2          | cr         rv32c rv64c
+|c.fsdsp  | cfrs2      cimmsdsp  | css·sdsp+f rv32c rv64c
+|c.swsp   | crs2       cimmswsp  | css·swsp   rv32c rv64c
+|c.fswsp  | cfrs2      cimmswsp  | css·swsp+f rv32c
 
 # RV64C    "RV64C Standard Extension for Compressed Instructions (in addition to RV32C)"
 
 | (23..18) | (17..12) | (11..6) | (5...0) |
 | -------- | -------- | ------- | ------- |
-|c.ld     | crdq  crs1q   cimmd  cl·ld            rv64c
-|c.sd     | crs1q crs2q   cimmd  cs·sd            rv64c
-|c.addiw  | crs1rd        cimmi  ci               rv64c
-|c.srli   | crs1rdq     cimmsh6  cb·sh6           rv64c
-|c.srai   | crs1rdq     cimmsh6  cb·sh6           rv64c
-|c.slli   | crs1rd      cimmsh6  ci·sh6           rv64c
-|c.ldsp   | crd        cimmldsp  ci·ldsp          rv64c
-|c.sdsp   | crs2       cimmsdsp  css·sdsp         rv64c
+|c.ld     | crdq  crs1q   cimmd  | cl·ld            rv64c
+|c.sd     | crs1q crs2q   cimmd  | cs·sd            rv64c
+|c.addiw  | crs1rd        cimmi  | ci               rv64c
+|c.srli   | crs1rdq     cimmsh6  | cb·sh6           rv64c
+|c.srai   | crs1rdq     cimmsh6  | cb·sh6           rv64c
+|c.slli   | crs1rd      cimmsh6  | ci·sh6           rv64c
+|c.ldsp   | crd        cimmldsp  | ci·ldsp          rv64c
+|c.sdsp   | crs2       cimmsdsp  | css·sdsp         rv64c
 
 # RV128C   "RV128C Standard Extension for Compressed Instructions (in addition to RV64C)"
 
 | (23..18) | (17..12) | (11..6) | (5...0) |
 | -------- | -------- | ------- | ------- |
-|c.lq     | crdq crs1q    cimmq  cl·lq            rv128c
-|c.sq     | crs1q crs2q   cimmq  cs·sq            rv128c
-|c.lqsp   | crd        cimmlqsp  ci·lqsp          rv128c
-|c.sqsp   | crs2       cimmsqsp  css·sqsp         rv128c
+|c.lq     | crdq crs1q    cimmq  | cl·lq            rv128c
+|c.sq     | crs1q crs2q   cimmq  | cs·sq            rv128c
+|c.lqsp   | crd        cimmlqsp  | ci·lqsp          rv128c
+|c.sqsp   | crs2       cimmsqsp  | css·sqsp         rv128c
