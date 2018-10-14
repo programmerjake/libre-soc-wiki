@@ -4,7 +4,8 @@ Based on information from Michael Clark's riscv-meta opcodes table, this
 page categorises and identifies the type of parallelism that SimpleV
 indirectly adds on each RISC-V **standard** opcode.
 
-* **-** no action
+* **-** no change of behaviour takes place: operation remains
+  **completely scalar** even if it has registers.
 * **sv** - a standard contiguous (optionally predicated, optionally
   indirected) multi-register operation where the predication for
   the operation is taken from the **destination** register
