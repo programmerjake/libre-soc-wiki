@@ -120,17 +120,17 @@
 
 | (23..18) | (17..12) | (11..6) | (5...0) |
 | -------- | -------- | ------- | ------- |
-|lr.w     | rd rs1          | r·l rv32a rv64a rv128a
-|sc.w     | rd rs1 rs2      | r·a rv32a rv64a rv128a
-|amoswap.w| rd rs1 rs2      | r·a rv32a rv64a rv128a
-|amoadd.w | rd rs1 rs2      | r·a rv32a rv64a rv128a
-|amoxor.w | rd rs1 rs2      | r·a rv32a rv64a rv128a
-|amoor.w  | rd rs1 rs2      | r·a rv32a rv64a rv128a
-|amoand.w | rd rs1 rs2      | r·a rv32a rv64a rv128a
-|amomin.w | rd rs1 rs2      | r·a rv32a rv64a rv128a
-|amomax.w | rd rs1 rs2      | r·a rv32a rv64a rv128a
-|amominu.w| rd rs1 rs2      | r·a rv32a rv64a rv128a
-|amomaxu.w| rd rs1 rs2      | r·a rv32a rv64a rv128a
+|lr.w     | rd rs1          | r·l | rv32a rv64a rv128a
+|sc.w     | rd rs1 rs2      | r·a | rv32a rv64a rv128a
+|amoswap.w| rd rs1 rs2      | r·a | rv32a rv64a rv128a
+|amoadd.w | rd rs1 rs2      | r·a | rv32a rv64a rv128a
+|amoxor.w | rd rs1 rs2      | r·a | rv32a rv64a rv128a
+|amoor.w  | rd rs1 rs2      | r·a | rv32a rv64a rv128a
+|amoand.w | rd rs1 rs2      | r·a | rv32a rv64a rv128a
+|amomin.w | rd rs1 rs2      | r·a | rv32a rv64a rv128a
+|amomax.w | rd rs1 rs2      | r·a | rv32a rv64a rv128a
+|amominu.w| rd rs1 rs2      | r·a | rv32a rv64a rv128a
+|amomaxu.w| rd rs1 rs2      | r·a | rv32a rv64a rv128a
 
 # RV64A    "RV64A Standard Extension for Atomic Instructions (in addition to RV32A)"
 
@@ -152,38 +152,38 @@
 
 | (23..18) | (17..12) | (11..6) | (5...0) |
 | -------- | -------- | ------- | ------- |
-|lr.q     | rd rs1          | r·l            | rv128a
-|sc.q     | rd rs1 rs2      | r·a            | rv128a
-|amoswap.q| rd rs1 rs2      | r·a            | rv128a
-|amoadd.q | rd rs1 rs2      | r·a            | rv128a
-|amoxor.q | rd rs1 rs2      | r·a            | rv128a
-|amoor.q  | rd rs1 rs2      | r·a            | rv128a
-|amoand.q | rd rs1 rs2      | r·a            | rv128a
-|amomin.q | rd rs1 rs2      | r·a            | rv128a
-|amomax.q | rd rs1 rs2      | r·a            | rv128a
-|amominu.q| rd rs1 rs2      | r·a            | rv128a
-|amomaxu.q| rd rs1 rs2      | r·a            | rv128a
+|lr.q     | rd rs1          | r·l | rv128a
+|sc.q     | rd rs1 rs2      | r·a | rv128a
+|amoswap.q| rd rs1 rs2      | r·a | rv128a
+|amoadd.q | rd rs1 rs2      | r·a | rv128a
+|amoxor.q | rd rs1 rs2      | r·a | rv128a
+|amoor.q  | rd rs1 rs2      | r·a | rv128a
+|amoand.q | rd rs1 rs2      | r·a | rv128a
+|amomin.q | rd rs1 rs2      | r·a | rv128a
+|amomax.q | rd rs1 rs2      | r·a | rv128a
+|amominu.q| rd rs1 rs2      | r·a | rv128a
+|amomaxu.q| rd rs1 rs2      | r·a | rv128a
 
 # RV32S    "RV32S Standard Extension for Supervisor-level Instructions"
 
 | (23..18) | (17..12) | (11..6) | (5...0) |
 | -------- | -------- | ------- | ------- |
-|ecall    |                         |   none   | rv32s rv64s rv128s
-|ebreak   |                         |   none   | rv32s rv64s rv128s
-|uret     |                         |   none   | rv32s rv64s rv128s
-|sret     |                         |   none   | rv32s rv64s rv128s
-|hret     |                         |   none   | rv32s rv64s rv128s
-|mret     |                         |   none   | rv32s rv64s rv128s
-|dret     |                         |   none   | rv32s rv64s rv128s
-|sfence.vm|         rs1             | r+sf   | rv32s rv64s rv128s
-|sfence.vma|  rs1 rs2               | r+sfa  | rv32s rv64s rv128s
-|wfi      |                         | none   | rv32s rv64s rv128s
-|csrrw    | rd      rs1      csr12  | i·csr  | rv32s rv64s rv128s
-|csrrs    | rd      rs1      csr12  | i·csr  | rv32s rv64s rv128s
-|csrrc    | rd      rs1      csr12  | i·csr  | rv32s rv64s rv128s
-|csrrwi   | rd      zimm     csr12  | i·csr+i | rv32s rv64s rv128s
-|csrrsi   | rd      zimm     csr12  | i·csr+i | rv32s rv64s rv128s
-|csrrci   | rd      zimm     csr12  | i·csr+i | rv32s rv64s rv128s
+|ecall     |                         | none    | rv32s rv64s rv128s
+|ebreak    |                         | none    | rv32s rv64s rv128s
+|uret      |                         | none    | rv32s rv64s rv128s
+|sret      |                         | none    | rv32s rv64s rv128s
+|hret      |                         | none    | rv32s rv64s rv128s
+|mret      |                         | none    | rv32s rv64s rv128s
+|dret      |                         | none    | rv32s rv64s rv128s
+|sfence.vm |         rs1             | r+sf    | rv32s rv64s rv128s
+|sfence.vma| rs1 rs2                 | r+sfa   | rv32s rv64s rv128s
+|wfi       |                         | none    | rv32s rv64s rv128s
+|csrrw     | rd      rs1      csr12  | i·csr   | rv32s rv64s rv128s
+|csrrs     | rd      rs1      csr12  | i·csr   | rv32s rv64s rv128s
+|csrrc     | rd      rs1      csr12  | i·csr   | rv32s rv64s rv128s
+|csrrwi    | rd      zimm     csr12  | i·csr+i | rv32s rv64s rv128s
+|csrrsi    | rd      zimm     csr12  | i·csr+i | rv32s rv64s rv128s
+|csrrci    | rd      zimm     csr12  | i·csr+i | rv32s rv64s rv128s
 
 # RV32F    "RV32F Standard Extension for Single-Precision Floating-Point"
 
@@ -191,27 +191,27 @@
 | -------- | -------- | ------- | ------- | |
 |flw      | frd rs1           oimm12      | i+lf  | rv32f rv64f rv128f
 |fsw      | rs1 frs2          simm12      | s+f   | rv32f rv64f rv128f
-|fmadd.s  | frd frs1 frs2 frs3            rm | r4·m  | rv32f rv64f rv128f
-|fmsub.s  | frd frs1 frs2 frs3            rm | r4·m  | rv32f rv64f rv128f
-|fnmsub.s | frd frs1 frs2 frs3            rm | r4·m  | rv32f rv64f rv128f
-|fnmadd.s | frd frs1 frs2 frs3            rm | r4·m  | rv32f rv64f rv128f
-|fadd.s   | frd frs1 frs2                 rm | r·m+3f | rv32f rv64f rv128f
-|fsub.s   | frd frs1 frs2                 rm | r·m+3f | rv32f rv64f rv128f
-|fmul.s   | frd frs1 frs2                 rm | r·m+3f | rv32f rv64f rv128f
-|fdiv.s   | frd frs1 frs2                 rm | r·m+3f | rv32f rv64f rv128f
+|fmadd.s  | frd frs1 frs2 frs3         rm | r4·m  | rv32f rv64f rv128f
+|fmsub.s  | frd frs1 frs2 frs3         rm | r4·m  | rv32f rv64f rv128f
+|fnmsub.s | frd frs1 frs2 frs3         rm | r4·m  | rv32f rv64f rv128f
+|fnmadd.s | frd frs1 frs2 frs3         rm | r4·m  | rv32f rv64f rv128f
+|fadd.s   | frd frs1 frs2              rm | r·m+3f | rv32f rv64f rv128f
+|fsub.s   | frd frs1 frs2              rm | r·m+3f | rv32f rv64f rv128f
+|fmul.s   | frd frs1 frs2              rm | r·m+3f | rv32f rv64f rv128f
+|fdiv.s   | frd frs1 frs2              rm | r·m+3f | rv32f rv64f rv128f
 |fsgnj.s  | frd frs1 frs2                 | r+3f  | rv32f rv64f rv128f
 |fsgnjn.s | frd frs1 frs2                 | r+3f  | rv32f rv64f rv128f
 |fsgnjx.s | frd frs1 frs2                 | r+3f  | rv32f rv64f rv128f
 |fmin.s   | frd frs1 frs2                 | r+3f  | rv32f rv64f rv128f
 |fmax.s   | frd frs1 frs2                 | r+3f  | rv32f rv64f rv128f
-|fsqrt.s  | frd frs1                      rm | r·m+ff | rv32f rv64f rv128f
+|fsqrt.s  | frd frs1                   rm | r·m+ff | rv32f rv64f rv128f
 |fle.s    | rd frs1 frs2                  | r+rff | rv32f rv64f rv128f
 |flt.s    | rd frs1 frs2                  | r+rff | rv32f rv64f rv128f
 |feq.s    | rd frs1 frs2                  | r+rff | rv32f rv64f rv128f
-|fcvt.w.s | rd frs1                       rm | r·m+rf | rv32f rv64f rv128f
-|fcvt.wu.s| rd frs1                       rm | r·m+rf | rv32f rv64f rv128f
-|fcvt.s.w | frd rs1                       rm | r·m+fr | rv32f rv64f rv128f
-|fcvt.s.wu| frd rs1                       rm | r·m+fr | rv32f rv64f rv128f
+|fcvt.w.s | rd frs1                    rm | r·m+rf | rv32f rv64f rv128f
+|fcvt.wu.s| rd frs1                    rm | r·m+rf | rv32f rv64f rv128f
+|fcvt.s.w | frd rs1                    rm | r·m+fr | rv32f rv64f rv128f
+|fcvt.s.wu| frd rs1                    rm | r·m+fr | rv32f rv64f rv128f
 |fmv.x.s  | rd frs1                       | r+rf  | rv32f rv64f rv128f
 |fclass.s | rd frs1                       | r+rf  | rv32f rv64f rv128f
 |fmv.s.x  | frd rs1                       | r+fr  | rv32f rv64f rv128f
@@ -229,76 +229,76 @@
 
 | (23..18) | (17..12) | (11..6) | (5...0) |
 | -------- | -------- | ------- | ------- |
-|fld      | frd rs1           oimm12      14..12=3  i+lf  | rv32d rv64d rv128d
-|fsd      | rs1 frs2          simm12      14..12=3  s+f   | rv32d rv64d rv128d
-|fmadd.d  | frd frs1 frs2 frs3            rm        r4·m  | rv32d rv64d rv128d
-|fmsub.d  | frd frs1 frs2 frs3            rm        r4·m  | rv32d rv64d rv128d
-|fnmsub.d | frd frs1 frs2 frs3            rm        r4·m  | rv32d rv64d rv128d
-|fnmadd.d | frd frs1 frs2 frs3            rm        r4·m  | rv32d rv64d rv128d
-|fadd.d   | frd frs1 frs2     31..27=0x00 rm        r·m+3f | rv32d rv64d rv128d
-|fsub.d   | frd frs1 frs2     31..27=0x01 rm        r·m+3f | rv32d rv64d rv128d
-|fmul.d   | frd frs1 frs2     31..27=0x02 rm        r·m+3f | rv32d rv64d rv128d
-|fdiv.d   | frd frs1 frs2     31..27=0x03 rm        r·m+3f | rv32d rv64d rv128d
-|fsgnj.d  | frd frs1 frs2     31..27=0x04 14..12=0  r+3f  | rv32d rv64d rv128d
-|fsgnjn.d | frd frs1 frs2     31..27=0x04 14..12=1  r+3f  | rv32d rv64d rv128d
-|fsgnjx.d | frd frs1 frs2     31..27=0x04 14..12=2  r+3f  | rv32d rv64d rv128d
-|fmin.d   | frd frs1 frs2     31..27=0x05 14..12=0  r+3f  | rv32d rv64d rv128d
-|fmax.d   | frd frs1 frs2     31..27=0x05 14..12=1  r+3f  | rv32d rv64d rv128d
-|fcvt.s.d | frd frs1 24..20=1 31..27=0x08 rm        r·m+ff | rv32d rv64d rv128d
-|fcvt.d.s | frd frs1 24..20=0 31..27=0x08 rm        r·m+ff | rv32d rv64d rv128d
-|fsqrt.d  | frd frs1 24..20=0 31..27=0x0B rm        r·m+ff | rv32d rv64d rv128d
-|fle.d    | rd frs1 frs2      31..27=0x14 14..12=0  r+rff | rv32d rv64d rv128d
-|flt.d    | rd frs1 frs2      31..27=0x14 14..12=1  r+rff | rv32d rv64d rv128d
-|feq.d    | rd frs1 frs2      31..27=0x14 14..12=2  r+rff | rv32d rv64d rv128d
-|fcvt.w.d | rd frs1  24..20=0 31..27=0x18 rm        r·m+rf | rv32d rv64d rv128d
-|fcvt.wu.d| rd frs1  24..20=1 31..27=0x18 rm        r·m+rf | rv32d rv64d rv128d
-|fcvt.d.w | frd rs1  24..20=0 31..27=0x1A rm        r·m+fr | rv32d rv64d rv128d
-|fcvt.d.wu| frd rs1  24..20=1 31..27=0x1A rm        r·m+fr | rv32d rv64d rv128d
-|fclass.d | rd frs1  24..20=0 31..27=0x1C 14..12=1  r+rf  | rv32d rv64d rv128d
+|fld      | frd rs1   oimm12      | i+lf  | rv32d rv64d rv128d
+|fsd      | rs1 frs2  simm12      | s+f   | rv32d rv64d rv128d
+|fmadd.d  | frd frs1 frs2 frs3 rm | r4·m  | rv32d rv64d rv128d
+|fmsub.d  | frd frs1 frs2 frs3 rm | r4·m  | rv32d rv64d rv128d
+|fnmsub.d | frd frs1 frs2 frs3 rm | r4·m  | rv32d rv64d rv128d
+|fnmadd.d | frd frs1 frs2 frs3 rm | r4·m  | rv32d rv64d rv128d
+|fadd.d   | frd frs1 frs2      rm | r·m+3f | rv32d rv64d rv128d
+|fsub.d   | frd frs1 frs2      rm | r·m+3f | rv32d rv64d rv128d
+|fmul.d   | frd frs1 frs2      rm | r·m+3f | rv32d rv64d rv128d
+|fdiv.d   | frd frs1 frs2      rm | r·m+3f | rv32d rv64d rv128d
+|fsgnj.d  | frd frs1 frs2         | r+3f  | rv32d rv64d rv128d
+|fsgnjn.d | frd frs1 frs2         | r+3f  | rv32d rv64d rv128d
+|fsgnjx.d | frd frs1 frs2         | r+3f  | rv32d rv64d rv128d
+|fmin.d   | frd frs1 frs2         | r+3f  | rv32d rv64d rv128d
+|fmax.d   | frd frs1 frs2         | r+3f  | rv32d rv64d rv128d
+|fcvt.s.d | frd frs1 rm           | r·m+ff | rv32d rv64d rv128d
+|fcvt.d.s | frd frs1 rm           | r·m+ff | rv32d rv64d rv128d
+|fsqrt.d  | frd frs1 rm           | r·m+ff | rv32d rv64d rv128d
+|fle.d    | rd frs1 frs2          | r+rff | rv32d rv64d rv128d
+|flt.d    | rd frs1 frs2          | r+rff | rv32d rv64d rv128d
+|feq.d    | rd frs1 frs2          | r+rff | rv32d rv64d rv128d
+|fcvt.w.d | rd frs1  rm           | r·m+rf | rv32d rv64d rv128d
+|fcvt.wu.d| rd frs1  rm           | r·m+rf | rv32d rv64d rv128d
+|fcvt.d.w | frd rs1  rm           | r·m+fr | rv32d rv64d rv128d
+|fcvt.d.wu| frd rs1  rm           | r·m+fr | rv32d rv64d rv128d
+|fclass.d | rd frs1               | r+rf  | rv32d rv64d rv128d
 
 # RV64D    "RV64D Standard Extension for Double-Precision Floating-Point (in addition to RV32D)"
 
 | (23..18) | (17..12) | (11..6) | (5...0) |
 | -------- | -------- | ------- | ------- |
-|fcvt.l.d | rd frs1  24..20=2 31..27=0x18 rm        r·m+rf      | rv64d rv128d
-|fcvt.lu.d| rd frs1  24..20=3 31..27=0x18 rm        r·m+rf      | rv64d rv128d
-|fmv.x.d  | rd frs1  24..20=0 31..27=0x1C 14..12=0  r+rf        | rv64d rv128d
-|fcvt.d.l | frd rs1  24..20=2 31..27=0x1A rm        r·m+fr      | rv64d rv128d
-|fcvt.d.lu| frd rs1  24..20=3 31..27=0x1A rm        r·m+fr      | rv64d rv128d
-|fmv.d.x  | frd rs1  24..20=0 31..27=0x1E 14..12=0  r+fr        | rv64d rv128d
+|fcvt.l.d | rd frs1  rm      | r·m+rf      | rv64d rv128d
+|fcvt.lu.d| rd frs1  rm      | r·m+rf      | rv64d rv128d
+|fmv.x.d  | rd frs1          | r+rf        | rv64d rv128d
+|fcvt.d.l | frd rs1  rm      | r·m+fr      | rv64d rv128d
+|fcvt.d.lu| frd rs1  rm      | r·m+fr      | rv64d rv128d
+|fmv.d.x  | frd rs1          | r+fr        | rv64d rv128d
 
 # RV32Q    "RV32Q Standard Extension for Quad-Precision Floating-Point"
 
 | (23..18) | (17..12) | (11..6) | (5...0) |
 | -------- | -------- | ------- | ------- |
-|flq      | frd rs1           oimm12      14..12=4  i+lf   | rv32q rv64q rv128q
-|fsq      | rs1 frs2          simm12      14..12=4  s+f    | rv32q rv64q rv128q
-|fmadd.q  | frd frs1 frs2 frs3            rm        r4·m   | rv32q rv64q rv128q
-|fmsub.q  | frd frs1 frs2 frs3            rm        r4·m   | rv32q rv64q rv128q
-|fnmsub.q | frd frs1 frs2 frs3            rm        r4·m   | rv32q rv64q rv128q
-|fnmadd.q | frd frs1 frs2 frs3            rm        r4·m   | rv32q rv64q rv128q
-|fadd.q   | frd frs1 frs2     31..27=0x00 rm        r·m+3f | rv32q rv64q rv128q
-|fsub.q   | frd frs1 frs2     31..27=0x01 rm        r·m+3f | rv32q rv64q rv128q
-|fmul.q   | frd frs1 frs2     31..27=0x02 rm        r·m+3f | rv32q rv64q rv128q
-|fdiv.q   | frd frs1 frs2     31..27=0x03 rm        r·m+3f | rv32q rv64q rv128q
-|fsgnj.q  | frd frs1 frs2     31..27=0x04 14..12=0  r+3f   | rv32q rv64q rv128q
-|fsgnjn.q | frd frs1 frs2     31..27=0x04 14..12=1  r+3f   | rv32q rv64q rv128q
-|fsgnjx.q | frd frs1 frs2     31..27=0x04 14..12=2  r+3f   | rv32q rv64q rv128q
-|fmin.q   | frd frs1 frs2     31..27=0x05 14..12=0  r+3f   | rv32q rv64q rv128q
-|fmax.q   | frd frs1 frs2     31..27=0x05 14..12=1  r+3f   | rv32q rv64q rv128q
-|fcvt.s.q | frd frs1 24..20=3 31..27=0x08 rm        r·m+ff | rv32q rv64q rv128q
-|fcvt.q.s | frd frs1 24..20=0 31..27=0x08 rm        r·m+ff | rv32q rv64q rv128q
-|fcvt.d.q | frd frs1 24..20=3 31..27=0x08 rm        r·m+ff | rv32q rv64q rv128q
-|fcvt.q.d | frd frs1 24..20=1 31..27=0x08 rm        r·m+ff | rv32q rv64q rv128q
-|fsqrt.q  | frd frs1 24..20=0 31..27=0x0B rm        r·m+ff | rv32q rv64q rv128q
-|fle.q    | rd frs1 frs2      31..27=0x14 14..12=0  r+rff  | rv32q rv64q rv128q
-|flt.q    | rd frs1 frs2      31..27=0x14 14..12=1  r+rff  | rv32q rv64q rv128q
-|feq.q    | rd frs1 frs2      31..27=0x14 14..12=2  r+rff  | rv32q rv64q rv128q
-|fcvt.w.q | rd frs1  24..20=0 31..27=0x18 rm        r·m+rf | rv32q rv64q rv128q
-|fcvt.wu.q| rd frs1  24..20=1 31..27=0x18 rm        r·m+rf | rv32q rv64q rv128q
-|fcvt.q.w | frd rs1  24..20=0 31..27=0x1A rm        r·m+fr | rv32q rv64q rv128q
-|fcvt.q.wu| frd rs1  24..20=1 31..27=0x1A rm        r·m+fr | rv32q rv64q rv128q
-|fclass.q | rd frs1  24..20=0 31..27=0x1C 14..12=1  r+rf   | rv32q rv64q rv128q
+|flq      | frd rs1       oimm12  | i+lf   | rv32q rv64q rv128q
+|fsq      | rs1 frs2      simm12  | s+f    | rv32q rv64q rv128q
+|fmadd.q  | frd frs1 frs2 frs3 rm | r4·m   | rv32q rv64q rv128q
+|fmsub.q  | frd frs1 frs2 frs3 rm | r4·m   | rv32q rv64q rv128q
+|fnmsub.q | frd frs1 frs2 frs3 rm | r4·m   | rv32q rv64q rv128q
+|fnmadd.q | frd frs1 frs2 frs3 rm | r4·m   | rv32q rv64q rv128q
+|fadd.q   | frd frs1 frs2     rm  | r·m+3f | rv32q rv64q rv128q
+|fsub.q   | frd frs1 frs2     rm  | r·m+3f | rv32q rv64q rv128q
+|fmul.q   | frd frs1 frs2     rm  | r·m+3f | rv32q rv64q rv128q
+|fdiv.q   | frd frs1 frs2     rm  | r·m+3f | rv32q rv64q rv128q
+|fsgnj.q  | frd frs1 frs2         | r+3f   | rv32q rv64q rv128q
+|fsgnjn.q | frd frs1 frs2         | r+3f   | rv32q rv64q rv128q
+|fsgnjx.q | frd frs1 frs2         | r+3f   | rv32q rv64q rv128q
+|fmin.q   | frd frs1 frs2         | r+3f   | rv32q rv64q rv128q
+|fmax.q   | frd frs1 frs2         | r+3f   | rv32q rv64q rv128q
+|fcvt.s.q | frd frs1 rm           | r·m+ff | rv32q rv64q rv128q
+|fcvt.q.s | frd frs1 rm           | r·m+ff | rv32q rv64q rv128q
+|fcvt.d.q | frd frs1 rm           | r·m+ff | rv32q rv64q rv128q
+|fcvt.q.d | frd frs1 rm           | r·m+ff | rv32q rv64q rv128q
+|fsqrt.q  | frd frs1 rm           | r·m+ff | rv32q rv64q rv128q
+|fle.q    | rd frs1 frs2          | r+rff  | rv32q rv64q rv128q
+|flt.q    | rd frs1 frs2          | r+rff  | rv32q rv64q rv128q
+|feq.q    | rd frs1 frs2          | r+rff  | rv32q rv64q rv128q
+|fcvt.w.q | rd frs1  rm           | r·m+rf | rv32q rv64q rv128q
+|fcvt.wu.q| rd frs1  rm           | r·m+rf | rv32q rv64q rv128q
+|fcvt.q.w | frd rs1  rm           | r·m+fr | rv32q rv64q rv128q
+|fcvt.q.wu| frd rs1  rm           | r·m+fr | rv32q rv64q rv128q
+|fclass.q | rd frs1               | r+rf   | rv32q rv64q rv128q
 
 # RV64Q    "RV64Q Standard Extension for Quad-Precision Floating-Point (in addition to RV32Q)"
 
@@ -356,7 +356,7 @@
 |c.add    | crs1rd crs2          | cr        | rv32c rv64c
 |c.fsdsp  | cfrs2      cimmsdsp  | css·sdsp+f | rv32c rv64c
 |c.swsp   | crs2       cimmswsp  | css·swsp  | rv32c rv64c
-|c.fswsp  | cfrs2      cimmswsp  | css·swsp+f rv32c
+|c.fswsp  | cfrs2      cimmswsp  | css·swsp+f | rv32c
 
 # RV64C    "RV64C Standard Extension for Compressed Instructions (in addition to RV32C)"
 
