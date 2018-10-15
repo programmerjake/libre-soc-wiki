@@ -311,19 +311,13 @@ as follows.
         preg = fp_pred_reg[rd]
 
     for (int i=0; i<vl; ++i)
-        predidx = preg[rd].predidx; // the indirection takes place HERE
-        if (!preg[rd].enabled)
-            predicate = ~0x0; // all parallel ops enabled
-        else:
-            predicate = intregfile[predidx]; // get actual reg contents HERE
-            if (preg[rd].inv) // invert if requested
-                predicate = ~predicate;
+        predicate, zeroing = get_pred_val(type(iop) == INT, rd):
         if (predicate && (1<<i))
            (d ? regfile[rd+i] : regfile[rd]) =
             iop(s1 ? regfile[rs1+i] : regfile[rs1],
                 s2 ? regfile[rs2+i] : regfile[rs2]); // for insts with 2 inputs
-        else if (preg[rd].zero)
-            // TODO: place zero in dest reg
+        else if (zeroing)
+           (d ? regfile[rd+i] : regfile[rd]) = 0
 
 Note:
 
@@ -338,6 +332,9 @@ If written as a function, obtaining the predication mask (and whether
 zeroing takes place) may be done as follows:
 
     def get_pred_val(bool is_fp_op, int reg):
+       tb = int_reg if is_fp_op else fp_reg
+       if (!tb[reg].enabled):
+          return ~0x0, False       // all enabled; no zeroing
        tb = int_pred if is_fp_op else fp_pred
        if (!tb[reg].enabled):
           return ~0x0, False       // all enabled; no zeroing
@@ -347,6 +344,15 @@ zeroing takes place) may be done as follows:
           predicate = ~predicate   // invert ALL bits
        return predicate, tb[reg].zero
 
+Note here, critically, that **only** if the register is marked
+in its CSR **register** table entry as being "active" does the testing
+proceed further to check if the CSR **predicate** table entry is
+also active.
+
+Note also that this is in direct contrast to branch operations
+for the storage of comparisions: in these specific circumstances
+the requirement for there to be an active CSR *register* entry
+is removed.
 
 # Instruction Execution Order
 
@@ -512,6 +518,13 @@ Notes:
 TODO: predication now taken from src2.  also branch goes ahead
 if all compares are successful.
 
+Note also that where normally, predication requires that there must
+also be a CSR register entry for the register being used in order
+for the **predication** CSR register entry to also be active,
+for branches this is **not** the case.  src2 does **not** have
+to have its CSR register entry marked as active in order for
+predication on src2 to be active.
+
 ### Floating-point Comparisons
 
 There does not exist floating-point branch operations, only compare.
@@ -529,30 +542,22 @@ had "invert" added to it.
 
 ### Compressed Branch Instruction
 
-Compressed Branch instructions are likewise re-interpreted as predicated
-2-register operations, with the result going into rd.  All the bits of
-the immediate are re-interpreted for different purposes, to extend the
-number of comparator operations to beyond the original specification,
-but also to cater for floating-point comparisons as well as integer ones.
+Compressed Branch instructions are, just like standard Branch instructions,
+reinterpreted to be vectorised and predicated based on the source register
+(rs1s) CSR entries.  As however there is only the one source register,
+given that c.beqz a10 is equivalent to beqz a10,x0, the optional target
+to store the results of the comparisions is taken from CSR predication
+table entries for **x0**.
 
-[[!table  data="""
-15..13 | 12...10  | 9..7 | 6..5  | 4..2 | 1..0 | name |
-funct3 | imm      | rs10 | imm   |      | op   |      |
-3      | 3        | 3    | 2     |  3   | 2    |      |
-C.BPR  | pred rs3 | src1 | I/F B | src2 | C1   |      |
-110    | pred rs3 | src1 | I/F 0 | src2 | C1   | P.EQ |
-111    | pred rs3 | src1 | I/F 0 | src2 | C1   | P.NE |
-110    | pred rs3 | src1 | I/F 1 | src2 | C1   | P.LT |
-111    | pred rs3 | src1 | I/F 1 | src2 | C1   | P.LE |
-"""]]
+The specific required use of x0 is, with a little thought, quite obvious,
+but is counterintuitive.  Clearly it is **not** recommended to redirect
+x0 with a CSR register entry, however as a means to opaquely obtain
+a predication target it is the only sensible option that does not involve
+additional special CSRs (or, worse, additional special opcodes).
 
-Notes:
-
-* Bits 5 13 14 and 15 make up the comparator type
-* Bit 6 indicates whether to use integer or floating-point comparisons
-* In both floating-point and integer cases there are four predication
-  comparators: EQ/NEQ/LT/LE (with GT and GE being synthesised by inverting
-  src1 and src2).
+Note also that, just as with standard branches, the 2nd source
+(in this case x0 rather than src2) does **not** have to have its CSR
+register table marked as "active" in order for predication to work.
 
 ## Vectorised Dual-operand instructions
 
