@@ -60,17 +60,79 @@ when to parallelise operations **entirely to the implementor**.
 
 # CSRs <a name="csrs"></a>
 
-There are two CSR key-value stores needed to create lookup tables which
-are used at the register decode phase.
+For U-Mode there are two CSR key-value stores needed to create lookup
+tables which are used at the register decode phase.
 
-* A register CSR key-value table
-* A predication CSR key-value table
+* A register CSR key-value table (8 32-bit CSRs of 2 16-bits each)
+* A predication CSR key-value table (again, 8 32-bit CSRs of 2 16-bits each)
 
-There are also three CSRS:
+There are also four additional CSRs for User-Mode:
 
-* MAXVECTORLENGTH (the Maximum Vector Length)
+* CFG subsets the CSR tables
+* MVL (the Maximum Vector Length)
 * VL (which has different characteristics from standard CSRs)
-* STATE (useful for saving and restoring during context switch)
+* STATE (useful for saving and restoring during context switch,
+  and for providing fast transitions)
+
+There are also three additional CSRs for Supervisor-Mode:
+
+* SMVL
+* SVL
+* SSTATE
+
+And likewise for M-Mode:
+
+* MMVL
+* MVL
+* MSTATE
+
+Both Supervisor and M-Mode have their own (small) CSR register and
+predication tables of only 4 entries each.
+
+## CFG
+
+This CSR may be used to switch between subsets of the CSR Register and
+Predication Tables: it is kept to 5 bits so that a single CSRRWI instruction
+can be used.  A setting of all ones is reserved to indicate that SimpleV
+is disabled.
+
+| (4..3) | (2...0) |
+| ------ | ------- |
+| size   | bank    |
+
+Bank is 3 bits in size, and indicates the starting index of the CSR
+entries that are "enabled".  Given that each CSR table row is 16 bits
+and contains 2 CAM entries each, there are only 8 CSRs to cover in
+each table, so 8 bits is sufficient.
+
+Size is 2 bits.  With the exception of when bank == 7 and size == 3,
+the number of elements enabled is taken by right-shifting 2 by size:
+
+| size   | elements |
+| ------ | -------- |
+| 0      | 2        |
+| 1      | 4        |
+| 2      | 8        |
+| 3      | 16       |
+
+Given that there are 2 16-bit CAM entries per CSR table row, this
+may also be viewed as the number of CSR rows to enable, by raising size to
+the power of 2.
+
+Examples:
+
+* When bank = 0 and size = 3, SVREGCFG0 through to SVREGCFG7 are
+  enabled, and SVPREDCFG0 through to SVPREGCFG7 are enabled.
+* When bank = 1 and size = 3, SVREGCFG1 through to SVREGCFG7 are
+  enabled, and SVPREDCFG1 through to SVPREGCFG7 are enabled.
+* When bank = 3 and size = 0, SVREGCFG3 and SVPREDCFG3 are enabled.
+* When bank = 3 and size = 0, SVREGCFG3 and SVPREDCFG3 are enabled.
+* When bank = 7 and size = 1, SVREGCFG7 and SVPREDCFG7 are enabled.
+* When bank = 7 and size = 3, SimpleV is entirely disabled.
+
+In this way it is possible to enable and disable SimpleV with a
+single instruction, and, furthermore, on context-switching the quantity
+of CSRs to be saved and restored is greatly reduced.
 
 ## MAXVECTORLENGTH
 
