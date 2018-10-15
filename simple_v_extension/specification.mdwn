@@ -886,4 +886,11 @@ for element-grouping, if there is unused space within a register
 idea: have an additional set of register CSRs that indicate that, instead of
 a straight 1D linear relationship, the element index is put through
 a (reasonably simple) 2D processing algorithm.  in this way, 4x3 blocks
-of registers can have the ordering changed to 3x4 for example.
+of registers can have the ordering changed to 3x4 for example:
+
+    xdim = CSRtb[reg].x_sz
+    ydim = CSRtb[reg].y_sz
+
+    for idx in range(VL):
+        new_idx = (idx % xdim) * ydim + (idx / xdim)
+
