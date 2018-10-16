@@ -495,20 +495,31 @@ shows this more clearly, and may be executed as a python program:
 
 Here, it is assumed that this algorithm be run within all pseudo-code
 throughout this document where a (parallelism) for-loop would normally
-run from 0 to VL-1 and then use that to refer to contiguous register
+run from 0 to VL-1 to refer to contiguous register
 elements; instead, where REMAP indicates to do so, the element index
 is run through the above algorithm to work out the **actual** element
-index.  Given that there are three possible SHAPE entries, up to
+index, instead.  Given that there are three possible SHAPE entries, up to
 three separate registers in any given operation may be simultaneously
-remapped.
+remapped:
 
-In this way, 2D matrices may be transposed "in-place" for one operation,
-followed by setting a different permutation order without having to
-move the values in the registers to or from memory.  Also, the reason
-for having REMAP separate from the three SHAPE CSRs is so that in a
-chain of matrix multiplications and additions, for example, the SHAPE
-CSRs need only be set up once; only the REMAP CSR need be changed to
-target different
+    function op_add(rd, rs1, rs2) # add not VADD!
+      ...
+      ...
+      for (i = 0; i < VL; i++)
+        if (predval & 1<<i) # predication uses intregs
+           ireg[rd+remap(id)] <= ireg[rs1+remap(irs1)] +
+                                 ireg[rs2+remap(irs2)];
+        if (int_vec[rd ].isvector)  { id += 1; }
+        if (int_vec[rs1].isvector)  { irs1 += 1; }
+        if (int_vec[rs2].isvector)  { irs2 += 1; }
+
+By changing remappings, 2D matrices may be transposed "in-place" for one
+operation, followed by setting a different permutation order without
+having to move the values in the registers to or from memory.  Also,
+the reason for having REMAP separate from the three SHAPE CSRs is so
+that in a chain of matrix multiplications and additions, for example,
+the SHAPE CSRs need only be set up once; only the REMAP CSR need be
+changed to target different registers.
 
 Note that:
 
