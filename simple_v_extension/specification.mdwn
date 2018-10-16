@@ -108,9 +108,9 @@ is disabled.
 | size   | bank    |
 
 Bank is 3 bits in size, and indicates the starting index of the CSR
-entries that are "enabled".  Given that each CSR table row is 16 bits
-and contains 2 CAM entries each, there are only 8 CSRs to cover in
-each table, so 8 bits is sufficient.
+Register and Predication Table entries that are "enabled".  Given that
+each CSR table row is 16 bits and contains 2 CAM entries each, there
+are only 8 CSRs to cover in each table, so 8 bits is sufficient.
 
 Size is 2 bits.  With the exception of when bank == 7 and size == 3,
 the number of elements enabled is taken by right-shifting 2 by size:
@@ -141,29 +141,35 @@ In this way it is possible to enable and disable SimpleV with a
 single instruction, and, furthermore, on context-switching the quantity
 of CSRs to be saved and restored is greatly reduced.
 
-## MAXVECTORLENGTH
+## MAXVECTORLENGTH (MVL)
 
 MAXVECTORLENGTH is the same concept as MVL in RVV, except that it
 is variable length and may be dynamically set.  MAXVECTORLENGTH is
-however limited to the regfile bitwidth minus one (31 for RV32, 63 for RV64
-and so on).
+however limited to the regfile bitwidth XLEN (1-32 for RV32,
+1-64 for RV64 and so on).
 
 The reason for setting this limit is so that predication registers, when
 marked as such, may fit into a single register as opposed to fanning out
 over several registers.  This keeps the implementation a little simpler.
 
-## VSETVL (VL and CSRs)
+The other important factor to note is that the actual MVL is **offset
+by one**, so that it can fit into only 6 bits (for RV64) and still cover
+a range up to XLEN bits.  So, when setting the MVL CSR to 0, this actually
+means that MVL==1.  When setting the MVL CSR to 3, this actually means
+that MVL==4, and so on.
 
-VSETVL is slightly different from RVV.  Like RVV, VL is set to be limited
-to the MAXVECTORLENGTH, which in turn is limited to XLEN.
+## Vector Length (VL)
 
-    VL = rd = MIN(vlen, MAXVECTORLENGTH)
+VSETVL is slightly different from RVV.  Like RVV, VL is set to be within
+the range 1 <= VL <= MVL (where MVL in turn is limited to 1 <= MVL <= XLEN)
 
-where MAXVECTORLENGTH <= XLEN
+    VL = rd = MIN(vlen, MVL)
+
+where 1 <= MVL <= XLEN
 
 This allows vector LOAD/STORE to be used to switch
 the entire bank of registers using a single instruction (see Appendix,
-"Context Switch Example").  The reason for limiting VSETVL to XLEN is
+"Context Switch Example").  The reason for limiting VL to XLEN is
 down to the fact that predication bits fit into a single register of length
 XLEN bits.
 
@@ -171,11 +177,11 @@ The second change is that when VSETVL is requested to be stored
 into x0, it is *ignored* silently (VSETVL x0, x5)
 
 The third and most important change is that, within the limits set by
-MAXVECTORLENGTH, the value passed in **must** be set in VL (and in the
+MVL, the value passed in **must** be set in VL (and in the
 destination register).
 
 This has implication for the microarchitecture, as VL is required to be
-set (limits from MAXVECTORLENGTH notwithstanding) to the actual value
+set (limits from MVL notwithstanding) to the actual value
 requested.  RVV has the option to set VL to an arbitrary value that suits
 the conditions and the micro-architecture: SV does *not* permit this.
 
@@ -210,7 +216,7 @@ is limited to 0-31.
 
 This is a standard CSR that contains sufficient information for a
 full context save/restore.  It contains (and permits setting of)
-MAXVL, VL, the destination element offset of the current parallel
+MVL, VL, the destination element offset of the current parallel
 instruction being executed, and, for twin-predication, the source
 element offset as well.  Interestingly it may hypothetically
 also be used to get the immediately-following instruction to skip a
