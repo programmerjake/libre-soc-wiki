@@ -522,9 +522,9 @@ Note that:
 * Twin-predicated operations require **two** separate and distinct
   element offsets.  The above pseudo-code algorithm will be applied
   separately and independently to each, should each of the two
-  operands be remapped.  *This even includes C.LDSP* where in that case
-  it will be the offset that is remapped (see Compressed Stack LOAD/STORE
-  section).
+  operands be remapped.  *This even includes C.LDSP* and other operations
+  in that category, where in that case it will be the **offset** that is
+  remapped (see Compressed Stack LOAD/STORE section).
 * Setting the total elements (xdim+1) times (ydim+1) times (zdim+1) to
   less than MVL is **perfectly legal**, albeit very obscure.  It permits
   entries to be regularly presented to operands **more than once**, thus
