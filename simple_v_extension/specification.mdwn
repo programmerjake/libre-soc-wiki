@@ -457,12 +457,12 @@ below shows how the permutation dimensionality order works:
 
 | permute | order | array format             |
 | ------- | ----- | ------------------------ |
-| 000     | 0,1,2 | (xdim+1){ydim+1)(zdim+1) |
-| 001     | 0,2,1 | (xdim+1){zdim+1)(ydim+1) |
-| 010     | 1,0,2 | (ydim+1){xdim+1)(zdim+1) |
-| 011     | 1,2,0 | (ydim+1){zdim+1)(xdim+1) |
-| 100     | 2,0,1 | (zdim+1){xdim+1)(ydim+1) |
-| 101     | 2,1,0 | (zdim+1){ydim+1)(xdim+1) |
+| 000     | 0,1,2 | (xdim+1)(ydim+1)(zdim+1) |
+| 001     | 0,2,1 | (xdim+1)(zdim+1)(ydim+1) |
+| 010     | 1,0,2 | (ydim+1)(xdim+1)(zdim+1) |
+| 011     | 1,2,0 | (ydim+1)(zdim+1)(xdim+1) |
+| 100     | 2,0,1 | (zdim+1)(xdim+1)(ydim+1) |
+| 101     | 2,1,0 | (zdim+1)(ydim+1)(xdim+1) |
 
 In other words, the "permute" option changes the order in which
 nested for-loops over the array would be done.  The algorithm below
