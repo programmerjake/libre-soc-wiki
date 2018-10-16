@@ -419,6 +419,9 @@ is removed.
 
 ## REMAP CSR
 
+(Note: both the REMAP and SHAPE sections are best read after the
+ rest of the document has been read)
+
 There is one 32-bit CSR which may be used to indicate which registers,
 if used in any operation, must be "reshaped" (re-mapped) from a linear
 form to a 2D or 3D transposed form.  The 32-bit REMAP CSR may reshape
@@ -434,6 +437,9 @@ shape0-2 refers to one of three SHAPE CSRs.  A value of 0x3 is reserved.
 Bits 7, 15, 23, 30 and 31 are also reserved, and must be set to zero.
 
 ## SHAPE 1D/2D/3D vector-matrix remapping CSRs
+
+(Note: both the REMAP and SHAPE sections are best read after the
+ rest of the document has been read)
 
 There are three "shape" CSRs, SHAPE0, SHAPE1, SHAPE2, 32-bits in each,
 which have the same format.  When each SHAPE CSR is set entirely to zeros,
@@ -474,7 +480,7 @@ shows this more clearly, and may be executed as a python program:
     zdim = 5 # SHAPE[mapidx].zdim_sz+1
 
     lims = [xdim, ydim, zdim]
-    idxs = [0,0,0]
+    idxs = [0,0,0] # starting indices
     order = [1,0,2] # experiment with different permutations, here
 
     for idx in range(xdim * ydim * zdim):
@@ -509,6 +515,16 @@ Note that:
 * If permute option 000 is utilised, the actual order of the
   reindexing does not change!
 * If two or more dimensions are set to zero, the actual order does not change!
+* The above algorithm is pseudo-code **only**.  Actual implementations
+  will need to take into account the fact that the element for-looping
+  must be **re-entrant**, due to the possibility of exceptions occurring.
+  See MSTATE CSR, which records the current element index.
+* Twin-predicated operations require **two** separate and distinct
+  element offsets.  The above pseudo-code algorithm will be applied
+  separately and independently to each, should each of the two
+  operands be remapped.  *This even includes C.LDSP* where in that case
+  it will be the offset that is remapped (see Compressed Stack LOAD/STORE
+  section).
 * Setting the total elements (xdim+1) times (ydim+1) times (zdim+1) to
   less than MVL is **perfectly legal**, albeit very obscure.  It permits
   entries to be regularly presented to operands **more than once**, thus
