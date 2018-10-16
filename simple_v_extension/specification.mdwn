@@ -159,7 +159,14 @@ The other important factor to note is that the actual MVL is **offset
 by one**, so that it can fit into only 6 bits (for RV64) and still cover
 a range up to XLEN bits.  So, when setting the MVL CSR to 0, this actually
 means that MVL==1.  When setting the MVL CSR to 3, this actually means
-that MVL==4, and so on.
+that MVL==4, and so on.  This is expressed more clearly as follows:
+
+    set_mvl_csr(value, rd):
+        regs[rd] = MVL
+        MVL = MIN(value+1, MVL)
+
+    get_mvl_csr(rd):
+        regs[rd] = VL
 
 ## Vector Length (VL)
 
@@ -170,11 +177,22 @@ the range 1 <= VL <= MVL (where MVL in turn is limited to 1 <= MVL <= XLEN)
 
 where 1 <= MVL <= XLEN
 
-This allows vector LOAD/STORE to be used to switch
-the entire bank of registers using a single instruction (see Appendix,
-"Context Switch Example").  The reason for limiting VL to XLEN is
-down to the fact that predication bits fit into a single register of length
-XLEN bits.
+However just like MVL it is important to note that the value passed in
+to the CSR is offset by one.  This is expressed more clearly with the
+following pseudo-code:
+
+    set_vl_csr(value, rd):
+        VL = MIN(value+1, MVL)
+        regs[rd] = VL # yes returning the new value NOT the old CSR
+
+    get_vl_csr(rd):
+        regs[rd] = VL
+
+The fixed (specific) setting of VL allows vector LOAD/STORE to be used
+to switch the entire bank of registers using a single instruction (see
+Appendix, "Context Switch Example").  The reason for limiting VL to XLEN
+is down to the fact that predication bits fit into a single register of
+length XLEN bits.
 
 The second change is that when VSETVL is requested to be stored
 into x0, it is *ignored* silently (VSETVL x0, x5)
@@ -234,10 +252,30 @@ The format of the SVSTATE CSR is as follows:
 
 When setting this CSR, the following characteristics will be enforced:
 
-* **MAXVL** will be truncated to be within the range 0 to XLEN-1
-* **VL** will be truncated to be within the range 0 to MAXVL
-* **srcoffs** will be truncated to be within the range 0 to VL
-* **destoffs** will be truncated to be within the range 0 to VL
+* **MAXVL** will be truncated (after offset) to be within the range 1 to XLEN
+* **VL** will be truncated (after offset) to be within the range 1 to MAXVL
+* **srcoffs** will be truncated to be within the range 0 to VL-1
+* **destoffs** will be truncated to be within the range 0 to VL-1
+
+Just as with setting VL and MVL, the values from the CSR (on setting)
+must be offset by one, however note specifically the differences
+in what is returned:
+
+    set_state_csr(value, rd):
+        old_value = (MVL-1) | (VL-1)<<6 | (srcoffs)<<12 | (destoffs)<<18
+        MVL = set_mvl_csr(value[11:6])
+        VL = set_vl_csr(value[5:0])
+        destoffs = value[23:18]>>18
+        srcoffs = value[23:18]>>12
+        regs[rd] = old_value
+
+    get_state_csr(rd):
+        regs[rd] = (MVL-1) | (VL-1)<<6 | (srcoffs)<<12 | (destoffs)<<18
+
+In both cases, whilst CSR read of VL and MVL return the exact values
+of VL and MVL respectively, reading and writing the STATE CSR returns
+those values **minus one**.  This is absolutely critical to implement
+if the STATE CSR is to be used for fast context-switching.
 
 ## Register CSR key-value (CAM) table
 
