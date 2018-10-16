@@ -28,8 +28,10 @@ for redirection.  When such a tagged register is used in any instruction,
 it indicates that the PC shall **not** be incremented; instead a loop
 is activated where *multiple* instructions are issued to the pipeline
 (as determined by a length CSR), with contiguously incrementing register
-numbers starting from the tagged register.  Thus Simple-V effectively sits
-(slots) *in between* the instruction decode phase and the ALU(s).
+numbers starting from the tagged register.  When the last "element"
+has been reached, only then is the PC permitted to move onn.  Thus
+Simple-V effectively sits (slots) *in between* the instruction decode phase
+and the ALU(s).
 
 The barrier to entry with SV is therefore very low.  The minimum is
 software-emulation (traps), requiring only the CSRs and CSR tables, and that
@@ -50,6 +52,7 @@ To emphasise that clearly: Simple-V (SV) is *not*:
 * A SIMT system
 * A Vectorisation Microarchitecture
 * A microarchitecture of any specific kind
+* A mandary parallel processor microarchitecture of any kind
 * A supercomputer extension
 
 SV does **not** tell implementors how or even if they should implement
@@ -1017,6 +1020,60 @@ is set, the predication register itself could hypothetically be passed
 in as a *parameter* to the HINT operation.
 
 No specific hints are yet defined in Simple-V
+
+# Subsets of RV functionality
+
+This section describes the differences when SV is implemented on top of
+different subsets of RV.
+
+## Common options
+
+It is permitted to limit the size of either (or both) the register files
+down to the original size of the standard RV architecture.  However, below
+the mandatory limits set in the RV standard will result in non-compliance
+with the SV Specification.
+
+## RV32 / RV32F
+
+When RV32 or RV32F is implemented, XLEN is set to 32, and thus the
+maximum limit for predication is also restricted to 32 bits.  Whilst not
+actually specifically an "option" it is worth noting.
+
+## RV32G
+
+Normally in standard RV32 it does not make much sense to have
+RV32G, however it is automatically implied to exist in RV32+SV due to
+the option for the element width to be doubled.  This may be sufficient
+for implementors, such that actually needing RV32G itself (which makes
+no sense given that the RV32 integer register file is 32-bit) may be
+redundant.
+
+It is a strange combination that may make sense on closer inspection,
+particularly given that under the standard RV32 system many of the opcodes
+to convert and sign-extend 64-bit integers to 64-bit floating-point will
+be missing, as they are assumed to only be present in an RV64 context.
+
+## RV32
+
+When floating-point is not implemented, the size of the User Register and
+Predication CSR tables may be halved, to only 4 2x16-bit CSRs (8 entries
+per table).
+
+## RV32E
+
+In embedded scenarios the User Register and Predication CSRs may be
+dropped entirely, or optionally limited to 1 CSR, such that the combined
+number of entries from the M-Mode CSR Register table plus U-Mode
+CSR Register table is either 4 16-bit entries or (if the U-Mode is
+zero) only 2 16-bit entries (M-Mode CSR table only).  Likewise for
+the Predication CSR tables.
+
+## RV128
+
+RV128 has not been especially considered, here, however it has some
+extremely large possibilities: double the element width implies
+256-bit operands, spanning 2 128-bit registers each, and predication
+of total length 128 bit given that XLEN is now 128.
 
 # Under consideration <a name="issues"></a>
 
