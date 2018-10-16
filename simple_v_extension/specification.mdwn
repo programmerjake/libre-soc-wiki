@@ -66,9 +66,12 @@ when to parallelise operations **entirely to the implementor**.
 For U-Mode there are two CSR key-value stores needed to create lookup
 tables which are used at the register decode phase.
 
-* A register CSR key-value table (8 32-bit CSRs of 2 16-bits each)
+* A register CSR key-value table (typically 8 32-bit CSRs of 2 16-bits each)
 * A predication CSR key-value table (again, 8 32-bit CSRs of 2 16-bits each)
-* A "reshaping"
+* Small U-Mode and S-Mode register and predication CSR key-value tables
+  (2 16-bit entries each).
+* An optional "reshaping" CSR key-value table which remaps from a 1D
+  linear shape to 2D or 3D, including full transposition.
 
 There are also four additional CSRs for User-Mode:
 
@@ -1053,7 +1056,7 @@ particularly given that under the standard RV32 system many of the opcodes
 to convert and sign-extend 64-bit integers to 64-bit floating-point will
 be missing, as they are assumed to only be present in an RV64 context.
 
-## RV32
+## RV32 (not RV32F / RV32G) and RV64 (not RV64F / RV64G)
 
 When floating-point is not implemented, the size of the User Register and
 Predication CSR tables may be halved, to only 4 2x16-bit CSRs (8 entries
