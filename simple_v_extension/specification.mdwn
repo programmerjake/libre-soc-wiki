@@ -1068,6 +1068,10 @@ CSR Register table is either 4 16-bit entries or (if the U-Mode is
 zero) only 2 16-bit entries (M-Mode CSR table only).  Likewise for
 the Predication CSR tables.
 
+RV32E is the most likely candidate for simply detecting that registers
+are marked as "vectorised", and generating an appropriate exception
+for the VL loop to be implemented in software.
+
 ## RV128
 
 RV128 has not been especially considered, here, however it has some
