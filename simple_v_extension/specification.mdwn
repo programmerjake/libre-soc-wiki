@@ -29,18 +29,21 @@ it indicates that the PC shall **not** be incremented; instead a loop
 is activated where *multiple* instructions are issued to the pipeline
 (as determined by a length CSR), with contiguously incrementing register
 numbers starting from the tagged register.  When the last "element"
-has been reached, only then is the PC permitted to move onn.  Thus
+has been reached, only then is the PC permitted to move on.  Thus
 Simple-V effectively sits (slots) *in between* the instruction decode phase
 and the ALU(s).
 
-The barrier to entry with SV is therefore very low.  The minimum is
-software-emulation (traps), requiring only the CSRs and CSR tables, and that
-an exception be thrown if an instruction is detected to have been
-parallelised.  The looping that would otherwise be done in hardware is
-thus carried out in software, instead.  Whilst much slower, it is "compliant"
-with the SV specification, and may be suited for implementation in RV32E
-and also in situations where the implementor wishes to focus on certain
-aspects of SV, whilst also conforming strictly with the API.
+The barrier to entry with SV is therefore very low.  The minimum
+compliantt implementation is software-emulation (traps), requiring
+only the CSRs and CSR tables, and that an exception be thrown if an
+instruction's registers are detected to have been tagged.  The looping
+that would otherwise be done in hardware is thus carried out in software,
+instead.  Whilst much slower, it is "compliant" with the SV specification,
+and may be suited for implementation in RV32E and also in situations
+where the implementor wishes to focus on certain aspects of SV, without
+unnecessary time and resources into the silicon, whilst also conforming
+strictly with the API.  A good area to punt to software would be the
+polymorphic element width capability for example.
 
 Hardware Parallelism, if any, is therefore added at the implementor's
 discretion to turn what would otherwise be a sequential loop into a
@@ -58,8 +61,8 @@ To emphasise that clearly: Simple-V (SV) is *not*:
 SV does **not** tell implementors how or even if they should implement
 parallelism: it is a hardware "API" (Application Programming Interface)
 that, if implemented, presents a uniform and consistent way to *express*
-parallelism, at the same time leaving the choice of if, how, how much and
-when to parallelise operations **entirely to the implementor**.
+parallelism, at the same time leaving the choice of if, how, how much,
+when and whether to parallelise operations **entirely to the implementor**.
 
 # CSRs <a name="csrs"></a>
 
