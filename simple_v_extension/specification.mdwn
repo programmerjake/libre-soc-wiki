@@ -65,6 +65,7 @@ tables which are used at the register decode phase.
 
 * A register CSR key-value table (8 32-bit CSRs of 2 16-bits each)
 * A predication CSR key-value table (again, 8 32-bit CSRs of 2 16-bits each)
+* A "reshaping"
 
 There are also four additional CSRs for User-Mode:
 
@@ -416,6 +417,111 @@ for the storage of comparisions: in these specific circumstances
 the requirement for there to be an active CSR *register* entry
 is removed.
 
+## REMAP CSR
+
+There is one 32-bit CSR which may be used to indicate which registers,
+if used in any operation, must be "reshaped" (re-mapped) from a linear
+form to a 2D or 3D transposed form.  The 32-bit REMAP CSR may reshape
+up to 3 registers:
+
+| 29..28 | 27..26 | 25..24 | 23 | 22..16  | 15 | 14..8   | 7  | 6..0    |
+| ------ | ------ | ------ | -- | ------- | -- | ------- | -- | ------- |
+| shape2 | shape1 | shape0 | 0  | regidx2 | 0  | regidx1 | 0  | regidx0 |
+
+regidx0-2 refer not to the Registe CSR CAM entry but to the underlying
+*real* register (see regidx, the value) and consequently is 7-bits wide.
+shape0-2 refers to one of three SHAPE CSRs.  A value of 0x3 is reserved.
+Bits 7, 15, 23, 30 and 31 are reserved, and must be set to zero.
+
+## SHAPE 1D/2D/3D vector-matrix remapping CSRs
+
+There are three "shape" CSRs, SHAPE0, SHAPE1, SHAPE2, 32-bits in each,
+which have the same format.  When each SHAPE CSR is set entirely to zeros,
+remapping is disabled: the register's elements are a linear (1D) vector.
+
+| 26..24  | 23 | 22..16  | 15 | 14..8   | 7  | 6..0    |
+| ------- | -- | ------- | -- | ------- | -- | ------- |
+| permute | 0  | zdimsz  | 0  | ydimsz  | 0  | xdimsz  |
+
+xdimsz, ydimsz and zdimsz are offset by 1, such that a value of 0 indicates
+that the array dimensionality for that dimension is 1.  A value of xdimsz=2
+would indicate that in the first dimension there are 3 elements in the
+array.  The format of the array is therefore as follows:
+
+    array[xdim+1][ydim+1][zdim+1]
+
+However whilst illustrative of the dimensionality, that does not take the
+"permute" setting into account.  "permute" may be any one of six values
+(0-5, with values of 6 and 7 being reserved, and not legal).  The table
+below shows how the permutation dimensionality order works:
+
+| permute | order | array format             |
+| ------- | ----- | ------------------------ |
+| 000     | 0,1,2 | (xdim+1){ydim+1)(zdim+1) |
+| 001     | 0,2,1 | (xdim+1){zdim+1)(ydim+1) |
+| 010     | 1,0,2 | (ydim+1){xdim+1)(zdim+1) |
+| 011     | 1,2,0 | (ydim+1){zdim+1)(xdim+1) |
+| 100     | 2,0,1 | (zdim+1){xdim+1)(ydim+1) |
+| 101     | 2,1,0 | (zdim+1){ydim+1)(xdim+1) |
+
+In other words, the "permute" option changes the order in which
+nested for-loops over the array would be done.  The algorithm below
+shows this more clearly, and may be executed as a python program:
+
+    # mapidx = REMAP.shape2
+    xdim = 3 # SHAPE[mapidx].xdim_sz+1
+    ydim = 4 # SHAPE[mapidx].ydim_sz+1
+    zdim = 5 # SHAPE[mapidx].zdim_sz+1
+
+    lims = [xdim, ydim, zdim]
+    idxs = [0,0,0]
+    order = [1,0,2]
+
+    for idx in range(xdim * ydim * zdim):
+        new_idx = idxs[0] + idxs[1] * xdim + idxs[2] * xdim * ydim
+        print new_idx,
+        for i in range(3):
+            idxs[order[i]] = idxs[order[i]] + 1
+            if (idxs[order[i]] != lims[order[i]]):
+                break
+            print
+            idxs[order[i]] = 0
+
+Here, it is assumed that this algorithm be run within all pseudo-code
+throughout this document where a (parallelism) for-loop would normally
+run from 0 to VL-1 and then use that to refer to contiguous register
+elements; instead, where REMAP indicates to do so, the element index
+is run through the above algorithm to work out the **actual** element
+index.  Given that there are three possible SHAPE entries, up to
+three separate registers in any given operation may be simultaneously
+remapped.
+
+In this way, 2D matrices may be transposed "in-place" for one operation,
+followed by setting a different permutation order without having to
+move the values in the registers to or from memory.  Also, the reason
+for having REMAP separate from the three SHAPE CSRs is so that in a
+chain of matrix multiplications and additions, for example, the SHAPE
+CSRs need only be set up once; only the REMAP CSR need be changed to
+target different
+
+Note that:
+
+* If permute option 000 is utilised, the actual order of the
+  reindexing does not change!
+* If two or more dimensions are set to zero, the actual order does not change!
+* Setting the total elements (xdim+1) times (ydim+1) times (zdim+1) to
+  less than MVL is **perfectly legal**, albeit very obscure.  It permits
+  entries to be regularly presented to operands **more than once**, thus
+  allowing the same underlying registers to act as an accumulator of
+  multiple vector or matrix operations, for example.
+
+Clearly here some considerable care needs to be taken as the remapping
+could hypothetically create arithmetic operations that target the
+exact same underlying registers, resulting in data corruption due to
+pipeline overlaps.  Out-of-order / Superscalar micro-architectures with
+register-renaming will have an easier time dealing with this than
+DSP-style SIMD micro-architectures.
+
 # Instruction Execution Order
 
 Simple-V behaves as if it is a hardware-level "macro expansion system",
@@ -483,6 +589,22 @@ challenging, all RV-Base instructions are parallelised:
 All other operations using registers are automatically parallelised.
 This includes AMOMAX, AMOSWAP and so on, where particular care and
 attention must be paid.
+
+Example pseudo-code for an integer ADD operation (including scalar operations).
+Floating-point uses fp csrs.
+
+    function op_add(rd, rs1, rs2) # add not VADD!
+      int i, id=0, irs1=0, irs2=0;
+      predval = get_pred_val(FALSE, rd);
+      rd  = int_vec[rd ].isvector ? int_vec[rd ].regidx : rd;
+      rs1 = int_vec[rs1].isvector ? int_vec[rs1].regidx : rs1;
+      rs2 = int_vec[rs2].isvector ? int_vec[rs2].regidx : rs2;
+      for (i = 0; i < VL; i++)
+        if (predval & 1<<i) # predication uses intregs
+           ireg[rd+id] <= ireg[rs1+irs1] + ireg[rs2+irs2];
+        if (int_vec[rd ].isvector)  { id += 1; }
+        if (int_vec[rs1].isvector)  { irs1 += 1; }
+        if (int_vec[rs2].isvector)  { irs2 += 1; }
 
 ## Instruction Format
 
@@ -880,17 +1002,4 @@ for element-grouping, if there is unused space within a register
 * The unused elements in a floating-point register are treated as-if
   they are set to all ones on write and are ignored on read, matching the
   existing standard for storing smaller FP values in larger registers.
-
-## 2D remapping
-
-idea: have an additional set of register CSRs that indicate that, instead of
-a straight 1D linear relationship, the element index is put through
-a (reasonably simple) 2D processing algorithm.  in this way, 4x3 blocks
-of registers can have the ordering changed to 3x4 for example:
-
-    xdim = CSRtb[reg].x_sz
-    ydim = CSRtb[reg].y_sz
-
-    for idx in range(VL):
-        new_idx = (idx % xdim) * ydim + (idx / xdim)
 
