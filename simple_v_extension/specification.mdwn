@@ -1140,6 +1140,170 @@ during the hardware loop, **not** the offset.
 Element bitwidth is best covered as its own special section, as it
 is quite involved and applies uniformly across-the-board.
 
+The effect of setting an element bitwidth is to re-cast the register
+table to a completely different width.  In c-style terms, on an
+RV64 architecture, effectively each register looks like this:
+
+    typedef union {
+        uint8_t  b[8];
+        uint16_t s[4];
+        uint32_t i[2];
+        uint64_t l[1];
+    } reg_t;
+
+    // integer table: assume maximum SV 7-bit regfile size
+    reg_t int_regfile[128];
+
+However this hides the fact that setting VL greater than 8, for example,
+when the bitwidth is 8, accessing one specific register "spills over"
+to the following parts of the register file in a sequential fashion.
+So a much more accurate way to reflect this would be:
+
+    typedef union {
+        uint8_t  actual_register_bytes[8];
+        uint8_t  *b;
+        uint16_t *s;
+        uint32_t *i;
+        uint64_t *l;
+        uint128_t *d;
+    } reg_t;
+
+    reg_t int_regfile[128];
+
+Where it is up to the implementor to ensure that, towards the end
+of the register file, an exception is thrown if attempts to access
+beyond the "real" register bytes is ever attempted.
+
+Now we may pseudo-code an operation where all element bitwidths have
+been set to the same size:
+
+    function op_add(rd, rs1, rs2) # add not VADD!
+      ...
+      ...
+      for (i = 0; i < VL; i++)
+        if (predval & 1<<i) # predication uses intregs
+           // TODO, calculate if over-run occurs, for each elwidth
+           if (elwidth == 8) {
+               int_regfile[rd].b[id] <= int_regfile[rs1].i[irs1] +
+                                        int_regfile[rs2].i[irs2];
+            } else if elwidth == 16 {
+               int_regfile[rd].s[id] <= int_regfile[rs1].s[irs1] +
+                                        int_regfile[rs2].s[irs2];
+            } else if elwidth == 32 {
+               int_regfile[rd].i[id] <= int_regfile[rs1].i[irs1] +
+                                        int_regfile[rs2].i[irs2];
+            } else { // elwidth == 64
+               int_regfile[rd].l[id] <= int_regfile[rs1].l[irs1] +
+                                        int_regfile[rs2].l[irs2];
+            }
+        if (int_vec[rd ].isvector)  { id += 1; }
+        if (int_vec[rs1].isvector)  { irs1 += 1; }
+        if (int_vec[rs2].isvector)  { irs2 += 1; }
+
+So here we can see clearly: for 8-bit entries rd, rs1 and rs2 (and registers
+following sequentially on respectively from the same) are "type-cast"
+to 8-bit; for 16-bit entries likewise and so on.
+
+However that only covers the case where the element widths are the same.
+Where the element widths are different, the following algorithm applies:
+
+* Analyse the bitwidth of all source operands and work out the
+  maximum.  Record this as "maxsrcbitwidth"
+* If any given source operand requires sign-extension or zero-extension
+  (ldb, div, rem, mul, sll, srl, sra etc.), instead of mandatory 32-bit
+  sign-extension / zero-extension or whatever is specified in the standard
+  RV specification, **change** that to sign-extending from the individual
+  source operand's over-ridden bitwidth out to "maxsrcbitwidth", instead.
+* Following separate and distinct (optional) sign/zero-extension of all
+  source operands, carry out the operation at "maxsrcbitwidth".  In the
+  case of LOAD/STORE or MV this may be a "null" (copy) operation.
+* If the destination operand requires sign-extension or zero-extension,
+  instead of a mandatory fixed size (typically 32-bit for arithmetic,
+  for subw for example, and otherwise various: 8-bit for sb, 16-bit for sw
+  etc.), overload the RV specification with the bitwidth from the
+  destination register's elwidth entry.
+* Finally, store the (optionally) sign/zero-extended value into its
+  destination: memory for sb/sw etc., or an offset section of the register
+  file for an arithmetic operation.
+
+In this way, polymorphic bitwidths are achieved without requiring a
+massive 64-way permutation of calculations **per opcode**, for example
+(4 possible rs1 bitwidths times 4 possible rs2 bitwidths times 4 possible
+rd bitwidths).  The pseudo-code is therefore as follows:
+
+    typedef union {
+        uint8_t  b;
+        uint16_t s;
+        uint32_t i;
+        uint64_t l;
+    } el_reg_t;
+
+    get_max_elwidth(rs1, rs2):
+        return max(int_csr[rs1].elwidth, # default (XLEN) if not set
+                   int_csr[rs2].elwidth) # again XLEN if no entry
+
+    get_polymorphed_reg(reg, bitwidth, offset):
+        el_reg_t res;
+        res.l = 0; // TODO: going to need sign-extending / zero-extending
+        if bitwidth == 8:
+            reg.b = int_regfile[reg].b[offset]
+        elif bitwidth == 16:
+            reg.s = int_regfile[reg].s[offset]
+        elif bitwidth == 32:
+            reg.i = int_regfile[reg].i[offset]
+        elif bitwidth == 64:
+            reg.l = int_regfile[reg].l[offset]
+        return res
+
+    set_polymorphed_reg(reg, bitwidth, offset, val):
+        if bitwidth == 8:
+            int_regfile[reg].b[offset] = val
+        elif bitwidth == 16:
+            int_regfile[reg].s[offset] = val
+            reg.s = int_regfile[reg].s[offset]
+        elif bitwidth == 32:
+            int_regfile[reg].i[offset] = val
+        elif bitwidth == 64:
+            int_regfile[reg].l[offset] = val
+
+      maxsrcwid =  get_max_elwidth(rs1, rs2) # source element width(s)
+      destwid = int_csr[rs1].elwidth         # destination element width
+      for (i = 0; i < VL; i++)
+        if (predval & 1<<i) # predication uses intregs
+           // TODO, calculate if over-run occurs, for each elwidth
+           src1 = get_polymorphed_reg(rs1, maxsrcwid, irs1)
+           // TODO, sign/zero-extend src1 and src2 as operation requires
+           if (op_requires_sign_extend_src1)
+              src1 = sign_extend(src1, maxsrcwid)
+           src2 = get_polymorphed_reg(rs2, maxsrcwid, irs2)
+           result = src1 + src2 # actual add here
+           // TODO, sign/zero-extend result, as operation requires
+           if (op_requires_sign_extend_dest)
+              result = sign_extend(result, maxsrcwid)
+           set_polymorphed_reg(rd, destwid, ird, result)
+        if (int_vec[rd ].isvector)  { id += 1; }
+        if (int_vec[rs1].isvector)  { irs1 += 1; }
+        if (int_vec[rs2].isvector)  { irs2 += 1; }
+
+Whilst sign-extension and zero-extension implementations are left out
+due to each operation being different, the above should be clear that;
+
+* the source operands are extended out to the maximum bitwidth of all
+  source operands
+* the operation takes place at that bitwidth
+* the result is extended (or potentially even, truncated) before being
+  stored in the destination.
+
+For floating-point operations, the conversion takes place without
+raising any kind of exception.  Exactly as specified in the standard
+RV specification, NAN (or appropriate) is stored if the result
+is beyond the range of the destination, and, again, exactly as
+with the standard RV specification just as with scalar
+operations, the floating-point flag is raised (FCSR).  And, again, just as
+with scalar operations, it is software's responsibility to check this flag.
+Given that the FCSR flags are "accrued", the fact that multiple element
+operations could have occurred is not a problem.
+
 # Exceptions
 
 TODO: expand.  Exceptions may occur at any time, in any given underlying
