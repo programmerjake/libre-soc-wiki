@@ -1174,14 +1174,16 @@ Where it is up to the implementor to ensure that, towards the end
 of the register file, an exception is thrown if attempts to access
 beyond the "real" register bytes is ever attempted.
 
-Now we may pseudo-code an operation where all element bitwidths have
-been set to the same size:
+Now we may modify pseudo-code an operation where all element bitwidths have
+been set to the same size, where this pseudo-code is otherwise identical
+to its "non" polymorphic versions (above):
 
     function op_add(rd, rs1, rs2) # add not VADD!
       ...
       ...
       for (i = 0; i < VL; i++)
-        if (predval & 1<<i) # predication uses intregs
+           ...
+           ...
            // TODO, calculate if over-run occurs, for each elwidth
            if (elwidth == 8) {
                int_regfile[rd].b[id] <= int_regfile[rs1].i[irs1] +
@@ -1196,9 +1198,8 @@ been set to the same size:
                int_regfile[rd].l[id] <= int_regfile[rs1].l[irs1] +
                                         int_regfile[rs2].l[irs2];
             }
-        if (int_vec[rd ].isvector)  { id += 1; }
-        if (int_vec[rs1].isvector)  { irs1 += 1; }
-        if (int_vec[rs2].isvector)  { irs2 += 1; }
+           ...
+           ...
 
 So here we can see clearly: for 8-bit entries rd, rs1 and rs2 (and registers
 following sequentially on respectively from the same) are "type-cast"
