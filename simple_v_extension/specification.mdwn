@@ -306,7 +306,8 @@ in an instruction-minimal fashion:
 
      CSRvect1 = {type: F, key: a3, val: a3, elwidth: dflt}
      CSRvect2 = {type: F, key: a7, val: a7, elwidth: dflt}
-     CSRRWI MVL, 4          # sets MVL == 4
+     CSRRWI MVL, 3          # sets MVL == **4** (not 3)
+     j zerotest             # in case loop counter a0 already 0
     loop:
      CSRRW VL, t0, a0       # vl = t0 = min(mvl, a0)
      ld     a3, a1          # load 4 registers a3-6 from x
@@ -317,6 +318,7 @@ in an instruction-minimal fashion:
      sub    a0, a0, t0      # n -= vl (t0)
      st     a7, a2          # store 4 registers a7-10 to y
      add    a2, a2, t1      # increment pointer to y by vl*8
+    zerotest:
      bnez   a0, loop        # repeat if n != 0
 
 With the STATE CSR, just like with CSRRWI, in order to maximise the
