@@ -346,30 +346,29 @@ if the STATE CSR is to be used for fast context-switching.
 
 ## Register CSR key-value (CAM) table
 
-TODO: update CSR tables, now 7-bit for regidx
-
 The purpose of the Register CSR table is four-fold:
 
 * To mark integer and floating-point registers as requiring "redirection"
   if it is ever used as a source or destination in any given operation.
-  This involves a level of indirection through a 5-to-6-bit lookup table,
+  This involves a level of indirection through a 5-to-7-bit lookup table,
   such that **unmodified** operands with 5 bit (3 for Compressed) may
   access up to **64** registers.
 * To indicate whether, after redirection through the lookup table, the
   register is a vector (or remains a scalar).
 * To over-ride the implicit or explicit bitwidth that the operation would
   normally give the register.
-* To indicate if the register is to be interpreted as "packed" (SIMD)
-  i.e. containing multiple contiguous elements of size equal to "bitwidth".
 
-| RgCSR | 15     | 14     | 13       | (12..11) | 10  | (9..5)  | (4..0)  |
-| ----- | -      | -      | -        | -        | -   | ------- | ------- |
-| 0     | simd0  | bank0  | isvec0   | vew0     | i/f | regidx  | predidx |
-| 1     | simd1  | bank1  | isvec1   | vew1     | i/f | regidx  | predidx |
-| ..    | simd.. | bank.. | isvec..  | vew..    | i/f | regidx  | predidx |
-| 15    | simd15 | bank15 | isvec15  | vew15    | i/f | regidx  | predidx |
+| RgCSR | | 15       | (14..8)  | 7   | (6..5) | (4..0)  |
+| ----- | | -        | -        | -   | ------ | ------- |
+| 0     | | isvec0   | regidx0  | i/f | vew0   | regkey  |
+| 1     | | isvec1   | regidx1  | i/f | vew1   | regkey  |
+| ..    | | isvec..  | regidx.. | i/f | vew..  | regkey  |
+| 15    | | isvec15  | regidx15 | i/f | vew15  | regkey  |
 
-vew may be one of the following (giving a table "bytestable", used below):
+i/f is set to "1" to indicate that the redirection/tag entry is to be applied
+to integer registers; 0 indicates that it is relevant to floating-point
+registers.  vew has the following meanings, indicating that the instruction's
+operand size is "over-ridden" in a polymorphic fashion:
 
 | vew | bitwidth   |
 | --- | ---------- |
@@ -379,9 +378,9 @@ vew may be one of the following (giving a table "bytestable", used below):
 | 11  | 8          |
 
 As the above table is a CAM (key-value store) it may be appropriate
-to expand it as follows:
+(faster, implementation-wise) to expand it as follows:
 
-    struct vectorised fp_vec[32], int_vec[32]; // 64 in future
+    struct vectorised fp_vec[32], int_vec[32];
 
     for (i = 0; i < 16; i++) // 16 CSRs?
        tb = int_vec if CSRvec[i].type == 0 else fp_vec
@@ -390,6 +389,36 @@ to expand it as follows:
        tb[idx].regidx   = CSRvec[i].regidx  // indirection
        tb[idx].isvector = CSRvec[i].isvector // 0=scalar
        tb[idx].packed   = CSRvec[i].packed  // SIMD or not
+
+The actual size of the CSR Register table depends on the platform
+and on whether other Extensions are present (RV64G, RV32E, etc.).
+For details see "Subsets" section.
+
+16-bit CSR Register CAM entries are mapped directly into 32-bit
+on any RV32-based system, however RV64 (XLEN=64) and RV128 (XLEN=128)
+are slightly different: the 16-bit entries appear (and can be set)
+multiple times, in an overlapping fashion.  Here is the table for RV64:
+
+| CSR#  | 63..48  | 47..32  | 31..16  | 15..0   |
+| 0x4c0 | RgCSR3  | RgCSR2  | RgCSR1  | RgCSR0  |
+| 0x4c1 | RgCSR5  | RgCSR4  | RgCSR3  | RgCSR2  |
+| 0x4c2 | ...     | ...     | ...     | ...     |
+| 0x4c1 | RgCSR15 | RgCSR14 | RgCSR13 | RgCSR12 |
+| 0x4c8 | n/a     | n/a     | RgCSR15 | RgCSR4  |
+
+The rules for writing to these CSRs are that any entries above the ones
+being set will be automatically wiped (to zero), so to fill several entries
+they must be written in a sequentially increasing manner.  This functionality
+was in an early draft of RVV and it means that, firstly, compilers do not have
+to spend time zero-ing out CSRs unnecessarily, and secondly, that on
+context-switching (and function calls) the number of CSRs that may need
+saving is implicitly known.
+
+The reason for the overlapping entries is that in the worst-case on an
+RV64 system, only 4 64-bit CSR reads/writes are required for a full
+context-switch (and an RV128 system, only 2 128-bit CSR reads/writes).
+
+--
 
 TODO: move elsewhere
 
@@ -443,6 +472,12 @@ in the instruction, due to the redirection through the lookup table.
   interpret unpredicated elements as an internal "copy element"
   operation (which would be necessary in SIMD microarchitectures
   that perform register-renaming)
+* "packed" indicates if the register is to be interpreted as SIMD
+  i.e. containing multiple contiguous elements of size equal to "bitwidth".
+  (Note: in earlier drafts this was in the Register CSR table.
+  However after extending to 7 bits there was not enough space.
+  To use "unpredicated" packed SIMD, set the predicate to x0 and
+  set "invert".  This has the effect of setting a predicate of all 1s)
 
 | PrCSR | 13     | 12     | 11    | 10  | (9..5)  | (4..0)  |
 | ----- | -      | -      | -     | -   | ------- | ------- |
@@ -1099,6 +1134,11 @@ Vector "Unit Stride" capable.
 
 Just as with uncompressed LOAD/STORE C.LD / C.ST increment the *register*
 during the hardware loop, **not** the offset.
+
+# Element bitwidth polymorphism
+
+Element bitwidth is best covered as its own special section, as it
+is quite involved and applies uniformly across-the-board.
 
 # Exceptions
 
