@@ -159,14 +159,8 @@ The other important factor to note is that the actual MVL is **offset
 by one**, so that it can fit into only 6 bits (for RV64) and still cover
 a range up to XLEN bits.  So, when setting the MVL CSR to 0, this actually
 means that MVL==1.  When setting the MVL CSR to 3, this actually means
-that MVL==4, and so on.  This is expressed more clearly as follows:
-
-    set_mvl_csr(value, rd):
-        regs[rd] = MVL
-        MVL = MIN(value+1, MVL)
-
-    get_mvl_csr(rd):
-        regs[rd] = VL
+that MVL==4, and so on.  This is expressed more clearly in the "pseudocode"
+section, where there are subtle differences between CSRRW and CSRRWI.
 
 ## Vector Length (VL)
 
@@ -177,16 +171,8 @@ the range 1 <= VL <= MVL (where MVL in turn is limited to 1 <= MVL <= XLEN)
 
 where 1 <= MVL <= XLEN
 
-However just like MVL it is important to note that the value passed in
-to the CSR is offset by one.  This is expressed more clearly with the
-following pseudo-code:
-
-    set_vl_csr(value, rd):
-        VL = MIN(value+1, MVL)
-        regs[rd] = VL # yes returning the new value NOT the old CSR
-
-    get_vl_csr(rd):
-        regs[rd] = VL
+However just like MVL it is important to note that the range for VL has
+subtle design implications, covered in the "CSR pseudocode" section
 
 The fixed (specific) setting of VL allows vector LOAD/STORE to be used
 to switch the entire bank of registers using a single instruction (see
@@ -237,18 +223,24 @@ is limited to 0-31.
 
 This is a standard CSR that contains sufficient information for a
 full context save/restore.  It contains (and permits setting of)
-MVL, VL, the destination element offset of the current parallel
+MVL, VL, CFG, the destination element offset of the current parallel
 instruction being executed, and, for twin-predication, the source
 element offset as well.  Interestingly it may hypothetically
-also be used to get the immediately-following instruction to skip a
+also be used to make the immediately-following instruction to skip a
 certain number of elements, however the recommended method to do
 this is predication.
 
+Setting destoffs and srcoffs is realistically intended for saving state
+so that exceptions (page faults in particular) may be serviced and the
+hardware-loop that was being executed at the time of the trap, from
+user-mode (or Supervisor-mode), may be returned to and continued from
+where it left off.
+
 The format of the SVSTATE CSR is as follows:
 
-| (23..18) | (17..12) | (11..6) | (5...0) |
-| -------- | -------- | ------- | ------- |
-| destoffs | srcoffs  | vl      | maxvl   |
+| (28..26) | (25..24) | (23..18) | (17..12) | (11..6) | (5...0) |
+| -------- | -------- | -------- | -------- | ------- | ------- |
+| size     | bank     | destoffs | srcoffs  | vl      | maxvl   |
 
 When setting this CSR, the following characteristics will be enforced:
 
@@ -257,20 +249,91 @@ When setting this CSR, the following characteristics will be enforced:
 * **srcoffs** will be truncated to be within the range 0 to VL-1
 * **destoffs** will be truncated to be within the range 0 to VL-1
 
-Just as with setting VL and MVL, the values from the CSR (on setting)
-must be offset by one, however note specifically the differences
-in what is returned:
+## MVL, VL and CSR Pseudocode
 
-    set_state_csr(value, rd):
-        old_value = (MVL-1) | (VL-1)<<6 | (srcoffs)<<12 | (destoffs)<<18
-        MVL = set_mvl_csr(value[11:6])
-        VL = set_vl_csr(value[5:0])
+The pseudo-code for get and set of VL and MVL are as follows:
+
+    set_mvl_csr(value, rd):
+        regs[rd] = MVL
+        MVL = MIN(value, MVL)
+
+    get_mvl_csr(rd):
+        regs[rd] = VL
+
+    set_vl_csr(value, rd):
+        VL = MIN(value, MVL)
+        regs[rd] = VL # yes returning the new value NOT the old CSR
+
+    get_vl_csr(rd):
+        regs[rd] = VL
+
+Note that where setting MVL behaves as a normal CSR, unlike standard CSR
+behaviour, setting VL will return the **new** value of VL **not** the old
+one.
+
+For CSRRWI, the range of the immediate is restricted to 5 bits.  In order to
+maximise the effectiveness, an immediate of 0 is used to set VL=1,
+an immediate of 1 is used to set VL=2 and so on:
+
+    CSRRWI_Set_MVL(value):
+        set_mvl_csr(value+1, x0)
+
+    CSRRWI_Set_VL(value):
+        set_vl_csr(value+1, x0)
+
+However for CSRRW the following pseudocide is used for MVL and VL,
+where setting the value to zero will cause an exception to be raised.
+The reason is that if VL or MVL are set to zero, the STATE CSR is
+not capable of returning that value.
+
+    CSRRW_Set_MVL(rs1, rd):
+        value = regs[rs1]
+        if value == 0:
+            raise Exception
+        set_mvl_csr(value, rd)
+
+    CSRRW_Set_VL(rs1, rd):
+        value = regs[rs1]
+        if value == 0:
+            raise Exception
+        set_vl_csr(value, rd)
+
+In this way, when CSRRW is utilised with a loop variable, the value
+that goes into VL (and into the destination register) may be used
+in an instruction-minimal fashion:
+
+     CSRvect1 = {type: F, key: a3, val: a3, elwidth: dflt}
+     CSRvect2 = {type: F, key: a7, val: a7, elwidth: dflt}
+     CSRRWI MVL, 4          # sets MVL == 4
+    loop:
+     CSRRW VL, t0, a0       # vl = t0 = min(mvl, a0)
+     ld     a3, a1          # load 4 registers a3-6 from x
+     slli   t1, t0, 3       # t1 = vl * 8 (in bytes)
+     ld     a7, a2          # load 4 registers a7-10 from y
+     add    a1, a1, t1      # increment pointer to x by vl*8
+     fmadd a7, a3, fa0, a7 # v1 += v0 * fa0 (y = a * x + y)
+     sub    a0, a0, t0      # n -= vl (t0)
+     st     a7, a2          # store 4 registers a7-10 to y
+     add    a2, a2, t1      # increment pointer to y by vl*8
+     bnez   a0, loop        # repeat if n != 0
+
+With the STATE CSR, just like with CSRRWI, in order to maximise the
+utilisation of the limited bitspace, "000000" in binary represents
+VL==1, "00001" represents VL==2 and so on (likewise for MVL):
+
+    CSRRW_Set_SV_STATE(rs1, rd):
+        value = regs[rs1]
+        get_state_csr(rd)
+        MVL = set_mvl_csr(value[11:6]+1)
+        VL = set_vl_csr(value[5:0]+1)
+        CFG = value[28:24]>>24
         destoffs = value[23:18]>>18
         srcoffs = value[23:18]>>12
-        regs[rd] = old_value
 
     get_state_csr(rd):
-        regs[rd] = (MVL-1) | (VL-1)<<6 | (srcoffs)<<12 | (destoffs)<<18
+        regs[rd] = (MVL-1) | (VL-1)<<6 | (srcoffs)<<12 |
+                   (destoffs)<<18 | (CFG)<<24
+        return regs[rd]
 
 In both cases, whilst CSR read of VL and MVL return the exact values
 of VL and MVL respectively, reading and writing the STATE CSR returns
