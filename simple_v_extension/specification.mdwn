@@ -1140,9 +1140,9 @@ during the hardware loop, **not** the offset.
 Element bitwidth is best covered as its own special section, as it
 is quite involved and applies uniformly across-the-board.
 
-The effect of setting an element bitwidth is to re-cast the register
-table to a completely different width.  In c-style terms, on an
-RV64 architecture, effectively each register looks like this:
+The effect of setting an element bitwidth is to re-cast each entry
+in the register table to a completely different width.  In c-style terms,
+on an RV64 architecture, effectively each register looks like this:
 
     typedef union {
         uint8_t  b[8];
@@ -1160,7 +1160,7 @@ to the following parts of the register file in a sequential fashion.
 So a much more accurate way to reflect this would be:
 
     typedef union {
-        uint8_t  actual_register_bytes[8];
+        uint8_t  actual_bytes[8]; // 8 for RV64, 4 for RV32, 16 for RV128
         uint8_t  *b;
         uint16_t *s;
         uint32_t *i;
