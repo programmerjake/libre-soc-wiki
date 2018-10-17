@@ -1213,11 +1213,15 @@ Where the element widths are different, the following algorithm applies:
 * If any given source operand requires sign-extension or zero-extension
   (ldb, div, rem, mul, sll, srl, sra etc.), instead of mandatory 32-bit
   sign-extension / zero-extension or whatever is specified in the standard
-  RV specification, **change** that to sign-extending from the individual
-  source operand's over-ridden bitwidth out to "maxsrcbitwidth", instead.
+  RV specification, **change** that to sign-extending from the respective
+  individual source operand's bitwidth from the CSR table out to
+  "maxsrcbitwidth" (previously calculated), instead.
 * Following separate and distinct (optional) sign/zero-extension of all
-  source operands, carry out the operation at "maxsrcbitwidth".  In the
-  case of LOAD/STORE or MV this may be a "null" (copy) operation.
+  source operands as specifically required for that operation, carry out the
+  operation at "maxsrcbitwidth".  (Note that in the case of LOAD/STORE or MV
+  this may be a "null" (copy) operation, and that with FCVT, the changes
+  to the source and destination bitwidths may also turn FVCT effectively
+  into a copy).
 * If the destination operand requires sign-extension or zero-extension,
   instead of a mandatory fixed size (typically 32-bit for arithmetic,
   for subw for example, and otherwise various: 8-bit for sb, 16-bit for sw
@@ -1295,7 +1299,7 @@ due to each operation being different, the above should be clear that;
 * the result is extended (or potentially even, truncated) before being
   stored in the destination.
 
-For floating-point operations, the conversion takes place without
+For floating-point operations, conversion takes place without
 raising any kind of exception.  Exactly as specified in the standard
 RV specification, NAN (or appropriate) is stored if the result
 is beyond the range of the destination, and, again, exactly as
@@ -1304,6 +1308,13 @@ operations, the floating-point flag is raised (FCSR).  And, again, just as
 with scalar operations, it is software's responsibility to check this flag.
 Given that the FCSR flags are "accrued", the fact that multiple element
 operations could have occurred is not a problem.
+
+Note that it is perfectly legitimate for floating-point bitwidths of
+only 8 to be specified.  However whilst it is possible to apply IEEE 754
+principles, no actual standard yet exists.  Implementors wishing to
+provide hardware-level 8-bit support rather than throw a trap to emulate
+in software should contact the author of this specification before
+proceeding.
 
 # Exceptions
 
