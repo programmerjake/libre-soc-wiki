@@ -234,9 +234,11 @@ Setting destoffs and srcoffs is realistically intended for saving state
 so that exceptions (page faults in particular) may be serviced and the
 hardware-loop that was being executed at the time of the trap, from
 user-mode (or Supervisor-mode), may be returned to and continued from
-where it left off.
+where it left off.  The reason why this works is because setting
+User-Mode STATE will not change (not be used) in M-Mode or S-Mode
+(and is entirely why M-Mode and S-Mode have their own STATE CSRs).
 
-The format of the SVSTATE CSR is as follows:
+The format of the STATE CSR is as follows:
 
 | (28..26) | (25..24) | (23..18) | (17..12) | (11..6) | (5...0) |
 | -------- | -------- | -------- | -------- | ------- | ------- |
