@@ -1308,7 +1308,8 @@ be clear that;
   source operands
 * the operation takes place at that bitwidth
 * the result is extended (or potentially even, truncated) before being
-  stored in the destination.
+  stored in the destination.  i.e. truncation (if required) to the
+  destination width occurs **after** the operation **not** before.
 
 For floating-point operations, conversion takes place without
 raising any kind of exception.  Exactly as specified in the standard
