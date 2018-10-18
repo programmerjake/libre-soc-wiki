@@ -1162,11 +1162,11 @@ So a much more accurate way to reflect this would be:
 
     typedef union {
         uint8_t  actual_bytes[8]; // 8 for RV64, 4 for RV32, 16 for RV128
-        uint8_t  *b;
-        uint16_t *s;
-        uint32_t *i;
-        uint64_t *l;
-        uint128_t *d;
+        uint8_t  b[];
+        uint16_t s[];
+        uint32_t i[];
+        uint64_t l[];
+        uint128_t d[];
     } reg_t;
 
     reg_t int_regfile[128];
