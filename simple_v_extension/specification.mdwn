@@ -1139,7 +1139,10 @@ during the hardware loop, **not** the offset.
 # Element bitwidth polymorphism <a name="elwidth"></a>
 
 Element bitwidth is best covered as its own special section, as it
-is quite involved and applies uniformly across-the-board.
+is quite involved and applies uniformly across-the-board.  SV restricts
+bitwidth polymorphism to default, default/2, default\*2 and 8-bit
+(whilst this seems limiting, the justification is covered in a later
+sub-section).
 
 The effect of setting an element bitwidth is to re-cast each entry
 in the register table, and for all memory operations involving
@@ -1382,6 +1385,67 @@ Pseudocode for this example would therefore be:
 This example illustrates that considerable care therefore needs to be
 taken to ensure that left and right shift operations are implemented
 correctly.
+
+## Why SV bitwidth specification is restricted to 4 entries
+
+The four entries for SV element bitwidths only allows three over-rides:
+
+* default bitwidth for a given operation *divided* by two
+* default bitwidth for a given operation *multiplied* by two
+* 8-bit
+
+At first glance this seems completely inadequate: for example, RV64
+cannot possibly operate on 16-bit operations, because 64 divided by
+2 is 32.  However, the reader may have forgotten that it is possible,
+at run-time, to switch a 64-bit application into 32-bit mode, by
+setting UXL.  Once switched, opcodes that formerly had 64-bit
+meanings now have 32-bit meanings, and in this way, "default/2"
+now reaches **16-bit** where previously it meant "32-bit".
+
+There is however an absolutely crucial aspect oF SV here that explicitly
+needs spelling out, and it's whether the "vectorised" bit is set in
+the Register's CSR entry.
+
+If "vectorised" is clear (not set), this indicates that the operation
+is "scalar".  Under these circumstances, when set on a destination (RD),
+then sign-extension and zero-extension, whilst changed to match the
+override bitwidth (if set), will erase the **full** register entry
+(64-bit if RV64).
+
+When vectorised is *set*, this indicates that the operation now treats
+**elements** as if they were independent registers, so regardless of
+the length, any parts of a given actual register that are not involved
+in the operation are **NOT** modified, but are **PRESERVED**.
+
+SIMD micro-architectures may implement this by using predication on
+any elements in a given actual register that are beyond the end of
+multi-element operation.
+
+Example:
+
+* rs1, rs2 and rd are all set to 8-bit
+* VL is set to 3
+* RV64 architecture is set (UXL=64)
+* add operation is carried out
+* bits 0-23 of RD are modified to be rs1[23..16] + rs2[23..16]
+  concatenated with similar add operations on bits 15..8 and 7..0
+* bits 24 through 63 **remain as they originally were**.
+
+Example SIMD micro-architectural implementation:
+
+* SIMD architecture works out the nearest round number of elements
+  that would fit into a full RV64 register (in this case: 8)
+* SIMD architecture creates a hidden predicate, binary 0b00000111
+  i.e. the bottom 3 bits set (VL=3) and the top 5 bits clear
+* SIMD architecture goes ahead with the add operation as if it
+  was a full 8-wide batch of 8 adds
+* SIMD architecture passes top 5 elements through the adders
+  (which are "disabled" due to zero-bit predication)
+* SIMD architecture gets the 5 unmodified top 8-bits back unmodified
+  and stores them in rd.
+
+This requires a read on rd, however this is required anyway in order
+to support non-zeroing mode.
 
 # Exceptions
 
