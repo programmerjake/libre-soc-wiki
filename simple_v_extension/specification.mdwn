@@ -1142,8 +1142,10 @@ Element bitwidth is best covered as its own special section, as it
 is quite involved and applies uniformly across-the-board.
 
 The effect of setting an element bitwidth is to re-cast each entry
-in the register table to a completely different width.  In c-style terms,
-on an RV64 architecture, effectively each register looks like this:
+in the register table, and for all memory operations involving
+load/stores of certain specific sizes, to a completely different width.
+Thus In c-style terms, on an RV64 architecture, effectively each register
+now looks like this:
 
     typedef union {
         uint8_t  b[8];
@@ -1155,25 +1157,36 @@ on an RV64 architecture, effectively each register looks like this:
     // integer table: assume maximum SV 7-bit regfile size
     reg_t int_regfile[128];
 
-However this hides the fact that setting VL greater than 8, for example,
-when the bitwidth is 8, accessing one specific register "spills over"
-to the following parts of the register file in a sequential fashion.
-So a much more accurate way to reflect this would be:
+where the CSR Register table entry (not the instruction alone) determines
+which of those union entries is to be used on each operation, and the
+VL element offset in the hardware-loop specifies the index into each array.
+
+However a naive interpretation of the data structure above masks the
+fact that setting VL greater than 8, for example, when the bitwidth is 8,
+accessing one specific register "spills over" to the following parts of
+the register file in a sequential fashion.  So a much more accurate way
+to reflect this would be:
 
     typedef union {
         uint8_t  actual_bytes[8]; // 8 for RV64, 4 for RV32, 16 for RV128
-        uint8_t  b[];
-        uint16_t s[];
-        uint32_t i[];
-        uint64_t l[];
-        uint128_t d[];
+        uint8_t  b[0]; // array of type uint8_t
+        uint16_t s[0];
+        uint32_t i[0];
+        uint64_t l[0];
+        uint128_t d[0];
     } reg_t;
 
     reg_t int_regfile[128];
 
-Where it is up to the implementor to ensure that, towards the end
-of the register file, an exception is thrown if attempts to access
-beyond the "real" register bytes is ever attempted.
+where when accessing any individual regfile[n].b entry it is permitted
+(in c) to arbitrarily over-run the *declared* length of the array (zero),
+and thus "overspill" to consecutive register file entries in a fashion
+that is completely transparent to a greatly-simplified software / pseudo-code
+representation.
+It is however critical to note that it is clearly the responsibility of
+the implementor to ensure that, towards the end of the register file,
+an exception is thrown if attempts to access beyond the "real" register
+bytes is ever attempted.
 
 Now we may modify pseudo-code an operation where all element bitwidths have
 been set to the same size, where this pseudo-code is otherwise identical
@@ -1312,6 +1325,8 @@ be clear that;
   stored in the destination.  i.e. truncation (if required) to the
   destination width occurs **after** the operation **not** before.
 
+## Polymorphic floating-point operation exceptions and error-handling
+
 For floating-point operations, conversion takes place without
 raising any kind of exception.  Exactly as specified in the standard
 RV specification, NAN (or appropriate) is stored if the result
@@ -1328,6 +1343,45 @@ principles, no actual standard yet exists.  Implementors wishing to
 provide hardware-level 8-bit support rather than throw a trap to emulate
 in software should contact the author of this specification before
 proceeding.
+
+## Polymorphic shift operators
+
+A special note is needed for changing the element width of left and right
+shift operators, particularly right-shift.  Even for standard RV base,
+in order for correct results to be returned, the second operand RS2 must
+be truncated to be within the range of RS1's bitwidth.  spike's implementation
+of sll for example is as follows:
+
+    WRITE_RD(sext_xlen(zext_xlen(RS1) << (RS2 & (xlen-1))));
+
+which means: where XLEN is 32 (for RV32), restrict RS2 to cover the
+range 0..31 so that RS1 will only be left-shifted by the amount that
+is possible to fit into a 32-bit register.  Whilst this appears not
+to matter for hardware, it matters greatly in software implementations,
+and it also matters where an RV64 system is set to "RV32" mode, such
+that the underlying registers RS1 and RS2 comprise 64 hardware bits
+each.
+
+For SV, where each operand's element bitwidth may be over-ridden, the
+rule about determining the operation's bitwidth *still applies*, being
+defined as the maximum bitwidth of RS1 and RS2.  *However*, this rule
+**also applies to the truncation of RS2**.  In other words, *after*
+determining the maximum bitwidth, RS2's range must **also be truncated**
+to ensure a correct answer.  Example:
+
+* RS1 is over-ridden to a 16-bit width
+* RS2 is over-ridden to an 8-bit width
+* RD is over-ridden to a 64-bit width
+* the maximum bitwidth is thus determined to be 16-bit - max(8,16)
+* RS2 is **truncated to a range of values from 0 to 15**: RS2 & (16-1)
+
+Pseudocode for this example would therefore be:
+
+    WRITE_RD(sext_xlen(zext_16bit(RS1) << (RS2 & (16-1))));
+
+This example illustrates that considerable care therefore needs to be
+taken to ensure that left and right shift operations are implemented
+correctly.
 
 # Exceptions
 
