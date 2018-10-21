@@ -1455,6 +1455,42 @@ polymorphic widths, to ensure that it is correct.
 
 ### add
 
+Standard Scalar RV32/RV64 (xlen):
+
+* RS1 @ xlen bits
+* RS2 @ xlen bits
+* add @ xlen bits
+* RD @ xlen bits
+
+Polymorphic variant:
+
+* RS1 @ rs1 bits, zero-extended to max(rs1, rs2) bits
+* RS2 @ rs2 bits, zero-extended to max(rs1, rs2) bits
+* add @ max(rs1, rs2) bits
+* RD @ rd bits.  zero-extend to rd if rd > max(rs1, rs2) otherwise truncate
+
+Note here that polymorphic add zero-extends its source operands,
+where addw sign-extends.
+
+### addw
+
+Standard Scalar RV32/RV64 (xlen):
+
+* RS1 @ xlen bits
+* RS2 @ xlen bits
+* add @ xlen bits
+* RD @ xlen bits, truncate add to 32-bit and sign-extend to xlen.
+
+Polymorphic variant:
+
+* RS1 @ rs1 bits, sign-extended to max(rs1, rs2) bits
+* RS2 @ rs2 bits, sign-extended to max(rs1, rs2) bits
+* add @ max(rs1, rs2) bits
+* RD @ rd bits. sign-extend to rd if rd > max(rs1, rs2) otherwise truncate
+
+Note here that polymorphic addw sign-extends its source operands,
+where add zero-extends.
+
 TODO
 
 # Exceptions
