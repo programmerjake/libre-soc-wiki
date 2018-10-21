@@ -1555,3 +1555,17 @@ for element-grouping, if there is unused space within a register
   they are set to all ones on write and are ignored on read, matching the
   existing standard for storing smaller FP values in larger registers.
 
+---
+
+info register,
+
+> One solution is to just not support LR/SC wider than a fixed
+> implementation-dependent size, which must be at least 
+>1 XLEN word, which can be read from a read-only CSR
+> that can also be used for info like the kind and width of 
+> hw parallelism supported (128-bit SIMD, minimal virtual 
+> parallelism, etc.) and other things (like maybe the number 
+> of registers supported). 
+
+> That CSR would have to have a flag to make a read trap so
+> a hypervisor can simulate different values.
