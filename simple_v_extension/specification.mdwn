@@ -1474,7 +1474,7 @@ where addw sign-extends.
 
 ### addw
 
-Standard Scalar RV32/RV64 (xlen):
+Standard Scalar RV64 (xlen):
 
 * RS1 @ xlen bits
 * RS2 @ xlen bits
@@ -1491,7 +1491,32 @@ Polymorphic variant:
 Note here that polymorphic addw sign-extends its source operands,
 where add zero-extends.
 
+This requires a little more in-depth analysis.  Where the bitwidth of
+rs1 equals the bitwidth of rs2, no sign-extending will occur.  It is
+only where the bitwidth of either rs1 or rs2 are different, will the
+lesser-width operand be sign-extended.
+
+Effectively however, both rs1 and rs2 are being sign-extended to the
+bitwidth of rd (or truncated), where for add they are both zero-extended.
+
 TODO
+
+### addiw
+
+Standard Scalar RV64I:
+
+* RS1 @ xlen bits, truncated to 32-bit
+* immed @ 12 bits, sign-extended to 32-bit
+* add @ 32 bits
+* RD @ rd bits.  sign-extend to rd if rd > 32, otherwise truncate.
+
+Polymorphic variant:
+
+* RS1 @ rs1 bits
+* immed @ 12 bits, sign-extend to max(rs1, 12) bits
+* add @ max(rs1, 12) bits
+* RD @ rd bits. sign-extend to rd if rd > max(rs1, 12) otherwise truncate
+
 
 # Exceptions
 
