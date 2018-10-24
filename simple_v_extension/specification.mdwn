@@ -1474,6 +1474,12 @@ where addw sign-extends.
 
 ### addw
 
+The RV Specification specifically states that "W" variants of arithmetic
+operations always produce 32-bit signed values.  In a polymorphic
+environment it is reasonable to assume that the signed aspect is
+preserved, where it is the length of the operands and the result
+that may be changed.
+
 Standard Scalar RV64 (xlen):
 
 * RS1 @ xlen bits
@@ -1496,10 +1502,9 @@ rs1 equals the bitwidth of rs2, no sign-extending will occur.  It is
 only where the bitwidth of either rs1 or rs2 are different, will the
 lesser-width operand be sign-extended.
 
-Effectively however, both rs1 and rs2 are being sign-extended to the
-bitwidth of rd (or truncated), where for add they are both zero-extended.
-
-TODO
+Effectively however, both rs1 and rs2 are being sign-extended (or truncated),
+where for add they are both zero-extended.  This holds true for all arithmetic
+operations ending with "W".
 
 ### addiw
 
