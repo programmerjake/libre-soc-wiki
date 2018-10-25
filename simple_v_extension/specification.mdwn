@@ -1648,3 +1648,10 @@ info register,
 
 answer: they're not vectorised, so not a problem
 
+----
+
+* if opcode is in the RV32 group, rd, rs1 and rs2 bitwidth are
+  XLEN if elwidth==default
+* if opcode is in the RV32I group, rd, rs1 and rs2 bitwidth are
+  *32* if elwidth == default
+
