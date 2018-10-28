@@ -1386,6 +1386,115 @@ This example illustrates that considerable care therefore needs to be
 taken to ensure that left and right shift operations are implemented
 correctly.
 
+## Polymorphic elwidth on LOAD/STORE
+
+Polymorphic element widths in vectorised form means that the data
+being loaded (or stored) across multiple registers needs to be treated
+(reinterpreted) as a contiguous stream of elwidth-wide items, where
+the source register's element width is **independent** from the destination's.
+
+This makes for a slightly more complex algorithm when using indirection
+on the "addressed" register (source for LOAD and destination for STORE),
+particularly given that the LOAD/STORE instruction provides important
+information about the width of the data to be reinterpreted.
+
+Let's illustrate the "load" part, where the pseudo-code for elwidth=default
+was as follows, and i is the loop from 0 to VL-1:
+
+    srcbase = ireg[rs+i];
+    return mem[srcbase + imm]; // returns XLEN bits
+
+For a LW (32-bit LOAD), elwidth-wide chunks are taken from the source,
+and only when a full 32-bits-worth are taken will the index be moved
+on to the next register:
+
+    bitwidth = bw(elwidth);             // source elwidth from CSR reg entry
+    elsperblock = 32 / bitwidth         // 1 if bw=32, 2 if bw=16, 4 if bw=8
+    srcbase = ireg[rs+i/(elsperblock)]; // integer divide
+    offs = i % elsperblock;             // modulo
+    return &mem[srcbase + imm + offs];  // re-cast to uint8_t*, uint16_t* etc.
+
+Note that the constant "32" above is replaced by 8 for LB, 16 for LH, 64 for LD
+and 128 for LQ.
+
+The principle is basically exactly the same as if the srcbase were pointing
+at the memory of the *register* file: memory is re-interpreted as containing
+groups of elwidth-wide discrete elements.
+
+When storing the result from a load, it's important to respect the fact
+that the destination register has its *own separate element width*.  Thus,
+when each element is loaded (at the source element width), any sign-extension
+or zero-extension (or truncation) needs to be done to the *destination*
+bitwidth.  Also, the storing has the exact same analogous algorithm as
+above, where in fact it is just the set\_polymorphed\_reg pseudocode
+(completely unchanged) used above.
+
+One issue remains: when the source element width is **greater** than
+the width of the operation, it is obvious that a single LB for example
+cannot possibly obtain 16-bit-wide data.  This condition may be detected
+where, when using integer divide, elsperblock (the width of the LOAD
+divided by the bitwidth of the element) is zero.
+
+The issue is "fixed" by ensuring that elsperblock is a minimum of 1:
+
+    elsperblock = min(1, LD_OP_BITWIDTH / element_bitwidth)
+
+The elements, if the element bitwidth is larger than the LD operation's
+size, will then be sign/zero-extended to the full LD operation size, as
+specified by the LOAD (LDU instead of LD, LBU instead of LB), before
+being passed on to the second phase.
+
+As LOAD/STORE may be twin-predicated, it is important to note that
+the rules on twin predication still apply, except where in previous
+pseudo-code (elwidth=default for both source and target) it was
+the *registers* that the predication was applied to, it is now the
+**elements** that the predication are applied to.
+
+Thus the full pseudocode for all LD operations may be written out
+as follows:
+
+    function LBU(rd, rs):
+        load_elwidthed(rd, rs, 8, true)
+    function LB(rd, rs):
+        load_elwidthed(rd, rs, 8, false)
+    function LH(rd, rs):
+        load_elwidthed(rd, rs, 16, false)
+    ...
+    ...
+    function LQ(rd, rs):
+        load_elwidthed(rd, rs, 128, false)
+
+    # returns 1 byte of data when opwidth=8, 2 bytes when opwidth=16..
+    function load_memory(rs, imm, i, opwidth):
+        elwidth = int_csr[rs].elwidth
+        bitwidth = bw(elwidth);
+        elsperblock = min(1, opwidth / bitwidth)
+        srcbase = ireg[rs+i/(elsperblock)];
+        offs = i % elsperblock;
+        return mem[srcbase + imm + offs]; # 1/2/4/8/16 bytes
+
+    function load_elwidthed(rd, rs, opwidth, unsigned):
+      destwid = int_csr[rd].elwidth # destination element width
+      rd = int_csr[rd].active ? int_csr[rd].regidx : rd;
+      rs = int_csr[rs].active ? int_csr[rs].regidx : rs;
+      ps = get_pred_val(FALSE, rs); # predication on src
+      pd = get_pred_val(FALSE, rd); # ... AND on dest
+      for (int i = 0, int j = 0; i < VL && j < VL;):
+        if (int_csr[rs].isvec) while (!(ps & 1<<i)) i++;
+        if (int_csr[rd].isvec) while (!(pd & 1<<j)) j++;
+        val = load_memory(rs, imm, i, opwidth)
+        if unsigned:
+            val = zero_extend(val, min(opwidth, bitwidth))
+        else:
+            val = sign_extend(val, min(opwidth, bitwidth))
+        set_polymorphed_reg(rd, bitwidth, j, val)
+        if (int_csr[rs].isvec) i++;
+        if (int_csr[rd].isvec) j++;
+
+Note when comparing against for example the twin-predicated c.mv
+pseudo-code, the pattern of independent incrementing of rd and rs
+is preserved unchanged.
+
 ## Why SV bitwidth specification is restricted to 4 entries
 
 The four entries for SV element bitwidths only allows three over-rides:
