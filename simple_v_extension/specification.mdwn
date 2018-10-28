@@ -1386,7 +1386,7 @@ This example illustrates that considerable care therefore needs to be
 taken to ensure that left and right shift operations are implemented
 correctly.
 
-## Polymorphic elwidth on LOAD/STORE
+## Polymorphic elwidth on LOAD/STORE <a name="elwidth_loadstore"></a>
 
 Polymorphic element widths in vectorised form means that the data
 being loaded (or stored) across multiple registers needs to be treated
@@ -1493,7 +1493,8 @@ as follows:
 
 Note when comparing against for example the twin-predicated c.mv
 pseudo-code, the pattern of independent incrementing of rd and rs
-is preserved unchanged.
+is preserved unchanged.  Note also that, just as with the c.mv
+pseudocode, zeroing is not included and must be taken into account.
 
 ## Why SV bitwidth specification is restricted to 4 entries
 
