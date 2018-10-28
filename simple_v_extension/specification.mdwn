@@ -35,7 +35,7 @@ Simple-V effectively sits (slots) *in between* the instruction decode phase
 and the ALU(s).
 
 The barrier to entry with SV is therefore very low.  The minimum
-compliantt implementation is software-emulation (traps), requiring
+compliant implementation is software-emulation (traps), requiring
 only the CSRs and CSR tables, and that an exception be thrown if an
 instruction's registers are detected to have been tagged.  The looping
 that would otherwise be done in hardware is thus carried out in software,
@@ -64,6 +64,25 @@ parallelism: it is a hardware "API" (Application Programming Interface)
 that, if implemented, presents a uniform and consistent way to *express*
 parallelism, at the same time leaving the choice of if, how, how much,
 when and whether to parallelise operations **entirely to the implementor**.
+
+# Basic Operation
+
+The principle of SV is as follows:
+
+* CSRs indicating which registers are "tagged" as parallel are set up
+* A "Vector Length" CSR is set, indicating the span of any future
+  "parallel" operations.
+* A **scalar** operation, just after the decode phase and before the
+  execution phase, checks the CSR register tables to see if any of
+  its registers have been marked as "vectorised"
+* If so, a hardware "macro-unrolling loop" is activated, of length
+  VL, that effectively issues **multiple** identical instructions (whether
+  they be sequential or parallel is entirely up to the implementor),
+  using contiguous sequentially-incrementing registers.
+
+In this way an entire scalar algorithm may be vectorised with
+the minimum of modification to the hardware and to compiler toolchains.
+There are **no** new opcodes.
 
 # CSRs <a name="csrs"></a>
 
@@ -665,7 +684,8 @@ remapped:
         if (predval & 1<<i) # predication uses intregs
            ireg[rd+remap(id)] <= ireg[rs1+remap(irs1)] +
                                  ireg[rs2+remap(irs2)];
-        if (int_vec[rd ].isvector)  { id += 1; } else break
+           if (!int_vec[rd ].isvector) break;
+        if (int_vec[rd ].isvector)  { id += 1; }
         if (int_vec[rs1].isvector)  { irs1 += 1; }
         if (int_vec[rs2].isvector)  { irs2 += 1; }
 
@@ -785,6 +805,7 @@ Floating-point uses fp csrs.
       for (i = 0; i < VL; i++)
         if (predval & 1<<i) # predication uses intregs
            ireg[rd+id] <= ireg[rs1+irs1] + ireg[rs2+irs2];
+           if (!int_vec[rd ].isvector) break;
         if (int_vec[rd ].isvector)  { id += 1; }
         if (int_vec[rs1].isvector)  { irs1 += 1; }
         if (int_vec[rs2].isvector)  { irs2 += 1; }
