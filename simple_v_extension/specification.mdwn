@@ -1338,7 +1338,8 @@ rd bitwidths).  The pseudo-code is therefore as follows:
            if (op_requires_sign_extend_dest)
               result = sign_extend(result, maxsrcwid)
            set_polymorphed_reg(rd, destwid, ird, result)
-        if (int_vec[rd ].isvector)  { id += 1; } else break
+           if (!int_vec[rd].isvector) break
+        if (int_vec[rd ].isvector)  { id += 1; }
         if (int_vec[rs1].isvector)  { irs1 += 1; }
         if (int_vec[rs2].isvector)  { irs2 += 1; }
 
