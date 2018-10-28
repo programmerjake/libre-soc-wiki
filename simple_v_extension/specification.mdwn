@@ -665,7 +665,7 @@ remapped:
         if (predval & 1<<i) # predication uses intregs
            ireg[rd+remap(id)] <= ireg[rs1+remap(irs1)] +
                                  ireg[rs2+remap(irs2)];
-        if (int_vec[rd ].isvector)  { id += 1; }
+        if (int_vec[rd ].isvector)  { id += 1; } else break
         if (int_vec[rs1].isvector)  { irs1 += 1; }
         if (int_vec[rs2].isvector)  { irs2 += 1; }
 
@@ -956,7 +956,7 @@ follows:
         if (int_csr[rd].isvec) while (!(pd & 1<<j)) j++;
         reg[rd+j] = SCALAR_OPERATION_ON(reg[rs+i])
         if (int_csr[rs].isvec) i++;
-        if (int_csr[rd].isvec) j++;
+        if (int_csr[rd].isvec) j++; else break
 
 This pattern covers scalar-scalar, scalar-vector, vector-scalar
 and vector-vector, and predicated variants of all of those.
@@ -1001,7 +1001,7 @@ A simplified version of the pseudocode for this operation is as follows:
         if (int_csr[rd].isvec) while (!(pd & 1<<j)) j++;
         ireg[rd+j] <= ireg[rs+i];
         if (int_csr[rs].isvec) i++;
-        if (int_csr[rd].isvec) j++;
+        if (int_csr[rd].isvec) j++; else break
 
 There are several different instructions from RVV that are covered by
 this one opcode:
@@ -1115,7 +1115,7 @@ that must be incremented.  Pseudo-code follows:
         if (int_csr[rd].isvec) while (!(pd & 1<<j)) j++;
         reg[rd+j] = mem[x2 + ((offset+i) * 4)]
         if (int_csr[rs].isvec) i++;
-        if (int_csr[rd].isvec) j++;
+        if (int_csr[rd].isvec) j++; else break;
 
 For C.LDSP, the offset (and loop) multiplier would be 8, and for
 C.LQSP it would be 16.  Effectively this makes C.LWSP etc. a Vector
@@ -1288,11 +1288,15 @@ rd bitwidths).  The pseudo-code is therefore as follows:
         return res
 
     set_polymorphed_reg(reg, bitwidth, offset, val):
-        if bitwidth == 8:
+        if (!int_csr[reg].isvec):
+            # sign/zero-extend depending on opcode requirements, from
+            # the reg's bitwidth out to the full bitwidth of the regfile
+            val = sign_or_zero_extend(val, bitwidth, xlen)
+            int_regfile[reg].l[0] = val
+        elif bitwidth == 8:
             int_regfile[reg].b[offset] = val
         elif bitwidth == 16:
             int_regfile[reg].s[offset] = val
-            reg.s = int_regfile[reg].s[offset]
         elif bitwidth == 32:
             int_regfile[reg].i[offset] = val
         elif bitwidth == 64:
@@ -1313,20 +1317,31 @@ rd bitwidths).  The pseudo-code is therefore as follows:
            if (op_requires_sign_extend_dest)
               result = sign_extend(result, maxsrcwid)
            set_polymorphed_reg(rd, destwid, ird, result)
-        if (int_vec[rd ].isvector)  { id += 1; }
+        if (int_vec[rd ].isvector)  { id += 1; } else break
         if (int_vec[rs1].isvector)  { irs1 += 1; }
         if (int_vec[rs2].isvector)  { irs2 += 1; }
 
-Whilst specific sign-extension and zero-extension pseudocode calls
-are left out, due to each operation being different, the above should
-be clear that;
+Whilst specific sign-extension and zero-extension pseudocode call
+details are left out, due to each operation being different, the above
+should be clear that;
 
 * the source operands are extended out to the maximum bitwidth of all
   source operands
-* the operation takes place at that maximum source bitwidth
+* the operation takes place at that maximum source bitwidth (the
+  destination bitwidth is not involved at this point, at all)
 * the result is extended (or potentially even, truncated) before being
   stored in the destination.  i.e. truncation (if required) to the
   destination width occurs **after** the operation **not** before.
+* when the destination is not marked as "vectorised", the **full**
+  (standard, scalar) register file entry is taken up, i.e. the
+  element is either sign-extended or zero-extended to cover the
+  full register bitwidth (XLEN) if it is not already XLEN bits long.
+
+Implementors are entirely free to optimise the above, particularly
+if it is specifically known that any given operation will complete
+accurately in less bits, as long as the results produced are
+directly equivalent and equal, for all inputs and all outputs,
+to those produced by the above algorithm.
 
 ## Polymorphic floating-point operation exceptions and error-handling
 
@@ -1404,9 +1419,11 @@ was as follows, and i is the loop from 0 to VL-1:
     srcbase = ireg[rs+i];
     return mem[srcbase + imm]; // returns XLEN bits
 
-For a LW (32-bit LOAD), elwidth-wide chunks are taken from the source,
-and only when a full 32-bits-worth are taken will the index be moved
-on to the next register:
+Instead, when elwidth != default, for a LW (32-bit LOAD), elwidth-wide
+chunks are taken from the source memory location addressed by the current
+indexed source address register, and only when a full 32-bits-worth
+are taken will the index be moved on to the next contiguous source
+address register:
 
     bitwidth = bw(elwidth);             // source elwidth from CSR reg entry
     elsperblock = 32 / bitwidth         // 1 if bw=32, 2 if bw=16, 4 if bw=8
@@ -1489,12 +1506,24 @@ as follows:
             val = sign_extend(val, min(opwidth, bitwidth))
         set_polymorphed_reg(rd, bitwidth, j, val)
         if (int_csr[rs].isvec) i++;
-        if (int_csr[rd].isvec) j++;
+        if (int_csr[rd].isvec) j++; else break;
 
-Note when comparing against for example the twin-predicated c.mv
-pseudo-code, the pattern of independent incrementing of rd and rs
-is preserved unchanged.  Note also that, just as with the c.mv
-pseudocode, zeroing is not included and must be taken into account.
+Note:
+
+* when comparing against for example the twin-predicated c.mv
+  pseudo-code, the pattern of independent incrementing of rd and rs
+  is preserved unchanged.
+* just as with the c.mv pseudocode, zeroing is not included and must be
+  taken into account (TODO).
+* that due to the use of a twin-predication algorithm, LOAD/STORE also
+  take on the same VSPLAT, VINSERT, VREDUCE, VEXTRACT, VGATHER and
+  VSCATTER characteristics.
+* that due to the use of the same set\_polymorphed\_reg pseudocode,
+  a destination that is not vectorised (marked as scalar) will
+  result in the element being fully sign-extended or zero-extended
+  out to the full register file bitwidth (XLEN).  When the source
+  is also marked as scalar, this is how the compatibility with
+  standard RV LOAD/STORE is preserved by this algorithm.
 
 ## Why SV bitwidth specification is restricted to 4 entries
 
