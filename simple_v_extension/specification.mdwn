@@ -1547,6 +1547,16 @@ Note:
   is also marked as scalar, this is how the compatibility with
   standard RV LOAD/STORE is preserved by this algorithm.
 
+### Example Tables showing LOAD:
+
+LH - 16-bit load, to elwidth 32-bit
+
+| byte 0 | byte 1 | byte 2 | byte 3 | byte 4 | byte 5 | byte 6 | byte 7 |
+| ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ |
+| elem 0         || elem 1         || elem 2         || elem 3         ||
+| elem 4         || elem 5         || elem 6         || elem 7         ||
+
+
 ## Why SV bitwidth specification is restricted to 4 entries
 
 The four entries for SV element bitwidths only allows three over-rides:
