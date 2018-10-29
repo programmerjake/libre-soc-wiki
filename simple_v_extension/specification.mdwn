@@ -1547,14 +1547,19 @@ Note:
   is also marked as scalar, this is how the compatibility with
   standard RV LOAD/STORE is preserved by this algorithm.
 
-### Example Tables showing LOAD:
+### Example Tables showing LOAD elements
 
 **Example: LD x8, x5(0), x8 CSR-elwidth=32, x5 CSR-elwidth=16, VL=7**
 
-This is 64-bit load, with an offset of zero,
-with a source-address elwidth of 16-bit,
-into a destination-register elwidth 32-bit,
-where VL=7, from x5 to x8.
+This is:
+
+* a 64-bit load, with an offset of zero
+* with a source-address elwidth of 16-bit
+* into a destination-register with an elwidth of 32-bit
+* where VL=7
+* from register x5 (actually x5-x6) to x8 (actually x8 to half of x11)
+
+RV64 where XLEN=64 is assumed.
 
 First, the memory table, which, due to the
 element width being 16 and the operation being LD (64), the 64-bits
@@ -1565,7 +1570,7 @@ the next three from the next contiguous register, x6:
 [[!table  data="""
 addr | byte 0 | byte 1 | byte 2 | byte 3 | byte 4 | byte 5 | byte 6 | byte 7 |
 @x5  | elem 0         || elem 1         || elem 2         || elem 3         ||
-@x6  | elem 4         || elem 5         || elem 6         || ......         ||
+@x6  | elem 4         || elem 5         || elem 6         || not loaded     ||
 """]]
 
 Next, the elements are zero-extended from 16-bit to 32-bit, as whilst
