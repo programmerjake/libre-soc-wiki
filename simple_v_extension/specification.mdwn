@@ -1549,7 +1549,11 @@ Note:
 
 ### Example Tables showing LOAD elements
 
-**Example: LD x8, x5(0), x8 CSR-elwidth=32, x5 CSR-elwidth=16, VL=7**
+This section contains examples of vectorised LOAD operations, showing
+how the two stage process works (three if zero/sign-extension is included).
+
+
+#### Example: LD x8, x5(0), x8 CSR-elwidth=32, x5 CSR-elwidth=16, VL=7
 
 This is:
 
@@ -1563,9 +1567,10 @@ RV64 where XLEN=64 is assumed.
 
 First, the memory table, which, due to the
 element width being 16 and the operation being LD (64), the 64-bits
-are subdivided into groups of **four** elements.  And, with VL being
-7, the first four are sourced from the address pointed to by x5, and
-the next three from the next contiguous register, x6:
+loaded from memory are subdivided into groups of **four** elements.
+And, with VL being 7 (deliberately to illustrate that this is reasonable
+and possible), the first four are sourced from the address pointed to
+by x5, and the next three from the next contiguous register, x6:
 
 [[!table  data="""
 addr | byte 0 | byte 1 | byte 2 | byte 3 | byte 4 | byte 5 | byte 6 | byte 7 |
