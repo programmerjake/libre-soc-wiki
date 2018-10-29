@@ -1549,10 +1549,14 @@ Note:
 
 ### Example Tables showing LOAD:
 
-Example: LD x8, x5(0), a 64-bit load, with an offset of zero,
+**Example: LD x8, x5(0), x8 CSR-elwidth=32, x5 CSR-elwidth=16, VL=7**
+
+This is 64-bit load, with an offset of zero,
 with a source-address elwidth of 16-bit,
 into a destination-register elwidth 32-bit,
-where VL=7, from x5 to x8.  First, the memory table, which, due to the
+where VL=7, from x5 to x8.
+
+First, the memory table, which, due to the
 element width being 16 and the operation being LD (64), the 64-bits
 are subdivided into groups of **four** elements.  And, with VL being
 7, the first four are sourced from the address pointed to by x5, and
@@ -1584,11 +1588,11 @@ Lastly, the elements are stored in contiguous blocks, as if x8 was also
 with the last 32 "bits" of x11 being **UNMODIFIED**:
 
 [[!table  data="""
-reg  | byte 7 | byte 6 | byte 5 | byte 4 | byte 3 | byte 2 | byte 1 | byte 0 |
-x8   | 0x0    | 0x0    | elem 1         || 0x0    | 0x0    | elem 0         || 
-x8   | 0x0    | 0x0    | elem 3         || 0x0    | 0x0    | elem 2         || 
-x8   | 0x0    | 0x0    | elem 5         || 0x0    | 0x0    | elem 4         || 
-x8   | **UNMODIFIED**                 |||| 0x0    | 0x0    | elem 6         || 
+reg# | byte 7 | byte 6 | byte 5 | byte 4 | byte 3 | byte 2 | byte 1 | byte 0 |
+x8   | 0x0    | 0x0    | elem 1         || 0x0    | 0x0    | elem 0         ||
+x9   | 0x0    | 0x0    | elem 3         || 0x0    | 0x0    | elem 2         ||
+x10  | 0x0    | 0x0    | elem 5         || 0x0    | 0x0    | elem 4         ||
+x11  | **UNMODIFIED**                 |||| 0x0    | 0x0    | elem 6         ||
 """]]
 
 
