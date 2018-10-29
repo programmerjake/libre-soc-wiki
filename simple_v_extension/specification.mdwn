@@ -1600,6 +1600,13 @@ x10  | 0x0    | 0x0    | elem 5         || 0x0    | 0x0    | elem 4         ||
 x11  | **UNMODIFIED**                 |||| 0x0    | 0x0    | elem 6         ||
 """]]
 
+Thus we have data that is loaded from the **addresses** pointed to by
+x5 and x6, zero-extended from 16-bit to 32-bit, stored in the **registers**
+x8 through to half of x11.
+
+Note that whilst the memory addressing table is shown left-to-right byte order, 
+the registers are shown in right-to-left (MSB) order.  This does **not**
+imply that bit or byte-reversal is carried out: it's just easier to visualise.
 
 ## Why SV bitwidth specification is restricted to 4 entries
 
