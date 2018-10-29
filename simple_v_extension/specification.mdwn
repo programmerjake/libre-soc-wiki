@@ -1551,10 +1551,11 @@ Note:
 
 LH - 16-bit load, to elwidth 32-bit
 
-^ byte 0 ^ byte 1 ^ byte 2 ^ byte 3 ^ byte 4 ^ byte 5 ^ byte 6 ^ byte 7 ^
-| ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ |
-| elem 0         || elem 1         || elem 2         || elem 3         ||
-| elem 4         || elem 5         || elem 6         || elem 7         ||
+| addr | byte 0 | byte 1 | byte 2 | byte 3 | byte 4 | byte 5 | byte 6 | byte 7 |
+| ---- | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ |
+| @x5  | elem 0         || elem 1         || elem 2         || elem 3         ||
+| @x6  | elem 4         || elem 5         || elem 6         || elem 7         ||
+| .... | ...... | ...... | ...... | ...... | ...... | ...... | ...... | ...... |
 
 
 ## Why SV bitwidth specification is restricted to 4 entries
