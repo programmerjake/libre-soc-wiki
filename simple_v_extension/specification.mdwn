@@ -1549,15 +1549,48 @@ Note:
 
 ### Example Tables showing LOAD:
 
-LH - 16-bit load, to elwidth 32-bit
+Example: LD x8, x5(0), a 64-bit load, with an offset of zero,
+with a source-address elwidth of 16-bit,
+into a destination-register elwidth 32-bit,
+where VL=7, from x5 to x8.  First, the memory table, which, due to the
+element width being 16 and the operation being LD (64), the 64-bits
+are subdivided into groups of **four** elements.  And, with VL being
+7, the first four are sourced from the address pointed to by x5, and
+the next three from the next contiguous register, x6:
 
 [[!table  data="""
-| addr | byte 0 | byte 1 | byte 2 | byte 3 | byte 4 | byte 5 | byte 6 | byte 7 |
-| ---- | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ |
-| @x5  | elem 0         || elem 1         || elem 2         || elem 3         ||
-| @x6  | elem 4         || elem 5         || elem 6         || elem 7         ||
-| .... | ...... | ...... | ...... | ...... | ...... | ...... | ...... | ...... |
+addr | byte 0 | byte 1 | byte 2 | byte 3 | byte 4 | byte 5 | byte 6 | byte 7 |
+@x5  | elem 0         || elem 1         || elem 2         || elem 3         ||
+@x6  | elem 4         || elem 5         || elem 6         || ......         ||
 """]]
+
+Next, the elements are zero-extended from 16-bit to 32-bit, as whilst
+the elwidth CSR entry for x5 is 16-bit, the destination elwidth on x8 is 32.
+
+[[!table  data="""
+byte 3 | byte 2 | byte 1 | byte 0 |
+0x0    | 0x0    | elem0          ||
+0x0    | 0x0    | elem1          ||
+0x0    | 0x0    | elem2          ||
+0x0    | 0x0    | elem3          ||
+0x0    | 0x0    | elem4          ||
+0x0    | 0x0    | elem5          ||
+0x0    | 0x0    | elem6          ||
+0x0    | 0x0    | elem7          ||
+"""]]
+
+Lastly, the elements are stored in contiguous blocks, as if x8 was also
+"memory".  That "memory" happens to cover registers x8, x9, x10 and x11,
+with the last 32 "bits" of x11 being **UNMODIFIED**:
+
+[[!table  data="""
+reg  | byte 7 | byte 6 | byte 5 | byte 4 | byte 3 | byte 2 | byte 1 | byte 0 |
+x8   | 0x0    | 0x0    | elem 1         || 0x0    | 0x0    | elem 0         || 
+x8   | 0x0    | 0x0    | elem 3         || 0x0    | 0x0    | elem 2         || 
+x8   | 0x0    | 0x0    | elem 5         || 0x0    | 0x0    | elem 4         || 
+x8   | **UNMODIFIED**                 |||| 0x0    | 0x0    | elem 6         || 
+"""]]
+
 
 ## Why SV bitwidth specification is restricted to 4 entries
 
