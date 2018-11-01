@@ -1657,6 +1657,29 @@ in advance to avoid.
 
 TBD: floating-point compare and other exception handling
 
+------
+
+Multi-LR/SC
+
+Please don't try to use the L1 itself.
+
+Use the Load and Store buffers which capture instruction state prior
+to being accessed in the L1 (and prior to data arriving in the case of
+Store buffer).
+
+Also, use the L1 Miss buffers as these already HAVE to be snooped by
+coherence traffic. These are used to monitor that all participating
+cache lines remain interference free, and amalgamate same into a CPU
+signal accessible ia branch or predicate.
+
+The Load buffers manage inbound traffic
+The Store buffers manage outbound traffic.
+
+Done properly, the participating cache lines can exceed the associativity
+of the L1 cache without architectural harm (may incur additional latency).
+
+<https://groups.google.com/d/msg/comp.arch/QVl3c9vVDj0/ol_232-pAQAJ>
+
 # References
 
 * SIMD considered harmful <https://www.sigarch.org/simd-instructions-considered-harmful/>
