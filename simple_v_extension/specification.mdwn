@@ -161,8 +161,10 @@ Examples:
 * When bank = 1 and size = 3, SVREGCFG1 through to SVREGCFG7 are
   enabled, and SVPREDCFG1 through to SVPREGCFG7 are enabled.
 * When bank = 3 and size = 0, SVREGCFG3 and SVPREDCFG3 are enabled.
-* When bank = 3 and size = 0, SVREGCFG3 and SVPREDCFG3 are enabled.
-* When bank = 7 and size = 1, SVREGCFG7 and SVPREDCFG7 are enabled.
+* When bank = 3 and size = 1, SVREGCFG3-4 and SVPREDCFG3-4 are enabled.
+* When bank = 7 and size = 1, SVREGCFG7 and SVPREDCFG7 are enabled
+  (because there are only 8 32-bit CSRs there does not exist a
+  SVREGCFG8 or SVPREDCFG8 to enable).
 * When bank = 7 and size = 3, SimpleV is entirely disabled.
 
 In this way it is possible to enable and disable SimpleV with a
