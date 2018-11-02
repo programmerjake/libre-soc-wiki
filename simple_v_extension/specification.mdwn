@@ -71,16 +71,19 @@ when and whether to parallelise operations **entirely to the implementor**.
 
 The principle of SV is as follows:
 
-* CSRs indicating which registers are "tagged" as parallel are set up
+* CSRs indicating which registers are "tagged" as "vectorised"
+  (potentially parallel, depending on the microarchitecture)
+  must be set up
 * A "Vector Length" CSR is set, indicating the span of any future
   "parallel" operations.
 * A **scalar** operation, just after the decode phase and before the
   execution phase, checks the CSR register tables to see if any of
   its registers have been marked as "vectorised"
 * If so, a hardware "macro-unrolling loop" is activated, of length
-  VL, that effectively issues **multiple** identical instructions (whether
-  they be sequential or parallel is entirely up to the implementor),
+  VL, that effectively issues **multiple** identical instructions
   using contiguous sequentially-incrementing registers.
+  **Whether they be executed sequentially or in parallel or a
+  mixture of both is entirely up to the implementor**.
 
 In this way an entire scalar algorithm may be vectorised with
 the minimum of modification to the hardware and to compiler toolchains.
