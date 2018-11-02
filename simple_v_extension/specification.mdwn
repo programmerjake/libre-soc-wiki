@@ -620,9 +620,12 @@ There are three "shape" CSRs, SHAPE0, SHAPE1, SHAPE2, 32-bits in each,
 which have the same format.  When each SHAPE CSR is set entirely to zeros,
 remapping is disabled: the register's elements are a linear (1D) vector.
 
-| 26..24  | 23 | 22..16  | 15 | 14..8   | 7  | 6..0    |
-| ------- | -- | ------- | -- | ------- | -- | ------- |
-| permute | 0  | zdimsz  | 0  | ydimsz  | 0  | xdimsz  |
+| 26..24  | 23      | 22..16  | 15      | 14..8   | 7       | 6..0    |
+| ------- | --      | ------- | --      | ------- | --      | ------- |
+| permute | offs[2] | zdimsz  | offs[1] | ydimsz  | offs[0] | xdimsz  |
+
+offs is a 3-bit field, spread out across bits 7, 15 and 23, which
+is added to the element index during the loop calculation.
 
 xdimsz, ydimsz and zdimsz are offset by 1, such that a value of 0 indicates
 that the array dimensionality for that dimension is 1.  A value of xdimsz=2
@@ -657,9 +660,10 @@ shows this more clearly, and may be executed as a python program:
     lims = [xdim, ydim, zdim]
     idxs = [0,0,0] # starting indices
     order = [1,0,2] # experiment with different permutations, here
+    offs = 0        # experiment with different offsets, here
 
     for idx in range(xdim * ydim * zdim):
-        new_idx = idxs[0] + idxs[1] * xdim + idxs[2] * xdim * ydim
+        new_idx = offs + idxs[0] + idxs[1] * xdim + idxs[2] * xdim * ydim
         print new_idx,
         for i in range(3):
             idxs[order[i]] = idxs[order[i]] + 1
@@ -699,6 +703,11 @@ changed to target different registers.
 
 Note that:
 
+* Over-running the register file clearly has to be detected and
+  an exception thrown
+* When non-default elwidths are set, the exact same algorithm still
+  applies (i.e. it offsets elements *within* registers rather than
+  entire registers).
 * If permute option 000 is utilised, the actual order of the
   reindexing does not change!
 * If two or more dimensions are set to zero, the actual order does not change!
@@ -810,16 +819,31 @@ Floating-point uses fp csrs.
         if (int_vec[rs1].isvector)  { irs1 += 1; }
         if (int_vec[rs2].isvector)  { irs2 += 1; }
 
+Note that for simplicity there is quite a lot missing from the above
+pseudo-code: element widths, zeroing on predication, dimensional
+reshaping and offsets and so on.  However it demonstrates the basic
+principle.  Augmentations that produce the full pseudo-code are covered in
+other sections.
+
 ## Instruction Format
 
-There are **no operations added to SV, at all**.
-Instead SV  *overloads* pre-existing branch operations into predicated
+It is critical to appreciate that there are
+**no operations added to SV, at all**.
+
+Instead, by using CSRs to tag registers as an indication of "changed behaviour",
+SV *overloads* pre-existing branch operations into predicated
 variants, and implicitly overloads arithmetic operations, MV,
-FCVT, and LOAD/STORE
-depending on CSR configurations for bitwidth and
-predication.  **Everything** becomes parallelised.  *This includes
-Compressed instructions* as well as any
-future instructions and Custom Extensions.
+FCVT, and LOAD/STORE depending on CSR configurations for bitwidth
+and predication.  **Everything** becomes parallelised.  *This includes
+Compressed instructions* as well as any future instructions and Custom
+Extensions.
+
+Note: CSR tags to change behaviour of instructions is nothing new, including
+in RISC-V.  UXL, SXL and MXL change the behaviour so that XLEN=32/64/128.
+FRM changes the behaviour of the floating-point unit, to alter the rounding
+mode.  Other architectures change the LOAD/STORE byte-order from big-endian
+to little-endian on a per-instruction basis.  SV is just a little more...
+comprehensive in its effect on instructions.
 
 ## Branch Instructions
 
