@@ -1562,15 +1562,15 @@ This is:
 * into a destination-register with an elwidth of 32-bit
 * where VL=7
 * from register x5 (actually x5-x6) to x8 (actually x8 to half of x11)
-
-RV64 where XLEN=64 is assumed.
+* RV64, where XLEN=64 is assumed.
 
 First, the memory table, which, due to the
 element width being 16 and the operation being LD (64), the 64-bits
 loaded from memory are subdivided into groups of **four** elements.
 And, with VL being 7 (deliberately to illustrate that this is reasonable
-and possible), the first four are sourced from the address pointed to
-by x5, and the next three from the next contiguous register, x6:
+and possible), the first four are sourced from the offset addresses pointed
+to by x5, and the next three from the ofset addresses pointed to by
+the next contiguous register, x6:
 
 [[!table  data="""
 addr | byte 0 | byte 1 | byte 2 | byte 3 | byte 4 | byte 5 | byte 6 | byte 7 |
@@ -1594,8 +1594,8 @@ byte 3 | byte 2 | byte 1 | byte 0 |
 """]]
 
 Lastly, the elements are stored in contiguous blocks, as if x8 was also
-"memory".  That "memory" happens to cover registers x8, x9, x10 and x11,
-with the last 32 "bits" of x11 being **UNMODIFIED**:
+byte-addressable "memory".  That "memory" happens to cover registers
+x8, x9, x10 and x11, with the last 32 "bits" of x11 being **UNMODIFIED**:
 
 [[!table  data="""
 reg# | byte 7 | byte 6 | byte 5 | byte 4 | byte 3 | byte 2 | byte 1 | byte 0 |
@@ -1608,6 +1608,9 @@ x11  | **UNMODIFIED**                 |||| 0x0    | 0x0    | elem 6         ||
 Thus we have data that is loaded from the **addresses** pointed to by
 x5 and x6, zero-extended from 16-bit to 32-bit, stored in the **registers**
 x8 through to half of x11.
+The end result is that elements 0 and 1 end up in x8, with element 8 being
+shifted up 32 bits, and so on, until finally element 6 is in the
+LSBs of x11.
 
 Note that whilst the memory addressing table is shown left-to-right byte order, 
 the registers are shown in right-to-left (MSB) order.  This does **not**
