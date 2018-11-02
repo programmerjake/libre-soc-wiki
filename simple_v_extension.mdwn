@@ -1680,6 +1680,38 @@ of the L1 cache without architectural harm (may incur additional latency).
 
 <https://groups.google.com/d/msg/comp.arch/QVl3c9vVDj0/ol_232-pAQAJ>
 
+> > > so, let's say instead of another LR *cancelling* the load
+> > > reservation, the SMP core / hardware thread *blocks* for
+> > > up to 63 further instructions, waiting for the reservation
+> > > to clear.
+> > 
+> > Can you explain what you mean by this paragraph?
+> 
+>  best put in sequential events, probably.
+> 
+>  <core1> LR    <-- 64-instruction countdown starts here
+>  <core1> ... 63
+>  <core1> ... 62
+>  <core2> LR same address <--- notes that core1 is on 61,
+>                          so pauses for **UP TO** 61 cycles
+>  <core1> ... 32
+>  <core1> SC <- core1 didn't reach zero, therefore valid, therefore
+>                core2 is now **UNBLOCKED**, is granted the
+>                load-reservation (and begins its **own** 64-cycle
+>                LR instruction countdown)
+>  <core2> ... 63
+>  <core2> ... 62
+>  <core2> ... 
+>  <core2> ...
+>  <core2> SC <- also valid
+
+Looks to me that you could effect the same functionality by simply
+holding onto the cache line in core 1 preventing core 2 from
+<architecturally> getting past the LR.
+
+On the other hand, the freeze is similar to how the MP CRAYs did
+ATOMIC stuff.
+
 # References
 
 * SIMD considered harmful <https://www.sigarch.org/simd-instructions-considered-harmful/>
