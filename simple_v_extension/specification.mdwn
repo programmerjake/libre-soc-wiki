@@ -1679,6 +1679,78 @@ Example SIMD micro-architectural implementation:
 This requires a read on rd, however this is required anyway in order
 to support non-zeroing mode.
 
+## Polymorphic floating-point
+
+Standard scalar RV integer operations base the register width on XLEN,
+which may be changed (UXL in USTATUS, and the corresponding MXL and
+SXL in MSTATUS and SSTATUS respectively).  Integer LOAD, STORE and
+arithmetic operations are therefore restricted to an active XLEN bits,
+with sign or zero extension to pad out the upper bits when XLEN has
+been dynamically set to less than the actual register size.
+
+For scalar floating-point, the active (used / changed) bits are
+specified exclusively by the operation: ADD.S specifies an active
+32-bits, with the upper bits of the source registers needing to
+be all 1s ("NaN-boxed"), and the destination upper bits being
+*set* to all 1s (including on LOAD/STOREs).
+
+Where elwidth is set to default (on any source or the destination)
+it is obvious that this NaN-boxing behaviour can and should be
+preserved.  When elwidth is non-default things are less obvious,
+so need to be thought through.  Here is a normal (scalar) sequence,
+assuming an RV64 which supports Quad (128-bit) FLEN:
+
+* FLD loads 64-bit wide from memory.  Top 64 MSBs are set to all 1s
+* ADD.D performs a 64-bit-wide add.  Top 64 MSBs of destination set to 1s.
+* FSD stores lowest 64-bits from the 128-bit-wide register to memory:
+  top 64 MSBs ignored.
+
+Therefore it makes sense to mirror this behaviour when, for example,
+elwidth is set to 32.  Assume elwidth set to 32 on all source and
+destination registers:
+
+* FLD loads 64-bit wide from memory as **two** 32-bit single-precision
+  floating-point numbers.
+* ADD.D performs **two** 32-bit-wide adds, storing one of the adds
+  in bits 0-31 and the second in bits 32-63.
+* FSD stores lowest 64-bits from the 128-bit-wide register to memory
+
+Here's the thing: it does not make sense to overwrite the top 64 MSBs
+of the registers either during the FLD **or** the ADD.D.  The reason
+is that, effectively, the top 64 MSBs actually represent a completely
+independent 64-bit register, so overwriting it is not only gratuitous
+but may actually be harmful for a future extension to SV which may
+have a way to directly access those top 64 bits.
+
+The decision is therefore **not** to touch the upper parts of floating-point
+registers whereever elwidth is set to non-default values, including
+when "isvec" is false in a given register's CSR entry.  Only when the
+elwidth is set to default **and** isvec is false will the standard
+RV behaviour be followed, namely that the upper bits be modified.
+
+Ultimately if elwidth is default and isvec false on *all* source
+and destination registers, a SimpleV instruction defaults completely
+to standard RV scalar behaviour (this holds true for **all** operations,
+right across the board).
+
+The nice thing here is that ADD.S, ADD.D and ADD.Q when elwidth are
+non-default values are effectively all the same: they all still perform
+multiple ADD operations, just at different widths.  A future extension
+to SimpleV may actually allow ADD.S to access the upper bits of the
+register, effectively breaking down a 128-bit register into a bank
+of 4 independently-accesible 32-bit registers.
+
+In the meantime, although when e.g. setting VL to 8 it would technically
+make no difference to the ALU whether ADD.S, ADD.D or ADD.Q is used,
+using ADD.Q may be an easy way to signal to the microarchitecture that
+it is to receive a higher VL value.  On a superscalar OoO architecture
+there may be absolutely no difference, however on simpler SIMD-style
+microarchitectures they may not necessarily have the infrastructure in
+place to know the difference, such that when VL=8 and an ADD.D instruction
+is issued, it completes in 2 cycles (or more) rather than one, where
+if an ADD.Q had been issued instead on such simpler microarchitectures
+it would complete in one.
+
 ## Specific instruction walk-throughs
 
 This section covers walk-throughs of the above-outlined procedure
