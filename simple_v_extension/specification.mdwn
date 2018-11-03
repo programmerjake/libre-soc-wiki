@@ -617,8 +617,15 @@ The 32-bit REMAP CSR may reshape up to 3 registers:
 
 regidx0-2 refer not to the Register CSR CAM entry but to the underlying
 *real* register (see regidx, the value) and consequently is 7-bits wide.
+When set to zero (referring to x0), clearly reshaping x0 is pointless,
+so is used to indicate "disabled".
 shape0-2 refers to one of three SHAPE CSRs.  A value of 0x3 is reserved.
 Bits 7, 15, 23, 30 and 31 are also reserved, and must be set to zero.
+
+It is anticipated that these specialist CSRs not be very often used.
+Unlike the CSR Register and Predication tables, the REMAP CSRs use
+the full 7-bit regidx so that they can be set once and left alone,
+whilst the CSR Register entries pointing to them are disabled, instead.
 
 ## SHAPE 1D/2D/3D vector-matrix remapping CSRs
 
