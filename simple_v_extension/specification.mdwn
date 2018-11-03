@@ -255,7 +255,7 @@ instruction being executed, and, for twin-predication, the source
 element offset as well.  Interestingly it may hypothetically
 also be used to make the immediately-following instruction to skip a
 certain number of elements, however the recommended method to do
-this is predication.
+this is predication or using the offset mode of the REMAP CSRs.
 
 Setting destoffs and srcoffs is realistically intended for saving state
 so that exceptions (page faults in particular) may be serviced and the
@@ -606,8 +606,10 @@ is removed.
 
 There is one 32-bit CSR which may be used to indicate which registers,
 if used in any operation, must be "reshaped" (re-mapped) from a linear
-form to a 2D or 3D transposed form.  The 32-bit REMAP CSR may reshape
-up to 3 registers:
+form to a 2D or 3D transposed form, or "offset" to permit arbitrary
+access to elements within a register.
+
+The 32-bit REMAP CSR may reshape up to 3 registers:
 
 | 29..28 | 27..26 | 25..24 | 23 | 22..16  | 15 | 14..8   | 7  | 6..0    |
 | ------ | ------ | ------ | -- | ------- | -- | ------- | -- | ------- |
@@ -711,7 +713,7 @@ changed to target different registers.
 Note that:
 
 * Over-running the register file clearly has to be detected and
-  an exception thrown
+  an illegal instruction exception thrown
 * When non-default elwidths are set, the exact same algorithm still
   applies (i.e. it offsets elements *within* registers rather than
   entire registers).
@@ -728,6 +730,11 @@ Note that:
   operands be remapped.  *This even includes C.LDSP* and other operations
   in that category, where in that case it will be the **offset** that is
   remapped (see Compressed Stack LOAD/STORE section).
+* Offset is especially useful, on its own, for accessing elements
+  within the middle of a register.  Without offsets, it is necessary
+  to either use a predicated MV, skipping the first elements, or
+  performing a LOAD/STORE cycle to memory.
+  With offsets, the data does not have to be moved.
 * Setting the total elements (xdim+1) times (ydim+1) times (zdim+1) to
   less than MVL is **perfectly legal**, albeit very obscure.  It permits
   entries to be regularly presented to operands **more than once**, thus
