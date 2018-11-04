@@ -1659,7 +1659,7 @@ The end result is that elements 0 and 1 end up in x8, with element 8 being
 shifted up 32 bits, and so on, until finally element 6 is in the
 LSBs of x11.
 
-Note that whilst the memory addressing table is shown left-to-right byte order, 
+Note that whilst the memory addressing table is shown left-to-right byte order,
 the registers are shown in right-to-left (MSB) order.  This does **not**
 imply that bit or byte-reversal is carried out: it's just easier to visualise
 memory as being contiguous bytes, and emphasises that registers are not
@@ -1873,6 +1873,119 @@ Polymorphic variant:
 * add @ max(rs1, 12) bits
 * RD @ rd bits. sign-extend to rd if rd > max(rs1, 12) otherwise truncate
 
+# Predication Element Zeroing
+
+The introduction of zeroing on traditional vector predication is usually
+intended as an optimisation for lane-based microarchitectures with register
+renaming to be able to save power by avoiding a register read on elements
+that are passed through en-masse through the ALU.  Simpler microarchitectures
+do not have this issue: they simply do not pass the element through to
+the ALU at all, and therefore do not store it back in the destination.
+More complex non-lane-based micro-architectures can, when zeroing is
+not set, use the predication bits to simply avoid sending element-based
+operations to the ALUs, entirely: thus, over the long term, potentially
+keeping all ALUs 100% occupied even when elements are predicated out.
+
+SimpleV's design principle is not based on or influenced by
+microarchitectural design factors: it is a hardware-level API.
+Therefore, looking purely at whether zeroing is *useful* or not,
+(whether less instructions are needed for certain scenarios),
+given that a case can be made for zeroing *and* non-zeroing, the
+decision was taken to add support for both.
+
+Zeroing on predication for arithmetic operations is taken from
+the destination register's predicate.  i.e. the predication *and*
+zeroing settings to be applied to the whole operation come from the
+CSR Predication table entry for the destination register.
+Thus when zeroing is set on predication of a destination element,
+if the predication bit is clear, then the destination element is *set*
+to zero (twin-predication is slightly different, and will be covered
+next).
+
+Thus the pseudo-code loop for a predicated arithmetic operation
+is modified to as follows:
+
+      for (i = 0; i < VL; i++)
+        if not zeroing: # an optimisation
+           while (!(predval & 1<<i) && i < VL)
+             if (int_vec[rd ].isvector)  { id += 1; }
+             if (int_vec[rs1].isvector)  { irs1 += 1; }
+             if (int_vec[rs2].isvector)  { irs2 += 1; }
+           if i == VL:
+             break
+        if (predval & 1<<i)
+           src1 = ....
+           src2 = ...
+           else:
+               result = src1 + src2 # actual add (or other op) here
+           set_polymorphed_reg(rd, destwid, ird, result)
+           if (!int_vec[rd].isvector) break
+        else if zeroing:
+           result = 0
+           set_polymorphed_reg(rd, destwid, ird, result)
+        if (int_vec[rd ].isvector)  { id += 1; }
+        else if (predval & 1<<i) break;
+        if (int_vec[rs1].isvector)  { irs1 += 1; }
+        if (int_vec[rs2].isvector)  { irs2 += 1; }
+
+The optimisation to skip elements entirely is only possible for certain
+micro-architectures when zeroing is not set.  However for lane-based
+micro-architectures this optimisation may not be practical, as it
+implies that elements end up in different "lanes".  Under these
+circumstances it is perfectly fine to simply have the lanes
+"inactive" for predicated elements, even though it results in
+less than 100% ALU utilisation.
+
+Twin-predication is not that much different, except that that
+the source is independently zero-predicated from the destination.
+This means that the source may be zero-predicated *or* the
+destination zero-predicated *or both*, or neither.
+
+When with twin-predication, zeroing is set on the source and not
+the destination, if a predicate bit is set it indicates that a zero
+data element is passed through the operation (the exception being:
+if the source data element is to be treated as an address - a LOAD -
+then the data returned *from* the LOAD is zero, rather than looking up an
+*address* of zero.
+
+When zeroing is set on the destination and not the source, then just
+as with single-predicated operations, a zero is stored into the destination
+element (or target memory address for a STORE).
+
+Zeroing on both source and destination effectively result in a bitwise
+NOR operation of the source and destination predicate: the result is that
+where either source predicate OR destination predicate is set to 0,
+a zero element will ultimately end up in the destination register.
+
+However: this may not necessarily be the case for all operations;
+implementors, particularly of custom instructions, clearly need to
+think through the implications in each and every case.
+
+Here is pseudo-code for a twin zero-predicated operation:
+
+    function op_mv(rd, rs) # MV not VMV!
+      rd = int_csr[rd].active ? int_csr[rd].regidx : rd;
+      rs = int_csr[rs].active ? int_csr[rs].regidx : rs;
+      ps, zerosrc = get_pred_val(FALSE, rs); # predication on src
+      pd, zerodst = get_pred_val(FALSE, rd); # ... AND on dest
+      for (int i = 0, int j = 0; i < VL && j < VL):
+        if (int_csr[rs].isvec && !zerosrc) while (!(ps & 1<<i)) i++;
+        if (int_csr[rd].isvec && !zerodst) while (!(pd & 1<<j)) j++;
+        if ((pd & 1<<j))
+            if ((pd & 1<<j))
+                sourcedata = ireg[rs+i];
+            else
+                sourcedata = 0
+            ireg[rd+j] <= sourcedata
+        else if (zerodst)
+            ireg[rd+j] <= 0
+        if (int_csr[rs].isvec)
+            i++;
+        if (int_csr[rd].isvec)
+            j++;
+        else
+            if ((pd & 1<<j))
+                break;
 
 # Exceptions
 
