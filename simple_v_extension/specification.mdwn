@@ -1987,6 +1987,11 @@ Here is pseudo-code for a twin zero-predicated operation:
             if ((pd & 1<<j))
                 break;
 
+Note that in the instance where the destination is a scalar, the hardware
+loop is ended the moment a value *or a zero* is placed into the destination
+register/element.  Also note that, for clarity, variable element widths
+have been left out of the above.
+
 # Exceptions
 
 TODO: expand.  Exceptions may occur at any time, in any given underlying
