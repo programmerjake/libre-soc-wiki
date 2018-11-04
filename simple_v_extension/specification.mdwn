@@ -2051,16 +2051,13 @@ actually specifically an "option" it is worth noting.
 ## RV32G
 
 Normally in standard RV32 it does not make much sense to have
-RV32G, however it is automatically implied to exist in RV32+SV due to
-the option for the element width to be doubled.  This may be sufficient
-for implementors, such that actually needing RV32G itself (which makes
-no sense given that the RV32 integer register file is 32-bit) may be
-redundant.
+RV32G, The critical instructions that are missing in standard RV32
+are those for moving data to and from the double-width floating-point
+registers into the integer ones, as well as the FCVT routines.
 
-It is a strange combination that may make sense on closer inspection,
-particularly given that under the standard RV32 system many of the opcodes
-to convert and sign-extend 64-bit integers to 64-bit floating-point will
-be missing, as they are assumed to only be present in an RV64 context.
+In an earlier draft of SV, it was possible to specify an elwidth
+of double the standard register size: this had to be dropped,
+and may be reintroduced in future revisions.
 
 ## RV32 (not RV32F / RV32G) and RV64 (not RV64F / RV64G)
 
