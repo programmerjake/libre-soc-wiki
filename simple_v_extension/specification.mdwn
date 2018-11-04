@@ -805,16 +805,18 @@ With some exceptions, where it does not make sense or is simply too
 challenging, all RV-Base instructions are parallelised:
 
 * CSR instructions, whilst a case could be made for fast-polling of
-  a CSR into multiple registers, would require guarantees of strict
-  sequential ordering that SV does not provide.  Therefore, CSRs are
-  not really suitable and are left out.
+  a CSR into multiple registers, or for being able to copy multiple
+  contiguously addressed CSRs into contiguous registers, and so on,
+  are the fundamental core basis of SV.  If parallelised, extreme
+  care would need to be taken.  Additionally, CSR reads are done
+  using x0, and it is *really* inadviseable to tag x0.
 * LUI, C.J, C.JR, WFI, AUIPC are not suitable for parallelising so are
   left as scalar.
 * LR/SC could hypothetically be parallelised however their purpose is
   single (complex) atomic memory operations where the LR must be followed
   up by a matching SC.  A sequence of parallel LR instructions followed
   by a sequence of parallel SC instructions therefore is guaranteed to
-  not be useful. Not least: the guarantees of LR/SC
+  not be useful. Not least: the guarantees of a Multi-LR/SC
   would be impossible to provide if emulated in a trap.
 * EBREAK, NOP, FENCE and others do not use registers so are not inherently
   paralleliseable anyway.
