@@ -124,6 +124,28 @@ And likewise for M-Mode:
 Both Supervisor and M-Mode have their own (small) CSR register and
 predication tables of only 4 entries each.
 
+The access pattern for these groups of CSRs in each mode follows the
+same pattern for other CSRs that have M-Mode and S-Mode "mirrors":
+
+* In M-Mode, the S-Mode and U-Mode CSRs are separate and distinct.
+* In S-Mode, accessing and changing of the M-Mode CSRs is identical
+  to changing the S-Mode CSRs.  Accessing and changing the U-Mode
+  CSRs is permitted.
+* In U-Mode, accessing and changing of the S-Mode and U-Mode CSRs
+  is prohibited.
+
+In M-Mode, only the M-Mode CSRs are in effect, i.e. it is only the
+M-Mode MVL, the M-Mode STATE and so on that influences the processor
+behaviour.  Likewise for S-Mode, and likewise for U-Mode.
+
+This has the interesting benefit of allowing M-Mode (or S-Mode)
+to be set up, for context-switching to take place, and, on return
+back to the higher privileged mode, the CSRs of that mode will be
+exactly as they were.  Thus, it becomes possible for example to
+set up CSRs suited best to aiding and assisting low-latency fast
+context-switching *once and only once*, without the need for
+re-initialising the CSRs needed to do so.
+
 ## CFG
 
 This CSR may be used to switch between subsets of the CSR Register and
@@ -267,7 +289,7 @@ User-Mode STATE will not change (not be used) in M-Mode or S-Mode
 
 The format of the STATE CSR is as follows:
 
-| (28..26) | (25..24) | (23..18) | (17..12) | (11..6) | (5...0) |
+| (28..27) | (26..24) | (23..18) | (17..12) | (11..6) | (5...0) |
 | -------- | -------- | -------- | -------- | ------- | ------- |
 | size     | bank     | destoffs | srcoffs  | vl      | maxvl   |
 
