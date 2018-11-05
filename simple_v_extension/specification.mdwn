@@ -83,7 +83,8 @@ The principle of SV is as follows:
   VL, that effectively issues **multiple** identical instructions
   using contiguous sequentially-incrementing registers.
   **Whether they be executed sequentially or in parallel or a
-  mixture of both is entirely up to the implementor**.
+  mixture of both or punted to software-emulation in a trap handler
+  is entirely up to the implementor**.
 
 In this way an entire scalar algorithm may be vectorised with
 the minimum of modification to the hardware and to compiler toolchains.
