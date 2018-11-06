@@ -2157,4 +2157,11 @@ TODO: update elwidth to be default / 8 / 16 / 32
 TODO: document different lengths for INT / FP regfiles, and provide
 as part of info register. 00=32, 01=64, 10=128, 11=reserved.
 
+---
 
+push/pop of vector config state:
+<https://groups.google.com/d/msg/comp.arch/bGBeaNjAKvc/z2d_cST7AgAJ>
+
+when Bank in CFG is altered, shift the "addressing" of Reg and
+Pred CSRs to match.  i.e. treat the Reg and Pred CSRs as a
+"mini stack".
