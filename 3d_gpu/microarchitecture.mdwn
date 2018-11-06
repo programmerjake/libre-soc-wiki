@@ -6,11 +6,20 @@
   each core with full 4-wide SIMD-style predicated ALUs
 * 6GFLOPS single-precision FP
 * 128 64-bit FP and 128 64-bit INT register files
-* RV64GC compliance
+* RV64GC compliance for running full GNU/Linux-based OS
+* SimpleV compliance
+* xBitManip (required for VPU and ideal for predication)
 * 4-lane 1Rx1W SRAMs for registers numbered 32 and above;
   Multi-R x Multi-W for registers 1-31.
   TODO: consider 2R for registers to be used as predication targets
   if >= 32.
+* Potentially: Lane-swapping / crossing / data-multiplexing
+  bus on register data
+* Potentially: Registers subdivided into 16-bit, to match
+  elwidth down to 16-bit (for FP16).  8-bit elwidth only
+  goes down as far as twin-SIMD (with predication).  This
+  requires registers to have extra hidden bits: register
+  x30 is now "x30:0+x30.1+x30.2+x30.3".  have to discuss.
 
 # Conversation Notes
 
