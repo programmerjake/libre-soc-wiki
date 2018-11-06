@@ -1,3 +1,37 @@
+# High-level architectural Requirements
+
+* SMP Cache coherency (TileLink?)
+* Minumum 800mhz
+* Minimum 2-core SMP, more likely 4-core uniform design,
+  each core with full 4-wide SIMD-style predicated ALUs
+* 6GFLOPS single-precision FP
+* 128 64-bit FP and 128 64-bit INT register files
+* RV64GC compliance
+* 4-lane 1Rx1W SRAMs for registers numbered 32 and above;
+  Multi-R x Multi-W for registers 1-31.
+  TODO: consider 2R for registers to be used as predication targets
+  if >= 32.
+
+# Conversation Notes
+
+----
+
+'m thinking about using tilelink (or something similar) internally as
+having a cache-coherent protocol is required for implementing Vulkan
+(unless you want to turn off the cache for the GPU memory, which I
+don't think is a good idea), axi is not a cache-coherent protocol,
+and tilelink already has atomic rmw operations built into the protocol.
+We can use an axi to tilelink bridge to interface with the memory.
+
+I'm thinking we will want to have a dual-core GPU since a single
+core with 4xSIMD is too slow to achieve 6GFLOPS with a reasonable
+clock speed. Additionally, that allows us to use an 800MHz core clock
+instead of the 1.6GHz we would otherwise need, allowing us to lower the
+core voltage and save power, since the power used is proportional to
+F\*V^2. (just guessing on clock speeds.)
+
+----
+
 I don't know about power, however I have done some research and a 4Kbyte
 (or 16, icr) SRAM (what I was thinking of for a tile buffer) takes in the
 ballpark of 1000 um^2 in 28nm.
