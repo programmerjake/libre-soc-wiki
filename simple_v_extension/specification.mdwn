@@ -7,6 +7,8 @@
 With thanks to:
 
 * Allen Baum
+* Bruce Hoult
+* comp.arch
 * Jacob Bachmeyer
 * Guy Lemurieux
 * Jacob Lifshay
@@ -1485,13 +1487,51 @@ to ensure a correct answer.  Example:
 * the maximum bitwidth is thus determined to be 16-bit - max(8,16)
 * RS2 is **truncated to a range of values from 0 to 15**: RS2 & (16-1)
 
-Pseudocode for this example would therefore be:
+Pseudocode (in spike) for this example would therefore be:
 
     WRITE_RD(sext_xlen(zext_16bit(RS1) << (RS2 & (16-1))));
 
 This example illustrates that considerable care therefore needs to be
 taken to ensure that left and right shift operations are implemented
-correctly.
+correctly.  The key is that
+
+* The operation bitwidth is determined by the maximum bitwidth
+  of the *source registers*, **not** the destination register bitwidth
+* The result is then sign-extend (or truncated) as appropriate.
+
+## Polymorphic MULH/MULHU/MULHSU
+
+MULH is designed to take the top half MSBs of a multiply that
+does not fit within the range of the source operands, such that
+smaller width operations may produce a full double-width multiply
+in two cycles.  The issue is: SV allows the source operands to
+have variable bitwidth.
+
+Here again special attention has to be paid to the rules regarding
+bitwidth, which, again, are that the operation is performed at
+the maximum bitwidth of the **source** registers.  Therefore:
+
+* An 8-bit x 8-bit multiply will create a 16-bit result that must
+  be shifted down by 8 bits
+* A 16-bit x 8-bit multiply will create a 24-bit result that must
+  be shifted down by 16 bits (top 8 bits being zero)
+* A 16-bit x 16-bit multiply will create a 32-bit result that must
+  be shifted down by 16 bits
+* A 32-bit x 16-bit multiply will create a 48-bit result that must
+  be shifted down by 32 bits
+* A 32-bit x 8-bit multiply will create a 40-bit result that must
+  be shifted down by 32 bits
+
+So again, just as with shift-left and shift-right, the result
+is shifted down by the maximum of the two source register bitwidths.
+And, exactly again, truncation or sign-extension is performed on the
+result.  If sign-extension is to be carried out, it is performed
+from the same maximum of the two source register bitwidths out
+to the result element's bitwidth.
+
+If truncation occurs, i.e. the top MSBs of the result are lost,
+this is "Officially Not Our Problem", i.e. it is assumed that the
+programmer actually desires the result to be truncated.
 
 ## Polymorphic elwidth on LOAD/STORE <a name="elwidth_loadstore"></a>
 
