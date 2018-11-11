@@ -196,7 +196,7 @@ In this way it is possible to enable and disable SimpleV with a
 single instruction, and, furthermore, on context-switching the quantity
 of CSRs to be saved and restored is greatly reduced.
 
-## MAXVECTORLENGTH (MVL)
+## MAXVECTORLENGTH (MVL) <a name="mvl" />
 
 MAXVECTORLENGTH is the same concept as MVL in RVV, except that it
 is variable length and may be dynamically set.  MVL is
@@ -214,7 +214,7 @@ means that MVL==1.  When setting the MVL CSR to 3, this actually means
 that MVL==4, and so on.  This is expressed more clearly in the "pseudocode"
 section, where there are subtle differences between CSRRW and CSRRWI.
 
-## Vector Length (VL)
+## Vector Length (VL) <a name="vl" />
 
 VSETVL is slightly different from RVV.  Like RVV, VL is set to be within
 the range 1 <= VL <= MVL (where MVL in turn is limited to 1 <= MVL <= XLEN)
