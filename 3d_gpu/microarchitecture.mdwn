@@ -9,10 +9,12 @@
 * RV64GC compliance for running full GNU/Linux-based OS
 * SimpleV compliance
 * xBitManip (required for VPU and ideal for predication)
-* 4-lane 1Rx1W SRAMs for registers numbered 32 and above;
+* 4-lane 2Rx1W SRAMs for registers numbered 32 and above;
   Multi-R x Multi-W for registers 1-31.
   TODO: consider 2R for registers to be used as predication targets
   if >= 32.
+* Idea: generic implementation of ports on register file so as to be able
+  to experiment with different arrangements.
 * Potentially: Lane-swapping / crossing / data-multiplexing
   bus on register data (particularly because of SHAPE-REMAP (1D/2D/3D)
 * Potentially: Registers subdivided into 16-bit, to match
@@ -76,4 +78,4 @@ least-significant bits of the 7-bit register number.
 * <https://en.wikipedia.org/wiki/Tomasulo_algorithm>
 * <https://en.wikipedia.org/wiki/Reservation_station>
 * Register File Bank Cacheing <https://www.princeton.edu/~rblee/ELE572Papers/MultiBankRegFile_ISCA2000.pdf>
-
+* Discussion <http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2018-November/000157.html>
