@@ -404,7 +404,7 @@ The purpose of the Register CSR table is four-fold:
   if it is ever used as a source or destination in any given operation.
   This involves a level of indirection through a 5-to-7-bit lookup table,
   such that **unmodified** operands with 5 bit (3 for Compressed) may
-  access up to **64** registers.
+  access up to **128** registers.
 * To indicate whether, after redirection through the lookup table, the
   register is a vector (or remains a scalar).
 * To over-ride the implicit or explicit bitwidth that the operation would
@@ -412,7 +412,7 @@ The purpose of the Register CSR table is four-fold:
 
 TODO: update
 
-| RgCSR | | 15       | (14..8)  | 7   | (6..5) | (4..0)  |
+| RegCAM | | 15       | (14..8)  | 7   | (6..5) | (4..0)  |
 | ----- | | -        | -        | -   | ------ | ------- |
 | 0     | | isvec0   | regidx0  | i/f | vew0   | regkey  |
 | 1     | | isvec1   | regidx1  | i/f | vew1   | regkey  |
@@ -424,12 +424,12 @@ to integer registers; 0 indicates that it is relevant to floating-point
 registers.  vew has the following meanings, indicating that the instruction's
 operand size is "over-ridden" in a polymorphic fashion:
 
-| vew | bitwidth   |
-| --- | ---------- |
-| 00  | default    |
-| 01  | default/2  |
-| 10  | default\*2 |
-| 11  | 8          |
+| vew | bitwidth            |
+| --- | ------------------- |
+| 00  | default (XLEN/FLEN) |
+| 01  | 8 bit               |
+| 10  | 16 bit              |
+| 11  | 32 bit              |
 
 As the above table is a CAM (key-value store) it may be appropriate
 (faster, implementation-wise) to expand it as follows:
@@ -448,52 +448,96 @@ The actual size of the CSR Register table depends on the platform
 and on whether other Extensions are present (RV64G, RV32E, etc.).
 For details see "Subsets" section.
 
-16-bit CSR Register CAM entries are mapped directly into 32-bit
-on any RV32-based system, however RV64 (XLEN=64) and RV128 (XLEN=128)
-are slightly different: the 16-bit entries appear (and can be set)
-multiple times, in an overlapping fashion.  Here is the table for RV64:
+There are two CSRs (per privilege level) for adding to and removing
+entries from the table, which, conceptually may be viewed as either
+a register window (similar to SPARC) or as the "top of a stack".
 
-| CSR#  | 63..48  | 47..32  | 31..16  | 15..0   |
-| 0x4c0 | RgCSR3  | RgCSR2  | RgCSR1  | RgCSR0  |
-| 0x4c1 | RgCSR5  | RgCSR4  | RgCSR3  | RgCSR2  |
-| 0x4c2 | ...     | ...     | ...     | ...     |
-| 0x4c1 | RgCSR15 | RgCSR14 | RgCSR13 | RgCSR12 |
-| 0x4c8 | n/a     | n/a     | RgCSR15 | RgCSR4  |
+* SVREGTOP will push or pop entries onto the top of the "stack"
+  (highest non-zero indexed entry in the table)
+* SVREGBOT will push or pop entries from the bottom (always
+  element indexed as zero.
 
-The rules for writing to these CSRs are that any entries above the ones
-being set will be automatically wiped (to zero), so to fill several entries
-they must be written in a sequentially increasing manner.  This functionality
-was in an early draft of RVV and it means that, firstly, compilers do not have
-to spend time zero-ing out CSRs unnecessarily, and secondly, that on
-context-switching (and function calls) the number of CSRs that may need
-saving is implicitly known.
+In addition, note that CSRRWI behaviour is completely different
+from CSRRW when writing to these two CSR registers.  The CSRRW
+behaviour: the src register is subdivided into 16-bit chunks,
+and each non-zero chunk is pushed/popped separately.  The
+CSRRWI behaviour: the immediate indicates the number of
+entries in the table to be popped.
 
-The reason for the overlapping entries is that in the worst-case on an
-RV64 system, only 4 64-bit CSR reads/writes are required for a full
-context-switch (and an RV128 system, only 2 128-bit CSR reads/writes).
+CSRRWI:
 
---
+* The src register indicates how many entries to pop from the
+  CAM table.
+* "CSRRWI SVREGTOP, 3" indicates that the top 3
+  entries are to be zero'd and returned as the CSR return
+  result.  The top entry is returned in bits 0-15, the
+  next entry down in bits 16-31, and when XLEN==64, an
+  extra 2 entries are also returned.
+* "CSRRWI SVREGBOT, 3" indicates that the bottom 3 entries are
+  to be returned, and the entries with indices above 3 are
+  to be shuffled down.  The first entry to be popped off the
+  bottom is returned in bits 0-15, the second entry as bits
+  16-31 and so on.
+* If XLEN==32, only a maximum of 2 entries may be returned
+  (and shuffled).  If XLEN==64, only a maximum of 4 entries
+  may be returned
+* If however the destination register is x0 (zero), then
+  the exact number of entries requested will be removed
+  (shuffled down).
 
-TODO: move elsewhere
+CSRRW when src == 0:
 
-    # TODO: use elsewhere (retire for now)
-    vew = CSRbitwidth[rs1]
-    if (vew == 0)
-        bytesperreg = (XLEN/8) # or FLEN as appropriate
-    elif (vew == 1)
-        bytesperreg = (XLEN/4) # or FLEN/2 as appropriate
-    else:
-        bytesperreg = bytestable[vew] # 8 or 16
-    simdmult = (XLEN/8) / bytesperreg # or FLEN as appropriate
-    vlen = CSRvectorlen[rs1] * simdmult
-    CSRvlength = MIN(MIN(vlen, MAXVECTORLENGTH), rs2)
+* When the src register is all zeros, this is a request to
+  pop one and only one 16-bit element from the table.
+* "CSRRW SVREGTOP, 0" will return (and clear) the highest
+  non-zero 16-bit entry in the table
+* "CSRRW SVREGBOT, 0" will return (and clear) the zero'th
+  16-bit entry in the table, and will shuffle down all
+  other entries (if any) by one index.
 
-The reason for multiplying the vector length by the number of SIMD elements
-(in each individual register) is so that each SIMD element may optionally be
-predicated.
+CSRRW when src != 0:
 
-An example of how to subdivide the register file when bitwidth != default
-is given in the section "Bitwidth Virtual Register Reordering".
+All other CSRRW behaviours are a "loop", taking 16-bits
+at a time from the src register.  Obviously, for XLEN=32
+that can only be up to 2 16-bit entries, however for XLEN=64
+it can be up to 4.
+
+* When the src 16-bit chunk is non-zero and there already exists
+  an entry with the exact same "regkey" (bits 0-4), the
+  entry is **updated**.  No other modifications are made.
+* When the 16-bit chunk is non-zero and there does not exist
+  an entry, the new value will be placed at the end
+  (in the highest non-zero slot), or at the beginning
+  (shuffling up all other entries to make room).
+* If there is not enough room, the entry at the opposite
+  end will become part of the CSR return result.
+* The process is repeated for the next 16-bit chunk (starting
+  with bits 0-15 and moving next to 16-31 and so on), until
+  the limit of XLEN is reached or a chunk is all-zeros, at
+  which point the looping stops.
+* Any 16-bit entries that are pushed out of the stack
+  (from either end) are concatenated in order (first entry
+  pushed out is bits 0-15 of the return result).
+
+What this behaviour basically does is allow the CAM table to
+effectively be like the top entries of a stack.  Entries that
+get returned from CSRRW SVREGTOP can be *actually* stored on the stack,
+such that after a function call exits, CSRRWI SVREGTOP may be used
+to delete the callee's CAM entries, and the caller's entries may then
+be pushed *back*, using CSRRW SVREGBOT.
+
+Context-switching may be carried out in a loop, where CSRRWI may
+be called to "pop" values that are tested for being non-zero, and
+transferred onto the stack with C.SWSP using only around 4-5 instructions.
+CSRRW may then be used in combination with C.LWSP to get the CAM entries
+off the stack and back into the CAM table, again with a loop using
+only around 4-5 instructions.
+
+Contrast this with needing around 6-7 instructions (8-9 without SV on
+RV64, and 16-17 on RV32) to do a context-switch of fixed-address CSRs:
+a sequence of fixed-address C.LWSP with fixed offsets plus fixed-address
+CSRRWs, and that is without testing if any of the entries are zero
+or not.
 
 ## Predication CSR <a name="predication_csr_table"></a>
 
