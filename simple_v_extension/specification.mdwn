@@ -1032,20 +1032,42 @@ for branches this is **not** the case.  src2 does **not** have
 to have its CSR register entry marked as active in order for
 predication on src2 to be active.
 
+Also note: SV Branch operations are **not** twin-predicated
+(see Twin Predication section).  This would require three
+element offsets: one to track src1, one to track src2 and a third
+to track where to store the accumulation of the results.  Given
+that the element offsets need to be exposed via CSRs so that
+the parallel hardware looping may be made re-entrant on traps
+and exceptions, the decision was made not to make SV Branches
+twin-predicated.
+
 ### Floating-point Comparisons
 
 There does not exist floating-point branch operations, only compare.
 Interestingly no change is needed to the instruction format because
 FP Compare already stores a 1 or a zero in its "rd" integer register
 target, i.e. it's not actually a Branch at all: it's a compare.
-Thus, no change is made to the floating-point comparison, so
 
-It is however noted that an entry "FNE" (the opposite of FEQ) is missing,
+In RV (scalar) Base, a branch on a floating-point compare is
+done via the sequence "FEQ x1, f0, f5; BEQ x1, x0, #jumploc".
+This does extend to SV, as long as x1 (in the example sequence given)
+is vectorised.  When that is the case, x1..x(1+VL-1) will also be
+set to 0 or 1 depending on whether f0==f5, f1==f6, f2==f7 and so on.
+The BEQ that follows will *also* compare x1==x0, x2==x0, x3==x0 and
+so on.  Consequently, unlike integer-branch, FP Compare needs no
+modification in its behaviour.
+
+In addition, it is noted that an entry "FNE" (the opposite of FEQ) is missing,
 and whilst in ordinary branch code this is fine because the standard
 RVF compare can always be followed up with an integer BEQ or a BNE (or
 a compressed comparison to zero or non-zero), in predication terms that
 becomes more of an impact.  To deal with this, SV's predication has
 had "invert" added to it.
+
+Also: note that FP Compare may be predicated, using the destination
+integer register (rd) to determine the predicate.  FP Compare is **not**
+a twin-predication operation, as, again, just as with SV Branches,
+there are three registers involved: FP src1, FP src2 and INT rd.
 
 ### Compressed Branch Instruction
 
