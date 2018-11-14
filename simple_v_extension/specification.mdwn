@@ -963,6 +963,13 @@ Where vectorisation is present on either or both src registers, the
 branch may stil go ahead if any only if *all* tests succeed (i.e. excluding
 those tests that are predicated out).
 
+Note that when either src1 or src2 have zero-predication enabled,
+a cleared bit in the respective predicate (src1's predicate register
+or src2's predicate register, respectively) indicates that a zero is passed
+into the compare unit (instead of the corresponding respective src1 or
+src2 element), whilst a set bit indicates that the src1 (or src2) element
+be passed into the compare unit.
+
 Note that just as with the standard (scalar, non-predicated) branch
 operations, BLE, BGT, BLEU and BTGU may be synthesised by inverting
 src1 and src2.
