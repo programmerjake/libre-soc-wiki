@@ -964,11 +964,15 @@ branch may stil go ahead if any only if *all* tests succeed (i.e. excluding
 those tests that are predicated out).
 
 Note that when either src1 or src2 have zero-predication enabled,
-a cleared bit in the respective predicate (src1's predicate register
-or src2's predicate register, respectively) indicates that a zero is passed
-into the compare unit (instead of the corresponding respective src1 or
-src2 element), whilst a set bit indicates that the src1 (or src2) element
-be passed into the compare unit.
+a cleared bit in the respective predicate indicates that the result
+of the compare is set to "false", i.e. that the corresponding
+destination bit (or result)) be set to zero.  Contrast this with
+when zeroing is not set: bits in the destination predicate are
+only *set*; they are **not** cleared.  This is important to appreciate,
+as there may be an expectation that, going into the hardware-loop,
+the destination predicate is always expected to be set to zero:
+this is **not** the case.  The destination predicate is only set
+to zero if **zeroing** is enabled.
 
 Note that just as with the standard (scalar, non-predicated) branch
 operations, BLE, BGT, BLEU and BTGU may be synthesised by inverting
@@ -1000,34 +1004,44 @@ complex), this becomes:
     ps = get_pred_val(I/F==INT, rs1);
     rd = get_pred_val(I/F==INT, rs2); # this may not exist
 
-    if not exists(rd)
-        temporary_result = 0
+    if not exists(rd) or zeroing:
+        result = 0
     else
-        preg[rd] = 0; # initialise to zero
+        result = preg[rd]
 
     for (int i = 0; i < VL; ++i)
-      if (ps & (1<<i)) && (cmp(s1 ? reg[src1+i]:reg[src1],
+      if (zeroing)
+        if not (ps & (1<<i))
+           result &= ~(1<<i);
+      else if (ps & (1<<i))
+          if (cmp(s1 ? reg[src1+i]:reg[src1],
                                s2 ? reg[src2+i]:reg[src2])
-          if not exists(rd)
-              temporary_result |= 1<<i;
+              result |= 1<<i;
           else
-              preg[rd] |= 1<<i;  # bitfield not vector
+              result &= ~(1<<i);
 
      if not exists(rd)
-        if temporary_result == ps
+        if result == ps
             goto branch
      else
+        preg[rd] = result # store in destination
         if preg[rd] == ps
             goto branch
 
 Notes:
 
-* zeroing has been temporarily left out of the above pseudo-code,
-  for clarity
 * Predicated SIMD comparisons would break src1 and src2 further down
   into bitwidth-sized chunks (see Appendix "Bitwidth Virtual Register
   Reordering") setting Vector-Length times (number of SIMD elements) bits
   in Predicate Register rd, as opposed to just Vector-Length bits.
+* If an exception (trap) occurs during the middle of a vectorised
+  Branch (now a SV predicated compare) operation, the partial results
+  of any comparisons must be written out to the destination
+  register before the trap is permitted to begin.  If however there
+  is no predicate, the **entire** set of comparisons must be **restarted**,
+  with the offset loop indices set back to zero.  This is because
+  there is no place to store the temporary result during the handling
+  of traps.
 
 TODO: predication now taken from src2.  also branch goes ahead
 if all compares are successful.
