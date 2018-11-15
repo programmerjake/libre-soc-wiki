@@ -671,7 +671,7 @@ for the storage of comparisions: in these specific circumstances
 the requirement for there to be an active CSR *register* entry
 is removed.
 
-## REMAP CSR
+## REMAP CSR <a name="remap" />
 
 (Note: both the REMAP and SHAPE sections are best read after the
  rest of the document has been read)
@@ -963,8 +963,8 @@ Where vectorisation is present on either or both src registers, the
 branch may stil go ahead if any only if *all* tests succeed (i.e. excluding
 those tests that are predicated out).
 
-Note that when either src1 or src2 have zero-predication enabled,
-a cleared bit in the respective predicate indicates that the result
+Note that when zero-predication is enabled (from source rs1),
+a cleared bit in the predicate indicates that the result
 of the compare is set to "false", i.e. that the corresponding
 destination bit (or result)) be set to zero.  Contrast this with
 when zeroing is not set: bits in the destination predicate are
