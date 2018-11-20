@@ -1251,7 +1251,8 @@ Similar rules apply to the destination register.
 
 ## LOAD / STORE Instructions and LOAD-FP/STORE-FP <a name="load_store"></a>
 
-An earlier draft of SV modified the behaviour of LOAD/STORE.  This
+An earlier draft of SV modified the behaviour of LOAD/STORE (modified
+the interpretation of the instruction fields).  This
 actually undermined the fundamental principle of SV, namely that there
 be no modifications to the scalar behaviour (except where absolutely
 necessary), in order to simplify an implementor's task if considering
@@ -1259,21 +1260,48 @@ converting a pre-existing scalar design to support parallelism.
 
 So the original RISC-V scalar LOAD/STORE and LOAD-FP/STORE-FP functionality
 do not change in SV, however just as with C.MV it is important to note
-that dual-predication is possible.  Using the template outlined in
-the section "Vectorised dual-op instructions", the pseudo-code covering
-scalar-scalar, scalar-vector, vector-scalar and vector-vector applies,
-where SCALAR\_OPERATION is as follows, exactly as for a standard
-scalar RV LOAD operation:
+that dual-predication is possible.
 
-        srcbase = ireg[rs+i];
-        return mem[srcbase + imm];
+In vectorised architectures there are usually at least two different modes
+for LOAD/STORE:
 
-Whilst LOAD and STORE remain as-is when compared to their scalar
-counterparts, the incrementing on the source register (for LOAD)
-means that pointers-to-structures can be easily implemented, and
-if contiguous offsets are required, those pointers (the contents
-of the contiguous source registers) may simply be set up to point
-to contiguous locations.
+* Read (or write for STORE) from sequential locations, where one
+  register specifies the address, and the one address is incremented
+  by a fixed amount.
+* Read (or write) from multiple indirected addresses, where the
+  vector elements each specify separate and distinct addresses.
+
+To support these different addressing modes, the CSR "isvector"
+bit is used.  So, for a LOAD, when the src register is set to
+scalar, the LOADs are sequentially incremented by the src register
+element width, and when the src register is set to "vector", the
+elements are treated as indirection addresses.  Simplified
+pseudo-code would look like this:
+
+    function op_load(rd, rs) # LD not VLD!
+      rd = int_csr[rd].active ? int_csr[rd].regidx : rd;
+      rs = int_csr[rs].active ? int_csr[rs].regidx : rs;
+      ps = get_pred_val(FALSE, rs); # predication on src
+      pd = get_pred_val(FALSE, rd); # ... AND on dest
+      for (int i = 0, int j = 0; i < VL && j < VL;):
+        if (int_csr[rs].isvec) while (!(ps & 1<<i)) i++;
+        if (int_csr[rd].isvec) while (!(pd & 1<<j)) j++;
+        if (int_csr[rd].isvec)
+          srcbase = ireg[rs+i];
+        else
+          srcbase = ireg[rs] + i * XLEN/8; # offset in bytes
+        ireg[rd+j] <= mem[srcbase + imm_offs];
+        if (!int_csr[rs].isvec &&
+            !int_csr[rd].isvec) break # scalar-scalar LD
+        if (int_csr[rs].isvec) i++;
+        if (int_csr[rd].isvec) j++;
+
+The test for whether both source and destination are scalar is
+what makes the above pseudo-code provide the "standard" RV Base
+behaviour for LD operations.  The offset in bytes (XLEN/8)
+changes depending on whether the operation is a LB (1 byte),
+LH (2 byes), LW (4 bytes) or LD (8 bytes), and also whether the element
+width is over-ridden (see special element width section).
 
 ## Compressed Stack LOAD / STORE Instructions <a name="c_ld_st"></a>
 
