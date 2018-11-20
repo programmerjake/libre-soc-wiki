@@ -73,6 +73,38 @@ too much.
 Yeah pretty much, though I had meant the bank number comes from the
 least-significant bits of the 7-bit register number.
 
+----
+
+Assuming 64-bit operands:
+If you could organize 2 SRAM macros and use the pair of them to
+read/write 4 registers at a time (256-bits). The pipeline will allow you to
+dedicate 3 cycles for reading and 1 cycle for writing (4 registers each).
+
+RS1 = Read of operand S1
+WRd = Write of result Dst
+FMx = Floating Point Multiplier, x = stage.
+
+   |RS1|RS2|RS3|FWD|FM1|FM2|FM3|FM4|
+                   |FWD|FM1|FM2|FM3|FM4|
+                       |FWD|FM1|FM2|FM3|FM4|
+                           |FWD|FM1|FM2|FM3|FM4|WRd|
+                   |RS1|RS2|RS3|FWD|FM1|FM2|FM3|FM4|
+                                   |FWD|FM1|FM2|FM3|FM4|
+                                       |FWD|FM1|FM2|FM3|FM4|
+                                           |FWD|FM1|FM2|FM3|FM4|WRd|
+                                   |RS1|RS2|RS3|FWD|FM1|FM2|FM3|FM4|
+                                                   |FWD|FM1|FM2|FM3|FM4|
+                                                       |FWD|FM1|FM2|FM3|FM4|
+                                                           |FWD|FM1|FM2|FM3|FM4|WRd|
+
+The only trick is getting the read and write dedicated on different clocks.
+When the RS3 operand is not needed (60% of the time) you can use
+the time slot for reading or writing on behalf of memory refs; STs read,
+LDs write.
+
+You will find doing VRFs a lot more compact this way. In GPU land we
+called the flip-flops orchestrating the timing "collectors".
+
 # References
 
 * <https://en.wikipedia.org/wiki/Tomasulo_algorithm>
