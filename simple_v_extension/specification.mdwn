@@ -1278,7 +1278,7 @@ element width, and when the src register is set to "vector", the
 elements are treated as indirection addresses.  Simplified
 pseudo-code would look like this:
 
-    function op_load(rd, rs) # LD not VLD!
+    function op_ld(rd, rs) # LD not VLD!
       rdv = int_csr[rd].active ? int_csr[rd].regidx : rd;
       rsv = int_csr[rs].active ? int_csr[rs].regidx : rs;
       ps = get_pred_val(FALSE, rs); # predication on src
@@ -1313,47 +1313,27 @@ Notes:
 ## Compressed Stack LOAD / STORE Instructions <a name="c_ld_st"></a>
 
 C.LWSP / C.SWSP and floating-point etc. are also source-dest twin-predicated,
-where it is implicit in C.LWSP/FLWSP that x2 is the source register.
+where it is implicit in C.LWSP/FLWSP etc. that x2 is the source register.
 It is therefore possible to use predicated C.LWSP to efficiently
 pop registers off the stack (by predicating x2 as the source), cherry-picking
 which registers to store to (by predicating the destination).  Likewise
 for C.SWSP.  In this way, LOAD/STORE-Multiple is efficiently achieved.
 
-However, to do so, the behaviour of C.LWSP/C.SWSP needs to be slightly
-different: where x2 is marked as vectorised, instead of incrementing
-the register on each loop (x2, x3, x4...), instead it is the *immediate*
-that must be incremented.  Pseudo-code follows:
-
-    function lwsp(rd, rs):
-      rd = int_csr[rd].active ? int_csr[rd].regidx : rd;
-      rs = x2 # effectively no redirection on x2.
-      ps = get_pred_val(FALSE, rs); # predication on src
-      pd = get_pred_val(FALSE, rd); # ... AND on dest
-      for (int i = 0, int j = 0; i < VL && j < VL;):
-        if (int_csr[rs].isvec) while (!(ps & 1<<i)) i++;
-        if (int_csr[rd].isvec) while (!(pd & 1<<j)) j++;
-        reg[rd+j] = mem[x2 + ((offset+i) * 4)]
-        if (int_csr[rs].isvec) i++;
-        if (int_csr[rd].isvec) j++; else break;
-
-For C.LDSP, the offset (and loop) multiplier would be 8, and for
-C.LQSP it would be 16.  Effectively this makes C.LWSP etc. a Vector
-"Unit Stride" Load instruction.
+The two modes ("unit stride" and multi-indirection) are still supported,
+as with standard LD/ST.  Essentially, the only difference is that the
+use of x2 is hard-coded into the instruction.
 
 **Note**: it is still possible to redirect x2 to an alternative target
 register.  With care, this allows C.LWSP / C.SWSP (and C.FLWSP) to be used as
-general-purpose Vector "Unit Stride" LOAD/STORE operations.
+general-purpose LOAD/STORE operations.
 
 ## Compressed LOAD / STORE Instructions
 
 Compressed LOAD and STORE are again exactly the same as scalar LOAD/STORE,
 where the same rules apply and the same pseudo-code apply as for
-non-compressed LOAD/STORE.  This is **different** from Compressed Stack
-LOAD/STORE (C.LWSP / C.SWSP), which have been augmented to become
-Vector "Unit Stride" capable.
-
-Just as with uncompressed LOAD/STORE C.LD / C.ST increment the *register*
-during the hardware loop, **not** the offset.
+non-compressed LOAD/STORE.  Again: setting scalar or vector mode
+on the src for LOAD and dest for STORE switches mode from "Unit Stride"
+to "Multi-indirection", respectively.
 
 # Element bitwidth polymorphism <a name="elwidth"></a>
 
