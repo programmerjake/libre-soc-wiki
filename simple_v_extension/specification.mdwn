@@ -1267,11 +1267,11 @@ for LOAD/STORE:
 
 * Read (or write for STORE) from sequential locations, where one
   register specifies the address, and the one address is incremented
-  by a fixed amount.
+  by a fixed amount.  This is usually known as "Unit Stride" mode.
 * Read (or write) from multiple indirected addresses, where the
   vector elements each specify separate and distinct addresses.
 
-To support these different addressing modes, the CSR "isvector"
+To support these different addressing modes, the CSR Register "isvector"
 bit is used.  So, for a LOAD, when the src register is set to
 scalar, the LOADs are sequentially incremented by the src register
 element width, and when the src register is set to "vector", the
@@ -1287,8 +1287,10 @@ pseudo-code would look like this:
         if (int_csr[rs].isvec) while (!(ps & 1<<i)) i++;
         if (int_csr[rd].isvec) while (!(pd & 1<<j)) j++;
         if (int_csr[rd].isvec)
+          # indirect mode (multi mode)
           srcbase = ireg[rsv+i];
         else
+          # unit stride mode
           srcbase = ireg[rsv] + i * XLEN/8; # offset in bytes
         ireg[rdv+j] <= mem[srcbase + imm_offs];
         if (!int_csr[rs].isvec &&
