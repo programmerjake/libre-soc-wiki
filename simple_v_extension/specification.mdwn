@@ -1637,7 +1637,9 @@ to the result element's bitwidth.
 
 If truncation occurs, i.e. the top MSBs of the result are lost,
 this is "Officially Not Our Problem", i.e. it is assumed that the
-programmer actually desires the result to be truncated.
+programmer actually desires the result to be truncated.  i.e. if the
+programmer wanted all of the bits, they would have set the destination
+elwidth to accommodate them.
 
 ## Polymorphic elwidth on LOAD/STORE <a name="elwidth_loadstore"></a>
 
