@@ -950,7 +950,9 @@ be "predicate variants" in the instance where either of the two src
 registers are marked as vectors (active=1, vector=1).
 
 Note that the predication register to use (if one is enabled) is taken from
-the *first* src register.  The target (destination) predication register
+the *first* src register, and that this is used, just as with predicated
+arithmetic operations, to mask whether the comparison operations take
+place or not.  The target (destination) predication register
 to use (if one is enabled) is taken from the *second* src register.
 
 If either of src1 or src2 are scalars (whether by there being no
@@ -1035,7 +1037,9 @@ Notes:
   into bitwidth-sized chunks (see Appendix "Bitwidth Virtual Register
   Reordering") setting Vector-Length times (number of SIMD elements) bits
   in Predicate Register rd, as opposed to just Vector-Length bits.
-* If an exception (trap) occurs during the middle of a vectorised
+* The execution of "parallelised" instructions **must** be implemented
+  as "re-entrant" (to use a term from software).  If an exception (trap)
+  occurs during the middle of a vectorised
   Branch (now a SV predicated compare) operation, the partial results
   of any comparisons must be written out to the destination
   register before the trap is permitted to begin.  If however there
