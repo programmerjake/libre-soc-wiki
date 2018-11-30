@@ -80,6 +80,7 @@ If you could organize 2 SRAM macros and use the pair of them to
 read/write 4 registers at a time (256-bits). The pipeline will allow you to
 dedicate 3 cycles for reading and 1 cycle for writing (4 registers each).
 
+<pre>
 RS1 = Read of operand S1
 WRd = Write of result Dst
 FMx = Floating Point Multiplier, x = stage.
@@ -96,6 +97,7 @@ FMx = Floating Point Multiplier, x = stage.
                                                    |FWD|FM1|FM2|FM3|FM4|
                                                        |FWD|FM1|FM2|FM3|FM4|
                                                            |FWD|FM1|FM2|FM3|FM4|WRd|
+</pre>
 
 The only trick is getting the read and write dedicated on different clocks.
 When the RS3 operand is not needed (60% of the time) you can use
