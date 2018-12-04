@@ -177,6 +177,11 @@ Advantages of Speculation, Load and Store hazards:
     - SD F1 100(R2)
     - LD F2 100(R2)
 
+Exceptions
+
+* Exceptions are handled by not recognising the exception until
+  instruction that caused it is ready to commit in ROB (reaches head
+  of ROB)
 # References
 
 * <https://en.wikipedia.org/wiki/Tomasulo_algorithm>
