@@ -165,6 +165,18 @@ be pending
   written to by an earlier store cannot perform the memory access until
   the store has written the data.
 
+Advantages of Speculation, Load and Store hazards:
+
+* A store updates memoryy only when it reached the head of the ROB
+* WAW and WAR type of hazards are eliminated with speculation
+  (actual updating of memory occurs in order)
+* RAW hazards through memory are maintained by not allowing a load
+  to initiate the second step of its execution
+* Check if any store has a destination field that matched the
+  value of the load:
+    - SD F1 100(R2)
+    - LD F2 100(R2)
+
 # References
 
 * <https://en.wikipedia.org/wiki/Tomasulo_algorithm>
