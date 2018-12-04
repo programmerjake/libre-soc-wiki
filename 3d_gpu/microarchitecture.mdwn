@@ -190,6 +190,20 @@ Reorder Buffer
     - Registers updated
     - Memory updated
 
+Reorder Buffer Entry
+
+* Instruction type
+    - branch (no destination resutl)
+    - store (has a memory address destination)
+    - register operation (ALU operation or load, which has reg dests)
+* Destination
+    - register number (for loads and ALU ops) or
+    - memory address (for stores) where the result should be written
+* Value
+    - value of instruction result, pending a commit
+* Ready
+    - indicates that the instruction has completed execution: value is ready
+
 # References
 
 * <https://en.wikipedia.org/wiki/Tomasulo_algorithm>
