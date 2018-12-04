@@ -129,6 +129,23 @@ like compilers and standard RV code with decent performance. Additionally,
 quite a few shaders have branching in their internal loops so
 zero-overhead loops won't be able to fix all the branching problems.
 
+----
+
+> you would need a 4-wide cdb anyway, since that's the performance we're
+> trying for.
+
+ if the 32-bit ops can be grouped as 2x SIMD to a 64-bit-wide ALU,
+then only 2 such ALUs would be needed to give 4x 32-bit FP per cycle
+per core, which means only a 2-wide CDB, a heck of a lot better than
+4.
+
+ oh: i thought of another way to cut the power-impact of the Reorder
+Buffer CAMs: a simple bit-field (a single-bit 2RWW memory, of address
+length equal to the number of registers, 2 is because of 2-issue).
+
+ the CAM of a ROB is on the instruction destination register.  key:
+ROBnum, value: instr-dest-reg.  if you have a bitfleid that says "this
+destreg has no ROB tag", it's dead-easy to check that bitfield, first.
 
 # References
 
