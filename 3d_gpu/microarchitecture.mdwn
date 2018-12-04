@@ -156,10 +156,10 @@ because actual updating of memory occurs in order, when a store is at
 the head of the ROB, and hence, no earlier loads or stores can still
 be pending
 * RAW hazards are maintained by two restrictions:
-    1. not allowing a load to initiate the second step of its execution if
-      any active ROB entry occupied by a store has a destination
-      field that matches the value of the A field of the load and
-    2. maintaining the program order for the computation of an effective
+  1. not allowing a load to initiate the second step of its execution if
+    any active ROB entry occupied by a store has a destination
+    field that matches the value of the A field of the load and
+  2. maintaining the program order for the computation of an effective
       address of a load with respect to all earlier stores
 * These restrictions ensure that any load that access a memory location
   written to by an earlier store cannot perform the memory access until
