@@ -107,6 +107,29 @@ LDs write.
 You will find doing VRFs a lot more compact this way. In GPU land we
 called the flip-flops orchestrating the timing "collectors".
 
+----
+
+For GPU workloads FP64 is not common so I think having 1 FP64 alu would
+be sufficient. Since indexed loads and stores are not supported, it will
+be important to support 4x64 integer operations to generate addresses
+for loads/stores.
+
+I was thinking we would use scoreboarding to keep track of operations
+and dependencies since it doesn't need a cam per alu. We should be able
+to design it to forward past the register file to allow for 0-latency
+forwarding. If we combined that with register renaming it should prevent
+most war and waw data hazards.
+
+I think branch prediction will be essential if only to fetch and decode
+operations since it will reduce the branch penalty substantially.
+
+Note that even if we have a zero-overhead loop extension, branch
+prediction will still be useful as we will want to be able to run code
+like compilers and standard RV code with decent performance. Additionally,
+quite a few shaders have branching in their internal loops so
+zero-overhead loops won't be able to fix all the branching problems.
+
+
 # References
 
 * <https://en.wikipedia.org/wiki/Tomasulo_algorithm>
