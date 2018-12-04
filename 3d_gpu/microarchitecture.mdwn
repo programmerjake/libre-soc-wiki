@@ -182,6 +182,14 @@ Exceptions
 * Exceptions are handled by not recognising the exception until
   instruction that caused it is ready to commit in ROB (reaches head
   of ROB)
+
+Reorder Buffer
+
+* Results of an instruction become visible externally when it leaves
+  the ROB
+    - Registers updated
+    - Memory updated
+
 # References
 
 * <https://en.wikipedia.org/wiki/Tomasulo_algorithm>
