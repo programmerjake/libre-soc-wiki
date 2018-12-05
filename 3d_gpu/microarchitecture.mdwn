@@ -126,6 +126,20 @@ than having to wait for the fetched instructions to be decoded.
 
 ----
 
+> https://www.researchgate.net/publication/316727584_A_case_for_standard-cell_based_RAMs_in_highly-ported_superscalar_processor_structures
+
+well, there is this concept:
+https://www.princeton.edu/~rblee/ELE572Papers/MultiBankRegFile_ISCA2000.pdf
+
+it is a 2-level hierarchy for register cacheing.  honestly, though, the
+reservation stations of the tomasulo algorithm are similar to a cache,
+although only of the intermediate results, not of the initial operands.
+
+i have a feeling we should investigate putting a 2-level register cache
+in front of a multiplexed SRAM.
+
+----
+
 For GPU workloads FP64 is not common so I think having 1 FP64 alu would
 be sufficient. Since indexed loads and stores are not supported, it will
 be important to support 4x64 integer operations to generate addresses
@@ -240,3 +254,4 @@ Reorder Buffer Entry
 * Discussion <http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2018-November/000157.html>
 * <https://github.com/UCSBarchlab/PyRTL/blob/master/examples/example5-instrospection.py>
 * <https://github.com/ataradov/riscv/blob/master/rtl/riscv_core.v#L210>
+* <https://www.eda.ncsu.edu/wiki/FreePDK>
