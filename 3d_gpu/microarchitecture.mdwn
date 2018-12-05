@@ -109,6 +109,23 @@ called the flip-flops orchestrating the timing "collectors".
 
 ----
 
+Justification for Branch Prediction
+
+<http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2018-December/000212.html>
+
+We can combine several branch predictors to make a decent predictor:
+call/return predictor -- important as it can predict calls and returns
+with around 99.8% accuracy loop predictor -- basically counts loop
+iterations some kind of global predictor -- handles everything else
+
+We will also want a btb, a smaller one will work, it reduces average
+branch cycle count from 2-3 to 1 since it predicts which instructions
+are taken branches while the instructions are still being fetched,
+allowing the fetch to go to the target address on the next clock rather
+than having to wait for the fetched instructions to be decoded.
+
+----
+
 For GPU workloads FP64 is not common so I think having 1 FP64 alu would
 be sufficient. Since indexed loads and stores are not supported, it will
 be important to support 4x64 integer operations to generate addresses
