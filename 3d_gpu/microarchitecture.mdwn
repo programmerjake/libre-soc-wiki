@@ -249,6 +249,20 @@ Video @ 3:24, "RAT" table - Register Aliasing Table:
 
 This scheme looks very much like a Reservation Station.
 
+----
+
+There is another way to get precise ordering of the writes in a scoreboard.
+First, one has to implement forwarding in the scoreboard.
+Second, the function units need an output queue <of say 4 registers>
+Now, one can launch an instruction and pick up its operand either
+from the RF or from the function unit output while the result sits
+in the function unit waiting for its GO_Write signal.
+
+Thus the launching of instructions is not delayed due to hazards
+but the results are delivered to the RF in program order.
+
+This looks surprisingly like a 'belt' at the end of the function unit.
+
 # References
 
 * <https://en.wikipedia.org/wiki/Tomasulo_algorithm>
