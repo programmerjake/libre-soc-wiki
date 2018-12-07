@@ -263,6 +263,52 @@ but the results are delivered to the RF in program order.
 
 This looks surprisingly like a 'belt' at the end of the function unit.
 
+----
+
+> https://salsa.debian.org/Kazan-team/kazan/blob/e4b516e29469e26146e717e0ef4b552efdac694b/docs/ALU%20lanes.svg
+
+ so, coming back to this diagram, i think if we stratify the
+Functional Units into lanes as well, we may get a multi-issue
+architecture.
+
+ the 6600 scoreboard rules - which are awesomely simple and actually
+involve D-Latches (3 gates) *not* flip-flops (10 gates) can be executed
+in parallel because there will be no overlap between stratified registers.
+
+ if using that odd-even / msw-lsw division (instead of modulo 4 on the
+register number) it will be more like a 2-issue for standard RV
+instructions and a 4-issue for when SV 32-bit ops are loop-generated.
+
+ by subdividing the registers into odd-even banks we will need a
+_pair_ of (completely independent) register-renaming tables:
+  https://libre-riscv.org/3d_gpu/rat_table.png
+
+ for SIMD'd operations, if we have the same type of reservation
+station queue as with Tomasulo, it can be augmented with the byte-mask:
+if the byte-masks in the queue of both the src and dest registers do
+not overlap, the operations may be done in parallel.
+
+ i still have not yet thought through how the Reorder Buffer would
+work: here, again, i am tempted to recommend that, again, we "stratify"
+the ROB into odd-even (modulo 2) or perhaps modulo 4, with 32 entries,
+however the CAM is only 4-bit or 3-bit wide.
+
+ if an instruction's destination register does not meet the modulo
+requirements, that ROB entry is *left empty*.  this does mean that,
+for a 32-entry Reorder Buffer, if the stratification is 4-wide (modulo
+4), and there are 4 sequential instructions that happen e.g. to have
+a destination of r4 for insn1, r24 for insn2, r16 for insn3.... etc.
+etc.... the ROB will only hold 8 such instructions
+
+and that i think is perfectly fine, because, statistically, it'll balance
+out, and SV generates sequentially-incrementing instruction registers,
+so *that* is fine, too.
+
+i'll keep working on diagrams, and also reading mitch alsup's chapters
+on the 6600.  they're frickin awesome.  the 6600 could do multi-issue
+LD and ST by way of having dedicated registers to LD and ST.  X1-X5 were
+for ST, X6 and X7 for LD.
+
 # References
 
 * <https://en.wikipedia.org/wiki/Tomasulo_algorithm>
