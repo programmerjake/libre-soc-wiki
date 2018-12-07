@@ -309,6 +309,31 @@ on the 6600.  they're frickin awesome.  the 6600 could do multi-issue
 LD and ST by way of having dedicated registers to LD and ST.  X1-X5 were
 for ST, X6 and X7 for LD.
 
+----
+
+i took a shot at explaining this also on comp.arch today, and that
+allowed me to identify a problem with the proposed modulo-4 "lanes"
+stratification.
+
+when a result is created in one lane, it may need to be passed to the next
+lane.  that means that each of the other lanes needs to keep a watchful
+eye on when another lane updates the other regfiles (all 3 of them).
+
+when an incoming update occurs, there may be up to 3 register writes
+(that need to be queued?) that need to be broadcast (written) into
+reservation stations.
+
+what i'm not sure of is: can data consistency be preserved, even if
+there's a delay?  my big concern is that during the time where the data is
+broadcast from one lane, the head of the ROB arrives at that instruction
+(which is the "commit" condition), it gets committed, then, unfortunately,
+the same ROB# gets *reused*.
+
+now that i think about it, as long as the length of the queue is below
+the size of the Reorder Buffer (preferably well below), and as long as
+it's guaranteed to be emptied by the time the ROB cycles through the
+whole buffer, it *should* be okay.
+
 # References
 
 * <https://en.wikipedia.org/wiki/Tomasulo_algorithm>
