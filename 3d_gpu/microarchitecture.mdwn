@@ -9,6 +9,8 @@
 * RV64GC compliance for running full GNU/Linux-based OS
 * SimpleV compliance
 * xBitManip (required for VPU and ideal for predication)
+* On-chip tile buffer (memory-mapped SRAM), likely shared
+  between all cores, for the collaborative creation of pixel "tiles".
 * 4-lane 2Rx1W SRAMs for registers numbered 32 and above;
   Multi-R x Multi-W for registers 1-31.
   TODO: consider 2R for registers to be used as predication targets
