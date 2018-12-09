@@ -334,6 +334,24 @@ the size of the Reorder Buffer (preferably well below), and as long as
 it's guaranteed to be emptied by the time the ROB cycles through the
 whole buffer, it *should* be okay.
 
+----
+
+> Don't forget that in these days of Spectre and Meltdown, merely
+> preventing dead instruction results from being written to registers or
+> memory is NOT ENOUGH. You also need to prevent load instructions from
+> altering cache and branch instructions from altering branch prediction
+> state.
+
+Which, oddly enough, provides a necessity for being able to consume
+multiple containers from the cache Miss buffers, which oddly enough,
+are what makes a crucial mechanism in the Virtual Vector Method work.
+
+In the past, one would forward the demand container to the waiting
+memref and then write the whole the line into the cache. S&M means you
+have to forward multiple times from the miss buffers and avoid damaging
+the cache until the instruction retires. VVM uses this to avoid having
+a vector strip mine the data cache.
+
 # References
 
 * <https://en.wikipedia.org/wiki/Tomasulo_algorithm>
