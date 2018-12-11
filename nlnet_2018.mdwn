@@ -1,7 +1,12 @@
 # NL.net proposal
 
-* Project name    
-* Website / wiki  https://
+## Project name
+
+The Libre-RISCV SoC
+
+## Website / wiki 
+
+<https://libre-riscv.org>
 
 Please be short and to the point in your answers; focus primarily on
 the what and how, not so much on the why. Add longer descriptions as
@@ -12,40 +17,184 @@ English. On the up side, you can be as technical as you need to be (but
 you don't have to). Do stay concrete. Use plain text in your reply only,
 if you need any HTML to make your point please include this as attachment.
 
-# Abstract: Can you explain the whole project and its expected outcome(s).
+## Abstract: Can you explain the whole project and its expected outcome(s).
 
-  (you have 1200 characters)
+Intelligence Communities have a hard rule: if the trustworthiness of
+an adversary is not known, the absolute worst must be assumed.
+An average computer end-user makes the mistake of holding the opposite view:
+"what I don't know about can't hurt me therefore it couldn't happen to me".
+
+until it does.
+
+So responsibility falls to those people who *do* have the expertise and
+knowledge to design trustworthy privacy-respecting systems to take the
+initiative.  Unfortunately, if the hardware is compromised (for example,
+the Intel Management Engine, aka "NSA Backdoor spying co-processor"), all
+efforts at the software level, however well-intentioned and no matter
+how far they go, are utterly compromised and rendered completely ineffective.
+
+Therefore, the only real way to fully and truly gain the trust of the
+end-users is to go right back to the harware, and to *transparently*
+design an entire processor, from scratch, in a truly Libre / Open
+fashion.
+
+This project therefore will provide a fully libre and open design of
+mobile-class processor, where not only the source code of the BIOS,
+bootloader, kernel and Operating System are entirely available, the
+*hardware defintion* (HDL) source code will be entirely available as well.
+That includes the GPU (for 3D Graphics), and the VPU (for video decode),
+as well as full libre-licensed source code for the 3D and VPU drivers.
+
+The expected outcome within the next 18-24 months is to deliver a
+fully-functioning quad-core 800mhz RISC-V 64-bit SoC (system-on-a-chip)
+for use in tablets, netbooks, smartphones, chromebooks and IoT Industrial
+Embedded scenarios.
+
 # Have you been involved with projects or organisations relevant to this project before? And if so, can you tell us a bit about your contributions?
 
+Luke Leighton is an ethical technology specialist who has a consistent
+23-year track record of developing code in a real-time transparent
+(fully libre) fashion, and in managing Software Libre teams.  He currently
+is fulfilling a USD $200,000 successfully-funded crowdfunding campaign:
+an eco-conscious computing project.
 
-# Requested support
+Jacob Lifshay is a software libre 3D expert who developed a Vulkan 3D
+software render engine under the GSoc2017 Programme.  He also developed
+his own libre-licensed 32-bit RISC-V processor.  Luke is presently
+personally sponsoring him to continue the Vulkan driver development,
+a project known as Kazan.
+
 # Requested Amount    
-(between 5.000 and 50.000 euro)
-  (in Euro)
+
+EUR $50,000.
 
 # Explain what the requested budget will be used for? 
 
+EUR $50,000 is approximately half a percent of the total budget needed to
+achieve the goal.  It will however easily fund us, as software engineers,
+to get to an all-important milestone: an FPGA demonstrator.  We already
+have the FPGAs: we need time to focus on developing both the hardware
+and the software (in tandem).
+
+An FPGA demonstration will bring confidence to investors and larger
+sponsors alike, as well as give potential Crowdsupply campaign backers
+confidence to back the project (the Crowdsupply page is already
+up in pre-launch mode at https://crowdsupply.com/libre-risc-v/m-class)
+
+Additionally, there are domain experts whom we would like to bring on board
+with offers of sponsorship, particularly when it comes to the compilers
+that will need to be augmented to match the planned RISC-V enhancements
+needed for the combined CPU, GPU and VPU workload.
+
 # Does the project have other funding sources, both past and present?
 
-(If you want, you can in addition attach a budget at the bottom of the form)
+The project is entirely self-funded from personal income.  Luke is presently
+sponsoring Jacob from personal income.  There is no corporate sponsorship.
+There is no academic affiliation so there is no source of academic grants.
 
+Jacob's costs are around USD $1,000 per month.  Luke's costs are around
+USD $1,500 per month (including support for his family).
 
-Explain costs for hardware, human labor, travel cost to technical meetings, etc.
+We already have been donated a ZC706 FPGA board, and have just recently
+also been offered a comparable MicroSemi FPGA board from another sponsor.
+We both have sufficiently powerful modern computers to cope with the workload
+of both the software development and for hardware simulations, although Luke's
+Aorus X3v6 could benefit from an upgrade to 32GB of RAM (approx USD $250).
+
+Whilst there are conferences that it would be good to go to, the cost
+of world-wide flights is so relatively high that it would only be
+prudent to do so only if there is significant benefit (or additional
+sponsors).
+
+Primarily we need to focus on the development of the core processor,
+the 3D Driver (Kazan) and the compiler technology.  EUR $50,000 will
+easily cover our costs for up to 20 months.
 
 # Compare your own project with existing or historical efforts.
 
+There have been a number of efforts to create Libre SoCs.  If they are
+by Open Hardware community individuals, they are typically 32-bit and
+tend to run at an absolute maximum of 500mhz, due to design flaws that
+are not noticed if run in (slow) FPGAs.  The OpenRISC 1200 falls into
+this category.
 
-(e.g. what is new, more thorough or otherwise different)
+There are a number of higher-end 64-bit RISC-V efforts: Rocket-Chip
+is used by LowRISC and SiFive.  These are not capable of 3D or VPU
+workloads, and their internal architecture nor codebase is suited
+to the massive redesign effort required to cope with the demands of
+3D and Video workloads.
 
-# What are significant technical challenges you expect to solve during the project, if any?
+There have also been a number of GPU efforts: the Open Graphics
+Project, and the (incorrectly named) GPLGPU project (the license was
+not GPL).  Both of these focussed on a PCIe Graphics Card as the
+primary objective: neither of them succeeded.  There is also a
+project called "ORGFX": an extension to the OpenRISC core as a Master's
+Degree.  This was successful however it is what is termed a "fixed
+function" 3D engine, which is in no way suited to modern graphics,
+all of which has moved to "shader" design.
+
+Also, from two researchers at the University of Birmingham, are
+two efforts known as "Nyuzi" and the "Open Shader" Project.  Nyuzi
+is a non-hardware-accelerated Software Renderer which has
+power-performance characteristics 25% that of an embedded MALI 400 GPU,
+so is unsuitable for deployment in a mobile-class environment.  The
+Open Shader project appears to have stalled, and its academic developers
+are unresponsive.
+
+In addition, the MIAOW Project is another academic effort to research
+parallel computing workloads.  It has no GPU characteristics, at all,
+would require significant investment of time and effort to adapt, and,
+not being suitable for general-purpose CPU workloads, would require
+a significant (risky) investment of time and effort in the 3D driver.
+By contrast, the approach taken - to hardware-accelerate a hybrid
+CPU-GPU-VPU that is primarily a software renderer, requires significantly
+less resources in driver development.
+
+All other mobile-class commercial SoCs license either proprietary
+GPU technology or proprietary VPU technology, neither of which may
+be trusted by end-users to respect privacy.
+
+Basically there does not exist - anywhere in the world - in the year
+2018 - a commercially-available system-on-a-chip where the entire
+source code of both the hardware and the software is libre-licensed.
+Full (libre) transparency is the only way that independent audits may be
+carried out.
+
+## What are significant technical challenges you expect to solve during the project, if any?
+
+The development of a hybrid CPU-GPU-VPU is a significant project.
+However as an libre / open project, we are able to ask questions and
+get help online from unexpected sources, which no "competitive"
+commercial company could ever possibly consider doing.  At the time
+of writing, the comp.arch newsgroup has a number of active discussions
+where our lack of knowledge is being corrected and augmented by
+several extremely experienced hardware engineers, including Mitch
+Alsup, the designer of the Motorola 68000 Family.
+
+Mitch used to work for AMD, in particular on the AMDGPU: he was also
+the architect of the AMD K9 Series, and more recently he was a technical
+advisor to Samsung on their GPU Project.
+
+With his help we have already uncovered some previously unknown
+features of the CDC 6600 processor, developed in 1964 by Seymour Cray.
+We are extremely lucky to have access to his wealth of experience and
+knowledge
+
+Only by being independent of Corporate control as a Libre Project can we
+release simulations, reports, documentation and source code, in real-time,
+such that it may be publicly reviewed.
 
 
-(optional but recommended)
+## Describe the ecosystem of the project, and how you will engage with relevant actors and promote the outcomes?
 
-# Describe the ecosystem of the project, and how you will engage with relevant actors and promote the outcomes?
+We have a pre-launch Crowdsupply page up and running already, at
+https://www.crowdsupply.com/libre-risc-v/m-class through which we will
+engage with developers and end-users alike.  Developers will be invited
+to participate through the http://libre-riscv.org website and resources.
 
-
-E.g. which actors will you involve? Who should run or deploy your solution to make it a success?
+The Crowdsupply page has already been picked up by Phoronix, Heise.de
+Magazine, reddit and ycombinator.  There is a lot of interest in this
+project.
 
 # Extra info to be submitted
 
