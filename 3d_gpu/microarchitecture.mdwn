@@ -361,35 +361,35 @@ ok,so continuing some thoughts-in-order notes:
 * scoreboards are not just scoreboards, they are dependency matrices,
   and there are several of them:
     - one for LOAD/STORE-to-LOAD/STORE:
-         * most recent LOADs prevent later STOREs
-         * most recent STOREs prevent later LOADs.
+        1. most recent LOADs prevent later STOREs
+        2. most recent STOREs prevent later LOADs.
     - one for Function-Unit to Function-Unit.
-         * it exxpresses both RAW and WAW hazards through "Go_Write"
+        3. it exxpresses both RAW and WAW hazards through "Go_Write"
          and "Go_Read" signals, which are stopped from proceeding by
          dependent 1-bit CAM latches
-         * exceptions may ALSO be made "precise" by holding a "Write prevention"
+        4. exceptions may ALSO be made "precise" by holding a "Write prevention"
          signal.  only when the Function Unit knows that an exception is
          not going to occur (memory has been fetched, for example), does
          it release the signal
-         * speculative branch execution likewise may hold a "Write prevention",
+        5. speculative branch execution likewise may hold a "Write prevention",
            however it also needs a "Go die" signal, to clear out the
            incorrectly-taken branch.
-         * LOADs/STOREs *also* must be considered as "Functional Units" and thus
+        6. LOADs/STOREs *also* must be considered as "Functional Units" and thus
            must also have corresponding entries (plural) in the FU-to-FU Matrix
-         * it is permitted for ALUs to *BEGIN* execution (read operands are
+        7. it is permitted for ALUs to *BEGIN* execution (read operands are
            valid) without being permitted to *COMMIT*.  thus, each FU must
            store (buffer) results, until such time as a "commit" signal is
            received
-         * we may need to express an inter-dependence on the instruction order
+        8. we may need to express an inter-dependence on the instruction order
            (raising the WAW hazard line to do so) as a way to preserve execution
            order.  only the oldest instructions will have this flag dropped,
            permitting execution that has *begun* to also reach "commit" phase.
     - one for Function-Unit to Registers.
-         * it expresses the read and write requirements: the source
+        1. it expresses the read and write requirements: the source
           and destination registers on which the operation depends.  source
           registers are marked "need read", dest registers marked
           "need write".
-         * by having *more than one* Functional Unit matrix row per ALU
+        2. by having *more than one* Functional Unit matrix row per ALU
           it becomes possible to effectively achieve "Reservation Stations"
           orthogonality with the Tomasulo Algorithm.  the FU row must, like
           RS's, take and store a copy of the src register values.
@@ -399,14 +399,14 @@ ok,so continuing some thoughts-in-order notes:
     - the Function Unit rows are multiplied up by 2 (or 4) however they are
       actually connected to the same ALUs (pipelined and with both src and
       dest register buffers/latches).
-    - the Register Read and Write signals are then "striped" such that read/write
-      requests for every 2nd (or 4th) register are "grouped" and will have to
-      fight for access to a multiplexer in order to access registers that do not
-      have the same modulo 2 (or 4) match.
+    - the Register Read and Write signals are then "striped" such that
+      read/write requests for every 2nd (or 4th) register are "grouped" and
+      will have to fight for access to a multiplexer in order to access
+      registers that do not   have the same modulo 2 (or 4) match.
     - we MAY potentially be able to drop the destination (write) multiplexer(s)
-      by only permitting FU rows with the same modulo to write to that destination
-      bank.  FUs with indices 0,4,8,12 may only write to registers similarly
-      numbered.
+      by only permitting FU rows with the same modulo to write to that
+      destination bank.  FUs with indices 0,4,8,12 may only write to registers
+      similarly numbered.
     - there will therefore be FOUR separate register-data buses, with (at least)
       the Read buses multiplexed so that all FU banks may read all src registers
       (even if there is contention for the multiplexers)
