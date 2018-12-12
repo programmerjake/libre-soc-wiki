@@ -6,7 +6,7 @@ The Libre-RISCV SoC
 
 ## Website / wiki 
 
-<https://libre-riscv.org>
+<https://libre-riscv.org/nlnet_2018>
 
 Please be short and to the point in your answers; focus primarily on
 the what and how, not so much on the why. Add longer descriptions as
@@ -60,9 +60,10 @@ an eco-conscious computing project.
 
 Jacob Lifshay is a software libre 3D expert who developed a Vulkan 3D
 software render engine under the GSoc2017 Programme.  He also developed
-his own libre-licensed 32-bit RISC-V processor.  Luke is presently
-personally sponsoring him to continue the Vulkan driver development,
-a project known as Kazan.
+his own libre-licensed 32-bit RISC-V processor, and has written an
+optimising javascript compiler.  Luke is presently personally sponsoring
+him to continue the Vulkan driver development, a project known as Kazan
+(https://salsa.debian.org/Kazan-team/kazan)
 
 # Requested Amount    
 
@@ -99,7 +100,8 @@ We already have been donated a ZC706 FPGA board, and have just recently
 also been offered a comparable MicroSemi FPGA board from another sponsor.
 We both have sufficiently powerful modern computers to cope with the workload
 of both the software development and for hardware simulations, although Luke's
-Aorus X3v6 could benefit from an upgrade to 32GB of RAM (approx USD $250).
+Aorus X3v6 high-end laptop could benefit from an upgrade to 32GB of RAM
+(approx USD $250).
 
 Whilst there are conferences that it would be good to go to, the cost
 of world-wide flights is so relatively high that it would only be
@@ -115,8 +117,8 @@ easily cover our costs for up to 20 months.
 There have been a number of efforts to create Libre SoCs.  If they are
 by Open Hardware community individuals, they are typically 32-bit and
 tend to run at an absolute maximum of 500mhz, due to design flaws that
-are not noticed if run in (slow) FPGAs.  The OpenRISC 1200 falls into
-this category.
+are not really noticed at the slower speeds achievable with FPGAs.
+The OpenRISC 1200 falls into this category.
 
 There are a number of higher-end 64-bit RISC-V efforts: Rocket-Chip
 is used by LowRISC and SiFive.  These are not capable of 3D or VPU
@@ -130,16 +132,17 @@ not GPL).  Both of these focussed on a PCIe Graphics Card as the
 primary objective: neither of them succeeded.  There is also a
 project called "ORGFX": an extension to the OpenRISC core as a Master's
 Degree.  This was successful however it is what is termed a "fixed
-function" 3D engine, which is in no way suited to modern graphics,
+function" 3D engine, which is in absolutely no way suited to modern graphics,
 all of which has moved to "shader" design.
 
 Also, from two researchers at the University of Birmingham, are
 two efforts known as "Nyuzi" and the "Open Shader" Project.  Nyuzi
-is a non-hardware-accelerated Software Renderer which has
-power-performance characteristics 25% that of an embedded MALI 400 GPU,
-so is unsuitable for deployment in a mobile-class environment.  The
+is a non-hardware-accelerated Software Renderer, based on Intel's
+Larrabee Project, which has
+power-performance characteristics 25% that of an embedded MALI 400 GPU.
+As-is, it is unsuitable for deployment in a mobile-class environment.  The
 Open Shader project appears to have stalled, and its academic developers
-are unresponsive.
+are unresponsive (a prerequisite for true auditable open collaboration).
 
 In addition, the MIAOW Project is another academic effort to research
 parallel computing workloads.  It has no GPU characteristics, at all,
@@ -178,11 +181,12 @@ advisor to Samsung on their GPU Project.
 With his help we have already uncovered some previously unknown
 features of the CDC 6600 processor, developed in 1964 by Seymour Cray.
 We are extremely lucky to have access to his wealth of experience and
-knowledge
+knowledge.
 
 Only by being independent of Corporate control as a Libre Project can we
 release simulations, reports, documentation and source code, in real-time,
-such that it may be publicly reviewed.
+such that it may be publicly reviewed and found not to contain
+privacy-violating spying back-doors.
 
 
 ## Describe the ecosystem of the project, and how you will engage with relevant actors and promote the outcomes?
