@@ -433,6 +433,31 @@ ok,so continuing some thoughts-in-order notes:
     - FUs therefore only really express the register, memory, and execution
       dependencies: they don't actually do the execution.
 
+## Register file workloads
+
+Note: Vectorisation also includes predication, which is one extra integer read
+
+Integer workloads:
+
+* 43% Integer
+* 21% Load
+* 12% store
+* 24% branch
+
+* 100% of the instruction stream can be integer instructions
+* 75% utilize two source operand registers.
+* 50% of the instruction stream can be Load instructions
+* 25% can be store instructions,
+* 25% can be branch instructions
+
+FP workloads:
+
+* 30% Integer
+* 25% Load
+* 10% Store
+* 13% Multiplication
+* 17% Addition
+* 5% branch
 
 
 # References
