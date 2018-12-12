@@ -358,80 +358,138 @@ a vector strip mine the data cache.
 
 ok,so continuing some thoughts-in-order notes:
 
-* scoreboards are not just scoreboards, they are dependency matrices,
-  and there are several of them:
-    - one for LOAD/STORE-to-LOAD/STORE:
-        1. most recent LOADs prevent later STOREs
-        2. most recent STOREs prevent later LOADs.
-    - one for Function-Unit to Function-Unit.
-        3. it expresses both RAW and WAW hazards through "Go_Write"
-         and "Go_Read" signals, which are stopped from proceeding by
-         dependent 1-bit CAM latches
-        4. exceptions may ALSO be made "precise" by holding a "Write prevention"
-         signal.  only when the Function Unit knows that an exception is
-         not going to occur (memory has been fetched, for example), does
-         it release the signal
-        5. speculative branch execution likewise may hold a "Write prevention",
-           however it also needs a "Go die" signal, to clear out the
-           incorrectly-taken branch.
-        6. LOADs/STOREs *also* must be considered as "Functional Units" and thus
-           must also have corresponding entries (plural) in the FU-to-FU Matrix
-        7. it is permitted for ALUs to *BEGIN* execution (read operands are
-           valid) without being permitted to *COMMIT*.  thus, each FU must
-           store (buffer) results, until such time as a "commit" signal is
-           received
-        8. we may need to express an inter-dependence on the instruction order
-           (raising the WAW hazard line to do so) as a way to preserve execution
-           order.  only the oldest instructions will have this flag dropped,
-           permitting execution that has *begun* to also reach "commit" phase.
-    - one for Function-Unit to Registers.
-        1. it expresses the read and write requirements: the source
-          and destination registers on which the operation depends.  source
-          registers are marked "need read", dest registers marked
-          "need write".
-        2. by having *more than one* Functional Unit matrix row per ALU
-          it becomes possible to effectively achieve "Reservation Stations"
-          orthogonality with the Tomasulo Algorithm.  the FU row must, like
-          RS's, take and store a copy of the src register values.
-* we may potentially have 2-issue (or 4-issue) and a simpler issue and
-  detection by "striping" the register file according to modulo 2 (or 4)
-  on the destination   register number
-    - the Function Unit rows are multiplied up by 2 (or 4) however they are
-      actually connected to the same ALUs (pipelined and with both src and
-      dest register buffers/latches).
-    - the Register Read and Write signals are then "striped" such that
-      read/write requests for every 2nd (or 4th) register are "grouped" and
-      will have to fight for access to a multiplexer in order to access
-      registers that do not   have the same modulo 2 (or 4) match.
-    - we MAY potentially be able to drop the destination (write) multiplexer(s)
-      by only permitting FU rows with the same modulo to write to that
-      destination bank.  FUs with indices 0,4,8,12 may only write to registers
-      similarly numbered.
-    - there will therefore be FOUR separate register-data buses, with (at least)
-      the Read buses multiplexed so that all FU banks may read all src registers
-      (even if there is contention for the multiplexers)
-* an oddity / artefact of the FU-to-Registers Dependency Matrix is that the
-  write/read enable signals already exist as single-bits.  "normal" processors
-  store the src/dest registers as an index (5 bits == 0-31), where in this
-  design, that has been expanded out to 32 individual Read/Write wires,
-  already.
-    - the register file verilog implementation therefore must take in an
-      array of 128-bit write-enable and 128-bit read-enable signals.
-    - however the data buses will be multiplexed modulo 2 (or 4) according
-      to the lower bits of the register number, in order to cross "lanes".
-* with so many Function Units in RISC-V (dozens of instructions, times 2
-  to provide Reservation Stations, times 2 OR 4 for dual (or quad) issue),
-  we almost certainly are going to have to deploy a "grouping" scheme:
-    - rather than dedicate 2x4 FUs to ADD, 2x4 FUs to SUB, 2x4 FUs
-      to MUL etc., instead we group the FUs by how many src and dest
-      registers are required, and *pass the opcode down to them*
-    - only FUs with the exact same number (and type) of register profile
-      will receive like-minded opcodes.
-    - when src and dest are free for a particular op (and an ALU pipeline is
-      not stalled) the FU is at liberty to push the operands into the
-      appropriate free ALU.
-    - FUs therefore only really express the register, memory, and execution
-      dependencies: they don't actually do the execution.
+## Scoreboards
+
+scoreboards are not just scoreboards, they are dependency matrices,
+and there are several of them:
+
+* one for LOAD/STORE-to-LOAD/STORE:
+    1. most recent LOADs prevent later STOREs
+    2. most recent STOREs prevent later LOADs.
+* one for Function-Unit to Function-Unit.
+    3. it expresses both RAW and WAW hazards through "Go_Write"
+     and "Go_Read" signals, which are stopped from proceeding by
+     dependent 1-bit CAM latches
+    4. exceptions may ALSO be made "precise" by holding a "Write prevention"
+     signal.  only when the Function Unit knows that an exception is
+     not going to occur (memory has been fetched, for example), does
+     it release the signal
+    5. speculative branch execution likewise may hold a "Write prevention",
+       however it also needs a "Go die" signal, to clear out the
+       incorrectly-taken branch.
+    6. LOADs/STOREs *also* must be considered as "Functional Units" and thus
+       must also have corresponding entries (plural) in the FU-to-FU Matrix
+    7. it is permitted for ALUs to *BEGIN* execution (read operands are
+       valid) without being permitted to *COMMIT*.  thus, each FU must
+       store (buffer) results, until such time as a "commit" signal is
+       received
+    8. we may need to express an inter-dependence on the instruction order
+       (raising the WAW hazard line to do so) as a way to preserve execution
+       order.  only the oldest instructions will have this flag dropped,
+       permitting execution that has *begun* to also reach "commit" phase.
+* one for Function-Unit to Registers.
+    1. it expresses the read and write requirements: the source
+      and destination registers on which the operation depends.  source
+      registers are marked "need read", dest registers marked
+      "need write".
+    2. by having *more than one* Functional Unit matrix row per ALU
+      it becomes possible to effectively achieve "Reservation Stations"
+      orthogonality with the Tomasulo Algorithm.  the FU row must, like
+      RS's, take and store a copy of the src register values.
+
+## Register Renaming
+
+Register-renaming will be done with a single extra mutually-exclusive bit
+in the FUxReg Dependency Matrix, which may be set on only one FU.
+This bit indicates which of the FUs has the **most recent** destination
+register value pending.  It is **directly** functionally equivalent to
+the Reorder Buffer Dest Reg# CAM value, except that now it is a
+string of 1-bit "CAMs".
+
+See https://groups.google.com/d/msg/comp.arch/w5fUBkrcw-s/c80jRn4PCQAJ
+
+MUL r1, r2, r3
+
+    FU name  Reg name
+             12345678
+    add-0    ........
+    add-1    ........
+    mul-0    X.......
+    mul-1    ........
+
+ADD r4, r1, r3
+
+    FU name  Reg name
+             12345678
+    add-0    ...X....
+    add-1    ........
+    mul-0    X.......
+    mul-1    ........
+
+ADD r1, r5, r6
+
+    FU name  Reg name
+             12345678
+    add-0    ...X....
+    add-1    X.......
+    mul-0    ........
+    mul-1    ........
+
+note how on the 3rd instruction, the mul-0,R1 entry is **cleared**
+and **replaced** with an add-1,R1 entry.  future instructions now
+know that if their src operands require R1, they are to place a
+RaW dependency on **add-1**, not mul-0
+
+## Multi-issue
+
+we may potentially have 2-issue (or 4-issue) and a simpler issue and
+detection by "striping" the register file according to modulo 2 (or 4)
+on the destination   register number
+
+* the Function Unit rows are multiplied up by 2 (or 4) however they are
+  actually connected to the same ALUs (pipelined and with both src and
+  dest register buffers/latches).
+* the Register Read and Write signals are then "striped" such that
+  read/write requests for every 2nd (or 4th) register are "grouped" and
+  will have to fight for access to a multiplexer in order to access
+  registers that do not   have the same modulo 2 (or 4) match.
+* we MAY potentially be able to drop the destination (write) multiplexer(s)
+  by only permitting FU rows with the same modulo to write to that
+  destination bank.  FUs with indices 0,4,8,12 may only write to registers
+  similarly numbered.
+* there will therefore be FOUR separate register-data buses, with (at least)
+  the Read buses multiplexed so that all FU banks may read all src registers
+  (even if there is contention for the multiplexers)
+
+## FU-to-Register address de-muxed already
+
+an oddity / artefact of the FU-to-Registers Dependency Matrix is that the
+write/read enable signals already exist as single-bits.  "normal" processors
+store the src/dest registers as an index (5 bits == 0-31), where in this
+design, that has been expanded out to 32 individual Read/Write wires,
+already.
+
+* the register file verilog implementation therefore must take in an
+  array of 128-bit write-enable and 128-bit read-enable signals.
+* however the data buses will be multiplexed modulo 2 (or 4) according
+  to the lower bits of the register number, in order to cross "lanes".
+
+## FU "Grouping"
+
+with so many Function Units in RISC-V (dozens of instructions, times 2
+to provide Reservation Stations, times 2 OR 4 for dual (or quad) issue),
+we almost certainly are going to have to deploy a "grouping" scheme:
+
+* rather than dedicate 2x4 FUs to ADD, 2x4 FUs to SUB, 2x4 FUs
+  to MUL etc., instead we group the FUs by how many src and dest
+  registers are required, and *pass the opcode down to them*
+* only FUs with the exact same number (and type) of register profile
+  will receive like-minded opcodes.
+* when src and dest are free for a particular op (and an ALU pipeline is
+  not stalled) the FU is at liberty to push the operands into the
+  appropriate free ALU.
+* FUs therefore only really express the register, memory, and execution
+  dependencies: they don't actually do the execution.
 
 ## Recommendations
 
@@ -467,31 +525,31 @@ FP workloads:
 
 ----
 
->  in particular i found it fascinating that analysis of INT 
->  instructions found a 50% LD, 25% ST and 25% branch, and that 
->  70% were 2-src ops.  therefore you made sure that the number 
->  of read and write ports matched these, to ensure no bottlenecks, 
->  bearing in mind that ST requires reading an address *and* 
->  a data register. 
+>  in particular i found it fascinating that analysis of INT
+>  instructions found a 50% LD, 25% ST and 25% branch, and that
+>  70% were 2-src ops.  therefore you made sure that the number
+>  of read and write ports matched these, to ensure no bottlenecks,
+>  bearing in mind that ST requires reading an address *and*
+>  a data register.
 
-I never had a problem in "reading the write slot" in any of my pipelines. 
-That is, take a pipeline where LD (cache hit) has a latency of 3 cycles 
-(AGEN, Cache, Align). Align would be in the cycle where the data was being 
-forwarded, and the subsequent cycle, data could be written into the RF. 
+I never had a problem in "reading the write slot" in any of my pipelines.
+That is, take a pipeline where LD (cache hit) has a latency of 3 cycles
+(AGEN, Cache, Align). Align would be in the cycle where the data was being
+forwarded, and the subsequent cycle, data could be written into the RF.
 
-|dec|AGN|$$$|ALN|LDW| 
+|dec|AGN|$$$|ALN|LDW|
 
-For stores I would read the LDs write slot Align the store data and merge 
-into the cache as:: 
+For stores I would read the LDs write slot Align the store data and merge
+into the cache as::
 
-|dec|AGEN|tag|---|STR|ALN|$$$| 
+|dec|AGEN|tag|---|STR|ALN|$$$|
 
-You know 4 cycles in advance that a store is coming, 2 cycles after hit 
-so there is easy logic to decide to read the write slot (or not), and it 
-costs 2 address comparators to disambiguate this short shadow in the pipeline. 
+You know 4 cycles in advance that a store is coming, 2 cycles after hit
+so there is easy logic to decide to read the write slot (or not), and it
+costs 2 address comparators to disambiguate this short shadow in the pipeline.
 
-This is a lower expense than building another read port into the RF, in 
-both area and power, and uses the pipeline efficiently. 
+This is a lower expense than building another read port into the RF, in
+both area and power, and uses the pipeline efficiently.
 
 
 # References
