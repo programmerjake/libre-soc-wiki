@@ -433,6 +433,12 @@ ok,so continuing some thoughts-in-order notes:
     - FUs therefore only really express the register, memory, and execution
       dependencies: they don't actually do the execution.
 
+## Recommendations
+
+* Include a merged address-generator in the INT ALU
+* Have simple ALU units duplicated and allow more than one FU to
+  receive (and process) the src operands.
+
 ## Register file workloads
 
 Note: Vectorisation also includes predication, which is one extra integer read
@@ -458,6 +464,34 @@ FP workloads:
 * 13% Multiplication
 * 17% Addition
 * 5% branch
+
+----
+
+>  in particular i found it fascinating that analysis of INT 
+>  instructions found a 50% LD, 25% ST and 25% branch, and that 
+>  70% were 2-src ops.  therefore you made sure that the number 
+>  of read and write ports matched these, to ensure no bottlenecks, 
+>  bearing in mind that ST requires reading an address *and* 
+>  a data register. 
+
+I never had a problem in "reading the write slot" in any of my pipelines. 
+That is, take a pipeline where LD (cache hit) has a latency of 3 cycles 
+(AGEN, Cache, Align). Align would be in the cycle where the data was being 
+forwarded, and the subsequent cycle, data could be written into the RF. 
+
+|dec|AGN|$$$|ALN|LDW| 
+
+For stores I would read the LDs write slot Align the store data and merge 
+into the cache as:: 
+
+|dec|AGEN|tag|---|STR|ALN|$$$| 
+
+You know 4 cycles in advance that a store is coming, 2 cycles after hit 
+so there is easy logic to decide to read the write slot (or not), and it 
+costs 2 address comparators to disambiguate this short shadow in the pipeline. 
+
+This is a lower expense than building another read port into the RF, in 
+both area and power, and uses the pipeline efficiently. 
 
 
 # References
