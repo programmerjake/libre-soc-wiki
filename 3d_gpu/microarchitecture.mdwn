@@ -364,9 +364,9 @@ scoreboards are not just scoreboards, they are dependency matrices,
 and there are several of them:
 
 * one for LOAD/STORE-to-LOAD/STORE:
-    - most recent LOADs prevent later STOREs
-    - most recent STOREs prevent later LOADs.
-* one for Function-Unit to Function-Unit.
+  - most recent LOADs prevent later STOREs
+  - most recent STOREs prevent later LOADs.
+- one for Function-Unit to Function-Unit.
     - it expresses both RAW and WAW hazards through "Go_Write"
      and "Go_Read" signals, which are stopped from proceeding by
      dependent 1-bit CAM latches
