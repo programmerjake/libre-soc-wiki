@@ -400,11 +400,19 @@ and there are several of them:
 ## Register Renaming
 
 Register-renaming will be done with a single extra mutually-exclusive bit
-in the FUxReg Dependency Matrix, which may be set on only one FU.
+in the FUxReg Dependency Matrix, which may be set on only one FU (per register).
 This bit indicates which of the FUs has the **most recent** destination
 register value pending.  It is **directly** functionally equivalent to
 the Reorder Buffer Dest Reg# CAM value, except that now it is a
 string of 1-bit "CAMs".
+
+When an FU needs a src reg and finds that it needs to create a
+dependency waiting for a result to be created, it must use this
+bit to determine which FU it creates a dependency on.
+
+If there is a destination register that already has a bit set
+(anywhere in the column), it is **cleared** and **replaced**
+with a bit in the FU's row and the destination register's column.
 
 See https://groups.google.com/d/msg/comp.arch/w5fUBkrcw-s/c80jRn4PCQAJ
 
@@ -435,8 +443,8 @@ ADD r1, r5, r6
     mul-0    ........
     mul-1    ........
 
-note how on the 3rd instruction, the mul-0,R1 entry is **cleared**
-and **replaced** with an add-1,R1 entry.  future instructions now
+note how on the 3rd instruction, the (mul-0,R1) entry is **cleared**
+and **replaced** with an (add-1,R1) entry.  future instructions now
 know that if their src operands require R1, they are to place a
 RaW dependency on **add-1**, not mul-0
 
