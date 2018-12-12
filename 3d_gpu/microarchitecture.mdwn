@@ -366,6 +366,9 @@ and there are several of them:
 * one for LOAD/STORE-to-LOAD/STORE
   - most recent LOADs prevent later STOREs
   - most recent STOREs prevent later LOADs.
+  - a separate process analyses LOAD-STORE addresses for
+    conflicts, based on sufficient bits to assess uniqueness
+    as opposed to precise and exact matches
 * one for Function-Unit to Function-Unit.
   - it expresses both RAW and WAW hazards through "Go_Write"
     and "Go_Read" signals, which are stopped from proceeding by
