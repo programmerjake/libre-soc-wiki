@@ -354,6 +354,35 @@ have to forward multiple times from the miss buffers and avoid damaging
 the cache until the instruction retires. VVM uses this to avoid having
 a vector strip mine the data cache.
 
+----
+
+> I meant the renaming done as part of the SV extension, not the
+> microarchitectural renaming.
+
+ah ok, yes. right.  ok, so i don't know what to name that, and i'd
+been thinking of it in terms of "post-renaming", as in my mind, it's
+not really renaming, at all, it's... remapping.  or, vector
+"elements".
+
+as in: architecturally we already have a name (vector "elements").
+physically we already have a name: register file.
+
+i was initially thinking that the issue stage would take care of it,
+by producing:
+
+* post-remapped elements which are basically post-remapped register indices
+* a byte-mask indicating which *bytes* of the register are to be
+  modified and which left alone
+* an element-width that is effectively an augmentation of (part of) the opcode
+
+the element width goes into the ALU as an augmentation of the opcode
+because the 64-bit "register" now contains e.g. 16-bit "elements"
+indexed 0-3, or 8-bit "elements" indexed 0-7, and we now want a
+SIMD-style (predicated) operation to take place.
+
+now that i think about it, i think we may need to have the three
+phases be part of a pipeline, in a single dependency matrix.
+
 # Design Layout
 
 ok,so continuing some thoughts-in-order notes:
