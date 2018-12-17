@@ -394,6 +394,30 @@ You have to prove that the logic can never create a circular dependency,
 not a proof with test vectors, a logical proof like what we do with FP
 arithmetic these days.
 
+----
+
+
+>  however... we don't mind that, as the vectorisation engine will 
+>  be, for the most part, generating sequentially-increasing index
+>  dest *and* src registers, so we kinda get away with it.
+
+In this case:: you could simply design a 1R or 1W file (A.K.A. SRAM)
+and read 4 registers at a time or write 4 registers at a time. Timing
+looks like:
+
+<pre>
+     |RdS1|RdS2|RdS3|WtRd|RdS1|RdS2|RdS3|WtRd|RdS1|RdS2|RdS3|WtRd|
+                    |F123|F123|F123|F123|
+                         |Esk1|EsK2|EsK3|EsK4|
+                                        |EfK1|EfK2|EfK3|EfK4|
+</pre>
+
+4 cycle FU shown. Read as much as you need in 4 cycles for one operand,
+Read as much as you need in 4 cycles for another operand, read as much
+as you need in 4 cycles for the last operand, then write as much as you
+can for the result. This simply requires flip-flops to capture the width
+and then deliver operands in parallel (serial to parallel converter) and
+similarly for writing.       
 # Design Layout
 
 ok,so continuing some thoughts-in-order notes:
