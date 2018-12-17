@@ -383,6 +383,17 @@ SIMD-style (predicated) operation to take place.
 now that i think about it, i think we may need to have the three
 phases be part of a pipeline, in a single dependency matrix.
 
+----
+
+I had a state machine in one chip that could come up out of power on in a
+state it could not get out of. Since this experience, I have a rule with
+state machines, A state machine must be able to go from any state to idle
+when the reset line is asserted.
+
+You have to prove that the logic can never create a circular dependency,
+not a proof with test vectors, a logical proof like what we do with FP
+arithmetic these days.
+
 # Design Layout
 
 ok,so continuing some thoughts-in-order notes:
@@ -605,7 +616,6 @@ costs 2 address comparators to disambiguate this short shadow in the pipeline.
 
 This is a lower expense than building another read port into the RF, in
 both area and power, and uses the pipeline efficiently.
-
 
 # References
 
