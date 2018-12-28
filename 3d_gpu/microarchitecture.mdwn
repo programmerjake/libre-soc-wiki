@@ -418,6 +418,24 @@ as you need in 4 cycles for the last operand, then write as much as you
 can for the result. This simply requires flip-flops to capture the width
 and then deliver operands in parallel (serial to parallel converter) and
 similarly for writing.       
+
+----
+
+* <https://groups.google.com/d/msg/comp.arch/gedwgWzCK4A/32aNXIzeDQAJ>
+
+discussion of how to do dest-latches rather than src-latches.
+
+also includes need for forwarding to achieve it (synonymous with
+Tomasulo CDB).
+
+also, assigning a result number at issue time allows multiple results
+to be stored-and-forwarded, meaning that multiplying up the FUs is
+not needed.
+
+also, discussion of how to have multiple instructions issued even with
+the same dest reg: drop the reg-store and effectively rename them
+to "R.FU#".  exceptions under discussion.
+
 # Design Layout
 
 ok,so continuing some thoughts-in-order notes:
