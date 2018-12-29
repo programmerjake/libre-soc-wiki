@@ -397,7 +397,7 @@ arithmetic these days.
 ----
 
 
->  however... we don't mind that, as the vectorisation engine will 
+>  however... we don't mind that, as the vectorisation engine will
 >  be, for the most part, generating sequentially-increasing index
 >  dest *and* src registers, so we kinda get away with it.
 
@@ -417,7 +417,7 @@ Read as much as you need in 4 cycles for another operand, read as much
 as you need in 4 cycles for the last operand, then write as much as you
 can for the result. This simply requires flip-flops to capture the width
 and then deliver operands in parallel (serial to parallel converter) and
-similarly for writing.       
+similarly for writing.
 
 ----
 
@@ -435,6 +435,28 @@ not needed.
 also, discussion of how to have multiple instructions issued even with
 the same dest reg: drop the reg-store and effectively rename them
 to "R.FU#".  exceptions under discussion.
+
+# Register File having same-cycle "forwarding"
+
+discussion about CDC 6600 Register File: it was capable of forwarding
+operands being written out to "reads", *in the same cycle*.  this
+effectively turns the Reg File *into* a "Forwarding Bus".
+
+we aim to only have (4 banks of) 2R1W ported register files,
+with *additional* Forwarding Multiplexers (which look exactly
+like multi-port regfile gate logic).
+
+suggestion by Mitch is to have a "demon" on the front of the regfile,
+<https://groups.google.com/d/msg/comp.arch/gedwgWzCK4A/qY2SYjd2DgAJ>,
+which:
+
+    basically, you are going to end up with a "demon" at the RF and when
+    all read reservations have been satisfied the demon determines if the
+    result needs to be written to the RF or discarded. The demon sees
+    the instruction issue process, the branch resolutions, and the FU
+    exceptions, and keeps track of whether the result needs to be written.
+    It then forwards the result from the FU and clears the slot, then writes
+    the result to the RF if needed.
 
 # Design Layout
 
