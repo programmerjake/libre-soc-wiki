@@ -1,0 +1,84 @@
+# Requirements Specification
+
+# General Architectural Design Principle
+
+The general design base is to utilise an augmented and enhanced variant
+of the original CDC 6600 scoreboard system.  It is not well-known that
+the 6600 includes operand forwarding and register renaming.  Precise
+exceptions, precise in-order commit, branch speculation, "nameless"
+registers (results detected that need not be written because they have
+been overwritten by another instruction), predication and vectorisation
+will all be added by overloading write hazards.
+
+# Register File
+
+There shall be two 127-entry 64-bit register files: one for floating-point,
+the other for integer operations.  Each shall have byte-level write-enable
+lines, and shall be divided into 4-way 2R1W banks that are split into
+odd-even register numbers and further split into hi-32 and lo-32 bits.
+
+In this way, 2 simultaneous 64-bit operations may write to the register
+file (as long as the destinations have odd and even numbers), or 4
+simultaneous 32-bit operations likewise.  byte-level write-enable is
+so that writes may be performed down to the 16-bit and 8-bit level
+without requiring additional reads.
+
+Additionally, if a read is requested for a register that is currently
+being written, the written value shall be "passed through" on the same
+cycle, such that the register file may effectively be used as an
+"Operand Forwarding" Channel.
+
+# Function Units
+
+
+# 6600 Scoreboards
+
+6600 Scoreboards are usually viewed as incomplete: incapable of register
+renaming and precise exceptions are two of the perceived flaws.  These
+flaws do not exist, however it takes some explaining.
+
+## Q-Table (FU to Register Lookup)
+
+The Q Table is a lookup table that records (in binary form in the
+original 6600, however unary bit-wise form - N Function Unit bits
+and M register bits - can be recommended) the last Function Unit
+that, in instruction issue order, is to write to any given
+register.
+
+However, to support "nameless" registers, the Q-Table shall support
+*multiple* (historical) entries, recording the history of the
+*previous* Function Unit that was to write to each register.
+When historic entries exist (non-empty), the following shall occur:
+
+* All Function Units with historic entries shall **not** commit
+  their values to the register file, even if they are free to do so.
+* All Function Units with historic entries shall hold a "write hazard"
+  against their dependencies that are waiting for that "nameless" result.
+* When a dependent Function Unit has cleared all possibility of an
+  Exception being raised, it shall **drop** the write hazard on the
+  "nameless" source.
+* If a "nameless" Function Unit needs to generate an Exception, it
+  does so in the standard way (see "Exceptions"), **however**,
+  in doing so it will also result in a **roll back** of the Q-Table for
+  **all and any** cancelled Function Units, to *previous* (historic)
+  Q-Table values for the relevant destination registers.  Once
+  rolled back, the Function Unit must store its result in the register
+  file, prior to permitting the Exception to proceed.
+* Likewise If a dependent Function Unit has to generate an exception,
+  and its source Function Units are "nameless", the "nameless"
+  Function Units must also "roll back", store their results, and
+  finally permit the Exception to trigger.
+* Likewise, all other "nameless" results must also be "rolled back",
+  except unlike the Function Units triggering the exception they may
+  roll back to the newest "nameless" historical Q-Table entry
+  (if they have not already been cancelled by the FU triggering the
+  exception).
+
+Bear in mind that exceptions (like all operations that are ready to
+commit) may only occur in-order (following a FU-to-FU "link" bit),
+and may only occur if the Function Unit is entirely free of write hazards.
+
+## FU-to-FU Dependency Matrix
+
+The Function-Unit to Function-Unit Dependency Matrix expresses the
+read and write hazards - dependencies - between Function Units.
