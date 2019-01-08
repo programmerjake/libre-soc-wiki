@@ -29,7 +29,7 @@ An overview of the design is as follows:
   file.  The instruction will be scalar and will inherently and
   automatically parallelised by SV, just like all other scalar opcodes.
 * The register files will be stratified into 4-way 2R1W banks,
-  with byte-level write-enable on all banks.
+  with *separate* and distinct byte-level write-enable lines on all banks.
 * 6600-style scoreboards will be augmented with "shadow" wires
   and write hazard capability on exceptions, branch speculation,
   LD/ST and predication.
