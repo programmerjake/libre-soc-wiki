@@ -20,10 +20,15 @@ An overview of the design is as follows:
 * Each "shadow" capability will be provided by a separate Function
   Unit.  If there is to exist the possibility of rolling ahead
   through two speculative branches, then two **separate**
-  Branch-speculative Function Units will be required.
+  Branch-speculative Function Units will be required: each will
+  hold their own separate and distinct "shadow" (Go-Die wire) and
+  write-hazard over instructions on which the branch depends.
 * Likewise for predication, which shall place a "hold" on
   the Function Units that depend on it until the register used
-  as a predicate mask has been read and decoded.
+  as a predicate mask has been read and decoded.  Bits in the
+  mask that are "zero" will result in "Go-Die" signals being
+  sent to the Function Units previously (speculatively) allocated
+  for that (now cancelled) element operation.
 * The 6600 "Q-Table" that records, for each register, the last Function
   Unit (in instruction issue order) that is to write its result to that
   register, shall be augmented with "history" capability that aids and
