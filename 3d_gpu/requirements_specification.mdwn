@@ -1,5 +1,14 @@
 # Requirements Specification
 
+This document contains the Requirements Specification for the Libre RISC-V
+micro-architectural design.  It shall meet the target of 5-6 32-bit GFLOPs,
+150 M-Pixels/sec, 30 Million Triangles/sec, and minimum video decode 
+capability of 720p @ 30fps to a 1920x1080 framebuffer, in under 2.5 watts
+at an 800mhz clock rate.  Exceeding this target is acceptable if the
+power budget is not exceeded.  Exceeding this target just for the hell of
+it is also acceptable, as long as it does not disrupt meeting the minimum
+performance and power requirements.
+
 # General Architectural Design Principle
 
 The general design base is to utilise an augmented and enhanced variant
@@ -12,6 +21,13 @@ will all be added by overloading write hazards.
 
 An overview of the design is as follows:
 
+* 3D and Video primitives (operations) will only be added as strictly
+  necessary to achieve the minimum power and performance target.
+* Identified so far is a 4xFP32 ARGB Quad to 1xINT32 ARGB pixel
+  conversion opcode (part of the Vulkan API).  It will write directly
+  to a separate "tile buffer" (SRAM), not to the integer register
+  file.  The instruction will be scalar and will inherently and
+  automatically parallelised by SV, just like all other scalar opcodes.
 * The register files will be stratified into 4-way 2R1W banks,
   with byte-level write-enable on all banks.
 * 6600-style scoreboards will be augmented with "shadow" wires
