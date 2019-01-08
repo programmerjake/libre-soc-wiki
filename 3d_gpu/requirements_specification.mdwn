@@ -10,6 +10,41 @@ registers (results detected that need not be written because they have
 been overwritten by another instruction), predication and vectorisation
 will all be added by overloading write hazards.
 
+An overview of the design is as follows:
+
+* The register files will be stratified into 4-way 2R1W banks,
+  with byte-level write-enable on all banks.
+* 6600-style scoreboards will be augmented with "shadow" wires
+  and write hazard capability on exceptions, branch speculation,
+  LD/ST and predication.
+* Function Units will have both src and destination Reservation
+  Stations (latches) in order to buffer incoming and outgoing data
+* Crossbar Routing from the Register File will be on the **source**
+  registers **only**: Function Units will route **directly** to
+  and be hard-wired associated with one of four register banks.
+* Additional "Operand Forwarding" crossbar(s) will be added that
+  **bypass** the register file entirely, to be used exclusively
+  for registers that have specifically been identified as "nameless".
+* Function Units will be the *front-end* to **shared** pipelined
+  concurrent ALUs.  The input src registers will come from the
+  latches associated with the Function Unit, and will put the
+  result **back** into the destination latch associated with that
+  **same** Function Unit.
+* **Pairs** of 32-bit Function Units will handle 64-bit operations.
+* 32-bit Function Units will handle 8 and 16 bit operations in
+  cases where batches of operations may be (easily, conveniently)
+  allocated to a 32-bit-wide SIMD-style (predicated) ALU.
+* Additional 8-bit Function Units (in groups of 4) will handle
+  8-bit operations as well as pair up to handle 16-bit operations
+  in cases where neither 8 nor 16 bit operations can be (conveniently,
+  easily) allocated to parallel (SIMD-like) ALUs.  This to handle
+  corner-cases and to not jam up the 32-bit Function Units with single-byte
+  operations (resulting in only 25% utilisation).
+* Allocation of an operation to a 32-bit ALU will block the
+  corresponding 8/16-bit Function Unit(s) for that register, and vice-versa.
+  8/16-bit operations will however **not** block the remaining
+  (unallocated) bytes of the same register from being utilised.
+
 # Register File
 
 There shall be two 127-entry 64-bit register files: one for floating-point,
