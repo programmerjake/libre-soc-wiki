@@ -28,6 +28,7 @@ An overview of the design is as follows:
   to a separate "tile buffer" (SRAM), not to the integer register
   file.  The instruction will be scalar and will inherently and
   automatically parallelised by SV, just like all other scalar opcodes.
+* xBitManip opcodes will be required to deal with VPU workloads
 * The register files will be stratified into 4-way 2R1W banks,
   with *separate* and distinct byte-level write-enable lines on all four
   bytes of all four banks.
@@ -53,7 +54,9 @@ An overview of the design is as follows:
   Unit (in instruction issue order) that is to write its result to that
   register, shall be augmented with "history" capability that aids and
   assists in "rollback" of "nameless" registers, should an exception
-  or interrupt occur.
+  or interrupt occur. "History" is simply a (short) queue (stack)
+  that preserves, in instruction-issue order, a record of the previous
+  Function Unit(s) that targetted each register as a destination.
 * Function Units will have both src and destination Reservation
   Stations (latches) in order to buffer incoming and outgoing data.
   This to make best use of (limited) inter-Function-Unit bus bandwidth.
