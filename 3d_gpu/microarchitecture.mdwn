@@ -31,6 +31,15 @@ See [[requirements_specification]]
 
 ----
 
+http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2019-January/000310.html
+
+> We will need fast f32 <-> i16 at least since that is used for 16-bit
+> z-buffers. Since we don't have indexed load/store and need to manually
+> construct pointer vectors we will need fast i32 -> i64. We will also need
+> fast i32 <-> f32.
+
+----
+
 'm thinking about using tilelink (or something similar) internally as
 having a cache-coherent protocol is required for implementing Vulkan
 (unless you want to turn off the cache for the GPU memory, which I
