@@ -109,6 +109,7 @@ cycle, such that the register file may effectively be used as an
 
 # Function Units
 
+## Commit Phase (instruction order preservation)
 
 # 6600 Scoreboards
 
@@ -164,5 +165,42 @@ read and write hazards - dependencies - between Function Units.
 
 ## Branch Speculation
 
+Branch speculation is done by preventing instructions from becoming
+"writeable" until the Branch Unit knows if it has resolved or not.
+This is done with the addition of "Shadow" lines, as shown below:
+
+This image reproduced with kind permission, Copyright (C) Mitch Alsup
 [[!img shadow_issue_flipflops.png]]
+
+Note that there are multiple "Shadow" signals, coming not just from Branch
+Speculation but also from predication and exception shadows.
+
+On a "Failed" signal, the instruction is told to "Go Die".  This is
+passed to the Computation Unit as well.  When all "Success" signals
+are raised the instruction is permitted to enter "Writeable".
+
+## Exceptions
+
+Exceptions shall be handled by each instruction that *may* throw an
+exception having and holding a "Shadow" wire over all dependent
+Function Units, in exactly the same way as Branch Speculation.
+Likewise, dependent instructions are prevented and prohibited from
+entering the "Writeable" state.
+
+Dependent downstream instructions, if the exception is thrown,
+shall have the "Failed" bit ASSERTED (by the Function Unit throwing
+the exception) such that the down-stream dependent instruction is told
+to "Go Die".
+
+If the point is reached at which the instruction knows that the
+Exception cannot possibly occur, the "Success" signal is raised
+instead, thus cancelling the "hold" over dependent downstream
+instructions - again in exactly the same way as Branch Speculation
+"Success".
+
+Exceptions may **only** be actually raised if they are at the front of
+the instruction queue, i.e. if they are free of write hazards.
+See section on "Function Unit Commit" phase, as the Function Units
+have a "link bit" that preserves the instruction issue order, which
+must also be respected.
 
