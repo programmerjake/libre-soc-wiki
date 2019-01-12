@@ -447,6 +447,35 @@ also, discussion of how to have multiple instructions issued even with
 the same dest reg: drop the reg-store and effectively rename them
 to "R.FU#".  exceptions under discussion.
 
+----
+
+Speculation
+
+<https://groups.google.com/forum/#!topic/comp.arch/mzXXTU2GUSo>
+
+There is a minimal partial order that is immune to Spetré amd friends,
+You have the dependence matrix that imposes a minimal partial order on
+executing instructions (at least in the architecture you have been
+discussing herein) You just have to prove that your matrix provides
+that minimal partial order for instructions.
+
+Then you have to prove that no cache/tlb state can be updated prior to the
+causing instruction being made retirable (not retired retirable).
+
+As to cache updates, all "reasonable" interfaces that service cache misses
+will have line buffers to deal with the inbound and outbound memory traffic.
+These buffers will provide the appropriate data to the execution stream,
+but not update the cache until the causing instruction becomes transitively
+retirable. This will put "a little" extra pressure on these buffers.
+
+As to the TLB it is easy enough on a TLB miss to fetch the mapping tables
+transitively and arrive at a PTE. This PTE cannot be installed until the
+causing instruction becomes retirable. The miss buffers are probably the
+right place, and if a second TLB miss occurs, you might just as well walk
+the tables again and if it hits the line in the buffer use the data from
+there. When we looked at this a long time ago, there was little benefit
+for being able to walk more than one TLB miss at a time.
+
 # Register File having same-cycle "forwarding"
 
 discussion about CDC 6600 Register File: it was capable of forwarding
