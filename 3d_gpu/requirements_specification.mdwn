@@ -88,6 +88,15 @@ An overview of the design is as follows:
   corresponding 8/16-bit Function Unit(s) for that register, and vice-versa.
   8/16-bit operations will however **not** block the remaining
   (unallocated) bytes of the same register from being utilised.
+* Spectre timing attacks will be dealt with by ensuring that there
+  are no side-channels between cores in the usual ways (no shared
+  DIV unit, correct use of L1 cache), however there will be an
+  addition of a "Speculation Fence" instruction (or hint) that will
+  reset the internal state to a known quiescent state.  This involves
+  cancellation of all speculation, cancellation of "nameless" registers,
+  committing outstanding register writes to the register file, and
+  cancelling all Function Units waiting for read hazards.  This to
+  be automatically done on any exceptions or interrupts.
 
 # Register File
 
@@ -203,4 +212,27 @@ the instruction queue, i.e. if they are free of write hazards.
 See section on "Function Unit Commit" phase, as the Function Units
 have a "link bit" that preserves the instruction issue order, which
 must also be respected.
+
+# Spectre-style timing mitigation
+
+Spectre-style timing attacks are defined by one instruction issue
+affecting the completion time of past **and future** instructions.
+The key insight to mitigation against such attacks is to note that
+arbitrary untrusted instructions must not be permitted to affect
+trusted instructions.  Consequently as long as there is a firebreak
+(a "Fence") between trusted and untrusted, timing attacks can be
+held off.
+
+Two instructions ("hints") shall therefore be added:
+
+* One that stops speculation, multi-issue and any out-of-order
+  resource allocation for a minimum of 16 instructions.
+* Another that **cancels** all speculation and reservations,
+  cancels "nameless" registers, waits for and ensures that all
+  outstanding instructions have completed and committed, before
+  permitting the processor to continue further.
+
+This latter shall occur unconditionally without requiring a special
+instruction to be called, on ECALL as well as all exceptions and
+interrupts.
 
