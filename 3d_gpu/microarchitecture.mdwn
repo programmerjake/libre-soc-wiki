@@ -508,6 +508,17 @@ Register Prefixes <a name="prefixes" />
 | xxxxxxxxxxxxxxxx | xxxxxxxxxxxbbb11 | XXXXXXXXXXXXXXXX | XXXXXXXXX0111111 |
 </pre>
 
+# TLBs / Virtual Memory <a name="tlb" />
+
+----
+
+We were specifically looking for ways to not need large CAMs since they are
+power-hungry when designing the instruction scheduling logic, so it may be
+a good idea to have a smaller L1 TLB and a larger, slower, more
+power-efficient, L2 TLB. I would have the L1 be 4-32 entries and the L2 can
+be 32-128 as long as the L2 cam isn't being activated every clock cycle. We
+can also share the L2 between the instruction and data caches.
+
 # Register File having same-cycle "forwarding"
 
 discussion about CDC 6600 Register File: it was capable of forwarding
