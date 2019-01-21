@@ -476,6 +476,38 @@ the tables again and if it hits the line in the buffer use the data from
 there. When we looked at this a long time ago, there was little benefit
 for being able to walk more than one TLB miss at a time.
 
+----
+
+Register Prefixes <a name="prefixes" />
+
+<pre>
+|           3      |           2      |           1      |           0      |
+| ---------------- | ---------------- | ---------------- | ---------------- |
+|                  | xxxxxxxxxxxxxxaa | xxxxxxxxxxxxxxaa | XXXXXXXXXX011111 |
+|                  | xxxxxxxxxxxxxxxx | xxxxxxxxxxxbbb11 | XXXXXXXXXX011111 |
+|                  | xxxxxxxxxxxxxxaa | XXXXXXXXXX011111 | XXXXXXXXXX011111 |
+| xxxxxxxxxxxxxxaa | xxxxxxxxxxxxxxaa | XXXXXXXXXXXXXXXX | XXXXXXXXX0111111 |
+| xxxxxxxxxxxxxxxx | xxxxxxxxxxxbbb11 | XXXXXXXXXXXXXXXX | XXXXXXXXX0111111 |
+</pre>
+
+<pre>
+2x16-bit / 32-bit:
+
+| 9 8   | 7 6 5 |     4 3 |     2 1 | 0 |
+| ----- | ----- | ------- | ------- | - |
+| elwid | VL    | rs[6:5] | rd[6:5] | 0 |
+
+| 9 8 7 6 5 |      4 3 |   2 |   1 | 0 |
+| --------- | -------- | --- | --- | - |
+| predicate | predtarg | end | inv | 1 |
+
+
+|                  | xxxxxxxxxxxxxxxx | xxxxxxxxxxxbbb11 | XXXXXXXXXX011111 |
+|                  | xxxxxxxxxxxxxxaa | XXXXXXXXXX011111 | XXXXXXXXXX011111 |
+| xxxxxxxxxxxxxxaa | xxxxxxxxxxxxxxaa | XXXXXXXXXXXXXXXX | XXXXXXXXX0111111 |
+| xxxxxxxxxxxxxxxx | xxxxxxxxxxxbbb11 | XXXXXXXXXXXXXXXX | XXXXXXXXX0111111 |
+</pre>
+
 # Register File having same-cycle "forwarding"
 
 discussion about CDC 6600 Register File: it was capable of forwarding
