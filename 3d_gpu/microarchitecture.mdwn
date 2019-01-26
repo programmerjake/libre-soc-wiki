@@ -508,6 +508,40 @@ Register Prefixes <a name="prefixes" />
 | xxxxxxxxxxxxxxxx | xxxxxxxxxxxbbb11 | XXXXXXXXXXXXXXXX | XXXXXXXXX0111111 |
 </pre>
 
+# MVX and other reg-shuffling
+
+<pre>
+> Crucial strategic op missing is MVX:
+> regs[rd]= regs[regs[rs1]]
+>
+we could modify the definition slightly:
+for i in 0..VL {
+    let offset = regs[rs1 + i];
+    // we could also limit on out-of-range
+    assert!(offset < VL); // trap on fail
+    regs[rd + i] = regs[rs2 + offset];
+}
+
+The dependency matrix would have the instruction depend on everything from
+rs2 to rs2 + VL and we let the execution unit figure it out. for
+simplicity, we could extend the dependencies to a power of 2 or something.
+
+We should add some constrained swizzle instructions for the more
+pipeline-friendly cases. One that will be important is:
+for i in (0..VL) {
+    let i = i * 4;
+    let s1: [0; 4];
+    for j in 0..4 {
+        s1[j] = regs[rs1 + i + j];
+    }
+    for j in 0..4 {
+        regs[rd + i + j] = s1[(imm >> j * 2) & 0x3];
+    }
+}
+Another is matrix transpose for (2-4)x(2-4) matrices which we can implement
+as similar to a strided ld/st except for registers.
+</pre>
+
 # TLBs / Virtual Memory <a name="tlb" />
 
 ----
