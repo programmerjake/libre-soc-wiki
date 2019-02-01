@@ -2,7 +2,7 @@
 
 This document contains the Requirements Specification for the Libre RISC-V
 micro-architectural design.  It shall meet the target of 5-6 32-bit GFLOPs,
-150 M-Pixels/sec, 30 Million Triangles/sec, and minimum video decode 
+150 M-Pixels/sec, 30 Million Triangles/sec, and minimum video decode
 capability of 720p @ 30fps to a 1920x1080 framebuffer, in under 2.5 watts
 at an 800mhz clock rate.  Exceeding this target is acceptable if the
 power budget is not exceeded.  Exceeding this target "just because we can"
@@ -236,3 +236,15 @@ This latter shall occur unconditionally without requiring a special
 instruction to be called, on ECALL as well as all exceptions and
 interrupts.
 
+# ALU design
+
+There is a separate pipelined alu for fdiv/fsqrt/frsqrt/idiv/irem
+that is possibly shared between 2 or 4 cores.
+
+The main ALUs are each a unified ALU for i8-i64/f16-f64 where the
+ALU is split into lanes with separate instructions for each 32-bit half.
+So, the multiplier should be capable of 64-bit fmadd, 2x32-bit fmadd,
+4x16-bit fmadd, 1x32-bit fmadd + 2x16-bit fmadd (in either order), and all
+(8/16/32/64) sizes of integer mul/mulhsu/mulh/mulhu in 2 groups of 32-bits.
+We can implement fmul using fmadd with 0 (make sure that we get the right
+sign bit for 0 for all rounding modes).
