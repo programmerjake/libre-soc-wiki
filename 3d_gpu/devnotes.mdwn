@@ -1,0 +1,35 @@
+# Notes for dev
+
+* nmigen is python, therefore use pep8. Install autopep8 and use
+ -v  -a -a -a --experimental. goes in Makefile
+* epydoc (old but still relevant) to be used to extract docstrings. again
+  goes in Makefile
+* unit tests (python setup.py test) always to be developed extensively
+  (synergistically) at time of code writing, NOT as an afterthought.
+* do not use import * !
+* modules to be kept very small, such that "yosys show" on reading
+  verilog produces a small, legible diagram
+* module header to actually explain what the module does. link to
+  requirements spec, and any other useful stuff.
+* ascii art recommended in module header to illustrate where bits go.
+* class header likewise required and explain purpose of the class.
+* code comments to be useful but not excessive to the point of drowning
+  the code
+* functions not to exceed 60-70 (or so) lines, if possible. if too big,
+  split into multiple functions (remember, nmigen constructs can be returned
+  from a function)
+
+# Git commits
+
+* commits to be SMALL (5 - 15 lines max) and MUST not disrupt existing unit
+  tests. unit tests always to be run prior to commit.
+* commits MUST be SINGLE PURPOSE. clue (red flag) is if the commit message
+  includes the word "and".
+* commit message to explain purpose (ie not be "changed this" or "added that")
+* large commits ok as long as they are additions rather than modifications.
+* whitespace to be separate, "autopep8 cleanup" is sufficient.
+* when using bugtracker, include link to bugreport in commit message. Cross
+  ref commit id to bugreport.
+* large refactoring (e.g. renaming functions) needs to be atomic and
+  single-purpose as best as possible.  unit tests still need to pass,
+  post-refactor.
