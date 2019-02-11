@@ -33,3 +33,33 @@
 * large refactoring (e.g. renaming functions) needs to be atomic and
   single-purpose as best as possible.  unit tests still need to pass,
   post-refactor.
+
+# Which files should be added to the repository
+
+**Only source files must be added to the repository.**
+
+Output that is created from another command must not, with
+very very few exceptions, be added to the repository.  The reason is
+simple: each time a source file is modified, the auto-generated
+(compiled) output **also** changes.  If those changes are added
+to the repository, they become confused with the source code.
+If they are **not** added to the repository, the source and its
+auto-generated output become out-of-sync.
+
+**Either way is bad**.
+
+Instead, the following is advised:
+
+* add the source code *only*
+* add a script or command that builds the source code, generating the output
+* do *NOT* add the *output* to the repository
+* add the script or command to the Makefile
+* list the command as a "build dependency" in the documentation
+
+As a convenience and a courtesy, consider creating "release tarballs"
+(also adding the means to create them to the Makefile) so that people who
+for one reason or another cannot get or install the build dependencies
+may at least get the end-result of the work.  However this should be
+done as a low priority, or if there are financial offers of sponsorhip
+or other incentives received or to be gained by doing so.
+
