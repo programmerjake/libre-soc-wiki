@@ -42,9 +42,10 @@ Output that is created from another command must not, with
 very very few exceptions, be added to the repository.  The reason is
 simple: each time a source file is modified, the auto-generated
 (compiled) output **also** changes.  If those changes are added
-to the repository, they become confused with the source code.
-If they are **not** added to the repository, the source and its
-auto-generated output become out-of-sync.
+to the repository, they become confused with the source code (a git
+diff will show *both* the source *and* changes to the auto-generated
+output).  If they are **not** added to the repository, the source and
+its auto-generated output become out-of-sync.
 
 **Either way is bad**.
 
