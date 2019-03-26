@@ -1,25 +1,99 @@
 # Simple-V Spike emulator
 
-example dev script (riscvdev.sh):
+####1. Set RISCV and PATH variables
+  RISCV will be the location where riscv-tools will place all created
+  executables into when building. RISCV must also be appended to the PATH
+  to allow the usage of the created executables without specifying RISCV.
 
-    export RISCV="$HOME/src/riscv"
-    export PATH="$PATH:$RISCV/bin"
+ > example dev script (riscvdev.sh):
 
-Needs riscv-tools, first
+>       export RISCV="$HOME/src/riscv"
+>       export PATH="$PATH:$RISCV/bin"
 
-* git clone https://github.com/riscv/riscv-tools
+####2. Install riscv-tools: <https://github.com/riscv/riscv-tools>
+  riscv-tools is needed to perform a variety of actions such as: compiling
+  a program to work with a spike simulator, simulate the kernel running
+  on spike, and more!
 
-once compiled check out sv versions of spike and tests:
+ > 1. Clone the riscv-tools repository
+    * git clone https://github.com/riscv/riscv-tools
 
-* git clone https://git.libre-riscv.org/git/riscv-isa-sim.git
-* cd risc-v-isa-sim
-* git checkout -b sv
-* cd ..
-* git clone https://git.libre-riscv.org/git/riscv-tests.git
-* cd riscv-tests
-* git checkout -b sv
+ > 2. Follow the instructions found in the README.md
+    * Note: Be sure to be inside the riscv-tools directory when executing the instructions found there
 
-make install needed on the simulator for the tests to pick it up
+ > 3. Run the riscv-tests within riscv-tools to verify installation
+    * Navigate to riscv-tests/isa inside riscv-tools and execute the following:
+            * make
+            * make run
+
+> 4. Make a cache of the current installation somewhere
+    * When all else fails you will not have to run the build script again. Just be sure it is not in the same directory as the current installation.
+
+When the tests a stream of text will be output to the terminal, however,
+this is normal. Both commands must complete without error and errors
+will stop the execution of either command.
+
+####3. Clone and check out Simple-V riscv-isa-sim:
+
+  This is a repository used by libre and contains an augmented version of the spike simulator . Do not clone these inside riscv-tools!
+
+> 1. Clone Simple-V riscv-isa-sim
+    * git clone https://git.libre-riscv.org/git/riscv-isa-sim.git
+
+ >2. Checkout the correct branch
+    * cd riscv-isa-sim
+    * git branch sv origin/sv
+    * git checkout sv
+
+
+####4. Compile and Install Simple-V riscv-isa-sim:
+
+  In order for the spike libraries to use the Simple-V version of the
+  simulator the cloned repository must be compiled and installed to
+  the toolchain.
+
+>1. Navigate into the recently cloned riscv-isa-sim directory
+    * cd riscv-isa-sim
+
+>2. Create a build directory inside riscv-isa-sim
+    * cd riscv-isa-sim
+    * mkdir build
+
+>3. Compile riscv-isa-sim
+    * cd build
+    * ../configure --prefix=$RISCV --with-fesvr=$RISCV
+    * make
+
+>3. Install riscv-isa-sim
+    * make install
+
+####5. Clone Simple-V riscv-tests:
+
+  This repository is used by libre and contains an augmented versions of
+  the tests found in riscv-tools. Do not clone these inside riscv-tools!
+
+>1. Clone the Simple-V version of riscv-tests
+    * git clone https://git.libre-riscv.org/git/riscv-tests.git
+
+>2. Checkout the correct branch
+    * cd riscv-tests
+    * git branch sv origin/sv
+    * git checkout sv
+
+>3. Update internal repository
+    * git submodule update --init --recursive
+
+####6. Compile and Run Simple-V riscv-tests:
+
+  These tests verify that everything was both generated and installed properly.
+
+>1. Navigate to riscv-tests/isa
+
+>2. Compile riscv-tests
+    * make
+
+>3. Run riscv-tests
+    * make run
 
 To run the sv unit tests (requires $RISCV to be set correctly i think, or
 at least riscv32/64-unknown-elf-gcc to be in the path)
