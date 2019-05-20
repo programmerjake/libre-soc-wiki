@@ -24,3 +24,59 @@ to the priority picker, which generates GoRead, so it is critical
 
 [[!img comp_unit_req_rel.jpg]]
 [[!img group_pick_rd_rel.jpg]]
+
+# Modifications to Dependency Cell
+
+Note: this version still requires CLK to operate on a HI-LO cycle.
+
+The dependency cell is responsible for recording that a Function Unit
+requires the use of a dest or src register, which is given in UNARY.
+It is also responsible for "defending" that unary register bit for
+read and write hazards, and for also, on request (GoRead/GoWrite)
+generating a "Register File Select" signal.
+
+The sequence of operations for determining hazards is as follows:
+
+* Issue goes HI when CLK is HI.  If any of Dest / Oper1 / Oper2 are also HI,
+  the relevant SRLatch will go HI to indicate that this Function Unit requires
+  the use of this dest/src register
+* Bear in mind that this cell works in conjunction with the FU-FU cells
+* Issue is LOW when CLK is HI.  This is where the "defending" comes into
+  play.  There will be *another* Function Unit somewhere that has had
+  its Issue line raised.  This cell needs to know if there is a conflict
+  (Read Hazard or Write Hazard).
+* Therefore, *this* cell must, if either of the Oper1/Oper2 signals are
+  HI, output a "Read after Write" (RaW) hazard if its Dest Latch (Dest-Q) is HI.
+  This is the *Read_Pending* signal.
+* Likewise, if either of the two SRC Latches (Oper1-Q or Oper2-Q) are HI,
+  this cell must output a "Write after Read" (WaR) hazard if the (other)
+  instruction has raised the unary Dest line.
+
+The sequence for determining register select is as follows:
+
+* After the Issue+CLK-HI has resulted in the relevant (unary) latches for
+  dest and src (unary) latches being set, at some point a GoRead (or GoWrite)
+  signal needs to be asserted
+* The GoRead (or GoWrite) is asserted when *CLK is LOW*.  The AND gate
+  on Reset ensures that the SRLatch *remains ENABLED*.
+* This gives an opportunity for the Latch Q to be ANDed with the GoRead
+  (or GoWrite), raising an indicator flag that the register is being
+  "selected" by this Function Unit.
+* The "select" outputs from the entire column (all Function Units for this
+  unary Register) are ORed together.  Given that only one GoRead (or GoWrite)
+  is guaranteed to be ASSERTed (because that is the Priority Picker's job),
+  the ORing is acceptable.
+* Whilst the GoRead (or GoWrite) signal is still asserted HI, the *CLK*
+  line goes *LOW*.  With the Reset-AND-gate now being HI, this *clears* the
+  latch.  This is the desired outcome because in the previous cycle (which
+  happened to be when CLK was LOW), the register file was read (or written)
+
+The release of the latch happens to have a by-product of releasing the
+"reservation", such that future instructions, if they ever test for
+Read/Write hazards, will find that this Cell no longer responds: the
+hazard has already passed as this Cell already indicated that it was
+safe to read (or write) the register file, freeing up future instructions
+from hazards in the process.
+
+[[!img dependence_cell_pending.jpg]]
+
