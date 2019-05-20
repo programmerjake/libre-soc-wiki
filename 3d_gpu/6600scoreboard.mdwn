@@ -13,7 +13,12 @@ However the same thing has to be done for the read path, as well.
 
 Below are the modifications required to add a read-release path that
 will prevent a Function Unit from requesting a GoRead signal when it
-has no need to read registers.
+has no need to read registers.  Note that once both the Busy and GoRead
+signals combined are dropped, the ReadRelease is dropped.
+
+Note that this is a loop: GoRead (ANDed with Busy) goes through
+to the priority picker, which generates GoRead, so it is critical
+(in a modern design) to use a clock-sync'd latch in this path.
 
 [[!img comp_unit_req_rel.jpg]]
 [[!img group_pick_rd_rel.jpg]]
