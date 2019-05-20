@@ -2,5 +2,18 @@
 
 # Modifications needed to Computation Unit and Group Picker
 
+The scoreboard uses two big NOR gates respectively to determine when there
+are no read/write hazards.  These two NOR gates are permanently active
+(per Function Unit) even if the Function Unit is idle.
+
+In the case of the Write path, these "permanently-on" signals are gated
+by a Write-Release-Request signal that would otherwise leave the Priority
+Picker permanently selecting one of the Function Units (the highest priority).
+However the same thing has to be done for the read path, as well.
+
+Below are the modifications required to add a read-release path that
+will prevent a Function Unit from requesting a GoRead signal when it
+has no need to read registers.
+
 [[!img comp_unit_req_rel.jpg]]
 [[!img group_pick_rd_rel.jpg]]
