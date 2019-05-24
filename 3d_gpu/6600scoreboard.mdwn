@@ -95,6 +95,10 @@ Shadowing is important as it is the fundamental basis of:
 Modifications to the shadow circuit below allow the shadow flip-flops
 to be automatically reset after a Function Unit "dies".  Without these
 modifications, the shadow unit may spuriously fire on subsequent re-use
-due to some of the latches being left in the previous state.
+due to some of the latches being left in a previous state.
+
+Note that only "success" will cause the latch to reset.  Note also
+that the introduction of the NOT gate causes the latch to be more like
+a DFF (register).
 
 [[!img shadow.jpg]]
