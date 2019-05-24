@@ -83,3 +83,18 @@ from hazards in the process.
 
 [[!img dependence_cell_pending.jpg]]
 
+# Shadowing
+
+Shadowing is important as it is the fundamental basis of:
+
+* Precise exceptions
+* Write-after-write hazard avoidance
+* Correct multi-issue instruction sequencing
+* Branch speculation
+
+Modifications to the shadow circuit below allow the shadow flip-flops
+to be automatically reset after a Function Unit "dies".  Without these
+modifications, the shadow unit may spuriously fire on subsequent re-use
+due to some of the latches being left in the previous state.
+
+[[!img shadow.jpg]]
