@@ -102,3 +102,17 @@ that the introduction of the NOT gate causes the latch to be more like
 a DFF (register).
 
 [[!img shadow.jpg]]
+
+# Store Computation Unit
+
+* Issue will close the opcode latch and OPEN the operand latch AND
+trigger "Request-Read" (and set "Busy")
+* Go-Read will close the operand latch and OPEN the address latch AND
+trigger "Request Address".
+* Go-Address will close the address latch and OPEN the result latch
+AND trigger "Request Write"
+* Go-Write will close the result latch and OPEN the opcode latch, and
+reset BUSY back to OFF, ready for a new cycle.
+
+[[!img st_comp_unit.jpg]]
+
