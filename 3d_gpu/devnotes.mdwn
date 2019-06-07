@@ -25,9 +25,14 @@
   tests. unit tests always to be run prior to commit.
 * commits MUST be SINGLE PURPOSE. clue (red flag) is if the commit message
   includes the word "and".
-* commit message to explain purpose (ie not be "changed this" or "added that")
+* commit message to explain purpose (ie not be "changed this" or "added that").
+  if rollback is ever needed (possibly even months later), the commit log
+  is only useful to find that one commit if the commit message is useful.
 * large commits ok as long as they are additions rather than modifications.
-* whitespace to be separate, "autopep8 cleanup" is sufficient.
+  examples: a completely new class that is not in use anywhere, or a new unit
+  test.
+* whitespace to be separate, commit msg "autopep8 cleanup" or
+  "whitespace cleanup" is sufficient.
 * when using bugtracker, include link to bugreport in commit message. Cross
   ref commit id to bugreport.
 * large refactoring (e.g. renaming functions) needs to be atomic and
