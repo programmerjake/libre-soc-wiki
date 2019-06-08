@@ -5,6 +5,9 @@
 * recommended to use "python3 setup.py develop", it makes life a lot easier.
 * epydoc (old but still relevant) to be used to extract docstrings. again
   goes in Makefile
+* some people may use pypy3, others python3.6, others python3.7.  do NOT
+  hard-code the python executable name into Makefiles / scripts, use
+  $(PYTHON3) as an optional env-var (PYTHON3 ?= "python3")
 * unit tests (python setup.py test) always to be developed extensively
   (synergistically) at time of code writing, NOT as an afterthought.
 * do not use import * !
