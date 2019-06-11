@@ -1,0 +1,33 @@
+# Note-form on ISAMUX (aka "ISANS")
+
+A fixed number of additional (hidden) bits that go directly and non-optionally
+into the instruction decode phase, extending (in each implementation) the
+opcode length to 16+N, 32+N, 48+N, where N is a hard fixed quantity on
+a per-implementor basis.
+
+Where the opcode is normally loaded from the location at the PC, the extra
+bits are instead set via a CSR: hence why they are described as "hidden".
+
+# Privileged Modes / Traps
+
+i remembered how priv-mode (and interrupts) are
+done.  just as the idea you suggested of having separate MISAs per
+ISAMUX/ISANS permutation, so are separate utvec / stvec / htvec
+required.
+
+whilst these tables would under some circumstances point to exactly
+the same trap vectors, many would not.
+
+or, at least, the very first thing that each would do is: push the
+current ISAMUX/ISANS value onto the stack, set it to a "known-good"
+value, and call the "common" trap vector as a function.  when that
+function exits, the ISAMUX/ISANS is popped off the stack, returned to
+its former value, and the trap allowed to exit.
+
+each trap in each ISAMUX/ISANS is written in the opcodes that that
+ISAMUX/ISANS uses.  the RVCv2 use-case should be pretty obvious that
+if you use RVCv1 opcodes within the RVCv2 ISAMUX/ISANS trap, it's not
+going to work.
+
+thus, the need for having a per-privilege per-permutation utvec/stvec/htvec.
+
