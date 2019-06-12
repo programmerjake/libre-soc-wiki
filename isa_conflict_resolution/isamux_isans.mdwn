@@ -1,23 +1,25 @@
 # Note-form on ISAMUX (aka "ISANS")
 
-A fixed number of additional (hidden) bits that go directly and non-optionally
+A fixed number of additional (hidden) bits, conceptually a "namespace", that go directly and non-optionally
 into the instruction decode phase, extending (in each implementation) the
 opcode length to 16+N, 32+N, 48+N, where N is a hard fixed quantity on
 a per-implementor basis.
 
 Where the opcode is normally loaded from the location at the PC, the extra
-bits are instead set via a CSR: hence why they are described as "hidden".
+bits are instead set via a CSR and mandatorially appended to every instruction: hence why they are described as "hidden" opcode bits, and as a "namespace".
+
+The parallels with c++ "using namespace" are direct and clear.
 
 # Hypothetical Format
 
-<tt>
+~~~
   3                   2                
   1
 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
      reserved                      |          |      | foreignarch |1|
        reserved                    |          |        |B| rvcpage |0|
 
-</tt>
+~~~
 
 RV Mode
 
