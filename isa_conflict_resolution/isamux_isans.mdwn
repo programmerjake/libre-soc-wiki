@@ -33,6 +33,14 @@ thus, the need for having a per-privilege per-permutation utvec/stvec/htvec.
 
 # Why ISAMUX / ISANS has to be WLRL and mandatory trap on illegal writes
 
+The namespaces, set by bits in the CSR, are functionally directly equivalent to c++ nanespaces, even down to the use of braces. 
+
+WARL, by allowing implementors to choose the value, prevents and prohibits the critical and necessary raising of an exception that would begin the JIT process in the case of ongoing standards evolution.
+
+Without this opportunity, an implementation has no way of knowing how to JIT emulate any given conflicting opcode. It is as if the c++ standard was given the similar opportunity to completely ignore the "using namespace" prefix!
+
+--
+
 Ok so I trust it's now clear why WLRL (thanks Allen) is needed.
 
 When Dan raised the WARL concern initially a situation was masked by the conflict, that if gone unnoticed would jeapordise ISAMUX/ISANS entirely. Actually, two separate errors. So thank you for raising the question.
