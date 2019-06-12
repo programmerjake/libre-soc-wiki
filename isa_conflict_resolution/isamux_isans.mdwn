@@ -98,3 +98,14 @@ Only then does the mandatory need to trap on write really start to hit home, as 
 Lastly, I *think* it's ok to only reserve say 32 bits, and, in 50 years time if that genuinely is not enough, start the process all over again with a new CSR.  ISAMUX2/NS2.
 
 Subdivision of the RV NS (support for RVCv3/4/5/RV16 without wasting precious CSR bits) best left for discussion another time, the above is a heck of a lot to absorb, already.
+
+# Alternative RVC 16 Bit Opcode meanings
+
+Ok, here is appropriate to raise an idea how to cover RVC and future variants, including RV16. 
+
+Just as with foreign archs, and you quite rightly highlight above, it makes absolutely no sense to try to select both RVCv1, v2, v3 and so on, all simultaneously. An unary bit vector for RVC modes, changing the 16 BIT opcode space meaning, is wasteful and again has us believe that WARL is the "solution". 
+
+The correct thing to do is, again, just like with foreign archs, to treat RVCs as a *binary* namespace selector. Bits 1 thru 3 would give 8 possible completely new alternative meanings, just like how the Z80 and the 286 and 386 used to do bank switching. 
+
+All zeros is clearly reserved for the present RVC. 0b001 for RVCv2. 0b010 for RV16 (look it up) and there should definitely be room reserved here for custom reencodings of the 16 bit opcode space. 
+
