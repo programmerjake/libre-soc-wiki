@@ -8,6 +8,53 @@ a per-implementor basis.
 Where the opcode is normally loaded from the location at the PC, the extra
 bits are instead set via a CSR: hence why they are described as "hidden".
 
+# Hypothetical Format
+
+      3                   2                
+  1
+    1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
+    |   reserved                      |          |      | foreignarch |1|
+    |     reserved                    |          |        |B| rvcpage |0|
+
+RV Mode
+
+* when bit 0 is 0, "RV" mode is selected.
+* in RV mode, bits 1 thru 5 provide up to 16 possible alternative meanings (namespaces) for 16 Bit opcodes. "pages" if you will. The top bit indicates custom meanings. When set to 0, the top bit is for official usage.
+* Bits 15 thru 31 are reserved.
+* bit 6 ("B") is LE/BE
+
+16 bit page examples:
+
+* 0b0000 STANDARD (2019) RVC
+* 0b0001 RVCv2
+* 0b0010 RV16
+* 0b0011 RVCv3
+* ...
+* 0b1000 custom 16 bit opcode meanings 1
+* .....
+
+Foreign Arch Mode
+
+* when bit 0 is 1, "Foreign arch" mode is selected.
+* Bits 1 thru 7 are a table of foreign arches.
+* when the MSB is 1, this is for custom use.
+* when the MSB is 0, bits 1 thru 6 are reserved for 64 possible official foreign archs.
+
+
+Foreign archs could be (examples):
+
+* 0b000000 x86_32
+* 0b000001 x86_64
+* 0b000010 MIPS32
+* 0b000011 MIPS64
+* ....
+* 0b010000 Java Bytecode
+* ....
+* 0b1000000 custom foreign arch 1
+* ....
+
+
+
 # Privileged Modes / Traps
 
 i remembered how priv-mode (and interrupts) are
