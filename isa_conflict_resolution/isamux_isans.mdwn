@@ -69,7 +69,7 @@ the same trap vectors, many would not.
 
 or, at least, the very first thing that each would do is: push the
 current ISAMUX/ISANS value onto the stack, set it to a "known-good"
-value, and call the "common" trap vector as a function.  when that
+value (almost certainly the current 2019 Base Standard RV but not necessarily required to be so), and call the "common" trap vector as a function.  when that
 function exits, the ISAMUX/ISANS is popped off the stack, returned to
 its former value, and the trap allowed to exit.
 
@@ -79,6 +79,23 @@ if you use RVCv1 opcodes within the RVCv2 ISAMUX/ISANS trap, it's not
 going to work.
 
 thus, the need for having a per-privilege per-permutation utvec/stvec/htvec.
+
+# What happens if this scheme is not adopted? Why is it better than leaving things well alone?
+
+At the first sign of an emergency non-backwards compatible and unavoidable change to the *frozen* RISCV *official* Standards, the entire RISCV community is fragmented and divided into two:
+
+* Those vendors that are hardware compatible with the legacy standard.
+* Those that are compatible with the new standard.
+
+*These two communities would be mutually exclusively incompatible*. If a second emergency occurs, RISCV becomes even less tenable.
+
+Hardware that wished to be "compatible" with either flavour would require JIT or offline static binary recompilation. No vendor would willingly accept this as a condition of the standards divergence in the first place, locking up decision making to the detriment of RISCV as a whole.
+
+By providing a "safety valve" in the form of a hidden namespace, at least newer hardware has the option to implement both (or more) variations, *and still apply for Certification*.
+
+However to also allow "legacy" hardware to at least be JIT soft compatible, some very strict rules *must* be adhered to, that appear at first sight not to make amy sense.
+
+It's complicated in other words!
 
 # Why not leave this to individual custom vendors to solve on a case by case basis?
 
