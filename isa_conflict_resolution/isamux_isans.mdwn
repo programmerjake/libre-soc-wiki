@@ -208,12 +208,10 @@ Support for both assembly languages immediately after the CSR write is clearly i
 
 # Is it strictly necessary for foreign archs to switch back?
 
-It is not strictly necessary for foreign archs to have an equivalent of the CSR ISAMUX/NS write, although it is optional for them to do so.
+Yes because trap vectors execute in the *current* namespace, and as described above, the first thing that they are expected to do under normal circumstances is to change the CSR ISAMUX/NS back to a known-good (RV) value, push the old value onto the stack, and to call the equivalent RV trap vector as a subroutine.
 
-The reason is that this is a RISCV proposal, not a MIPS or x86 proposal.
+The foreign arch therefore has to have some mechanism of returning to RV mode: one of the simplest ways is to memory map the NS CSR.
 
-The test case is hypervisor mode. Running the hypervisor core in x86 or MIPS assembly on a RISCV system makes no sense. The RISCV hypervisor may take care transparently of running foreign arch OSes - unmodified - even just as Qemu KVM Mode does if the implementation fully supported x86 assembler.  That code has no need to know it is a guest under a hypervisor.
+Foreign arch trap vectors are extremely weird in that the setting of the CSR is handled through the foreign arch instruction set, however the code following that instruction will be an RV opcode!
 
-
-
-
+More thought on this is required.
