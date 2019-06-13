@@ -158,3 +158,25 @@ The correct thing to do is, again, just like with foreign archs, to treat RVCs a
 
 All zeros is clearly reserved for the present RVC. 0b001 for RVCv2. 0b010 for RV16 (look it up) and there should definitely be room reserved here for custom reencodings of the 16 bit opcode space. 
 
+# Why WARL will not work and why WLRL is required
+
+WARL requires a follow-up read of the CSR to ascertain what heuristic the hardware *might* have applied, and if that procedure is followed in this proposal, performance even on hardware would be severely compromised.
+
+In addition when switching to foreign architectures, the switch has to be done atomically and guaranteed to occur.
+
+In the case of JIT emulation, the WARL "detection" code will be in an assembly language that is alien to hardware.
+
+Support for both assembly languages immediately after the CSR write is clearly impossible, this leaves no other option but to have the CSR be WLRL (on all platforms) and for traps to be mandatory (on the UNIX Platform).
+
+# Is it strictly necessary for foreign archs to switch back?
+
+It is not strictly necessary for foreign archs to have an equivalent of the CSR ISAMUX/NS write, although it is optional for them to do so.
+
+The reason is that this is a RISCV proposal, not a MIPS or x86 proposal.
+
+The test case is hypervisor mode. Running the hypervisor core in x86 or MIPS assembly on a RISCV system makes no sense. The RISCV hypervisor may take care transparently of running foreign arch OSes - unmodified - even just as Qemu KVM Mode does if the implementation fully supported x86 assembler.  That code has no need to know it is a guest under a hypervisor.
+
+
+
+
+
