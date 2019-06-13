@@ -92,6 +92,8 @@ Secondly: CSR space is precious. With each vendor likely needing only one or two
 
 Thirdly: JIT Emulation of such an unregulated space becomes just as much hell as it is for compiler writers. In addition, if two vendors use conflicting CSR addresses, the only sane way to tell the emulator what to do is to give the emulator a runtime commandline argument.
 
+Fourthly: with each vendor coming up with their own way of handling conflicts, not only are the chances of mistakes higher, it is against the very principles of collaboration and cooperation that save vendors money on development and ongoing maintenance.  Each custom vendor will have to maintain their own separate hard fork of the toolchain and software, which is well known to result in security vulnerabilities.
+
 By coordinating and managing the allocation of namespace bits (unary or binary) the above issues are solved. CSR space is no longer wasted, compiler and JIT software writers have an easier time, clashes are avoided, and RISCV is stabilised and has a trustable long term future.
 
 # Why ISAMUX / ISANS has to be WLRL and mandatory trap on illegal writes
