@@ -80,6 +80,20 @@ going to work.
 
 thus, the need for having a per-privilege per-permutation utvec/stvec/htvec.
 
+# Why not leave this to individual custom vendors to solve on a case by case basis?
+
+The suggestion was raised that a custom extension vendor could create their own CSR that selects between conflicting namespaces that resolve the meaning of the exact same opcode.  This to be done by all and any vendors, as they see fit, with little to no collaboration or coordination towards standardisation in any form.
+
+The problems with this approach are numerous, when presented to a worldwide context that the UNIX Platform, in particular, has to face (where the embedded platform does not)
+
+First: lack of coordination, in the proliferation of arbitrary solutions, has to primarily be borne by gcc, binutils, LLVM and other compilers.
+
+Secondly: CSR space is precious. With each vendor likely needing only one or two bits to express the namespace collision avoidance, if they make even a token effort to use worldwide unique CSRs (an effort that would benefit compiler writers), the CSR register space is quickly exhausted.
+
+Thirdly: JIT Emulation of such an unregulated space becomes just as much hell as it is for compiler writers. In addition, if two vendors use conflicting CSR addresses, the only sane way to tell the emulator what to do is to give the emulator a runtime commandline argument.
+
+By coordinating and managing the allocation of namespace bits (unary or binary) the above issues are solved. CSR space is no longer wasted, compiler and JIT software writers have an easier time, clashes are avoided, and RISCV is stabilised and has a trustable long term future.
+
 # Why ISAMUX / ISANS has to be WLRL and mandatory trap on illegal writes
 
 The namespaces, set by bits in the CSR, are functionally directly equivalent to c++ nanespaces, even down to the use of braces. 
@@ -175,7 +189,6 @@ It is not strictly necessary for foreign archs to have an equivalent of the CSR 
 The reason is that this is a RISCV proposal, not a MIPS or x86 proposal.
 
 The test case is hypervisor mode. Running the hypervisor core in x86 or MIPS assembly on a RISCV system makes no sense. The RISCV hypervisor may take care transparently of running foreign arch OSes - unmodified - even just as Qemu KVM Mode does if the implementation fully supported x86 assembler.  That code has no need to know it is a guest under a hypervisor.
-
 
 
 
