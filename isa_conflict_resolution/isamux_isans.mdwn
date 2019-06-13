@@ -80,6 +80,11 @@ going to work.
 
 thus, the need for having a per-privilege per-permutation utvec/stvec/htvec.
 
+In this way, Hypervisor Mode can be applied recursively, as the traps execute in the (present) native namespace and jump out to a common one, using the stack to solve the issue of both recursive exceptions as well as higher privileged exceptions.
+
+Supervisor Modes have the option to continue to remain in the namespace in which the userspace is presently running (as does M Mode).  Whilst this results in a need for trap vector proliferation of identical source code compiled for specific namespaces, it has the advantage of reducing latency, which may be critically important for real time applications.
+
+
 # What happens if this scheme is not adopted? Why is it better than leaving things well alone?
 
 At the first sign of an emergency non-backwards compatible and unavoidable change to the *frozen* RISCV *official* Standards, the entire RISCV community is fragmented and divided into two:
