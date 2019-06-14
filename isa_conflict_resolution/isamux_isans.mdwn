@@ -60,34 +60,30 @@ Foreign archs could be (examples):
 * ....
 
 
+# Privileged Modes / Traps <a href="#privtraps" />
 
-# Privileged Modes / Traps
+An additional WLRL CSR per priv-level named "LAST-ISANS" is required.
+This mirrors the ISANS CSR, and, on a trap, if the current ISANS in
+that privilegel level is non-zero, its value is atomically transferred
+into LAST-ISANS by the hardware, and ISANS in that trap is set to zero.
+Hardware is *only then* permitted to modify the PC to begin execution
+of the trap.
 
-i remembered how priv-mode (and interrupts) are
-done.  just as the idea you suggested of having separate MISAs per
-ISAMUX/ISANS permutation, so are separate utvec / stvec / htvec
-required.
+On exit from the trap, hardware must check to see if LAST-ISANS is non-zero.
+If it is non-zero, its value is copied into the ISANS, LAST-ISANS is set to
+zero, and *only then* is the hardware permitted to modify the PC to begin
+execution where the trap left off.
 
-whilst these tables would under some circumstances point to exactly
-the same trap vectors, many would not.
+Note 1: in the case of Supervisor Mode (context switches in particular),
+saving and changing of LAST-ISANS (to and from the stack) must be done
+atomically and under the protection of the SIE bit.  Failure to do so
+could result in corruption of LAST-ISANS when multiple traps occur in
+the same privilege level.
 
-or, at least, the very first thing that each would do is: push the
-current ISAMUX/ISANS value onto the stack, set it to a "known-good"
-value (almost certainly the current 2019 Base Standard RV but not necessarily required to be so), and call the "common" trap vector as a function.  when that
-function exits, the ISAMUX/ISANS is popped off the stack, returned to
-its former value, and the trap allowed to exit.
-
-each trap in each ISAMUX/ISANS is written in the opcodes that that
-ISAMUX/ISANS uses.  the RVCv2 use-case should be pretty obvious that
-if you use RVCv1 opcodes within the RVCv2 ISAMUX/ISANS trap, it's not
-going to work.
-
-thus, the need for having a per-privilege per-permutation utvec/stvec/htvec.
-
-In this way, Hypervisor Mode can be applied recursively, as the traps execute in the (present) native namespace and jump out to a common one, using the stack to solve the issue of both recursive exceptions as well as higher privileged exceptions.
-
-Supervisor Modes have the option to continue to remain in the namespace in which the userspace is presently running (as does M Mode).  Whilst this results in a need for trap vector proliferation of identical source code compiled for specific namespaces, it has the advantage of reducing latency, which may be critically important for real time applications.
-
+Note 2: question - should the trap due to illegal (unsupported) values
+written into LAST-ISANS occur when the *software* writes to LAST-ISANS,
+or when the *trap* (on exit) writes into LAST-ISANS?  this latter seems
+fraught: a trap, on exit, causing another trap??
 
 # What happens if this scheme is not adopted? Why is it better than leaving things well alone?
 
@@ -210,12 +206,18 @@ In the case of JIT emulation, the WARL "detection" code will be in an assembly l
 
 Support for both assembly languages immediately after the CSR write is clearly impossible, this leaves no other option but to have the CSR be WLRL (on all platforms) and for traps to be mandatory (on the UNIX Platform).
 
-# Is it strictly necessary for foreign archs to switch back?
+# Is it strictly necessary for foreign archs to switch back? <a href="#foreignswitch"</a>
 
-Yes because trap vectors execute in the *current* namespace, and as described above, the first thing that they are expected to do under normal circumstances is to change the CSR ISAMUX/NS back to a known-good (RV) value, push the old value onto the stack, and to call the equivalent RV trap vector as a subroutine.
+No, because LAST-ISANS handles the setting and unsetting of the ISANS CSR
+in a completely transparent fashion as far as the foreign arch is concerned.
 
-The foreign arch therefore has to have some mechanism of returning to RV mode: one of the simplest ways is to memory map the NS CSR.
+Thus, in e.g. Hypervisor Mode, the foreign guest arch has no knowledge
+or need to know that the hypervisor is flipping back to RV at the time of
+a trap.
 
-Foreign arch trap vectors are extremely weird in that the setting of the CSR is handled through the foreign arch instruction set, however the code following that instruction will be an RV opcode!
+Note however that this is **not** the same as the foreign arch executing
+*foreign* traps!  Foreign architecture trap and interrupt handling mechanisms
+are **out of scope** of this document and MUST be handled by the foreign
+architecture implementation in a completely transparent fashion that in
+no way interacts or interferes with this proposal.
 
-More thought on this is required.
