@@ -77,7 +77,7 @@ This to occur immediately and atomically at the point at which the change in ISA
 
 The most obvious application of this is for Foreign Archs, which may have their own completely separate PC. Thus, foreign assembly code and RISCV assembly code need not be mixed in the same binary.
 
-Further use-cases may be envisaged however great care needs to be taken to not cause massive complications for JIT emulation. Switching CSR and PC in the RISCV NS needs to be done wisely ane responsibly, i.e. minimised!
+Further use-cases may be envisaged however great care needs to be taken to not cause massive complications for JIT emulation, as the RV ISANS is unary encoded (2^31 permutations). Switching CSR and PC in the RISCV unary NS therefore needs to be done wisely and responsibly, i.e. minimised!
 
 To be discussed. Context <https://groups.google.com/a/groups.riscv.org/d/msg/isa-dev/x-uFZDXiOxY/27QDW5KvBQAJ>
 
