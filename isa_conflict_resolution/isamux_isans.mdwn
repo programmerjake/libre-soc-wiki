@@ -95,6 +95,9 @@ written into LAST-ISANS occur when the *software* writes to LAST-ISANS,
 or when the *trap* (on exit) writes into LAST-ISANS?  this latter seems
 fraught: a trap, on exit, causing another trap??
 
+Per-privilege-level pseudocode (there exists UISANS, UTRAPISANS, ULASTISANS,
+MISANS, MTRAPISANS, MLASTISANS and so on):
+
 <code>
 <pre>
 trap_entry()
