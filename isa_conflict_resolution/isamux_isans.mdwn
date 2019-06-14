@@ -122,6 +122,39 @@ trap_exit():
 </pre>
 </code>
 
+# Why not have TRAP-ISANS as a vector table, matching mtvec? <a name="trap-isans-vec"></a>
+
+Use case to be determined.  Rather than be a global per-priv-level value,
+TRAP-ISANS is a table of length exactly equal to the mtvec/utvec/stvec table,
+with corresponding entries that specify the assembly-code namespace in which
+the trap handler routine is written.
+
+Open question: see <https://groups.google.com/a/groups.riscv.org/d/msg/isa-dev/IAhyOqEZoWA/BM0G3J2zBgAJ>
+
+<code>
+<pre>
+trap_entry(x_cause)
+{
+    if (ISANS != TRAP_ISANS[xcause]) // musn't change if already there
+    {
+        LAST-ISANS = ISANS // record the old NS
+        ISANS = TRAP_ISANS[xcause] // traps are executed in "trap" NS
+    }
+}
+
+and trap_exit:
+
+trap_exit(x_cause):
+{
+    if (LAST-ISANS != TRAP_ISANS[x_cause])
+    {
+        ISANS = LAST-ISANS
+        LAST-ISANS = TRAP_ISANS[x_cause]
+    }
+}
+</pre>
+</code>
+
 # What happens if this scheme is not adopted? Why is it better than leaving things well alone? <a name="lassezfaire"></a>
 
 At the first sign of an emergency non-backwards compatible and unavoidable
