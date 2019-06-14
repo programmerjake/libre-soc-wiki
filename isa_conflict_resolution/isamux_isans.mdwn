@@ -79,9 +79,9 @@ Hardware is *only then* permitted to modify the PC to begin execution
 of the trap.
 
 On exit from the trap, hardware must check to see if LAST-ISANS is non-zero.
-If it is non-zero, its value is copied into the ISANS, LAST-ISANS is set to
-zero, and *only then* is the hardware permitted to modify the PC to begin
-execution where the trap left off.
+If it is non-zero, its value is copied into the ISANS CSR, LAST-ISANS is set
+to zero, and *only then* is the hardware permitted to modify the PC to
+begin execution where the trap left off.
 
 Note 1: in the case of Supervisor Mode (context switches in particular),
 saving and changing of LAST-ISANS (to and from the stack) must be done
