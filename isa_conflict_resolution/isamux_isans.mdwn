@@ -69,6 +69,18 @@ Foreign archs could be (examples):
 Note that "official" foreign archs have a binary value where the MSB is zero,
 and custom foreign archs have a binary value where the MSB is 1.
 
+# Namespaces are permitted to swap to new state <a name="stateswap"></a>
+
+In each privilege level, on a change of ISANS (whether through manual setting of ISANS or through trap entry or exit changing the ISANS CSR), an implementation is permitted to completely and arbitrarily switch not only the instruction set, it is permitted to switch to a new bank of CSRs (or a subset of the same), and even to switch to a new PC.
+
+This to occur immediately and atomically at the point at which the change in ISANS occurs.
+
+The most obvious application of this is for Foreign Archs, which may have their own completely separate PC. Thus, foreign assembly code and RISCV assembly code need not be mixed in the same binary.
+
+Further use-cases may be envisaged however great care needs to be taken to not cause massive complications for JIT emulation. Switching CSR and PC in the RISCV NS needs to be done wisely ane responsibly, i.e. minimised!
+
+To be discussed.
+
 # Privileged Modes / Traps <a name="privtraps"></a>
 
 An additional WLRL CSR per priv-level named "LAST-ISANS" is required, and
