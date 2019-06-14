@@ -118,7 +118,6 @@ MISANS, MTRAPISANS, MLASTISANS and so on):
 <pre>
 trap_entry()
 {
-
     LAST-ISANS = ISANS // record the old NS
     ISANS = TRAP_ISANS // traps are executed in "trap" NS
 }
@@ -147,7 +146,7 @@ Open question: see <https://groups.google.com/a/groups.riscv.org/d/msg/isa-dev/I
 trap_entry(x_cause)
 {
     LAST-ISANS = ISANS // record the old NS
-    ISANS = TRAP_ISANS[xcause] // traps are executed in "trap" NS
+    ISANS = TRAP_ISANS_VEC[xcause] // traps are executed in "trap" NS
 }
 
 and trap_exit:
@@ -155,7 +154,7 @@ and trap_exit:
 trap_exit(x_cause):
 {
     ISANS = LAST-ISANS
-    LAST-ISANS = TRAP_ISANS[x_cause]
+    LAST-ISANS = TRAP_ISANS_VEC[x_cause]
 }
 </pre>
 </code>
