@@ -12,13 +12,17 @@ The parallels with c++ "using namespace" are direct and clear.
 
 # Hypothetical Format
 
+Note that this is a hypothetical format, yet TBD, where particular attention
+needs to be paid to the fact that there is an "immediate" version of CSRRW
+(with 5 bits of immediate) that could save a lot of space in binaries.
+
 <code>
 <pre>
       3                   2                   1
    |1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0|
-   |-----------------------------|---------|---------------------|-|
-   |reserved                     |         |       | foreignarch |1|
-   |reserved                     |         |         |B| rvcpage |0|
+   |------------------------------ |-------|---------------------|-|
+   |reserved reserved reserved reserved reserved   | foreignarch |1|
+   |custom         | reserved    |           official|B| rvcpage |0|
 </pre>
 <code>
 
@@ -26,7 +30,8 @@ RV Mode
 
 * when bit 0 is 0, "RV" mode is selected.
 * in RV mode, bits 1 thru 5 provide up to 16 possible alternative meanings (namespaces) for 16 Bit opcodes. "pages" if you will. The top bit indicates custom meanings. When set to 0, the top bit is for official usage.
-* Bits 15 thru 31 are reserved.
+* Bits 15 thru 23 are reserved.
+* Bits 24 thru 31 are for custom usage.
 * bit 6 ("B") is LE/BE
 
 16 bit page examples:
@@ -37,6 +42,7 @@ RV Mode
 * 0b0011 RVCv3
 * ...
 * 0b1000 custom 16 bit opcode meanings 1
+* 0b1001 custom 16 bit opcode meanings 2
 * .....
 
 Foreign Arch Mode
@@ -46,19 +52,22 @@ Foreign Arch Mode
 * when the MSB is 1, this is for custom use.
 * when the MSB is 0, bits 1 thru 6 are reserved for 64 possible official foreign archs.
 
-
 Foreign archs could be (examples):
 
-* 0b000000 x86_32
-* 0b000001 x86_64
-* 0b000010 MIPS32
-* 0b000011 MIPS64
+* 0b0000000 x86_32
+* 0b0000001 x86_64
+* 0b0000010 MIPS32
+* 0b0000011 MIPS64
 * ....
-* 0b010000 Java Bytecode
+* 0b0010000 Java Bytecode
+* 0b0010001 N.E.Other Bytecode
 * ....
 * 0b1000000 custom foreign arch 1
+* 0b1000001 custom foreign arch 2
 * ....
 
+Note that "official" foreign archs have a binary value where the MSB is zero,
+and custom foreign archs have a binary value where the MSB is 1.
 
 # Privileged Modes / Traps <a href="#privtraps" />
 
@@ -85,126 +94,237 @@ written into LAST-ISANS occur when the *software* writes to LAST-ISANS,
 or when the *trap* (on exit) writes into LAST-ISANS?  this latter seems
 fraught: a trap, on exit, causing another trap??
 
-# What happens if this scheme is not adopted? Why is it better than leaving things well alone?
+# What happens if this scheme is not adopted? Why is it better than leaving things well alone? <a href="#lassezfaire">
 
-At the first sign of an emergency non-backwards compatible and unavoidable change to the *frozen* RISCV *official* Standards, the entire RISCV community is fragmented and divided into two:
+At the first sign of an emergency non-backwards compatible and unavoidable
+change to the *frozen* RISCV *official* Standards, the entire RISCV
+community is fragmented and divided into two:
 
 * Those vendors that are hardware compatible with the legacy standard.
 * Those that are compatible with the new standard.
 
-*These two communities would be mutually exclusively incompatible*. If a second emergency occurs, RISCV becomes even less tenable.
+*These two communities would be mutually exclusively incompatible*. If
+a second emergency occurs, RISCV becomes even less tenable.
 
-Hardware that wished to be "compatible" with either flavour would require JIT or offline static binary recompilation. No vendor would willingly accept this as a condition of the standards divergence in the first place, locking up decision making to the detriment of RISCV as a whole.
+Hardware that wished to be "compatible" with either flavour would require
+JIT or offline static binary recompilation. No vendor would willingly
+accept this as a condition of the standards divergence in the first place,
+locking up decision making to the detriment of RISCV as a whole.
 
-By providing a "safety valve" in the form of a hidden namespace, at least newer hardware has the option to implement both (or more) variations, *and still apply for Certification*.
+By providing a "safety valve" in the form of a hidden namespace, at least
+newer hardware has the option to implement both (or more) variations,
+*and still apply for Certification*.
 
-However to also allow "legacy" hardware to at least be JIT soft compatible, some very strict rules *must* be adhered to, that appear at first sight not to make amy sense.
+However to also allow "legacy" hardware to at least be JIT soft
+compatible, some very strict rules *must* be adhered to, that appear at
+first sight not to make any sense.
 
 It's complicated in other words!
 
 # Why not leave this to individual custom vendors to solve on a case by case basis?
 
-The suggestion was raised that a custom extension vendor could create their own CSR that selects between conflicting namespaces that resolve the meaning of the exact same opcode.  This to be done by all and any vendors, as they see fit, with little to no collaboration or coordination towards standardisation in any form.
+The suggestion was raised that a custom extension vendor could create
+their own CSR that selects between conflicting namespaces that resolve
+the meaning of the exact same opcode.  This to be done by all and any
+vendors, as they see fit, with little to no collaboration or coordination
+towards standardisation in any form.
 
-The problems with this approach are numerous, when presented to a worldwide context that the UNIX Platform, in particular, has to face (where the embedded platform does not)
+The problems with this approach are numerous, when presented to a
+worldwide context that the UNIX Platform, in particular, has to face
+(where the embedded platform does not)
 
-First: lack of coordination, in the proliferation of arbitrary solutions, has to primarily be borne by gcc, binutils, LLVM and other compilers.
+First: lack of coordination, in the proliferation of arbitrary solutions,
+has to primarily be borne by gcc, binutils, LLVM and other compilers.
 
-Secondly: CSR space is precious. With each vendor likely needing only one or two bits to express the namespace collision avoidance, if they make even a token effort to use worldwide unique CSRs (an effort that would benefit compiler writers), the CSR register space is quickly exhausted.
+Secondly: CSR space is precious. With each vendor likely needing only one
+or two bits to express the namespace collision avoidance, if they make
+even a token effort to use worldwide unique CSRs (an effort that would
+benefit compiler writers), the CSR register space is quickly exhausted.
 
-Thirdly: JIT Emulation of such an unregulated space becomes just as much hell as it is for compiler writers. In addition, if two vendors use conflicting CSR addresses, the only sane way to tell the emulator what to do is to give the emulator a runtime commandline argument.
+Thirdly: JIT Emulation of such an unregulated space becomes just as
+much hell as it is for compiler writers. In addition, if two vendors
+use conflicting CSR addresses, the only sane way to tell the emulator
+what to do is to give the emulator a runtime commandline argument.
 
-Fourthly: with each vendor coming up with their own way of handling conflicts, not only are the chances of mistakes higher, it is against the very principles of collaboration and cooperation that save vendors money on development and ongoing maintenance.  Each custom vendor will have to maintain their own separate hard fork of the toolchain and software, which is well known to result in security vulnerabilities.
+Fourthly: with each vendor coming up with their own way of handling
+conflicts, not only are the chances of mistakes higher, it is against the
+very principles of collaboration and cooperation that save vendors money
+on development and ongoing maintenance.  Each custom vendor will have
+to maintain their own separate hard fork of the toolchain and software,
+which is well known to result in security vulnerabilities.
 
-By coordinating and managing the allocation of namespace bits (unary or binary) the above issues are solved. CSR space is no longer wasted, compiler and JIT software writers have an easier time, clashes are avoided, and RISCV is stabilised and has a trustable long term future.
+By coordinating and managing the allocation of namespace bits (unary
+or binary) the above issues are solved. CSR space is no longer wasted,
+compiler and JIT software writers have an easier time, clashes are
+avoided, and RISCV is stabilised and has a trustable long term future.
 
 # Why ISAMUX / ISANS has to be WLRL and mandatory trap on illegal writes
 
-The namespaces, set by bits in the CSR, are functionally directly equivalent to c++ namespaces, even down to the use of braces. 
+The namespaces, set by bits in the CSR, are functionally directly
+equivalent to c++ namespaces, even down to the use of braces.
 
-WARL, by allowing implementors to choose the value, prevents and prohibits the critical and necessary raising of an exception that would begin the JIT process in the case of ongoing standards evolution.
+WARL, by allowing implementors to choose the value, prevents and prohibits
+the critical and necessary raising of an exception that would begin the
+JIT process in the case of ongoing standards evolution.
 
-Without this opportunity, an implementation has no way of knowing how to JIT emulate any given conflicting opcode. It is as if the c++ standard was given the similar opportunity to completely ignore the "using namespace" prefix!
+Without this opportunity, an implementation has no way of knowing
+how to JIT emulate any given conflicting opcode. It is as if the c++
+standard was given the similar opportunity to completely ignore the
+"using namespace" prefix!
 
 --
 
 Ok so I trust it's now clear why WLRL (thanks Allen) is needed.
 
-When Dan raised the WARL concern initially a situation was masked by the conflict, that if gone unnoticed would jeapordise ISAMUX/ISANS entirely. Actually, two separate errors. So thank you for raising the question.
+When Dan raised the WARL concern initially a situation was masked by
+the conflict, that if gone unnoticed would jeapordise ISAMUX/ISANS
+entirely. Actually, two separate errors. So thank you for raising the
+question.
 
-The situation arises when foreign archs are to be given their own NS bit. MIPS is allocated bit 8, x86 bit 9, whilst LE/BE is given bit 0, RVCv2 bit 1 andso on. All of this potential rather than actual, clearly.
+The situation arises when foreign archs are to be given their own NS
+bit. MIPS is allocated bit 8, x86 bit 9, whilst LE/BE is given bit 0,
+RVCv2 bit 1 andso on. All of this potential rather than actual, clearly.
 
-Imagine then that software tries to write and set not just bit 8 and bit 9, it also tries to set bit 0 and 1 as well.
+Imagine then that software tries to write and set not just bit 8 and
+bit 9, it also tries to set bit 0 and 1 as well.
 
 This *IS* on the face of it a legitimate reason to make ISAMUX/ISANS WARL.
 
-However it masks a fundamental flaw that has to be addressed, which brings us back much closer to the original design of 18 months ago, and it's highlighted thus:
+However it masks a fundamental flaw that has to be addressed, which
+brings us back much closer to the original design of 18 months ago,
+and it's highlighted thus:
 
 x86 and simultaneous RVCv2 modes are total nonsense in the first place!
 
-The solution instead is to have a NS bit (bit0) that SPECIFICALLY determines if the arch is RV or not.  If 0, the rest of the ISAMUX/ISANS is very specifically RV *only*, and if 1, the ISAMUX/ISANS is a *binary* table of foreign architectures and foreign architectures only.
+The solution instead is to have a NS bit (bit0) that SPECIFICALLY
+determines if the arch is RV or not.  If 0, the rest of the ISAMUX/ISANS
+is very specifically RV *only*, and if 1, the ISAMUX/ISANS is a *binary*
+table of foreign architectures and foreign architectures only.
 
-Exactly how many bits are used for the foreign arch table, is to be determined. 7 bits, one of which is reserved for custom usage, leaving a whopping 64 possible "official" foreign instruction sets to be hardware-supported/JIT-emulated seems to be sufficiently gratuitous, to me.
+Exactly how many bits are used for the foreign arch table, is to
+be determined. 7 bits, one of which is reserved for custom usage,
+leaving a whopping 64 possible "official" foreign instruction sets to
+be hardware-supported/JIT-emulated seems to be sufficiently gratuitous,
+to me.
 
 One of those could even be Java Bytecode!
 
-Now, it could *hypothetically* be argued that the permutation of setting LE/BE and MIPS for example is desirable. A simple analysis shows this not to be the case: once in the MIPS foreign NS, it is the MIPS hardware implementation that should have its own way of setting and managing its LE/BE mode, because to do otherwise drastically interferes with MIPS binary compatibility.
+Now, it could *hypothetically* be argued that the permutation of setting
+LE/BE and MIPS for example is desirable. A simple analysis shows this
+not to be the case: once in the MIPS foreign NS, it is the MIPS hardware
+implementation that should have its own way of setting and managing its
+LE/BE mode, because to do otherwise drastically interferes with MIPS
+binary compatibility.
 
-Thus, it is officially Not Our Problem: only flipping into one foreign arch at a time makes sense, thus this has to be reflected in the ISAMUX/ISANS CSR itself, completely side-stepping the (apparent) need to make the NS CSR WARL (which would not work anyway, as previously mentioned).
+Thus, it is officially Not Our Problem: only flipping into one foreign
+arch at a time makes sense, thus this has to be reflected in the
+ISAMUX/ISANS CSR itself, completely side-stepping the (apparent) need
+to make the NS CSR WARL (which would not work anyway, as previously
+mentioned).
 
-So, thank you, again, Dan, for raising this. It would have completely jeapordised ISAMUX/NS if not spotted.
+So, thank you, again, Dan, for raising this. It would have completely
+jeapordised ISAMUX/NS if not spotted.
 
-The second issue is: how does any hardware system, whether it support ISANS or not, and whether any future hardware supports some Namespaces and, in a transitive fashion, has to support *more* future namespaces, through JIT emulation, if this is not planned properly in advance?
+The second issue is: how does any hardware system, whether it support
+ISANS or not, and whether any future hardware supports some Namespaces
+and, in a transitive fashion, has to support *more* future namespaces,
+through JIT emulation, if this is not planned properly in advance?
 
-Let us take the simple case first: a current 2019 RISCV fully compliant RV64GC UNIX capable system (with mandatory traps on all unsupported CSRs).
+Let us take the simple case first: a current 2019 RISCV fully compliant
+RV64GC UNIX capable system (with mandatory traps on all unsupported CSRs).
 
-Fast forward 20 years, there are now 5 ISAMUX/NS unary bits, and 3 foreign arch binary table entries.
+Fast forward 20 years, there are now 5 ISAMUX/NS unary bits, and 3
+foreign arch binary table entries.
 
-Such a system is perfectly possible of software JIT emulating ALL of these options because the write to the (illegal, for that system) ISAMUX/NS CSR generates the trap that is needed for that system ti begin JIT mode.
+Such a system is perfectly possible of software JIT emulating ALL of these
+options because the write to the (illegal, for that system) ISAMUX/NS
+CSR generates the trap that is needed for that system ti begin JIT mode.
 
 (This again emphasises exactly why the trap is mandatory).
 
-Now let us take the case of a hypothetical system from say 2021 that implements RVCv2 at the hardware level.
+Now let us take the case of a hypothetical system from say 2021 that
+implements RVCv2 at the hardware level.
 
-Fast forward 20 years: if the CSR were made WARL, that system would be absolutely screwed. The implementor would be under the false impression that ignoring setting of "illegal" bits was acceptable, making the transition to JIT mode flat-out impossible to detect.
+Fast forward 20 years: if the CSR were made WARL, that system would be
+absolutely screwed. The implementor would be under the false impression
+that ignoring setting of "illegal" bits was acceptable, making the
+transition to JIT mode flat-out impossible to detect.
 
-When this is considered transitively, considering all future additions to the NS, and all permutations, it can be logically deduced that there is a need to reserve a *full* set of bits in the ISAMUX/NS CSR *in advance*.
+When this is considered transitively, considering all future additions to
+the NS, and all permutations, it can be logically deduced that there is
+a need to reserve a *full* set of bits in the ISAMUX/NS CSR *in advance*.
 
-i.e. that *right now*, in the year 2019, the entire ISAMUX/NS CSR cannot be added to piecemeal, the full 32 (or 64) bits *has* to be reserved, and reserved bits set at zero.
+i.e. that *right now*, in the year 2019, the entire ISAMUX/NS CSR cannot
+be added to piecemeal, the full 32 (or 64) bits *has* to be reserved,
+and reserved bits set at zero.
 
-Furthermore, if any software attempts to write to those reserved bits, it *must* be treated just as if those bits were distinct and nonexistent CSRs, and a trap raised.
+Furthermore, if any software attempts to write to those reserved bits,
+it *must* be treated just as if those bits were distinct and nonexistent
+CSRs, and a trap raised.
 
-It makes more sense to consider each NS as having its own completely separate CSR, which, if it does not exist, clearly it should be obvious that, as an unsupported CSR, a trap should be raised (and JIT emulation activated).
+It makes more sense to consider each NS as having its own completely
+separate CSR, which, if it does not exist, clearly it should be obvious
+that, as an unsupported CSR, a trap should be raised (and JIT emulation
+activated).
 
-However given that only the one bit is needed (in RV NS Mode, not Foreign NS Mode), it would be terribly wasteful of the CSRs to do this, despite it being technically correct and much easier to understand why trap raising is so essential (mandatory).
+However given that only the one bit is needed (in RV NS Mode, not
+Foreign NS Mode), it would be terribly wasteful of the CSRs to do this,
+despite it being technically correct and much easier to understand why
+trap raising is so essential (mandatory).
 
-This again should emphasise how to mentally get one's head round this mind-bendingly complex problem space: think of each NS bit as its own totally separate CSR that every implementor is free and clear to implement (or leave to JIT Emulation) as they see fit.
+This again should emphasise how to mentally get one's head round this
+mind-bendingly complex problem space: think of each NS bit as its own
+totally separate CSR that every implementor is free and clear to implement
+(or leave to JIT Emulation) as they see fit.
 
-Only then does the mandatory need to trap on write really start to hit home, as does the need to preallocate a full set of reserved zero values in the RV ISAMUX/NS.
+Only then does the mandatory need to trap on write really start to hit
+home, as does the need to preallocate a full set of reserved zero values
+in the RV ISAMUX/NS.
 
-Lastly, I *think* it's ok to only reserve say 32 bits, and, in 50 years time if that genuinely is not enough, start the process all over again with a new CSR.  ISAMUX2/NS2.
+Lastly, I *think* it's ok to only reserve say 32 bits, and, in 50 years
+time if that genuinely is not enough, start the process all over again
+with a new CSR.  ISAMUX2/NS2.
 
-Subdivision of the RV NS (support for RVCv3/4/5/RV16 without wasting precious CSR bits) best left for discussion another time, the above is a heck of a lot to absorb, already.
+Subdivision of the RV NS (support for RVCv3/4/5/RV16 without wasting
+precious CSR bits) best left for discussion another time, the above is
+a heck of a lot to absorb, already.
 
 # Alternative RVC 16 Bit Opcode meanings
 
-Ok, here is appropriate to raise an idea how to cover RVC and future variants, including RV16. 
+Ok, here is appropriate to raise an idea how to cover RVC and future
+variants, including RV16.
 
-Just as with foreign archs, and you quite rightly highlight above, it makes absolutely no sense to try to select both RVCv1, v2, v3 and so on, all simultaneously. An unary bit vector for RVC modes, changing the 16 BIT opcode space meaning, is wasteful and again has us believe that WARL is the "solution". 
+Just as with foreign archs, and you quite rightly highlight above, it
+makes absolutely no sense to try to select both RVCv1, v2, v3 and so on,
+all simultaneously. An unary bit vector for RVC modes, changing the 16
+BIT opcode space meaning, is wasteful and again has us believe that WARL
+is the "solution".
 
-The correct thing to do is, again, just like with foreign archs, to treat RVCs as a *binary* namespace selector. Bits 1 thru 3 would give 8 possible completely new alternative meanings, just like how the Z80 and the 286 and 386 used to do bank switching. 
+The correct thing to do is, again, just like with foreign archs, to
+treat RVCs as a *binary* namespace selector. Bits 1 thru 3 would give
+8 possible completely new alternative meanings, just like how the Z80
+and the 286 and 386 used to do bank switching.
 
-All zeros is clearly reserved for the present RVC. 0b001 for RVCv2. 0b010 for RV16 (look it up) and there should definitely be room reserved here for custom reencodings of the 16 bit opcode space. 
+All zeros is clearly reserved for the present RVC. 0b001 for RVCv2. 0b010
+for RV16 (look it up) and there should definitely be room reserved here
+for custom reencodings of the 16 bit opcode space.
 
 # Why WARL will not work and why WLRL is required
 
-WARL requires a follow-up read of the CSR to ascertain what heuristic the hardware *might* have applied, and if that procedure is followed in this proposal, performance even on hardware would be severely compromised.
+WARL requires a follow-up read of the CSR to ascertain what heuristic
+the hardware *might* have applied, and if that procedure is followed in
+this proposal, performance even on hardware would be severely compromised.
 
-In addition when switching to foreign architectures, the switch has to be done atomically and guaranteed to occur.
+In addition when switching to foreign architectures, the switch has to
+be done atomically and guaranteed to occur.
 
-In the case of JIT emulation, the WARL "detection" code will be in an assembly language that is alien to hardware.
+In the case of JIT emulation, the WARL "detection" code will be in an
+assembly language that is alien to hardware.
 
-Support for both assembly languages immediately after the CSR write is clearly impossible, this leaves no other option but to have the CSR be WLRL (on all platforms) and for traps to be mandatory (on the UNIX Platform).
+Support for both assembly languages immediately after the CSR write
+is clearly impossible, this leaves no other option but to have the CSR
+be WLRL (on all platforms) and for traps to be mandatory (on the UNIX
+Platform).
 
 # Is it strictly necessary for foreign archs to switch back? <a href="#foreignswitch"</a>
 
