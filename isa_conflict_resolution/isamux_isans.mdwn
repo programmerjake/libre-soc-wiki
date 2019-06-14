@@ -69,7 +69,7 @@ Foreign archs could be (examples):
 Note that "official" foreign archs have a binary value where the MSB is zero,
 and custom foreign archs have a binary value where the MSB is 1.
 
-# Privileged Modes / Traps <a href="#privtraps" />
+# Privileged Modes / Traps <a name="privtraps"></a>
 
 An additional WLRL CSR per priv-level named "LAST-ISANS" is required.
 This mirrors the ISANS CSR, and, on a trap, if the current ISANS in
@@ -94,7 +94,7 @@ written into LAST-ISANS occur when the *software* writes to LAST-ISANS,
 or when the *trap* (on exit) writes into LAST-ISANS?  this latter seems
 fraught: a trap, on exit, causing another trap??
 
-# What happens if this scheme is not adopted? Why is it better than leaving things well alone? <a href="#lassezfaire">
+# What happens if this scheme is not adopted? Why is it better than leaving things well alone? <a name="lassezfaire"></a>
 
 At the first sign of an emergency non-backwards compatible and unavoidable
 change to the *frozen* RISCV *official* Standards, the entire RISCV
@@ -158,7 +158,7 @@ or binary) the above issues are solved. CSR space is no longer wasted,
 compiler and JIT software writers have an easier time, clashes are
 avoided, and RISCV is stabilised and has a trustable long term future.
 
-# Why ISAMUX / ISANS has to be WLRL and mandatory trap on illegal writes
+# Why ISAMUX / ISANS has to be WLRL and mandatory trap on illegal writes <a name="wlrlmandatorytrap"></a>
 
 The namespaces, set by bits in the CSR, are functionally directly
 equivalent to c++ namespaces, even down to the use of braces.
@@ -326,7 +326,7 @@ is clearly impossible, this leaves no other option but to have the CSR
 be WLRL (on all platforms) and for traps to be mandatory (on the UNIX
 Platform).
 
-# Is it strictly necessary for foreign archs to switch back? <a href="#foreignswitch"</a>
+# Is it strictly necessary for foreign archs to switch back? <a name="foreignswitch"></a>
 
 No, because LAST-ISANS handles the setting and unsetting of the ISANS CSR
 in a completely transparent fashion as far as the foreign arch is concerned.
