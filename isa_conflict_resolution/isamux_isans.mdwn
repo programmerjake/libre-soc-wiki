@@ -118,22 +118,17 @@ MISANS, MTRAPISANS, MLASTISANS and so on):
 <pre>
 trap_entry()
 {
-    if (ISANS != TRAP_ISANS) // musn't change if already there
-    {
-        LAST-ISANS = ISANS // record the old NS
-        ISANS = TRAP_ISANS // traps are executed in "trap" NS
-    }
+
+    LAST-ISANS = ISANS // record the old NS
+    ISANS = TRAP_ISANS // traps are executed in "trap" NS
 }
 
 and trap_exit:
 
 trap_exit():
 {
-    if (LAST-ISANS != TRAP_ISANS)
-    {
-        ISANS = LAST-ISANS
-        LAST-ISANS = TRAP_ISANS
-    }
+    ISANS = LAST-ISANS
+    LAST-ISANS = TRAP_ISANS
 }
 </pre>
 </code>
@@ -151,22 +146,16 @@ Open question: see <https://groups.google.com/a/groups.riscv.org/d/msg/isa-dev/I
 <pre>
 trap_entry(x_cause)
 {
-    if (ISANS != TRAP_ISANS[xcause]) // musn't change if already there
-    {
-        LAST-ISANS = ISANS // record the old NS
-        ISANS = TRAP_ISANS[xcause] // traps are executed in "trap" NS
-    }
+    LAST-ISANS = ISANS // record the old NS
+    ISANS = TRAP_ISANS[xcause] // traps are executed in "trap" NS
 }
 
 and trap_exit:
 
 trap_exit(x_cause):
 {
-    if (LAST-ISANS != TRAP_ISANS[x_cause])
-    {
-        ISANS = LAST-ISANS
-        LAST-ISANS = TRAP_ISANS[x_cause]
-    }
+    ISANS = LAST-ISANS
+    LAST-ISANS = TRAP_ISANS[x_cause]
 }
 </pre>
 </code>
