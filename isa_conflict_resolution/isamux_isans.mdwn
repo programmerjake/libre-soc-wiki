@@ -71,17 +71,18 @@ and custom foreign archs have a binary value where the MSB is 1.
 
 # Privileged Modes / Traps <a name="privtraps"></a>
 
-An additional WLRL CSR per priv-level named "LAST-ISANS" is required.
-This mirrors the ISANS CSR, and, on a trap, if the current ISANS in
-that privilegel level is non-zero, its value is atomically transferred
-into LAST-ISANS by the hardware, and ISANS in that trap is set to zero.
-Hardware is *only then* permitted to modify the PC to begin execution
-of the trap.
+An additional WLRL CSR per priv-level named "LAST-ISANS" is required, and
+another called "TRAP-ISANS"
+These mirrors the ISANS CSR, and, on a trap, if the current ISANS in
+that privilege level is not equal to TRAP-ISANS, its value is atomically
+transferred into LAST-ISANS by the hardware, and ISANS in that trap
+is set to TRAP-ISANS.  Hardware is *only then* permitted to modify the PC to
+begin execution of the trap.
 
-On exit from the trap, hardware must check to see if LAST-ISANS is non-zero.
-If it is non-zero, its value is copied into the ISANS CSR, LAST-ISANS is set
-to zero, and *only then* is the hardware permitted to modify the PC to
-begin execution where the trap left off.
+On exit from the trap, hardware must check to see if LAST-ISANS is equal
+to TRAP-ISANS.  If it is not, LAST-ISANS is copied into the ISANS CSR,
+LAST-ISANS is set to TRAP-ISANS, and *only then* is the hardware permitted
+to modify the PC to begin execution where the trap left off.
 
 Note 1: in the case of Supervisor Mode (context switches in particular),
 saving and changing of LAST-ISANS (to and from the stack) must be done
@@ -93,6 +94,30 @@ Note 2: question - should the trap due to illegal (unsupported) values
 written into LAST-ISANS occur when the *software* writes to LAST-ISANS,
 or when the *trap* (on exit) writes into LAST-ISANS?  this latter seems
 fraught: a trap, on exit, causing another trap??
+
+<code>
+<pre>
+trap_entry()
+{
+    if (ISANS != TRAP_ISANS) // musn't change if already there
+    {
+        LAST-ISANS = ISANS // record the old NS
+        ISANS = TRAP_ISANS // traps are executed in "trap" NS
+    }
+}
+
+and trap_exit:
+
+trap_exit():
+{
+    if (LAST-ISANS != TRAP_ISANS)
+    {
+        ISANS = LAST-ISANS
+        LAST-ISANS = TRAP_ISANS
+    }
+}
+</pre>
+</code>
 
 # What happens if this scheme is not adopted? Why is it better than leaving things well alone? <a name="lassezfaire"></a>
 
