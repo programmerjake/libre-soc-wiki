@@ -159,6 +159,17 @@ trap_exit(x_cause):
 </pre>
 </code>
 
+# Is this like MISA? <a name="misa"></a>
+
+No.
+
+* MISA's space is entirely taken up (and running out).
+* There is no allocation (provision) for custom extensions.
+* MISA switches on and off entire extensions: ISAMUX/NS may be used to switch multiple opcodes (present and future), to alternate meanings.
+* MISA is WARL and is inaccessible from everything but M-Mode (not even readable). 
+
+MISA is therefore wholly unsuited to U-Mode usage; ISANS is specifically permitted to be called by userspace to switch (with no stalling) between namespaces, repeatedly and in quick succession.
+
 # What happens if this scheme is not adopted? Why is it better than leaving things well alone? <a name="lassezfaire"></a>
 
 At the first sign of an emergency non-backwards compatible and unavoidable
