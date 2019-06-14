@@ -6,7 +6,7 @@ opcode length to 16+N, 32+N, 48+N, where N is a hard fixed quantity on
 a per-implementor basis.
 
 Where the opcode is normally loaded from the location at the PC, the extra
-bits are instead set via a CSR and mandatorially appended to every instruction: hence why they are described as "hidden" opcode bits, and as a "namespace".
+bits, set via a CSR, are mandatorially appended to every instruction: hence why they are described as "hidden" opcode bits, and as a "namespace".
 
 The parallels with c++ "using namespace" are direct and clear.
 
@@ -18,11 +18,11 @@ needs to be paid to the fact that there is an "immediate" version of CSRRW
 
 <code>
 <pre>
-      3                   2                   1
-   |1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0|
-   |------------------------------ |-------|---------------------|-|
-   |reserved reserved reserved reserved reserved   | foreignarch |1|
-   |custom         | reserved    |           official|B| rvcpage |0|
+   3                   2                   1
+|1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0|
+|------------------------------ |-------|---------------------|-|
+|reserved reserved reserved reserved reserved   | foreignarch |1|
+|custom         | reserved    |           official|B| rvcpage |0|
 </pre>
 <code>
 
