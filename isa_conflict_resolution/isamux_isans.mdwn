@@ -121,6 +121,18 @@ first sight not to make any sense.
 
 It's complicated in other words!
 
+# Surely it's okay to just tell people to use 48-bit encodings? <a name="use48bit"></a>
+
+Short answer: it doesn't help resolve conflicts, and costs hardware and
+redesigns to do so.  Softcores in cost-sensitive embedded applications may
+even not actually be able to fit the required 48 bit instruction decode engine
+into a (small, ICE40) FPGA.  48-bit instruction decoding is much more complex
+than straight 32-bit decoding, requiring a queue.
+
+Second answer: conflicts can still occur in the (unregulated, custom) 48-bit
+space, which *could* be resolved by ISAMUX/ISANS as applied to the *48* bit
+space in exactly the same way.  And the 64-bit space.
+
 # Why not leave this to individual custom vendors to solve on a case by case basis?
 
 The suggestion was raised that a custom extension vendor could create
