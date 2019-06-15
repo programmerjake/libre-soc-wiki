@@ -255,9 +255,12 @@ WARL, by allowing implementors to choose the value, prevents and prohibits
 the critical and necessary raising of an exception that would begin the
 JIT process in the case of ongoing standards evolution.
 
-Without this opportunity, an implementation has no way of knowing
-how to JIT emulate any given conflicting opcode. It is as if the c++
-standard was given the similar opportunity to completely ignore the
+Without this opportunity, an implementation has no reliable guaranteed way of knowing
+when to drop into full JIT mode,
+which is the only guaranteed way to distinguish
+any given conflicting opcode. It is as if the c++
+standard was given a similar optional
+opportunity to completely ignore the
 "using namespace" prefix!
 
 --
