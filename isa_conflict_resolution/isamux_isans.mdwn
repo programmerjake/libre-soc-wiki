@@ -89,16 +89,17 @@ To be discussed. Context <https://groups.google.com/a/groups.riscv.org/d/msg/isa
 
 An additional WLRL CSR per priv-level named "LAST-ISANS" is required, and
 another called "TRAP-ISANS"
-These mirrors the ISANS CSR, and, on a trap, if the current ISANS in
-that privilege level is not equal to TRAP-ISANS, its value is atomically
+These mirrors the ISANS CSR, and, on a trap, the current ISANS in
+that privilege level is atomically
 transferred into LAST-ISANS by the hardware, and ISANS in that trap
 is set to TRAP-ISANS.  Hardware is *only then* permitted to modify the PC to
 begin execution of the trap.
 
-On exit from the trap, hardware must check to see if LAST-ISANS is equal
-to TRAP-ISANS.  If it is not, LAST-ISANS is copied into the ISANS CSR,
-LAST-ISANS is set to TRAP-ISANS, and *only then* is the hardware permitted
+On exit from the trap, LAST-ISANS is copied into the ISANS CSR, and
+LAST-ISANS is set to TRAP-ISANS. *Only then* is the hardware permitted
 to modify the PC to begin execution where the trap left off.
+
+This is identical to how xepc is handled.
 
 Note 1: in the case of Supervisor Mode (context switches in particular),
 saving and changing of LAST-ISANS (to and from the stack) must be done
