@@ -270,8 +270,11 @@ exactly as standard CSRs, and contains more than just VL.
 
 One interesting side-effect of using CSRRWI to set VL is that this
 may be done with a single instruction, useful particularly for a
-context-load/save.  There are however limitations: CSRWWI's immediate
-is limited to 0-31.
+context-load/save.  There are however limitations: CSRWI's immediate
+is limited to 0-31 (representing VL=1-32).
+
+Note that when VL is set to 1, all parallel operations cease: the
+hardware loop is reduced to a single element: scalar operations.
 
 ## STATE
 
