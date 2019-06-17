@@ -375,36 +375,36 @@ defined 48-bit instruction encoding for the base instruction.
 
 1. If the base instruction is a load instruction, then
     a. If the base instruction is an I-type instruction, then
-        1. The encoding is P48LD-type.
+        1. The encoding is P48-LD-type.
     b. Otherwise
         1. The encoding is *Reserved*.
 2. If the base instruction is a store instruction, then
     a. If the base instruction is an S-type instruction, then
-        1. The encoding is P48ST-type.
+        1. The encoding is P48-ST-type.
     b. Otherwise
         1. The encoding is *Reserved*.
 3. If the base instruction is a SYSTEM instruction, then
     a. The encoding is *Reserved*.
 4. If the base instruction is an integer instruction, then
     a. If the base instruction is an R-type instruction, then
-        1. The encoding is P48R-type.
+        1. The encoding is P48-R-type.
     b. If the base instruction is an I-type instruction, then
-        1. The encoding is P48I-type.
+        1. The encoding is P48-I-type.
     c. If the base instruction is an S-type instruction, then
         1. The encoding is *Reserved*.
     d. If the base instruction is an B-type instruction, then
         1. The encoding is *Reserved*.
     e. If the base instruction is an U-type instruction, then
-        1. The encoding is P48U-type.
+        1. The encoding is P48-U-type.
     f. If the base instruction is an J-type instruction, then
         1. The encoding is *Reserved*.
     g. Otherwise
         1. The encoding is *Reserved*.
 5. If the base instruction is a floating-point instruction, then
     a. If the base instruction is an R-type instruction, then
-        1. The encoding is P48FR-type.
+        1. The encoding is P48-FR-type.
     b. If the base instruction is an I-type instruction, then
-        1. The encoding is P48FI-type.
+        1. The encoding is P48-FI-type.
     c. If the base instruction is an S-type instruction, then
         1. The encoding is *Reserved*.
     d. If the base instruction is an B-type instruction, then
@@ -414,7 +414,7 @@ defined 48-bit instruction encoding for the base instruction.
     f. If the base instruction is an J-type instruction, then
         1. The encoding is *Reserved*.
     g. If the base instruction is an R4-type instruction, then
-        1. The encoding is P48FR4-type.
+        1. The encoding is P48-FR4-type.
     h. Otherwise
         1. The encoding is *Reserved*.
 6. Otherwise
