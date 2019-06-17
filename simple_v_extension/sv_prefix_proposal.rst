@@ -1,0 +1,478 @@
+SimpleV Prefix (SVprefix) Proposal v0.2
+=======================================
+
+This proposal is designed to be able to operate without SVcsr, but not to
+require the absence of SVcsr.
+
+Conventions
+===========
+
+Conventions used in this document:
+- Bits are numbered starting from 0 at the LSB, so bit 3 is 1 in the integer 8.
+- Bit ranges are inclusive on both ends, so 5:3 means bits 5, 4, and 3.
+
+Operations work on variable-length vectors of sub-vectors, where each sub-vector
+has a length *svlen*, and an element type *etype*. When the vectors are stored
+in registers, all elements are packed so that there is no padding in-between
+elements of the same vector. The number of bytes in a sub-vector, *svsz*, is the
+product of *svlen* and the element size in bytes.
+
+Half-Precision Floating Point (FP16)
+====================================
+If the F extension is supported, SVprefix adds support for FP16 in the
+base FP instructions by using 10 (H) in the floating-point format field *fmt*
+and using 001 (H) in the floating-point load/store *width* field.
+
+Compressed Instructions
+=======================
+This proposal doesn't include any prefixed RVC instructions, instead, it will
+include 32-bit instructions that are compressed forms of SVprefix 48-bit
+instructions, in the same manner that RVC instructions are compressed forms of
+RVI instructions. The compressed instructions will be defined later by
+considering which 48-bit instructions are the most common.
+
+48-bit Prefixed Instructions
+============================
+All 48-bit prefixed instructions contain a 32-bit "base" instruction as the
+last 4 bytes. Since all 32-bit instructions have bits 1:0 set to 11, those bits
+are reused for additional encoding space in the 48-bit instructions.
+
+64-bit Prefixed Instructions
+============================
+
+TODO.  Really need to resolve vitp7 by reducing lsk to 2 bits, or just use
+0b111111 as the prefix, then lsk can remain at 3 bits.
+
+48-bit Instruction Encodings
+============================
+
+In the following table, *Reserved* entries must be zero.  RV32 equivalent encodings
+included for side-by-side comparison (and listed below, separately).
+
+First, bits 17:0:
+
++---------------+--------+------------+------------+-----+------------+-------------+------+------------+--------+
+| Encoding      | 17     | 16         | 15         | 14  | 13         | 12          | 11:7 | 6          | 5:0    |
++---------------+--------+------------+------------+-----+------------+-------------+------+------------+--------+
+| P48-LD-type   | rd[5]  | rs1[5]     | lsk                           | vitp7[5:0]         | vitp7[6]   | 011111 |
++---------------+--------+------------+------------+--------------------------------+------+------------+--------+
+| P48-ST-type   | lsk[2] | rs1[5]     | rs2[5]     | lsk[1:0]         | vitp7[5:0]         | vitp7[6]   | 011111 |
++---------------+--------+------------+------------+-----+------------+-------------+------+------------+--------+
+| P48-R-type    | rd[5]  | rs1[5]     | rs2[5]     | vs2 | vs1        | vitp6              | *Reserved* | 011111 |
++---------------+--------+------------+------------+-----+------------+--------------------+------------+--------+
+| P48-I-type    | rd[5]  | rs1[5]     | vitp7[6]   | vd  | vs1        | vitp7[5:0]         | *Reserved* | 011111 |
++---------------+--------+------------+------------+-----+------------+--------------------+------------+--------+
+| P48-U-type    | rd[5]  | *Reserved* | *Reserved* | vd  | *Reserved* | vitp6              | *Reserved* | 011111 |
++---------------+--------+------------+------------+-----+------------+-------------+------+------------+--------+
+| P48-FR-type   | rd[5]  | rs1[5]     | rs2[5]     | vs2 | vs1        | *Reserved*  | vtp5 | *Reserved* | 011111 |
++---------------+--------+------------+------------+-----+------------+-------------+------+------------+--------+
+| P48-FI-type   | rd[5]  | rs1[5]     | vitp7[6]   | vd  | vs1        | vitp7[5:0]         | *Reserved* | 011111 |
++---------------+--------+------------+------------+-----+------------+-------------+------+------------+--------+
+| P48-FR4-type  | rd[5]  | rs1[5]     | rs2[5]     | vs2 | rs3[5]     | vs3 [#fr4]_ | vtp5 | *Reserved* | 011111 |
++---------------+--------+------------+------------+-----+------------+-------------+------+------------+--------+
+
+.. [#fr4] Only vs2 and vs3 are included in the P48-FR4-type encoding because
+          there is not enough space for vs1 as well, and because it is more
+          useful to have a scalar argument for each of the multiplication and
+          addition portions of fmadd than to have two scalars on the
+          multiplication portion.
+
+Table showing correspondance between P48-*-type and RV32-*-type.  These are
+bits 47:18 (RV32 shifted up by 16 bits):
+
++---------------+---------------+
+| Encoding      | 47:18         |
++---------------+---------------+
+| RV32 Encoding | 31:2          |
++---------------+---------------+
+| P48-LD-type   | RV32-I-type   | 
++---------------+---------------+
+| P48-ST-type   | RV32-S-Type   |
++---------------+---------------+
+| P48-R-type    | RV32-R-Type   |
++---------------+---------------+
+| P48-I-type    | RV32-I-Type   |
++---------------+---------------+
+| P48-U-type    | RV32-U-Type   |
++---------------+---------------+
+| P48-FR-type   | RV32-FR-Type  |
++---------------+---------------+
+| P48-FI-type   | RV32-I-Type   |
++---------------+---------------+
+| P48-FR4-type  | RV32-FR-type  |
++---------------+---------------+
+
+Separately, RV32 encodings:
+
++---------------+-------------+-------+----------+----------+--------+----------+--------+--------+------------+
+| Encoding      | 31:27       | 26:25 | 24:20    | 19:15    | 14:12  | 11:7     | 6:2    | 1      | 0          |
++---------------+-------------+-------+----------+----------+--------+----------+--------+--------+------------+
+| RV32-R-type   +    funct7           + rs2[4:0] + rs1[4:0] + funct3 | rd[4:0]  + opcode + 1      + 1          |
++---------------+-------------+-------+----------+----------+--------+----------+--------+--------+------------+
+| RV32-S-type   + imm[11:5]           + rs2[4:0] + rs1[4:0] + funct3 | imm[4:0] + opcode + 1      + 1          |
++---------------+-------------+-------+----------+----------+--------+----------+--------+--------+------------+
+| RV32-I-type   + imm[11:0]                      + rs1[4:0] + funct3 | rd[4:0]  + opcode + 1      + 1          |
++---------------+-------------+-------+----------+----------+--------+----------+--------+--------+------------+
+| RV32-U-type   + imm[31:12]                                         | rd[4:0]  + opcode + 1      + 1          |
++---------------+-------------+-------+----------+----------+--------+----------+--------+--------+------------+
+| RV32-FR4-type + rs3[4:0]    + fmt   + rs2[4:0] + rs1[4:0] + funct3 | rd[4:0]  + opcode + 1      + 1          |
++---------------+-------------+-------+----------+----------+--------+----------+--------+--------+------------+
+| RV32-FR-type  + funct5      + fmt   + rs2[4:0] + rs1[4:0] + rm     | rd[4:0]  + opcode + 1      + 1          |
++---------------+-------------+-------+----------+----------+--------+----------+--------+--------+------------+
+
+64-bit Instruction Encodings
+============================
+
+These extend the 48-bit encodings with the following additional bits:
+
++--------------+-------+-------+--------+--------+--------+----------+
+| Encoding     | 63:58 | 57    | 56     | 55     | 54     | 53:48    |
++--------------+-------+-------+--------+--------+--------+----------+
+| P64-LD-type  | VL    | rd[6] | rs1[6] |        |        | Vstart   |
++--------------+-------+-------+--------+--------+--------+----------+
+| P64-ST-type  | VL    |       | rs1[6] | rs2[6] |        | Vstart   |
++--------------+-------+-------+--------+--------+--------+----------+
+| P64-R-type   | VL    | rd[6] | rs1[6] | rs2[6] |        | Vstart   |
++--------------+-------+-------+--------+--------+--------+----------+
+| P64-I-type   | VL    | rd[6] | rs1[6] |        |        | Vstart   |
++--------------+-------+-------+--------+--------+--------+----------+
+| P64-U-type   | VL    | rd[6] |        |        |        | Vstart   |
++--------------+-------+-------+--------+--------+--------+----------+
+| P64-FR-type  | VL    |       | rs1[6] | rs2[6] |        | Vstart   |
++--------------+-------+-------+--------+--------+--------+----------+
+| P64-FI-type  | VL    | rd[6] | rs1[6] | rs2[6] |        | Vstart   |
++--------------+-------+-------+--------+--------+--------+----------+
+| P64-FR4-type | VL    | rd[6] | rs1[6] | rs2[6] | rs3[6] | Vstart   |
++--------------+-------+-------+--------+--------+--------+----------+
+
+vs#/vd Fields' Encoding
+=======================
+
++--------+----------+----------------------------------------------------------+
+| vs#/vd | Mnemonic | Meaning                                                  |
++========+==========+==========================================================+
+| 0      | S        | the rs#/rd field specifies a scalar (single sub-vector); |
+|        |          | the rs#/rd field is zero-extended to get the actual      |
+|        |          | 7-bit register number                                    |
++--------+----------+----------------------------------------------------------+
+| 1      | V        | the rs#/rd field specifies a vector; the rs#/rd field is |
+|        |          | decoded using the `Vector Register Number Encoding`_ to  |
+|        |          | get the actual 7-bit register number                     |
++--------+----------+----------------------------------------------------------+
+
+If a vs#/vd field is not present, it is as if it was present with a value that
+is the bitwise-or of all present vs#/vd fields.
+
+* scalar register numbers do NOT increment when allocated in the
+  hardware for-loop.  the same scalar register number is handed
+  to every ALU.
+
+* vector register numbers *DO* increase when allocated in the
+  hardware for-loop.  sequentially-increasing register data
+  is handed to sequential ALUs.
+
+Vector Register Number Encoding
+===============================
+
+When vs#/vd is 1, the actual 7-bit register number is derived from the
+corresponding 6-bit rs#/rd field:
+
++---------------------------------+
+| Actual 7-bit register number    |
++===========+=============+=======+
+| Bit 6     | Bits 5:1    | Bit 0 |
++-----------+-------------+-------+
+| rs#/rd[0] | rs#/rd[5:1] | 0     |
++-----------+-------------+-------+
+
+TODO: similar scheme for 64-bit encoding (incorporating extra bit rs#/rd[6] from 64-bit encoding)
+
+Load/Store Kind (lsk) Field Encoding
+====================================
+
++------+----------+------------+-----------------------------------------------------------------+
+| lsk  | Mnemonic | Stride     | Meaning                                                         |
++======+==========+============+=================================================================+
+| 000  | C        |            | Contiguous                                                      |
++------+----------+------------+-----------------------------------------------------------------+
+| 001  | SI       | *svsz* * 2 | Strided with an immediate stride of 2 times the sub-vector size |
++------+----------+------------+-----------------------------------------------------------------+
+| 010  | SI       | *svsz* * 3 | Strided with an immediate stride of 3 times the sub-vector size |
++------+----------+------------+-----------------------------------------------------------------+
+| 011  | SI       | *svsz* * 4 | Strided with an immediate stride of 4 times the sub-vector size |
++------+----------+------------+-----------------------------------------------------------------+
+| 100  | SI       | *svsz* * 5 | Strided with an immediate stride of 5 times the sub-vector size |
++------+----------+------------+-----------------------------------------------------------------+
+| 101  | SI       | *svsz* * 6 | Strided with an immediate stride of 6 times the sub-vector size |
++------+----------+------------+-----------------------------------------------------------------+
+| 110  | SI       | *svsz* * 7 | Strided with an immediate stride of 7 times the sub-vector size |
++------+----------+------------+-----------------------------------------------------------------+
+| 111  | S        | x8 (s0)    | Strided with a stride in bytes specified by a register          |
++------+----------+------------+-----------------------------------------------------------------+
+
+Sub-Vector Length (svlen) Field Encoding
+=======================================================
+
++----------------+-------+
+| svlen Encoding | Value |
++================+=======+
+| 00             | 4     |
++----------------+-------+
+| 01             | 1     |
++----------------+-------+
+| 10             | 2     |
++----------------+-------+
+| 11             | 3     |
++----------------+-------+
+
+Predication (pred) Field Encoding
+=================================
+
++------+------------+--------------------+----------------------------------------+
+| pred | Mnemonic   | Predicate Register | Meaning                                |
++======+============+====================+========================================+
+| 000  | *None*     | *None*             | The instruction is unpredicated        |
++------+------------+--------------------+----------------------------------------+
+| 001  | *Reserved* | *Reserved*         |                                        |
++------+------------+--------------------+----------------------------------------+
+| 010  | !x9        | x9 (s1)            | execute vector op[0..i] on x9[i] == 0  |
++------+------------+                    +----------------------------------------+
+| 011  | x9         |                    | execute vector op[0..i] on x9[i] == 1  |
++------+------------+--------------------+----------------------------------------+
+| 100  | !x10       | x10 (a0)           | execute vector op[0..i] on x10[i] == 0 |
++------+------------+                    +----------------------------------------+
+| 101  | x10        |                    | execute vector op[0..i] on x10[i] == 1 |
++------+------------+--------------------+----------------------------------------+
+| 110  | !x11       | x11 (a1)           | execute vector op[0..i] on x11[i] == 0 |
++------+------------+                    +----------------------------------------+
+| 111  | x11        |                    | execute vector op[0..i] on x11[i] == 1 |
++------+------------+--------------------+----------------------------------------+
+
+Twin-predication (tpred) Field Encoding
+=======================================
+
++-------+------------+--------------------+----------------------------------------------+
+| tpred | Mnemonic   | Predicate Register | Meaning                                      |
++=======+============+====================+==============================================+
+| 000   | *None*     | *None*             | The instruction is unpredicated              |
++-------+------------+--------------------+----------------------------------------------+
+| 001   | x9,off     | src=x9, dest=none  | src[0..i] uses x9[i], dest unpredicated      |
++-------+------------+                    +----------------------------------------------+
+| 010   | off,x10    | src=none, dest=x10 | dest[0..i] uses x10[i], src unpredicated     |
++-------+------------+                    +----------------------------------------------+
+| 011   | x9,10      | src=x9, dest=x10   | src[0..i] uses x9[i], dest[0..i] uses x10[i] |
++-------+------------+--------------------+----------------------------------------------+
+| 100   | *None*     | *RESERVED*         | Instruction is unpredicated (TBD)            |
++-------+------------+--------------------+----------------------------------------------+
+| 101   | !x9,off    | src=!x9, dest=none |                                              |
++-------+------------+                    +----------------------------------------------+
+| 110   | off,!x10   | src=none, dest=!x10|                                              |
++-------+------------+                    +----------------------------------------------+
+| 111   | !x9,!x10   | src=!x9, dest=!x10 |                                              |
++-------+------------+--------------------+----------------------------------------------+
+
+Integer Element Type (itype) Field Encoding
+===========================================
+
++------------+-------+--------------+--------------+-----------------+-------------------+
+| Signedness | itype | Element Type | Mnemonic in  | Mnemonic in FP  | Meaning (INT may  |
+| [#sgn_def]_|       |              | Integer      | Instructions    | be un/signed, FP  |
+| [#sgn_def]_|       |              | Instructions | (such as fmv.x) | just re-sized     |
++============+=======+==============+==============+=================+===================+
+| Unsigned   | 00    | u8           | BU           | BU              | Unsigned 8-bit    |
+|            +-------+--------------+--------------+-----------------+-------------------+
+|            | 01    | u16          | HU           | HU              | Unsigned 16-bit   |
+|            +-------+--------------+--------------+-----------------+-------------------+
+|            | 10    | u32          | WU           | WU              | Unsigned 32-bit   |
+|            +-------+--------------+--------------+-----------------+-------------------+
+|            | 11    | uXLEN        | WU/DU/QU     | WU/LU/TU        | Unsigned XLEN-bit |
++------------+-------+--------------+--------------+-----------------+-------------------+
+| Signed     | 00    | i8           | BS           | BS              | Signed 8-bit      |
+|            +-------+--------------+--------------+-----------------+-------------------+
+|            | 01    | i16          | HS           | HS              | Signed 16-bit     |
+|            +-------+--------------+--------------+-----------------+-------------------+
+|            | 10    | i32          | W            | W               | Signed 32-bit     |
+|            +-------+--------------+--------------+-----------------+-------------------+
+|            | 11    | iXLEN        | W/D/Q        | W/L/T           | Signed XLEN-bit   |
++------------+-------+--------------+--------------+-----------------+-------------------+
+
+.. [#sgn_def] Signedness is defined in `Signedness Decision Procedure`_
+
+Note: vector mode is effectively a type-cast of the register file
+as if it was a sequential array being typecast to typedef itype[]
+(c syntax).  The starting point of the "typecast" is the vector
+register rs#/rd.
+
+Example: if itype=0b01 (u16), and rd is set to "vector", and
+VL is set to 4, the 64-bit register at rd is subdivided into
+*FOUR* 16-bit destination elements.  It is *NOT* four
+separate 64-bit destination registers (rd+0, rd+1, rd+2, rd+3)
+that are sign-extended from the source width size out to 64-bit,
+because that is itype=0b11 (uXLEN).
+
+Signedness Decision Procedure
+=============================
+
+1. If the opcode field is either OP or OP-IMM, then
+    1. Signedness is Unsigned.
+2. If the opcode field is either OP-32 or OP-IMM-32, then
+    1. Signedness is Signed.
+3. If Signedness is encoded in a field of the base instruction, [#sign_enc]_ then
+    1. Signedness uses the encoded value.
+4. Otherwise,
+    1. Signedness is Unsigned.
+
+.. [#sign_enc] Like in fcvt.d.l[u], but unlike in fmv.x.w, since there is no
+               fmv.x.wu
+
+Vector Type and Predication 5-bit (vtp5) Field Encoding
+=======================================================
+
+In the following table, X denotes a wildcard that is 0 or 1 and can be a
+different value for every occurrence.
+
++-------+-----------+-----------+
+| vtp5  | pred      | svlen     |
++=======+===========+===========+
+| 1XXXX | vtp5[4:2] | vtp5[1:0] |
++-------+           |           |
+| 01XXX |           |           |
++-------+           |           |
+| 000XX |           |           |
++-------+-----------+-----------+
+| 001XX | *Reserved*            |
++-------+-----------------------+
+
+Vector Integer Type and Predication 6-bit (vitp6) Field Encoding
+================================================================
+
+In the following table, X denotes a wildcard that is 0 or 1 and can be a
+different value for every occurrence.
+
++--------+------------+---------+------------+------------+
+| vitp6  | itype      | pred[2] | pred[0:1]  | svlen      |
++========+============+=========+============+============+
+| XX1XXX | vitp6[5:4] | 0       | vitp6[3:2] | vitp6[1:0] |
++--------+            |         |            |            |
+| XX00XX |            |         |            |            |
++--------+------------+---------+------------+------------+
+| XX01XX | *Reserved*                                     |
++--------+------------------------------------------------+
+
+vitp7 field: only tpred=
+
++---------+------------+----------+-------------+------------+
+| vitp7   | itype      | tpred[2] | tpred[0:1]  | svlen      |
++=========+============+==========+=============+============+
+| XXXXXXX | vitp7[5:4] | vitp7[6] | vitp7[3:2]  | vitp7[1:0] |
++---------+------------+----------+-------------+------------+
+
+48-bit Instruction Encoding Decision Procedure
+==============================================
+
+In the following decision procedure, *Reserved* means that there is not yet a
+defined 48-bit instruction encoding for the base instruction.
+
+1. If the base instruction is a load instruction, then
+    a. If the base instruction is an I-type instruction, then
+        1. The encoding is P48LD-type.
+    b. Otherwise
+        1. The encoding is *Reserved*.
+2. If the base instruction is a store instruction, then
+    a. If the base instruction is an S-type instruction, then
+        1. The encoding is P48ST-type.
+    b. Otherwise
+        1. The encoding is *Reserved*.
+3. If the base instruction is a SYSTEM instruction, then
+    a. The encoding is *Reserved*.
+4. If the base instruction is an integer instruction, then
+    a. If the base instruction is an R-type instruction, then
+        1. The encoding is P48R-type.
+    b. If the base instruction is an I-type instruction, then
+        1. The encoding is P48I-type.
+    c. If the base instruction is an S-type instruction, then
+        1. The encoding is *Reserved*.
+    d. If the base instruction is an B-type instruction, then
+        1. The encoding is *Reserved*.
+    e. If the base instruction is an U-type instruction, then
+        1. The encoding is P48U-type.
+    f. If the base instruction is an J-type instruction, then
+        1. The encoding is *Reserved*.
+    g. Otherwise
+        1. The encoding is *Reserved*.
+5. If the base instruction is a floating-point instruction, then
+    a. If the base instruction is an R-type instruction, then
+        1. The encoding is P48FR-type.
+    b. If the base instruction is an I-type instruction, then
+        1. The encoding is P48FI-type.
+    c. If the base instruction is an S-type instruction, then
+        1. The encoding is *Reserved*.
+    d. If the base instruction is an B-type instruction, then
+        1. The encoding is *Reserved*.
+    e. If the base instruction is an U-type instruction, then
+        1. The encoding is *Reserved*.
+    f. If the base instruction is an J-type instruction, then
+        1. The encoding is *Reserved*.
+    g. If the base instruction is an R4-type instruction, then
+        1. The encoding is P48FR4-type.
+    h. Otherwise
+        1. The encoding is *Reserved*.
+6. Otherwise
+    a. The encoding is *Reserved*.
+
+CSR Registers
+=============
+
++--------+-----------------+---------------------------------------------------+
+| Name   | Legal Values    | Meaning                                           |
++========+=================+===================================================+
+| VL     | 0 <= VL <= XLEN | Vector Length. The number of sub-vectors operated |
+|        |                 | on by vector instructions.                        |
++--------+-----------------+---------------------------------------------------+
+| Vstart | 0 <= VL < XLEN  | The sub-vector index to start execution at.       |
+|        |                 | Successful completion of all elements in a vector |
+|        |                 | instruction sets Vstart to 0. Set to the index of |
+|        |                 | the failing sub-vector when a vector instruction  |
+|        |                 | traps.  Used to resume execution of vector        |
+|        |                 | instructions after a trap. Is *NOT* "slow"        |
++--------+-----------------+---------------------------------------------------+
+
+SetVL
+=====
+
+setvl rd, rs1, imm
+
+imm is the amount of space allocated from the register file by the compiler.
+
+Pseudocode:
+
+1. Trap if imm > XLEN.
+2. If rs1 is x0, then
+    1. Set VL to imm.
+3. Else If regs[rs1] > 2 * imm, then
+    1. Set VL to XLEN.
+4. Else If regs[rs1] > imm, then
+    1. Set VL to regs[rs1] / 2 rounded down.
+5. Otherwise,
+    1. Set VL to regs[rs1].
+6. Set regs[rd] to VL.
+
+Additional Instructions
+=======================
+
+Add instructions to convert between integer types.
+
+Add instructions to `swizzle`_ elements in sub-vectors. Note that the sub-vector
+lengths of the source and destination won't necessarily match.
+
+.. _swizzle: https://www.khronos.org/opengl/wiki/Data_Type_(GLSL)#Swizzling
+
+Add instructions to transpose (2-4)x(2-4) element matrices.
+
+Add instructions to insert or extract a sub-vector from a vector, with the index
+allowed to be both immediate and from a register (*immediate can be covered partly
+by twin-predication, register cannot: requires MV.X aka VSELECT*)
+
+Add a register gather instruction (*NOT NEEDED*)
+
+VSELECT instruction (or mechanism) is needed (aka MV.X)
