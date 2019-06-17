@@ -433,3 +433,62 @@ are **out of scope** of this document and MUST be handled by the foreign
 architecture implementation in a completely transparent fashion that in
 no way interacts or interferes with this proposal.
 
+# Can we have dynamic declaration and runtime declaration of capabilities? <a name="dynamic"></a>
+
+Answer: don't know (yet).  Quoted from Rogier:
+
+> "A SOC may have several devices that one may want to directly control
+> with custom instructions. If independent vendors use the same opcodes you
+> either have to change the encodings for every different chip (not very
+> nice for software) or you can give the device an ID which is defined in
+> some device tree or something like that and use that."
+
+dynamic detection wasn't originally planned: static
+compilation was envisaged to solve the need, with a table of
+mvendorid-marchid-isamux/isans being maintained inside gcc / binutils /
+llvm (or separate library?) that, like the linux kernel ARCH table,
+requires a world-wide atomic "git commit" to add globally-unique
+registered entries that map functionality to actual namespaces.
+
+where that goes wrong is if there is ever a pair (or more) of vendors
+that use the exact same custom feature that maps to different opcodes,
+a statically-compiled binary has no hope of executing natively on both
+systems.
+
+at that point: yes, something akin to device-tree would be needed.
+
+# Open Questions
+
+This section from a post by Rogier Bruisse
+<http://hands.com/~lkcl/gmail_re_isadev_isamux.html>
+
+## is the ISANS CSR a 32 or XLEN bit value? <a name="isans-32-or-xlen"></a>
+
+
+## is the ISANS a flat number space or should some bits be reserved for use as flags?
+
+## should the ISANS space be partitioned between reserved, custom with registration guaranteed non clashing, custom, very likely non clashing?
+
+## should only compiler visible/generated constant setting with CSRRWI and/or using a clearly recognisable LI/LUI be accommodated or should dynamic setting be accommodated as well?
+
+## How should the ISANS be (re)stored in a trap and in context switch?
+
+## Should the mechanism accommodate "foreign ISA's" and if so how does one restore the ISA.
+## Where is the default ISA stored and what  is responsible for what it is after
+
+Options:
+* start up
+* starting a program
+* calling into a dynamically linked library
+* taking a trap
+* changing privilege levels
+
+## If the ISANS is just bits of an instruction that are to be prefixed by the cpu, can those bits contain immediates? Register numbers?
+
+## How does the system indicate a namespace is not recognised? Does it trap or can/must a recoverable mechanism be provided?
+
+## What are the security implications? Can some ISA namespaces be set by user space?
+
+## Does the validity of an ISA namespace depend on privilege level? If so how?
+
+
