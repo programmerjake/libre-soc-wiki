@@ -466,9 +466,13 @@ This section from a post by Rogier Bruisse
 
 This is partly answered in another FAQ above: if 32 bits is not enough
 for a full suite of official, custom-with-atomic-registration and custom-without
-then a second CSR group (ISANS2) may be added.
+then a second CSR group (ISANS2) may be added at a future date (10-20 years
+hence).
 
-32 bits only would not inconvenience RV32.
+32 bits would not inconvenience RV32, and implementors wishing to
+make significant altnernative modifications to opcodes in the RV32 ISA space
+could do so without the burden of having to support a split 32/LO 32/HI
+CSR across two locations.
 
 ## is the ISANS a flat number space or should some bits be reserved for use as flags?
 
@@ -515,10 +519,10 @@ Options:
 * taking a trap
 * changing privilege levels
 
-These are entirely at the discretion of the software.  There is precedent
-for most of these having been implemented, historically, at some point,
-in relation to LE/BE mode CSRs in other hardware (MIPSEL vs MIPS distros
-for example).
+These first four are entirely at the discretion of (and the
+responsibility of) the software.  There is precedent for most of these
+having been implemented, historically, at some point, in relation to
+LE/BE mode CSRs in other hardware (MIPSEL vs MIPS distros for example).
 
 Traps are responsible for saving LAST-ISANS on the stack, exactly as they
 are also responsible for saving other context-sensitive information such
@@ -530,8 +534,17 @@ above.
 
 ## If the ISANS is just bits of an instruction that are to be prefixed by the cpu, can those bits contain immediates? Register numbers?
 
-This is effectively asking "can CSRs in general be kept in registers or
-immediates".  It makes no sense and would require a massive redesign of RISC-V.
+The concept of a CSR containing an immediate makes no sense.  The concept
+of a CSR containing a register number, the contents of which would, presumably,
+be inserted into the NS, would immediately make that register a permanent
+and irrevocably reserved register that could not be utilised for any other
+purpose.
+
+This is what the CSRs are supposed to be for!
+
+It would be better just to have a second CSR - ISANS2 - potentially even ISANS3
+in 60+ years time, rather than try to use a GPR for the purposes for which CSRs
+are intended.
 
 ## How does the system indicate a namespace is not recognised? Does it trap or can/must a recoverable mechanism be provided?
 
