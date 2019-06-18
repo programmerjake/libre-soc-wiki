@@ -464,16 +464,48 @@ This section from a post by Rogier Bruisse
 
 ## is the ISANS CSR a 32 or XLEN bit value? <a name="isans-32-or-xlen"></a>
 
+This is partly answered in another FAQ above: if 32 bits is not enough
+for a full suite of official, custom-with-atomic-registration and custom-without
+then a second CSR group (ISANS2) may be added.
+
+32 bits only would not inconvenience RV32.
 
 ## is the ISANS a flat number space or should some bits be reserved for use as flags?
 
+See 16-bit RV namespace "page" concept, above.  Some bits have to be unary
+(multiple simultaneous features such as LE/BE in one bit, and augmented
+Floating-point rounding / clipping in another), whilst others definitely
+need to be binary (the most obvious one being "paging" in the space currently
+occupied by RVC).
+
 ## should the ISANS space be partitioned between reserved, custom with registration guaranteed non clashing, custom, very likely non clashing?
+
+Yes.
 
 ## should only compiler visible/generated constant setting with CSRRWI and/or using a clearly recognisable LI/LUI be accommodated or should dynamic setting be accommodated as well?
 
+This is almost certainly a software design issue, not so much a hardware
+issue.
+
 ## How should the ISANS be (re)stored in a trap and in context switch?
 
+See section above on privilege mode: LAST-ISANS has been introduced that
+mirrors (x)CAUSE and (x)EPC pretty much exactly.  Context switches change
+uepc just before exit from the trap, in order to change the user-mode PC
+to switch to a new process, and ulast-isans can - must - be treated in
+exactly the same way.  When the context switch sets ulast-isans (and uepc),
+the hardware flips both ulast-isans into uisans and uepc into pc (atomically):
+both the new NS and the new PC activate immediately, on return to usermode.
+
+Quite simple.
+
 ## Should the mechanism accommodate "foreign ISA's" and if so how does one restore the ISA.
+
+See section above on LAST-ISANS.  With the introduction of LAST-ISANS, the
+change is entirely transparent, and handled by the Supervisor (or Hypervisor)
+trap, in a fashion that the foreign ISA need not even know of the existence
+of ISANS.  At all.
+
 ## Where is the default ISA stored and what  is responsible for what it is after
 
 Options:
@@ -483,12 +515,52 @@ Options:
 * taking a trap
 * changing privilege levels
 
+These are entirely at the discretion of the software.  There is precedent
+for most of these having been implemented, historically, at some point,
+in relation to LE/BE mode CSRs in other hardware (MIPSEL vs MIPS distros
+for example).
+
+Traps are responsible for saving LAST-ISANS on the stack, exactly as they
+are also responsible for saving other context-sensitive information such
+as the registers and xEPC.
+
+The hardware is responsible for atomically switching out ISANS into the
+relevant xLAST-ISANS (and back again on exit).  See Privileged Traps,
+above.
+
 ## If the ISANS is just bits of an instruction that are to be prefixed by the cpu, can those bits contain immediates? Register numbers?
+
+This is effectively asking "can CSRs in general be kept in registers or
+immediates".  It makes no sense and would require a massive redesign of RISC-V.
 
 ## How does the system indicate a namespace is not recognised? Does it trap or can/must a recoverable mechanism be provided?
 
+It doesn't "indicate" that a namespace is not recognised.  WLRL fields only
+hold supported values.  If the hardware cannot hold the value, a trap
+**MUST** be thrown (in the UNIX platform), and at that point it becomes the
+responsibility of software to deal with it.
+
 ## What are the security implications? Can some ISA namespaces be set by user space?
 
+Of course they can.  It becomes the responsibility of the Supervisor Mode
+(the kernel) to treat ISANS in a fashion orthogonal to the PC.  If the OS
+is not capable of properly context-switching securely by setting the right
+PC, it's not going to be capable of properly looking after changes to ISANS.
+
 ## Does the validity of an ISA namespace depend on privilege level? If so how?
+
+The question does not exactly make sense, and may need a re-reading of the
+section on how Privilege Modes, above.  In RISC-V, privilege modes do not
+actually change very much state of the system: the absolute minimum changes
+are made (swapped out) - xEPC, xSTATUS and so on - and the privilege mode
+is expected to handle the context switching (or other actions) itself.
+
+ISANS - through LAST-ISANS - is absolutely no different.  The trap and the
+kernel (Supervisor or Hypervisor) are provided the *mechanism* by which
+ISA Namespace *may* be set: it is up to the software to use that mechanism
+correctly, just as the software is expected to use the mechanisms provided
+to correctly implement context-switching by saving and restoring register
+files, the PC, and other state.  The NS effectively becomes just another
+part of that state.
 
 
