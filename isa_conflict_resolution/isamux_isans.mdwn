@@ -422,6 +422,8 @@ Platform).
 
 No, because LAST-ISANS handles the setting and unsetting of the ISANS CSR
 in a completely transparent fashion as far as the foreign arch is concerned.
+Supervisor or Hypervisor traps take care of the context switch in a way
+that the user mode (or guest) need not be aware of, in any way.
 
 Thus, in e.g. Hypervisor Mode, the foreign guest arch has no knowledge
 or need to know that the hypervisor is flipping back to RV at the time of
