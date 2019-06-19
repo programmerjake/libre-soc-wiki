@@ -2230,8 +2230,9 @@ Optional VL/MAXVL/SubVL Block:
 
 Reminder of the variable-length format from Section 1.5 of the RISC-V ISA:
 
-| .. | xxxx | xxxxxxxxxxxxxxxx | xnnnxxxxx1111111 | (80+16\*nnn)-bit, nnn!=111 |
-| -- | ---- | ---------------- | ---------------- | -------------------------- |
+| base+4 | base+2           | base             | number of bits             |
+| ------ | ---------------- | ---------------- | -------------------------- |
+| ..xxxx | xxxxxxxxxxxxxxxx | xnnnxxxxx1111111 | (80+16\*nnn)-bit, nnn!=111 |
 
 Notes:
 
