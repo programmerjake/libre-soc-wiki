@@ -2254,8 +2254,9 @@ Notes:
 This would greatly reduce the amount of space utilised by Vectorised
 instructions, given that 64-bit CSRRW requires 3, even 4 32-bit opcodes: the
 CSR itself, a LI, and the setting up of the value into the RS register
-of the CSR, which, again, requires a LI / LUI to get the full 64 bit
-data into the CSR.
+of the CSR, which, again, requires a LI / LUI to get the 32 bit
+data into the CSR.  To get 64-bit data into the register in order to put
+it into the CSR(s), LOAD operations from memory are needed!
 
 Given that each 64-bit CSR can hold only 4x PredCAM entries (or 4 RegCAM
 entries), that's potentially 6 to eight 32-bit instructions, just to
@@ -2265,8 +2266,20 @@ Not only that: even CSRRW on VL and MAXVL requires 64-bits (even more bits if
 VL needs to be set to greater than 32).  Bear in mind that in SV, both MAXVL
 and VL need to be set.
 
+By contrast, the VLIW prefix is only 16 bits, the VL/MAX/SubVL block is
+only 16 bits, and as long as not too many predicates and register vector
+qualifiers are specified, several 32-bit and 16-bit opcodes can fit into the
+format.
 In this light, embedding the VL/MAXVL, PredCam and RegCam CSR entries into
 a VLIW format makes a lot of sense.
+
+Open Questions:
+
+* is there a way to create a much more compact (compressed) version of the
+  PredCAM and RegCAM entries?
+* Is it necessary to stick to the RISC-V 1.5 format?  Why not go with
+  using the 15th bit to allow 80 + 16\*0bnnnn bits?  Perhaps to be sane,
+  limit to 256 bits (16 times 0-11).
 
 # Subsets of RV functionality
 
