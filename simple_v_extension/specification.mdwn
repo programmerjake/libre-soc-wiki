@@ -415,7 +415,7 @@ The purpose of the Register CSR table is four-fold:
 * To over-ride the implicit or explicit bitwidth that the operation would
   normally give the register.
 
-TODO: update
+16 bit format:
 
 | RegCAM | | 15       | (14..8)  | 7   | (6..5) | (4..0)  |
 | ------ | | -        | -        | -   | ------ | ------- |
@@ -424,9 +424,19 @@ TODO: update
 | ..     | | isvec..  | regidx.. | i/f | vew..  | regkey  |
 | 15     | | isvec15  | regidx15 | i/f | vew15  | regkey  |
 
+8 bit format:
+
+| RegCAM | | 7   | (6..5) | (4..0)  |
+| ------ | | -   | ------ | ------- |
+| 0      | | i/f | vew0   | regnum  |
+
 i/f is set to "1" to indicate that the redirection/tag entry is to be applied
 to integer registers; 0 indicates that it is relevant to floating-point
-registers.  vew has the following meanings, indicating that the instruction's
+registers.
+
+The 8 bit format is used for a much more compact expression. "isvec" is implicit and, as in [[sv-prefix-proposal]], the target vector is "regnum<<2", implicitly. Contrast this with the 16-bit format where the target vector is *explicitly* named in bits 8 to 14, and bit 15 may optionally set "scalar" mode.
+
+vew has the following meanings, indicating that the instruction's
 operand size is "over-ridden" in a polymorphic fashion:
 
 | vew | bitwidth            |
