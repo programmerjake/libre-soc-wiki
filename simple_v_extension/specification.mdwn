@@ -2290,7 +2290,8 @@ and VL need to be set.
 By contrast, the VLIW prefix is only 16 bits, the VL/MAX/SubVL block is
 only 16 bits, and as long as not too many predicates and register vector
 qualifiers are specified, several 32-bit and 16-bit opcodes can fit into the
-format.
+format. If the full flexibility of the 16 bit block formats are not needed, more space is saved by using the 8 bit formats.
+
 In this light, embedding the VL/MAXVL, PredCam and RegCam CSR entries into
 a VLIW format makes a lot of sense.
 
