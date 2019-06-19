@@ -592,14 +592,25 @@ in the instruction, due to the redirection through the lookup table.
   To use "unpredicated" packed SIMD, set the predicate to x0 and
   set "invert".  This has the effect of setting a predicate of all 1s)
 
+16 bit format:
+
 | PrCSR | (15..11) | 10     | 9     | 8   | (7..1)  | 0       |
 | ----- | -        | -      | -     | -   | ------- | ------- |
-| 0     | predkey  | zero0  | inv0  | i/f | regidx  | packed0 |
+| 0     | predkey  | zero0  | inv0  | i/f | regidx  | rsrvd |
 | 1     | predkey  | zero1  | inv1  | i/f | regidx  | packed1 |
 | ...   | predkey  | .....  | ....  | i/f | ....... | ....... |
 | 15    | predkey  | zero15 | inv15 | i/f | regidx  | packed15|
 
-The Predication CSR Table is a key-value store, so implementation-wise
+
+8 bit format:
+
+| PrCSR | 7     | 6     | 5   | (4..0)  |
+| ----- | -     | -     | -   | ------- |
+| 0     | zero0 | inv0  | i/f | regnum  |
+
+The 8 bit format is a compact and less expressive variant of the full 16 bit format.  Using the 8 bit formatis very different: the predicate register to use is implicit, and numbering begins inplicitly from x9. The regnum is still used to "activate" predication.
+
+The 16 bit Predication CSR Table is a key-value store, so implementation-wise
 it will be faster to turn the table around (maintain topologically
 equivalent state):
 
@@ -633,7 +644,7 @@ reference to the predication register to be used:
                 s2 ? vreg[rs2][i] : sreg[rs2]); // for insts with 2 inputs
 
 This instead becomes an *indirect* reference using the *internal* state
-table generated from the Predication CSR key-value store, which iwws used
+table generated from the Predication CSR key-value store, which is used
 as follows.
 
     if type(iop) == INT:
@@ -2228,11 +2239,11 @@ A suitable prefix, which fits the Expanded Instruction-Length encoding
 for "(80 + 16 times instruction_length)", as defined in Section 1.5
 of the RISC-V ISA, is as follows:
 
-| 15   | 14:12 | 11:10 | 9:8   | 7   | 6:0     |
-| -    | ----- | ----- | ----- | --- | ------- |
-| rsvd | 16xil | pplen | rplen | S/VL| 1111111 |
+| 15    | 14:12 | 11:10 | 9:8   | 7    | 6:0     |
+| -     | ----- | ----- | ----- | ---  | ------- |
+| rmode | 16xil | pplen | rplen | pmode| 1111111 |
 
-Optional VL/MAXVL/SubVL Block:
+VL/MAXVL/SubVL Block:
 
 | 15   | 14:12 | 11:6   | 5:0     |
 | -    | ----- | ------ | ------- |
@@ -2247,10 +2258,10 @@ Reminder of the variable-length format from Section 1.5 of the RISC-V ISA:
 
 Notes:
 
-* Bit 7 does not specify the VL, it specifies if VL, MAXVL and Sub-Vector
-  Length are to be in an optional block immediately following the prefix.
-* Bits 8 and 9 define how many RegCam entries (0 to 3) follow (after
-  the optional VL block)
+* Bit 7 specifies if the prefix block format is the full 16 bit format (1) or the compact less expressive format (0). In the 8 bit format, pplen is multiplied by 2.
+* NOTE: 8 bit format predicate numbering is implicit and begins from x9. Thus it is critical to put blocks in the correct order as required.
+* Bit 15 specifies if the register block format is 16 bit (1) or 8 bit (0). In the 8 bit format, rplen is multiplied by 2. If only an odd number of entries are needed the last may be set to 0x00, indicating "unused".
+* Bits 8 and 9 define how many RegCam entries (0 to 3 if bit 15 is 1, otherwise 0 to 6) follow the VL Block.
 * Bits 10 and 11 define how many PredCam entries (0 to 3) follow after
   the (optional) RegCam entries
 * Bits 14 to 12 (IL) define the actual length of the instruction: total
@@ -2258,7 +2269,7 @@ Notes:
   SVPrefix (P48-\*-Type) instructions fit into this space, after the
   (optional) RegCam / PredCam entries
 * Anything - any registers - within the VLIW-prefixed format *MUST* have the
-  RegCam and PredCam CSRs applied to it.
+  RegCam and PredCam entries applied to it.
 * At the end of the VLIW Group, the RegCam and PredCam CSRs *no longer apply*.
 
 This would greatly reduce the amount of space utilised by Vectorised
@@ -2285,11 +2296,23 @@ a VLIW format makes a lot of sense.
 
 Open Questions:
 
-* is there a way to create a much more compact (compressed) version of the
-  PredCAM and RegCAM entries?
 * Is it necessary to stick to the RISC-V 1.5 format?  Why not go with
   using the 15th bit to allow 80 + 16\*0bnnnn bits?  Perhaps to be sane,
   limit to 256 bits (16 times 0-11).
+
+## Limitations on instructions.
+
+An implementation is required to treat the VLIW group as a separate sub-program with its own separate PC. The sub-pc advances separately whilst the main PC remains pointing at the beginning of the VLIW instruction.
+
+This has implications, namely that a new set of CSRs identical to xepc (mepc, srpc, hepc and uepc) must be created and managed and respected as being a sub extension of the xepc set of CSRs.  Thus, xevliwpc CSRs must be context switched and saved / restored in traps.
+
+The VStart indices in the STATE CSR may be similarly regarded as another sub-execution context.
+
+In addition, as xevliwpc CSRs are relative to the beginning of the VLIW block, branches MUST be restricted to within the block, i.e. addressing is now restricted to the start (and very short) length of the block.
+
+Also: calling subroutines is inadviseable, unless they can be entirely accomplished within a block.
+
+A normal jump and a normal function call may only be taken by letting the VLIW end, returning to "normal" standard RV mode, using RVC, 32 bit or P48-*-type opcodes.
 
 # Subsets of RV functionality
 
