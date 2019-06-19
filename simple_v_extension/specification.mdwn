@@ -423,7 +423,6 @@ TODO: update
 | 1      | | isvec1   | regidx1  | i/f | vew1   | regkey  |
 | ..     | | isvec..  | regidx.. | i/f | vew..  | regkey  |
 | 15     | | isvec15  | regidx15 | i/f | vew15  | regkey  |
-| ------ | | -        | -        | -   | ------ | ------- |
 
 i/f is set to "1" to indicate that the redirection/tag entry is to be applied
 to integer registers; 0 indicates that it is relevant to floating-point
@@ -583,12 +582,12 @@ in the instruction, due to the redirection through the lookup table.
   To use "unpredicated" packed SIMD, set the predicate to x0 and
   set "invert".  This has the effect of setting a predicate of all 1s)
 
-| PrCSR | 13     | 12     | 11    | 10  | (9..5)  | (4..0)  |
-| ----- | -      | -      | -     | -   | ------- | ------- |
-| 0     | bank0  | zero0  | inv0  | i/f | regidx  | predkey |
-| 1     | bank1  | zero1  | inv1  | i/f | regidx  | predkey |
-| ..    | bank.. | zero.. | inv.. | i/f | regidx  | predkey |
-| 15    | bank15 | zero15 | inv15 | i/f | regidx  | predkey |
+| PrCSR | (15..11) | 10     | 9     | 8   | (7..1)  | 0       |
+| ----- | -        | -      | -     | -   | ------- | ------- |
+| 0     | predkey  | zero0  | inv0  | i/f | regidx  | packed0 |
+| 1     | predkey  | zero1  | inv1  | i/f | regidx  | packed1 |
+| ...   | predkey  | .....  | ....  | i/f | ....... | ....... |
+| 15    | predkey  | zero15 | inv15 | i/f | regidx  | packed15|
 
 The Predication CSR Table is a key-value store, so implementation-wise
 it will be faster to turn the table around (maintain topologically
