@@ -191,24 +191,26 @@ Load/Store Kind (lsk) Field Encoding
 ====================================
 
 +------+----------+------------+-----------------------------------------------------------------+
-| lsk  | Mnemonic | Stride     | Meaning                                                         |
+| vd/vs2 | vs1  | Meaning                                                         |
 +======+==========+============+=================================================================+
-| 000  | C        |            | Contiguous                                                      |
+| 0      | 0   | srcbase is scalar, LD/ST is pure scalar.                                                      |
 +------+----------+------------+-----------------------------------------------------------------+
-| 001  | SI       | *svsz* * 2 | Strided with an immediate stride of 2 times the sub-vector size |
+| 1     | 0   | srcbase is scalar, LD/ST is unit strided |
 +------+----------+------------+-----------------------------------------------------------------+
-| 010  | SI       | *svsz* * 3 | Strided with an immediate stride of 3 times the sub-vector size |
+| 0     | 1   | srcbase is a vector (gather/scatter aka array of srcbases). VSPLAT and VSELECT |
 +------+----------+------------+-----------------------------------------------------------------+
-| 011  | SI       | *svsz* * 4 | Strided with an immediate stride of 4 times the sub-vector size |
+| 1     | 1        | srcbase is a vector, LD/ST is a full vector LD/ST. |
 +------+----------+------------+-----------------------------------------------------------------+
-| 100  | SI       | *svsz* * 5 | Strided with an immediate stride of 5 times the sub-vector size |
-+------+----------+------------+-----------------------------------------------------------------+
-| 101  | SI       | *svsz* * 6 | Strided with an immediate stride of 6 times the sub-vector size |
-+------+----------+------------+-----------------------------------------------------------------+
-| 110  | SI       | *svsz* * 7 | Strided with an immediate stride of 7 times the sub-vector size |
-+------+----------+------------+-----------------------------------------------------------------+
-| 111  | S        | x8 (s0)    | Strided with a stride in bytes specified by a register          |
-+------+----------+------------+-----------------------------------------------------------------+
+
+Notes:
+
+* A register strided LD/ST would require *5* registers. srcbase, vd/vs2, predicate 1, predicate 2 and the stride register.
+* Complex strides may all be done with a general purpose vector of srcbases.
+* Twin predication may be used even when vd/vs1 is a scalar, to give VSPLAT and VSELECT, because the hardware loop ends on the first occurrence of a 1 in the predicate when a predicate is applied to a scalar.
+* Full vectorised gather/scatter is enabled when both registers are marked as vectorised, however unlike e.g Intel AVX512, twin predication can be applied.
+
+Open question: RVV overloads the width field of LOAD-FP/STORE-FP using the bit 2 to indicate additional interpretation of the 11 bit immediate. Should this be considered?
+
 
 Sub-Vector Length (svlen) Field Encoding
 =======================================================
