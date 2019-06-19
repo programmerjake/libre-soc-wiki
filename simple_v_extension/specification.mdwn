@@ -2245,16 +2245,16 @@ of the RISC-V ISA, is as follows:
 
 VL/MAXVL/SubVL Block:
 
-| 15   | 14:12 | 11:6   | 5:0     |
-| -    | ----- | ------ | ------- |
-| rsvd | SubVL | MAXVL  | VLEN    |
+| 31-30 | 29:28 | 27:22  | 21:16   |
+| -     | ----- | ------ | ------- |
+| rsvd  | SubVL | MAXVL  | VLEN    |
 
 Reminder of the variable-length format from Section 1.5 of the RISC-V ISA:
 
-| base+4 ..  base+2         | base             | number of bits             |
-| ------------------------- | ---------------- | -------------------------- |
-| ..xxxx   xxxxxxxxxxxxxxxx | xnnnxxxxx1111111 | (80+16\*nnn)-bit, nnn!=111 |
-| {ops}{Pred}{Reg}{VL}      | SV Prefix        |                            |
+| base+4 | base+2         | base             | number of bits             |
+| ------ | ------------------- | ---------------- | -------------------------- |
+| ..xxxx | xxxxxxxxxxxxxxxx | xnnnxxxxx1111111 | (80+16\*nnn)-bit, nnn!=111 |
+| {ops}{Pred}{Reg}  | VL Block     | SV Prefix        |                            |
 
 Notes:
 
