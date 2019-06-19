@@ -2208,6 +2208,65 @@ in as a *parameter* to the HINT operation.
 
 No specific hints are yet defined in Simple-V
 
+# VLIW Format <a name="vliw-format"></a>
+
+One issue with SV is the setup and teardown time of the CSRs.  The cost
+of the use of a full CSRRW (requiring LI) is quite high.  A VLIW format
+therefore makes sense.
+
+A suitable prefix, which fits the Expanded Instruction-Length encoding
+for "(80 + 16 times instruction_length)", as defined in Section 1.5
+of the RISC-V ISA, is as follows:
+
+| 15   | 14:12 | 11:10 | 9:8   | 7   | 6:0     |
+| -    | ----- | ----- | ----- | --- | ------- |
+| rsvd | 16xil | pplen | rplen | S/VL| 1111111 |
+
+Optional VL/MAXVL/SubVL Block:
+
+| 15   | 14:12 | 11:6   | 5:0     |
+| -    | ----- | ------ | ------- |
+| rsvd | SubVL | MAXVL  | VLEN    |
+
+Reminder of the variable-length format from Section 1.5 of the RISC-V ISA:
+
+| -  | ---- | ---------------- | ---------------- | -------------------------- |
+| .. | xxxx | xxxxxxxxxxxxxxxx | xnnnxxxxx1111111 | (80+16\*nnn)-bit, nnn!=111 |
+| -  | ---- | ---------------- | ---------------- | -------------------------- |
+
+Notes:
+
+* Bit 7 does not specify the VL, it specifies if VL, MAXVL and Sub-Vector
+  Length are to be in an optional block immediately following the prefix.
+* Bits 8 and 9 define how many RegCam entries (0 to 3) follow (after
+  the optional VL block)
+* Bits 10 and 11 define how many PredCam entries (0 to 3) follow after
+  the (optional) RegCam entries
+* Bits 14 to 12 (IL) define the actual length of the instruction: total
+  number of bits is 80 + 16 times IL.  Standard RV32, RVC and also
+  SVPrefix (P48-\*-Type) instructions fit into this space, after the
+  (optional) RegCam / PredCam entries
+* Anything - any registers - within the VLIW-prefixed format *MUST* have the
+  RegCam and PredCam CSRs applied to it.
+* At the end of the VLIW Group, the RegCam and PredCam CSRs *no longer apply*.
+
+This would greatly reduce the amount of space utilised by Vectorised
+instructions, given that 64-bit CSRRW requires 3, even 4 32-bit opcodes: the
+CSR itself, a LI, and the setting up of the value into the RS register
+of the CSR, which, again, requires a LI / LUI to get the full 64 bit
+data into the CSR.
+
+Given that each 64-bit CSR can hold only 4x PredCAM entries (or 4 RegCAM
+entries), that's potentially 6 to eight 32-bit instructions, just to
+establish the Vector State!
+
+Not only that: even CSRRW on VL and MAXVL requires 64-bits (even more bits if
+VL needs to be set to greater than 32).  Bear in mind that in SV, both MAXVL
+and VL need to be set.
+
+In this light, embedding the VL/MAXVL, PredCam and RegCam CSR entries into
+a VLIW format makes a lot of sense.
+
 # Subsets of RV functionality
 
 This section describes the differences when SV is implemented on top of
