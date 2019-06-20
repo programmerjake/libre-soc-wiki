@@ -2243,6 +2243,15 @@ of the RISC-V ISA, is as follows:
 | -     | ----- | ----- | ----- | ---  | ------- |
 | vlset | 16xil | pplen | rplen | mode | 1111111 |
 
+An optional VL Block, optional predicate entries, optional register entries and finally some 16/32/48 bit standard RV or SVPrefix opcodes follow.
+
+The variable-length format from Section 1.5 of the RISC-V ISA:
+
+| base+4 ... base+2         | base             | number of bits             |
+| ------ ------------------- | ----------------  -------------------------- |
+| ..xxxx  xxxxxxxxxxxxxxxx | xnnnxxxxx1111111 | (80+16\*nnn)-bit, nnn!=111 |
+| {ops}{Pred}{Reg}{VL Block}    | SV Prefix        |                            |
+
 VL/MAXVL/SubVL Block:
 
 | 31-30 | 29:28 | 27:22  | 21:17  | 16  |
@@ -2257,13 +2266,6 @@ This option will typically be used to start vectorised loops, where the VLIW ins
 When bit 15 is set to 1, MAXVL and VL are both set to the immediate, VLEN, which is 6 bits in length, and the same value stored in scalar register VLdest (if that register is nonzero).
 
 This option will typically not be used so much for loops as it will be for one-off instructions such as saving the entire register file to the stack with a single one-off Vectorised LD/ST.
-
-Reminder of the variable-length format from Section 1.5 of the RISC-V ISA:
-
-| base+4 ... base+2         | base             | number of bits             |
-| ------ ------------------- | ----------------  -------------------------- |
-| ..xxxx  xxxxxxxxxxxxxxxx | xnnnxxxxx1111111 | (80+16\*nnn)-bit, nnn!=111 |
-| {ops}{Pred}{Reg}{VL Block}    | SV Prefix        |                            |
 
 CSRs needed:
 
@@ -2286,8 +2288,8 @@ Notes:
   (optional) VL / RegCam / PredCam entries
 * Anything - any registers - within the VLIW-prefixed format *MUST* have the
   RegCam and PredCam entries applied to it.
-* At the end of the VLIW Group, the RegCam and PredCam entries *no longer apply*.
-* Although inefficient use of resources, it is fine to set the MAXVL, VL and SUBVL CSRs with standard CSRRW instructions, within a VLIW block.
+* At the end of the VLIW Group, the RegCam and PredCam entries *no longer apply*.  VL, MAXVL and SUBVL on the other hand remain at the values set by the last instruction (whether a CSRRW or the VL Block header).
+* Although an inefficient use of resources, it is fine to set the MAXVL, VL and SUBVL CSRs with standard CSRRW instructions, within a VLIW block.
 
 All this would greatly reduce the amount of space utilised by Vectorised
 instructions, given that 64-bit CSRRW requires 3, even 4 32-bit opcodes: the
@@ -2320,13 +2322,13 @@ Open Questions:
 
 ## Limitations on instructions.
 
-An implementation is required to treat the VLIW group as a separate sub-program with its own separate PC. The sub-pc advances separately whilst the main PC remains pointing at the beginning of the VLIW instruction.
+To greatly simplify implementations, it is required to treat the VLIW group as a separate sub-program with its own separate PC. The sub-pc advances separately whilst the main PC remains pointing at the beginning of the VLIW instruction (not to be confused with how VL works, which is exactly the same principle, except it is VStart in the STATE CSR that increments).
 
-This has implications, namely that a new set of CSRs identical to xepc (mepc, srpc, hepc and uepc) must be created and managed and respected as being a sub extension of the xepc set of CSRs.  Thus, xevliwpc CSRs must be context switched and saved / restored in traps.
+This has implications, namely that a new set of CSRs identical to xepc (mepc, srpc, hepc and uepc) must be created and managed and respected as being a sub extension of the xepc set of CSRs.  Thus, xepcvliw CSRs must be context switched and saved / restored in traps.
 
-The VStart indices in the STATE CSR may be similarly regarded as another sub-execution context.
+The VStart indices in the STATE CSR may be similarly regarded as another sub-execution context, giving in effect two sets of nested sub-levels of the RISCV Program Counter.
 
-In addition, as xevliwpc CSRs are relative to the beginning of the VLIW block, branches MUST be restricted to within the block, i.e. addressing is now restricted to the start (and very short) length of the block.
+In addition, as xepcvliw CSRs are relative to the beginning of the VLIW block, branches MUST be restricted to within the block, i.e. addressing is now restricted to the start (and very short) length of the block.
 
 Also: calling subroutines is inadviseable, unless they can be entirely accomplished within a block.
 
