@@ -281,21 +281,21 @@ Integer Element Type (itype) Field Encoding
 | [#sgn_def]_|       |              | Integer      | Instructions    | be un/signed, FP  |
 | [#sgn_def]_|       |              | Instructions | (such as fmv.x) | just re-sized     |
 +============+=======+==============+==============+=================+===================+
-| Unsigned   | 00    | u8           | BU           | BU              | Unsigned 8-bit    |
+| Unsigned   | 01    | u8           | BU           | BU              | Unsigned 8-bit    |
 |            +-------+--------------+--------------+-----------------+-------------------+
-|            | 01    | u16          | HU           | HU              | Unsigned 16-bit   |
+|            | 10    | u16          | HU           | HU              | Unsigned 16-bit   |
 |            +-------+--------------+--------------+-----------------+-------------------+
-|            | 10    | u32          | WU           | WU              | Unsigned 32-bit   |
+|            | 11    | u32          | WU           | WU              | Unsigned 32-bit   |
 |            +-------+--------------+--------------+-----------------+-------------------+
-|            | 11    | uXLEN        | WU/DU/QU     | WU/LU/TU        | Unsigned XLEN-bit |
+|            | 00    | uXLEN        | WU/DU/QU     | WU/LU/TU        | Unsigned XLEN-bit |
 +------------+-------+--------------+--------------+-----------------+-------------------+
-| Signed     | 00    | i8           | BS           | BS              | Signed 8-bit      |
+| Signed     | 01    | i8           | BS           | BS              | Signed 8-bit      |
 |            +-------+--------------+--------------+-----------------+-------------------+
-|            | 01    | i16          | HS           | HS              | Signed 16-bit     |
+|            | 10    | i16          | HS           | HS              | Signed 16-bit     |
 |            +-------+--------------+--------------+-----------------+-------------------+
-|            | 10    | i32          | W            | W               | Signed 32-bit     |
+|            | 11    | i32          | W            | W               | Signed 32-bit     |
 |            +-------+--------------+--------------+-----------------+-------------------+
-|            | 11    | iXLEN        | W/D/Q        | W/L/T           | Signed XLEN-bit   |
+|            | 00    | iXLEN        | W/D/Q        | W/L/T           | Signed XLEN-bit   |
 +------------+-------+--------------+--------------+-----------------+-------------------+
 
 .. [#sgn_def] Signedness is defined in `Signedness Decision Procedure`_
@@ -305,12 +305,12 @@ as if it was a sequential array being typecast to typedef itype[]
 (c syntax).  The starting point of the "typecast" is the vector
 register rs#/rd.
 
-Example: if itype=0b01 (u16), and rd is set to "vector", and
+Example: if itype=0b10 (u16), and rd is set to "vector", and
 VL is set to 4, the 64-bit register at rd is subdivided into
 *FOUR* 16-bit destination elements.  It is *NOT* four
 separate 64-bit destination registers (rd+0, rd+1, rd+2, rd+3)
 that are sign-extended from the source width size out to 64-bit,
-because that is itype=0b11 (uXLEN).
+because that is itype=0b00 (uXLEN).
 
 Signedness Decision Procedure
 =============================
@@ -475,6 +475,4 @@ Add instructions to insert or extract a sub-vector from a vector, with the index
 allowed to be both immediate and from a register (*immediate can be covered partly
 by twin-predication, register cannot: requires MV.X aka VSELECT*)
 
-Add a register gather instruction (*NOT NEEDED*)
-
-VSELECT instruction (or mechanism) is needed (aka MV.X)
+Add a register gather instruction (aka MV.X)
