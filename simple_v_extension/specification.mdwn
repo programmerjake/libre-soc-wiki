@@ -2271,7 +2271,7 @@ Notes:
 * NOTE: 8 bit format predicate numbering is implicit and begins from x9. Thus it is critical to put blocks in the correct order as required.
 * Bit 15 specifies if the register block format is 16 bit (1) or 8 bit (0). In the 8 bit format, rplen is multiplied by 2. If only an odd number of entries are needed the last may be set to 0x00, indicating "unused".
 * Bits 8 and 9 define how many RegCam entries (0 to 3 if bit 15 is 1, otherwise 0 to 6) follow the VL Block.
-* Bits 10 and 11 define how many PredCam entries (0 to 3) follow after
+* Bits 10 and 11 define how many PredCam entries (0 to 3 if bit 7 is 1, otherwise 0 to 6) follow after
   the (optional) RegCam entries
 * Bits 14 to 12 (IL) define the actual length of the instruction: total
   number of bits is 80 + 16 times IL.  Standard RV32, RVC and also
