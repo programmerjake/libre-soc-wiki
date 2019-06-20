@@ -2245,9 +2245,11 @@ of the RISC-V ISA, is as follows:
 
 VL/MAXVL/SubVL Block:
 
-| 31-30 | 29:28 | 27:22  | 21:16   |
-| -     | ----- | ------ | ------- |
-| rsvd  | SubVL | MAXVL  | VLEN    |
+| 31-30 | 29:28 | 27:22  | 21:17  | 16  |
+| -     | ----- | ------ | ------ | -   |
+| rsvd  | SubVL | MAXVL  | VLEN   | vlt |
+
+If vlt is 0, VLEN is a 5 bit immediate value. If vlt is 1, it specifies the scalar register from which VL is set by this VLIW instruction group. Any changes to that register by any VLIW Group instruction *automatically* result in an immediate change to VL. Thus, the register effectively *becomes* VL, for the full duration of the group's execution.
 
 Reminder of the variable-length format from Section 1.5 of the RISC-V ISA:
 
@@ -2255,6 +2257,13 @@ Reminder of the variable-length format from Section 1.5 of the RISC-V ISA:
 | ------ | ------------------- | ---------------- | -------------------------- |
 | ..xxxx | xxxxxxxxxxxxxxxx | xnnnxxxxx1111111 | (80+16\*nnn)-bit, nnn!=111 |
 | {ops}{Pred}{Reg}  | VL Block     | SV Prefix        |                            |
+
+CSRs needed:
+
+* mepcvliw
+* sepcvliw
+* uepcvliw
+* hepcvliw
 
 Notes:
 
