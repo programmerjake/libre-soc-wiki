@@ -1,8 +1,8 @@
 # Simple-V (Parallelism Extension Proposal) Specification
 
 * Copyright (C) 2017, 2018, 3029 Luke Kenneth Casson Leighton
-* Status: DRAFTv0.5
-* Last edited: 19 jun 2019
+* Status: DRAFTv0.6
+* Last edited: 21 jun 2019
 * Ancillary resource: [[opcodes]] [[sv_prefix_proposal]]
 
 With thanks to:
@@ -108,7 +108,6 @@ tables which are used at the register decode phase.
 
 There are also four additional CSRs for User-Mode:
 
-* CFG subsets the CSR tables
 * MVL (the Maximum Vector Length)
 * VL (which has different characteristics from standard CSRs)
 * STATE (useful for saving and restoring during context switch,
@@ -150,53 +149,6 @@ exactly as they were.  Thus, it becomes possible for example to
 set up CSRs suited best to aiding and assisting low-latency fast
 context-switching *once and only once*, without the need for
 re-initialising the CSRs needed to do so.
-
-## CFG
-
-This CSR may be used to switch between subsets of the CSR Register and
-Predication Tables: it is kept to 5 bits so that a single CSRRWI instruction
-can be used.  A setting of all ones is reserved to indicate that SimpleV
-is disabled.
-
-| (4..3) | (2...0) |
-| ------ | ------- |
-| size   | bank    |
-
-Bank is 3 bits in size, and indicates the starting index of the CSR
-Register and Predication Table entries that are "enabled".  Given that
-each CSR table row is 16 bits and contains 2 CAM entries each, there
-are only 8 CSRs to cover in each table, so 8 bits is sufficient.
-
-Size is 2 bits.  With the exception of when bank == 7 and size == 3,
-the number of elements enabled is taken by right-shifting 2 by size:
-
-| size   | elements |
-| ------ | -------- |
-| 0      | 2        |
-| 1      | 4        |
-| 2      | 8        |
-| 3      | 16       |
-
-Given that there are 2 16-bit CAM entries per CSR table row, this
-may also be viewed as the number of CSR rows to enable, by raising size to
-the power of 2.
-
-Examples:
-
-* When bank = 0 and size = 3, SVREGCFG0 through to SVREGCFG7 are
-  enabled, and SVPREDCFG0 through to SVPREGCFG7 are enabled.
-* When bank = 1 and size = 3, SVREGCFG1 through to SVREGCFG7 are
-  enabled, and SVPREDCFG1 through to SVPREGCFG7 are enabled.
-* When bank = 3 and size = 0, SVREGCFG3 and SVPREDCFG3 are enabled.
-* When bank = 3 and size = 1, SVREGCFG3-4 and SVPREDCFG3-4 are enabled.
-* When bank = 7 and size = 1, SVREGCFG7 and SVPREDCFG7 are enabled
-  (because there are only 8 32-bit CSRs there does not exist a
-  SVREGCFG8 or SVPREDCFG8 to enable).
-* When bank = 7 and size = 3, SimpleV is entirely disabled.
-
-In this way it is possible to enable and disable SimpleV with a
-single instruction, and, furthermore, on context-switching the quantity
-of CSRs to be saved and restored is greatly reduced.
 
 ## MAXVECTORLENGTH (MVL) <a name="mvl" />
 
@@ -280,7 +232,7 @@ hardware loop is reduced to a single element: scalar operations.
 
 This is a standard CSR that contains sufficient information for a
 full context save/restore.  It contains (and permits setting of)
-MVL, VL, CFG, the destination element offset of the current parallel
+MVL, VL, the destination element offset of the current parallel
 instruction being executed, and, for twin-predication, the source
 element offset as well.  Interestingly it may hypothetically
 also be used to make the immediately-following instruction to skip a
@@ -299,7 +251,7 @@ The format of the STATE CSR is as follows:
 
 | (28..27) | (26..24) | (23..18) | (17..12) | (11..6) | (5...0) |
 | -------- | -------- | -------- | -------- | ------- | ------- |
-| size     | bank     | destoffs | srcoffs  | vl      | maxvl   |
+| rsvd    | rsvd    | destoffs | srcoffs  | vl      | maxvl   |
 
 When setting this CSR, the following characteristics will be enforced:
 
@@ -308,7 +260,7 @@ When setting this CSR, the following characteristics will be enforced:
 * **srcoffs** will be truncated to be within the range 0 to VL-1
 * **destoffs** will be truncated to be within the range 0 to VL-1
 
-## MVL, VL and CSR Pseudocode
+## MVL and VL  Pseudocode
 
 The pseudo-code for get and set of VL and MVL are as follows:
 
@@ -322,9 +274,11 @@ The pseudo-code for get and set of VL and MVL are as follows:
     set_vl_csr(value, rd):
         VL = MIN(value, MVL)
         regs[rd] = VL # yes returning the new value NOT the old CSR
+        return VL
 
     get_vl_csr(rd):
         regs[rd] = VL
+        return VL
 
 Note that where setting MVL behaves as a normal CSR, unlike standard CSR
 behaviour, setting VL will return the **new** value of VL **not** the old
@@ -340,7 +294,7 @@ an immediate of 1 is used to set VL=2 and so on:
     CSRRWI_Set_VL(value):
         set_vl_csr(value+1, x0)
 
-However for CSRRW the following pseudocide is used for MVL and VL,
+However for CSRRW the following pseudocode is used for MVL and VL,
 where setting the value to zero will cause an exception to be raised.
 The reason is that if VL or MVL are set to zero, the STATE CSR is
 not capable of returning that value.
@@ -387,13 +341,12 @@ VL==1, "00001" represents VL==2 and so on (likewise for MVL):
         get_state_csr(rd)
         MVL = set_mvl_csr(value[11:6]+1)
         VL = set_vl_csr(value[5:0]+1)
-        CFG = value[28:24]>>24
         destoffs = value[23:18]>>18
         srcoffs = value[23:18]>>12
 
     get_state_csr(rd):
         regs[rd] = (MVL-1) | (VL-1)<<6 | (srcoffs)<<12 |
-                   (destoffs)<<18 | (CFG)<<24
+                   (destoffs)<<18
         return regs[rd]
 
 In both cases, whilst CSR read of VL and MVL return the exact values
@@ -463,96 +416,10 @@ The actual size of the CSR Register table depends on the platform
 and on whether other Extensions are present (RV64G, RV32E, etc.).
 For details see "Subsets" section.
 
-There are two CSRs (per privilege level) for adding to and removing
-entries from the table, which, conceptually may be viewed as either
-a register window (similar to SPARC) or as the "top of a stack".
 
-* SVREGTOP will push or pop entries onto the top of the "stack"
-  (highest non-zero indexed entry in the table)
-* SVREGBOT will push or pop entries from the bottom (always
-  element indexed as zero.
 
-In addition, note that CSRRWI behaviour is completely different
-from CSRRW when writing to these two CSR registers.  The CSRRW
-behaviour: the src register is subdivided into 16-bit chunks,
-and each non-zero chunk is pushed/popped separately.  The
-CSRRWI behaviour: the immediate indicates the number of
-entries in the table to be popped.
 
-CSRRWI:
 
-* The src register indicates how many entries to pop from the
-  CAM table.
-* "CSRRWI SVREGTOP, 3" indicates that the top 3
-  entries are to be zero'd and returned as the CSR return
-  result.  The top entry is returned in bits 0-15, the
-  next entry down in bits 16-31, and when XLEN==64, an
-  extra 2 entries are also returned.
-* "CSRRWI SVREGBOT, 3" indicates that the bottom 3 entries are
-  to be returned, and the entries with indices above 3 are
-  to be shuffled down.  The first entry to be popped off the
-  bottom is returned in bits 0-15, the second entry as bits
-  16-31 and so on.
-* If XLEN==32, only a maximum of 2 entries may be returned
-  (and shuffled).  If XLEN==64, only a maximum of 4 entries
-  may be returned
-* If however the destination register is x0 (zero), then
-  the exact number of entries requested will be removed
-  (shuffled down).
-
-CSRRW when src == 0:
-
-* When the src register is all zeros, this is a request to
-  pop one and only one 16-bit element from the table.
-* "CSRRW SVREGTOP, 0" will return (and clear) the highest
-  non-zero 16-bit entry in the table
-* "CSRRW SVREGBOT, 0" will return (and clear) the zero'th
-  16-bit entry in the table, and will shuffle down all
-  other entries (if any) by one index.
-
-CSRRW when src != 0:
-
-All other CSRRW behaviours are a "loop", taking 16-bits
-at a time from the src register.  Obviously, for XLEN=32
-that can only be up to 2 16-bit entries, however for XLEN=64
-it can be up to 4.
-
-* When the src 16-bit chunk is non-zero and there already exists
-  an entry with the exact same "regkey" (bits 0-4), the
-  entry is **updated**.  No other modifications are made.
-* When the 16-bit chunk is non-zero and there does not exist
-  an entry, the new value will be placed at the end
-  (in the highest non-zero slot), or at the beginning
-  (shuffling up all other entries to make room).
-* If there is not enough room, the entry at the opposite
-  end will become part of the CSR return result.
-* The process is repeated for the next 16-bit chunk (starting
-  with bits 0-15 and moving next to 16-31 and so on), until
-  the limit of XLEN is reached or a chunk is all-zeros, at
-  which point the looping stops.
-* Any 16-bit entries that are pushed out of the stack
-  (from either end) are concatenated in order (first entry
-  pushed out is bits 0-15 of the return result).
-
-What this behaviour basically does is allow the CAM table to
-effectively be like the top entries of a stack.  Entries that
-get returned from CSRRW SVREGTOP can be *actually* stored on the stack,
-such that after a function call exits, CSRRWI SVREGTOP may be used
-to delete the callee's CAM entries, and the caller's entries may then
-be pushed *back*, using CSRRW SVREGBOT.
-
-Context-switching may be carried out in a loop, where CSRRWI may
-be called to "pop" values that are tested for being non-zero, and
-transferred onto the stack with C.SWSP using only around 4-5 instructions.
-CSRRW may then be used in combination with C.LWSP to get the CAM entries
-off the stack and back into the CAM table, again with a loop using
-only around 4-5 instructions.
-
-Contrast this with needing around 6-7 instructions (8-9 without SV on
-RV64, and 16-17 on RV32) to do a context-switch of fixed-address CSRs:
-a sequence of fixed-address C.LWSP with fixed offsets plus fixed-address
-CSRRWs, and that is without testing if any of the entries are zero
-or not.
 
 ## Predication CSR <a name="predication_csr_table"></a>
 
@@ -585,21 +452,15 @@ in the instruction, due to the redirection through the lookup table.
   interpret unpredicated elements as an internal "copy element"
   operation (which would be necessary in SIMD microarchitectures
   that perform register-renaming)
-* "packed" indicates if the register is to be interpreted as SIMD
-  i.e. containing multiple contiguous elements of size equal to "bitwidth".
-  (Note: in earlier drafts this was in the Register CSR table.
-  However after extending to 7 bits there was not enough space.
-  To use "unpredicated" packed SIMD, set the predicate to x0 and
-  set "invert".  This has the effect of setting a predicate of all 1s)
 
 16 bit format:
 
 | PrCSR | (15..11) | 10     | 9     | 8   | (7..1)  | 0       |
 | ----- | -        | -      | -     | -   | ------- | ------- |
 | 0     | predkey  | zero0  | inv0  | i/f | regidx  | rsrvd |
-| 1     | predkey  | zero1  | inv1  | i/f | regidx  | packed1 |
+| 1     | predkey  | zero1  | inv1  | i/f | regidx  | rsvd |
 | ...   | predkey  | .....  | ....  | i/f | ....... | ....... |
-| 15    | predkey  | zero15 | inv15 | i/f | regidx  | packed15|
+| 15    | predkey  | zero15 | inv15 | i/f | regidx  | rsvd |
 
 
 8 bit format:
