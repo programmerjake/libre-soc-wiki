@@ -130,7 +130,8 @@ The access pattern for these groups of CSRs in each mode follows the
 same pattern for other CSRs that have M-Mode and S-Mode "mirrors":
 
 * In M-Mode, the S-Mode and U-Mode CSRs are separate and distinct.
-* In S-Mode, accessing and changing of the M-Mode CSRs is identical
+* In S-Mode, accessing and changing of the M-Mode CSRs is transparently
+  identical
   to changing the S-Mode CSRs.  Accessing and changing the U-Mode
   CSRs is permitted.
 * In U-Mode, accessing and changing of the S-Mode and U-Mode CSRs
@@ -145,8 +146,10 @@ to be set up, for context-switching to take place, and, on return
 back to the higher privileged mode, the CSRs of that mode will be
 exactly as they were.  Thus, it becomes possible for example to
 set up CSRs suited best to aiding and assisting low-latency fast
-context-switching *once and only once*, without the need for
+context-switching *once and only once* (for example at boot time), without the need for
 re-initialising the CSRs needed to do so.
+
+Another interesting side effect of separate S Mode CSRs is that Vectorised saving of the entire register file to the stack is a single instruction (accidental provision of LOAD-MULTI semantics). It can even be predicated, which opens up some very interesting possibilities.
 
 The xEPCVLIW CSRs must be treated exactly like their corresponding xepc equivalents. See VLIW section for details.
 
@@ -2348,10 +2351,6 @@ answer: they're not vectorised, so not a problem
   XLEN if elwidth==default
 * if opcode is in the RV32I group, rd, rs1 and rs2 bitwidth are
   *32* if elwidth == default
-
----
-
-TODO: update elwidth to be default / 8 / 16 / 32
 
 ---
 
