@@ -1741,19 +1741,13 @@ really actually "memory" as such.
 
 The four entries for SV element bitwidths only allows three over-rides:
 
-* default bitwidth for a given operation *divided* by two
-* default bitwidth for a given operation *multiplied* by two
-* 8-bit
+* 8 bit
+* 16 hit
+* 32 bit
 
-At first glance this seems completely inadequate: for example, RV64
-cannot possibly operate on 16-bit operations, because 64 divided by
-2 is 32.  However, the reader may have forgotten that it is possible,
-at run-time, to switch a 64-bit application into 32-bit mode, by
-setting UXL.  Once switched, opcodes that formerly had 64-bit
-meanings now have 32-bit meanings, and in this way, "default/2"
-now reaches **16-bit** where previously it meant "32-bit".
+This would seem inadequate, surely it would be better to have 3 bits or more and allow 64, 128 and some other options besides.  The answer here is, it gets too complex, no RV128 implementation yet exists, and so RV64's default is 64 bit, so the 4 major element widths are covered anyway.
 
-There is however an absolutely crucial aspect oF SV here that explicitly
+There is an absolutely crucial aspect oF SV here that explicitly
 needs spelling out, and it's whether the "vectorised" bit is set in
 the Register's CSR entry.
 
@@ -1768,9 +1762,16 @@ When vectorised is *set*, this indicates that the operation now treats
 the length, any parts of a given actual register that are not involved
 in the operation are **NOT** modified, but are **PRESERVED**.
 
+For example:
+
+* when the vector bit is clear and elwidth set to 16 on the destination register, operations are truncated to 16 bit and then sign or zero extended to the *FULL* XLEN register width.
+* when the vector bit is set, elwidth is 16 and VL=1 (or other value where groups of elwidth sized elements do not fill an entire XLEN register), the "top" bits of the destination register do *NOT* get modified, zero'd or otherwise overwritten.
+
 SIMD micro-architectures may implement this by using predication on
 any elements in a given actual register that are beyond the end of
 multi-element operation.
+
+Other microarchitectures may choose to provide byte-level write-enable lines on the register file, such that each 64 bit register in an RV64 system requires 8 WE lines.  Scalar RV64 operations would require activation of all 8 lines, where SV elwidth based operations would activate the required subset of those byte-level write lines.
 
 Example:
 
