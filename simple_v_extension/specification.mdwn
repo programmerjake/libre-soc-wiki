@@ -81,10 +81,11 @@ The principle of SV is as follows:
 * A "Vector Length" CSR is set, indicating the span of any future
   "parallel" operations.
 * If any operation (a **scalar** standard RV opcode)
- uses a register that has been so "marked",
+ uses a register that has been so "marked"
+ ("tagged"),
  a hardware "macro-unrolling loop" is activated, of length
   VL, that effectively issues **multiple** identical instructions
-  using contiguous sequentially-incrementing register numbers.
+  using contiguous sequentially-incrementing register numbers, based on the "tags".
 * **Whether they be executed sequentially or in parallel or a
   mixture of both or punted to software-emulation in a trap handler
   is entirely up to the implementor**.
