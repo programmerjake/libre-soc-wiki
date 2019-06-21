@@ -75,16 +75,16 @@ when and whether to parallelise operations **entirely to the implementor**.
 
 The principle of SV is as follows:
 
-* Standard RV instructions are "prefixed" either by a 48 format or a variable
- length VLIW-like prefix, that indicates
- which registers are "tagged" as "vectorised"
+* Standard RV instructions are "prefixed" either to a 48 format (single instruction option) or a variable
+ length VLIW-like prefix (multi or "grouped" option) that indicates
+ which registers are "tagged" as "vectorised". Predicates can also be added.
 * A "Vector Length" CSR is set, indicating the span of any future
   "parallel" operations.
 * If any operation (a **scalar** standard RV opcode)
  uses a register that has been so "marked",
  a hardware "macro-unrolling loop" is activated, of length
   VL, that effectively issues **multiple** identical instructions
-  using contiguous sequentially-incrementing registers.
+  using contiguous sequentially-incrementing register numbers.
 * **Whether they be executed sequentially or in parallel or a
   mixture of both or punted to software-emulation in a trap handler
   is entirely up to the implementor**.
@@ -92,35 +92,39 @@ The principle of SV is as follows:
 In this way an entire scalar algorithm may be vectorised with
 the minimum of modification to the hardware and to compiler toolchains.
 
-To reiterate: **There are *no* new opcodes**
+To reiterate: **There are *no* new opcodes**. The scheme works *entirely* on hidden context that augments *scalar* RISCV instructions.
 
 # CSRs <a name="csrs"></a>
 
 * An optional "reshaping" CSR key-value table which remaps from a 1D
   linear shape to 2D or 3D, including full transposition.
 
-There are also four additional CSRs for User-Mode:
+There are also five additional User mode CSRs :
 
-* MVL (the Maximum Vector Length)
-* VL (which has different characteristics from standard CSRs)
-* SUBVL (effectively a kind of SIMD)
-* STATE (useful for saving and restoring during context switch,
+* uMVL (the Maximum Vector Length)
+* uVL (which has different characteristics from standard CSRs)
+* uSUBVL (effectively a kind of SIMD)
+* uEPCVLIW (a copy of the sub-execution Program Counter, that is relative to the start of the current VLIW Group, set on a trap).
+* uSTATE (useful for saving and restoring during context switch,
   and for providing fast transitions)
 
-There are also three additional CSRs for Supervisor-Mode:
+There are also five additional CSRs for Supervisor-Mode:
 
 * SMVL
 * SVL
+* SSUBVL
+* SEPCVLIW
 * SSTATE
 
 And likewise for M-Mode:
 
 * MMVL
 * MVL
+* MSUBVL
+* MEPCVLIW
 * MSTATE
 
-Both Supervisor and M-Mode have their own (small) CSR register and
-predication tables of only 4 entries each.
+Both Supervisor and M-Mode have their own CSR registers, independent of the other privilege levels, in order to make it easier to use Vectorisation in each level without affecting other privilege levels.
 
 The access pattern for these groups of CSRs in each mode follows the
 same pattern for other CSRs that have M-Mode and S-Mode "mirrors":
@@ -143,6 +147,8 @@ exactly as they were.  Thus, it becomes possible for example to
 set up CSRs suited best to aiding and assisting low-latency fast
 context-switching *once and only once*, without the need for
 re-initialising the CSRs needed to do so.
+
+The xEPCVLIW CSRs must be treated exactly like their corresponding xepc equivalents. See VLIW section for details.
 
 ## MAXVECTORLENGTH (MVL) <a name="mvl" />
 
@@ -222,11 +228,25 @@ is limited to 0-31 (representing VL=1-32).
 Note that when VL is set to 1, all parallel operations cease: the
 hardware loop is reduced to a single element: scalar operations.
 
+## SUBVL - Sub Vector Length
+
+This is a "group by quantity" that effectively divides VL into groups of elements of length SUBVL. VL itself must therefore be set in advance to a multiple of SUBVL.
+
+Legal values are 1, 2, 3 and 4, and the STATE CSR must hold the 2 bit values 0b00 thru 0b11.
+
+Setting this CSR to 0 must raise an exception.  Setting it to a value greater than 4 likewise.
+
+The main effect of SUBVL is that predication bits are applied per **group**, 
+rather than by individual element.
+
+This saves a not insignificant number of instructions when handling 3D vectors, as otherwise a much longer predicate mask would have to be set up with regularly-repeated bit patterns.
+
 ## STATE
 
 This is a standard CSR that contains sufficient information for a
 full context save/restore.  It contains (and permits setting of)
-MVL, VL, the destination element offset of the current parallel
+MVL, VL, SUBVL,
+the destination element offset of the current parallel
 instruction being executed, and, for twin-predication, the source
 element offset as well.  Interestingly it may hypothetically
 also be used to make the immediately-following instruction to skip a
@@ -251,7 +271,7 @@ When setting this CSR, the following characteristics will be enforced:
 
 * **MAXVL** will be truncated (after offset) to be within the range 1 to XLEN
 * **VL** will be truncated (after offset) to be within the range 1 to MAXVL
-* **SUBVL** which sets a SIMD-like quantity, a grouping quantity.
+* **SUBVL** which sets a SIMD-like quantity, has only 4 values however if VL is not a multiple of SUBVL an exception will be raised.
 * **srcoffs** will be truncated to be within the range 0 to VL-1
 * **destoffs** will be truncated to be within the range 0 to VL-1
 
@@ -2118,9 +2138,9 @@ VL/MAXVL/SubVL Block:
 If vlt is 0, VLEN is a 5 bit immediate value. If vlt is 1, it specifies
 the scalar register from which VL is set by this VLIW instruction
 group. VL, whether set from the register or the immediate, is then
-modified (truncated) to be max(VL, MAXVL), and the result stored in the
+modified (truncated) to be MIN(VL, MAXVL), and the result stored in the
 scalar register specified in VLdest. If VLdest is zero, no store in the
-regfile occurs.
+regfile occurs (however VL is still set).
 
 This option will typically be used to start vectorised loops, where
 the VLIW instruction effectively embeds an optional "SETSUBVL, SETVL"
@@ -2132,7 +2152,7 @@ register VLdest (if that register is nonzero).
 
 This option will typically not be used so much for loops as it will be
 for one-off instructions such as saving the entire register file to the
-stack with a single one-off Vectorised LD/ST.
+stack with a single one-off Vectorised and predicated LD/ST.
 
 CSRs needed:
 
