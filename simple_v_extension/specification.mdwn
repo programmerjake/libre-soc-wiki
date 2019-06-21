@@ -2322,17 +2322,32 @@ Open Questions:
 
 ## Limitations on instructions.
 
-To greatly simplify implementations, it is required to treat the VLIW group as a separate sub-program with its own separate PC. The sub-pc advances separately whilst the main PC remains pointing at the beginning of the VLIW instruction (not to be confused with how VL works, which is exactly the same principle, except it is VStart in the STATE CSR that increments).
+To greatly simplify implementations, it is required to treat the VLIW
+group as a separate sub-program with its own separate PC. The sub-pc
+advances separately whilst the main PC remains pointing at the beginning
+of the VLIW instruction (not to be confused with how VL works, which
+is exactly the same principle, except it is VStart in the STATE CSR
+that increments).
 
-This has implications, namely that a new set of CSRs identical to xepc (mepc, srpc, hepc and uepc) must be created and managed and respected as being a sub extension of the xepc set of CSRs.  Thus, xepcvliw CSRs must be context switched and saved / restored in traps.
+This has implications, namely that a new set of CSRs identical to xepc
+(mepc, srpc, hepc and uepc) must be created and managed and respected
+as being a sub extension of the xepc set of CSRs.  Thus, xepcvliw CSRs
+must be context switched and saved / restored in traps.
 
-The VStart indices in the STATE CSR may be similarly regarded as another sub-execution context, giving in effect two sets of nested sub-levels of the RISCV Program Counter.
+The VStart indices in the STATE CSR may be similarly regarded as another
+sub-execution context, giving in effect two sets of nested sub-levels
+of the RISCV Program Counter.
 
-In addition, as xepcvliw CSRs are relative to the beginning of the VLIW block, branches MUST be restricted to within the block, i.e. addressing is now restricted to the start (and very short) length of the block.
+In addition, as xepcvliw CSRs are relative to the beginning of the VLIW
+block, branches MUST be restricted to within the block, i.e. addressing
+is now restricted to the start (and very short) length of the block.
 
-Also: calling subroutines is inadviseable, unless they can be entirely accomplished within a block.
+Also: calling subroutines is inadviseable, unless they can be entirely
+accomplished within a block.
 
-A normal jump and a normal function call may only be taken by letting the VLIW end, returning to "normal" standard RV mode, using RVC, 32 bit or P48-*-type opcodes.
+A normal jump and a normal function call may only be taken by letting
+the VLIW end, returning to "normal" standard RV mode, using RVC, 32 bit
+or P48-*-type opcodes.
 
 ## Links
 
