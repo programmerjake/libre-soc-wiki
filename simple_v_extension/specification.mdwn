@@ -2320,6 +2320,13 @@ Open Questions:
 * Is it necessary to stick to the RISC-V 1.5 format?  Why not go with
   using the 15th bit to allow 80 + 16\*0bnnnn bits?  Perhaps to be sane,
   limit to 256 bits (16 times 0-11).
+* Could a "hint" be used to set which operations are parallel and which
+  are sequential?
+* Could a new sub-instruction opcode format be used, one that does not
+  conform precisely to RISC-V rules, but *unpacks* to RISC-V opcodes?
+  no need for byte or bit-alignment
+* Could a hardware compression algorithm be deployed?  Quite likely,
+  because of the sub-execution context (sub-VLIW PC)
 
 ## Limitations on instructions.
 
