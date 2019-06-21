@@ -75,34 +75,27 @@ when and whether to parallelise operations **entirely to the implementor**.
 
 The principle of SV is as follows:
 
-* CSRs indicating which registers are "tagged" as "vectorised"
-  (potentially parallel, depending on the microarchitecture)
-  must be set up
+* Standard RV instructions are "prefixed" either by a 48 format or a variable
+ length VLIW-like prefix, that indicates
+ which registers are "tagged" as "vectorised"
 * A "Vector Length" CSR is set, indicating the span of any future
   "parallel" operations.
-* A **scalar** operation, just after the decode phase and before the
-  execution phase, checks the CSR register tables to see if any of
-  its registers have been marked as "vectorised"
-* If so, a hardware "macro-unrolling loop" is activated, of length
+* If any operation (a **scalar** standard RV opcode)
+ uses a register that has been so "marked",
+ a hardware "macro-unrolling loop" is activated, of length
   VL, that effectively issues **multiple** identical instructions
   using contiguous sequentially-incrementing registers.
-  **Whether they be executed sequentially or in parallel or a
+* **Whether they be executed sequentially or in parallel or a
   mixture of both or punted to software-emulation in a trap handler
   is entirely up to the implementor**.
 
 In this way an entire scalar algorithm may be vectorised with
 the minimum of modification to the hardware and to compiler toolchains.
-There are **no** new opcodes.
+
+To reiterate: **There are *no* new opcodes**
 
 # CSRs <a name="csrs"></a>
 
-For U-Mode there are two CSR key-value stores needed to create lookup
-tables which are used at the register decode phase.
-
-* A register CSR key-value table (typically 8 32-bit CSRs of 2 16-bits each)
-* A predication CSR key-value table (again, 8 32-bit CSRs of 2 16-bits each)
-* Small U-Mode and S-Mode register and predication CSR key-value tables
-  (2 32-bit CSRs of 2x 16-bit entries each).
 * An optional "reshaping" CSR key-value table which remaps from a 1D
   linear shape to 2D or 3D, including full transposition.
 
@@ -110,6 +103,7 @@ There are also four additional CSRs for User-Mode:
 
 * MVL (the Maximum Vector Length)
 * VL (which has different characteristics from standard CSRs)
+* SUBVL (effectively a kind of SIMD)
 * STATE (useful for saving and restoring during context switch,
   and for providing fast transitions)
 
@@ -251,12 +245,13 @@ The format of the STATE CSR is as follows:
 
 | (28..27) | (26..24) | (23..18) | (17..12) | (11..6) | (5...0) |
 | -------- | -------- | -------- | -------- | ------- | ------- |
-| rsvd    | rsvd    | destoffs | srcoffs  | vl      | maxvl   |
+| rsvd    | subvl   | destoffs | srcoffs  | vl      | maxvl   |
 
 When setting this CSR, the following characteristics will be enforced:
 
 * **MAXVL** will be truncated (after offset) to be within the range 1 to XLEN
 * **VL** will be truncated (after offset) to be within the range 1 to MAXVL
+* **SUBVL** which sets a SIMD-like quantity, a grouping quantity.
 * **srcoffs** will be truncated to be within the range 0 to VL-1
 * **destoffs** will be truncated to be within the range 0 to VL-1
 
@@ -2346,9 +2341,4 @@ as part of info register. 00=32, 01=64, 10=128, 11=reserved.
 
 ---
 
-push/pop of vector config state:
-<https://groups.google.com/d/msg/comp.arch/bGBeaNjAKvc/z2d_cST7AgAJ>
-
-when Bank in CFG is altered, shift the "addressing" of Reg and
-Pred CSRs to match.  i.e. treat the Reg and Pred CSRs as a
-"mini stack".
+TODO, update to remove RegCam and PredCam CSRs, just use SVprefix and VLIW format
