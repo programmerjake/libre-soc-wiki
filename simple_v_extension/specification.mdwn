@@ -2110,10 +2110,10 @@ The variable-length format from Section 1.5 of the RISC-V ISA:
 
 VL/MAXVL/SubVL Block:
 
-| 31-30 | 29:28 | 27:22  | 21:17  | 16  |
-| -     | ----- | ------ | ------ | -   |
-| 0     | SubVL | VLdest | VLEN   | vlt |
-| 1     | SubVL | VLdest | VLEN        ||
+| 31-30 | 29:28 | 27:22  | 21:17  - 16  |
+| -     | ----- | ------ | ------ - -   |
+| 0     | SubVL | VLdest | VLEN     vlt |
+| 1     | SubVL | VLdest | VLEN         |
 
 If vlt is 0, VLEN is a 5 bit immediate value. If vlt is 1, it specifies
 the scalar register from which VL is set by this VLIW instruction
@@ -2163,7 +2163,8 @@ Notes:
   *no longer apply*.  VL, MAXVL and SUBVL on the other hand remain at
   the values set by the last instruction (whether a CSRRW or the VL
   Block header).
-* Although an inefficient use of resources, it is fine to set the MAXVL, VL and SUBVL CSRs with standard CSRRW instructions, within a VLIW block.
+* Although an inefficient use of resources, it is fine to set the MAXVL,
+  VL and SUBVL CSRs with standard CSRRW instructions, within a VLIW block.
 
 All this would greatly reduce the amount of space utilised by Vectorised
 instructions, given that 64-bit CSRRW requires 3, even 4 32-bit opcodes: the
