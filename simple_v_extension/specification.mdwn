@@ -369,9 +369,11 @@ of VL and MVL respectively, reading and writing the STATE CSR returns
 those values **minus one**.  This is absolutely critical to implement
 if the STATE CSR is to be used for fast context-switching.
 
-## Register CSR key-value (CAM) table <a name="regcsrtable" />
+## Register key-value (CAM) table <a name="regcsrtable" />
 
-The purpose of the Register CSR table is four-fold:
+*NOTE: in prior versions of SV, this table used to be writable and accessible via CSRs. It is now stored in the VLIW instruction format, and entries may be overridden by the SVPrefix format*
+
+The purpose of the Register table is four-fold:
 
 * To mark integer and floating-point registers as requiring "redirection"
   if it is ever used as a source or destination in any given operation.
@@ -402,7 +404,9 @@ i/f is set to "1" to indicate that the redirection/tag entry is to be applied
 to integer registers; 0 indicates that it is relevant to floating-point
 registers.
 
-The 8 bit format is used for a much more compact expression. "isvec" is implicit and, as in [[sv-prefix-proposal]], the target vector is "regnum<<2", implicitly. Contrast this with the 16-bit format where the target vector is *explicitly* named in bits 8 to 14, and bit 15 may optionally set "scalar" mode.
+The 8 bit format is used for a much more compact expression. "isvec" is implicit and, similar to [[sv-prefix-proposal]], the target vector is "regnum<<2", implicitly. Contrast this with the 16-bit format where the target vector is *explicitly* named in bits 8 to 14, and bit 15 may optionally set "scalar" mode.
+
+Note that whilst SVPrefis adds one extra bit to each of rd, rs1 etc., and thus the "vector" mode need only shift the (6 bit) regnum by 1 to get the actual (7 bit) register number to use, there is not enough space in the 8 bit format so "regnum<<2" is required.
 
 vew has the following meanings, indicating that the instruction's
 operand size is "over-ridden" in a polymorphic fashion:
@@ -427,37 +431,30 @@ As the above table is a CAM (key-value store) it may be appropriate
        tb[idx].isvector = CSRvec[i].isvector // 0=scalar
        tb[idx].packed   = CSRvec[i].packed  // SIMD or not
 
-The actual size of the CSR Register table depends on the platform
-and on whether other Extensions are present (RV64G, RV32E, etc.).
-For details see "Subsets" section.
 
 
+## Predication Table <a name="predication_csr_table"></a>
 
+*NOTE: in prior versions of SV, this table used to be writable and accessible via CSRs. It is now stored in the VLIW instruction format, and entries may be overridden by the SVPrefix format*
 
-
-
-## Predication CSR <a name="predication_csr_table"></a>
-
-TODO: update CSR tables, now 7-bit for regidx
-
-The Predication CSR is a key-value store indicating whether, if a given
+The Predication Table is a key-value store indicating whether, if a given
 destination register (integer or floating-point) is referred to in an
-instruction, it is to be predicated.  Tt is particularly important to note
+instruction, it is to be predicated. Like the Register table, it is an indirect lookup that allows the RV opcodes to not need modification.
+
+It is particularly important to note
 that the *actual* register used can be *different* from the one that is
 in the instruction, due to the redirection through the lookup table.
 
-* regidx is the actual register that in combination with the
-  i/f flag, if that integer or floating-point register is referred to,
+* regidx is the register that in combination with the
+  i/f flag, if that integer or floating-point register is referred to
+ in a (standard RV) instruction
   results in the lookup table being referenced to find the predication
-  mask to use on the operation in which that (regidx) register has
-  been used
-* predidx (in combination with the bank bit in the future) is the
-  *actual* register to be used for the predication mask.  Note:
-  in effect predidx is actually a 6-bit register address, as the bank
-  bit is the MSB (and is nominally set to zero for now).
+  mask to use for this operation.
+* predidx is the
+  *actual* (full, 7 bit) register to be used for the predication mask. 
 * inv indicates that the predication mask bits are to be inverted
   prior to use *without* actually modifying the contents of the
-  register itself.
+  registerfrom which those bits originated.
 * zeroing is either 1 or 0, and if set to 1, the operation must
   place zeros in any element position where the predication mask is
   set to zero.  If zeroing is set to 0, unpredicated elements *must*
@@ -484,7 +481,7 @@ in the instruction, due to the redirection through the lookup table.
 | ----- | -     | -     | -   | ------- |
 | 0     | zero0 | inv0  | i/f | regnum  |
 
-The 8 bit format is a compact and less expressive variant of the full 16 bit format.  Using the 8 bit formatis very different: the predicate register to use is implicit, and numbering begins inplicitly from x9. The regnum is still used to "activate" predication.
+The 8 bit format is a compact and less expressive variant of the full 16 bit format.  Using the 8 bit formatis very different: the predicate register to use is implicit, and numbering begins inplicitly from x9. The regnum is still used to "activate" predication, in the same fashion as described above.
 
 The 16 bit Predication CSR Table is a key-value store, so implementation-wise
 it will be faster to turn the table around (maintain topologically
@@ -543,7 +540,7 @@ Note:
   source1 and source2 are vector or scalar
 * key-value CSR-redirection of rd, rs1 and rs2 have NOT been included
   above, for clarity.  rd, rs1 and rs2 all also must ALSO go through
-  register-level redirection (from the Register CSR table) if they are
+  register-level redirection (from the Register table) if they are
   vectors.
 
 If written as a function, obtaining the predication mask (and whether
@@ -563,13 +560,13 @@ zeroing takes place) may be done as follows:
        return predicate, tb[reg].zero
 
 Note here, critically, that **only** if the register is marked
-in its CSR **register** table entry as being "active" does the testing
-proceed further to check if the CSR **predicate** table entry is
+in its **register** table entry as being "active" does the testing
+proceed further to check if the **predicate** table entry is
 also active.
 
 Note also that this is in direct contrast to branch operations
 for the storage of comparisions: in these specific circumstances
-the requirement for there to be an active CSR *register* entry
+the requirement for there to be an active *register* entry
 is removed.
 
 ## REMAP CSR <a name="remap" />
