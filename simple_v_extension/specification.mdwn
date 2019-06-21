@@ -2259,13 +2259,24 @@ VL/MAXVL/SubVL Block:
 | 0     | SubVL | VLdest | VLEN   | vlt |
 | 1     | SubVL | VLdest | VLEN        ||
 
-If vlt is 0, VLEN is a 5 bit immediate value. If vlt is 1, it specifies the scalar register from which VL is set by this VLIW instruction group. VL, whether set from the register or the immediate, is then modified (truncated) to be max(VL, MAXVL), and the result stored in the scalar register specified in VLdest. If VLdest is zero, no store in the regfile occurs. 
+If vlt is 0, VLEN is a 5 bit immediate value. If vlt is 1, it specifies
+the scalar register from which VL is set by this VLIW instruction
+group. VL, whether set from the register or the immediate, is then
+modified (truncated) to be max(VL, MAXVL), and the result stored in the
+scalar register specified in VLdest. If VLdest is zero, no store in the
+regfile occurs.
 
-This option will typically be used to start vectorised loops, where the VLIW instruction effectively embeds an optional "SETSUBVL, SETVL" sequence (in compact form).
+This option will typically be used to start vectorised loops, where
+the VLIW instruction effectively embeds an optional "SETSUBVL, SETVL"
+sequence (in compact form).
 
-When bit 15 is set to 1, MAXVL and VL are both set to the immediate, VLEN, which is 6 bits in length, and the same value stored in scalar register VLdest (if that register is nonzero).
+When bit 15 is set to 1, MAXVL and VL are both set to the immediate,
+VLEN, which is 6 bits in length, and the same value stored in scalar
+register VLdest (if that register is nonzero).
 
-This option will typically not be used so much for loops as it will be for one-off instructions such as saving the entire register file to the stack with a single one-off Vectorised LD/ST.
+This option will typically not be used so much for loops as it will be
+for one-off instructions such as saving the entire register file to the
+stack with a single one-off Vectorised LD/ST.
 
 CSRs needed:
 
@@ -2276,9 +2287,13 @@ CSRs needed:
 
 Notes:
 
-* Bit 7 specifies if the prefix block format is the full 16 bit format (1) or the compact less expressive format (0). In the 8 bit format, pplen is multiplied by 2.
+* Bit 7 specifies if the prefix block format is the full 16 bit format
+  (1) or the compact less expressive format (0). In the 8 bit format,
+  pplen is multiplied by 2.
 * 8 bit format predicate numbering is implicit and begins from x9. Thus it is critical to put blocks in the correct order as required.
-* Bit 7 also specifies if the register block format is 16 bit (1) or 8 bit (0). In the 8 bit format, rplen is multiplied by 2. If only an odd number of entries are needed the last may be set to 0x00, indicating "unused".
+* Bit 7 also specifies if the register block format is 16 bit (1) or 8 bit
+  (0). In the 8 bit format, rplen is multiplied by 2. If only an odd number
+  of entries are needed the last may be set to 0x00, indicating "unused".
 * Bit 15 specifies if the VL Block is present. If set to 1, the VL Block immediately follows the VLIW instruction Prefix
 * Bits 8 and 9 define how many RegCam entries (0 to 3 if bit 15 is 1, otherwise 0 to 6) follow the (optional) VL Block.
 * Bits 10 and 11 define how many PredCam entries (0 to 3 if bit 7 is 1, otherwise 0 to 6) follow the (optional) RegCam entries
@@ -2288,7 +2303,10 @@ Notes:
   (optional) VL / RegCam / PredCam entries
 * Anything - any registers - within the VLIW-prefixed format *MUST* have the
   RegCam and PredCam entries applied to it.
-* At the end of the VLIW Group, the RegCam and PredCam entries *no longer apply*.  VL, MAXVL and SUBVL on the other hand remain at the values set by the last instruction (whether a CSRRW or the VL Block header).
+* At the end of the VLIW Group, the RegCam and PredCam entries
+  *no longer apply*.  VL, MAXVL and SUBVL on the other hand remain at
+  the values set by the last instruction (whether a CSRRW or the VL
+  Block header).
 * Although an inefficient use of resources, it is fine to set the MAXVL, VL and SUBVL CSRs with standard CSRRW instructions, within a VLIW block.
 
 All this would greatly reduce the amount of space utilised by Vectorised
