@@ -476,3 +476,29 @@ allowed to be both immediate and from a register (*immediate can be covered part
 by twin-predication, register cannot: requires MV.X aka VSELECT*)
 
 Add a register gather instruction (aka MV.X)
+
+# Open questions <a name="questions"></a>
+
+What is SUBVL and how does it work
+
+--
+
+SVorig goes to a lot of effort to make VL 1<= MAXVL and MAXVL 1..64 where both CSRs may be stored internally in only 6 bits.
+
+Thus, CSRRWI can reach 1..32 for VL and MAXVL.
+
+In addition, setting a hardware loop to zero turning instructions into NOPs, um, just branch over them, to start the first loop at the end, on the test for loop variable being zero, a la c "while do" instead of "do while".
+
+Or, does it not matter that VL only goes up to 31 on a CSRRWI, and that it only goes to a max of 63 rather than 64?
+
+--
+
+Should these questions be moved to Discussion subpage
+
+--
+
+Is MV.X good enough a substitute for swizzle?
+
+--
+
+Is vectorised srcbase ok as a gather scatter and ok substitute for register stride? 5 dependency registers (reg stride being the 5th) is quite scary
