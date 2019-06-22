@@ -1,8 +1,10 @@
 SimpleV Prefix (SVprefix) Proposal v0.3
 =======================================
 
-This proposal is designed to be able to operate without SVcsr, but not to
-require the absence of SVcsr.
+This proposal is designed to be able to operate without SVorig, but not to
+require the absence of SVorig See [[specification]].
+
+.. contents::
 
 Conventions
 ===========
