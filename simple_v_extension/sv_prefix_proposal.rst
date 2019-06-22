@@ -122,7 +122,6 @@ Table showing Standard RV32 encodings:
 
 64-bit Instruction Encodings 
 ============================
-<a name="64-bit-prefix"></a>
 
 Where in the 48 bit format the prefix is "0b0011111" in bits 0 to 6, this is
 now set to "0b0111111".
