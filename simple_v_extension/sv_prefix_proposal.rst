@@ -2,7 +2,9 @@ SimpleV Prefix (SVprefix) Proposal v0.3
 =======================================
 
 This proposal is designed to be able to operate without SVorig, but not to
-require the absence of SVorig See [[specification]].
+require the absence of SVorig See Specification_.
+
+.. _Specification: http://libre-riscv.org/simple_v_extension/specification/
 
 .. contents::
 
