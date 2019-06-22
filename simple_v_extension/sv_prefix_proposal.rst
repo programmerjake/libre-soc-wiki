@@ -123,7 +123,7 @@ Table showing Standard RV32 encodings:
 64-bit Instruction Encodings
 ============================
 
-TODO (please disregard)
+TODO (please disregard for now, WIP)
 
 +--------------+-------+-------+--------+--------+--------+----------+
 | Encoding     | 63:58 | 57    | 56     | 55     | 54     | 53:48    |
@@ -142,8 +142,10 @@ TODO (please disregard)
 +--------------+-------+-------+--------+--------+--------+----------+
 | P64-FI-type  | VLtyp | rd[6] | rs1[6] | rs2[6] |        | MVLtp    |
 +--------------+-------+-------+--------+--------+--------+----------+
-| P64-FR4-type | VLtyp | rd[6] | rs1[6] | rs2[6] | rs3[6] | MVLtp   |
+| P64-FR4-type | VLtyp | rd[6] | rs1[6] | rs2[6] | rs3[6] | MVLtp    |
 +--------------+-------+-------+--------+--------+--------+----------+
+
+The extra bit for src and dest registers provides the full range of up to 128 registers, when combined with the extra bit from the 48 bit prefix as well.
 
 VLtyp
 
@@ -155,7 +157,9 @@ VLtyp
 | immed        |  0      |
 +--------------+---------+
 
-Just as in the VLIW format, when bit 0 of vtyp is zero, bits 1 to 5 specify the scalar register that VL is set from.  When bit 0 is 1, VL is set to the immediate (plus one). 
+Just as in the VLIW format, when bit 0 of vtyp is zero, bits 1 to 5 specify the scalar register that VL is set from.  When bit 0 is 1, VL is set to the immediate (plus one).
+
+
 
 vs#/vd Fields' Encoding
 =======================
@@ -186,7 +190,7 @@ is the bitwise-or of all present vs#/vd fields.
 Vector Register Number Encoding
 ===============================
 
-When vs#/vd is 1, the actual 7-bit register number is derived from the
+For the 48 bit format, when vs#/vd is 1, the actual 7-bit register number is derived from the
 corresponding 6-bit rs#/rd field:
 
 +---------------------------------+
@@ -197,7 +201,7 @@ corresponding 6-bit rs#/rd field:
 | rs#/rd[0] | rs#/rd[5:1] | 0     |
 +-----------+-------------+-------+
 
-TODO: similar scheme for 64-bit encoding (incorporating extra bit rs#/rd[6] from 64-bit encoding)
+For the 64 bit format, the 7 bit register is constructed from the 7 bit fields: bits 0 to 4 from the 32 bit RV Standard format, bit 5 from the 48 bit prefix and bit 6 from the 64 bit prefix.  Thus in the 64 bit format the full range of up to 128 registers is directly available. This for both when either scalar or vector mode is set.
 
 Load/Store Kind (lsk) Field Encoding
 ====================================
