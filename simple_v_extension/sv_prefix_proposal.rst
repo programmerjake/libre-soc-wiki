@@ -120,7 +120,7 @@ Table showing Standard RV32 encodings:
 | RV32-FR-type  + funct5      + fmt   + rs2[4:0] + rs1[4:0] + rm     | rd[4:0]  + opcode + 1      + 1          |
 +---------------+-------------+-------+----------+----------+--------+----------+--------+--------+------------+
 
-64-bit Instruction Encodings
+64-bit Instruction Encodings <a name="64-bit-prefix"></a>
 ============================
 
 Where in the 48 bit format the prefix is "0b0011111" in bits 0 to 6, this is
