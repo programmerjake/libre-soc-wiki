@@ -175,18 +175,14 @@ VLtyp field encoding
 +-----------+-------------+--------------+----------+----------------------+
 | 0         |  000000     | 00000        |  0       | no change to VL/MVL  |
 +-----------+-------------+--------------+----------+----------------------+
-| 0         |  VLdest!=0  | 00000        |  0       | reserved             |
-+-----------+-------------+--------------+----------+----------------------+
 | 0         |  VLdest     | VLEN         |  vlt     | VL imm/reg mode (vlt)|
 +-----------+-------------+--------------+----------+----------------------+
-| 1         |  VLdest     |  MVL+VL-immed           | MVL/VL immed mode    |
+| 1         |  VLdest     | MVL+VL-immed | 0          | MVL/VL immed mode    |
++-----------+-------------+--------------+----------+----------------------+
+| 1         |  VLdest     |  MVL-immed   | 1         | MVL/VL immed mode    |
 +-----------+-------------+--------------+----------+----------------------+
 
-Notes:
-
-* When VLtyp is all zeros, neither VL nor MVL are changed
-* VLtype[11]=0, VLtype[5:0]=0 and VLtype[10:6] non-zero is a reserved encoding.
-  Its uses raises an illegal instruction exception.
+Note: when VLtyp is all zeros, neither VL nor MVL are changed.
 
 Just as in the VLIW format, when bit 11 of VLtyp is zero:
 
