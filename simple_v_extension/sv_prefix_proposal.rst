@@ -142,32 +142,32 @@ now set to "0b0111111".
 +--------------+-------+--------+--------+--------+--------+
 | Encoding     | 63    | 62     | 61     | 60     | 59:48  |
 +--------------+-------+--------+--------+--------+--------+
-| P64-LD-type  | rd[6] | rs1[6] |        |        | SVtyp  |
+| P64-LD-type  | rd[6] | rs1[6] |        |        | VLtyp  |
 +--------------+-------+--------+--------+--------+--------+
-| P64-ST-type  |       | rs1[6] | rs2[6] |        | SVtyp  |
+| P64-ST-type  |       | rs1[6] | rs2[6] |        | VLtyp  |
 +--------------+-------+--------+--------+--------+--------+
-| P64-R-type   | rd[6] | rs1[6] | rs2[6] |        | SVtyp  |
+| P64-R-type   | rd[6] | rs1[6] | rs2[6] |        | VLtyp  |
 +--------------+-------+--------+--------+--------+--------+
-| P64-I-type   | rd[6] | rs1[6] |        |        | SVtyp  |
+| P64-I-type   | rd[6] | rs1[6] |        |        | VLtyp  |
 +--------------+-------+--------+--------+--------+--------+
-| P64-U-type   | rd[6] |        |        |        | SVtyp  |
+| P64-U-type   | rd[6] |        |        |        | VLtyp  |
 +--------------+-------+--------+--------+--------+--------+
-| P64-FR-type  |       | rs1[6] | rs2[6] |        | SVtyp  |
+| P64-FR-type  |       | rs1[6] | rs2[6] |        | VLtyp  |
 +--------------+-------+--------+--------+--------+--------+
-| P64-FI-type  | rd[6] | rs1[6] | rs2[6] |        | SVtyp  |
+| P64-FI-type  | rd[6] | rs1[6] | rs2[6] |        | VLtyp  |
 +--------------+-------+--------+--------+--------+--------+
-| P64-FR4-type | rd[6] | rs1[6] | rs2[6] | rs3[6] | SVtyp  |
+| P64-FR4-type | rd[6] | rs1[6] | rs2[6] | rs3[6] | VLtyp  |
 +--------------+-------+--------+--------+--------+--------+
 
 The extra bit for src and dest registers provides the full range of
 up to 128 registers, when combined with the extra bit from the 48 bit
-prefix as well.  SVtyp encodes how (whether) to set VL and MAXVL.
+prefix as well.  VLtyp encodes how (whether) to set VL and MAXVL.
 
-SVtyp field encoding
+VLtyp field encoding
 ====================
 
 +-----------+-------------+--------------+----------+----------------------+
-| SVtyp[11] | SVtyp[10:6] | SVtyp[5:1]   | SVtyp[0] | comment              |
+| VLtyp[11] | VLtyp[10:6] | VLtyp[5:1]   | VLtyp[0] | comment              |
 +-----------+-------------+--------------+----------+----------------------+
 | 0         |  000000     | 00000        |  0       | no change to VL/MVL  |
 +-----------+-------------+--------------+----------+----------------------+
@@ -180,11 +180,11 @@ SVtyp field encoding
 
 Notes:
 
-* When SVtyp is all zeros, neither VL nor MVL are changed
-* SVtype[11]=0, SVtype[5:0]=0 and SVtype[10:6] non-zero is a reserved encoding.
+* When VLtyp is all zeros, neither VL nor MVL are changed
+* VLtype[11]=0, VLtype[5:0]=0 and VLtype[10:6] non-zero is a reserved encoding.
   Its uses raises an illegal instruction exception.
 
-Just as in the VLIW format, when bit 11 of SVtyp is zero:
+Just as in the VLIW format, when bit 11 of VLtyp is zero:
 
 * if vlt is zero, bits 1 to 5 specify the VLEN as a 5 bit immediate
   (offset by 1: 0b00000 represents VL=1, 0b00001 represents VL=2 etc.)
@@ -192,13 +192,13 @@ Just as in the VLIW format, when bit 11 of SVtyp is zero:
   from which VL is set.  x0 is not permitted
 * VL goes into the scalar register VLdest (if VLdest is not x0)
 
-When bit 11 of SVtype is 1:
+When bit 11 of VLtype is 1:
 
 * both MAXVL and VL are set to (VLenimmed+1)
 * the same value goes into the scalar register VLdest (if VLdest is not x0)
 
-This gives the option to set up VL in a "loop mode" (SVtype[11]=0) or
-in a "one-off" mode (SVtype[11]=1) which sets both MVL and VL to the
+This gives the option to set up VL in a "loop mode" (VLtype[11]=0) or
+in a "one-off" mode (VLtype[11]=1) which sets both MVL and VL to the
 same immediate value.  This may be most useful for one-off Vectorised
 operations such as LOAD-MULTI / STORE-MULTI, for saving and restoration
 of large batches of registers in context-switches or function calls.
