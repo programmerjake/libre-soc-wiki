@@ -506,20 +506,9 @@ SetVL
 
 setvl rd, rs1, imm
 
-imm is the amount of space allocated from the register file by the compiler.
+This is done the same as Standard SV.
+There is alsO a MVL CSR.  CSRRW and CSRRWI operate in the same way as in SV. See Specification_.
 
-Pseudocode:
-
-1. Trap if imm > XLEN.
-2. If rs1 is x0, then
-    1. Set VL to imm.
-3. Else If regs[rs1] > 2 * imm, then
-    1. Set VL to XLEN.
-4. Else If regs[rs1] > imm, then
-    1. Set VL to regs[rs1] / 2 rounded down.
-5. Otherwise,
-    1. Set VL to regs[rs1].
-6. Set regs[rd] to VL.
 
 Additional Instructions
 =======================
@@ -564,3 +553,11 @@ Is MV.X good enough a substitute for swizzle?
 --
 
 Is vectorised srcbase ok as a gather scatter and ok substitute for register stride? 5 dependency registers (reg stride being the 5th) is quite scary
+
+--
+
+Why are integer conversion instructions needed, when the main SV spec covers them by allowing elwidth to be set on both src and dest regs?
+
+--
+
+Why are the SETVL rules so complex? What is the reason, how are loops carried out?
