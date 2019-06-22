@@ -161,7 +161,7 @@ now set to "0b0111111".
 
 The extra bit for src and dest registers provides the full range of
 up to 128 registers, when combined with the extra bit from the 48 bit
-prefix as well.
+prefix as well.  SVtyp encodes how (whether) to set VL and MAXVL.
 
 SVtyp field encoding
 ====================
