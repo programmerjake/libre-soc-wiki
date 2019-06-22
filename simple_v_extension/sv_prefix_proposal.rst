@@ -277,17 +277,23 @@ Open question: RVV overloads the width field of LOAD-FP/STORE-FP using the bit 2
 Sub-Vector Length (svlen) Field Encoding
 =======================================================
 
+Bitwidth, from VL's perspective, is a multiple of the elwidth times svlen.  So within each loop of VL there are svlen sub-elements of elwidth in size, just like in a SIMD architecture. When svlen is set to 0b00 (indicating svlen=1) no such SIMD-like behaviour exists and the subvectoring is disabled.
+
+Predicate bits do not apply to the individual sub-vector elements, they apply to the entire subvector group. This saves instructions on setup of the predicate.
+
 +----------------+-------+
 | svlen Encoding | Value |
 +================+=======+
-| 00             | 4     |
+| 00             | 1     |
 +----------------+-------+
-| 01             | 1     |
+| 01             | 2     |
 +----------------+-------+
-| 10             | 2     |
+| 10             | 3     |
 +----------------+-------+
-| 11             | 3     |
+| 11             | 4     |
 +----------------+-------+
+
+TODO : resolve interactions when SV VLIW Mode is active, as SVLEN is also a CSR.
 
 Predication (pred) Field Encoding
 =================================
@@ -561,3 +567,16 @@ Why are integer conversion instructions needed, when the main SV spec covers the
 --
 
 Why are the SETVL rules so complex? What is the reason, how are loops carried out?
+
+--
+
+With SUBVL (sub vector len) being both a CSR and also part of the 48/64 bit opcode, how does that work?
+
+--
+
+What are the interaction rules when a 48/64 prefix opcode has a rd/rs that already has a Vector Context for either predication or a register?
+
+It would perhaps make sense (and for svlen as well) to make 48/64 isolated and unaffected by VLIW context, with the exception of VL/MVL.
+
+MVL and VL should be modifiable by 64 bit prefix as they are global in nature.
+
