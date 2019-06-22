@@ -75,18 +75,18 @@ when and whether to parallelise operations **entirely to the implementor**.
 
 The principle of SV is as follows:
 
-* Standard RV instructions are "prefixed" (extended) through a 48 bit format (single instruction option) or a variable
+* Standard RV instructions are "prefixed" (extended) through a 48/64
+  bit format (single instruction option) or a variable
  length VLIW-like prefix (multi or "grouped" option).
-* The prefix(es) indicate
- which registers are "tagged" as "vectorised". Predicates can also be added.
+* The prefix(es) indicate which registers are "tagged" as
+  "vectorised". Predicates can also be added.
 * A "Vector Length" CSR is set, indicating the span of any future
   "parallel" operations.
-* If any operation (a **scalar** standard RV opcode)
- uses a register that has been so "marked"
- ("tagged"),
- a hardware "macro-unrolling loop" is activated, of length
-  VL, that effectively issues **multiple** identical instructions
-  using contiguous sequentially-incrementing register numbers, based on the "tags".
+* If any operation (a **scalar** standard RV opcode) uses a register
+  that has been so "marked" ("tagged"), a hardware "macro-unrolling loop"
+  is activated, of length VL, that effectively issues **multiple**
+  identical instructions using contiguous sequentially-incrementing
+  register numbers, based on the "tags".
 * **Whether they be executed sequentially or in parallel or a
   mixture of both or punted to software-emulation in a trap handler
   is entirely up to the implementor**.
@@ -94,7 +94,8 @@ The principle of SV is as follows:
 In this way an entire scalar algorithm may be vectorised with
 the minimum of modification to the hardware and to compiler toolchains.
 
-To reiterate: **There are *no* new opcodes**. The scheme works *entirely* on hidden context that augments *scalar* RISCV instructions.
+To reiterate: **There are *no* new opcodes**. The scheme works *entirely*
+on hidden context that augments *scalar* RISCV instructions.
 
 # CSRs <a name="csrs"></a>
 
@@ -106,7 +107,8 @@ There are also five additional User mode CSRs :
 * uMVL (the Maximum Vector Length)
 * uVL (which has different characteristics from standard CSRs)
 * uSUBVL (effectively a kind of SIMD)
-* uEPCVLIW (a copy of the sub-execution Program Counter, that is relative to the start of the current VLIW Group, set on a trap).
+* uEPCVLIW (a copy of the sub-execution Program Counter, that is relative
+  to the start of the current VLIW Group, set on a trap).
 * uSTATE (useful for saving and restoring during context switch,
   and for providing fast transitions)
 
@@ -126,7 +128,9 @@ And likewise for M-Mode:
 * MEPCVLIW
 * MSTATE
 
-Both Supervisor and M-Mode have their own CSR registers, independent of the other privilege levels, in order to make it easier to use Vectorisation in each level without affecting other privilege levels.
+Both Supervisor and M-Mode have their own CSR registers, independent
+of the other privilege levels, in order to make it easier to use
+Vectorisation in each level without affecting other privilege levels.
 
 The access pattern for these groups of CSRs in each mode follows the
 same pattern for other CSRs that have M-Mode and S-Mode "mirrors":
@@ -143,17 +147,21 @@ In M-Mode, only the M-Mode CSRs are in effect, i.e. it is only the
 M-Mode MVL, the M-Mode STATE and so on that influences the processor
 behaviour.  Likewise for S-Mode, and likewise for U-Mode.
 
-This has the interesting benefit of allowing M-Mode (or S-Mode)
-to be set up, for context-switching to take place, and, on return
-back to the higher privileged mode, the CSRs of that mode will be
-exactly as they were.  Thus, it becomes possible for example to
-set up CSRs suited best to aiding and assisting low-latency fast
-context-switching *once and only once* (for example at boot time), without the need for
-re-initialising the CSRs needed to do so.
+This has the interesting benefit of allowing M-Mode (or S-Mode) to be set
+up, for context-switching to take place, and, on return back to the higher
+privileged mode, the CSRs of that mode will be exactly as they were.
+Thus, it becomes possible for example to set up CSRs suited best to aiding
+and assisting low-latency fast context-switching *once and only once*
+(for example at boot time), without the need for re-initialising the
+CSRs needed to do so.
 
-Another interesting side effect of separate S Mode CSRs is that Vectorised saving of the entire register file to the stack is a single instruction (accidental provision of LOAD-MULTI semantics). It can even be predicated, which opens up some very interesting possibilities.
+Another interesting side effect of separate S Mode CSRs is that Vectorised
+saving of the entire register file to the stack is a single instruction
+(accidental provision of LOAD-MULTI semantics). It can even be predicated,
+which opens up some very interesting possibilities.
 
-The xEPCVLIW CSRs must be treated exactly like their corresponding xepc equivalents. See VLIW section for details.
+The xEPCVLIW CSRs must be treated exactly like their corresponding xepc
+equivalents. See VLIW section for details.
 
 ## MAXVECTORLENGTH (MVL) <a name="mvl" />
 
@@ -166,9 +174,10 @@ The reason for setting this limit is so that predication registers, when
 marked as such, may fit into a single register as opposed to fanning out
 over several registers.  This keeps the implementation a little simpler.
 
-The other important factor to note is that the actual MVL is internally stored **offset
-by one**, so that it can fit into only 6 bits (for RV64) and still cover
-a range up to XLEN bits.  Attempts to set MVL to zero will return an exception.  This is expressed more clearly in the "pseudocode"
+The other important factor to note is that the actual MVL is internally
+stored **offset by one**, so that it can fit into only 6 bits (for RV64)
+and still cover a range up to XLEN bits.  Attempts to set MVL to zero will
+return an exception.  This is expressed more clearly in the "pseudocode"
 section, where there are subtle differences between CSRRW and CSRRWI.
 
 ## Vector Length (VL) <a name="vl" />
@@ -233,27 +242,37 @@ hardware loop is reduced to a single element: scalar operations.
 
 ## SUBVL - Sub Vector Length
 
-This is a "group by quantity" that effectively divides VL into groups of elements of length SUBVL. VL itself must therefore be set in advance to a multiple of SUBVL.
+This is a "group by quantity" that effectively divides VL into groups
+of elements of length SUBVL. VL itself must therefore be set in advance
+to a multiple of SUBVL.
 
 Legal values are 1, 2, 3 and 4, and the STATE CSR must hold the 2 bit values 0b00 thru 0b11.
 
-Setting this CSR to 0 must raise an exception.  Setting it to a value greater than 4 likewise.
+Setting this CSR to 0 must raise an exception.  Setting it to a value
+greater than 4 likewise.
 
 The main effect of SUBVL is that predication bits are applied per **group**, 
 rather than by individual element.
 
-This saves a not insignificant number of instructions when handling 3D vectors, as otherwise a much longer predicate mask would have to be set up with regularly-repeated bit patterns.
+This saves a not insignificant number of instructions when handling 3D
+vectors, as otherwise a much longer predicate mask would have to be set
+up with regularly-repeated bit patterns.
 
 ## STATE
 
 This is a standard CSR that contains sufficient information for a
-full context save/restore.  It contains (and permits setting of)
-MVL, VL, SUBVL,
-the destination element offset of the current parallel
-instruction being executed, and, for twin-predication, the source
-element offset as well.  Interestingly it may hypothetically
-also be used to make the immediately-following instruction to skip a
-certain number of elements.
+full context save/restore.  It contains (and permits setting of):
+
+* MVL
+* VL
+* SUBVL
+* the destination element offset of the current parallel instruction
+  being executed
+* and, for twin-predication, the source element offset as well.
+
+Interestingly STATE may hypothetically also be used to make the
+immediately-following instruction to skip a certain number of elements,
+by playing with destoffs and srcoffs.
 
 Setting destoffs and srcoffs is realistically intended for saving state
 so that exceptions (page faults in particular) may be serviced and the
@@ -267,19 +286,21 @@ The format of the STATE CSR is as follows:
 
 | (28..27) | (26..24) | (23..18) | (17..12) | (11..6) | (5...0) |
 | -------- | -------- | -------- | -------- | ------- | ------- |
-| rsvd    | subvl   | destoffs | srcoffs  | vl      | maxvl   |
+| rsvd     | subvl    | destoffs | srcoffs  | vl      | maxvl   |
 
 When setting this CSR, the following characteristics will be enforced:
 
 * **MAXVL** will be truncated (after offset) to be within the range 1 to XLEN
 * **VL** will be truncated (after offset) to be within the range 1 to MAXVL
-* **SUBVL** which sets a SIMD-like quantity, has only 4 values however if VL is not a multiple of SUBVL an exception will be raised.
+* **SUBVL** which sets a SIMD-like quantity, has only 4 values however
+  if VL is not a multiple of SUBVL an exception will be raised.
 * **srcoffs** will be truncated to be within the range 0 to VL-1
 * **destoffs** will be truncated to be within the range 0 to VL-1
 
 ## MVL and VL  Pseudocode
 
-The pseudo-code for get and set of VL and MVL use the following internal functions as follows:
+The pseudo-code for get and set of VL and MVL use the following internal
+functions as follows:
 
     set_mvl_csr(value, rd):
         regs[rd] = MVL
@@ -297,9 +318,9 @@ The pseudo-code for get and set of VL and MVL use the following internal functio
         regs[rd] = VL
         return VL
 
-Note that where setting MVL behaves as a normal CSR (returns the old value), unlike standard CSR
-behaviour, setting VL will return the **new** value of VL **not** the old
-one.
+Note that where setting MVL behaves as a normal CSR (returns the old
+value), unlike standard CSR behaviour, setting VL will return the **new**
+value of VL **not** the old one.
 
 For CSRRWI, the range of the immediate is restricted to 5 bits.  In order to
 maximise the effectiveness, an immediate of 0 is used to set VL=1,
@@ -373,7 +394,9 @@ if the STATE CSR is to be used for fast context-switching.
 
 ## Register key-value (CAM) table <a name="regcsrtable" />
 
-*NOTE: in prior versions of SV, this table used to be writable and accessible via CSRs. It is now stored in the VLIW instruction format, and entries may be overridden by the SVPrefix format*
+*NOTE: in prior versions of SV, this table used to be writable and
+accessible via CSRs. It is now stored in the VLIW instruction format,
+and entries may be overridden by the SVPrefix format*
 
 The purpose of the Register table is four-fold:
 
@@ -406,9 +429,16 @@ i/f is set to "1" to indicate that the redirection/tag entry is to be applied
 to integer registers; 0 indicates that it is relevant to floating-point
 registers.
 
-The 8 bit format is used for a much more compact expression. "isvec" is implicit and, similar to [[sv-prefix-proposal]], the target vector is "regnum<<2", implicitly. Contrast this with the 16-bit format where the target vector is *explicitly* named in bits 8 to 14, and bit 15 may optionally set "scalar" mode.
+The 8 bit format is used for a much more compact expression. "isvec"
+is implicit and, similar to [[sv-prefix-proposal]], the target vector
+is "regnum<<2", implicitly. Contrast this with the 16-bit format where
+the target vector is *explicitly* named in bits 8 to 14, and bit 15 may
+optionally set "scalar" mode.
 
-Note that whilst SVPrefis adds one extra bit to each of rd, rs1 etc., and thus the "vector" mode need only shift the (6 bit) regnum by 1 to get the actual (7 bit) register number to use, there is not enough space in the 8 bit format so "regnum<<2" is required.
+Note that whilst SVPrefis adds one extra bit to each of rd, rs1 etc.,
+and thus the "vector" mode need only shift the (6 bit) regnum by 1 to
+get the actual (7 bit) register number to use, there is not enough space
+in the 8 bit format so "regnum<<2" is required.
 
 vew has the following meanings, indicating that the instruction's
 operand size is "over-ridden" in a polymorphic fashion:
@@ -437,11 +467,14 @@ As the above table is a CAM (key-value store) it may be appropriate
 
 ## Predication Table <a name="predication_csr_table"></a>
 
-*NOTE: in prior versions of SV, this table used to be writable and accessible via CSRs. It is now stored in the VLIW instruction format, and entries may be overridden by the SVPrefix format*
+*NOTE: in prior versions of SV, this table used to be writable and
+accessible via CSRs. It is now stored in the VLIW instruction format,
+and entries may be overridden by the SVPrefix format*
 
-The Predication Table is a key-value store indicating whether, if a given
-destination register (integer or floating-point) is referred to in an
-instruction, it is to be predicated. Like the Register table, it is an indirect lookup that allows the RV opcodes to not need modification.
+The Predication Table is a key-value store indicating whether, if a
+given destination register (integer or floating-point) is referred to
+in an instruction, it is to be predicated. Like the Register table, it
+is an indirect lookup that allows the RV opcodes to not need modification.
 
 It is particularly important to note
 that the *actual* register used can be *different* from the one that is
@@ -483,7 +516,11 @@ in the instruction, due to the redirection through the lookup table.
 | ----- | -     | -     | -   | ------- |
 | 0     | zero0 | inv0  | i/f | regnum  |
 
-The 8 bit format is a compact and less expressive variant of the full 16 bit format.  Using the 8 bit formatis very different: the predicate register to use is implicit, and numbering begins inplicitly from x9. The regnum is still used to "activate" predication, in the same fashion as described above.
+The 8 bit format is a compact and less expressive variant of the full
+16 bit format.  Using the 8 bit formatis very different: the predicate
+register to use is implicit, and numbering begins inplicitly from x9. The
+regnum is still used to "activate" predication, in the same fashion as
+described above.
 
 The 16 bit Predication CSR Table is a key-value store, so implementation-wise
 it will be faster to turn the table around (maintain topologically
@@ -825,13 +862,12 @@ other sections.
 It is critical to appreciate that there are
 **no operations added to SV, at all**.
 
-Instead, by using CSRs to tag registers as an indication of "changed behaviour",
-SV *overloads* pre-existing branch operations into predicated
-variants, and implicitly overloads arithmetic operations, MV,
-FCVT, and LOAD/STORE depending on CSR configurations for bitwidth
-and predication.  **Everything** becomes parallelised.  *This includes
-Compressed instructions* as well as any future instructions and Custom
-Extensions.
+Instead, by using CSRs to tag registers as an indication of "changed
+behaviour", SV *overloads* pre-existing branch operations into predicated
+variants, and implicitly overloads arithmetic operations, MV, FCVT, and
+LOAD/STORE depending on CSR configurations for bitwidth and predication.
+**Everything** becomes parallelised.  *This includes Compressed
+instructions* as well as any future instructions and Custom Extensions.
 
 Note: CSR tags to change behaviour of instructions is nothing new, including
 in RISC-V.  UXL, SXL and MXL change the behaviour so that XLEN=32/64/128.
@@ -1747,7 +1783,10 @@ The four entries for SV element bitwidths only allows three over-rides:
 * 16 hit
 * 32 bit
 
-This would seem inadequate, surely it would be better to have 3 bits or more and allow 64, 128 and some other options besides.  The answer here is, it gets too complex, no RV128 implementation yet exists, and so RV64's default is 64 bit, so the 4 major element widths are covered anyway.
+This would seem inadequate, surely it would be better to have 3 bits or
+more and allow 64, 128 and some other options besides.  The answer here
+is, it gets too complex, no RV128 implementation yet exists, and so RV64's
+default is 64 bit, so the 4 major element widths are covered anyway.
 
 There is an absolutely crucial aspect oF SV here that explicitly
 needs spelling out, and it's whether the "vectorised" bit is set in
@@ -1766,14 +1805,23 @@ in the operation are **NOT** modified, but are **PRESERVED**.
 
 For example:
 
-* when the vector bit is clear and elwidth set to 16 on the destination register, operations are truncated to 16 bit and then sign or zero extended to the *FULL* XLEN register width.
-* when the vector bit is set, elwidth is 16 and VL=1 (or other value where groups of elwidth sized elements do not fill an entire XLEN register), the "top" bits of the destination register do *NOT* get modified, zero'd or otherwise overwritten.
+* when the vector bit is clear and elwidth set to 16 on the destination
+  register, operations are truncated to 16 bit and then sign or zero
+  extended to the *FULL* XLEN register width.
+* when the vector bit is set, elwidth is 16 and VL=1 (or other value where
+  groups of elwidth sized elements do not fill an entire XLEN register),
+  the "top" bits of the destination register do *NOT* get modified, zero'd
+  or otherwise overwritten.
 
 SIMD micro-architectures may implement this by using predication on
 any elements in a given actual register that are beyond the end of
 multi-element operation.
 
-Other microarchitectures may choose to provide byte-level write-enable lines on the register file, such that each 64 bit register in an RV64 system requires 8 WE lines.  Scalar RV64 operations would require activation of all 8 lines, where SV elwidth based operations would activate the required subset of those byte-level write lines.
+Other microarchitectures may choose to provide byte-level write-enable
+lines on the register file, such that each 64 bit register in an RV64
+system requires 8 WE lines.  Scalar RV64 operations would require
+activation of all 8 lines, where SV elwidth based operations would
+activate the required subset of those byte-level write lines.
 
 Example:
 
@@ -2119,14 +2167,16 @@ of the RISC-V ISA, is as follows:
 | -     | ----- | ----- | ----- | ---  | ------- |
 | vlset | 16xil | pplen | rplen | mode | 1111111 |
 
-An optional VL Block, optional predicate entries, optional register entries and finally some 16/32/48 bit standard RV or SVPrefix opcodes follow.
+An optional VL Block, optional predicate entries, optional register
+entries and finally some 16/32/48 bit standard RV or SVPrefix opcodes
+follow.
 
 The variable-length format from Section 1.5 of the RISC-V ISA:
 
-| base+4 ... base+2         | base             | number of bits             |
-| ------ ------------------- | ----------------  -------------------------- |
-| ..xxxx  xxxxxxxxxxxxxxxx | xnnnxxxxx1111111 | (80+16\*nnn)-bit, nnn!=111 |
-| {ops}{Pred}{Reg}{VL Block}    | SV Prefix        |                            |
+| base+4 ... base+2          | base             | number of bits             |
+| ------ -----------------   | ---------------- | -------------------------- |
+| ..xxxx  xxxxxxxxxxxxxxxx   | xnnnxxxxx1111111 | (80+16\*nnn)-bit, nnn!=111 |
+| {ops}{Pred}{Reg}{VL Block} | SV Prefix        |                            |
 
 VL/MAXVL/SubVL Block:
 
@@ -2135,24 +2185,30 @@ VL/MAXVL/SubVL Block:
 | 0     | SubVL | VLdest | VLEN     vlt |
 | 1     | SubVL | VLdest | VLEN         |
 
-If vlt is 0, VLEN is a 5 bit immediate value, offset by one (i.e a bit sequence of 0b00000 represents VL=1 and so on). If vlt is 1, it specifies
-the scalar register from which VL is set by this VLIW instruction
-group. VL, whether set from the register or the immediate, is then
-modified (truncated) to be MIN(VL, MAXVL), and the result stored in the
-scalar register specified in VLdest. If VLdest is zero, no store in the
-regfile occurs (however VL is still set).
+Note: this format is very similar to that used in [[sv_prefix_proposal]]
+
+If vlt is 0, VLEN is a 5 bit immediate value, offset by one (i.e
+a bit sequence of 0b00000 represents VL=1 and so on). If vlt is 1,
+it specifies the scalar register from which VL is set by this VLIW
+instruction group. VL, whether set from the register or the immediate,
+is then modified (truncated) to be MIN(VL, MAXVL), and the result stored
+in the scalar register specified in VLdest. If VLdest is zero, no store
+in the regfile occurs (however VL is still set).
 
 This option will typically be used to start vectorised loops, where
 the VLIW instruction effectively embeds an optional "SETSUBVL, SETVL"
 sequence (in compact form).
 
 When bit 15 is set to 1, MAXVL and VL are both set to the immediate,
-VLEN (again, offset by one), which is 6 bits in length, and the same value stored in scalar
-register VLdest (if that register is nonzero).  A value of 0b000000 will set MAXVL = VL = 1, a value of 0b000001 will set MAXVL = VL = 2 and so on.
+VLEN (again, offset by one), which is 6 bits in length, and the same
+value stored in scalar register VLdest (if that register is nonzero).
+A value of 0b000000 will set MAXVL=VL=1, a value of 0b000001 will
+set MAXVL=VL= 2 and so on.
 
 This option will typically not be used so much for loops as it will be
 for one-off instructions such as saving the entire register file to the
-stack with a single one-off Vectorised and predicated LD/ST, or as a way to save or restore registers in a function call with a single instruction.
+stack with a single one-off Vectorised and predicated LD/ST, or as a way
+to save or restore registers in a function call with a single instruction.
 
 CSRs needed:
 
@@ -2166,16 +2222,20 @@ Notes:
 * Bit 7 specifies if the prefix block format is the full 16 bit format
   (1) or the compact less expressive format (0). In the 8 bit format,
   pplen is multiplied by 2.
-* 8 bit format predicate numbering is implicit and begins from x9. Thus it is critical to put blocks in the correct order as required.
+* 8 bit format predicate numbering is implicit and begins from x9. Thus
+  it is critical to put blocks in the correct order as required.
 * Bit 7 also specifies if the register block format is 16 bit (1) or 8 bit
   (0). In the 8 bit format, rplen is multiplied by 2. If only an odd number
   of entries are needed the last may be set to 0x00, indicating "unused".
-* Bit 15 specifies if the VL Block is present. If set to 1, the VL Block immediately follows the VLIW instruction Prefix
-* Bits 8 and 9 define how many RegCam entries (0 to 3 if bit 15 is 1, otherwise 0 to 6) follow the (optional) VL Block.
-* Bits 10 and 11 define how many PredCam entries (0 to 3 if bit 7 is 1, otherwise 0 to 6) follow the (optional) RegCam entries
+* Bit 15 specifies if the VL Block is present. If set to 1, the VL Block
+  immediately follows the VLIW instruction Prefix
+* Bits 8 and 9 define how many RegCam entries (0 to 3 if bit 15 is 1,
+  otherwise 0 to 6) follow the (optional) VL Block.
+* Bits 10 and 11 define how many PredCam entries (0 to 3 if bit 7 is 1,
+  otherwise 0 to 6) follow the (optional) RegCam entries
 * Bits 14 to 12 (IL) define the actual length of the instruction: total
   number of bits is 80 + 16 times IL.  Standard RV32, RVC and also
-  SVPrefix (P48-\*-Type) instructions fit into this space, after the
+  SVPrefix (P48/64-\*-Type) instructions fit into this space, after the
   (optional) VL / RegCam / PredCam entries
 * Anything - any registers - within the VLIW-prefixed format *MUST* have the
   RegCam and PredCam entries applied to it.
@@ -2250,7 +2310,7 @@ accomplished within a block.
 
 A normal jump and a normal function call may only be taken by letting
 the VLIW end, returning to "normal" standard RV mode, using RVC, 32 bit
-or P48-*-type opcodes.
+or P48/64-\*-type opcodes.
 
 ## Links
 
@@ -2358,4 +2418,5 @@ as part of info register. 00=32, 01=64, 10=128, 11=reserved.
 
 ---
 
-TODO, update to remove RegCam and PredCam CSRs, just use SVprefix and VLIW format
+TODO, update to remove RegCam and PredCam CSRs, just use SVprefix and
+VLIW format
