@@ -89,7 +89,7 @@ bits 47:18 (RV32 shifted up by 16 bits):
 +---------------+---------------+
 | RV32 Encoding | 31:2          |
 +---------------+---------------+
-| P48-LD-type   | RV32-I-type   | 
+| P48-LD-type   | RV32-I-type   |
 +---------------+---------------+
 | P48-ST-type   | RV32-S-Type   |
 +---------------+---------------+
@@ -124,7 +124,7 @@ Table showing Standard RV32 encodings:
 | RV32-FR-type  + funct5      + fmt   + rs2[4:0] + rs1[4:0] + rm     | rd[4:0]  + opcode + 1      + 1          |
 +---------------+-------------+-------+----------+----------+--------+----------+--------+--------+------------+
 
-64-bit Instruction Encodings 
+64-bit Instruction Encodings
 ============================
 
 Where in the 48 bit format the prefix is "0b0011111" in bits 0 to 6, this is
@@ -177,9 +177,9 @@ VLtyp field encoding
 +-----------+-------------+--------------+----------+----------------------+
 | 0         |  VLdest     | VLEN         |  vlt     | VL imm/reg mode (vlt)|
 +-----------+-------------+--------------+----------+----------------------+
-| 1         |  VLdest     | MVL+VL-immed | 0          | MVL/VL immed mode    |
+| 1         |  VLdest     | MVL+VL-immed | 0        | MVL+VL immed mode    |
 +-----------+-------------+--------------+----------+----------------------+
-| 1         |  VLdest     |  MVL-immed   | 1         | MVL/VL immed mode    |
+| 1         |  VLdest     |  MVL-immed   | 1        | MVL immed mode       |
 +-----------+-------------+--------------+----------+----------------------+
 
 Note: when VLtyp is all zeros, neither VL nor MVL are changed.
@@ -194,8 +194,12 @@ Just as in the VLIW format, when bit 11 of VLtyp is zero:
 
 When bit 11 of VLtype is 1:
 
-* both MAXVL and VL are set to (VLenimmed+1)
-* the same value goes into the scalar register VLdest (if VLdest is not x0)
+* if VLtyp[0] is zero, both MAXVL and VL are set to (imm+1).  The same
+  value goes into the scalar register VLdest (if VLdest is not x0)
+* if VLtyp[0] is 1, MAXVL is set to (imm+1).
+  VL will be truncated to within the new range (if VL was greater
+  than the new MAXVL).  The new VL goes into the scalar register VLdest
+  (if VLdest is not x0).
 
 This gives the option to set up VL in a "loop mode" (VLtype[11]=0) or
 in a "one-off" mode (VLtype[11]=1) which sets both MVL and VL to the
