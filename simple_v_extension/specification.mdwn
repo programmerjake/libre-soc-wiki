@@ -24,7 +24,7 @@ Simple-V is a uniform parallelism API for RISC-V hardware that has several
 unplanned side-effects including code-size reduction, expansion of
 HINT space and more.  The reason for
 creating it is to provide a manageable way to turn a pre-existing design
-into a parallel one, in a step-by-step incremental fashion, allowing
+into a parallel one, in a step-by-step incremental fashion, without adding any new opcodes, thus allowing
 the implementor to focus on adding hardware where it is needed and necessary.
 The primary target is for mobile-class 3D GPUs and VPUs, with secondary
 goals being to reduce executable size and reduce context-switch latency.
@@ -75,8 +75,9 @@ when and whether to parallelise operations **entirely to the implementor**.
 
 The principle of SV is as follows:
 
-* Standard RV instructions are "prefixed" either to a 48 format (single instruction option) or a variable
- length VLIW-like prefix (multi or "grouped" option) that indicates
+* Standard RV instructions are "prefixed" (extended) through a 48 bit format (single instruction option) or a variable
+ length VLIW-like prefix (multi or "grouped" option).
+* The prefix(es) indicate
  which registers are "tagged" as "vectorised". Predicates can also be added.
 * A "Vector Length" CSR is set, indicating the span of any future
   "parallel" operations.
@@ -165,16 +166,14 @@ The reason for setting this limit is so that predication registers, when
 marked as such, may fit into a single register as opposed to fanning out
 over several registers.  This keeps the implementation a little simpler.
 
-The other important factor to note is that the actual MVL is **offset
+The other important factor to note is that the actual MVL is internally stored **offset
 by one**, so that it can fit into only 6 bits (for RV64) and still cover
-a range up to XLEN bits.  So, when setting the MVL CSR to 0, this actually
-means that MVL==1.  When setting the MVL CSR to 3, this actually means
-that MVL==4, and so on.  This is expressed more clearly in the "pseudocode"
+a range up to XLEN bits.  Attempts to set MVL to zero will return an exception.  This is expressed more clearly in the "pseudocode"
 section, where there are subtle differences between CSRRW and CSRRWI.
 
 ## Vector Length (VL) <a name="vl" />
 
-VSETVL is slightly different from RVV.  Like RVV, VL is set to be within
+VSETVL is slightly different from RVV.  Similar to RVV, VL is set to be within
 the range 1 <= VL <= MVL (where MVL in turn is limited to 1 <= MVL <= XLEN)
 
     VL = rd = MIN(vlen, MVL)
@@ -254,13 +253,12 @@ the destination element offset of the current parallel
 instruction being executed, and, for twin-predication, the source
 element offset as well.  Interestingly it may hypothetically
 also be used to make the immediately-following instruction to skip a
-certain number of elements, however the recommended method to do
-this is predication or using the offset mode of the REMAP CSRs.
+certain number of elements.
 
 Setting destoffs and srcoffs is realistically intended for saving state
 so that exceptions (page faults in particular) may be serviced and the
 hardware-loop that was being executed at the time of the trap, from
-user-mode (or Supervisor-mode), may be returned to and continued from
+user-mode (or Supervisor-mode), may be returned to and continued from exactly
 where it left off.  The reason why this works is because setting
 User-Mode STATE will not change (not be used) in M-Mode or S-Mode
 (and is entirely why M-Mode and S-Mode have their own STATE CSRs).
@@ -281,7 +279,7 @@ When setting this CSR, the following characteristics will be enforced:
 
 ## MVL and VL  Pseudocode
 
-The pseudo-code for get and set of VL and MVL are as follows:
+The pseudo-code for get and set of VL and MVL use the following internal functions as follows:
 
     set_mvl_csr(value, rd):
         regs[rd] = MVL
@@ -299,7 +297,7 @@ The pseudo-code for get and set of VL and MVL are as follows:
         regs[rd] = VL
         return VL
 
-Note that where setting MVL behaves as a normal CSR, unlike standard CSR
+Note that where setting MVL behaves as a normal CSR (returns the old value), unlike standard CSR
 behaviour, setting VL will return the **new** value of VL **not** the old
 one.
 
@@ -320,13 +318,13 @@ not capable of returning that value.
 
     CSRRW_Set_MVL(rs1, rd):
         value = regs[rs1]
-        if value == 0:
+        if value == 0 or value > XLEN:
             raise Exception
         set_mvl_csr(value, rd)
 
     CSRRW_Set_VL(rs1, rd):
         value = regs[rs1]
-        if value == 0:
+        if value == 0 or value > XLEN:
             raise Exception
         set_vl_csr(value, rd)
 
@@ -2137,7 +2135,7 @@ VL/MAXVL/SubVL Block:
 | 0     | SubVL | VLdest | VLEN     vlt |
 | 1     | SubVL | VLdest | VLEN         |
 
-If vlt is 0, VLEN is a 5 bit immediate value. If vlt is 1, it specifies
+If vlt is 0, VLEN is a 5 bit immediate value, offset by one (i.e a bit sequence of 0b00000 represents VL=1 and so on). If vlt is 1, it specifies
 the scalar register from which VL is set by this VLIW instruction
 group. VL, whether set from the register or the immediate, is then
 modified (truncated) to be MIN(VL, MAXVL), and the result stored in the
@@ -2149,12 +2147,12 @@ the VLIW instruction effectively embeds an optional "SETSUBVL, SETVL"
 sequence (in compact form).
 
 When bit 15 is set to 1, MAXVL and VL are both set to the immediate,
-VLEN, which is 6 bits in length, and the same value stored in scalar
-register VLdest (if that register is nonzero).
+VLEN (again, offset by one), which is 6 bits in length, and the same value stored in scalar
+register VLdest (if that register is nonzero).  A value of 0b000000 will set MAXVL = VL = 1, a value of 0b000001 will set MAXVL = VL = 2 and so on.
 
 This option will typically not be used so much for loops as it will be
 for one-off instructions such as saving the entire register file to the
-stack with a single one-off Vectorised and predicated LD/ST.
+stack with a single one-off Vectorised and predicated LD/ST, or as a way to save or restore registers in a function call with a single instruction.
 
 CSRs needed:
 
