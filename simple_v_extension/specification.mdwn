@@ -242,9 +242,11 @@ hardware loop is reduced to a single element: scalar operations.
 
 ## SUBVL - Sub Vector Length
 
-This is a "group by quantity" that effectively divides VL into groups
-of elements of length SUBVL. VL itself must therefore be set in advance
-to a multiple of SUBVL.
+This is a "group by quantity" that effectivrly asks each iteration of the hardware loop to load SUBVL elements of width elwidth at a time. Effectively, SUBVL is like a SIMD multiplier: instead of just 1 operation issued, SUBVL operations are issued.
+
+Another way to view SUBVL is that each element in the VL length vector is now SUBVL times elwidth bits in length.
+
+The primary use case for SUBVL is for 3D FP Vectors. A Vector of 3D coordinates X,Y,Z for example may be loaded and multiplied the stored, per VL element iteration, rather than having to set VL to three times larger.
 
 Legal values are 1, 2, 3 and 4, and the STATE CSR must hold the 2 bit values 0b00 thru 0b11.
 
@@ -257,6 +259,8 @@ rather than by individual element.
 This saves a not insignificant number of instructions when handling 3D
 vectors, as otherwise a much longer predicate mask would have to be set
 up with regularly-repeated bit patterns.
+
+See SUBVL Pseudocode illustration for details.
 
 ## STATE
 
