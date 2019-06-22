@@ -4,6 +4,8 @@ SimpleV Prefix (SVprefix) Proposal v0.3
 This proposal is designed to be able to operate without SVorig, but not to
 require the absence of SVorig See Specification_.
 
+If required, the STATE, VL, MVL and SUBVL CSRs all operate according to the main specification: hypothetically an implementor could choose not to support setting of VL, MVL or SUBVL (only allowing them to be set to a value of 1). STATE would then not be required either.
+
 .. _Specification: http://libre-riscv.org/simple_v_extension/specification/
 
 .. contents::
@@ -379,6 +381,8 @@ VL is set to 4, the 64-bit register at rd is subdivided into
 separate 64-bit destination registers (rd+0, rd+1, rd+2, rd+3)
 that are sign-extended from the source width size out to 64-bit,
 because that is itype=0b00 (uXLEN).
+
+Note also: changing elwidth creates packed elements that, depending on VL, may create vectors that do not fit perfectly onto XLEM sized rehistry file boundaries. This does  NOT result in the destruction of the MSBs of the last register written to at the end of a VL loop. More details on how to handle this are described in the main Specification_.
 
 Signedness Decision Procedure
 =============================
