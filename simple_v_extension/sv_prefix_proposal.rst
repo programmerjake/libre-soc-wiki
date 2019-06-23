@@ -15,13 +15,19 @@ Conventions
 ===========
 
 Conventions used in this document:
-- Bits are numbered starting from 0 at the LSB, so bit 3 is 1 in the integer 8.
-- Bit ranges are inclusive on both ends, so 5:3 means bits 5, 4, and 3.
 
-Operations work on variable-length vectors of sub-vectors, where each sub-vector
-has a length *svlen*, and an element type *etype*. When the vectors are stored
+* Bits are numbered starting from 0 at the LSB, so bit 3 is 1 in the integer 8.
+* Bit ranges are inclusive on both ends, so 5:3 means bits 5, 4, and 3.
+* Operations work on variable-length vectors of sub-vectors up to *VL* in length,
+where each sub-vector
+has a length *svlen*, and *svlen* elements of type *etype*.
+* The actual total number of elements is therefore *svlen* times *VL*.
+* When the vectors are stored
 in registers, all elements are packed so that there is no padding in-between
-elements of the same vector. The number of bytes in a sub-vector, *svsz*, is the
+elements of the same vector.
+* The register file itself is thus best viewed as a byte-level
+SRAM that is typecast to an array of *etype*s
+* The number of bytes in a sub-vector, *svsz*, is the
 product of *svlen* and the element size in bytes.
 
 Options
