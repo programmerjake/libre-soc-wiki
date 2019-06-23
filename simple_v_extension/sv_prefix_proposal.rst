@@ -192,6 +192,8 @@ prefix as well.  VLtyp encodes how (whether) to set VL and MAXVL.
 VLtyp field encoding
 ====================
 
+NOTE: VL and MVL below are separate and distinct from the main Specification_ VL and MVL.
+
 +-----------+-------------+--------------+----------+----------------------+
 | VLtyp[11] | VLtyp[10:6] | VLtyp[5:1]   | VLtyp[0] | comment              |
 +-----------+-------------+--------------+----------+----------------------+
@@ -229,9 +231,9 @@ same immediate value.  This may be most useful for one-off Vectorised
 operations such as LOAD-MULTI / STORE-MULTI, for saving and restoration
 of large batches of registers in context-switches or function calls.
 
-Note that VLtyp's VL and MVL are **NOT** the same as the main Specification_ VL or MVL, they are overrides that require their own separate associated SVPSTATE CSR that has nothing to do with the corresponding (otherwise identically formatted) STATE CSR from the main Specification_.
+Note that VLtyp's VL and MVL are **NOT** the same as the main Specification_ VL or MVL, they require their own separate associated SVPSTATE CSR that has nothing to do with the corresponding (otherwise identically formatted) STATE CSR from the main Specification_.
 
-This is so that the 48/64 bit instruction execution does not interfere with or compromise the VLIW execution, or interfere with loops that are underway using VL (and SUBVL).  48 and 64 bit instructions need to be stand-alone, and as such have to have their own (separate) context.
+This is so that the 48/64 bit instruction execution does not interfere with or compromise the VLIW execution, or interfere with loops that are underway using main spec VL (and SUBVL).  48 and 64 bit instructions need to be stand-alone, and as such have to have their own (separate) context.
 
 When using VLtyp, a separate independent element-based hardware loop is engaged (in an identical but independent fashion from the main Specification_), which must be both similarly "re-entrant" as far as exceptions are concerned, and also have the same in-order characteristics.  See main Specification_ and also svtyp below for more details.
 
@@ -307,6 +309,8 @@ Open question: RVV overloads the width field of LOAD-FP/STORE-FP using the bit 2
 Sub-Vector Length (svlen) Field Encoding
 =======================================================
 
+NOTE: svlen is **not** the same as the main spec SUBVL. svlen is local to the P48 and P64 encoding, and has its own corresponding SVPSTATE CSR.
+
 Bitwidth, from VL's perspective, is a multiple of the elwidth times svlen.  So within each loop of VL there are svlen sub-elements of elwidth in size, just like in a SIMD architecture. When svlen is set to 0b00 (indicating svlen=1) no such SIMD-like behaviour exists and the subvectoring is disabled.
 
 Predicate bits do not apply to the individual sub-vector elements, they apply to the entire subvector group. This saves instructions on setup of the predicate.
@@ -323,7 +327,7 @@ Predicate bits do not apply to the individual sub-vector elements, they apply to
 | 11             | 4     |
 +----------------+-------+
 
-Setting of svtyp (when supported) will override SUBVL (when supported) solely for the duration of the 48/64 bit instruction.
+Setting of svtyp (when supported) will activate solely for the duration of the 48/64 bit instruction, and has nothing to do with SUBVL.
 
 Just as with the main VL loop, the sub-vector element instruction execution must appear to be in-order, and must be "re-entrant" (to use a software term).
 
