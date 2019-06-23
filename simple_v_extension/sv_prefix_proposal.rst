@@ -4,12 +4,6 @@ SimpleV Prefix (SVprefix) Proposal v0.3
 This proposal is designed to be able to operate without SVorig, but not to
 require the absence of SVorig See Specification_.
 
-If required, the STATE, VL, MVL and SUBVL CSRs all operate according to the main specification: hypothetically an implementor could choose not to support setting of VL, MVL or SUBVL (only allowing them to be set to a value of 1). STATE would then not be required either.
-
-If support for SUBVL is to be provided, storing of the sub-vector offsets and SUBVL itself (and context switching of the same) in the STATE CSRs are mandatory.
-
-If support for VL is to be provided, storing of VL, MVL and the dest and src offsets (and context switching of the same) in the STATE CSRs are mandatory.
-
 .. _Specification: http://libre-riscv.org/simple_v_extension/specification/
 
 .. contents::
@@ -27,8 +21,28 @@ in registers, all elements are packed so that there is no padding in-between
 elements of the same vector. The number of bytes in a sub-vector, *svsz*, is the
 product of *svlen* and the element size in bytes.
 
+Options
+=======
+
+* SVPrefix augments the main Specification_
+* SVPregix operates independently, without the VL (and MVL) CSRs (in any priv level)
+* SVPrefix operates independently, without the SUBVL CSRs (in any priv level)
+* SVPrefix operates independently, with no support for VL (or MVL) overrides in the 64 bit instruction format either (VLtyp=0)
+* SVPrefix operates independently, with no support for svlen (SUBVL) overrides in either the 48 or 64 bit instruction format either (svlen=0).
+
+All permutations of the above options are permitted, and in the UNIX platform must raise illegal instruction exceptions on implementations that do not support them.
+
+The options 
+
+If required, the STATE, VL, MVL and SUBVL CSRs all operate according to the main specification: hypothetically an implementor could choose not to support setting of VL, MVL or SUBVL (only allowing them to be set to a value of 1). STATE would then not be required either.
+
+If support for SUBVL is to be provided, storing of the sub-vector offsets and SUBVL itself (and context switching of the same) in the STATE CSRs are mandatory.
+
+If support for VL is to be provided, storing of VL, MVL and the dest and src offsets (and context switching of the same) in the STATE CSRs are mandatory.
+
 Half-Precision Floating Point (FP16)
 ====================================
+
 If the F extension is supported, SVprefix adds support for FP16 in the
 base FP instructions by using 10 (H) in the floating-point format field *fmt*
 and using 001 (H) in the floating-point load/store *width* field.
@@ -508,6 +522,15 @@ CSRs are the same as in the main Specification_, if associated functionality is 
 * STATE
 * SUBVL
 
+If svlen and VL/MVL overides are allowed in the 48 and 64 bit formats, the offsets during hardware loops need to be kept as internal state, and kept separate from the same in the main Specification_. Therefore an additional CSR set is needed (per priv level) named xSVSTATE
+
+The format of the xSVSTATE CSR is identical to that in the main Specification_ as follows:
+
++---------+----------+----------+----------+----------+---------+---------+
+| (30..29 | (28..27) | (26..24) | (23..18) | (17..12) | (11..6) | (5...0) |
++---------+----------+----------+----------+----------+---------+---------+
+| dsvoffs | ssvoffs  | subvl    | destoffs | srcoffs  | vl      | maxvl   |
++---------+----------+----------+----------+----------+---------+---------+
 
 SetVL
 =====
