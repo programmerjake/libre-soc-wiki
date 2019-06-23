@@ -269,14 +269,18 @@ full context save/restore.  It contains (and permits setting of):
 
 * MVL
 * VL
-* SUBVL
 * the destination element offset of the current parallel instruction
   being executed
 * and, for twin-predication, the source element offset as well.
+* SUBVL
+* the subvector destination element offset of the current parallel instruction
+  being executed
+* and, for twin-predication, the subvector source element offset as well.
 
 Interestingly STATE may hypothetically also be used to make the
 immediately-following instruction to skip a certain number of elements,
-by playing with destoffs and srcoffs.
+by playing with destoffs and srcoffs
+(and the subvector offsets as well)
 
 Setting destoffs and srcoffs is realistically intended for saving state
 so that exceptions (page faults in particular) may be serviced and the
@@ -288,18 +292,21 @@ User-Mode STATE will not change (not be used) in M-Mode or S-Mode
 
 The format of the STATE CSR is as follows:
 
-| (28..27) | (26..24) | (23..18) | (17..12) | (11..6) | (5...0) |
-| -------- | -------- | -------- | -------- | ------- | ------- |
-| rsvd     | subvl    | destoffs | srcoffs  | vl      | maxvl   |
+| (30..29 | (28..27) | (26..24) | (23..18) | (17..12) | (11..6) | (5...0) |
+| ------- | -------- | -------- | -------- | -------- | ------- | ------- |
+| dsvoffs | ssvoffs  | subvl    | destoffs | srcoffs  | vl      | maxvl   |
 
 When setting this CSR, the following characteristics will be enforced:
 
 * **MAXVL** will be truncated (after offset) to be within the range 1 to XLEN
 * **VL** will be truncated (after offset) to be within the range 1 to MAXVL
-* **SUBVL** which sets a SIMD-like quantity, has only 4 values however
-  if VL is not a multiple of SUBVL an exception will be raised.
+* **SUBVL** which sets a SIMD-like quantity, has only 4 values there are no changes needed
 * **srcoffs** will be truncated to be within the range 0 to VL-1
 * **destoffs** will be truncated to be within the range 0 to VL-1
+* **ssvoffs** will be truncated to be within the range 0 to SUBVL-1
+* **dsvoffs** will be truncated to be within the range 0 to SUBVL-1
+
+NOTE: if the following instruction is not a twin predicated instruction, and destoffs or dsvoffs has been set to non-zero, subsequent execution behaviour is undefined. **USE WITH CARE**.
 
 ## MVL and VL  Pseudocode
 
