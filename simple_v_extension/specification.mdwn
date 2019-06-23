@@ -102,35 +102,36 @@ on hidden context that augments *scalar* RISCV instructions.
 * An optional "reshaping" CSR key-value table which remaps from a 1D
   linear shape to 2D or 3D, including full transposition.
 
-There are also five additional User mode CSRs :
+There are five additional CSRs, available in any privilege level:
 
-* uMVL (the Maximum Vector Length)
-* uVL (which has different characteristics from standard CSRs)
-* uSUBVL (effectively a kind of SIMD)
-* uEPCVLIW (a copy of the sub-execution Program Counter, that is relative
+* MVL (the Maximum Vector Length)
+* VL (which has different characteristics from standard CSRs)
+* SUBVL (effectively a kind of SIMD)
+* STATE (containing copies of MVL, VL and SUBVL as well as context information)
+* PCVLIW (the current operation being executed within a VLIW Group)
+
+For User Mode there are the following CSRs:
+
+* uePCVLIW (a copy of the sub-execution Program Counter, that is relative
   to the start of the current VLIW Group, set on a trap).
-* uSTATE (useful for saving and restoring during context switch,
+* ueSTATE (useful for saving and restoring during context switch,
   and for providing fast transitions)
 
-There are also five additional CSRs for Supervisor-Mode:
+There are also two additional CSRs for Supervisor-Mode:
 
-* SMVL
-* SVL
-* SSUBVL
-* SEPCVLIW
-* SSTATE
+* sePCVLIW
+* seSTATE
 
 And likewise for M-Mode:
 
-* MMVL
-* MVL
-* MSUBVL
-* MEPCVLIW
-* MSTATE
+* mePCVLIW
+* meSTATE
 
-Both Supervisor and M-Mode have their own CSR registers, independent
-of the other privilege levels, in order to make it easier to use
-Vectorisation in each level without affecting other privilege levels.
+The u/m/s CSRs are treated and handled exactly like their (x)epc equivalents. On entry to a privilege level, the contents of its (x)eSTATE and (x)ePCVLIW CSRs are copied into STATE and PCVLIW respectively, and on exit from a priv level the STATE and PCVLIW CSRs are copied to the exited priv level's corresponding CSRs.
+
+Thus for example, a User Mode trap will end up swapping STATE and ueSTATE (on both entry and exit), allowing User Mode traps to have their own Vectorisation Context set up, separated from and unaffected by normal user applications.
+
+Likewise, Supervisor Mode may perform context-switches, safe in the knowledge that its Vectorisation State is unaffected by User Mode.
 
 The access pattern for these groups of CSRs in each mode follows the
 same pattern for other CSRs that have M-Mode and S-Mode "mirrors":
@@ -226,7 +227,7 @@ behaviour of CSRRW (and CSRRWI) must be changed to specifically store
 the *new* value in the destination register, **not** the old value.
 Where context-load/save is to be implemented in the usual fashion
 by using a single CSRRW instruction to obtain the old value, the
-*secondary* CSR must be used (SVSTATE).  This CSR by contrast behaves
+*secondary* CSR must be used (STATE).  This CSR by contrast behaves
 exactly as standard CSRs, and contains more than just VL.
 
 One interesting side-effect of using CSRRWI to set VL is that this
@@ -234,7 +235,7 @@ may be done with a single instruction, useful particularly for a
 context-load/save.  There are however limitations: CSRWI's immediate
 is limited to 0-31 (representing VL=1-32).
 
-Note that when VL is set to 1, parallel operations cease: the
+Note that when VL is set to 1, vector operations cease (but not subvector operations: that requires setting SUBVL=1) the
 hardware loop is reduced to a single element: scalar operations.
 This is in effect the default, normal
 operating mode. However it is important
@@ -259,7 +260,7 @@ later.
 
 The primary use case for SUBVL is for 3D FP Vectors. A Vector of 3D coordinates X,Y,Z for example may be loaded and multiplied the stored, per VL element iteration, rather than having to set VL to three times larger.
 
-Legal values are 1, 2, 3 and 4, and the STATE CSR must hold the 2 bit values 0b00 thru 0b11.
+Legal values are 1, 2, 3 and 4 (and the STATE CSR must hold the 2 bit values 0b00 thru 0b11 to represent them).
 
 Setting this CSR to 0 must raise an exception.  Setting it to a value
 greater than 4 likewise.
@@ -288,7 +289,7 @@ full context save/restore.  It contains (and permits setting of):
   being executed
 * and, for twin-predication, the subvector source element offset as well.
 
-Interestingly STATE may hypothetically also be used to make the
+Interestingly STATE may hypothetically also be modified to make the
 immediately-following instruction to skip a certain number of elements,
 by playing with destoffs and srcoffs
 (and the subvector offsets as well)
@@ -299,7 +300,7 @@ hardware-loop that was being executed at the time of the trap, from
 user-mode (or Supervisor-mode), may be returned to and continued from exactly
 where it left off.  The reason why this works is because setting
 User-Mode STATE will not change (not be used) in M-Mode or S-Mode
-(and is entirely why M-Mode and S-Mode have their own STATE CSRs).
+(and is entirely why M-Mode and S-Mode have their own STATE CSRs, meSTATE and seSTATE).
 
 The format of the STATE CSR is as follows:
 
@@ -319,7 +320,7 @@ When setting this CSR, the following characteristics will be enforced:
 
 NOTE: if the following instruction is not a twin predicated instruction, and destoffs or dsvoffs has been set to non-zero, subsequent execution behaviour is undefined. **USE WITH CARE**.
 
-### Rules for when to increment STATE offsets
+### Hardware rules for when to increment STATE offsets
 
 The offsets inside STATE are like the indices in a loop, except in hardware. They are also partially (conceptually) similar to a "sub-execution Program Counter". As such, and to allow proper context switching and to define correct exception behaviour, the following rules must be observed:
 
@@ -333,7 +334,7 @@ This latter is why srcoffs and destoffs may be stored as values from 0 to XLEN-1
 
 The same corresponding rules apply to SUBVL, svsrcoffs and svdestoffs.
 
-## MVL and VL  Pseudocode
+## MVL and VL Pseudocode
 
 The pseudo-code for get and set of VL and MVL use the following internal
 functions as follows:
@@ -371,7 +372,7 @@ an immediate of 1 is used to set VL=2 and so on:
 However for CSRRW the following pseudocode is used for MVL and VL,
 where setting the value to zero will cause an exception to be raised.
 The reason is that if VL or MVL are set to zero, the STATE CSR is
-not capable of returning that value.
+not capable of storing that value.
 
     CSRRW_Set_MVL(rs1, rd):
         value = regs[rs1]
@@ -429,6 +430,8 @@ those values **minus one**.  This is absolutely critical to implement
 if the STATE CSR is to be used for fast context-switching.
 
 ## VL, MVL and SUBVL instruction aliases
+
+This table contains pseudo-assembly instruction aliases.
 
 | alias           | CSR                  |
 | -               | -                    |
@@ -515,8 +518,6 @@ As the above table is a CAM (key-value store) it may be appropriate
        tb[idx].regidx   = CSRvec[i].regidx  // indirection
        tb[idx].isvector = CSRvec[i].isvector // 0=scalar
        tb[idx].packed   = CSRvec[i].packed  // SIMD or not
-
-
 
 ## Predication Table <a name="predication_csr_table"></a>
 
