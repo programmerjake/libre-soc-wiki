@@ -198,10 +198,7 @@ Appendix, "Context Switch Example").  The reason for limiting VL to XLEN
 is down to the fact that predication bits fit into a single register of
 length XLEN bits.
 
-The second change is that when VSETVL is requested to be stored
-into x0, it is *ignored* silently (VSETVL x0, x5)
-
-The third and most important change is that, within the limits set by
+The second and most important change is that, within the limits set by
 MVL, the value passed in **must** be set in VL (and in the
 destination register).
 
@@ -224,12 +221,12 @@ hardware-parallelism in the ALUs is not deployed.  A hybrid is also
 permitted (as used in Broadcom's VideoCore-IV) however this must be
 *entirely* transparent to the ISA.
 
-The fourth change is that VSETVL is implemented as a CSR, where the
+The third change is that VSETVL is implemented as a CSR, where the
 behaviour of CSRRW (and CSRRWI) must be changed to specifically store
 the *new* value in the destination register, **not** the old value.
 Where context-load/save is to be implemented in the usual fashion
 by using a single CSRRW instruction to obtain the old value, the
-*secondary* CSR must be used (SVSTATE).  This CSR behaves
+*secondary* CSR must be used (SVSTATE).  This CSR by contrast behaves
 exactly as standard CSRs, and contains more than just VL.
 
 One interesting side-effect of using CSRRWI to set VL is that this
@@ -237,14 +234,28 @@ may be done with a single instruction, useful particularly for a
 context-load/save.  There are however limitations: CSRWI's immediate
 is limited to 0-31 (representing VL=1-32).
 
-Note that when VL is set to 1, all parallel operations cease: the
+Note that when VL is set to 1, parallel operations cease: the
 hardware loop is reduced to a single element: scalar operations.
+This is in effect the default, normal
+operating mode. However it is important
+to appreciate that this does **not**
+result in the Register table or SUBVL 
+being disabled. Only when the Register
+table is empty (P48/64 prefix fields notwithstanding)
+would SV have no effect.
 
 ## SUBVL - Sub Vector Length
 
 This is a "group by quantity" that effectivrly asks each iteration of the hardware loop to load SUBVL elements of width elwidth at a time. Effectively, SUBVL is like a SIMD multiplier: instead of just 1 operation issued, SUBVL operations are issued.
 
-Another way to view SUBVL is that each element in the VL length vector is now SUBVL times elwidth bits in length.
+Another way to view SUBVL is that each element in the VL length vector is now SUBVL times elwidth bits in length and
+now comprises SUBVL discrete sub
+operations.  An inner SUBVL for-loop within
+a VL for-loop in effect, with the
+sub-element increased every time in the
+innermost loop. This is best illustrated
+in the (simplified) pseudocode example,
+later.
 
 The primary use case for SUBVL is for 3D FP Vectors. A Vector of 3D coordinates X,Y,Z for example may be loaded and multiplied the stored, per VL element iteration, rather than having to set VL to three times larger.
 
@@ -918,11 +929,19 @@ So whilst elements are indexed by (i * SUBVL + s), predicate bits are indexed by
        for (s = 0; s < SUBVL; s++)
         xSTATE.ssvoffs = s # save context
         if (predval & 1<<i) # predication uses intregs
+           # actual add is here (at last)
            ireg[rd+id] <= ireg[rs1+irs1] + ireg[rs2+irs2];
            if (!int_vec[rd ].isvector) break;
         if (int_vec[rd ].isvector)  { id += 1; }
         if (int_vec[rs1].isvector)  { irs1 += 1; }
         if (int_vec[rs2].isvector)  { irs2 += 1; }
+        if (id == VL or irs1 == VL or irs2 == VL) {
+          # end VL hardware loop
+          xSTATE.srcoffs = 0; # reset
+          xSTATE.ssvoffs = 0; # reset
+          return;
+        }
+
 
 NOTE: pseudocode simplified greatly: zeroing, proper predicate handling, elwidth handling etc. all left out.
 
