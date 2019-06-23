@@ -27,13 +27,15 @@ product of *svlen* and the element size in bytes.
 Options
 =======
 
+The following partial / full implementation options are possible:
+
 * SVPrefix augments the main Specification_
 * SVPregix operates independently, without the main spec VL (and MVL) CSRs (in any priv level)
 * SVPrefix operates independently, without the main spec SUBVL CSRs (in any priv level)
 * SVPrefix operates independently, with no support for VL (or MVL) overrides in the 64 bit instruction format either (VLtyp=0 as the only legal permitted value)
 * SVPrefix operates independently, with no support for svlen overrides in either the 48 or 64 bit instruction format either (svlen=0 as the only legal permitted value).
 
-All permutations of the above options are permitted, and in the UNIX platform must raise illegal instruction exceptions on implementations that do not support them.
+All permutations of the above options are permitted, and the UNIX platform must raise illegal instruction exceptions on implementations that do not support each option.  For example, an implementation that has no support for VLtyp that sees a nonzero VLtyp must raise an illegal instruction exception.
 
 Note that SVPrefix (VLtyp and svlen) and the main spec share (modify) the STATE CSR. P48 and P64 opcodes must **NOT** set VLtyp or svlen inside loops that also use VL or SUBVL. Doing so will result in undefined behaviour, as STATE will be affected by doing so.
 
