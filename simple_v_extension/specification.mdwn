@@ -2330,8 +2330,10 @@ Notes:
   number of bits is 80 + 16 times IL.  Standard RV32, RVC and also
   SVPrefix (P48/64-\*-Type) instructions fit into this space, after the
   (optional) VL / RegCam / PredCam entries
-* Anything - any registers - within the VLIW-prefixed format *MUST* have the
-  RegCam and PredCam entries applied to it.
+* In any RVC or 32 Bit opcode, any registers within the VLIW-prefixed format *MUST* have the
+  RegCam and PredCam entries applied to the operation
+ (and the Vectorisation loop activated)
+* P48 and P64 opcodes do **not** take their Register or predication context from the VLIW Block tables: they do however have VL or SUBVL applied (unless VLtyp or svlen are set).
 * At the end of the VLIW Group, the RegCam and PredCam entries
   *no longer apply*.  VL, MAXVL and SUBVL on the other hand remain at
   the values set by the last instruction (whether a CSRRW or the VL
@@ -2362,6 +2364,8 @@ needed, more space is saved by using the 8 bit formats.
 
 In this light, embedding the VL/MAXVL, PredCam and RegCam CSR entries into
 a VLIW format makes a lot of sense.
+
+Bear in mind the warning in an earlier section that use of VLtyp or svlen in a P48 or P64 opcode within a VLIW Group will result in corruption (use) of the STATE CSR, as the STATE CSR is shared with SVPrefix. To avoid this situation, the STATE CSR may be copied into a temp register and restored afterwards.
 
 Open Questions:
 
