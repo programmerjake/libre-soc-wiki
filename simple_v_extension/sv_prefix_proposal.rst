@@ -1,6 +1,9 @@
 SimpleV Prefix (SVprefix) Proposal v0.3
 =======================================
 
+* Copyright (c) Jacob Lifshay, 2019
+* Copyright (c) Luke Kenneth Casson Leighton, 2019
+
 This proposal is designed to be able to operate without SVorig, but not to
 require the absence of SVorig See Specification_.
 
