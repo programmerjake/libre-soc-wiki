@@ -32,7 +32,9 @@ Options
 
 All permutations of the above options are permitted, and in the UNIX platform must raise illegal instruction exceptions on implementations that do not support them.
 
-Note that allowing interaction with VL/MVL (and SUBVL) CSRs is **NOT** the same as supporting VLtyp (or svlen) fields that are embedded in the 48/64 opcodes. Setting of VLtyp (or svlen) requires a **completely separate** CSR from the main Specification_ STATE CSR, named SVPSTATE.
+Note that SVPrefix (VLtyp and svlen) and the main spec share (modify) the STATE CSR. P48 and P64 opcodes must **NOT** set VLtyp or svlen inside loops that also use VL or SUBVL. Doing so will result in undefined behaviour, as STATE will be affected by doing so.
+
+However, using VLtyp or svlen in standalone operations, or pushing (and restoring) the contents of the STATE CSR to the stack, or just storing its contents in a temporary register whilst executing a sequence of P48 or P64 opcodes, is perfectly fine.
 
 If the main Specification_ CSRs are to be supported, the STATE, VL, MVL and SUBVL CSRs all operate according to the main specification. Under the options above, hypothetically an implementor could choose not to support setting of VL, MVL or SUBVL (only allowing them to be set to a value of 1). Under such circumstances, where *neither* VL/MVL *nor* SUBVL are supported, STATE would then not be required either.
 
@@ -40,7 +42,6 @@ If however support for SUBVL is to be provided, storing of the sub-vector offset
 
 Likewise if support for VL is to be provided, storing of VL, MVL and the dest and src offsets (and context switching of the same) in the STATE CSRs are mandatory.
 
-This completely independently of SVPSTATE, svlen and VLtyp, as these are instruction-specific overrides that do **not** affect the STATE CSR.
 
 Half-Precision Floating Point (FP16)
 ====================================
@@ -192,7 +193,7 @@ prefix as well.  VLtyp encodes how (whether) to set VL and MAXVL.
 VLtyp field encoding
 ====================
 
-NOTE: VL and MVL below are separate and distinct from the main Specification_ VL and MVL.
+NOTE: VL and MVL below are modified (potentially damaging) and so is the STATE CSR. It is the responsibility of the programmer to ensure that modifications to STATE do not compromise loops or VLIW Group opetations, by saving and restoring the STATE CSR (if needed).
 
 +-----------+-------------+--------------+----------+----------------------+
 | VLtyp[11] | VLtyp[10:6] | VLtyp[5:1]   | VLtyp[0] | comment              |
@@ -231,13 +232,9 @@ same immediate value.  This may be most useful for one-off Vectorised
 operations such as LOAD-MULTI / STORE-MULTI, for saving and restoration
 of large batches of registers in context-switches or function calls.
 
-Note that VLtyp's VL and MVL are **NOT** the same as the main Specification_ VL or MVL, they require their own separate associated SVPSTATE CSR that has nothing to do with the corresponding (otherwise identically formatted) STATE CSR from the main Specification_.
+Note that VLtyp's VL and MVL are the same as the main Specification_ VL or MVL, and that loops will also alter srcoffs and destoffs. It is the programmer's responsibility to ensure that STATE is not compromised (e.g saved to a temp reg or to the stack).
 
-This is so that the 48/64 bit instruction execution does not interfere with or compromise the VLIW execution, or interfere with loops that are underway using main spec VL (and SUBVL).  48 and 64 bit instructions need to be stand-alone, and as such have to have their own (separate) context.
-
-When using VLtyp, a separate independent element-based hardware loop is engaged (in an identical but independent fashion from the main Specification_), which must be both similarly "re-entrant" as far as exceptions are concerned, and also have the same in-order characteristics.  See main Specification_ and also svtyp below for more details.
-
-To reiterate and emphasise this critical point: the VLtyp loop indices (destoffs and srcoffs) are stored in the SVPSTATE CSR, **not** the STATE CSR. The STATE CSR **MUST** remain independent, unaffected and unaltered by all and any use of VLtyp in any given P64 opcode.
+Furthermore, the execution order and exception handling must be exactly the same as in the main spec.
 
 vs#/vd Fields' Encoding
 =======================
@@ -309,7 +306,7 @@ Open question: RVV overloads the width field of LOAD-FP/STORE-FP using the bit 2
 Sub-Vector Length (svlen) Field Encoding
 =======================================================
 
-NOTE: svlen is **not** the same as the main spec SUBVL. svlen is local to the P48 and P64 encoding, and has its own corresponding SVPSTATE CSR.
+NOTE: svlen is the same as the main spec SUBVL, and modifies the STATE CSR. The same caveats apply to svlen as do to SUBVL.
 
 Bitwidth, from VL's perspective, is a multiple of the elwidth times svlen.  So within each loop of VL there are svlen sub-elements of elwidth in size, just like in a SIMD architecture. When svlen is set to 0b00 (indicating svlen=1) no such SIMD-like behaviour exists and the subvectoring is disabled.
 
@@ -318,7 +315,7 @@ Predicate bits do not apply to the individual sub-vector elements, they apply to
 +----------------+-------+
 | svlen Encoding | Value |
 +================+=======+
-| 00             | 1     |
+| 00             | SUBVL |
 +----------------+-------+
 | 01             | 2     |
 +----------------+-------+
@@ -327,15 +324,9 @@ Predicate bits do not apply to the individual sub-vector elements, they apply to
 | 11             | 4     |
 +----------------+-------+
 
-Setting of svtyp (when supported) will activate solely for the duration of the 48/64 bit instruction, and has nothing to do with SUBVL.
+In independent standalone implementations that do not implement the main specification, the SUBVL CSR (svtyp=0b00) may be assumed to be 1.
 
-Just as with the main VL loop, the sub-vector element instruction execution must appear to be in-order, and must be "re-entrant" (to use a software term).
-
-Thus, if an exception occurs, SVPSTATE (**not STATE**) must store the current sub-element index, such that on return from the exception the instruction engine knows at which point in the sub-vector to continue execution.
-
-If any sub-vector element execution was in progress at the point of the exception, those results **MUST** be discarded.
-
-Also to reiterate: it is **critical** that STATE CSRs be unaltered and untouched by the use of svlen in a 48/64 bit opcode.
+Behaviour of operations that set svlen are identical to those of the main spec. See section on VLtyp, above.
 
 Predication (pred) Field Encoding
 =================================
@@ -544,25 +535,7 @@ CSRs are the same as in the main Specification_, if associated functionality is 
 * STATE
 * SUBVL
 
-If svlen overrides are allowed in the 48  bit formats (and VLtyp usage likewise in the 64 bit format), the offsets during hardware loops need to be kept as internal state, and kept entirely separate from the same in the main Specification_. Therefore an additional CSR set is needed (per priv level) named xSVSTATE (x=u/s/h/m).
-
-The format of the xSVSTATE CSR is identical to that in the main Specification_ as follows:
-
-+---------+----------+----------+----------+----------+---------+---------+
-| (30..29 | (28..27) | (26..24) | (23..18) | (17..12) | (11..6) | (5...0) |
-+---------+----------+----------+----------+----------+---------+---------+
-| dsvoffs | ssvoffs  | subvl    | destoffs | srcoffs  | vl      | maxvl   |
-+---------+----------+----------+----------+----------+---------+---------+
-
-SetVL
-=====
-
-setvl rd, rs1, imm
-setvl rd, rs1
-
-This is done the same as Standard SV.
-There is also a MVL CSR.  CSRRW and CSRRWI operate in the same way as in SV. See Specification_.
-
+Associated SET and GET on the CSRs is exactly as in the main spec as well (including CSRRWI and CSRRW differences).
 
 Additional Instructions
 =======================
@@ -632,3 +605,4 @@ It would perhaps make sense (and for svlen as well) to make 48/64 isolated and u
 
 MVL and VL should be modifiable by 64 bit prefix as they are global in nature.
 
+Possible solution, svlen and VLtyp allowed to share STATE CSR however programmer becomes responsible for push and pop of state during use of a sequence of P48 and P64 ops.
