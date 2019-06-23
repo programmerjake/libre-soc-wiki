@@ -501,27 +501,22 @@ defined 48-bit instruction encoding for the base instruction.
 CSR Registers
 =============
 
-+--------+-----------------+---------------------------------------------------+
-| Name   | Legal Values    | Meaning                                           |
-+========+=================+===================================================+
-| VL     | 0 <= VL <= XLEN | Vector Length. The number of sub-vectors operated |
-|        |                 | on by vector instructions.                        |
-+--------+-----------------+---------------------------------------------------+
-| Vstart | 0 <= VL < XLEN  | The sub-vector index to start execution at.       |
-|        |                 | Successful completion of all elements in a vector |
-|        |                 | instruction sets Vstart to 0. Set to the index of |
-|        |                 | the failing sub-vector when a vector instruction  |
-|        |                 | traps.  Used to resume execution of vector        |
-|        |                 | instructions after a trap. Is *NOT* "slow"        |
-+--------+-----------------+---------------------------------------------------+
+CSRs are the same as in the main Specification_, if associated functionality is implemented. They have the exact same meaning as in the main specification.
+
+* VL
+* MVL
+* STATE
+* SUBVL
+
 
 SetVL
 =====
 
 setvl rd, rs1, imm
+setvl rd, rs1
 
 This is done the same as Standard SV.
-There is alsO a MVL CSR.  CSRRW and CSRRWI operate in the same way as in SV. See Specification_.
+There is also a MVL CSR.  CSRRW and CSRRWI operate in the same way as in SV. See Specification_.
 
 
 Additional Instructions
@@ -543,6 +538,10 @@ by twin-predication, register cannot: requires MV.X aka VSELECT*)
 Add a register gather instruction (aka MV.X)
 
 # Open questions <a name="questions"></a>
+
+Confirmation needed as to whether subvector extraction can be covered by twin predication (it probably can, it is one of the many purposes it is for).
+
+--
 
 What is SUBVL and how does it work
 
