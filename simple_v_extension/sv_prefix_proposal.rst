@@ -562,7 +562,7 @@ by twin-predication, register might be, by virtue of predicates being registers*
 
 Add a register gather instruction (aka MV.X: regfile[rd] = regfile[regfile[rs1]])
 
-# Open questions <a name="questions"></a>
+# questions
 
 Confirmation needed as to whether subvector extraction can be covered by twin predication (it probably can, it is one of the many purposes it is for).
 
