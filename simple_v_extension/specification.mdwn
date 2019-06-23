@@ -157,10 +157,10 @@ CSRs needed to do so.
 
 Another interesting side effect of separate S Mode CSRs is that Vectorised
 saving of the entire register file to the stack is a single instruction
-(accidental provision of LOAD-MULTI semantics). It can even be predicated,
+(accidental provision of LOAD-MULTI semantics).  If the SVPrefix P64-LD-type format is used, LOAD-MULTI may even be done with a single standalone 64 bit opcode (P64 may set up both VL and MVL from an immediate field). It can even be predicated,
 which opens up some very interesting possibilities.
 
-The xEPCVLIW CSRs must be treated exactly like their corresponding xepc
+The (x)EPCVLIW CSRs must be treated exactly like their corresponding (x)epc
 equivalents. See VLIW section for details.
 
 ## MAXVECTORLENGTH (MVL) <a name="mvl" />
@@ -172,7 +172,7 @@ however limited to the regfile bitwidth XLEN (1-32 for RV32,
 
 The reason for setting this limit is so that predication registers, when
 marked as such, may fit into a single register as opposed to fanning out
-over several registers.  This keeps the implementation a little simpler.
+over several registers.  This keeps the hardware implementation a little simpler.
 
 The other important factor to note is that the actual MVL is internally
 stored **offset by one**, so that it can fit into only 6 bits (for RV64)
@@ -403,18 +403,31 @@ of VL and MVL respectively, reading and writing the STATE CSR returns
 those values **minus one**.  This is absolutely critical to implement
 if the STATE CSR is to be used for fast context-switching.
 
+## VL, MVL and SUBVL instruction aliases
+
+| alias           | CSR                  |
+| -               | -                    |
+| SETVL rd, rs    | CSRRW  VL, rd, rs    |
+| SETVLi rd, #n   | CSRRWI VL, rd, #n-1  |
+| GETVL rd        | CSRRW  VL, rd, x0    |
+| SETMVL rd, rs   | CSRRW  MVL, rd, rs   |
+| SETMVLi rd, #n  | CSRRWI MVL,rd, #n-1  |
+| GETMVL rd       | CSRRW  MVL, rd, x0   |
+
+Note: CSRRC and other bitsetting may still be used, they are however not particularly useful (very obscure).
+
 ## Register key-value (CAM) table <a name="regcsrtable" />
 
 *NOTE: in prior versions of SV, this table used to be writable and
 accessible via CSRs. It is now stored in the VLIW instruction format,
-and entries may be overridden by the SVPrefix format*
+and entries may be overridden temporarily by the SVPrefix P48/64 format*
 
-The purpose of the Register table is four-fold:
+The purpose of the Register table is three-fold:
 
 * To mark integer and floating-point registers as requiring "redirection"
   if it is ever used as a source or destination in any given operation.
   This involves a level of indirection through a 5-to-7-bit lookup table,
-  such that **unmodified** operands with 5 bit (3 for Compressed) may
+  such that **unmodified** operands with 5 bits (3 for some RVC ops) may
   access up to **128** registers.
 * To indicate whether, after redirection through the lookup table, the
   register is a vector (or remains a scalar).
@@ -446,10 +459,10 @@ is "regnum<<2", implicitly. Contrast this with the 16-bit format where
 the target vector is *explicitly* named in bits 8 to 14, and bit 15 may
 optionally set "scalar" mode.
 
-Note that whilst SVPrefis adds one extra bit to each of rd, rs1 etc.,
+Note that whilst SVPrefix adds one extra bit to each of rd, rs1 etc.,
 and thus the "vector" mode need only shift the (6 bit) regnum by 1 to
 get the actual (7 bit) register number to use, there is not enough space
-in the 8 bit format so "regnum<<2" is required.
+in the 8 bit format (only 5 bits for regnum) so "regnum<<2" is required.
 
 vew has the following meanings, indicating that the instruction's
 operand size is "over-ridden" in a polymorphic fashion:
