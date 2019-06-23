@@ -6,6 +6,10 @@ require the absence of SVorig See Specification_.
 
 If required, the STATE, VL, MVL and SUBVL CSRs all operate according to the main specification: hypothetically an implementor could choose not to support setting of VL, MVL or SUBVL (only allowing them to be set to a value of 1). STATE would then not be required either.
 
+If support for SUBVL is to be provided, storing of the sub-vector offsets and SUBVL itself (and context switching of the same) in the STATE CSRs are mandatory.
+
+If support for VL is to be provided, storing of VL, MVL and the dest and src offsets (and context switching of the same) in the STATE CSRs are mandatory.
+
 .. _Specification: http://libre-riscv.org/simple_v_extension/specification/
 
 .. contents::
@@ -31,7 +35,7 @@ and using 001 (H) in the floating-point load/store *width* field.
 
 Compressed Instructions
 =======================
-This proposal doesn't include any prefixed RVC instructions, instead, it will
+This proposal does not include any prefixed RVC instructions, instead, it will
 include 32-bit instructions that are compressed forms of SVprefix 48-bit
 instructions, in the same manner that RVC instructions are compressed forms of
 RVI instructions. The compressed instructions will be defined later by
