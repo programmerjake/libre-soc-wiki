@@ -307,7 +307,7 @@ Open question: RVV overloads the width field of LOAD-FP/STORE-FP using the bit 2
 
 
 Sub-Vector Length (svlen) Field Encoding
-=======================================================
+========================================
 
 NOTE: svlen is the same as the main spec SUBVL, and modifies the STATE CSR. The same caveats apply to svlen as do to SUBVL.
 
@@ -327,7 +327,7 @@ Predicate bits do not apply to the individual sub-vector elements, they apply to
 | 11             | 4     |
 +----------------+-------+
 
-In independent standalone implementations that do not implement the main specification, the SUBVL CSR (svtyp=0b00) may be assumed to be 1.
+In independent standalone implementations that do not implement the main specification, the value of SUBVL in the above table (svtyp=0b00) is set to 1, such that svlen is also 1.
 
 Behaviour of operations that set svlen are identical to those of the main spec. See section on VLtyp, above.
 
@@ -416,7 +416,7 @@ separate 64-bit destination registers (rd+0, rd+1, rd+2, rd+3)
 that are sign-extended from the source width size out to 64-bit,
 because that is itype=0b00 (uXLEN).
 
-Note also: changing elwidth creates packed elements that, depending on VL, may create vectors that do not fit perfectly onto XLEM sized rehistry file boundaries. This does  NOT result in the destruction of the MSBs of the last register written to at the end of a VL loop. More details on how to handle this are described in the main Specification_.
+Note also: changing elwidth creates packed elements that, depending on VL, may create vectors that do not fit perfectly onto XLEN sized registry file bit-boundaries. This does NOT result in the destruction of the MSBs of the last register written to at the end of a VL loop. More details on how to handle this are described in the main Specification_.
 
 Signedness Decision Procedure
 =============================
@@ -434,7 +434,7 @@ Signedness Decision Procedure
                fmv.x.wu
 
 Vector Type and Predication 5-bit (vtp5) Field Encoding
-=======================================================
+=========================================================
 
 In the following table, X denotes a wildcard that is 0 or 1 and can be a
 different value for every occurrence.
@@ -452,7 +452,7 @@ different value for every occurrence.
 +-------+-----------------------+
 
 Vector Integer Type and Predication 6-bit (vitp6) Field Encoding
-================================================================
+=================================================================
 
 In the following table, X denotes a wildcard that is 0 or 1 and can be a
 different value for every occurrence.
@@ -540,6 +540,10 @@ CSRs are the same as in the main Specification_, if associated functionality is 
 
 Associated SET and GET on the CSRs is exactly as in the main spec as well (including CSRRWI and CSRRW differences).
 
+Note that if all of VL/MVL, SUBVL, VLtyp and svlen are all chosen by an implementor not to be implemented, the STATE CSR is not required.
+
+However if partial functionality is implemented, the unimplemented bits in STATE must be zero, and, in the UNIX Platform, an illegal exception **MUST** be raised if unsupported bits are written to.
+
 Additional Instructions
 =======================
 
@@ -553,10 +557,10 @@ lengths of the source and destination won't necessarily match.
 Add instructions to transpose (2-4)x(2-4) element matrices.
 
 Add instructions to insert or extract a sub-vector from a vector, with the index
-allowed to be both immediate and from a register (*immediate can be covered partly
-by twin-predication, register cannot: requires MV.X aka VSELECT*)
+allowed to be both immediate and from a register (*immediate can be covered
+by twin-predication, register might be, by virtue of predicates being registers*)
 
-Add a register gather instruction (aka MV.X)
+Add a register gather instruction (aka MV.X: regfile[rd] = regfile[regfile[rs1]])
 
 # Open questions <a name="questions"></a>
 
