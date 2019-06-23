@@ -28,17 +28,19 @@ Options
 * SVPregix operates independently, without the VL (and MVL) CSRs (in any priv level)
 * SVPrefix operates independently, without the SUBVL CSRs (in any priv level)
 * SVPrefix operates independently, with no support for VL (or MVL) overrides in the 64 bit instruction format either (VLtyp=0)
-* SVPrefix operates independently, with no support for svlen (SUBVL) overrides in either the 48 or 64 bit instruction format either (svlen=0).
+* SVPrefix operates independently, with no support for svlen overrides in either the 48 or 64 bit instruction format either (svlen=0).
 
 All permutations of the above options are permitted, and in the UNIX platform must raise illegal instruction exceptions on implementations that do not support them.
 
-The options 
+Note that allowing interaction with VL/MVL (and SUBVL) CSRs is **NOT** the same as supporting VLtyp (or svlen) overrides that are embedded in the 48/64 opcodes. As overrides, setting of VLtyp (or svlen) requires a **completely separate** CSR from the main Specification_ STATE CSR, named SVPSTATE.
 
-If required, the STATE, VL, MVL and SUBVL CSRs all operate according to the main specification: hypothetically an implementor could choose not to support setting of VL, MVL or SUBVL (only allowing them to be set to a value of 1). STATE would then not be required either.
+If the nain Specification_ CSRs are to be supported, the STATE, VL, MVL and SUBVL CSRs all operate according to the main specification. Under the options above, hypothetically an implementor could choose not to support setting of VL, MVL or SUBVL (only allowing them to be set to a value of 1). Under such circumstances, where *neither* VL/MVL *nor* SUBVL are supported, STATE would then not be required either.
 
-If support for SUBVL is to be provided, storing of the sub-vector offsets and SUBVL itself (and context switching of the same) in the STATE CSRs are mandatory.
+If however support for SUBVL is to be provided, storing of the sub-vector offsets and SUBVL itself (and context switching of the same) in the STATE CSRs are mandatory.
 
-If support for VL is to be provided, storing of VL, MVL and the dest and src offsets (and context switching of the same) in the STATE CSRs are mandatory.
+Likewise if support for VL is to be provided, storing of VL, MVL and the dest and src offsets (and context switching of the same) in the STATE CSRs are mandatory.
+
+This completely independently of SVPSTATE, svlen and VLtyp, as these are instruction-specific overrides that do **not** affect STATE.
 
 Half-Precision Floating Point (FP16)
 ====================================
@@ -313,7 +315,11 @@ Predicate bits do not apply to the individual sub-vector elements, they apply to
 | 11             | 4     |
 +----------------+-------+
 
-TODO : resolve interactions when SV VLIW Mode is active, as SVLEN is also a CSR.
+Setting of svtyp (when supported) will override SUBVL (when supported) solely for the duration of the 48/64 bit instruction.
+
+Just as with the main VL loop, the sub-vector element instruction execution must appear to be in-order, and must be "re-entrant" (to use a software term).
+
+
 
 Predication (pred) Field Encoding
 =================================
