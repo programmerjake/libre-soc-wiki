@@ -308,6 +308,20 @@ When setting this CSR, the following characteristics will be enforced:
 
 NOTE: if the following instruction is not a twin predicated instruction, and destoffs or dsvoffs has been set to non-zero, subsequent execution behaviour is undefined. **USE WITH CARE**.
 
+### Rules for when to increment STATE offsets
+
+The offsets inside STATE are like the indices in a loop, except in hardware. They are also partially (conceptually) similar to a "sub-execution Program Counter". As such, and to allow proper context switching and to define correct exception behaviour, the following rules must be observed:
+
+* When the VL CSR is set, srcoffs and destoffs are reset to zero.
+* Each instruction that contains a "tagged" register shall start execution at the *current* value of srcoffs (and destoffs in the case of twin predication)
+* Unpredicated bits (in nonzeroing mode) shall cause the element operation to skip, incrementing the srcoffs (or destoffs)
+* On execution of an element operation, Exceptions shall **NOT** cause srcoffs or destoffs to increment.
+* On completion of the full Vector Loop (srcoffs = VL-1 or destoffs = VL-1 after the last element is executed), both srcoffs and destoffs shall be reset to zero.
+
+This latter is why srcoffs and destoffs may be stored as values from 0 to XLEN-1 in the STATE CSR, because as loop indices they refer to elements. srcoffs and destoffs never need to be set to VL: their maximum operating values are limited to 0 to VL-1.
+
+The same corresponding rules apply to SUBVL, svsrcoffs and svdestoffs.
+
 ## MVL and VL  Pseudocode
 
 The pseudo-code for get and set of VL and MVL use the following internal
