@@ -721,6 +721,7 @@ remapped:
       ...
       ...
       for (i = 0; i < VL; i++)
+        xSTATE.srcoffs = i # save context
         if (predval & 1<<i) # predication uses intregs
            ireg[rd+remap(id)] <= ireg[rs1+remap(irs1)] +
                                  ireg[rs2+remap(irs2)];
@@ -855,6 +856,7 @@ Floating-point uses fp csrs.
       rs1 = int_vec[rs1].isvector ? int_vec[rs1].regidx : rs1;
       rs2 = int_vec[rs2].isvector ? int_vec[rs2].regidx : rs2;
       for (i = 0; i < VL; i++)
+        xSTATE.srcoffs = i # save context
         if (predval & 1<<i) # predication uses intregs
            ireg[rd+id] <= ireg[rs1+irs1] + ireg[rs2+irs2];
            if (!int_vec[rd ].isvector) break;
@@ -881,7 +883,9 @@ So whilst elements are indexed by (i * SUBVL + s), predicate bits are indexed by
       rs1 = int_vec[rs1].isvector ? int_vec[rs1].regidx : rs1;
       rs2 = int_vec[rs2].isvector ? int_vec[rs2].regidx : rs2;
       for (i = 0; i < VL; i++)
+       xSTATE.srcoffs = i # save context
        for (s = 0; s < SUBVL; s++)
+        xSTATE.ssvoffs = s # save context
         if (predval & 1<<i) # predication uses intregs
            ireg[rd+id] <= ireg[rs1+irs1] + ireg[rs2+irs2];
            if (!int_vec[rd ].isvector) break;
@@ -1111,6 +1115,8 @@ follows:
       for (int i = 0, int j = 0; i < VL && j < VL;):
         if (int_csr[rs].isvec) while (!(ps & 1<<i)) i++;
         if (int_csr[rd].isvec) while (!(pd & 1<<j)) j++;
+        xSTATE.srcoffs = i # save context
+        xSTATE.destoffs = j # save context
         reg[rd+j] = SCALAR_OPERATION_ON(reg[rs+i])
         if (int_csr[rs].isvec) i++;
         if (int_csr[rd].isvec) j++; else break
@@ -1156,6 +1162,8 @@ A simplified version of the pseudocode for this operation is as follows:
       for (int i = 0, int j = 0; i < VL && j < VL;):
         if (int_csr[rs].isvec) while (!(ps & 1<<i)) i++;
         if (int_csr[rd].isvec) while (!(pd & 1<<j)) j++;
+        xSTATE.srcoffs = i # save context
+        xSTATE.destoffs = j # save context
         ireg[rd+j] <= ireg[rs+i];
         if (int_csr[rs].isvec) i++;
         if (int_csr[rd].isvec) j++; else break
@@ -2331,19 +2339,19 @@ This has implications, namely that a new set of CSRs identical to xepc
 as being a sub extension of the xepc set of CSRs.  Thus, xepcvliw CSRs
 must be context switched and saved / restored in traps.
 
-The VStart indices in the STATE CSR may be similarly regarded as another
+The srcoffs and destoffs indices in the STATE CSR may be similarly regarded as another
 sub-execution context, giving in effect two sets of nested sub-levels
-of the RISCV Program Counter.
+of the RISCV Program Counter (actually, three including SUBVL and ssvoffs).
 
 In addition, as xepcvliw CSRs are relative to the beginning of the VLIW
-block, branches MUST be restricted to within the block, i.e. addressing
+block, branches MUST be restricted to within (relative to) the block, i.e. addressing
 is now restricted to the start (and very short) length of the block.
 
 Also: calling subroutines is inadviseable, unless they can be entirely
 accomplished within a block.
 
-A normal jump and a normal function call may only be taken by letting
-the VLIW end, returning to "normal" standard RV mode, using RVC, 32 bit
+A normal jump, normal branch and a normal function call may only be taken by letting
+the VLIW group end, returning to "normal" standard RV mode, and then using standard RVC, 32 bit
 or P48/64-\*-type opcodes.
 
 ## Links
@@ -2356,6 +2364,11 @@ This section describes the differences when SV is implemented on top of
 different subsets of RV.
 
 ## Common options
+
+It is permitted to only implement SVprefix and not the VLIW instruction format option.
+UNIX Platforms **MUST** raise illegal instruction on seeing a VLIW opcode so that traps may emulate the format.
+
+It is permitted in SVprefix to either not implement VL or not implement SUBVL (see [[sv_prefix_proposal]] for full details. Again, UNIX Platforms *MUST* raise illegal instruction on implementations that do not support VL or SUBVL.
 
 It is permitted to limit the size of either (or both) the register files
 down to the original size of the standard RV architecture.  However, below
