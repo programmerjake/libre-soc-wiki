@@ -34,7 +34,7 @@ All permutations of the above options are permitted, and in the UNIX platform mu
 
 Note that allowing interaction with VL/MVL (and SUBVL) CSRs is **NOT** the same as supporting VLtyp (or svlen) overrides that are embedded in the 48/64 opcodes. As overrides, setting of VLtyp (or svlen) requires a **completely separate** CSR from the main Specification_ STATE CSR, named SVPSTATE.
 
-If the nain Specification_ CSRs are to be supported, the STATE, VL, MVL and SUBVL CSRs all operate according to the main specification. Under the options above, hypothetically an implementor could choose not to support setting of VL, MVL or SUBVL (only allowing them to be set to a value of 1). Under such circumstances, where *neither* VL/MVL *nor* SUBVL are supported, STATE would then not be required either.
+If the main Specification_ CSRs are to be supported, the STATE, VL, MVL and SUBVL CSRs all operate according to the main specification. Under the options above, hypothetically an implementor could choose not to support setting of VL, MVL or SUBVL (only allowing them to be set to a value of 1). Under such circumstances, where *neither* VL/MVL *nor* SUBVL are supported, STATE would then not be required either.
 
 If however support for SUBVL is to be provided, storing of the sub-vector offsets and SUBVL itself (and context switching of the same) in the STATE CSRs are mandatory.
 
@@ -228,6 +228,14 @@ in a "one-off" mode (VLtype[11]=1) which sets both MVL and VL to the
 same immediate value.  This may be most useful for one-off Vectorised
 operations such as LOAD-MULTI / STORE-MULTI, for saving and restoration
 of large batches of registers in context-switches or function calls.
+
+Note that VLtyp's VL and MVL are **NOT** the same as the main Specification_ VL or MVL, they are overrides that require their own separate associated SVPSTATE CSR that has nothing to do with the corresponding (otherwise identically formatted) STATE CSR from the main Specification_.
+
+This is so that the 48/64 bit instruction execution does not interfere with or compromise the VLIW execution, or interfere with loops that are underway using VL (and SUBVL).  48 and 64 bit instructions need to be stand-alone, and as such have to have their own (separate) context.
+
+When using VLtyp, a separate independent element-based hardware loop is engaged (in an identical but independent fashion from the main Specification_), which must be both similarly "re-entrant" as far as exceptions are concerned, and also have the same in-order characteristics.  See main Specification_ and also svtyp below for more details.
+
+To reiterate and emphasise this critical point: the VLtyp loop indices (destoffs and srcoffs) are stored in the SVPSTATE CSR, **not** the STATE CSR. The STATE CSR **MUST** remain independent, unaffected and unaltered by all and any use of VLtyp in any given P64 opcode.
 
 vs#/vd Fields' Encoding
 =======================
