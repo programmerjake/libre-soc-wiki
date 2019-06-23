@@ -340,20 +340,20 @@ The pseudo-code for get and set of VL and MVL use the following internal
 functions as follows:
 
     set_mvl_csr(value, rd):
-        regs[rd] = MVL
-        MVL = MIN(value, MVL)
+        regs[rd] = STATE.MVL
+        STATE.MVL = MIN(value, STATE.MVL)
 
     get_mvl_csr(rd):
-        regs[rd] = VL
+        regs[rd] = STATE.VL
 
     set_vl_csr(value, rd):
-        VL = MIN(value, MVL)
-        regs[rd] = VL # yes returning the new value NOT the old CSR
-        return VL
+        STATE.VL = MIN(value, STATE.MVL)
+        regs[rd] = STATE.VL # yes returning the new value NOT the old CSR
+        return STATE.VL
 
     get_vl_csr(rd):
-        regs[rd] = VL
-        return VL
+        regs[rd] = STATE.VL
+        return STATE.VL
 
 Note that where setting MVL behaves as a normal CSR (returns the old
 value), unlike standard CSR behaviour, setting VL will return the **new**
@@ -414,14 +414,14 @@ VL==1, "00001" represents VL==2 and so on (likewise for MVL):
     CSRRW_Set_SV_STATE(rs1, rd):
         value = regs[rs1]
         get_state_csr(rd)
-        MVL = set_mvl_csr(value[11:6]+1)
-        VL = set_vl_csr(value[5:0]+1)
-        destoffs = value[23:18]>>18
-        srcoffs = value[23:18]>>12
+        STATE.MVL = set_mvl_csr(value[11:6]+1)
+        STATE.VL = set_vl_csr(value[5:0]+1)
+        STATE.destoffs = value[23:18]>>18
+        STATE.srcoffs = value[23:18]>>12
 
     get_state_csr(rd):
-        regs[rd] = (MVL-1) | (VL-1)<<6 | (srcoffs)<<12 |
-                   (destoffs)<<18
+        regs[rd] = (STATE.MVL-1) | (STATE.VL-1)<<6 | (STATE.srcoffs)<<12 |
+                   (STATE.destoffs)<<18
         return regs[rd]
 
 In both cases, whilst CSR read of VL and MVL return the exact values
@@ -431,7 +431,7 @@ if the STATE CSR is to be used for fast context-switching.
 
 ## VL, MVL and SUBVL instruction aliases
 
-This table contains pseudo-assembly instruction aliases.
+This table contains pseudo-assembly instruction aliases. Note the subtraction of 1 from the CSRRWI pseudo variants, to compensate for the reduced range of the 5 bit immediate.
 
 | alias           | CSR                  |
 | -               | -                    |
@@ -2518,3 +2518,7 @@ as part of info register. 00=32, 01=64, 10=128, 11=reserved.
 
 TODO, update to remove RegCam and PredCam CSRs, just use SVprefix and
 VLIW format
+
+---
+
+Could the 8 bit Register VLIW format use regnum<<1 instead, only accessing regs 0 to 64?
