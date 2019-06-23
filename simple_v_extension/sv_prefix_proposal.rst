@@ -32,7 +32,7 @@ Options
 
 All permutations of the above options are permitted, and in the UNIX platform must raise illegal instruction exceptions on implementations that do not support them.
 
-Note that allowing interaction with VL/MVL (and SUBVL) CSRs is **NOT** the same as supporting VLtyp (or svlen) overrides that are embedded in the 48/64 opcodes. As overrides, setting of VLtyp (or svlen) requires a **completely separate** CSR from the main Specification_ STATE CSR, named SVPSTATE.
+Note that allowing interaction with VL/MVL (and SUBVL) CSRs is **NOT** the same as supporting VLtyp (or svlen) fields that are embedded in the 48/64 opcodes. Setting of VLtyp (or svlen) requires a **completely separate** CSR from the main Specification_ STATE CSR, named SVPSTATE.
 
 If the main Specification_ CSRs are to be supported, the STATE, VL, MVL and SUBVL CSRs all operate according to the main specification. Under the options above, hypothetically an implementor could choose not to support setting of VL, MVL or SUBVL (only allowing them to be set to a value of 1). Under such circumstances, where *neither* VL/MVL *nor* SUBVL are supported, STATE would then not be required either.
 
@@ -40,7 +40,7 @@ If however support for SUBVL is to be provided, storing of the sub-vector offset
 
 Likewise if support for VL is to be provided, storing of VL, MVL and the dest and src offsets (and context switching of the same) in the STATE CSRs are mandatory.
 
-This completely independently of SVPSTATE, svlen and VLtyp, as these are instruction-specific overrides that do **not** affect STATE.
+This completely independently of SVPSTATE, svlen and VLtyp, as these are instruction-specific overrides that do **not** affect the STATE CSR.
 
 Half-Precision Floating Point (FP16)
 ====================================
