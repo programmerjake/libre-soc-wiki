@@ -861,6 +861,29 @@ reshaping and offsets and so on.  However it demonstrates the basic
 principle.  Augmentations that produce the full pseudo-code are covered in
 other sections.
 
+## SUBVL Pseudocode
+
+Adding in support for SUBVL is a matter of adding in an extra inner for-loop, where register src and dest are still incremented inside the inner part. Not that the predication is still taken from the VL index.
+
+So whilst elements are indexed by (i * SUBVL + s), predicate bits are indexed by i
+
+    function op_add(rd, rs1, rs2) # add not VADD!
+      int i, id=0, irs1=0, irs2=0;
+      predval = get_pred_val(FALSE, rd);
+      rd  = int_vec[rd ].isvector ? int_vec[rd ].regidx : rd;
+      rs1 = int_vec[rs1].isvector ? int_vec[rs1].regidx : rs1;
+      rs2 = int_vec[rs2].isvector ? int_vec[rs2].regidx : rs2;
+      for (i = 0; i < VL; i++)
+       for (s = 0; s < SUBVL; s++)
+        if (predval & 1<<i) # predication uses intregs
+           ireg[rd+id] <= ireg[rs1+irs1] + ireg[rs2+irs2];
+           if (!int_vec[rd ].isvector) break;
+        if (int_vec[rd ].isvector)  { id += 1; }
+        if (int_vec[rs1].isvector)  { irs1 += 1; }
+        if (int_vec[rs2].isvector)  { irs2 += 1; }
+
+NOTE: pseudocode simplified greatly: zeroing, proper predicate handling, elwidth handling etc. all left out.
+
 ## Instruction Format
 
 It is critical to appreciate that there are
