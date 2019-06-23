@@ -25,10 +25,10 @@ Options
 =======
 
 * SVPrefix augments the main Specification_
-* SVPregix operates independently, without the VL (and MVL) CSRs (in any priv level)
-* SVPrefix operates independently, without the SUBVL CSRs (in any priv level)
-* SVPrefix operates independently, with no support for VL (or MVL) overrides in the 64 bit instruction format either (VLtyp=0)
-* SVPrefix operates independently, with no support for svlen overrides in either the 48 or 64 bit instruction format either (svlen=0).
+* SVPregix operates independently, without the main spec VL (and MVL) CSRs (in any priv level)
+* SVPrefix operates independently, without the main spec SUBVL CSRs (in any priv level)
+* SVPrefix operates independently, with no support for VL (or MVL) overrides in the 64 bit instruction format either (VLtyp=0 as the only legal permitted value)
+* SVPrefix operates independently, with no support for svlen overrides in either the 48 or 64 bit instruction format either (svlen=0 as the only legal permitted value).
 
 All permutations of the above options are permitted, and in the UNIX platform must raise illegal instruction exceptions on implementations that do not support them.
 
