@@ -133,6 +133,8 @@ Thus for example, a User Mode trap will end up swapping STATE and ueSTATE (on bo
 
 Likewise, Supervisor Mode may perform context-switches, safe in the knowledge that its Vectorisation State is unaffected by User Mode.
 
+For this to work, the (x)eSTATE CSR must be saved onto the stack by the trap, just like (x)epc, before modifying the trap atomicity flag (x)ie.
+
 The access pattern for these groups of CSRs in each mode follows the
 same pattern for other CSRs that have M-Mode and S-Mode "mirrors":
 
