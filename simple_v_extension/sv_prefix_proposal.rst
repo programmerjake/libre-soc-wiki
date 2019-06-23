@@ -319,7 +319,11 @@ Setting of svtyp (when supported) will override SUBVL (when supported) solely fo
 
 Just as with the main VL loop, the sub-vector element instruction execution must appear to be in-order, and must be "re-entrant" (to use a software term).
 
+Thus, if an exception occurs, SVPSTATE (**not STATE**) must store the current sub-element index, such that on return from the exception the instruction engine knows at which point in the sub-vector to continue execution.
 
+If any sub-vector element execution was in progress at the point of the exception, those results **MUST** be discarded.
+
+Also to reiterate: it is **critical** that STATE CSRs be unaltered and untouched by the use of svlen in a 48/64 bit opcode.
 
 Predication (pred) Field Encoding
 =================================
@@ -457,7 +461,7 @@ different value for every occurrence.
 | XX01XX | *Reserved*                                     |
 +--------+------------------------------------------------+
 
-vitp7 field: only tpred=
+vitp7 field: only tpred
 
 +---------+------------+----------+-------------+------------+
 | vitp7   | itype      | tpred[2] | tpred[0:1]  | svlen      |
@@ -528,7 +532,7 @@ CSRs are the same as in the main Specification_, if associated functionality is 
 * STATE
 * SUBVL
 
-If svlen and VL/MVL overides are allowed in the 48 and 64 bit formats, the offsets during hardware loops need to be kept as internal state, and kept separate from the same in the main Specification_. Therefore an additional CSR set is needed (per priv level) named xSVSTATE
+If svlen overrides are allowed in the 48  bit formats (and VLtyp usage likewise in the 64 bit format), the offsets during hardware loops need to be kept as internal state, and kept entirely separate from the same in the main Specification_. Therefore an additional CSR set is needed (per priv level) named xSVSTATE (x=u/s/h/m).
 
 The format of the xSVSTATE CSR is identical to that in the main Specification_ as follows:
 
