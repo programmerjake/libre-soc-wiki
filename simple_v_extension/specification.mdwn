@@ -79,7 +79,7 @@ The principle of SV is as follows:
   bit format (single instruction option) or a variable
  length VLIW-like prefix (multi or "grouped" option).
 * The prefix(es) indicate which registers are "tagged" as
-  "vectorised". Predicates can also be added.
+  "vectorised". Predicates can also be added, and element widths overridden on any src or dest register.
 * A "Vector Length" CSR is set, indicating the span of any future
   "parallel" operations.
 * If any operation (a **scalar** standard RV opcode) uses a register
