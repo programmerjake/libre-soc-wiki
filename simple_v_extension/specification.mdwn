@@ -749,7 +749,7 @@ inverse-on and using x0 as the predicate register.  This
 will have the effect of creating a mask of all ones, allowing ffirst
 to be set.
 
-For traps:
+### Fail-on-first traps
 
 Except for the first element, ffault stops sequential element processing
 when a trap occurs.  The first element is treated normally (as if ffirst
@@ -774,7 +774,7 @@ Given that predication bits apply to SUBVL groups, the same rules apply
 to predicated-out (masked-out) sub-groups in calculating the value that VL
 is set to.
 
-For conditional tests:
+### Fail-on-first conditional tests
 
 ffault stops sequential element conditional testing on the first element result
 being zero.  VL is set to the number of elements that were processed before
