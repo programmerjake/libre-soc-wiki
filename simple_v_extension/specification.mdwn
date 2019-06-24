@@ -605,10 +605,13 @@ in the instruction, due to the redirection through the lookup table.
 
 | PrCSR | (15..11) | 10     | 9     | 8   | (7..1)  | 0       |
 | ----- | -        | -      | -     | -   | ------- | ------- |
-| 0     | predkey  | zero0  | inv0  | i/f | regidx  | ffirst0 |
-| 1     | predkey  | zero1  | inv1  | i/f | regidx  | ffirst1 |
-| 2     | predkey  | zero2  | inv2  | i/f | regidx  | ffirst2 |
-| 3     | predkey  | zero3  | inv3  | i/f | regidx  | ffirst3 |
+| 0     | predidx  | zero0  | inv0  | i/f | regidx  | ffirst0 |
+| 1     | predidx  | zero1  | inv1  | i/f | regidx  | ffirst1 |
+| 2     | predidx  | zero2  | inv2  | i/f | regidx  | ffirst2 |
+| 3     | predidx  | zero3  | inv3  | i/f | regidx  | ffirst3 |
+
+Note: predidx=x0, zero=1, inv=1 is a RESERVED encoding.  Its use must
+generate an illegal instruction trap.
 
 8 bit format:
 
@@ -622,24 +625,33 @@ register to use is implicit, and numbering begins inplicitly from x9. The
 regnum is still used to "activate" predication, in the same fashion as
 described above.
 
+Thus if we map from 8 to 16 bit format, the table becomes:
+
+| PrCSR | (15..11) | 10     | 9     | 8   | (7..1)  | 0       |
+| ----- | -        | -      | -     | -   | ------- | ------- |
+| 0     | x9       | zero0  | inv0  | i/f | regnum  | ff=0    |
+| 1     | x10      | zero1  | inv1  | i/f | regnum  | ff=0    |
+| 2     | x11      | zero2  | inv2  | i/f | regnum  | ff=0    |
+| 3     | x12      | zero3  | inv3  | i/f | regnum  | ff=0    |
+
 The 16 bit Predication CSR Table is a key-value store, so
 implementation-wise it will be faster to turn the table around (maintain
 topologically equivalent state):
 
     struct pred {
-        bool zero;
-        bool inv;
-        bool ffirst;
-        bool enabled;
-        int predidx; // redirection: actual int register to use
+        bool zero;    // zeroing
+        bool inv;     // register at predidx is inverted
+        bool ffirst;  // fail-on-first
+        bool enabled; // use this to tell if the table-entry is active
+        int predidx;  // redirection: actual int register to use
     }
 
     struct pred fp_pred_reg[32];   // 64 in future (bank=1)
     struct pred int_pred_reg[32];  // 64 in future (bank=1)
 
-    for (i = 0; i < 16; i++)
-      tb = int_pred_reg if CSRpred[i].type == 0 else fp_pred_reg;
-      idx = CSRpred[i].regidx
+    for (i = 0; i < len; i++) // number of Predication entries in VBLOCK
+      tb = int_pred_reg if PredicateTable[i].type == 0 else fp_pred_reg;
+      idx = PredicateTable[i].regidx
       tb[idx].zero     = CSRpred[i].zero
       tb[idx].inv      = CSRpred[i].inv
       tb[idx].ffirst   = CSRpred[i].ffirst
@@ -716,20 +728,26 @@ for the storage of comparisions: in these specific circumstances
 the requirement for there to be an active *register* entry
 is removed.
 
-## Fail-on-First Mode
+## Fail-on-First Mode <a name="ffirst-mode"></a>
 
-ffirst is a special data-dependent mode.  There are two variants: one
-is for faults: typically for LOAD/STORE operations, which may encounter
-end of page faults during a series of operations.  The other variant is
-comparisons such as FEQ (or the augmented behaviour of Branch), and
-any operation that returns a result of zero (whether integer or floating-point).
-In the FP case, this includes negative-zero.
+ffirst is a special data-dependent predicate mode.  There are two
+variants: one is for faults: typically for LOAD/STORE operations,
+which may encounter end of page faults during a series of operations.
+The other variant is comparisons such as FEQ (or the augmented behaviour
+of Branch), and any operation that returns a result of zero (whether
+integer or floating-point).  In the FP case, this includes negative-zero.
 
 Note that the execution order must "appear" to be sequential for ffirst
 mode to work correctly.  An in-order architecture must execute the element
 operations in sequence, whilst an out-of-order architecture must *commit*
 the element operations in sequence (giving the appearance of in-order
 execution).
+
+Note also, that if ffirst mode is needed without predication, a special
+"always-on" Predicate Table Entry may be constructed by setting
+inverse-on and using x0 as the predicate register.  This
+will have the effect of creating a mask of all ones, allowing ffirst
+to be set.
 
 For traps:
 
