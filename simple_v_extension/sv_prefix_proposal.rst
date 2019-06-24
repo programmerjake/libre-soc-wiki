@@ -18,11 +18,16 @@ Conventions used in this document:
 
 * Bits are numbered starting from 0 at the LSB, so bit 3 is 1 in the integer 8.
 * Bit ranges are inclusive on both ends, so 5:3 means bits 5, 4, and 3.
-* Operations work on variable-length vectors of sub-vectors up to *VL* in length, where each sub-vector has a length *svlen*, and *svlen* elements of type *etype*.
+* Operations work on variable-length vectors of sub-vectors up to *VL*
+  in length, where each sub-vector has a length *svlen*, and *svlen*
+  elements of type *etype*.
 * The actual total number of elements is therefore *svlen* times *VL*.
-* When the vectors are stored in registers, all elements are packed so that there is no padding in-between elements of the same vector.
-* The register file itself is thus best viewed as a byte-level SRAM that is typecast to an array of *etypes*
-* The number of bytes in a sub-vector, *svsz*, is the product of *svlen* and the element size in bytes.
+* When the vectors are stored in registers, all elements are packed so
+  that there is no padding in-between elements of the same vector.
+* The register file itself is thus best viewed as a byte-level SRAM that
+  is typecast to an array of *etypes*
+* The number of bytes in a sub-vector, *svsz*, is the product of *svlen*
+  and the element size in bytes.
 
 Options
 =======
@@ -30,87 +35,116 @@ Options
 The following partial / full implementation options are possible:
 
 * SVPrefix augments the main Specification_
-* SVPregix operates independently, without the main spec VL (and MVL) CSRs (in any priv level)
-* SVPrefix operates independently, without the main spec SUBVL CSRs (in any priv level)
-* SVPrefix has no support for VL (or MVL) overrides in the 64 bit instruction format (VLtyp=0 as the only legal permitted value)
-* SVPrefix has no support for svlen overrides in either the 48 or 64 bit instruction format either (svlen=0 as the only legal permitted value).
+* SVPregix operates independently, without the main spec VL (and MVL)
+  CSRs (in any priv level)
+* SVPrefix operates independently, without the main spec SUBVL CSRs
+  (in any priv level)
+* SVPrefix has no support for VL (or MVL) overrides in the 64 bit
+  instruction format (VLtyp=0 as the only legal permitted value)
+* SVPrefix has no support for svlen overrides in either the 48 or 64
+  bit instruction format either (svlen=0 as the only legal permitted value).
 
-All permutations of the above options are permitted, and the UNIX platform must raise illegal instruction exceptions on implementations that do not support each option.  For example, an implementation that has no support for VLtyp that sees an opcode with a nonzero VLtyp must raise an illegal instruction exception.
+All permutations of the above options are permitted, and the UNIX
+platform must raise illegal instruction exceptions on implementations
+that do not support each option.  For example, an implementation that
+has no support for VLtyp that sees an opcode with a nonzero VLtyp must
+raise an illegal instruction exception.
 
-Note that SVPrefix (VLtyp and svlen) and the main spec share (modify) the STATE CSR. P48 and P64 opcodes must **NOT** set VLtyp or svlen inside loops that also use VL or SUBVL. Doing so will result in undefined behaviour, as STATE will be affected by doing so.
+Note that SVPrefix (VLtyp and svlen) and the main spec share (modify) the
+STATE CSR. P48 and P64 opcodes must **NOT** set VLtyp or svlen inside
+loops that also use VL or SUBVL. Doing so will result in undefined
+behaviour, as STATE will be affected by doing so.
 
-However, using VLtyp or svlen in standalone operations, or pushing (and restoring) the contents of the STATE CSR to the stack, or just storing its contents in a temporary register whilst executing a sequence of P48 or P64 opcodes, is perfectly fine.
+However, using VLtyp or svlen in standalone operations, or pushing (and
+restoring) the contents of the STATE CSR to the stack, or just storing
+its contents in a temporary register whilst executing a sequence of P48
+or P64 opcodes, is perfectly fine.
 
-If the main Specification_ CSRs are to be supported, the STATE, VL, MVL and SUBVL CSRs all operate according to the main specification. Under the options above, hypothetically an implementor could choose not to support setting of VL, MVL or SUBVL (only allowing them to be set to a value of 1). Under such circumstances, where *neither* VL/MVL *nor* SUBVL are supported, STATE would then not be required either.
+If the main Specification_ CSRs are to be supported, the STATE, VL, MVL
+and SUBVL CSRs all operate according to the main specification. Under
+the options above, hypothetically an implementor could choose not to
+support setting of VL, MVL or SUBVL (only allowing them to be set to
+a value of 1). Under such circumstances, where *neither* VL/MVL *nor*
+SUBVL are supported, STATE would then not be required either.
 
-If however support for SUBVL is to be provided, storing of the sub-vector offsets and SUBVL itself (and context switching of the same) in the STATE CSRs are mandatory.
+If however support for SUBVL is to be provided, storing of the sub-vector
+offsets and SUBVL itself (and context switching of the same) in the
+STATE CSRs are mandatory.
 
-Likewise if support for VL is to be provided, storing of VL, MVL and the dest and src offsets (and context switching of the same) in the STATE CSRs are mandatory.
+Likewise if support for VL is to be provided, storing of VL, MVL and the
+dest and src offsets (and context switching of the same) in the STATE
+CSRs are mandatory.
 
 
 Half-Precision Floating Point (FP16)
 ====================================
 
 If the F extension is supported, SVprefix adds support for FP16 in the
-base FP instructions by using 10 (H) in the floating-point format field *fmt*
-and using 001 (H) in the floating-point load/store *width* field.
+base FP instructions by using 10 (H) in the floating-point format field
+*fmt* and using 001 (H) in the floating-point load/store *width* field.
 
 Compressed Instructions
 =======================
-This proposal does not include any prefixed RVC instructions, instead, it will
-include 32-bit instructions that are compressed forms of SVprefix 48-bit
-instructions, in the same manner that RVC instructions are compressed forms of
-RVI instructions. The compressed instructions will be defined later by
-considering which 48-bit instructions are the most common.
+
+This proposal does not include any prefixed RVC instructions, instead,
+it will include 32-bit instructions that are compressed forms of
+SVprefix 48-bit instructions, in the same manner that RVC instructions
+are compressed forms of RVI instructions. The compressed instructions
+will be defined later by considering which 48-bit instructions are the
+most common.
 
 48-bit Prefixed Instructions
 ============================
-All 48-bit prefixed instructions contain a 32-bit "base" instruction as the
-last 4 bytes. Since all 32-bit instructions have bits 1:0 set to 11, those bits
-are reused for additional encoding space in the 48-bit instructions.
+
+All 48-bit prefixed instructions contain a 32-bit "base" instruction as
+the last 4 bytes. Since all 32-bit instructions have bits 1:0 set to
+11, those bits are reused for additional encoding space in the 48-bit
+instructions.
 
 64-bit Prefixed Instructions
 ============================
 
-The 48 bit format is further extended with the full 128-bit range on all source
-and destination registers, and the option to set both VL and MVL is provided.
+The 48 bit format is further extended with the full 128-bit range on all
+source and destination registers, and the option to set both VL and MVL
+is provided.
 
 48-bit Instruction Encodings
 ============================
 
-In the following table, *Reserved* entries must be zero.  RV32 equivalent encodings
-included for side-by-side comparison (and listed below, separately).
+In the following table, *Reserved* entries must be zero.  RV32 equivalent
+encodings included for side-by-side comparison (and listed below,
+separately).
 
 First, bits 17:0:
 
 +---------------+--------+------------+------------+-----+------------+-------------+------+------------+--------+
 | Encoding      | 17     | 16         | 15         | 14  | 13         | 12          | 11:7 | 6          | 5:0    |
 +---------------+--------+------------+------------+-----+------------+-------------+------+------------+--------+
-| P48-LD-type   | rd[5]  | rs1[5]     | vitp7[6]   | vd  | vs1        | vitp7[5:0]         | *Reserved* | 011111 |
+| P48-LD-type   | rd[5]  | rs1[5]     | vitp7[6]   | vd  | vs1        | vitp7[5:0]         | 0          | 011111 |
 +---------------+--------+------------+------------+-----+------------+-------------+------+------------+--------+
-| P48-ST-type   |vitp7[6]| rs1[5]     | rs2[5]     | vs2 | vs1        | vitp7[5:0]         | *Reserved* | 011111 |
+| P48-ST-type   |vitp7[6]| rs1[5]     | rs2[5]     | vs2 | vs1        | vitp7[5:0]         | 0          | 011111 |
 +---------------+--------+------------+------------+-----+------------+-------------+------+------------+--------+
-| P48-R-type    | rd[5]  | rs1[5]     | rs2[5]     | vs2 | vs1        | vitp6              | *Reserved* | 011111 |
+| P48-R-type    | rd[5]  | rs1[5]     | rs2[5]     | vs2 | vs1        | vitp6              | 0          | 011111 |
 +---------------+--------+------------+------------+-----+------------+--------------------+------------+--------+
-| P48-I-type    | rd[5]  | rs1[5]     | vitp7[6]   | vd  | vs1        | vitp7[5:0]         | *Reserved* | 011111 |
+| P48-I-type    | rd[5]  | rs1[5]     | vitp7[6]   | vd  | vs1        | vitp7[5:0]         | 0          | 011111 |
 +---------------+--------+------------+------------+-----+------------+--------------------+------------+--------+
-| P48-U-type    | rd[5]  | *Reserved* | *Reserved* | vd  | *Reserved* | vitp6              | *Reserved* | 011111 |
+| P48-U-type    | rd[5]  | *Reserved* | *Reserved* | vd  | *Reserved* | vitp6              | 0          | 011111 |
 +---------------+--------+------------+------------+-----+------------+-------------+------+------------+--------+
-| P48-FR-type   | rd[5]  | rs1[5]     | rs2[5]     | vs2 | vs1        | *Reserved*  | vtp5 | *Reserved* | 011111 |
+| P48-FR-type   | rd[5]  | rs1[5]     | rs2[5]     | vs2 | vs1        | *Reserved*  | vtp5 | 0          | 011111 |
 +---------------+--------+------------+------------+-----+------------+-------------+------+------------+--------+
-| P48-FI-type   | rd[5]  | rs1[5]     | vitp7[6]   | vd  | vs1        | vitp7[5:0]         | *Reserved* | 011111 |
+| P48-FI-type   | rd[5]  | rs1[5]     | vitp7[6]   | vd  | vs1        | vitp7[5:0]         | 0          | 011111 |
 +---------------+--------+------------+------------+-----+------------+-------------+------+------------+--------+
-| P48-FR4-type  | rd[5]  | rs1[5]     | rs2[5]     | vs2 | rs3[5]     | vs3 [#fr4]_ | vtp5 | *Reserved* | 011111 |
+| P48-FR4-type  | rd[5]  | rs1[5]     | rs2[5]     | vs2 | rs3[5]     | vs3 [#fr4]_ | vtp5 | 0          | 011111 |
 +---------------+--------+------------+------------+-----+------------+-------------+------+------------+--------+
 
-.. [#fr4] Only vs2 and vs3 are included in the P48-FR4-type encoding because
-          there is not enough space for vs1 as well, and because it is more
-          useful to have a scalar argument for each of the multiplication and
-          addition portions of fmadd than to have two scalars on the
-          multiplication portion.
+.. [#fr4] Only vs2 and vs3 are included in the P48-FR4-type encoding
+          because there is not enough space for vs1 as well, and because
+          it is more useful to have a scalar argument for each of the
+          multiplication and addition portions of fmadd than to have
+          two scalars on the multiplication portion.
 
-Table showing correspondance between P48-*-type and RV32-*-type.  These are
-bits 47:18 (RV32 shifted up by 16 bits):
+Table showing correspondance between P48-*-type and RV32-*-type.
+These are bits 47:18 (RV32 shifted up by 16 bits):
 
 +---------------+---------------+
 | Encoding      | 47:18         |
@@ -136,27 +170,27 @@ bits 47:18 (RV32 shifted up by 16 bits):
 
 Table showing Standard RV32 encodings:
 
-+---------------+-------------+-------+----------+----------+--------+----------+--------+--------+------------+
-| Encoding      | 31:27       | 26:25 | 24:20    | 19:15    | 14:12  | 11:7     | 6:2    | 1      | 0          |
-+---------------+-------------+-------+----------+----------+--------+----------+--------+--------+------------+
-| RV32-R-type   +    funct7           + rs2[4:0] + rs1[4:0] + funct3 | rd[4:0]  + opcode + 1      + 1          |
-+---------------+-------------+-------+----------+----------+--------+----------+--------+--------+------------+
-| RV32-S-type   + imm[11:5]           + rs2[4:0] + rs1[4:0] + funct3 | imm[4:0] + opcode + 1      + 1          |
-+---------------+-------------+-------+----------+----------+--------+----------+--------+--------+------------+
-| RV32-I-type   + imm[11:0]                      + rs1[4:0] + funct3 | rd[4:0]  + opcode + 1      + 1          |
-+---------------+-------------+-------+----------+----------+--------+----------+--------+--------+------------+
-| RV32-U-type   + imm[31:12]                                         | rd[4:0]  + opcode + 1      + 1          |
-+---------------+-------------+-------+----------+----------+--------+----------+--------+--------+------------+
-| RV32-FR4-type + rs3[4:0]    + fmt   + rs2[4:0] + rs1[4:0] + funct3 | rd[4:0]  + opcode + 1      + 1          |
-+---------------+-------------+-------+----------+----------+--------+----------+--------+--------+------------+
-| RV32-FR-type  + funct5      + fmt   + rs2[4:0] + rs1[4:0] + rm     | rd[4:0]  + opcode + 1      + 1          |
-+---------------+-------------+-------+----------+----------+--------+----------+--------+--------+------------+
++---------------+-------------+-------+----------+----------+--------+----------+--------+--------+
+| Encoding      | 31:27       | 26:25 | 24:20    | 19:15    | 14:12  | 11:7     | 6:2    | 1:0    |
++---------------+-------------+-------+----------+----------+--------+----------+--------+--------+
+| RV32-R-type   +    funct7           + rs2[4:0] + rs1[4:0] + funct3 | rd[4:0]  + opcode + 0b11   |
++---------------+-------------+-------+----------+----------+--------+----------+--------+--------+
+| RV32-S-type   + imm[11:5]           + rs2[4:0] + rs1[4:0] + funct3 | imm[4:0] + opcode + 0b11   |
++---------------+-------------+-------+----------+----------+--------+----------+--------+--------+
+| RV32-I-type   + imm[11:0]                      + rs1[4:0] + funct3 | rd[4:0]  + opcode + 0b11   |
++---------------+-------------+-------+----------+----------+--------+----------+--------+--------+
+| RV32-U-type   + imm[31:12]                                         | rd[4:0]  + opcode + 0b11   |
++---------------+-------------+-------+----------+----------+--------+----------+--------+--------+
+| RV32-FR4-type + rs3[4:0]    + fmt   + rs2[4:0] + rs1[4:0] + funct3 | rd[4:0]  + opcode + 0b11   |
++---------------+-------------+-------+----------+----------+--------+----------+--------+--------+
+| RV32-FR-type  + funct5      + fmt   + rs2[4:0] + rs1[4:0] + rm     | rd[4:0]  + opcode + 0b11   |
++---------------+-------------+-------+----------+----------+--------+----------+--------+--------+
 
 64-bit Instruction Encodings
 ============================
 
-Where in the 48 bit format the prefix is "0b0011111" in bits 0 to 6, this is
-now set to "0b0111111".
+Where in the 48 bit format the prefix is "0b0011111" in bits 0 to 6,
+this is now set to "0b0111111".
 
 +---------------+---------------+--------------+-----------+
 | 63:48         | 47:18         | 17:7         | 6:0       |
@@ -198,7 +232,10 @@ prefix as well.  VLtyp encodes how (whether) to set VL and MAXVL.
 VLtyp field encoding
 ====================
 
-NOTE: VL and MVL below are modified (potentially damaging) and so is the STATE CSR. It is the responsibility of the programmer to ensure that modifications to STATE do not compromise loops or VLIW Group opetations, by saving and restoring the STATE CSR (if needed).
+NOTE: VL and MVL below are modified (potentially damaging) and so is
+the STATE CSR. It is the responsibility of the programmer to ensure that
+modifications to STATE do not compromise loops or VLIW Group opetations,
+by saving and restoring the STATE CSR (if needed).
 
 +-----------+-------------+--------------+----------+----------------------+
 | VLtyp[11] | VLtyp[10:6] | VLtyp[5:1]   | VLtyp[0] | comment              |
@@ -237,9 +274,13 @@ same immediate value.  This may be most useful for one-off Vectorised
 operations such as LOAD-MULTI / STORE-MULTI, for saving and restoration
 of large batches of registers in context-switches or function calls.
 
-Note that VLtyp's VL and MVL are the same as the main Specification_ VL or MVL, and that loops will also alter srcoffs and destoffs. It is the programmer's responsibility to ensure that STATE is not compromised (e.g saved to a temp reg or to the stack).
+Note that VLtyp's VL and MVL are the same as the main Specification_
+VL or MVL, and that loops will also alter srcoffs and destoffs. It is
+the programmer's responsibility to ensure that STATE is not compromised
+(e.g saved to a temp reg or to the stack).
 
-Furthermore, the execution order and exception handling must be exactly the same as in the main spec.
+Furthermore, the execution order and exception handling must be exactly
+the same as in the main spec.
 
 vs#/vd Fields' Encoding
 =======================
@@ -270,8 +311,8 @@ is the bitwise-or of all present vs#/vd fields.
 Vector Register Number Encoding
 ===============================
 
-For the 48 bit format, when vs#/vd is 1, the actual 7-bit register number is derived from the
-corresponding 6-bit rs#/rd field:
+For the 48 bit format, when vs#/vd is 1, the actual 7-bit register number
+is derived from the corresponding 6-bit rs#/rd field:
 
 +---------------------------------+
 | Actual 7-bit register number    |
@@ -281,7 +322,11 @@ corresponding 6-bit rs#/rd field:
 | rs#/rd[0] | rs#/rd[5:1] | 0     |
 +-----------+-------------+-------+
 
-For the 64 bit format, the 7 bit register is constructed from the 7 bit fields: bits 0 to 4 from the 32 bit RV Standard format, bit 5 from the 48 bit prefix and bit 6 from the 64 bit prefix.  Thus in the 64 bit format the full range of up to 128 registers is directly available. This for both when either scalar or vector mode is set.
+For the 64 bit format, the 7 bit register is constructed from the 7 bit
+fields: bits 0 to 4 from the 32 bit RV Standard format, bit 5 from the 48
+bit prefix and bit 6 from the 64 bit prefix.  Thus in the 64 bit format
+the full range of up to 128 registers is directly available. This for
+both when either scalar or vector mode is set.
 
 Load/Store Kind (lsk) Field Encoding
 ====================================
@@ -300,22 +345,36 @@ Load/Store Kind (lsk) Field Encoding
 
 Notes:
 
-* A register strided LD/ST would require *5* registers. srcbase, vd/vs2, predicate 1, predicate 2 and the stride register.
+* A register strided LD/ST would require *5* registers. srcbase, vd/vs2,
+  predicate 1, predicate 2 and the stride register.
 * Complex strides may all be done with a general purpose vector of srcbases.
-* Twin predication may be used even when vd/vs1 is a scalar, to give VSPLAT and VSELECT, because the hardware loop ends on the first occurrence of a 1 in the predicate when a predicate is applied to a scalar.
-* Full vectorised gather/scatter is enabled when both registers are marked as vectorised, however unlike e.g Intel AVX512, twin predication can be applied.
+* Twin predication may be used even when vd/vs1 is a scalar, to give
+  VSPLAT and VSELECT, because the hardware loop ends on the first occurrence
+  of a 1 in the predicate when a predicate is applied to a scalar.
+* Full vectorised gather/scatter is enabled when both registers are
+  marked as vectorised, however unlike e.g Intel AVX512, twin predication
+  can be applied.
 
-Open question: RVV overloads the width field of LOAD-FP/STORE-FP using the bit 2 to indicate additional interpretation of the 11 bit immediate. Should this be considered?
+Open question: RVV overloads the width field of LOAD-FP/STORE-FP
+using the bit 2 to indicate additional interpretation of the 11 bit
+immediate. Should this be considered?
 
 
 Sub-Vector Length (svlen) Field Encoding
 ========================================
 
-NOTE: svlen is the same as the main spec SUBVL, and modifies the STATE CSR. The same caveats apply to svlen as do to SUBVL.
+NOTE: svlen is the same as the main spec SUBVL, and modifies the STATE
+CSR. The same caveats apply to svlen as do to SUBVL.
 
-Bitwidth, from VL's perspective, is a multiple of the elwidth times svlen.  So within each loop of VL there are svlen sub-elements of elwidth in size, just like in a SIMD architecture. When svlen is set to 0b00 (indicating svlen=1) no such SIMD-like behaviour exists and the subvectoring is disabled.
+Bitwidth, from VL's perspective, is a multiple of the elwidth times svlen.
+So within each loop of VL there are svlen sub-elements of elwidth in size,
+just like in a SIMD architecture. When svlen is set to 0b00 (indicating
+svlen=1) no such SIMD-like behaviour exists and the subvectoring is
+disabled.
 
-Predicate bits do not apply to the individual sub-vector elements, they apply to the entire subvector group. This saves instructions on setup of the predicate.
+Predicate bits do not apply to the individual sub-vector elements, they
+apply to the entire subvector group. This saves instructions on setup
+of the predicate.
 
 +----------------+-------+
 | svlen Encoding | Value |
@@ -329,9 +388,12 @@ Predicate bits do not apply to the individual sub-vector elements, they apply to
 | 11             | 4     |
 +----------------+-------+
 
-In independent standalone implementations that do not implement the main specification, the value of SUBVL in the above table (svtyp=0b00) is set to 1, such that svlen is also 1.
+In independent standalone implementations that do not implement the
+main specification, the value of SUBVL in the above table (svtyp=0b00)
+is set to 1, such that svlen is also 1.
 
-Behaviour of operations that set svlen are identical to those of the main spec. See section on VLtyp, above.
+Behaviour of operations that set svlen are identical to those of the
+main spec. See section on VLtyp, above.
 
 Predication (pred) Field Encoding
 =================================
@@ -418,7 +480,11 @@ separate 64-bit destination registers (rd+0, rd+1, rd+2, rd+3)
 that are sign-extended from the source width size out to 64-bit,
 because that is itype=0b00 (uXLEN).
 
-Note also: changing elwidth creates packed elements that, depending on VL, may create vectors that do not fit perfectly onto XLEN sized registry file bit-boundaries. This does NOT result in the destruction of the MSBs of the last register written to at the end of a VL loop. More details on how to handle this are described in the main Specification_.
+Note also: changing elwidth creates packed elements that, depending on
+VL, may create vectors that do not fit perfectly onto XLEN sized registry
+file bit-boundaries. This does NOT result in the destruction of the MSBs
+of the last register written to at the end of a VL loop. More details
+on how to handle this are described in the main Specification_.
 
 Signedness Decision Procedure
 =============================
@@ -432,14 +498,14 @@ Signedness Decision Procedure
 4. Otherwise,
     1. Signedness is Unsigned.
 
-.. [#sign_enc] Like in fcvt.d.l[u], but unlike in fmv.x.w, since there is no
-               fmv.x.wu
+.. [#sign_enc] Like in fcvt.d.l[u], but unlike in fmv.x.w,
+               since there is no fmv.x.wu
 
 Vector Type and Predication 5-bit (vtp5) Field Encoding
 =========================================================
 
-In the following table, X denotes a wildcard that is 0 or 1 and can be a
-different value for every occurrence.
+In the following table, X denotes a wildcard that is 0 or 1 and can be
+a different value for every occurrence.
 
 +-------+-----------+-----------+
 | vtp5  | pred      | svlen     |
@@ -480,8 +546,8 @@ vitp7 field: only tpred
 48-bit Instruction Encoding Decision Procedure
 ==============================================
 
-In the following decision procedure, *Reserved* means that there is not yet a
-defined 48-bit instruction encoding for the base instruction.
+In the following decision procedure, *Reserved* means that there is not
+yet a defined 48-bit instruction encoding for the base instruction.
 
 1. If the base instruction is a load instruction, then
     a. If the base instruction is an I-type instruction, then
@@ -533,18 +599,24 @@ defined 48-bit instruction encoding for the base instruction.
 CSR Registers
 =============
 
-CSRs are the same as in the main Specification_, if associated functionality is implemented. They have the exact same meaning as in the main specification.
+CSRs are the same as in the main Specification_, if associated
+functionality is implemented. They have the exact same meaning as in
+the main specification.
 
 * VL
 * MVL
 * STATE
 * SUBVL
 
-Associated SET and GET on the CSRs is exactly as in the main spec as well (including CSRRWI and CSRRW differences).
+Associated SET and GET on the CSRs is exactly as in the main spec as well
+(including CSRRWI and CSRRW differences).
 
-Note that if all of VL/MVL, SUBVL, VLtyp and svlen are all chosen by an implementor not to be implemented, the STATE CSR is not required.
+Note that if all of VL/MVL, SUBVL, VLtyp and svlen are all chosen by an
+implementor not to be implemented, the STATE CSR is not required.
 
-However if partial functionality is implemented, the unimplemented bits in STATE must be zero, and, in the UNIX Platform, an illegal exception **MUST** be raised if unsupported bits are written to.
+However if partial functionality is implemented, the unimplemented bits
+in STATE must be zero, and, in the UNIX Platform, an illegal exception
+**MUST** be raised if unsupported bits are written to.
 
 Additional Instructions
 =======================
@@ -558,15 +630,20 @@ lengths of the source and destination won't necessarily match.
 
 Add instructions to transpose (2-4)x(2-4) element matrices.
 
-Add instructions to insert or extract a sub-vector from a vector, with the index
-allowed to be both immediate and from a register (*immediate can be covered
-by twin-predication, register might be, by virtue of predicates being registers*)
+Add instructions to insert or extract a sub-vector from a vector, with
+the index allowed to be both immediate and from a register (*immediate
+can be covered by twin-predication, register might be, by virtue of
+predicates being registers*)
 
-Add a register gather instruction (aka MV.X: regfile[rd] = regfile[regfile[rs1]])
+Add a register gather instruction (aka MV.X: regfile[rd] =
+regfile[regfile[rs1]])
 
-# questions
+questions
+=========
 
-Confirmation needed as to whether subvector extraction can be covered by twin predication (it probably can, it is one of the many purposes it is for).
+Confirmation needed as to whether subvector extraction can be covered
+by twin predication (it probably can, it is one of the many purposes it
+is for).
 
 --
 
@@ -574,13 +651,18 @@ What is SUBVL and how does it work
 
 --
 
-SVorig goes to a lot of effort to make VL 1<= MAXVL and MAXVL 1..64 where both CSRs may be stored internally in only 6 bits.
+SVorig goes to a lot of effort to make VL 1<= MAXVL and MAXVL 1..64
+where both CSRs may be stored internally in only 6 bits.
 
 Thus, CSRRWI can reach 1..32 for VL and MAXVL.
 
-In addition, setting a hardware loop to zero turning instructions into NOPs, um, just branch over them, to start the first loop at the end, on the test for loop variable being zero, a la c "while do" instead of "do while".
+In addition, setting a hardware loop to zero turning instructions into
+NOPs, um, just branch over them, to start the first loop at the end,
+on the test for loop variable being zero, a la c "while do" instead of
+"do while".
 
-Or, does it not matter that VL only goes up to 31 on a CSRRWI, and that it only goes to a max of 63 rather than 64?
+Or, does it not matter that VL only goes up to 31 on a CSRRWI, and that
+it only goes to a max of 63 rather than 64?
 
 --
 
@@ -592,26 +674,41 @@ Is MV.X good enough a substitute for swizzle?
 
 --
 
-Is vectorised srcbase ok as a gather scatter and ok substitute for register stride? 5 dependency registers (reg stride being the 5th) is quite scary
+Is vectorised srcbase ok as a gather scatter and ok substitute for
+register stride? 5 dependency registers (reg stride being the 5th)
+is quite scary
 
 --
 
-Why are integer conversion instructions needed, when the main SV spec covers them by allowing elwidth to be set on both src and dest regs?
+Why are integer conversion instructions needed, when the main SV spec
+covers them by allowing elwidth to be set on both src and dest regs?
 
 --
 
-Why are the SETVL rules so complex? What is the reason, how are loops carried out?
+Why are the SETVL rules so complex? What is the reason, how are loops
+carried out?
 
 --
 
-With SUBVL (sub vector len) being both a CSR and also part of the 48/64 bit opcode, how does that work?
+With SUBVL (sub vector len) being both a CSR and also part of the 48/64
+bit opcode, how does that work?
 
 --
 
-What are the interaction rules when a 48/64 prefix opcode has a rd/rs that already has a Vector Context for either predication or a register?
+What are the interaction rules when a 48/64 prefix opcode has a rd/rs
+that already has a Vector Context for either predication or a register?
 
-It would perhaps make sense (and for svlen as well) to make 48/64 isolated and unaffected by VLIW context, with the exception of VL/MVL.
+It would perhaps make sense (and for svlen as well) to make 48/64 isolated
+and unaffected by VLIW context, with the exception of VL/MVL.
 
-MVL and VL should be modifiable by 64 bit prefix as they are global in nature.
+MVL and VL should be modifiable by 64 bit prefix as they are global
+in nature.
 
-Possible solution, svlen and VLtyp allowed to share STATE CSR however programmer becomes responsible for push and pop of state during use of a sequence of P48 and P64 ops.
+Possible solution, svlen and VLtyp allowed to share STATE CSR however
+programmer becomes responsible for push and pop of state during use of
+a sequence of P48 and P64 ops.
+
+--
+
+Can bit 60 of P64 be put to use (in all but the FR4 case)?
+
