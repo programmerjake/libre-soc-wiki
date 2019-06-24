@@ -2732,10 +2732,10 @@ SV version (WIP):
     strncpy:
         mv a3, a0
         SETMVLI 8 # set max vector to 8
-        RegCSR[a3] = 8bit, a3, vector
-        RegCSR[a1] = 8bit, a3, vector
+        RegCSR[a3] = 8bit, a3, scalar
+        RegCSR[a1] = 8bit, a1, scalar
+        RegCSR[t0] = 8bit, t0, vector
         PredTb[t0] = ffirst, x0, inv
-        add t2, x0, x0 #t2 = 0
     loop:
         SETVLI a2, t4 # t4 and VL now 1..8
         ldb t0, (a1) # t0 fail first mode
@@ -2758,10 +2758,16 @@ SV version (WIP):
 
 Notes:
 
+* Setting MVL to 8 is just an example. If enough registers are spare it may be set to XLEN which will require a bank of 8 registers for a1, a3 and t0.
+* obviously if that is done, t0 is not separated by 8 full registers, and would overwrite t1 etc. x80 would work well, as an example, instead.
+* with the exception of the GETVL (a pseudo code alias for csrr), every single instruction above may use RVC.
+* RVC C.BNEZ can be used because rs1' may be extended to the full 128 registers through redirection
+* RVC C.LW and C.SW may be used because the W format may be overridden by the 8 bit format. All of t0, a3 and a1 are overridden to make that work.
+* with the exception of the GETVL, all Vector Context may be done in VBLOCK form.
+* setting predication to x0 and invert on t0 is a trick to enable just ffirst on t0
 * ldb and bne are both using t0, both in ffirst mode
 * ldb will end on illegal mem, reduce VL, but copied all sorts of stuff into t0
-* bne behaviour modified to do multiple tests (more like FNE).
-* bne t0 x0 tests up to the NEW VL for nonzero, vector t0 against scalar  x0
+* bne t0 x0 tests up to the NEW VL for nonzero, vector t0 against scalar x0
 * however as t0 is in ffirst mode, the first fail wil ALSO stop the compares, and reduce VL as well
 * the branch only goes to allnonzero if all tests succeed
 * if it did not, we can safely increment VL by 1 (using a4) to include the zero.
