@@ -2706,7 +2706,7 @@ adding a 2nd STATE CSR (or extending STATE to 64 bits).  Future version?
 TODO evaluate strncpy and strlen
 <https://groups.google.com/forum/m/#!msg/comp.arch/bGBeaNjAKvc/_vbqyxTUAQAJ>
 
-RVV version:
+RVV version: <a name="strncpy"></>
 
     strncpy: 
         mv a3, a0               # Copy dst 
@@ -2727,6 +2727,48 @@ RVV version:
     exit: 
         ret 
 
+SV version (WIP):
+
+    strncpy:
+        mv a3, a0
+        SETMVLI 8 # set max vector to 8
+        RegCSR[a3] = 8bit, a3, vector
+        RegCSR[a1] = 8bit, a3, vector
+        PredTb[t0] = ffirst, x0, inv
+        add t2, x0, x0 #t2 = 0
+    loop:
+        SETVLI a2, t4 # t4 and VL now 1..8
+        ldb t0, (a1) # t0 fail first mode
+        bne t0, x0, allnonzero # still ff
+        # VL points to last nonzero
+        GETVL t4       # from bne tests
+        addi t4, t4, 1 # include zero
+        SETVL t4       # set exactly to t4
+        stb t0, (a3)   # store incl zero
+        ret            # end subroutine
+    allnonzero:
+        stb t0, (a3)    # VL legal range
+        GETVL t4        # from bne tests
+        add a1, a1, t4  # Bump src pointer 
+        sub a2, a2, t4  # Decrement count. 
+        add a3, a3, t4  # Bump dst pointer 
+        bnez a2, loop   # Anymore? 
+    exit:
+        ret
+
+Notes:
+
+* ldb and bne are both using t0, both in ffirst mode
+* ldb will end on illegal mem, reduce VL, but copied all sorts of stuff into t0
+# bne behaviour modified to do multiple tests (more like FNE).
+* bne t0 x0 tests up to the NEW VL for nonzero, vector t0 against scalar  x0
+* however as t0 is in ffirst mode, the first fail wil ALSO stop the compares, and reduce VL as well
+* the branch only goes to allnonzero if all tests succeed
+* if it did not, we can safely increment VL by 1 (using a4) to include the zero.
+* SETVL sets *exactly* the requested amount into VL.
+* the SETVL just after allnonzero label is needed in case the ldb ffirst activates but the bne allzeros does not.
+* this would cause the stb to copy up to the end of the legal memory
+* of course, on the next loop the ldb would throw a trap, as a1 points to the first illegal mem location.
 
 RVV version:
 
