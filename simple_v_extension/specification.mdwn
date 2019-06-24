@@ -2555,7 +2555,7 @@ https://groups.google.com/forum/m/#!msg/comp.arch/bGBeaNjAKvc/_vbqyxTUAQAJ
 
 
         mv a3, a0             # Save start 
-loop: 
+    loop: 
         setvli a1, x0, vint8  # byte vec, x0 (Zero reg) => use max hardware len
         vldbff.v v1, (a3)     # Get bytes
         csrr a1, vl           # Get bytes actually read e.g. if fault
