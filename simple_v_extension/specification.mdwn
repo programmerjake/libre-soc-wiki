@@ -972,11 +972,14 @@ reshaping and offsets and so on.  However it demonstrates the basic
 principle.  Augmentations that produce the full pseudo-code are covered in
 other sections.
 
-## SUBVL Pseudocode
+## SUBVL Pseudocode <a name="subvl-pseudocode"></a>
 
-Adding in support for SUBVL is a matter of adding in an extra inner for-loop, where register src and dest are still incremented inside the inner part. Not that the predication is still taken from the VL index.
+Adding in support for SUBVL is a matter of adding in an extra inner
+for-loop, where register src and dest are still incremented inside the
+inner part. Not that the predication is still taken from the VL index.
 
-So whilst elements are indexed by (i * SUBVL + s), predicate bits are indexed by i
+So whilst elements are indexed by "(i * SUBVL + s)", predicate bits are
+indexed by "(i)"
 
     function op_add(rd, rs1, rs2) # add not VADD!
       int i, id=0, irs1=0, irs2=0;
