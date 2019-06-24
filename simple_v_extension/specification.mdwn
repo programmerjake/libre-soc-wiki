@@ -579,12 +579,11 @@ that the *actual* register used can be *different* from the one that is
 in the instruction, due to the redirection through the lookup table.
 
 * regidx is the register that in combination with the
-  i/f flag, if that integer or floating-point register is referred to
- in a (standard RV) instruction
-  results in the lookup table being referenced to find the predication
-  mask to use for this operation.
-* predidx is the
-  *actual* (full, 7 bit) register to be used for the predication mask. 
+  i/f flag, if that integer or floating-point register is referred to in a
+  (standard RV) instruction results in the lookup table being referenced
+  to find the predication mask to use for this operation.
+* predidx is the *actual* (full, 7 bit) register to be used for the
+  predication mask.
 * inv indicates that the predication mask bits are to be inverted
   prior to use *without* actually modifying the contents of the
   registerfrom which those bits originated.
@@ -597,16 +596,19 @@ in the instruction, due to the redirection through the lookup table.
   interpret unpredicated elements as an internal "copy element"
   operation (which would be necessary in SIMD microarchitectures
   that perform register-renaming)
+* ffirst is a special mode that stops sequential element processing when
+  a data-dependent condition occurs, whether a trap or a conditional test.
+  The handling of each (trap or conditional test) is slightly different:
+  see Instruction sections for further details
 
 16 bit format:
 
 | PrCSR | (15..11) | 10     | 9     | 8   | (7..1)  | 0       |
 | ----- | -        | -      | -     | -   | ------- | ------- |
-| 0     | predkey  | zero0  | inv0  | i/f | regidx  | rsrvd |
-| 1     | predkey  | zero1  | inv1  | i/f | regidx  | rsvd |
-| ...   | predkey  | .....  | ....  | i/f | ....... | ....... |
-| 15    | predkey  | zero15 | inv15 | i/f | regidx  | rsvd |
-
+| 0     | predkey  | zero0  | inv0  | i/f | regidx  | ffirst0 |
+| 1     | predkey  | zero1  | inv1  | i/f | regidx  | ffirst1 |
+| 2     | predkey  | zero2  | inv2  | i/f | regidx  | ffirst2 |
+| 3     | predkey  | zero3  | inv3  | i/f | regidx  | ffirst3 |
 
 8 bit format:
 
@@ -627,6 +629,7 @@ topologically equivalent state):
     struct pred {
         bool zero;
         bool inv;
+        bool ffirst;
         bool enabled;
         int predidx; // redirection: actual int register to use
     }
@@ -637,8 +640,9 @@ topologically equivalent state):
     for (i = 0; i < 16; i++)
       tb = int_pred_reg if CSRpred[i].type == 0 else fp_pred_reg;
       idx = CSRpred[i].regidx
-      tb[idx].zero = CSRpred[i].zero
-      tb[idx].inv  = CSRpred[i].inv
+      tb[idx].zero     = CSRpred[i].zero
+      tb[idx].inv      = CSRpred[i].inv
+      tb[idx].ffirst   = CSRpred[i].ffirst
       tb[idx].predidx  = CSRpred[i].predidx
       tb[idx].enabled  = true
 
@@ -705,6 +709,17 @@ Note also that this is in direct contrast to branch operations
 for the storage of comparisions: in these specific circumstances
 the requirement for there to be an active *register* entry
 is removed.
+
+## Fail-on-First Mode
+
+* ffirst is a special mode that, except for the first element,
+  stops sequential element processing when a trap or fail-condition
+  occurs.
+  The first element is treated normally (as if ffirst is clear).
+  Should any subsequent element instruction require a trap, instead
+  it and subsequent indexed elements are ignored (or cancelled in
+  out-of-order designs), and VL is set to the *last* instruction
+  that did not take the trap.
 
 ## REMAP CSR <a name="remap" />
 
