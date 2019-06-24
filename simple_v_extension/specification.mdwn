@@ -322,7 +322,7 @@ and seSTATE).
 
 The format of the STATE CSR is as follows:
 
-| (30..29 | (28..27) | (26..24) | (23..18) | (17..12) | (11..6) | (5...0) |
+| (29..28 | (27..26) | (25..24) | (23..18) | (17..12) | (11..6) | (5...0) |
 | ------- | -------- | -------- | -------- | -------- | ------- | ------- |
 | dsvoffs | ssvoffs  | subvl    | destoffs | srcoffs  | vl      | maxvl   |
 
@@ -2591,6 +2591,11 @@ VLIW format
 ---
 
 Could the 8 bit Register VLIW format use regnum<<1 instead, only accessing regs 0 to 64?
+
+--
+
+Expand the range of SUBVL and its associated svsrcoffs and svdestoffs by
+adding a 2nd STATE CSR (or extending STATE to 64 bits).  Future version?
 
 --
 
