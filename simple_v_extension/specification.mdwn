@@ -669,9 +669,12 @@ as follows.
     for (int i=0; i<vl; ++i)
         predicate, zeroing = get_pred_val(type(iop) == INT, rd):
         if (predicate && (1<<i))
-           (d ? regfile[rd+i] : regfile[rd]) =
-            iop(s1 ? regfile[rs1+i] : regfile[rs1],
-                s2 ? regfile[rs2+i] : regfile[rs2]); // for insts with 2 inputs
+           result = iop(s1 ? regfile[rs1+i] : regfile[rs1],
+                        s2 ? regfile[rs2+i] : regfile[rs2]);
+           (d ? regfile[rd+i] : regfile[rd]) = result
+           if preg.ffirst and result == 0:
+              VL = i # result was zero, end loop early, return VL
+              return
         else if (zeroing)
            (d ? regfile[rd+i] : regfile[rd]) = 0
 
@@ -683,6 +686,9 @@ Note:
   above, for clarity.  rd, rs1 and rs2 all also must ALSO go through
   register-level redirection (from the Register table) if they are
   vectors.
+* fail-on-first mode stops execution early whenever an operation
+  returns a zero value.  floating-point results count both
+  positive-zero as well as negative-zero as "fail".
 
 If written as a function, obtaining the predication mask (and whether
 zeroing takes place) may be done as follows:
@@ -734,10 +740,21 @@ instead it and subsequent indexed elements are ignored (or cancelled in
 out-of-order designs), and VL is set to the *last* instruction that did
 not take the trap.
 
+Note that predicated-out elements (where the predicate mask bit is zero)
+are clearly excluded (i.e. the trap will not occur).  However, note that
+the loop still had to test the predicate bit: thus on return,
+VL is set to include elements that did not take the trap *and* includes
+the elements that were predicated (masked) out (not tested up to the
+point where the trap occurred).
+
 If SUBVL is being used (SUBVL!=1), the first *sub-group* of elements
 will cause a trap as normal (as if ffirst is not set); subsequently,
 the trap must not occur in the *sub-group* of elements.  SUBVL will **NOT**
 be modified.
+
+Given that predication bits apply to SUBVL groups, the same rules apply
+to predicated-out (masked-out) sub-groups in calculating the value that VL
+is set to.
 
 For conditional tests:
 
@@ -751,6 +768,13 @@ the *sub-group* that passed the test, that sub-group is still (entirely)
 excluded from the count (from setting VL).  i.e. VL is set to the total
 number of *sub-groups* that had no fail-condition up until execution was
 stopped.
+
+Note again that, just as with traps, predicated-out (masked-out) elements
+are included in the count leading up to the fail-condition, even though they
+were not tested.
+
+The pseudo-code for Predication makes this clearer and simpler than it is
+in words (the loop ends, VL is set to the current element index, "i").
 
 ## REMAP CSR <a name="remap" />
 
@@ -979,8 +1003,8 @@ All other operations using registers are automatically parallelised.
 This includes AMOMAX, AMOSWAP and so on, where particular care and
 attention must be paid.
 
-Example pseudo-code for an integer ADD operation (including scalar operations).
-Floating-point uses fp csrs.
+Example pseudo-code for an integer ADD operation (including scalar
+operations).  Floating-point uses the FP Register Table.
 
     function op_add(rd, rs1, rs2) # add not VADD!
       int i, id=0, irs1=0, irs2=0;
@@ -1037,7 +1061,8 @@ indexed by "(i)"
         }
 
 
-NOTE: pseudocode simplified greatly: zeroing, proper predicate handling, elwidth handling etc. all left out.
+NOTE: pseudocode simplified greatly: zeroing, proper predicate handling,
+elwidth handling etc. all left out.
 
 ## Instruction Format
 
@@ -2231,21 +2256,25 @@ is modified to as follows:
              if (int_vec[rs1].isvector)  { irs1 += 1; }
              if (int_vec[rs2].isvector)  { irs2 += 1; }
            if i == VL:
-             break
+             return
         if (predval & 1<<i)
            src1 = ....
            src2 = ...
            else:
                result = src1 + src2 # actual add (or other op) here
            set_polymorphed_reg(rd, destwid, ird, result)
-           if (!int_vec[rd].isvector) break
+           if int_vec[rd].ffirst and result == 0:
+              VL = i # result was zero, end loop early, return VL
+              return
+           if (!int_vec[rd].isvector) return
         else if zeroing:
            result = 0
            set_polymorphed_reg(rd, destwid, ird, result)
         if (int_vec[rd ].isvector)  { id += 1; }
-        else if (predval & 1<<i) break;
+        else if (predval & 1<<i) return
         if (int_vec[rs1].isvector)  { irs1 += 1; }
         if (int_vec[rs2].isvector)  { irs2 += 1; }
+        if (rd == VL or rs1 == VL or rs2 == VL): return
 
 The optimisation to skip elements entirely is only possible for certain
 micro-architectures when zeroing is not set.  However for lane-based
