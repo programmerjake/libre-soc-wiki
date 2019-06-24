@@ -2540,7 +2540,7 @@ https://groups.google.com/forum/m/#!msg/comp.arch/bGBeaNjAKvc/_vbqyxTUAQAJ
         vlbff.v v1, (a1)        # Get src bytes 
         vseq.vi v0, v1, 0       # Flag zero bytes 
         vmfirst a4, v0          # Zero found? 
-        vmsif.v v0, v0          # Set mask up to and including zero byte. 
+        vmsif.v v0, v0          # Set mask up to and including zero byte. Ppplio
         vsb.v v1, (a3), v0.t    # Write out bytes 
         bgez a4, exit           # Done 
         csrr t1, vl             # Get number of bytes fetched 
@@ -2556,15 +2556,14 @@ https://groups.google.com/forum/m/#!msg/comp.arch/bGBeaNjAKvc/_vbqyxTUAQAJ
 
         mv a3, a0             # Save start 
 loop: 
-        setvli a1, x0, vint8  # byte vec, x0 (Zero reg) => use max hardware len 
-        vldbff.v v1, (a3)     # Get bytes 
-        csrr a1, vl           # Get bytes actually read e.g. if fault 
+        setvli a1, x0, vint8  # byte vec, x0 (Zero reg) => use max hardware len
+        vldbff.v v1, (a3)     # Get bytes
+        csrr a1, vl           # Get bytes actually read e.g. if fault
         vseq.vi v0, v1, 0     # Set v0[i] where v1[i] = 0 
-        add a3, a3, a1        # Bump pointer 
-        vmfirst a2, v0        # Find first set bit in mask, returns -1 if none 
-        bltz a2, loop         # Not found? 
-
-        add a0, a0, a1        # Sum start + bump 
-        add a3, a3, a2        # Add index of zero byte 
-        sub a0, a3, a0        # Subtract start address+bump 
+        add a3, a3, a1        # Bump pointer
+        vmfirst a2, v0        # Find first set bit in mask, returns -1 if none
+        bltz a2, loop         # Not found?
+        add a0, a0, a1        # Sum start + bump
+        add a3, a3, a2        # Add index of zero byte
+        sub a0, a3, a0        # Subtract start address+bump
         ret 
