@@ -2760,7 +2760,7 @@ Notes:
 
 * ldb and bne are both using t0, both in ffirst mode
 * ldb will end on illegal mem, reduce VL, but copied all sorts of stuff into t0
-# bne behaviour modified to do multiple tests (more like FNE).
+* bne behaviour modified to do multiple tests (more like FNE).
 * bne t0 x0 tests up to the NEW VL for nonzero, vector t0 against scalar  x0
 * however as t0 is in ffirst mode, the first fail wil ALSO stop the compares, and reduce VL as well
 * the branch only goes to allnonzero if all tests succeed
