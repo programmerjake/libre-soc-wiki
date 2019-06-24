@@ -79,7 +79,8 @@ The principle of SV is as follows:
   bit format (single instruction option) or a variable
  length VLIW-like prefix (multi or "grouped" option).
 * The prefix(es) indicate which registers are "tagged" as
-  "vectorised". Predicates can also be added, and element widths overridden on any src or dest register.
+  "vectorised". Predicates can also be added, and element widths
+  overridden on any src or dest register.
 * A "Vector Length" CSR is set, indicating the span of any future
   "parallel" operations.
 * If any operation (a **scalar** standard RV opcode) uses a register
@@ -127,13 +128,22 @@ And likewise for M-Mode:
 * mePCVLIW
 * meSTATE
 
-The u/m/s CSRs are treated and handled exactly like their (x)epc equivalents. On entry to a privilege level, the contents of its (x)eSTATE and (x)ePCVLIW CSRs are copied into STATE and PCVLIW respectively, and on exit from a priv level the STATE and PCVLIW CSRs are copied to the exited priv level's corresponding CSRs.
+The u/m/s CSRs are treated and handled exactly like their (x)epc
+equivalents. On entry to a privilege level, the contents of its (x)eSTATE
+and (x)ePCVLIW CSRs are copied into STATE and PCVLIW respectively, and
+on exit from a priv level the STATE and PCVLIW CSRs are copied to the
+exited priv level's corresponding CSRs.
 
-Thus for example, a User Mode trap will end up swapping STATE and ueSTATE (on both entry and exit), allowing User Mode traps to have their own Vectorisation Context set up, separated from and unaffected by normal user applications.
+Thus for example, a User Mode trap will end up swapping STATE and ueSTATE
+(on both entry and exit), allowing User Mode traps to have their own
+Vectorisation Context set up, separated from and unaffected by normal
+user applications.
 
-Likewise, Supervisor Mode may perform context-switches, safe in the knowledge that its Vectorisation State is unaffected by User Mode.
+Likewise, Supervisor Mode may perform context-switches, safe in the
+knowledge that its Vectorisation State is unaffected by User Mode.
 
-For this to work, the (x)eSTATE CSR must be saved onto the stack by the trap, just like (x)epc, before modifying the trap atomicity flag (x)ie.
+For this to work, the (x)eSTATE CSR must be saved onto the stack by the
+trap, just like (x)epc, before modifying the trap atomicity flag (x)ie.
 
 The access pattern for these groups of CSRs in each mode follows the
 same pattern for other CSRs that have M-Mode and S-Mode "mirrors":
@@ -158,10 +168,13 @@ and assisting low-latency fast context-switching *once and only once*
 (for example at boot time), without the need for re-initialising the
 CSRs needed to do so.
 
-Another interesting side effect of separate S Mode CSRs is that Vectorised
-saving of the entire register file to the stack is a single instruction
-(accidental provision of LOAD-MULTI semantics).  If the SVPrefix P64-LD-type format is used, LOAD-MULTI may even be done with a single standalone 64 bit opcode (P64 may set up both VL and MVL from an immediate field). It can even be predicated,
-which opens up some very interesting possibilities.
+Another interesting side effect of separate S Mode CSRs is that
+Vectorised saving of the entire register file to the stack is a single
+instruction (accidental provision of LOAD-MULTI semantics).  If the
+SVPrefix P64-LD-type format is used, LOAD-MULTI may even be done with a
+single standalone 64 bit opcode (P64 may set up both VL and MVL from an
+immediate field). It can even be predicated, which opens up some very
+interesting possibilities.
 
 The (x)EPCVLIW CSRs must be treated exactly like their corresponding (x)epc
 equivalents. See VLIW section for details.
@@ -174,8 +187,9 @@ however limited to the regfile bitwidth XLEN (1-32 for RV32,
 1-64 for RV64 and so on).
 
 The reason for setting this limit is so that predication registers, when
-marked as such, may fit into a single register as opposed to fanning out
-over several registers.  This keeps the hardware implementation a little simpler.
+marked as such, may fit into a single register as opposed to fanning
+out over several registers.  This keeps the hardware implementation a
+little simpler.
 
 The other important factor to note is that the actual MVL is internally
 stored **offset by one**, so that it can fit into only 6 bits (for RV64)
@@ -237,38 +251,39 @@ may be done with a single instruction, useful particularly for a
 context-load/save.  There are however limitations: CSRWI's immediate
 is limited to 0-31 (representing VL=1-32).
 
-Note that when VL is set to 1, vector operations cease (but not subvector operations: that requires setting SUBVL=1) the
-hardware loop is reduced to a single element: scalar operations.
-This is in effect the default, normal
-operating mode. However it is important
-to appreciate that this does **not**
-result in the Register table or SUBVL 
-being disabled. Only when the Register
-table is empty (P48/64 prefix fields notwithstanding)
+Note that when VL is set to 1, vector operations cease (but not subvector
+operations: that requires setting SUBVL=1) the hardware loop is reduced
+to a single element: scalar operations.  This is in effect the default,
+normal operating mode. However it is important to appreciate that this
+does **not** result in the Register table or SUBVL being disabled. Only
+when the Register table is empty (P48/64 prefix fields notwithstanding)
 would SV have no effect.
 
 ## SUBVL - Sub Vector Length
 
-This is a "group by quantity" that effectivrly asks each iteration of the hardware loop to load SUBVL elements of width elwidth at a time. Effectively, SUBVL is like a SIMD multiplier: instead of just 1 operation issued, SUBVL operations are issued.
+This is a "group by quantity" that effectivrly asks each iteration
+of the hardware loop to load SUBVL elements of width elwidth at a
+time. Effectively, SUBVL is like a SIMD multiplier: instead of just 1
+operation issued, SUBVL operations are issued.
 
-Another way to view SUBVL is that each element in the VL length vector is now SUBVL times elwidth bits in length and
-now comprises SUBVL discrete sub
-operations.  An inner SUBVL for-loop within
-a VL for-loop in effect, with the
-sub-element increased every time in the
-innermost loop. This is best illustrated
-in the (simplified) pseudocode example,
-later.
+Another way to view SUBVL is that each element in the VL length vector is
+now SUBVL times elwidth bits in length and now comprises SUBVL discrete
+sub operations.  An inner SUBVL for-loop within a VL for-loop in effect,
+with the sub-element increased every time in the innermost loop. This
+is best illustrated in the (simplified) pseudocode example, later.
 
-The primary use case for SUBVL is for 3D FP Vectors. A Vector of 3D coordinates X,Y,Z for example may be loaded and multiplied the stored, per VL element iteration, rather than having to set VL to three times larger.
+The primary use case for SUBVL is for 3D FP Vectors. A Vector of 3D
+coordinates X,Y,Z for example may be loaded and multiplied the stored, per
+VL element iteration, rather than having to set VL to three times larger.
 
-Legal values are 1, 2, 3 and 4 (and the STATE CSR must hold the 2 bit values 0b00 thru 0b11 to represent them).
+Legal values are 1, 2, 3 and 4 (and the STATE CSR must hold the 2 bit
+values 0b00 thru 0b11 to represent them).
 
 Setting this CSR to 0 must raise an exception.  Setting it to a value
 greater than 4 likewise.
 
-The main effect of SUBVL is that predication bits are applied per **group**, 
-rather than by individual element.
+The main effect of SUBVL is that predication bits are applied per
+**group**, rather than by individual element.
 
 This saves a not insignificant number of instructions when handling 3D
 vectors, as otherwise a much longer predicate mask would have to be set
@@ -283,26 +298,27 @@ full context save/restore.  It contains (and permits setting of):
 
 * MVL
 * VL
-* the destination element offset of the current parallel instruction
-  being executed
-* and, for twin-predication, the source element offset as well.
+* destoffs - the destination element offset of the current parallel
+  instruction being executed
+* srcoffs - for twin-predication, the source element offset as well.
 * SUBVL
-* the subvector destination element offset of the current parallel instruction
-  being executed
-* and, for twin-predication, the subvector source element offset as well.
+* svdestoffs - the subvector destination element offset of the current
+  parallel instruction being executed
+* svsrcoffs - for twin-predication, the subvector source element offset
+  as well.
 
 Interestingly STATE may hypothetically also be modified to make the
 immediately-following instruction to skip a certain number of elements,
-by playing with destoffs and srcoffs
-(and the subvector offsets as well)
+by playing with destoffs and srcoffs (and the subvector offsets as well)
 
 Setting destoffs and srcoffs is realistically intended for saving state
 so that exceptions (page faults in particular) may be serviced and the
 hardware-loop that was being executed at the time of the trap, from
-user-mode (or Supervisor-mode), may be returned to and continued from exactly
-where it left off.  The reason why this works is because setting
-User-Mode STATE will not change (not be used) in M-Mode or S-Mode
-(and is entirely why M-Mode and S-Mode have their own STATE CSRs, meSTATE and seSTATE).
+user-mode (or Supervisor-mode), may be returned to and continued from
+exactly where it left off.  The reason why this works is because setting
+User-Mode STATE will not change (not be used) in M-Mode or S-Mode (and
+is entirely why M-Mode and S-Mode have their own STATE CSRs, meSTATE
+and seSTATE).
 
 The format of the STATE CSR is as follows:
 
@@ -314,25 +330,41 @@ When setting this CSR, the following characteristics will be enforced:
 
 * **MAXVL** will be truncated (after offset) to be within the range 1 to XLEN
 * **VL** will be truncated (after offset) to be within the range 1 to MAXVL
-* **SUBVL** which sets a SIMD-like quantity, has only 4 values there are no changes needed
+* **SUBVL** which sets a SIMD-like quantity, has only 4 values there
+  are no changes needed
 * **srcoffs** will be truncated to be within the range 0 to VL-1
 * **destoffs** will be truncated to be within the range 0 to VL-1
 * **ssvoffs** will be truncated to be within the range 0 to SUBVL-1
 * **dsvoffs** will be truncated to be within the range 0 to SUBVL-1
 
-NOTE: if the following instruction is not a twin predicated instruction, and destoffs or dsvoffs has been set to non-zero, subsequent execution behaviour is undefined. **USE WITH CARE**.
+NOTE: if the following instruction is not a twin predicated instruction,
+and destoffs or dsvoffs has been set to non-zero, subsequent execution
+behaviour is undefined. **USE WITH CARE**.
 
 ### Hardware rules for when to increment STATE offsets
 
-The offsets inside STATE are like the indices in a loop, except in hardware. They are also partially (conceptually) similar to a "sub-execution Program Counter". As such, and to allow proper context switching and to define correct exception behaviour, the following rules must be observed:
+The offsets inside STATE are like the indices in a loop, except
+in hardware. They are also partially (conceptually) similar to a
+"sub-execution Program Counter". As such, and to allow proper context
+switching and to define correct exception behaviour, the following rules
+must be observed:
 
 * When the VL CSR is set, srcoffs and destoffs are reset to zero.
-* Each instruction that contains a "tagged" register shall start execution at the *current* value of srcoffs (and destoffs in the case of twin predication)
-* Unpredicated bits (in nonzeroing mode) shall cause the element operation to skip, incrementing the srcoffs (or destoffs)
-* On execution of an element operation, Exceptions shall **NOT** cause srcoffs or destoffs to increment.
-* On completion of the full Vector Loop (srcoffs = VL-1 or destoffs = VL-1 after the last element is executed), both srcoffs and destoffs shall be reset to zero.
+* Each instruction that contains a "tagged" register shall start
+  execution at the *current* value of srcoffs (and destoffs in the case
+  of twin predication)
+* Unpredicated bits (in nonzeroing mode) shall cause the element operation
+  to skip, incrementing the srcoffs (or destoffs)
+* On execution of an element operation, Exceptions shall **NOT** cause
+  srcoffs or destoffs to increment.
+* On completion of the full Vector Loop (srcoffs = VL-1 or destoffs =
+  VL-1 after the last element is executed), both srcoffs and destoffs
+  shall be reset to zero.
 
-This latter is why srcoffs and destoffs may be stored as values from 0 to XLEN-1 in the STATE CSR, because as loop indices they refer to elements. srcoffs and destoffs never need to be set to VL: their maximum operating values are limited to 0 to VL-1.
+This latter is why srcoffs and destoffs may be stored as values from
+0 to XLEN-1 in the STATE CSR, because as loop indices they refer to
+elements. srcoffs and destoffs never need to be set to VL: their maximum
+operating values are limited to 0 to VL-1.
 
 The same corresponding rules apply to SUBVL, svsrcoffs and svdestoffs.
 
@@ -433,7 +465,9 @@ if the STATE CSR is to be used for fast context-switching.
 
 ## VL, MVL and SUBVL instruction aliases
 
-This table contains pseudo-assembly instruction aliases. Note the subtraction of 1 from the CSRRWI pseudo variants, to compensate for the reduced range of the 5 bit immediate.
+This table contains pseudo-assembly instruction aliases. Note the
+subtraction of 1 from the CSRRWI pseudo variants, to compensate for the
+reduced range of the 5 bit immediate.
 
 | alias           | CSR                  |
 | -               | -                    |
@@ -449,8 +483,9 @@ Note: CSRRC and other bitsetting may still be used, they are however not particu
 ## Register key-value (CAM) table <a name="regcsrtable" />
 
 *NOTE: in prior versions of SV, this table used to be writable and
-accessible via CSRs. It is now stored in the VLIW instruction format. Note that 
-this table does *not* get applied to the SVPrefix P48/64 format, only to scalar opcodes*
+accessible via CSRs. It is now stored in the VLIW instruction format. Note
+that this table does *not* get applied to the SVPrefix P48/64 format,
+only to scalar opcodes*
 
 The purpose of the Register table is three-fold:
 
@@ -464,9 +499,16 @@ The purpose of the Register table is three-fold:
 * To over-ride the implicit or explicit bitwidth that the operation would
   normally give the register.
 
-Note: clearly, if an RVC operation uses a 3 bit spec'd register (x8-x15) and the Register table contains entried that only refer to registerd x1-x14 or x16-x31, such operations will *never* activate the VL hardware loop!
+Note: clearly, if an RVC operation uses a 3 bit spec'd register (x8-x15)
+and the Register table contains entried that only refer to registerd
+x1-x14 or x16-x31, such operations will *never* activate the VL hardware
+loop!
 
-If however the (16 bit) Register table does contain such an entry (x8-x15 or x2 in the case of LWSP), that src or dest reg may be redirected anywhere to the *full* 128 register range. Thus, RVC becomes far more powerful and has many more opportunities to reduce code size that in Standard RV32/RV64 executables.
+If however the (16 bit) Register table does contain such an entry (x8-x15
+or x2 in the case of LWSP), that src or dest reg may be redirected
+anywhere to the *full* 128 register range. Thus, RVC becomes far more
+powerful and has many more opportunities to reduce code size that in
+Standard RV32/RV64 executables.
 
 16 bit format:
 
@@ -483,8 +525,9 @@ If however the (16 bit) Register table does contain such an entry (x8-x15 or x2 
 | ------ | | -   | ------ | ------- |
 | 0      | | i/f | vew0   | regnum  |
 
-i/f is set to "1" to indicate that the redirection/tag entry is to be applied
-to integer registers; 0 indicates that it is relevant to floating-point
+i/f is set to "1" to indicate that the redirection/tag entry is to
+be applied to integer registers; 0 indicates that it is relevant to
+floating-point
 registers.
 
 The 8 bit format is used for a much more compact expression. "isvec"
@@ -577,9 +620,9 @@ register to use is implicit, and numbering begins inplicitly from x9. The
 regnum is still used to "activate" predication, in the same fashion as
 described above.
 
-The 16 bit Predication CSR Table is a key-value store, so implementation-wise
-it will be faster to turn the table around (maintain topologically
-equivalent state):
+The 16 bit Predication CSR Table is a key-value store, so
+implementation-wise it will be faster to turn the table around (maintain
+topologically equivalent state):
 
     struct pred {
         bool zero;
@@ -2331,10 +2374,12 @@ Notes:
   number of bits is 80 + 16 times IL.  Standard RV32, RVC and also
   SVPrefix (P48/64-\*-Type) instructions fit into this space, after the
   (optional) VL / RegCam / PredCam entries
-* In any RVC or 32 Bit opcode, any registers within the VLIW-prefixed format *MUST* have the
-  RegCam and PredCam entries applied to the operation
- (and the Vectorisation loop activated)
-* P48 and P64 opcodes do **not** take their Register or predication context from the VLIW Block tables: they do however have VL or SUBVL applied (unless VLtyp or svlen are set).
+* In any RVC or 32 Bit opcode, any registers within the VLIW-prefixed
+  format *MUST* have the RegCam and PredCam entries applied to the
+  operation (and the Vectorisation loop activated)
+* P48 and P64 opcodes do **not** take their Register or predication
+  context from the VLIW Block tables: they do however have VL or SUBVL
+  applied (unless VLtyp or svlen are set).
 * At the end of the VLIW Group, the RegCam and PredCam entries
   *no longer apply*.  VL, MAXVL and SUBVL on the other hand remain at
   the values set by the last instruction (whether a CSRRW or the VL
@@ -2343,19 +2388,19 @@ Notes:
   VL and SUBVL CSRs with standard CSRRW instructions, within a VLIW block.
 
 All this would greatly reduce the amount of space utilised by Vectorised
-instructions, given that 64-bit CSRRW requires 3, even 4 32-bit opcodes: the
-CSR itself, a LI, and the setting up of the value into the RS register
-of the CSR, which, again, requires a LI / LUI to get the 32 bit
-data into the CSR.  To get 64-bit data into the register in order to put
-it into the CSR(s), LOAD operations from memory are needed!
+instructions, given that 64-bit CSRRW requires 3, even 4 32-bit opcodes:
+the CSR itself, a LI, and the setting up of the value into the RS
+register of the CSR, which, again, requires a LI / LUI to get the 32
+bit data into the CSR.  To get 64-bit data into the register in order
+to put it into the CSR(s), LOAD operations from memory are needed!
 
 Given that each 64-bit CSR can hold only 4x PredCAM entries (or 4 RegCAM
 entries), that's potentially 6 to eight 32-bit instructions, just to
 establish the Vector State!
 
-Not only that: even CSRRW on VL and MAXVL requires 64-bits (even more bits if
-VL needs to be set to greater than 32).  Bear in mind that in SV, both MAXVL
-and VL need to be set.
+Not only that: even CSRRW on VL and MAXVL requires 64-bits (even more
+bits if VL needs to be set to greater than 32).  Bear in mind that in SV,
+both MAXVL and VL need to be set.
 
 By contrast, the VLIW prefix is only 16 bits, the VL/MAX/SubVL block is
 only 16 bits, and as long as not too many predicates and register vector
@@ -2363,10 +2408,14 @@ qualifiers are specified, several 32-bit and 16-bit opcodes can fit into
 the format. If the full flexibility of the 16 bit block formats are not
 needed, more space is saved by using the 8 bit formats.
 
-In this light, embedding the VL/MAXVL, PredCam and RegCam CSR entries into
-a VLIW format makes a lot of sense.
+In this light, embedding the VL/MAXVL, PredCam and RegCam CSR entries
+into a VLIW format makes a lot of sense.
 
-Bear in mind the warning in an earlier section that use of VLtyp or svlen in a P48 or P64 opcode within a VLIW Group will result in corruption (use) of the STATE CSR, as the STATE CSR is shared with SVPrefix. To avoid this situation, the STATE CSR may be copied into a temp register and restored afterwards.
+Bear in mind the warning in an earlier section that use of VLtyp or svlen
+in a P48 or P64 opcode within a VLIW Group will result in corruption
+(use) of the STATE CSR, as the STATE CSR is shared with SVPrefix. To
+avoid this situation, the STATE CSR may be copied into a temp register
+and restored afterwards.
 
 Open Questions:
 
@@ -2395,20 +2444,22 @@ This has implications, namely that a new set of CSRs identical to xepc
 as being a sub extension of the xepc set of CSRs.  Thus, xepcvliw CSRs
 must be context switched and saved / restored in traps.
 
-The srcoffs and destoffs indices in the STATE CSR may be similarly regarded as another
-sub-execution context, giving in effect two sets of nested sub-levels
-of the RISCV Program Counter (actually, three including SUBVL and ssvoffs).
+The srcoffs and destoffs indices in the STATE CSR may be similarly
+regarded as another sub-execution context, giving in effect two sets of
+nested sub-levels of the RISCV Program Counter (actually, three including
+SUBVL and ssvoffs).
 
 In addition, as xepcvliw CSRs are relative to the beginning of the VLIW
-block, branches MUST be restricted to within (relative to) the block, i.e. addressing
-is now restricted to the start (and very short) length of the block.
+block, branches MUST be restricted to within (relative to) the block,
+i.e. addressing is now restricted to the start (and very short) length
+of the block.
 
 Also: calling subroutines is inadviseable, unless they can be entirely
 accomplished within a block.
 
-A normal jump, normal branch and a normal function call may only be taken by letting
-the VLIW group end, returning to "normal" standard RV mode, and then using standard RVC, 32 bit
-or P48/64-\*-type opcodes.
+A normal jump, normal branch and a normal function call may only be taken
+by letting the VLIW group end, returning to "normal" standard RV mode,
+and then using standard RVC, 32 bit or P48/64-\*-type opcodes.
 
 ## Links
 
@@ -2421,10 +2472,15 @@ different subsets of RV.
 
 ## Common options
 
-It is permitted to only implement SVprefix and not the VLIW instruction format option.
-UNIX Platforms **MUST** raise illegal instruction on seeing a VLIW opcode so that traps may emulate the format.
+It is permitted to only implement SVprefix and not the VLIW instruction
+format option, and vice-versa.  UNIX Platforms **MUST** raise illegal
+instruction on seeing an unsupported VLIW or SVprefix opcode, so that
+traps may emulate the format.
 
-It is permitted in SVprefix to either not implement VL or not implement SUBVL (see [[sv_prefix_proposal]] for full details. Again, UNIX Platforms *MUST* raise illegal instruction on implementations that do not support VL or SUBVL.
+It is permitted in SVprefix to either not implement VL or not implement
+SUBVL (see [[sv_prefix_proposal]] for full details. Again, UNIX Platforms
+*MUST* raise illegal instruction on implementations that do not support
+VL or SUBVL.
 
 It is permitted to limit the size of either (or both) the register files
 down to the original size of the standard RV architecture.  However, below
@@ -2531,7 +2587,9 @@ Could the 8 bit Register VLIW format use regnum<<1 instead, only accessing regs 
 --
 
 TODO evaluate strncpy and strlen
-https://groups.google.com/forum/m/#!msg/comp.arch/bGBeaNjAKvc/_vbqyxTUAQAJ
+<https://groups.google.com/forum/m/#!msg/comp.arch/bGBeaNjAKvc/_vbqyxTUAQAJ>
+
+RVV version:
 
     strncpy: 
         mv a3, a0               # Copy dst 
@@ -2553,6 +2611,7 @@ https://groups.google.com/forum/m/#!msg/comp.arch/bGBeaNjAKvc/_vbqyxTUAQAJ
         ret 
 
 
+RVV version:
 
         mv a3, a0             # Save start 
     loop: 
