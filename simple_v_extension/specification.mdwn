@@ -2290,32 +2290,40 @@ in as a *parameter* to the HINT operation.
 
 No specific hints are yet defined in Simple-V
 
-# VLIW Format <a name="vliw-format"></a>
+# Vector Block Format <a name="vliw-format"></a>
 
-One issue with SV is the setup and teardown time of the CSRs.  The cost
-of the use of a full CSRRW (requiring LI) is quite high.  A VLIW format
-therefore makes sense.
+One issue with a former revision of SV was the setup and teardown
+time of the CSRs.  The cost of the use of a full CSRRW (requiring LI)
+to set up registers and predicates was quite high.  A VLIW-like format
+therefore makes sense, and is conceptually reminiscent of the ARM Thumb2
+"IT" instruction.
 
-A suitable prefix, which fits the Expanded Instruction-Length encoding
-for "(80 + 16 times instruction_length)", as defined in Section 1.5
-of the RISC-V ISA, is as follows:
+The format is:
 
-| 15    | 14:12 | 11:10 | 9:8   | 7    | 6:0     |
-| -     | ----- | ----- | ----- | ---  | ------- |
-| vlset | 16xil | pplen | rplen | mode | 1111111 |
+* the standard RISC-V 80 to 192 bit encoding sequence, with bits
+  defining the options to follow within the block
+* An optional VL Block (16-bit)
+* Optional predicate entries (8/16-bit blocks: see Predicate Table, above)
+* Optional register entries (8/16-bit blocks: see Register Table, above)
+* finally some 16/32/48 bit standard RV or SVPrefix opcodes follow.
 
-An optional VL Block, optional predicate entries, optional register
-entries and finally some 16/32/48 bit standard RV or SVPrefix opcodes
-follow.
-
-The variable-length format from Section 1.5 of the RISC-V ISA:
+Thus, the variable-length format from Section 1.5 of the RISC-V ISA is used
+as follows:
 
 | base+4 ... base+2          | base             | number of bits             |
 | ------ -----------------   | ---------------- | -------------------------- |
 | ..xxxx  xxxxxxxxxxxxxxxx   | xnnnxxxxx1111111 | (80+16\*nnn)-bit, nnn!=111 |
 | {ops}{Pred}{Reg}{VL Block} | SV Prefix        |                            |
 
-VL/MAXVL/SubVL Block:
+A suitable prefix, which fits the Expanded Instruction-Length encoding
+for "(80 + 16 times instruction-length)", as defined in Section 1.5
+of the RISC-V ISA, is as follows:
+
+| 15    | 14:12 | 11:10 | 9:8   | 7    | 6:0     |
+| -     | ----- | ----- | ----- | ---  | ------- |
+| vlset | 16xil | pplen | rplen | mode | 1111111 |
+
+The VL/MAXVL/SubVL Block format:
 
 | 31-30 | 29:28 | 27:22  | 21:17  - 16  |
 | -     | ----- | ------ | ------ - -   |
