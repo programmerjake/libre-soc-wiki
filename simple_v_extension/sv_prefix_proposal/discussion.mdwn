@@ -61,7 +61,9 @@ Example pseudocode:
         rd[i * DESTSUBVL + 0] = rs1[i * SRCSUBVL + elements[0]];
     }
 
---
+> ok, i like that idea - adding to TODO list
+
+----
 
 What is SUBVL and how does it work
 
@@ -103,7 +105,7 @@ performs the following operation:
         }
     }
 
---
+----
 
 SVorig goes to a lot of effort to make VL 1<= MAXVL and MAXVL 1..64
 where both CSRs may be stored internally in only 6 bits.
@@ -131,7 +133,7 @@ One related idea would to support VL > XLEN but to only allow unpredicated
 instructions when VL > XLEN. This would allow later implementing register
 pairs/triplets/etc. as predicates as an extension.
 
---
+----
 
 Is MV.X good enough a substitute for swizzle?
 
@@ -143,18 +145,18 @@ doesn't need to pessimize. Additionally, swizzles almost always have constant
 element selectors. MV.X is meant more as a last-resort instruction that is
 better than load/store, but worse than everything else.
 
---
+----
 
 Is vectorised srcbase ok as a gather scatter and ok substitute for
 register stride? 5 dependency registers (reg stride being the 5th)
 is quite scary
 
---
+----
 
 Why are integer conversion instructions needed, when the main SV spec
 covers them by allowing elwidth to be set on both src and dest regs?
 
---
+----
 
 Why are the SETVL rules so complex? What is the reason, how are loops
 carried out?
@@ -175,7 +177,7 @@ maxVL CSR needed for just SVPrefix.
 > hardcoded MVL baked into the actual hardware.
 > That results in loss of flexibility and defeats the purpose of SV. 
 
---
+----
 
 With SUBVL (sub vector len) being both a CSR and also part of the 48/64
 bit opcode, how does that work?
@@ -196,7 +198,7 @@ all the state for context-switching and exception handling.
 > STATE CSR if needed is a workable compromise that
 > does not result in huge CSR proliferation
 
---
+----
 
 What are the interaction rules when a 48/64 prefix opcode has a rd/rs
 that already has a Vector Context for either predication or a register?
@@ -211,7 +213,7 @@ Possible solution, svlen and VLtyp allowed to share STATE CSR however
 programmer becomes responsible for push and pop of state during use of
 a sequence of P48 and P64 ops.
 
---
+----
 
 Can bit 60 of P64 be put to use (in all but the FR4 case)?
 
