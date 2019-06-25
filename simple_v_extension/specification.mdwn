@@ -249,7 +249,7 @@ would SV have no effect.
 
 ## SUBVL - Sub Vector Length
 
-This is a "group by quantity" that effectivrly asks each iteration
+This is a "group by quantity" that effectively asks each iteration
 of the hardware loop to load SUBVL elements of width elwidth at a
 time. Effectively, SUBVL is like a SIMD multiplier: instead of just 1
 operation issued, SUBVL operations are issued.
@@ -258,17 +258,15 @@ Another way to view SUBVL is that each element in the VL length vector is
 now SUBVL times elwidth bits in length and now comprises SUBVL discrete
 sub operations.  An inner SUBVL for-loop within a VL for-loop in effect,
 with the sub-element increased every time in the innermost loop. This
-is best illustrated in the (simplified) pseudocode example, later.
+is best illustrated in the (simplified) pseudocode example, in the
+[[appendix]].
 
 The primary use case for SUBVL is for 3D FP Vectors. A Vector of 3D
-coordinates X,Y,Z for example may be loaded and multiplied the stored, per
+coordinates X,Y,Z for example may be loaded and multiplied then stored, per
 VL element iteration, rather than having to set VL to three times larger.
 
-Legal values are 1, 2, 3 and 4 (and the STATE CSR must hold the 2 bit
-values 0b00 thru 0b11 to represent them).
-
 Setting this CSR to 0 must raise an exception.  Setting it to a value
-greater than 4 likewise.
+greater than 4 likewise.  To see the relationship with STATE, see below.
 
 The main effect of SUBVL is that predication bits are applied per
 **group**, rather than by individual element.
@@ -277,7 +275,7 @@ This saves a not insignificant number of instructions when handling 3D
 vectors, as otherwise a much longer predicate mask would have to be set
 up with regularly-repeated bit patterns.
 
-See SUBVL Pseudocode illustration for details.
+See SUBVL Pseudocode illustration in the appendix, for details.
 
 ## STATE
 
@@ -313,6 +311,15 @@ The format of the STATE CSR is as follows:
 | (29..28 | (27..26) | (25..24) | (23..18) | (17..12) | (11..6) | (5...0) |
 | ------- | -------- | -------- | -------- | -------- | ------- | ------- |
 | dsvoffs | ssvoffs  | subvl    | destoffs | srcoffs  | vl      | maxvl   |
+
+The relationship between SUBVL and the subvl field is:
+
+| SUBVL | (25..24) |
+| ----- | -------- |
+| 1     | 0b00     |
+| 2     | 0b01     |
+| 3     | 0b10     |
+| 4     | 0b11     |
 
 When setting this CSR, the following characteristics will be enforced:
 

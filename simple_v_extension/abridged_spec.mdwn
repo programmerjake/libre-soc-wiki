@@ -92,7 +92,7 @@ time. Effectively, SUBVL is like a SIMD multiplier: instead of just 1
 operation issued, SUBVL operations are issued.
 
 The main effect of SUBVL is that predication bits are applied per
-**group**, rather than by individual element.
+**group**, rather than by individual element.  Legal values are 1 to 4.
 
 ## STATE
 
@@ -115,6 +115,15 @@ The format of the STATE CSR is as follows:
 | (29..28 | (27..26) | (25..24) | (23..18) | (17..12) | (11..6) | (5...0) |
 | ------- | -------- | -------- | -------- | -------- | ------- | ------- |
 | dsvoffs | ssvoffs  | subvl    | destoffs | srcoffs  | vl      | maxvl   |
+
+The relationship between SUBVL and the subvl field is:
+
+| SUBVL | (25..24) |
+| ----- | -------- |
+| 1     | 0b00     |
+| 2     | 0b01     |
+| 3     | 0b10     |
+| 4     | 0b11     |
 
 Notes:
 
