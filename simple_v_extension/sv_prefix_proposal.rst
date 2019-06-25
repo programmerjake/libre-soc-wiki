@@ -824,6 +824,15 @@ executing 48/64-bit instructions. For just SVPrefix, I would say that the only
 user-visible CSR needed is VL. This is ignoring all the state for
 context-switching and exception handling.
 
+> the consequence of that would be that P48/64 would need
+> its own CSR State to track the subelement index.
+> or that any exceptions would need to occur on a group
+> basis, which is less than ideal,
+> and interrupts would have to be stalled.
+> interacting with SUBVL and requiring P48/64 to save the
+> STATE CSR if needed is a workable compromise that
+> does not result in huge CSR proliferation
+
 --
 
 What are the interaction rules when a 48/64 prefix opcode has a rd/rs
