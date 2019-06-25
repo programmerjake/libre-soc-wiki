@@ -621,25 +621,31 @@ in STATE must be zero, and, in the UNIX Platform, an illegal exception
 Additional Instructions
 =======================
 
-Add instructions to convert between integer types.
+* Add instructions to convert between integer types.
+* Add instructions to `swizzle`_ elements in sub-vectors. Note that
+  the sub-vector lengths of the source and destination won't necessarily
+  match.
+* Add instructions to transpose (2-4)x(2-4) element matrices.
+* Add instructions to insert or extract a sub-vector from a vector, with
+  the index allowed to be both immediate and from a register (*immediate
+  can be covered by twin-predication, register might be, by virtue of
+  predicates being registers*)
+* Add a register gather instruction (aka MV.X: regfile[rd] =
+  regfile[regfile[rs1]])
 
-Add instructions to `swizzle`_ elements in sub-vectors. Note that the sub-vector
-lengths of the source and destination won't necessarily match.
+subelement swizzle example:
+
+    velswizzle x32, x64, SRCSUBVL=3, DESTSUBVL=4, ELTYPE=u8, elements=[0, 0, 2, 1]
 
 .. _swizzle: https://www.khronos.org/opengl/wiki/Data_Type_(GLSL)#Swizzling
-
-Add instructions to transpose (2-4)x(2-4) element matrices.
-
-Add instructions to insert or extract a sub-vector from a vector, with
-the index allowed to be both immediate and from a register (*immediate
-can be covered by twin-predication, register might be, by virtue of
-predicates being registers*)
-
-Add a register gather instruction (aka MV.X: regfile[rd] =
-regfile[regfile[rs1]])
 
 questions
 =========
 
 Moved to the discussion page (link at top of this page)
+
+TODO
+====
+
+Work out a way to do sub-element swizzling.
 
