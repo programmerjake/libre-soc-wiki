@@ -16,12 +16,30 @@ The sub-context execution is "nested" in "re-entrant" form, in the
 following order:
 
 * Main standard RISC-V Program Counter (PC)
-* VBLOCK sub-execution context (PCVBLK increments whilst PC is paused)
-* VL element loops (STATE srcoffs and destoffs increment, PC and PCVBLK pause)
-* SUBVL element loops (STATE svsrcoffs/svdestoffs increment, VL pauses)
+* VBLOCK sub-execution context (PCVBLK increments whilst PC is paused).
+* VL element loops (STATE srcoffs and destoffs increment, PC and PCVBLK pause).
+  Predication bits may be individually applied per element.
+* SUBVL element loops (STATE svsrcoffs/svdestoffs increment, VL pauses).
+  Individual predicate bits from VL loops apply to the *group* of SUBVL
+  elements.
+
+An ancillary "SVPrefix" Format (P48/P64) [[sv_prefix_proposal]] may
+run its own VL/SUBVL "loops" and specifies its own Register and Predication
+format on the 32-bit RV scalar opcode embedded within it.
+
+The [[vblock_format]] specifies how VBLOCK sub-execution contexts
+operate.
+
+SV is never actually switched "off".  VL or SUBVL may be equal to 1, and
+Register or Predicate over-ride tables may be empty: under such circumstances
+the behaviour becomes effectively identical to standard RV execution, however
+SV is never truly actually "off".
 
 Note: **there are *no* new opcodes**. The scheme works *entirely*
-on hidden context that augments *scalar* RISCV instructions.
+on hidden context that augments *scalar* RISC-V instructions.  Thus it
+may cover existing, future and custom scalar extensions, turning all
+existing, all future and all custom scalar operations parallel, without
+requiring any special opcodes to do so.
 
 # CSRs <a name="csrs"></a>
 
@@ -173,8 +191,6 @@ Fields:
 | 10  | 16 bit              |
 | 11  | 32 bit              |
 
-A useful way to view the above table (and not have it as a CAM):
-
 As the above table is a CAM (key-value store) it may be appropriate
 (faster, less gates, implementation-wise) to expand it as follows:
 
@@ -210,16 +226,11 @@ is an indirect lookup that allows the RV opcodes to not need modification.
   predication mask.
 * inv indicates that the predication mask bits are to be inverted
   prior to use *without* actually modifying the contents of the
-  registerfrom which those bits originated.
+  register from which those bits originated.
 * zeroing is either 1 or 0, and if set to 1, the operation must
   place zeros in any element position where the predication mask is
   set to zero.  If zeroing is set to 0, unpredicated elements *must*
-  be left alone.  Some microarchitectures may choose to interpret
-  this as skipping the operation entirely.  Others which wish to
-  stick more closely to a SIMD architecture may choose instead to
-  interpret unpredicated elements as an internal "copy element"
-  operation (which would be necessary in SIMD microarchitectures
-  that perform register-renaming)
+  be left alone (unaltered), even when elwidth != default.
 * ffirst is a special mode that stops sequential element processing when
   a data-dependent condition occurs, whether a trap or a conditional test.
   The handling of each (trap or conditional test) is slightly different:
@@ -899,7 +910,7 @@ pseudo-code (elwidth=default for both source and target) it was
 the *registers* that the predication was applied to, it is now the
 **elements** that the predication is applied to.
 
-The full pseudocode for all LD operations may be written out
+The pseudocode for all LD operations may be written out
 as follows:
 
     function LBU(rd, rs):
@@ -942,23 +953,10 @@ as follows:
 
 # Predication Element Zeroing
 
-The introduction of zeroing on traditional vector predication is usually
-intended as an optimisation for lane-based microarchitectures with register
-renaming to be able to save power by avoiding a register read on elements
-that are passed through en-masse through the ALU.  Simpler microarchitectures
-do not have this issue: they simply do not pass the element through to
-the ALU at all, and therefore do not store it back in the destination.
-More complex non-lane-based micro-architectures can, when zeroing is
-not set, use the predication bits to simply avoid sending element-based
-operations to the ALUs, entirely: thus, over the long term, potentially
-keeping all ALUs 100% occupied even when elements are predicated out.
-
-SimpleV's design principle is not based on or influenced by
-microarchitectural design factors: it is a hardware-level API.
-Therefore, looking purely at whether zeroing is *useful* or not,
-(whether less instructions are needed for certain scenarios),
-given that a case can be made for zeroing *and* non-zeroing, the
-decision was taken to add support for both.
+The decision to add the *option* to zero unpredicated (masked-out)
+elements was based on whether it would be useful, rather than on
+how the microarchitecture is implemented (or optimised).  Therefore,
+both zeroing and non-zeroing are mandatory.
 
 ## Single-predication (based on destination register)
 
@@ -966,10 +964,10 @@ Zeroing on predication for arithmetic operations is taken from
 the destination register's predicate.  i.e. the predication *and*
 zeroing settings to be applied to the whole operation come from the
 CSR Predication table entry for the destination register.
+
 Thus when zeroing is set on predication of a destination element,
 if the predication bit is clear, then the destination element is *set*
-to zero (twin-predication is slightly different, and will be covered
-next).
+to zero (twin-predication is slightly different, and is covered below)
 
 Thus the pseudo-code loop for a predicated arithmetic operation
 is modified to as follows:
@@ -1001,20 +999,11 @@ is modified to as follows:
         if (int_vec[rs2].isvector)  { irs2 += 1; }
         if (rd == VL or rs1 == VL or rs2 == VL): return
 
-The optimisation to skip elements entirely is only possible for certain
-micro-architectures when zeroing is not set.  However for lane-based
-micro-architectures this optimisation may not be practical, as it
-implies that elements end up in different "lanes".  Under these
-circumstances it is perfectly fine to simply have the lanes
-"inactive" for predicated elements, even though it results in
-less than 100% ALU utilisation.
-
 ## Twin-predication (based on source and destination register)
 
-Twin-predication is not that much different, except that that
-the source is independently zero-predicated from the destination.
-This means that the source may be zero-predicated *or* the
-destination zero-predicated *or both*, or neither.
+In twin-predication, the source is independently zero-predicated from
+the destination.  This means that the source may be zero-predicated *or*
+the destination zero-predicated *or both*, or neither.
 
 When with twin-predication, zeroing is set on the source and not
 the destination, if a predicate bit is set it indicates that a zero
@@ -1036,9 +1025,9 @@ However: this may not necessarily be the case for all operations;
 implementors, particularly of custom instructions, clearly need to
 think through the implications in each and every case.
 
-Here is pseudo-code for a twin zero-predicated operation:
+Here is (simplified) pseudo-code for a twin zero-predicated MV operation:
 
-    function op_mv(rd, rs) # MV not VMV!
+    function op_mv(rd, rs) # MV, not VMV!
       rd = int_csr[rd].active ? int_csr[rd].regidx : rd;
       rs = int_csr[rs].active ? int_csr[rs].regidx : rs;
       ps, zerosrc = get_pred_val(FALSE, rs); # predication on src
@@ -1047,20 +1036,12 @@ Here is pseudo-code for a twin zero-predicated operation:
         if (int_csr[rs].isvec && !zerosrc) while (!(ps & 1<<i)) i++;
         if (int_csr[rd].isvec && !zerodst) while (!(pd & 1<<j)) j++;
         if ((pd & 1<<j))
-            if ((pd & 1<<j))
-                sourcedata = ireg[rs+i];
-            else
-                sourcedata = 0
-            ireg[rd+j] <= sourcedata
+            ireg[rd+j] <= (pd & 1<<j) ? ireg[rs+1] : 0
         else if (zerodst)
             ireg[rd+j] <= 0
-        if (int_csr[rs].isvec)
-            i++;
-        if (int_csr[rd].isvec)
-            j++;
-        else
-            if ((pd & 1<<j))
-                break;
+        if (int_csr[rs].isvec) i++;
+        if (int_csr[rd].isvec) j++;
+        else if ((pd & 1<<j)) break;
 
 Note that in the instance where the destination is a scalar, the hardware
 loop is ended the moment a value *or a zero* is placed into the destination
