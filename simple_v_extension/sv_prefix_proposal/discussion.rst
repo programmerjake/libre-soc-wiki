@@ -62,7 +62,9 @@ Example pseudocode:
         rd[i * DESTSUBVL + 0] = rs1[i * SRCSUBVL + elements[0]];
     }
 
->> ok, i like that idea - adding to TODO list
+Answer:
+
+    > ok, i like that idea - adding to TODO list
 
 ----
 
@@ -146,13 +148,13 @@ doesn't need to pessimize. Additionally, swizzles almost always have constant
 element selectors. MV.X is meant more as a last-resort instruction that is
 better than load/store, but worse than everything else.
 
->> ok, then we'll need a way to do that.  given that it needs to apply
->> to, well... everything, basically, i'm tempted to recommend it be
->> done as a CSR and/or as (another) table in VBLOCK.
->> the reason is, it's just too much to expect to massively duplicate
->> literally every single opcode in existence, just to add swizzle
->> when there's no room in the opcode space to do so.
->> not sure what alternatives there might be.
+    > ok, then we'll need a way to do that.  given that it needs to apply
+    > to, well... everything, basically, i'm tempted to recommend it be
+    > done as a CSR and/or as (another) table in VBLOCK.
+    > the reason is, it's just too much to expect to massively duplicate
+    > literally every single opcode in existence, just to add swizzle
+    > when there's no room in the opcode space to do so.
+    > not sure what alternatives there might be.
 
 ----
 
@@ -176,18 +178,18 @@ The idea is that the compiler knows maxVL at compile time since it allocated the
 backing registers, so SETVL has the maxVL as an immediate value. There is no
 maxVL CSR needed for just SVPrefix.
 
->> when looking at a loop assembly sequence
->> i think you'll find this approach will not work.
->> RVV loops on which SV loops are directly based needs understanding
->> of the use of MIN within the actual SETVL instruction.
->> Yes MVL is known at compile time
->> however unless MVL is communicates to the hardware, SETVL just
->> does not work: it has absolutely no way of knowing when to stop
->> processing.  The point being: it's not *MVL* that's the problem
->> if MVL is not a CSR, it's *VL* that becomes the problem.
->> The only other option which does work is to set a mandatory
->> hardcoded MVL baked into the actual hardware.
->> That results in loss of flexibility and defeats the purpose of SV. 
+    > when looking at a loop assembly sequence
+    > i think you'll find this approach will not work.
+    > RVV loops on which SV loops are directly based needs understanding
+    > of the use of MIN within the actual SETVL instruction.
+    > Yes MVL is known at compile time
+    > however unless MVL is communicates to the hardware, SETVL just
+    > does not work: it has absolutely no way of knowing when to stop
+    > processing.  The point being: it's not *MVL* that's the problem
+    > if MVL is not a CSR, it's *VL* that becomes the problem.
+    > The only other option which does work is to set a mandatory
+    > hardcoded MVL baked into the actual hardware.
+    > That results in loss of flexibility and defeats the purpose of SV. 
 
 ----
 
@@ -201,14 +203,14 @@ SUBVL field when executing 48/64-bit instructions. For just SVPrefix,
 I would say that the only user-visible CSR needed is VL. This is ignoring
 all the state for context-switching and exception handling.
 
->> the consequence of that would be that P48/64 would need
->> its own CSR State to track the subelement index.
->> or that any exceptions would need to occur on a group
->> basis, which is less than ideal,
->> and interrupts would have to be stalled.
->> interacting with SUBVL and requiring P48/64 to save the
->> STATE CSR if needed is a workable compromise that
->> does not result in huge CSR proliferation
+    > the consequence of that would be that P48/64 would need
+    > its own CSR State to track the subelement index.
+    > or that any exceptions would need to occur on a group
+    > basis, which is less than ideal,
+    > and interrupts would have to be stalled.
+    > interacting with SUBVL and requiring P48/64 to save the
+    > STATE CSR if needed is a workable compromise that
+    > does not result in huge CSR proliferation
 
 ----
 
