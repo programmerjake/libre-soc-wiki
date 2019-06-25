@@ -231,35 +231,9 @@ is an indirect lookup that allows the RV opcodes to not need modification.
   The handling of each (trap or conditional test) is slightly different:
   see Instruction sections for further details
 
-16 bit format:
-
-| PrCSR | (15..11) | 10     | 9     | 8   | (7..1)  | 0       |
-| ----- | -        | -      | -     | -   | ------- | ------- |
-| 0     | predidx  | zero0  | inv0  | i/f | regidx  | ffirst0 |
-| 1     | predidx  | zero1  | inv1  | i/f | regidx  | ffirst1 |
-| 2     | predidx  | zero2  | inv2  | i/f | regidx  | ffirst2 |
-| 3     | predidx  | zero3  | inv3  | i/f | regidx  | ffirst3 |
-
-Note: predidx=x0, zero=1, inv=1 is a RESERVED encoding.  Its use must
-generate an illegal instruction trap.
-
-8 bit format:
-
-| PrCSR | 7     | 6     | 5   | (4..0)  |
-| ----- | -     | -     | -   | ------- |
-| 0     | zero0 | inv0  | i/f | regnum  |
-
-Mapping from 8 to 16 bit format, the table becomes:
-
-| PrCSR | (15..11) | 10     | 9     | 8   | (7..1)  | 0       |
-| ----- | -        | -      | -     | -   | ------- | ------- |
-| 0     | x9       | zero0  | inv0  | i/f | regnum  | ff=0    |
-| 1     | x10      | zero1  | inv1  | i/f | regnum  | ff=0    |
-| 2     | x11      | zero2  | inv2  | i/f | regnum  | ff=0    |
-| 3     | x12      | zero3  | inv3  | i/f | regnum  | ff=0    |
+[[!inline raw="yes" pages="simple_v_extension/pred_table_format" ]]
 
 Pseudocode for predication:
-
 
 [[!inline raw="yes" pages="simple_v_extension/pred_table" ]]
 [[!inline raw="yes" pages="simple_v_extension/get_pred_value" ]]
