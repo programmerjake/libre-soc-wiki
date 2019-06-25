@@ -645,9 +645,103 @@ Confirmation needed as to whether subvector extraction can be covered
 by twin predication (it probably can, it is one of the many purposes it
 is for).
 
+Answer:
+
+Yes, it can, but VL needs to be changed for it to work, since predicates work at
+the size of a whole subvector instead of an element of that subvector. To avoid
+needing to constantly change VL, and since swizzles are a very common operation, I
+think we should have a separate instruction -- a subvector element swizzle
+instruction::
+
+    velswizzle x32, x64, SRCSUBVL=3, DESTSUBVL=4, ELTYPE=u8, elements=[0, 0, 2, 1]
+
+Example pseudocode:
+
+.. code:: C
+
+    // processor state:
+    uint64_t regs[128];
+    int VL = 5;
+
+    typedef uint8_t ELTYPE;
+    const int SRCSUBVL = 3;
+    const int DESTSUBVL = 4;
+    const int elements[] = [0, 0, 2, 1];
+    ELTYPE *rd = (ELTYPE *)&regs[32];
+    ELTYPE *rs1 = (ELTYPE *)&regs[48];
+    for(int i = 0; i < VL; i++)
+    {
+        rd[i * DESTSUBVL + 0] = rs1[i * SRCSUBVL + elements[0]];
+        rd[i * DESTSUBVL + 1] = rs1[i * SRCSUBVL + elements[1]];
+        rd[i * DESTSUBVL + 2] = rs1[i * SRCSUBVL + elements[2]];
+        rd[i * DESTSUBVL + 3] = rs1[i * SRCSUBVL + elements[3]];
+    }
+
+To use the subvector element swizzle instruction to extract a subvector element,
+all that needs to be done is to have DESTSUBVL be 1::
+
+    // extract element index 2
+    velswizzle rd, rs1, SRCSUBVL=4, DESTSUBVL=1, ELTYPE=u32, elements=[2]
+
+Example pseudocode:
+
+.. code:: C
+
+    // processor state:
+    uint64_t regs[128];
+    int VL = 5;
+
+    typedef uint32_t ELTYPE;
+    const int SRCSUBVL = 4;
+    const int DESTSUBVL = 1;
+    const int elements[] = [2];
+    ELTYPE *rd = (ELTYPE *)&regs[...];
+    ELTYPE *rs1 = (ELTYPE *)&regs[...];
+    for(int i = 0; i < VL; i++)
+    {
+        rd[i * DESTSUBVL + 0] = rs1[i * SRCSUBVL + elements[0]];
+    }
+
 --
 
 What is SUBVL and how does it work
+
+Answer:
+
+SUBVL is the instruction field in P48 instructions that specifies the sub-vector
+length. The sub-vector length is the number of scalars that are grouped together
+and treated like an element by both VL and predication. This is used to support
+operations where the elements are short vectors (2-4 elements) in Vulkan and
+OpenGL. Those short vectors are mostly used as mathematical vectors to handle
+directions, positions, and colors, rather than as a pure optimization.
+
+For example, when VL is 5::
+
+    add x32, x48, x64, SUBVL=3, ELTYPE=u16, PRED=!x9
+
+performs the following operation:
+
+.. code:: C
+
+    // processor state:
+    uint64_t regs[128];
+    int VL = 5;
+
+    // instruction fields:
+    typedef uint16_t ELTYPE;
+    const int SUBVL = 3;
+    ELTYPE *rd = (ELTYPE *)&regs[32];
+    ELTYPE *rs1 = (ELTYPE *)&regs[48];
+    ELTYPE *rs2 = (ELTYPE *)&regs[64];
+    for(int i = 0; i < VL; i++)
+    {
+        if(~regs[9] & 0x1)
+        {
+            rd[i * SUBVL + 0] = rs1[i * SUBVL + 0] + rs2[i * SUBVL + 0];
+            rd[i * SUBVL + 1] = rs1[i * SUBVL + 1] + rs2[i * SUBVL + 1];
+            rd[i * SUBVL + 2] = rs1[i * SUBVL + 2] + rs2[i * SUBVL + 2];
+        }
+    }
 
 --
 
@@ -664,13 +758,37 @@ on the test for loop variable being zero, a la c "while do" instead of
 Or, does it not matter that VL only goes up to 31 on a CSRRWI, and that
 it only goes to a max of 63 rather than 64?
 
+Answer:
+
+I think supporting SETVL where VL would be set to 0 should be done. that way,
+the branch can be put after SETVL, allowing SETVL to execute earlier giving more
+time for VL to propagate (preventing stalling) to the instruction decoder.
+I have no problem with having 0 stored to VL via CSRW resulting in VL=64
+(or whatever maximum value is supported in hardware).
+
+One related idea would to support VL > XLEN but to only allow unpredicated
+instructions when VL > XLEN. This would allow later implementing register
+pairs/triplets/etc. as predicates as an extension.
+
 --
 
 Should these questions be moved to Discussion subpage
 
+Answer:
+
+probably, I'll let Luke do that if desired.
+
 --
 
 Is MV.X good enough a substitute for swizzle?
+
+Answer:
+
+no, since the swizzle instruction specifies in the opcode which elements are
+used and where they go, so it can run much faster since the execution engine
+doesn't need to pessimize. Additionally, swizzles almost always have constant
+element selectors. MV.X is meant more as a last-resort instruction that is
+better than load/store, but worse than everything else.
 
 --
 
@@ -688,10 +806,23 @@ covers them by allowing elwidth to be set on both src and dest regs?
 Why are the SETVL rules so complex? What is the reason, how are loops
 carried out?
 
+Partial Answer:
+
+The idea is that the compiler knows maxVL at compile time since it allocated the
+backing registers, so SETVL has the maxVL as an immediate value. There is no
+maxVL CSR needed for just SVPrefix.
+
 --
 
 With SUBVL (sub vector len) being both a CSR and also part of the 48/64
 bit opcode, how does that work?
+
+Answer:
+
+I think we should just ignore the SUBVL CSR and use the value from the SUBVL field when
+executing 48/64-bit instructions. For just SVPrefix, I would say that the only
+user-visible CSR needed is VL. This is ignoring all the state for
+context-switching and exception handling.
 
 --
 
