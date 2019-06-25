@@ -50,13 +50,6 @@ for one-off instructions such as saving the entire register file to the
 stack with a single one-off Vectorised and predicated LD/ST, or as a way
 to save or restore registers in a function call with a single instruction.
 
-CSRs needed:
-
-* mepcvblk
-* sepcvblk
-* uepcvblk
-* hepcvblk
-
 Notes:
 
 * Bit 7 specifies if the prefix block format is the full 16 bit format
@@ -120,20 +113,29 @@ in a P48 or P64 opcode within a VBLOCK Group will result in corruption
 avoid this situation, the STATE CSR may be copied into a temp register
 and restored afterwards.
 
-Open Questions:
+# Register Table Format
 
-* Is it necessary to stick to the RISC-V 1.5 format?  Why not go with
-  using the 15th bit to allow 80 + 16\*0bnnnn bits?  Perhaps to be sane,
-  limit to 256 bits (16 times 0-11).
-* Could a "hint" be used to set which operations are parallel and which
-  are sequential?
-* Could a new sub-instruction opcode format be used, one that does not
-  conform precisely to RISC-V rules, but *unpacks* to RISC-V opcodes?
-  no need for byte or bit-alignment
-* Could a hardware compression algorithm be deployed?  Quite likely,
-  because of the sub-execution context (sub-VBLOCK PC)
+The register table format is covered in the main [[specification]],
+included here for convenience:
 
-## Limitations on instructions.
+[[!inline raw="yes" pages="simple_v_extension/reg_table_format" ]]
+
+# Predicate Table Format
+
+The predicate table format is covered in the main [[specification]],
+included here for convenience:
+
+[[!inline raw="yes" pages="simple_v_extension/pred_table_format" ]]
+
+# CSRs:
+
+* pcvblk
+* mepcvblk
+* sepcvblk
+* uepcvblk
+* hepcvblk
+
+# Limitations on instructions.
 
 To greatly simplify implementations, it is required to treat the VBLOCK
 group as a separate sub-program with its own separate PC. The sub-pc
@@ -164,7 +166,20 @@ A normal jump, normal branch and a normal function call may only be taken
 by letting the VBLOCK group end, returning to "normal" standard RV mode,
 and then using standard RVC, 32 bit or P48/64-\*-type opcodes.
 
-## Links
+# Links
 
 * <https://groups.google.com/d/msg/comp.arch/yIFmee-Cx-c/jRcf0evSAAAJ>
+
+# Open Questions:
+
+* Is it necessary to stick to the RISC-V 1.5 format?  Why not go with
+  using the 15th bit to allow 80 + 16\*0bnnnn bits?  Perhaps to be sane,
+  limit to 256 bits (16 times 0-11).
+* Could a "hint" be used to set which operations are parallel and which
+  are sequential?
+* Could a new sub-instruction opcode format be used, one that does not
+  conform precisely to RISC-V rules, but *unpacks* to RISC-V opcodes?
+  no need for byte or bit-alignment
+* Could a hardware compression algorithm be deployed?  Quite likely,
+  because of the sub-execution context (sub-VBLOCK PC)
 
