@@ -37,10 +37,10 @@ the behaviour becomes effectively identical to standard RV execution, however
 SV is never truly actually "off".
 
 Note: **there are *no* new opcodes**. The scheme works *entirely*
-on hidden context that augments *scalar* RISC-V instructions.  Thus it
-may cover existing, future and custom scalar extensions, turning all
-existing, all future and all custom scalar operations parallel, without
-requiring any special opcodes to do so.
+on hidden context that augments (nests) *scalar* RISC-V instructions.
+Thus it may cover existing, future and custom scalar extensions, turning
+all existing, all future and all custom scalar operations parallel,
+without requiring any special (identical, parallel variant) opcodes to do so.
 
 # CSRs <a name="csrs"></a>
 
