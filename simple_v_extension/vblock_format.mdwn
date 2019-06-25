@@ -129,24 +129,25 @@ included here for convenience:
 
 # CSRs:
 
+The CSRs needed, in addition to those from the main [[specification]] are:
+
 * pcvblk
 * mepcvblk
 * sepcvblk
 * uepcvblk
 * hepcvblk
 
-# Limitations on instructions.
+To greatly simplify implementations, which would otherwise require a
+way to track (cache) VBLOCK instructions, it is required to treat the
+VBLOCK group as a separate sub-program with its own separate PC. The
+sub-pc advances separately whilst the main PC remains "frozen", pointing
+at the beginning of the VBLOCK instruction (not to be confused with how
+VL works, which is exactly the same principle, except it is VStart in
+the STATE CSR that increments).
 
-To greatly simplify implementations, it is required to treat the VBLOCK
-group as a separate sub-program with its own separate PC. The sub-pc
-advances separately whilst the main PC remains pointing at the beginning
-of the VBLOCK instruction (not to be confused with how VL works, which
-is exactly the same principle, except it is VStart in the STATE CSR
-that increments).
-
-This has implications, namely that a new set of CSRs identical to xepc
+This has implications, namely that a new set of CSRs identical to (x)epc
 (mepc, srpc, hepc and uepc) must be created and managed and respected
-as being a sub extension of the xepc set of CSRs.  Thus, xepcvblk CSRs
+as being a sub extension of the (x)epc set of CSRs.  Thus, (x)epcvblk CSRs
 must be context switched and saved / restored in traps.
 
 The srcoffs and destoffs indices in the STATE CSR may be similarly
@@ -154,7 +155,9 @@ regarded as another sub-execution context, giving in effect two sets of
 nested sub-levels of the RISCV Program Counter (actually, three including
 SUBVL and ssvoffs).
 
-In addition, as xepcvblk CSRs are relative to the beginning of the VBLOCK,
+# Limitations on instructions
+
+As the pcvblk CSR is relative to the beginning of the VBLOCK,
 branches MUST be restricted to within (relative to) the block,
 i.e. addressing is now restricted to the start (and very short) length
 of the block.
