@@ -239,20 +239,6 @@ to be set.
 
 See [[appendix]] for more details on fail-on-first modes.
 
-# Exceptions
-
-TODO: expand.  
-
-# Hints
-
-With Simple-V being capable of issuing *parallel* instructions where
-rd=x0, the space for possible HINTs is expanded considerably.  VL
-could be used to indicate different hints.  In addition, if predication
-is set, the predication register itself could hypothetically be passed
-in as a *parameter* to the HINT operation.
-
-No specific hints are yet defined in Simple-V
-
 # Vector Block Format <a name="vliw-format"></a>
 
 The Vector Block format uses the RISC-V 80-192 bit format from Section 1.5
@@ -264,6 +250,23 @@ SVPrefix opcodes ([[sv_prefix_proposal]])
 [[!inline raw="yes" pages="simple_v_extension/vblock_format_table" ]]
 
 For full details see ancillary resource: [[vblock_format]]
+
+# Exceptions
+
+Exception handling **MUST** be precise, in-order, and exactly
+like Standard RISC-V as far as the instruction execution order is
+concerned, regardless of whether it is PC, PCVBLK, VL or SUBVL that
+is currently being incremented.
+
+# Hints
+
+With Simple-V being capable of issuing *parallel* instructions where
+rd=x0, the space for possible HINTs is expanded considerably.  VL
+could be used to indicate different hints.  In addition, if predication
+is set, the predication register itself could hypothetically be passed
+in as a *parameter* to the HINT operation.
+
+No specific hints are yet defined in Simple-V
 
 # Subsets of RV functionality
 
