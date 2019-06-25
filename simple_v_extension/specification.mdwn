@@ -129,21 +129,15 @@ And likewise for M-Mode:
 * meSTATE
 
 The u/m/s CSRs are treated and handled exactly like their (x)epc
-equivalents. On entry to a privilege level, the contents of its (x)eSTATE
-and (x)ePCVLIW CSRs are copied into STATE and PCVLIW respectively, and
-on exit from a priv level the STATE and PCVLIW CSRs are copied to the
-exited priv level's corresponding CSRs.
+equivalents. On entry to or exit from a privilege level, the contents of its (x)eSTATE are swapped with STATE.
 
 Thus for example, a User Mode trap will end up swapping STATE and ueSTATE
 (on both entry and exit), allowing User Mode traps to have their own
 Vectorisation Context set up, separated from and unaffected by normal
-user applications.
+user applications.  If an M Mode trap occurs in the middle of the U Mode trap, STATE is swapped with meSTATE, and restored on exit: the U Mode trap continues unaware that the M Mode trap even occurred.
 
 Likewise, Supervisor Mode may perform context-switches, safe in the
 knowledge that its Vectorisation State is unaffected by User Mode.
-
-For this to work, the (x)eSTATE CSR must be saved onto the stack by the
-trap, just like (x)epc, before modifying the trap atomicity flag (x)ie.
 
 The access pattern for these groups of CSRs in each mode follows the
 same pattern for other CSRs that have M-Mode and S-Mode "mirrors":
@@ -156,27 +150,17 @@ same pattern for other CSRs that have M-Mode and S-Mode "mirrors":
 * In U-Mode, accessing and changing of the S-Mode and U-Mode CSRs
   is prohibited.
 
-In M-Mode, only the M-Mode CSRs are in effect, i.e. it is only the
-M-Mode MVL, the M-Mode STATE and so on that influences the processor
-behaviour.  Likewise for S-Mode, and likewise for U-Mode.
-
-This has the interesting benefit of allowing M-Mode (or S-Mode) to be set
-up, for context-switching to take place, and, on return back to the higher
-privileged mode, the CSRs of that mode will be exactly as they were.
-Thus, it becomes possible for example to set up CSRs suited best to aiding
-and assisting low-latency fast context-switching *once and only once*
-(for example at boot time), without the need for re-initialising the
-CSRs needed to do so.
-
-Another interesting side effect of separate S Mode CSRs is that
-Vectorised saving of the entire register file to the stack is a single
-instruction (accidental provision of LOAD-MULTI semantics).  If the
+An interesting side effect of SV STATE being
+separate and distinct in S Mode
+is that
+Vectorised saving of an entire register file to the stack is a single
+instruction (through accidental provision of LOAD-MULTI semantics).  If the
 SVPrefix P64-LD-type format is used, LOAD-MULTI may even be done with a
-single standalone 64 bit opcode (P64 may set up both VL and MVL from an
-immediate field). It can even be predicated, which opens up some very
+single standalone 64 bit opcode (P64 may set up SUBVL, VL and MVL from an
+immediate field, to cover the full regfile). It can even be predicated, which opens up some very
 interesting possibilities.
 
-The (x)EPCVLIW CSRs must be treated exactly like their corresponding (x)epc
+(x)EPCVLIW CSRs must be treated exactly like their corresponding (x)epc
 equivalents. See VLIW section for details.
 
 ## MAXVECTORLENGTH (MVL) <a name="mvl" />
@@ -330,7 +314,7 @@ When setting this CSR, the following characteristics will be enforced:
 
 * **MAXVL** will be truncated (after offset) to be within the range 1 to XLEN
 * **VL** will be truncated (after offset) to be within the range 1 to MAXVL
-* **SUBVL** which sets a SIMD-like quantity, has only 4 values there
+* **SUBVL** which sets a SIMD-like quantity, has only 4 values so there
   are no changes needed
 * **srcoffs** will be truncated to be within the range 0 to VL-1
 * **destoffs** will be truncated to be within the range 0 to VL-1
