@@ -234,7 +234,7 @@ VLtyp field encoding
 
 NOTE: VL and MVL below are modified (potentially damaging) and so is
 the STATE CSR. It is the responsibility of the programmer to ensure that
-modifications to STATE do not compromise loops or VLIW Group opetations,
+modifications to STATE do not compromise loops or VBLOCK Group opetations,
 by saving and restoring the STATE CSR (if needed).
 
 +-----------+-------------+--------------+----------+----------------------+
@@ -251,7 +251,7 @@ by saving and restoring the STATE CSR (if needed).
 
 Note: when VLtyp is all zeros, neither VL nor MVL are changed.
 
-Just as in the VLIW format, when bit 11 of VLtyp is zero:
+Just as in the VBLOCK format, when bit 11 of VLtyp is zero:
 
 * if vlt is zero, bits 1 to 5 specify the VLEN as a 5 bit immediate
   (offset by 1: 0b00000 represents VL=1, 0b00001 represents VL=2 etc.)
