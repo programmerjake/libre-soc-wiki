@@ -15,6 +15,10 @@ are a very common operation, I think we should have a separate instruction
 
     velswizzle x32, x64, SRCSUBVL=3, DESTSUBVL=4, ELTYPE=u8, elements=[0, 0, 2, 1]
 
+Answer:
+
+    > ok, i like that idea - adding to TODO list
+
 Example pseudocode:
 
 .. code:: C
@@ -61,10 +65,6 @@ Example pseudocode:
     {
         rd[i * DESTSUBVL + 0] = rs1[i * SRCSUBVL + elements[0]];
     }
-
-Answer:
-
-    > ok, i like that idea - adding to TODO list
 
 ----
 
