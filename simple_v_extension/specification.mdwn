@@ -585,7 +585,10 @@ described above.
 
 The 16 bit Predication CSR Table is a key-value store, so
 implementation-wise it will be faster to turn the table around (maintain
-topologically equivalent state):
+topologically equivalent state).  Opportunities then exist to access
+registers in unary form instead of binary, saving gates and power by
+only activating "redirection" with a single AND gate, instead of
+multiple multi-bit XORs (a CAM):
 
 [[!inline raw="yes" pages="simple_v_extension/pred_table" ]]
 
