@@ -733,15 +733,8 @@ now looks like this:
 
     reg_t int_regfile[128];
 
-where when accessing any individual regfile[n].b entry it is permitted
-(in c) to arbitrarily over-run the *declared* length of the array (zero),
-and thus "overspill" to consecutive register file entries in a fashion
-that is completely transparent to a greatly-simplified software / pseudo-code
-representation.
-It is however critical to note that it is clearly the responsibility of
-the implementor to ensure that, towards the end of the register file,
-an exception is thrown if attempts to access beyond the "real" register
-bytes is ever attempted.
+Implementors must ensure that over-runs of the register file throw
+an exception.
 
 The pseudo-code is as follows, to demonstrate how the sign-extending
 and width-extending works:
