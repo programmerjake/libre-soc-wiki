@@ -557,14 +557,7 @@ operand size is "over-ridden" in a polymorphic fashion:
 As the above table is a CAM (key-value store) it may be appropriate
 (faster, implementation-wise) to expand it as follows:
 
-    struct vectorised fp_vec[32], int_vec[32];
-
-    for (i = 0; i < len; i++) // from VBLOCK Format
-       tb = int_vec if CSRvec[i].type == 0 else fp_vec
-       idx = CSRvec[i].regkey // INT/FP src/dst reg in opcode
-       tb[idx].elwidth  = CSRvec[i].elwidth
-       tb[idx].regidx   = CSRvec[i].regidx  // indirection
-       tb[idx].isvector = CSRvec[i].isvector // 0=scalar
+[[!inline raw="yes" pages="simple_v_extension/reg_table" ]]
 
 ## Predication Table <a name="predication_csr_table"></a>
 
