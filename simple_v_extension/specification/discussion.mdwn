@@ -1,0 +1,49 @@
+# Under consideration <a name="issues"></a>
+
+for element-grouping, if there is unused space within a register
+(3 16-bit elements in a 64-bit register for example), recommend:
+
+* For the unused elements in an integer register, the used element
+  closest to the MSB is sign-extended on write and the unused elements
+  are ignored on read.
+* The unused elements in a floating-point register are treated as-if
+  they are set to all ones on write and are ignored on read, matching the
+  existing standard for storing smaller FP values in larger registers.
+
+> no, because it wastes space.
+
+---
+
+info register,
+
+> One solution is to just not support LR/SC wider than a fixed
+> implementation-dependent size, which must be at least 
+>1 XLEN word, which can be read from a read-only CSR
+> that can also be used for info like the kind and width of 
+> hw parallelism supported (128-bit SIMD, minimal virtual 
+> parallelism, etc.) and other things (like maybe the number 
+> of registers supported). 
+
+> That CSR would have to have a flag to make a read trap so
+> a hypervisor can simulate different values.
+
+----
+
+> And what about instructions like JALR? 
+
+answer: they're not vectorised, so not a problem
+
+---
+
+TODO: document different lengths for INT / FP regfiles, and provide
+as part of info CSR register. 00=32, 01=64, 10=128, 11=reserved.
+
+---
+
+Could the 8 bit Register VBLOCK format use regnum<<1 instead, only accessing regs 0 to 64?
+
+--
+
+Expand the range of SUBVL and its associated svsrcoffs and svdestoffs by
+adding a 2nd STATE CSR (or extending STATE to 64 bits).  Future version?
+
