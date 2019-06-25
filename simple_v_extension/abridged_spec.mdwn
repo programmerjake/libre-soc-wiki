@@ -624,8 +624,8 @@ vector | vector  | src == dest   | sparse VCOPY   |
 """]]
 
 Also, VMERGE may be implemented as back-to-back (macro-op fused) C.MV
-operations with inversion on the src and dest predication for one of the
-two C.MV operations.
+operations with zeroing off, and inversion on the src and dest
+predication for one of the two C.MV operations.
 
 ### FMV, FNEG and FABS Instructions
 

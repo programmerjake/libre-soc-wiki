@@ -1375,8 +1375,11 @@ vector | vector  | src == dest   | sparse VCOPY   |
 """]]
 
 Also, VMERGE may be implemented as back-to-back (macro-op fused) C.MV
-operations with inversion on the src and dest predication for one of the
-two C.MV operations.
+operations with zeroing off, and inversion on the src and dest predication
+for one of the two C.MV operations.  The non-inverted C.MV will place
+one set of registers into the destination, and the inverted one the other
+set.  With predicate-inversion, copying and inversion of the predicate mask
+need not be done as a separate (scalar) instruction.
 
 Note that in the instance where the Compressed Extension is not implemented,
 MV may be used, but that is a pseudo-operation mapping to addi rd, x0, rs.
