@@ -812,6 +812,16 @@ The idea is that the compiler knows maxVL at compile time since it allocated the
 backing registers, so SETVL has the maxVL as an immediate value. There is no
 maxVL CSR needed for just SVPrefix.
 
+> when looking at a loop assembly sequence
+> i think you'll find this approach will not work.
+> RVV loops on which SV loops are directly based needs understanding
+> of the use of MIN. Yes MVL is known at compile time
+> however unless MVL is communicates to the hardware, SETVL just
+> does not work.
+> The only other option which does work is to set a mandatory
+> hardcoded MVL baked into the actual hardware.
+> That results in loss of flexibility and defeats the purpose of SV. 
+
 --
 
 With SUBVL (sub vector len) being both a CSR and also part of the 48/64
