@@ -752,50 +752,8 @@ inverse-on and using x0 as the predicate register.  This
 will have the effect of creating a mask of all ones, allowing ffirst
 to be set.
 
-### Fail-on-first traps
-
-Except for the first element, ffault stops sequential element processing
-when a trap occurs.  The first element is treated normally (as if ffirst
-is clear).  Should any subsequent element instruction require a trap,
-instead it and subsequent indexed elements are ignored (or cancelled in
-out-of-order designs), and VL is set to the *last* instruction that did
-not take the trap.
-
-Note that predicated-out elements (where the predicate mask bit is zero)
-are clearly excluded (i.e. the trap will not occur).  However, note that
-the loop still had to test the predicate bit: thus on return,
-VL is set to include elements that did not take the trap *and* includes
-the elements that were predicated (masked) out (not tested up to the
-point where the trap occurred).
-
-If SUBVL is being used (SUBVL!=1), the first *sub-group* of elements
-will cause a trap as normal (as if ffirst is not set); subsequently,
-the trap must not occur in the *sub-group* of elements.  SUBVL will **NOT**
-be modified.
-
-Given that predication bits apply to SUBVL groups, the same rules apply
-to predicated-out (masked-out) sub-groups in calculating the value that VL
-is set to.
-
-### Fail-on-first conditional tests
-
-ffault stops sequential element conditional testing on the first element result
-being zero.  VL is set to the number of elements that were processed before
-the fail-condition was encountered.
-
-Note that just as with traps, if SUBVL!=1, the first of any of the *sub-group*
-will cause the processing to end, and, even if there were elements within
-the *sub-group* that passed the test, that sub-group is still (entirely)
-excluded from the count (from setting VL).  i.e. VL is set to the total
-number of *sub-groups* that had no fail-condition up until execution was
-stopped.
-
-Note again that, just as with traps, predicated-out (masked-out) elements
-are included in the count leading up to the fail-condition, even though they
-were not tested.
-
-The pseudo-code for Predication makes this clearer and simpler than it is
-in words (the loop ends, VL is set to the current element index, "i").
+See [[appendix]] for more details on fail-on-first modes, as well as
+pseudo-code, below.
 
 ## REMAP CSR <a name="remap" />
 
