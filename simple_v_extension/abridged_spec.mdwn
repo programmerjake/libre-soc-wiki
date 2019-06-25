@@ -255,7 +255,15 @@ No specific hints are yet defined in Simple-V
 
 # Vector Block Format <a name="vliw-format"></a>
 
-See ancillary resource: [[vblock_format]]
+The Vector Block format uses the RISC-V 80-192 bit format from Section 1.5
+of the RISC-V Spec.  It permits an optional VL/MVL/SUBVL block, up to 4
+16-bit (or 8 8-bit) Register Table entries, the same for Predicate Entries,
+and the rest of the instruction may be either standard RV opcodes or the
+SVPrefix opcodes ([[sv_prefix_proposal]])
+
+[[!inline raw="yes" pages="simple_v_extension/vblock_table_format" ]]
+
+For full details see ancillary resource: [[vblock_format]]
 
 # Subsets of RV functionality
 
