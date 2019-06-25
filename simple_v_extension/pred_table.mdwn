@@ -1,0 +1,20 @@
+    struct pred {
+        bool zero;    // zeroing
+        bool inv;     // register at predidx is inverted
+        bool ffirst;  // fail-on-first
+        bool enabled; // use this to tell if the table-entry is active
+        int predidx;  // redirection: actual int register to use
+    }
+
+    struct pred fp_pred_reg[32];   // 64 in future (bank=1)
+    struct pred int_pred_reg[32];  // 64 in future (bank=1)
+
+    for (i = 0; i < len; i++) // number of Predication entries in VBLOCK
+      tb = int_pred_reg if PredicateTable[i].type == 0 else fp_pred_reg;
+      idx = PredicateTable[i].regidx
+      tb[idx].zero     = CSRpred[i].zero
+      tb[idx].inv      = CSRpred[i].inv
+      tb[idx].ffirst   = CSRpred[i].ffirst
+      tb[idx].predidx  = CSRpred[i].predidx
+      tb[idx].enabled  = true
+

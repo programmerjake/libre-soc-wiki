@@ -641,25 +641,7 @@ The 16 bit Predication CSR Table is a key-value store, so
 implementation-wise it will be faster to turn the table around (maintain
 topologically equivalent state):
 
-    struct pred {
-        bool zero;    // zeroing
-        bool inv;     // register at predidx is inverted
-        bool ffirst;  // fail-on-first
-        bool enabled; // use this to tell if the table-entry is active
-        int predidx;  // redirection: actual int register to use
-    }
-
-    struct pred fp_pred_reg[32];   // 64 in future (bank=1)
-    struct pred int_pred_reg[32];  // 64 in future (bank=1)
-
-    for (i = 0; i < len; i++) // number of Predication entries in VBLOCK
-      tb = int_pred_reg if PredicateTable[i].type == 0 else fp_pred_reg;
-      idx = PredicateTable[i].regidx
-      tb[idx].zero     = CSRpred[i].zero
-      tb[idx].inv      = CSRpred[i].inv
-      tb[idx].ffirst   = CSRpred[i].ffirst
-      tb[idx].predidx  = CSRpred[i].predidx
-      tb[idx].enabled  = true
+[[!inline raw="yes" pagenames="simple_v_specification/pred_table"]]
 
 So when an operation is to be predicated, it is the internal state that
 is used.  In Section 6.4.2 of Hwacha's Manual (EECS-2015-262) the following
