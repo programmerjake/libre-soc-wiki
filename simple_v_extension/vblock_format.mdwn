@@ -1,0 +1,188 @@
+# Simple-V (Parallelism Extension Proposal) Vector Block Format
+
+* Copyright (C) 2017, 2018, 2019 Luke Kenneth Casson Leighton
+* Status: DRAFTv0.6
+* Last edited: 21 jun 2019
+
+[[!toc ]]
+
+# Vector Block Format <a name="vliw-format"></a>
+
+This is a way to give Vector and Predication Context to a group of
+standard scalar RISC-V instructions, in a highly compact form.
+
+The format is:
+
+* the standard RISC-V 80 to 192 bit encoding sequence, with bits
+  defining the options to follow within the block
+* An optional VL Block (16-bit)
+* Optional predicate entries (8/16-bit blocks: see Predicate Table, above)
+* Optional register entries (8/16-bit blocks: see Register Table, above)
+* finally some 16/32/48 bit standard RV or SVPrefix opcodes follow.
+
+Thus, the variable-length format from Section 1.5 of the RISC-V ISA is used
+as follows:
+
+| base+4 ... base+2          | base             | number of bits             |
+| ------ -----------------   | ---------------- | -------------------------- |
+| ..xxxx  xxxxxxxxxxxxxxxx   | xnnnxxxxx1111111 | (80+16\*nnn)-bit, nnn!=111 |
+| {ops}{Pred}{Reg}{VL Block} | SV Prefix        |                            |
+
+A suitable prefix, which fits the Expanded Instruction-Length encoding
+for "(80 + 16 times instruction-length)", as defined in Section 1.5
+of the RISC-V ISA, is as follows:
+
+| 15    | 14:12 | 11:10 | 9:8   | 7    | 6:0     |
+| -     | ----- | ----- | ----- | ---  | ------- |
+| vlset | 16xil | pplen | rplen | mode | 1111111 |
+
+The VL/MAXVL/SubVL Block format:
+
+| 31-30 | 29:28 | 27:22  | 21:17  - 16  |
+| -     | ----- | ------ | ------ - -   |
+| 0     | SubVL | VLdest | VLEN     vlt |
+| 1     | SubVL | VLdest | VLEN         |
+
+Note: this format is very similar to that used in [[sv_prefix_proposal]]
+
+If vlt is 0, VLEN is a 5 bit immediate value, offset by one (i.e
+a bit sequence of 0b00000 represents VL=1 and so on). If vlt is 1,
+it specifies the scalar register from which VL is set by this VBLOCK
+instruction group. VL, whether set from the register or the immediate,
+is then modified (truncated) to be MIN(VL, MAXVL), and the result stored
+in the scalar register specified in VLdest. If VLdest is zero, no store
+in the regfile occurs (however VL is still set).
+
+This option will typically be used to start vectorised loops, where
+the VBLOCK instruction effectively embeds an optional "SETSUBVL, SETVL"
+sequence (in compact form).
+
+When bit 15 is set to 1, MAXVL and VL are both set to the immediate,
+VLEN (again, offset by one), which is 6 bits in length, and the same
+value stored in scalar register VLdest (if that register is nonzero).
+A value of 0b000000 will set MAXVL=VL=1, a value of 0b000001 will
+set MAXVL=VL= 2 and so on.
+
+This option will typically not be used so much for loops as it will be
+for one-off instructions such as saving the entire register file to the
+stack with a single one-off Vectorised and predicated LD/ST, or as a way
+to save or restore registers in a function call with a single instruction.
+
+CSRs needed:
+
+* mepcvliw
+* sepcvliw
+* uepcvliw
+* hepcvliw
+
+Notes:
+
+* Bit 7 specifies if the prefix block format is the full 16 bit format
+  (1) or the compact less expressive format (0). In the 8 bit format,
+  pplen is multiplied by 2.
+* 8 bit format predicate numbering is implicit and begins from x9. Thus
+  it is critical to put blocks in the correct order as required.
+* Bit 7 also specifies if the register block format is 16 bit (1) or 8 bit
+  (0). In the 8 bit format, rplen is multiplied by 2. If only an odd number
+  of entries are needed the last may be set to 0x00, indicating "unused".
+* Bit 15 specifies if the VL Block is present. If set to 1, the VL Block
+  immediately follows the VBLOCK instruction Prefix
+* Bits 8 and 9 define how many RegCam entries (0 to 3 if bit 15 is 1,
+  otherwise 0 to 6) follow the (optional) VL Block.
+* Bits 10 and 11 define how many PredCam entries (0 to 3 if bit 7 is 1,
+  otherwise 0 to 6) follow the (optional) RegCam entries
+* Bits 14 to 12 (IL) define the actual length of the instruction: total
+  number of bits is 80 + 16 times IL.  Standard RV32, RVC and also
+  SVPrefix (P48/64-\*-Type) instructions fit into this space, after the
+  (optional) VL / RegCam / PredCam entries
+* In any RVC or 32 Bit opcode, any registers within the VBLOCK-prefixed
+  format *MUST* have the RegCam and PredCam entries applied to the
+  operation (and the Vectorisation loop activated)
+* P48 and P64 opcodes do **not** take their Register or predication
+  context from the VBLOCK tables: they do however have VL or SUBVL
+  applied (unless VLtyp or svlen are set).
+* At the end of the VBLOCK Group, the RegCam and PredCam entries
+  *no longer apply*.  VL, MAXVL and SUBVL on the other hand remain at
+  the values set by the last instruction (whether a CSRRW or the VL
+  Block header).
+* Although an inefficient use of resources, it is fine to set the MAXVL,
+  VL and SUBVL CSRs with standard CSRRW instructions, within a VBLOCK.
+
+All this would greatly reduce the amount of space utilised by Vectorised
+instructions, given that 64-bit CSRRW requires 3, even 4 32-bit opcodes:
+the CSR itself, a LI, and the setting up of the value into the RS
+register of the CSR, which, again, requires a LI / LUI to get the 32
+bit data into the CSR.  To get 64-bit data into the register in order
+to put it into the CSR(s), LOAD operations from memory are needed!
+
+Given that each 64-bit CSR can hold only 4x PredCAM entries (or 4 RegCAM
+entries), that's potentially 6 to eight 32-bit instructions, just to
+establish the Vector State!
+
+Not only that: even CSRRW on VL and MAXVL requires 64-bits (even more
+bits if VL needs to be set to greater than 32).  Bear in mind that in SV,
+both MAXVL and VL need to be set.
+
+By contrast, the VBLOCK prefix is only 16 bits, the VL/MAX/SubVL block is
+only 16 bits, and as long as not too many predicates and register vector
+qualifiers are specified, several 32-bit and 16-bit opcodes can fit into
+the format. If the full flexibility of the 16 bit block formats are not
+needed, more space is saved by using the 8 bit formats.
+
+In this light, embedding the VL/MAXVL, PredCam and RegCam CSR entries
+into a VBLOCK format makes a lot of sense.
+
+Bear in mind the warning in an earlier section that use of VLtyp or svlen
+in a P48 or P64 opcode within a VBLOCK Group will result in corruption
+(use) of the STATE CSR, as the STATE CSR is shared with SVPrefix. To
+avoid this situation, the STATE CSR may be copied into a temp register
+and restored afterwards.
+
+Open Questions:
+
+* Is it necessary to stick to the RISC-V 1.5 format?  Why not go with
+  using the 15th bit to allow 80 + 16\*0bnnnn bits?  Perhaps to be sane,
+  limit to 256 bits (16 times 0-11).
+* Could a "hint" be used to set which operations are parallel and which
+  are sequential?
+* Could a new sub-instruction opcode format be used, one that does not
+  conform precisely to RISC-V rules, but *unpacks* to RISC-V opcodes?
+  no need for byte or bit-alignment
+* Could a hardware compression algorithm be deployed?  Quite likely,
+  because of the sub-execution context (sub-VBLOCK PC)
+
+## Limitations on instructions.
+
+To greatly simplify implementations, it is required to treat the VBLOCK
+group as a separate sub-program with its own separate PC. The sub-pc
+advances separately whilst the main PC remains pointing at the beginning
+of the VBLOCK instruction (not to be confused with how VL works, which
+is exactly the same principle, except it is VStart in the STATE CSR
+that increments).
+
+This has implications, namely that a new set of CSRs identical to xepc
+(mepc, srpc, hepc and uepc) must be created and managed and respected
+as being a sub extension of the xepc set of CSRs.  Thus, xepcvliw CSRs
+must be context switched and saved / restored in traps.
+
+The srcoffs and destoffs indices in the STATE CSR may be similarly
+regarded as another sub-execution context, giving in effect two sets of
+nested sub-levels of the RISCV Program Counter (actually, three including
+SUBVL and ssvoffs).
+
+In addition, as xepcvliw CSRs are relative to the beginning of the VBLOCK,
+branches MUST be restricted to within (relative to) the block,
+i.e. addressing is now restricted to the start (and very short) length
+of the block.
+
+Also: calling subroutines is inadviseable, unless they can be entirely
+accomplished within a block.
+
+A normal jump, normal branch and a normal function call may only be taken
+by letting the VBLOCK group end, returning to "normal" standard RV mode,
+and then using standard RVC, 32 bit or P48/64-\*-type opcodes.
+
+## Links
+
+* <https://groups.google.com/d/msg/comp.arch/yIFmee-Cx-c/jRcf0evSAAAJ>
+
