@@ -70,10 +70,10 @@ to save or restore registers in a function call with a single instruction.
 
 CSRs needed:
 
-* mepcvliw
-* sepcvliw
-* uepcvliw
-* hepcvliw
+* mepcvblk
+* sepcvblk
+* uepcvblk
+* hepcvblk
 
 Notes:
 
@@ -162,7 +162,7 @@ that increments).
 
 This has implications, namely that a new set of CSRs identical to xepc
 (mepc, srpc, hepc and uepc) must be created and managed and respected
-as being a sub extension of the xepc set of CSRs.  Thus, xepcvliw CSRs
+as being a sub extension of the xepc set of CSRs.  Thus, xepcvblk CSRs
 must be context switched and saved / restored in traps.
 
 The srcoffs and destoffs indices in the STATE CSR may be similarly
@@ -170,7 +170,7 @@ regarded as another sub-execution context, giving in effect two sets of
 nested sub-levels of the RISCV Program Counter (actually, three including
 SUBVL and ssvoffs).
 
-In addition, as xepcvliw CSRs are relative to the beginning of the VBLOCK,
+In addition, as xepcvblk CSRs are relative to the beginning of the VBLOCK,
 branches MUST be restricted to within (relative to) the block,
 i.e. addressing is now restricted to the start (and very short) length
 of the block.
