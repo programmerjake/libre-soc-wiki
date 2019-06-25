@@ -17,7 +17,7 @@ be thrown if this were a scalar operation (when VL=1).
 
 ## Fail-on-first traps
 
-Except for the first element, ffault stops sequential element processing
+Except for the first element, ffirst stops sequential element processing
 when a trap occurs.  The first element is treated normally (as if ffirst
 is clear).  Should any subsequent element instruction require a trap,
 instead it and subsequent indexed elements are ignored (or cancelled in
@@ -42,7 +42,7 @@ is set to.
 
 ## Fail-on-first conditional tests
 
-ffault stops sequential element conditional testing on the first element result
+ffirst stops sequential element conditional testing on the first element result
 being zero.  VL is set to the number of elements that were processed before
 the fail-condition was encountered.
 
