@@ -1631,14 +1631,11 @@ rd bitwidths).  The pseudo-code is therefore as follows:
     } el_reg_t;
 
     bw(elwidth):
-        if elwidth == 0:
-            return xlen
-        if elwidth == 1:
-            return xlen / 2
-        if elwidth == 2:
-            return xlen * 2
+        if elwidth == 0: return xlen
+        if elwidth == 1: return 8
+        if elwidth == 2: return 16
         // elwidth == 3:
-        return 8
+        return 32
 
     get_max_elwidth(rs1, rs2):
         return max(bw(int_csr[rs1].elwidth), # default (XLEN) if not set
