@@ -690,18 +690,7 @@ Note:
 If written as a function, obtaining the predication mask (and whether
 zeroing takes place) may be done as follows:
 
-    def get_pred_val(bool is_fp_op, int reg):
-       tb = int_reg if is_fp_op else fp_reg
-       if (!tb[reg].enabled):
-          return ~0x0, False       // all enabled; no zeroing
-       tb = int_pred if is_fp_op else fp_pred
-       if (!tb[reg].enabled):
-          return ~0x0, False       // all enabled; no zeroing
-       predidx = tb[reg].predidx   // redirection occurs HERE
-       predicate = intreg[predidx] // actual predicate HERE
-       if (tb[reg].inv):
-          predicate = ~predicate   // invert ALL bits
-       return predicate, tb[reg].zero
+[[!inline raw="yes" pages="simple_v_extension/get_pred_value" ]]
 
 Note here, critically, that **only** if the register is marked
 in its **register** table entry as being "active" does the testing

@@ -275,38 +275,9 @@ Mapping from 8 to 16 bit format, the table becomes:
 
 Pseudocode for predication:
 
-    struct pred {
-        bool zero;    // zeroing
-        bool inv;     // register at predidx is inverted
-        bool ffirst;  // fail-on-first
-        bool enabled; // use this to tell if the table-entry is active
-        int predidx;  // redirection: actual int register to use
-    }
 
-    struct pred fp_pred_reg[32];
-    struct pred int_pred_reg[32];
-
-    for (i = 0; i < len; i++) // number of Predication entries in VBLOCK
-      tb = int_pred_reg if PredicateTable[i].type == 0 else fp_pred_reg;
-      idx = VBLOCKPredicateTable[i].regidx
-      tb[idx].zero     = CSRpred[i].zero
-      tb[idx].inv      = CSRpred[i].inv
-      tb[idx].ffirst   = CSRpred[i].ffirst
-      tb[idx].predidx  = CSRpred[i].predidx
-      tb[idx].enabled  = true
-
-    def get_pred_val(bool is_fp_op, int reg):
-       tb = int_reg if is_fp_op else fp_reg
-       if (!tb[reg].enabled):
-          return ~0x0, False       // all enabled; no zeroing
-       tb = int_pred if is_fp_op else fp_pred
-       if (!tb[reg].enabled):
-          return ~0x0, False       // all enabled; no zeroing
-       predidx = tb[reg].predidx   // redirection occurs HERE
-       predicate = intreg[predidx] // actual predicate HERE
-       if (tb[reg].inv):
-          predicate = ~predicate   // invert ALL bits
-       return predicate, tb[reg].zero
+[[!inline raw="yes" pages="simple_v_extension/pred_table" ]]
+[[!inline raw="yes" pages="simple_v_extension/get_pred_value" ]]
 
 ## Fail-on-First Mode <a name="ffirst-mode"></a>
 
