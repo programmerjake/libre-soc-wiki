@@ -170,9 +170,12 @@ maxVL CSR needed for just SVPrefix.
 > when looking at a loop assembly sequence
 > i think you'll find this approach will not work.
 > RVV loops on which SV loops are directly based needs understanding
-> of the use of MIN. Yes MVL is known at compile time
+> of the use of MIN within the actual SETVL instruction.
+> Yes MVL is known at compile time
 > however unless MVL is communicates to the hardware, SETVL just
-> does not work.
+> does not work: it has absolutely no way of knowing when to stop
+> processing.  The point being: it's not *MVL* that's the problem
+> if MVL is not a CSR, it's *VL* that becomes the problem.
 > The only other option which does work is to set a mandatory
 > hardcoded MVL baked into the actual hardware.
 > That results in loss of flexibility and defeats the purpose of SV. 
