@@ -7,6 +7,546 @@
 
 [[!toc ]]
 
+# Instructions <a name="instructions" />
+
+Despite being a 98% complete and accurate topological remap of RVV
+concepts and functionality, no new instructions are needed.
+Compared to RVV: *All* RVV instructions can be re-mapped, however xBitManip
+becomes a critical dependency for efficient manipulation of predication
+masks (as a bit-field).  Despite the removal of all operations,
+with the exception of CLIP and VSELECT.X
+*all instructions from RVV Base are topologically re-mapped and retain their
+complete functionality, intact*.  Note that if RV64G ever had
+a MV.X added as well as FCLIP, the full functionality of RVV-Base would
+be obtained in SV.
+
+Three instructions, VSELECT, VCLIP and VCLIPI, do not have RV Standard
+equivalents, so are left out of Simple-V.  VSELECT could be included if
+there existed a MV.X instruction in RV (MV.X is a hypothetical
+non-immediate variant of MV that would allow another register to
+specify which register was to be copied).  Note that if any of these three
+instructions are added to any given RV extension, their functionality
+will be inherently parallelised.
+
+With some exceptions, where it does not make sense or is simply too
+challenging, all RV-Base instructions are parallelised:
+
+* CSR instructions, whilst a case could be made for fast-polling of
+  a CSR into multiple registers, or for being able to copy multiple
+  contiguously addressed CSRs into contiguous registers, and so on,
+  are the fundamental core basis of SV.  If parallelised, extreme
+  care would need to be taken.  Additionally, CSR reads are done
+  using x0, and it is *really* inadviseable to tag x0.
+* LUI, C.J, C.JR, WFI, AUIPC are not suitable for parallelising so are
+  left as scalar.
+* LR/SC could hypothetically be parallelised however their purpose is
+  single (complex) atomic memory operations where the LR must be followed
+  up by a matching SC.  A sequence of parallel LR instructions followed
+  by a sequence of parallel SC instructions therefore is guaranteed to
+  not be useful. Not least: the guarantees of a Multi-LR/SC
+  would be impossible to provide if emulated in a trap.
+* EBREAK, NOP, FENCE and others do not use registers so are not inherently
+  paralleliseable anyway.
+
+All other operations using registers are automatically parallelised.
+This includes AMOMAX, AMOSWAP and so on, where particular care and
+attention must be paid.
+
+Example pseudo-code for an integer ADD operation (including scalar
+operations).  Floating-point uses the FP Register Table.
+
+    function op_add(rd, rs1, rs2) # add not VADD!
+      int i, id=0, irs1=0, irs2=0;
+      predval = get_pred_val(FALSE, rd);
+      rd  = int_vec[rd ].isvector ? int_vec[rd ].regidx : rd;
+      rs1 = int_vec[rs1].isvector ? int_vec[rs1].regidx : rs1;
+      rs2 = int_vec[rs2].isvector ? int_vec[rs2].regidx : rs2;
+      for (i = 0; i < VL; i++)
+        xSTATE.srcoffs = i # save context
+        if (predval & 1<<i) # predication uses intregs
+           ireg[rd+id] <= ireg[rs1+irs1] + ireg[rs2+irs2];
+           if (!int_vec[rd ].isvector) break;
+        if (int_vec[rd ].isvector)  { id += 1; }
+        if (int_vec[rs1].isvector)  { irs1 += 1; }
+        if (int_vec[rs2].isvector)  { irs2 += 1; }
+
+Note that for simplicity there is quite a lot missing from the above
+pseudo-code: element widths, zeroing on predication, dimensional
+reshaping and offsets and so on.  However it demonstrates the basic
+principle.  Augmentations that produce the full pseudo-code are covered in
+other sections.
+
+## SUBVL Pseudocode <a name="subvl-pseudocode"></a>
+
+Adding in support for SUBVL is a matter of adding in an extra inner
+for-loop, where register src and dest are still incremented inside the
+inner part. Not that the predication is still taken from the VL index.
+
+So whilst elements are indexed by "(i * SUBVL + s)", predicate bits are
+indexed by "(i)"
+
+    function op_add(rd, rs1, rs2) # add not VADD!
+      int i, id=0, irs1=0, irs2=0;
+      predval = get_pred_val(FALSE, rd);
+      rd  = int_vec[rd ].isvector ? int_vec[rd ].regidx : rd;
+      rs1 = int_vec[rs1].isvector ? int_vec[rs1].regidx : rs1;
+      rs2 = int_vec[rs2].isvector ? int_vec[rs2].regidx : rs2;
+      for (i = 0; i < VL; i++)
+       xSTATE.srcoffs = i # save context
+       for (s = 0; s < SUBVL; s++)
+        xSTATE.ssvoffs = s # save context
+        if (predval & 1<<i) # predication uses intregs
+           # actual add is here (at last)
+           ireg[rd+id] <= ireg[rs1+irs1] + ireg[rs2+irs2];
+           if (!int_vec[rd ].isvector) break;
+        if (int_vec[rd ].isvector)  { id += 1; }
+        if (int_vec[rs1].isvector)  { irs1 += 1; }
+        if (int_vec[rs2].isvector)  { irs2 += 1; }
+        if (id == VL or irs1 == VL or irs2 == VL) {
+          # end VL hardware loop
+          xSTATE.srcoffs = 0; # reset
+          xSTATE.ssvoffs = 0; # reset
+          return;
+        }
+
+
+NOTE: pseudocode simplified greatly: zeroing, proper predicate handling,
+elwidth handling etc. all left out.
+
+## Instruction Format
+
+It is critical to appreciate that there are
+**no operations added to SV, at all**.
+
+Instead, by using CSRs to tag registers as an indication of "changed
+behaviour", SV *overloads* pre-existing branch operations into predicated
+variants, and implicitly overloads arithmetic operations, MV, FCVT, and
+LOAD/STORE depending on CSR configurations for bitwidth and predication.
+**Everything** becomes parallelised.  *This includes Compressed
+instructions* as well as any future instructions and Custom Extensions.
+
+Note: CSR tags to change behaviour of instructions is nothing new, including
+in RISC-V.  UXL, SXL and MXL change the behaviour so that XLEN=32/64/128.
+FRM changes the behaviour of the floating-point unit, to alter the rounding
+mode.  Other architectures change the LOAD/STORE byte-order from big-endian
+to little-endian on a per-instruction basis.  SV is just a little more...
+comprehensive in its effect on instructions.
+
+## Branch Instructions
+
+Branch operations are augmented slightly to be a little more like FP
+Compares (FEQ, FNE etc.), by permitting the cumulation (and storage)
+of multiple comparisons into a register (taken indirectly from the predicate
+table).  As such, "ffirst" - fail-on-first - condition mode can be enabled.
+See ffirst mode in the Predication Table section.
+
+### Standard Branch <a name="standard_branch"></a>
+
+Branch operations use standard RV opcodes that are reinterpreted to
+be "predicate variants" in the instance where either of the two src
+registers are marked as vectors (active=1, vector=1).
+
+Note that the predication register to use (if one is enabled) is taken from
+the *first* src register, and that this is used, just as with predicated
+arithmetic operations, to mask whether the comparison operations take
+place or not.  The target (destination) predication register
+to use (if one is enabled) is taken from the *second* src register.
+
+If either of src1 or src2 are scalars (whether by there being no
+CSR register entry or whether by the CSR entry specifically marking
+the register as "scalar") the comparison goes ahead as vector-scalar
+or scalar-vector.
+
+In instances where no vectorisation is detected on either src registers
+the operation is treated as an absolutely standard scalar branch operation.
+Where vectorisation is present on either or both src registers, the
+branch may stil go ahead if any only if *all* tests succeed (i.e. excluding
+those tests that are predicated out).
+
+Note that when zero-predication is enabled (from source rs1),
+a cleared bit in the predicate indicates that the result
+of the compare is set to "false", i.e. that the corresponding
+destination bit (or result)) be set to zero.  Contrast this with
+when zeroing is not set: bits in the destination predicate are
+only *set*; they are **not** cleared.  This is important to appreciate,
+as there may be an expectation that, going into the hardware-loop,
+the destination predicate is always expected to be set to zero:
+this is **not** the case.  The destination predicate is only set
+to zero if **zeroing** is enabled.
+
+Note that just as with the standard (scalar, non-predicated) branch
+operations, BLE, BGT, BLEU and BTGU may be synthesised by inverting
+src1 and src2.
+
+In Hwacha EECS-2015-262 Section 6.7.2 the following pseudocode is given
+for predicated compare operations of function "cmp":
+
+    for (int i=0; i<vl; ++i)
+      if ([!]preg[p][i])
+         preg[pd][i] = cmp(s1 ? vreg[rs1][i] : sreg[rs1],
+                           s2 ? vreg[rs2][i] : sreg[rs2]);
+
+With associated predication, vector-length adjustments and so on,
+and temporarily ignoring bitwidth (which makes the comparisons more
+complex), this becomes:
+
+    s1 = reg_is_vectorised(src1);
+    s2 = reg_is_vectorised(src2);
+
+    if not s1 && not s2
+        if cmp(rs1, rs2) # scalar compare
+            goto branch
+        return
+
+    preg = int_pred_reg[rd]
+    reg = int_regfile
+
+    ps = get_pred_val(I/F==INT, rs1);
+    rd = get_pred_val(I/F==INT, rs2); # this may not exist
+
+    if not exists(rd) or zeroing:
+        result = 0
+    else
+        result = preg[rd]
+
+    for (int i = 0; i < VL; ++i)
+      if (zeroing)
+        if not (ps & (1<<i))
+           result &= ~(1<<i);
+      else if (ps & (1<<i))
+          if (cmp(s1 ? reg[src1+i]:reg[src1],
+                               s2 ? reg[src2+i]:reg[src2])
+              result |= 1<<i;
+          else
+              result &= ~(1<<i);
+
+     if not exists(rd)
+        if result == ps
+            goto branch
+     else
+        preg[rd] = result # store in destination
+        if preg[rd] == ps
+            goto branch
+
+Notes:
+
+* Predicated SIMD comparisons would break src1 and src2 further down
+  into bitwidth-sized chunks (see Appendix "Bitwidth Virtual Register
+  Reordering") setting Vector-Length times (number of SIMD elements) bits
+  in Predicate Register rd, as opposed to just Vector-Length bits.
+* The execution of "parallelised" instructions **must** be implemented
+  as "re-entrant" (to use a term from software).  If an exception (trap)
+  occurs during the middle of a vectorised
+  Branch (now a SV predicated compare) operation, the partial results
+  of any comparisons must be written out to the destination
+  register before the trap is permitted to begin.  If however there
+  is no predicate, the **entire** set of comparisons must be **restarted**,
+  with the offset loop indices set back to zero.  This is because
+  there is no place to store the temporary result during the handling
+  of traps.
+
+TODO: predication now taken from src2.  also branch goes ahead
+if all compares are successful.
+
+Note also that where normally, predication requires that there must
+also be a CSR register entry for the register being used in order
+for the **predication** CSR register entry to also be active,
+for branches this is **not** the case.  src2 does **not** have
+to have its CSR register entry marked as active in order for
+predication on src2 to be active.
+
+Also note: SV Branch operations are **not** twin-predicated
+(see Twin Predication section).  This would require three
+element offsets: one to track src1, one to track src2 and a third
+to track where to store the accumulation of the results.  Given
+that the element offsets need to be exposed via CSRs so that
+the parallel hardware looping may be made re-entrant on traps
+and exceptions, the decision was made not to make SV Branches
+twin-predicated.
+
+### Floating-point Comparisons
+
+There does not exist floating-point branch operations, only compare.
+Interestingly no change is needed to the instruction format because
+FP Compare already stores a 1 or a zero in its "rd" integer register
+target, i.e. it's not actually a Branch at all: it's a compare.
+
+In RV (scalar) Base, a branch on a floating-point compare is
+done via the sequence "FEQ x1, f0, f5; BEQ x1, x0, #jumploc".
+This does extend to SV, as long as x1 (in the example sequence given)
+is vectorised.  When that is the case, x1..x(1+VL-1) will also be
+set to 0 or 1 depending on whether f0==f5, f1==f6, f2==f7 and so on.
+The BEQ that follows will *also* compare x1==x0, x2==x0, x3==x0 and
+so on.  Consequently, unlike integer-branch, FP Compare needs no
+modification in its behaviour.
+
+In addition, it is noted that an entry "FNE" (the opposite of FEQ) is missing,
+and whilst in ordinary branch code this is fine because the standard
+RVF compare can always be followed up with an integer BEQ or a BNE (or
+a compressed comparison to zero or non-zero), in predication terms that
+becomes more of an impact.  To deal with this, SV's predication has
+had "invert" added to it.
+
+Also: note that FP Compare may be predicated, using the destination
+integer register (rd) to determine the predicate.  FP Compare is **not**
+a twin-predication operation, as, again, just as with SV Branches,
+there are three registers involved: FP src1, FP src2 and INT rd.
+
+Also: note that ffirst (fail first mode) applies directly to this operation.
+
+### Compressed Branch Instruction
+
+Compressed Branch instructions are, just like standard Branch instructions,
+reinterpreted to be vectorised and predicated based on the source register
+(rs1s) CSR entries.  As however there is only the one source register,
+given that c.beqz a10 is equivalent to beqz a10,x0, the optional target
+to store the results of the comparisions is taken from CSR predication
+table entries for **x0**.
+
+The specific required use of x0 is, with a little thought, quite obvious,
+but is counterintuitive.  Clearly it is **not** recommended to redirect
+x0 with a CSR register entry, however as a means to opaquely obtain
+a predication target it is the only sensible option that does not involve
+additional special CSRs (or, worse, additional special opcodes).
+
+Note also that, just as with standard branches, the 2nd source
+(in this case x0 rather than src2) does **not** have to have its CSR
+register table marked as "active" in order for predication to work.
+
+## Vectorised Dual-operand instructions
+
+There is a series of 2-operand instructions involving copying (and
+sometimes alteration):
+
+* C.MV
+* FMV, FNEG, FABS, FCVT, FSGNJ, FSGNJN and FSGNJX
+* C.LWSP, C.SWSP, C.LDSP, C.FLWSP etc.
+* LOAD(-FP) and STORE(-FP)
+
+All of these operations follow the same two-operand pattern, so it is
+*both* the source *and* destination predication masks that are taken into
+account.  This is different from
+the three-operand arithmetic instructions, where the predication mask
+is taken from the *destination* register, and applied uniformly to the
+elements of the source register(s), element-for-element.
+
+The pseudo-code pattern for twin-predicated operations is as
+follows:
+
+    function op(rd, rs):
+      rd = int_csr[rd].active ? int_csr[rd].regidx : rd;
+      rs = int_csr[rs].active ? int_csr[rs].regidx : rs;
+      ps = get_pred_val(FALSE, rs); # predication on src
+      pd = get_pred_val(FALSE, rd); # ... AND on dest
+      for (int i = 0, int j = 0; i < VL && j < VL;):
+        if (int_csr[rs].isvec) while (!(ps & 1<<i)) i++;
+        if (int_csr[rd].isvec) while (!(pd & 1<<j)) j++;
+        xSTATE.srcoffs = i # save context
+        xSTATE.destoffs = j # save context
+        reg[rd+j] = SCALAR_OPERATION_ON(reg[rs+i])
+        if (int_csr[rs].isvec) i++;
+        if (int_csr[rd].isvec) j++; else break
+
+This pattern covers scalar-scalar, scalar-vector, vector-scalar
+and vector-vector, and predicated variants of all of those.
+Zeroing is not presently included (TODO).  As such, when compared
+to RVV, the twin-predicated variants of C.MV and FMV cover
+**all** standard vector operations: VINSERT, VSPLAT, VREDUCE,
+VEXTRACT, VSCATTER, VGATHER, VCOPY, and more.
+
+Note that:
+
+* elwidth (SIMD) is not covered in the pseudo-code above
+* ending the loop early in scalar cases (VINSERT, VEXTRACT) is also
+  not covered
+* zero predication is also not shown (TODO).
+
+### C.MV Instruction <a name="c_mv"></a>
+
+There is no MV instruction in RV however there is a C.MV instruction.
+It is used for copying integer-to-integer registers (vectorised FMV
+is used for copying floating-point).
+
+If either the source or the destination register are marked as vectors
+C.MV is reinterpreted to be a vectorised (multi-register) predicated
+move operation.  The actual instruction's format does not change:
+
+[[!table  data="""
+15  12 | 11   7 | 6  2 | 1  0 |
+funct4 | rd     | rs   | op   |
+4      | 5      | 5    | 2    |
+C.MV   | dest   | src  | C0   |
+"""]]
+
+A simplified version of the pseudocode for this operation is as follows:
+
+    function op_mv(rd, rs) # MV not VMV!
+      rd = int_csr[rd].active ? int_csr[rd].regidx : rd;
+      rs = int_csr[rs].active ? int_csr[rs].regidx : rs;
+      ps = get_pred_val(FALSE, rs); # predication on src
+      pd = get_pred_val(FALSE, rd); # ... AND on dest
+      for (int i = 0, int j = 0; i < VL && j < VL;):
+        if (int_csr[rs].isvec) while (!(ps & 1<<i)) i++;
+        if (int_csr[rd].isvec) while (!(pd & 1<<j)) j++;
+        xSTATE.srcoffs = i # save context
+        xSTATE.destoffs = j # save context
+        ireg[rd+j] <= ireg[rs+i];
+        if (int_csr[rs].isvec) i++;
+        if (int_csr[rd].isvec) j++; else break
+
+There are several different instructions from RVV that are covered by
+this one opcode:
+
+[[!table  data="""
+src    | dest    | predication   | op             |
+scalar | vector  | none          | VSPLAT         |
+scalar | vector  | destination   | sparse VSPLAT  |
+scalar | vector  | 1-bit dest    | VINSERT        |
+vector | scalar  | 1-bit? src    | VEXTRACT       |
+vector | vector  | none          | VCOPY          |
+vector | vector  | src           | Vector Gather  |
+vector | vector  | dest          | Vector Scatter |
+vector | vector  | src & dest    | Gather/Scatter |
+vector | vector  | src == dest   | sparse VCOPY   |
+"""]]
+
+Also, VMERGE may be implemented as back-to-back (macro-op fused) C.MV
+operations with zeroing off, and inversion on the src and dest predication
+for one of the two C.MV operations.  The non-inverted C.MV will place
+one set of registers into the destination, and the inverted one the other
+set.  With predicate-inversion, copying and inversion of the predicate mask
+need not be done as a separate (scalar) instruction.
+
+Note that in the instance where the Compressed Extension is not implemented,
+MV may be used, but that is a pseudo-operation mapping to addi rd, x0, rs.
+Note that the behaviour is **different** from C.MV because with addi the
+predication mask to use is taken **only** from rd and is applied against
+all elements: rs[i] = rd[i].
+
+### FMV, FNEG and FABS Instructions
+
+These are identical in form to C.MV, except covering floating-point
+register copying.  The same double-predication rules also apply.
+However when elwidth is not set to default the instruction is implicitly
+and automatic converted to a (vectorised) floating-point type conversion
+operation of the appropriate size covering the source and destination
+register bitwidths.
+
+(Note that FMV, FNEG and FABS are all actually pseudo-instructions)
+
+### FVCT Instructions
+
+These are again identical in form to C.MV, except that they cover
+floating-point to integer and integer to floating-point.  When element
+width in each vector is set to default, the instructions behave exactly
+as they are defined for standard RV (scalar) operations, except vectorised
+in exactly the same fashion as outlined in C.MV.
+
+However when the source or destination element width is not set to default,
+the opcode's explicit element widths are *over-ridden* to new definitions,
+and the opcode's element width is taken as indicative of the SIMD width
+(if applicable i.e. if packed SIMD is requested) instead.
+
+For example FCVT.S.L would normally be used to convert a 64-bit
+integer in register rs1 to a 64-bit floating-point number in rd.
+If however the source rs1 is set to be a vector, where elwidth is set to
+default/2 and "packed SIMD" is enabled, then the first 32 bits of
+rs1 are converted to a floating-point number to be stored in rd's
+first element and the higher 32-bits *also* converted to floating-point
+and stored in the second.  The 32 bit size comes from the fact that
+FCVT.S.L's integer width is 64 bit, and with elwidth on rs1 set to
+divide that by two it means that rs1 element width is to be taken as 32.
+
+Similar rules apply to the destination register.
+
+## LOAD / STORE Instructions and LOAD-FP/STORE-FP <a name="load_store"></a>
+
+An earlier draft of SV modified the behaviour of LOAD/STORE (modified
+the interpretation of the instruction fields).  This
+actually undermined the fundamental principle of SV, namely that there
+be no modifications to the scalar behaviour (except where absolutely
+necessary), in order to simplify an implementor's task if considering
+converting a pre-existing scalar design to support parallelism.
+
+So the original RISC-V scalar LOAD/STORE and LOAD-FP/STORE-FP functionality
+do not change in SV, however just as with C.MV it is important to note
+that dual-predication is possible.
+
+In vectorised architectures there are usually at least two different modes
+for LOAD/STORE:
+
+* Read (or write for STORE) from sequential locations, where one
+  register specifies the address, and the one address is incremented
+  by a fixed amount.  This is usually known as "Unit Stride" mode.
+* Read (or write) from multiple indirected addresses, where the
+  vector elements each specify separate and distinct addresses.
+
+To support these different addressing modes, the CSR Register "isvector"
+bit is used.  So, for a LOAD, when the src register is set to
+scalar, the LOADs are sequentially incremented by the src register
+element width, and when the src register is set to "vector", the
+elements are treated as indirection addresses.  Simplified
+pseudo-code would look like this:
+
+    function op_ld(rd, rs) # LD not VLD!
+      rdv = int_csr[rd].active ? int_csr[rd].regidx : rd;
+      rsv = int_csr[rs].active ? int_csr[rs].regidx : rs;
+      ps = get_pred_val(FALSE, rs); # predication on src
+      pd = get_pred_val(FALSE, rd); # ... AND on dest
+      for (int i = 0, int j = 0; i < VL && j < VL;):
+        if (int_csr[rs].isvec) while (!(ps & 1<<i)) i++;
+        if (int_csr[rd].isvec) while (!(pd & 1<<j)) j++;
+        if (int_csr[rd].isvec)
+          # indirect mode (multi mode)
+          srcbase = ireg[rsv+i];
+        else
+          # unit stride mode
+          srcbase = ireg[rsv] + i * XLEN/8; # offset in bytes
+        ireg[rdv+j] <= mem[srcbase + imm_offs];
+        if (!int_csr[rs].isvec &&
+            !int_csr[rd].isvec) break # scalar-scalar LD
+        if (int_csr[rs].isvec) i++;
+        if (int_csr[rd].isvec) j++;
+
+Notes:
+
+* For simplicity, zeroing and elwidth is not included in the above:
+  the key focus here is the decision-making for srcbase; vectorised
+  rs means use sequentially-numbered registers as the indirection
+  address, and scalar rs is "offset" mode.
+* The test towards the end for whether both source and destination are
+  scalar is what makes the above pseudo-code provide the "standard" RV
+  Base behaviour for LD operations.
+* The offset in bytes (XLEN/8) changes depending on whether the
+  operation is a LB (1 byte), LH (2 byes), LW (4 bytes) or LD
+  (8 bytes), and also whether the element width is over-ridden
+  (see special element width section).
+
+## Compressed Stack LOAD / STORE Instructions <a name="c_ld_st"></a>
+
+C.LWSP / C.SWSP and floating-point etc. are also source-dest twin-predicated,
+where it is implicit in C.LWSP/FLWSP etc. that x2 is the source register.
+It is therefore possible to use predicated C.LWSP to efficiently
+pop registers off the stack (by predicating x2 as the source), cherry-picking
+which registers to store to (by predicating the destination).  Likewise
+for C.SWSP.  In this way, LOAD/STORE-Multiple is efficiently achieved.
+
+The two modes ("unit stride" and multi-indirection) are still supported,
+as with standard LD/ST.  Essentially, the only difference is that the
+use of x2 is hard-coded into the instruction.
+
+**Note**: it is still possible to redirect x2 to an alternative target
+register.  With care, this allows C.LWSP / C.SWSP (and C.FLWSP) to be used as
+general-purpose LOAD/STORE operations.
+
+## Compressed LOAD / STORE Instructions
+
+Compressed LOAD and STORE are again exactly the same as scalar LOAD/STORE,
+where the same rules apply and the same pseudo-code apply as for
+non-compressed LOAD/STORE.  Again: setting scalar or vector mode
+on the src for LOAD and dest for STORE switches mode from "Unit Stride"
+to "Multi-indirection", respectively.
+
 # Element bitwidth polymorphism <a name="elwidth"></a>
 
 Element bitwidth is best covered as its own special section, as it
