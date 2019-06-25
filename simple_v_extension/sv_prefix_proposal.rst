@@ -165,7 +165,7 @@ These are bits 47:18 (RV32 shifted up by 16 bits):
 +---------------+---------------+
 | P48-FI-type   | RV32-I-Type   |
 +---------------+---------------+
-| P48-FR4-type  | RV32-FR-type  |
+| P48-FR4-type  | RV32-FR4-type |
 +---------------+---------------+
 
 Table showing Standard RV32 encodings:
