@@ -1,5 +1,4 @@
-# questions
-# =========
+# Questions
 
 Confirmation needed as to whether subvector extraction can be covered
 by twin predication (it probably can, it is one of the many purposes it
@@ -7,11 +6,11 @@ is for).
 
 Answer:
 
-Yes, it can, but VL needs to be changed for it to work, since predicates work at
-the size of a whole subvector instead of an element of that subvector. To avoid
-needing to constantly change VL, and since swizzles are a very common operation, I
-think we should have a separate instruction -- a subvector element swizzle
-instruction::
+Yes, it can, but VL needs to be changed for it to work, since predicates
+work at the size of a whole subvector instead of an element of that
+subvector. To avoid needing to constantly change VL, and since swizzles
+are a very common operation, I think we should have a separate instruction
+-- a subvector element swizzle instruction::
 
     velswizzle x32, x64, SRCSUBVL=3, DESTSUBVL=4, ELTYPE=u8, elements=[0, 0, 2, 1]
 
@@ -68,12 +67,13 @@ What is SUBVL and how does it work
 
 Answer:
 
-SUBVL is the instruction field in P48 instructions that specifies the sub-vector
-length. The sub-vector length is the number of scalars that are grouped together
-and treated like an element by both VL and predication. This is used to support
-operations where the elements are short vectors (2-4 elements) in Vulkan and
-OpenGL. Those short vectors are mostly used as mathematical vectors to handle
-directions, positions, and colors, rather than as a pure optimization.
+SUBVL is the instruction field in P48 instructions that specifies
+the sub-vector length. The sub-vector length is the number of scalars
+that are grouped together and treated like an element by both VL and
+predication. This is used to support operations where the elements are
+short vectors (2-4 elements) in Vulkan and OpenGL. Those short vectors
+are mostly used as mathematical vectors to handle directions, positions,
+and colors, rather than as a pure optimization.
 
 For example, when VL is 5::
 
@@ -120,23 +120,16 @@ it only goes to a max of 63 rather than 64?
 
 Answer:
 
-I think supporting SETVL where VL would be set to 0 should be done. that way,
-the branch can be put after SETVL, allowing SETVL to execute earlier giving more
-time for VL to propagate (preventing stalling) to the instruction decoder.
-I have no problem with having 0 stored to VL via CSRW resulting in VL=64
-(or whatever maximum value is supported in hardware).
+I think supporting SETVL where VL would be set to 0 should be done. that
+way, the branch can be put after SETVL, allowing SETVL to execute
+earlier giving more time for VL to propagate (preventing stalling)
+to the instruction decoder.  I have no problem with having 0 stored to
+VL via CSRW resulting in VL=64 (or whatever maximum value is supported
+in hardware).
 
 One related idea would to support VL > XLEN but to only allow unpredicated
 instructions when VL > XLEN. This would allow later implementing register
 pairs/triplets/etc. as predicates as an extension.
-
---
-
-Should these questions be moved to Discussion subpage
-
-Answer:
-
-probably, I'll let Luke do that if desired.
 
 --
 
@@ -189,10 +182,10 @@ bit opcode, how does that work?
 
 Answer:
 
-I think we should just ignore the SUBVL CSR and use the value from the SUBVL field when
-executing 48/64-bit instructions. For just SVPrefix, I would say that the only
-user-visible CSR needed is VL. This is ignoring all the state for
-context-switching and exception handling.
+I think we should just ignore the SUBVL CSR and use the value from the
+SUBVL field when executing 48/64-bit instructions. For just SVPrefix,
+I would say that the only user-visible CSR needed is VL. This is ignoring
+all the state for context-switching and exception handling.
 
 > the consequence of that would be that P48/64 would need
 > its own CSR State to track the subelement index.
