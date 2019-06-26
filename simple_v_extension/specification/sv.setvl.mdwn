@@ -4,7 +4,7 @@ Formats for Vector Configuration Instructions under OP-V major opcode:
                                                              
 | 31|30         25|24      20|19      15|14   12|11      7|6     0| name    |
 |---|------------------------|----------|-------|---------|-------|---------|
-| 0 | zimm[10:6]  |imm[4:0]  |    rs1   | 1 1 1 |    rd   |1010111| vsetvli |
+| 0 |  imm[10:6]  |imm[4:0]  |    rs1   | 1 1 1 |    rd   |1010111| vsetvli |
 | 1 |   000000    |   rs2    |    rs1   | 1 1 1 |    rd   |1010111| vsetvl  |
 | 1 |      6      |     5    |     5    |   3   |    5    |   7   |         |
 
@@ -12,13 +12,13 @@ Requirement: fit MVL into this format.
                                                              
 | 31|30         25|24      20|19      15|14   12|11      7|6     0| name    |
 |---|-------------|----------|----------|-------|---------|-------|---------|
-| 0 | zimm[10:6]  |imm[4:0]  |    rs1   | 1 1 1 |    rd   |1010111| vsetvli |
+| 0 |  imm[10:6]  |imm[4:0]  |    rs1   | 1 1 1 |    rd   |1010111| vsetvli |
 | 1 |   imm[5:0]  |   rs2    |    rs1   | 1 1 1 |    rd   |1010111| vsetvl  |
 | 1 |      6      |     5    |     5    |   3   |    5    |   7   |         |
 
 where:
 
-* when bit 31==0, both MVL and VL are set to imm(5:0) - plus one to
+* when bit 31==0, both MVL and VL are set to imm(10:6) - plus one to
   get it out of the "NOP" scenario.
 * when bit 31==1, MVL is set to imm(5:0) plus one.
 
@@ -37,7 +37,8 @@ hang on... no, that's a 4-argument setvl!  what about this?
 | 1 |   imm[5:0]  | rs2!=x0  |  0b00000 | 1 1 1 |    rd   |1010111| vsetvl  | 8          |
 | 1 |      6      |     5    |     5    |   3   |    5    |   7   |         |            |
 
-i think those are the 8 permutations: what can those be used for?
+i think those are the 8 permutations: what can those be used for?  some of them for actual
+instructions (brownfield encodings).
 
 | name    | variant# - | purpose                                        |
 |---------|------------|------------------------------------------------|
