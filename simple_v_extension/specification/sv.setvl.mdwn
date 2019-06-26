@@ -51,3 +51,31 @@ instructions (brownfield encodings).
 | vsetvl  | 7          | TBD                                            |
 | vsetvl  | 8          | TBD                                            |
 
+
+pseudocode:
+
+    regs = [0u64; 128];
+    vl = 0;
+
+    // instruction fields:
+    rd = get_rd_field();
+    rs1 = get_rs1_field();
+    vlmax = get_immed_field();
+
+    // handle illegal instruction decoding
+    if vlmax > XLEN {
+        trap()
+    }
+
+    // calculate VL
+    if rs1 == 0 { // rs1 is x0
+        vl = vlmax
+    } else {
+        vl = min(regs[rs1], vlmax)
+    }
+
+    // write rd
+    if rd != 0 {
+        // rd is not x0
+        regs[rd] = vl
+    }
