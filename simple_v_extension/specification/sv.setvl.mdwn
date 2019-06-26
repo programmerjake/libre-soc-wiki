@@ -1,0 +1,51 @@
+# SV setvl exploration
+
+Formats for Vector Configuration Instructions under OP-V major opcode:
+                                                             
+| 31|30         25|24      20|19      15|14   12|11      7|6     0| name    |
+|---|------------------------|----------|-------|---------|-------|---------|
+| 0 | zimm[10:6]  |imm[4:0]  |    rs1   | 1 1 1 |    rd   |1010111| vsetvli |
+| 1 |   000000    |   rs2    |    rs1   | 1 1 1 |    rd   |1010111| vsetvl  |
+| 1 |      6      |     5    |     5    |   3   |    5    |   7   |         |
+
+Requirement: fit MVL into this format.
+                                                             
+| 31|30         25|24      20|19      15|14   12|11      7|6     0| name    |
+|---|-------------|----------|----------|-------|---------|-------|---------|
+| 0 | zimm[10:6]  |imm[4:0]  |    rs1   | 1 1 1 |    rd   |1010111| vsetvli |
+| 1 |   imm[5:0]  |   rs2    |    rs1   | 1 1 1 |    rd   |1010111| vsetvl  |
+| 1 |      6      |     5    |     5    |   3   |    5    |   7   |         |
+
+where:
+* when bit 31==0, both MVL and VL are set to imm(5:0) - plus one to
+  get it out of the "NOP" scenario.
+* when bit 31==1, MVL is set to imm(5:0) plus one.
+
+hang on... no, that's a 4-argument setvl!  what about this?
+
+
+| 31            25|24      20|19      15|14   12|11      7|6     0| name    | variant# - |
+|-----------------|----------|----------|-------|---------|-------|---------|------------|
+| 0 | imm[5:0]    | 0b00000  |    rs1   | 1 1 1 |    rd   |1010111| vsetvli | 1          |
+| 0 | imm[5:0]    | 0b00000  |  0b00000 | 1 1 1 |    rd   |1010111| vsetvli | 2          |
+| 0 |   imm[5:0]  | rs2!=x0  |    rs1   | 1 1 1 |    rd   |1010111| vsetvli | 3          |
+| 0 |   imm[5:0]  | rs2!=x0  |  0b00000 | 1 1 1 |    rd   |1010111| vsetvli | 4          |
+| 1 | imm[5:0]    | 0b00000  |    rs1   | 1 1 1 |    rd   |1010111| vsetvl  | 5          |
+| 1 | imm[5:0]    | 0b00000  |  0b00000 | 1 1 1 |    rd   |1010111| vsetvl  | 6          |
+| 1 |   imm[5:0]  | rs2!=x0  |    rs1   | 1 1 1 |    rd   |1010111| vsetvl  | 7          |
+| 1 |   imm[5:0]  | rs2!=x0  |  0b00000 | 1 1 1 |    rd   |1010111| vsetvl  | 8          |
+| 1 |      6      |     5    |     5    |   3   |    5    |   7   |         |            |
+
+i think those are the 8 permutations: what can those be used for?
+
+| name    | variant# - | purpose                                        |
+|---------|------------|------------------------------------------------|
+| vsetvli | 1          | TBD                                            |
+| vsetvli | 2          | TBD                                            |
+| vsetvli | 3          | TBD                                            |
+| vsetvli | 4          | TBD                                            |
+| vsetvl  | 5          | TBD                                            |
+| vsetvl  | 6          | TBD                                            |
+| vsetvl  | 7          | TBD                                            |
+| vsetvl  | 8          | TBD                                            |
+
