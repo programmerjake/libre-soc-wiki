@@ -51,6 +51,12 @@ instructions (brownfield encodings).
 | vsetvl  | 7          | TBD                                            |
 | vsetvl  | 8          | TBD                                            |
 
+notes:
+
+* there's no behavioural difference between the vsetvl version and the
+  vsetvli version.  that needs fixing (somehow, doing something)
+* the above 4 fit into the "rs2 == x0" case, leaving "rs2 != x0" for
+  brownfield encodings.
 
 pseudocode:
 
