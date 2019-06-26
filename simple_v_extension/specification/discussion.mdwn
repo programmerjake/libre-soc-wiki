@@ -47,3 +47,36 @@ Could the 8 bit Register VBLOCK format use regnum<<1 instead, only accessing reg
 Expand the range of SUBVL and its associated svsrcoffs and svdestoffs by
 adding a 2nd STATE CSR (or extending STATE to 64 bits).  Future version?
 
+--
+
+TODO: evaluate - BRIEFLY (under 1 hour MAXIMUM) - why these rules exist,
+by illustrating with pseudo-assembly DAXPY
+
+1. Trap if imm > XLEN.
+2. If rs1 is x0, then
+    1. Set VL to imm.
+3. Else If regs[rs1] > 2 * imm, then
+    1. Set VL to XLEN.
+4. Else If regs[rs1] > imm, then
+    1. Set VL to regs[rs1] / 2 rounded down.
+5. Otherwise,
+    1. Set VL to regs[rs1].
+6. Set regs[rd] to VL.
+
+TODO: adapt to the above rules.
+
+    # a0 is n, a1 is pointer to x[0], a2 is pointer to y[0], fa0 is a
+      0:  li t0, 2<<25
+      4:  vsetdcfg t0             # enable 2 64b Fl.Pt. registers
+    loop:
+      8:  setvl  t0, a0           # vl = t0 = min(mvl, n)
+      c:  vld    v0, a1           # load vector x
+      10:  slli   t1, t0, 3        # t1 = vl * 8 (in bytes)
+      14:  vld    v1, a2           # load vector y
+      18:  add    a1, a1, t1       # increment pointer to x by vl*8
+      1c:  vfmadd v1, v0, fa0, v1  # v1 += v0 * fa0 (y = a * x + y)
+      20:  sub    a0, a0, t0       # n -= vl (t0)
+      24:  vst    v1, a2           # store Y
+      28:  add    a2, a2, t1       # increment pointer to y by vl*8
+      2c:  bnez   a0, loop         # repeat if n != 0
+      30:  ret                     # return
