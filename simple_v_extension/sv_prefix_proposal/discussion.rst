@@ -18,6 +18,9 @@ are a very common operation, I think we should have a separate instruction
 Answer:
 
     > ok, i like that idea - adding to TODO list
+    > see MV.X_
+
+.. _MV.X: http://libre-riscv.org/simple_v_extension/specification/mv.x/
 
 Example pseudocode:
 
