@@ -2,7 +2,7 @@
 
 * Copyright (C) 2017, 2018, 2019 Luke Kenneth Casson Leighton
 * Status: DRAFTv0.6
-* Last edited: 21 jun 2019
+* Last edited: 28 jun 2019
 
 [[!toc ]]
 
@@ -159,7 +159,7 @@ SUBVL and ssvoffs).
 
 Using PCVBLK to store the progression of decoding of the VBLOCK allows a simple single issue design to only need to fetch 32 or 64 bits from the instruction cache on any given clock cycle.
 
-To support this option (where more complex implementations may skip some of these phases), VBLOCK contains partial decode state, that allows a trap to occur even oart-way through decode, in order to reduce latency.
+To support this option (where more complex implementations may skip some of these phases), VBLOCK contains partial decode state, that allows a trap to occur even part-way through decode, in order to reduce latency.
 
 The format is as follows:
 
