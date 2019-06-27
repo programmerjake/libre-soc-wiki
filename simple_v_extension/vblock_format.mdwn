@@ -195,8 +195,8 @@ ECALL, on the other hand, which will cause a trap that saves and restores the fu
 
 Prohibited instructions will cause an illegal instruction trap. If at that point, software is capable of then working out how to emulate a branch or function call successfully, by manipulating (x)ePCVBLK and other state, it is not prohibited from doing so.
 
-A normal jump, normal branch and a normal function call may only be taken
-by letting the VBLOCK group end, returning to "normal" standard RV mode,
+To reiterate: a normal jump, normal conditional branch and a normal function call may only be taken
+by letting the VBLOCK group finish, returning to "normal" standard RV mode,
 and then using standard RVC, 32 bit or P48/64-\*-type opcodes.
 
 # Links
