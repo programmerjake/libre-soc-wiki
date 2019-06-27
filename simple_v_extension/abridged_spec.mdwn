@@ -58,7 +58,7 @@ Modes respectively:
 
 * (x)ePCVBLK (a copy of the sub-execution Program Counter, that is relative
   to the start of the current VBLOCK Group, set on a trap).
-* (x) eSTATE (useful for saving and restoring during context switch,
+* (x)eSTATE (useful for saving and restoring during context switch,
   and for providing fast transitions)
 
 The u/m/s CSRs are treated and handled exactly like their (x)epc
@@ -93,6 +93,7 @@ operation issued, SUBVL operations are issued.
 
 The main effect of SUBVL is that predication bits are applied per
 **group**, rather than by individual element.  Legal values are 1 to 4.
+Illegal values raise an exception.
 
 ## STATE
 
