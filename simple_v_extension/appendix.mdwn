@@ -15,13 +15,15 @@ that is zero", however with traps, the first element has to
 be given the opportunity to throw the exact same trap that would
 be thrown if this were a scalar operation (when VL=1).
 
+Note that implementors are required to mutually exclusively choose one or the other modes: an instruction is **not** permitted to fail on a trap *and* fail a conditional test.  This advice to custom opcode writers as well as future extension writers.
+
 ## Fail-on-first traps
 
 Except for the first element, ffirst stops sequential element processing
 when a trap occurs.  The first element is treated normally (as if ffirst
 is clear).  Should any subsequent element instruction require a trap,
 instead it and subsequent indexed elements are ignored (or cancelled in
-out-of-order designs), and VL is set to the *last* instruction that did
+out-of-order designs), and VL is set to the *last* in-sequence instruction that did
 not take the trap.
 
 Note that predicated-out elements (where the predicate mask bit is zero)
@@ -42,8 +44,10 @@ is set to.
 
 ## Fail-on-first conditional tests
 
-ffirst stops sequential element conditional testing on the first element result
-being zero.  VL is set to the number of elements that were processed before
+ffirst stops sequential (or sequentially-appearing in the case of out-of-order designs)
+element conditional testing on the first element result
+being zero (or other "fail" condition).
+VL is set to the number of elements that were (sequentially) processed before
 the fail-condition was encountered.
 
 Note that just as with traps, if SUBVL!=1, the first of any of the *sub-group*
@@ -54,7 +58,8 @@ number of *sub-groups* that had no fail-condition up until execution was
 stopped.
 
 Note again that, just as with traps, predicated-out (masked-out) elements
-are included in the count leading up to the fail-condition, even though they
+are included in the (sequential)
+count leading up to the fail-condition, even though they
 were not tested.
 
 # Instructions <a name="instructions" />
@@ -1560,7 +1565,8 @@ Notes:
 * with the exception of the GETVL, all Vector Context may be done in VBLOCK form.
 * setting predication to x0 (zero) and invert on t0 is a trick to enable just ffirst on t0
 * ldb and bne are both using t0, both in ffirst mode
-* ldb will end on illegal mem, reduce VL, but copied all sorts of stuff into t0
+* t0 vectorised, a1 scalar, both elwidth 8 bit: ldb enters "unit stride, vectorised, no (un)sign-extension or truncation" mode.
+* ldb will end on illegal mem, reduce VL, but copied all sorts of stuff into t0 (could contain zeros).
 * bne t0 x0 tests up to the NEW VL for nonzero, vector t0 against scalar x0
 * however as t0 is in ffirst mode, the first fail wil ALSO stop the compares, and reduce VL as well
 * the branch only goes to allnonzero if all tests succeed
