@@ -58,6 +58,17 @@ notes:
 * the above 4 fit into the "rs2 == x0" case, leaving "rs2 != x0" for
   brownfield encodings.
 
+The encoding I (programmerjake) was planning on using is:
+
+| 31|30   20|19    15|14   12|11 7|6     0| name       |
+|---|-------|--------|-------|----|-------|------------|
+| 0 | VLMAX | rs1    | 1 1 1 | rd |1010111| sv.setvl   |
+| 0 | VLMAX | 0 (x0) | 1 1 1 | rd |1010111| sv.setvl   |
+| 1 | --    | --     | 1 1 1 | -- |1010111| *reserved* |
+
+It leaves space for future expansion to RV128 and/or multi-register predicates.
+
+
 pseudocode:
 
     regs = [0u64; 128];
