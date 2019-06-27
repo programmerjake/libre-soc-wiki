@@ -58,6 +58,8 @@ notes:
 * the above 4 fit into the "rs2 == x0" case, leaving "rs2 != x0" for
   brownfield encodings.
 
+# original encoding
+
 The encoding I (programmerjake) was planning on using is:
 
 | 31|30   20|19    15|14   12|11 7|6     0| name       |
@@ -69,7 +71,7 @@ The encoding I (programmerjake) was planning on using is:
 It leaves space for future expansion to RV128 and/or multi-register predicates.
 
 
-pseudocode:
+# pseudocode
 
     regs = [0u64; 128];
     vl = 0;
