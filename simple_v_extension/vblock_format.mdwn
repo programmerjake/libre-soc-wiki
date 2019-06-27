@@ -178,9 +178,9 @@ When status=0b11, opptr may be written to using CSRRWI. Doing so will cause exec
 
 In privileged modes, obviously the above rules do not apply to the completely seoarate (x)ePCVBLK CSRs because these are copies of state, not the actual active PCVBLK. Writing to PCVBLK during a trap however, clearly the rules must apply.
 
-If PCVBLK is written to with CSRRW, the same rules apply, however the entire register is treated as the new opptr.
+If PCVBLK is written to with CSRRW, the same rules apply, however the entire register in rs1 is treated as the new opptr.
 
-Note that the value returned in the dest register is the *full* PCVBLK, not just the opptr part.
+Note that the value returned in the register rd is the *full* PCVBLK, not just the opptr part.
 
 # Limitations on instructions
 
