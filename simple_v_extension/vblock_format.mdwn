@@ -159,6 +159,8 @@ SUBVL and ssvoffs).
 
 Using PCVBLK to store the progression of decoding and subsequent execution of opcodes in a VBLOCK allows a simple single issue design to only need to fetch 32 or 64 bits from the instruction cache on any given clock cycle.
 
+*(This approach also alleviates one of the main concerns with the VBLOCK Format: unlike a VLIW engine, a FSM no longer requires full buffering of the entire VBLOCK opcode in order to begin execution. Future versions may therefore potentially lift the 192 bit limit).*
+
 To support this option (where more complex implementations may skip some of these phases), VBLOCK contains partial decode state, that allows a trap to occur even part-way through decode, in order to reduce latency.
 
 The format is as follows:
