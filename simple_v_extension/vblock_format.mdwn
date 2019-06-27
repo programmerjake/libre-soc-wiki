@@ -165,8 +165,13 @@ To support this option (where more complex implementations may skip some of thes
 
 The format is as follows:
 
++--------+-------+-------+-------+-------+------+-------+-------+
+| 31:30  | 29    | 28:26 | 25:24 | 23:22 | 21   | 20:5  | 4:0   |
++--------+-------+-------+-------+-------+------+-------+-------+
 | status | vlset | 16xil | pplen | rplen | mode | vlblk | opptr |
-| 2 | 1 | 3 | 2 | 2 | 1 | 16 | 5 |
++--------+-------+-------+-------+-------+------+-------+-------+
+| 2      | 1     | 3     | 2     | 2     | 1    | 16    | 5     |
++--------+-------+-------+-------+-------+------+-------+-------+
 
 * status is the key field that effectively exposes the inner FSM (Finite State Machine) directly.
 * status = 0b00 indicates that the processor is not in "VBLOCK Mode". It is instead in standard RV Scalar opcode execution mode. The processor will leave this mode only after it encounters the beginning of a valid VBLOCK opcode.
