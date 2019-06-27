@@ -157,7 +157,16 @@ SUBVL and ssvoffs).
 
 # PCVBLK CSR Format
 
-TBD
+Using PCVBLK to store the progression of decoding of the VBLOCK allows a simple single issue design to only need to fetch 32 or 64 bits from the instruction cache on any given clock cycle.
+
+To support this option (where more complex implementations may skip some of these phases), VBLOCK contains partial decode state, that allows a trap to occur even oart-way through decode, in order to reduce latency.
+
+The format is as follows:
+
+| vlvalid | bvalid | vlset | 16xil | pplen | rplen | mode | vlblk | opptr |
+| 1 | 1 | 1 | 3 | 2 | 2 | 1 | 16 | 5 |
+
+
 
 # Limitations on instructions
 
