@@ -270,6 +270,13 @@ like Standard RISC-V as far as the instruction execution order is
 concerned, regardless of whether it is PC, PCVBLK, VL or SUBVL that
 is currently being incremented.
 
+This.is extremely important. Exceptions
+**MUST** be raised one at a time and in
+strict sequential program order.
+
+No instructions are permitted to be out of
+sequence, therefore no exceptions are permitted to be, either.
+
 # Hints
 
 With Simple-V being capable of issuing *parallel* instructions where
