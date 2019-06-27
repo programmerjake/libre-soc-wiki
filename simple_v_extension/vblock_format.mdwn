@@ -157,7 +157,7 @@ SUBVL and ssvoffs).
 
 # PCVBLK CSR Format
 
-Using PCVBLK to store the progression of decoding of the VBLOCK allows a simple single issue design to only need to fetch 32 or 64 bits from the instruction cache on any given clock cycle.
+Using PCVBLK to store the progression of decoding and subsequent execution of opcodes in a VBLOCK allows a simple single issue design to only need to fetch 32 or 64 bits from the instruction cache on any given clock cycle.
 
 To support this option (where more complex implementations may skip some of these phases), VBLOCK contains partial decode state, that allows a trap to occur even part-way through decode, in order to reduce latency.
 
@@ -185,12 +185,13 @@ Note that the value returned in the register rd is the *full* PCVBLK, not just t
 # Limitations on instructions
 
 As the pcvblk CSR is relative to the beginning of the VBLOCK,
-branches MUST be restricted to within (relative to) the block,
-i.e. addressing is now restricted to the start (and very short) length
-of the block.
+branch and jump opcodes MUST NOT be used to point to a location inside a block: only at the beginning of an opcode (including another VBLOCK, including the current one). However, setting the PCVBLK CSR is permitted, to unconditionally jump to any opcode within a block.
 
-Also: calling subroutines is inadviseable, unless they can be entirely
-accomplished within a block.
+Also: calling subroutines is likewise not permitted, because PCVBLK context cannot be atomically reestablished on return from the function.
+
+ECALL, on the other hand, which will cause a trap that saves and restores the full state, is permitted.
+
+Prohibited instructions will cause an illegal instruction trap. If at that point, software is capable of then working out how to emulate a branch or function call successfully, by manipulating (x)ePCVBLK and other state, it is not prohibited from doing so.
 
 A normal jump, normal branch and a normal function call may only be taken
 by letting the VBLOCK group end, returning to "normal" standard RV mode,
