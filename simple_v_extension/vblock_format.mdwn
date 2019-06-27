@@ -163,10 +163,14 @@ To support this option (where more complex implementations may skip some of thes
 
 The format is as follows:
 
-| vlvalid | bvalid | vlset | 16xil | pplen | rplen | mode | vlblk | opptr |
-| 1 | 1 | 1 | 3 | 2 | 2 | 1 | 16 | 5 |
+| status | vlset | 16xil | pplen | rplen | mode | vlblk | opptr |
+| 2 | 1 | 3 | 2 | 2 | 1 | 16 | 5 |
 
-
+* status is the key field that effectively ezposes the inner FSM (Finite State Machine) directly.
+* status = 0b00 indicates that the processor is not in "VBLOCK Mode". It is instead in standard RV Scalar opcode execution mode. The processor will leave this mode only after it encounters the beginning of a valid VBLOCK opcode.
+* status=0b01 indicates that the VL Block has been read from the instruction stream and decoded (and copied into vlblk).
+* status=0b11 indicates that the Predicate and Register Blocks have been read from the instruction stream (and put into internal Vector Context)  Simpler implementations are permitted to reset status back to 0b10 and re-read the data after return from a trap. They are not however permitted to destroy opptr in the process.
+* status = 0b01 indicates that vlset, 16xil, pplen, rplen and mode have all been copied directly from the VBLOCK so that they do not need to be read again from the instruction stream.
 
 # Limitations on instructions
 
