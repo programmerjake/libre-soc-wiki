@@ -157,11 +157,18 @@ SUBVL and ssvoffs).
 
 # PCVBLK CSR Format
 
-Using PCVBLK to store the progression of decoding and subsequent execution of opcodes in a VBLOCK allows a simple single issue design to only need to fetch 32 or 64 bits from the instruction cache on any given clock cycle.
+Using PCVBLK to store the progression of decoding and subsequent execution
+of opcodes in a VBLOCK allows a simple single issue design to only need to
+fetch 32 or 64 bits from the instruction cache on any given clock cycle.
 
-*(This approach also alleviates one of the main concerns with the VBLOCK Format: unlike a VLIW engine, a FSM no longer requires full buffering of the entire VBLOCK opcode in order to begin execution. Future versions may therefore potentially lift the 192 bit limit).*
+*(This approach also alleviates one of the main concerns with the VBLOCK
+Format: unlike a VLIW engine, a FSM no longer requires full buffering
+of the entire VBLOCK opcode in order to begin execution. Future versions
+may therefore potentially lift the 192 bit limit).*
 
-To support this option (where more complex implementations may skip some of these phases), VBLOCK contains partial decode state, that allows a trap to occur even part-way through decode, in order to reduce latency.
+To support this option (where more complex implementations may skip some
+of these phases), VBLOCK contains partial decode state, that allows a
+trap to occur even part-way through decode, in order to reduce latency.
 
 The format is as follows:
 
@@ -170,36 +177,74 @@ The format is as follows:
 | status | vlset | 16xil | pplen | rplen | mode | vlblk | opptr |
 | 2      | 1     | 3     | 2     | 2     | 1    | 16    | 5     |
 
-* status is the key field that effectively exposes the inner FSM (Finite State Machine) directly.
-* status = 0b00 indicates that the processor is not in "VBLOCK Mode". It is instead in standard RV Scalar opcode execution mode. The processor will leave this mode only after it encounters the beginning of a valid VBLOCK opcode.
-* status = 0b01 indicates that vlset, 16xil, pplen, rplen and mode have all been copied directly from the VBLOCK so that they do not need to be read again from the instruction stream.
-* status=0b10 indicates that the VL Block has been read from the instruction stream and decoded (and copied into vlblk).
-* status=0b11 indicates that the Predicate and Register Blocks have been read from the instruction stream (and put into internal Vector Context)  Simpler implementations are permitted to reset status back to 0b10 and re-read the data after return from a trap that happened to occur in the middle of a VBLOCK. They are not however permitted to destroy opptr in the process, and after re-reading the Predicate and Register Blocks must resume execution pointed to by  opptr.
-* opptr points to where instructions begin in the VBLOCK. 0 indicates the start of the opcodes, and is in multiples of 16 bits (2 bytes).  This is the equivalent of a Program Counter, for VBLOCKs.
-* at the end of a VBLOCK, when the last instruction executes (assuming it does not change opptr to earlier in the block), status is reset to 0b00 to indicate exit from the VBLOCK FSM, and the current Vector Predicate and Register Context destroyed (Note: the STATE CSR is **not** altered purely by exit from a VBLOCK Context).
+* status is the key field that effectively exposes the inner FSM (Finite
+  State Machine) directly.
+* status = 0b00 indicates that the processor is not in "VBLOCK Mode". It
+  is instead in standard RV Scalar opcode execution mode. The processor
+  will leave this mode only after it encounters the beginning of a valid
+  VBLOCK opcode.
+* status = 0b01 indicates that vlset, 16xil, pplen, rplen and mode have
+  all been copied directly from the VBLOCK so that they do not need to be
+  read again from the instruction stream.
+* status=0b10 indicates that the VL Block has been read from the
+  instruction stream and decoded (and copied into vlblk).
+* status=0b11 indicates that the Predicate and Register Blocks have been
+  read from the instruction stream (and put into internal Vector Context)
+  Simpler implementations are permitted to reset status back to 0b10 and
+  re-read the data after return from a trap that happened to occur in the
+  middle of a VBLOCK. They are not however permitted to destroy opptr in
+  the process, and after re-reading the Predicate and Register Blocks must
+  resume execution pointed to by  opptr.
+* opptr points to where instructions begin in the VBLOCK. 0 indicates
+  the start of the opcodes, and is in multiples of 16 bits (2 bytes).
+  This is the equivalent of a Program Counter, for VBLOCKs.
+* at the end of a VBLOCK, when the last instruction executes (assuming it
+  does not change opptr to earlier in the block), status is reset to 0b00
+  to indicate exit from the VBLOCK FSM, and the current Vector Predicate
+  and Register Context destroyed (Note: the STATE CSR is **not** altered
+  purely by exit from a VBLOCK Context).
 
-When status=0b11, opptr may be written to using CSRRWI. Doing so will cause execution to jump within the block, exactly as if PC had been set in normal RISC-V eexecution. Writing a value outside of the range of the instruction block will cause an illegal instruction exception. Writing a value (any value) when status is not 0b11 likewise causes an illegal instruction exception.
+When status=0b11, opptr may be written to using CSRRWI. Doing so will
+cause execution to jump within the block, exactly as if PC had been set
+in normal RISC-V eexecution. Writing a value outside of the range of the
+instruction block will cause an illegal instruction exception. Writing
+a value (any value) when status is not 0b11 likewise causes an illegal
+instruction exception.
 
-In privileged modes, obviously the above rules do not apply to the completely seoarate (x)ePCVBLK CSRs because these are copies of state, not the actual active PCVBLK. Writing to PCVBLK during a trap however, clearly the rules must apply.
+In privileged modes, obviously the above rules do not apply to the
+completely seoarate (x)ePCVBLK CSRs because these are copies of state,
+not the actual active PCVBLK. Writing to PCVBLK during a trap however,
+clearly the rules must apply.
 
-If PCVBLK is written to with CSRRW, the same rules apply, however the entire register in rs1 is treated as the new opptr.
+If PCVBLK is written to with CSRRW, the same rules apply, however the
+entire register in rs1 is treated as the new opptr.
 
-Note that the value returned in the register rd is the *full* PCVBLK, not just the opptr part.
+Note that the value returned in the register rd is the *full* PCVBLK,
+not just the opptr part.
 
 # Limitations on instructions
 
-As the pcvblk CSR is relative to the beginning of the VBLOCK,
-branch and jump opcodes MUST NOT be used to point to a location inside a block: only at the beginning of an opcode (including another VBLOCK, including the current one). However, setting the PCVBLK CSR is permitted, to unconditionally jump to any opcode within a block.
+As the pcvblk CSR is relative to the beginning of the VBLOCK, branch
+and jump opcodes MUST NOT be used to point to a location inside a block:
+only at the beginning of an opcode (including another VBLOCK, including
+the current one). However, setting the PCVBLK CSR is permitted, to
+unconditionally jump to any opcode within a block.
 
-Also: calling subroutines is likewise not permitted, because PCVBLK context cannot be atomically reestablished on return from the function.
+Also: calling subroutines is likewise not permitted, because PCVBLK
+context cannot be atomically reestablished on return from the function.
 
-ECALL, on the other hand, which will cause a trap that saves and restores the full state, is permitted.
+ECALL, on the other hand, which will cause a trap that saves and restores
+the full state, is permitted.
 
-Prohibited instructions will cause an illegal instruction trap. If at that point, software is capable of then working out how to emulate a branch or function call successfully, by manipulating (x)ePCVBLK and other state, it is not prohibited from doing so.
+Prohibited instructions will cause an illegal instruction trap. If at
+that point, software is capable of then working out how to emulate a
+branch or function call successfully, by manipulating (x)ePCVBLK and
+other state, it is not prohibited from doing so.
 
-To reiterate: a normal jump, normal conditional branch and a normal function call may only be taken
-by letting the VBLOCK group finish, returning to "normal" standard RV mode,
-and then using standard RVC, 32 bit or P48/64-\*-type opcodes.
+To reiterate: a normal jump, normal conditional branch and a normal
+function call may only be taken by letting the VBLOCK group finish,
+returning to "normal" standard RV mode, and then using standard RVC,
+32 bit or P48/64-\*-type opcodes.
 
 # Links
 
