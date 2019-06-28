@@ -15,8 +15,10 @@ The VL/MAXVL/SubVL Block format:
 
 | 31-30 | 29:28 | 27:22  | 21:17  | 16  | comment |
 | -     | ----- | ------ | ------ | -   | -|
-| 0     | SubVL | VLdest | VLimm  | 0   | |
-| 0     | SubVL | MVLimm | VLreg  | 1   | VLdest=t0 |
-| 1     | SubVL | VLdest | VLimm  | imm | VL & MVL, bits 16-21 |
+| 0b00  | SubVL | VLdest | imm[4:0] | imm  | VL, bits 16-21 |
+| 0b01  | SubVL | MVLimm | VLreg    | VLd  | VLdest=t0,t1 |
+| 0b10  | SubVL | VLdest | imm[4:0] | imm | VL & MVL, bits 16-21 |
+| 0b11  | rsvd  | rsvd   | rsvd     | rsv | reserved, all 0s |
+
 
 
