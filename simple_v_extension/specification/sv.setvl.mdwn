@@ -70,6 +70,16 @@ The encoding I (programmerjake) was planning on using is:
 
 It leaves space for future expansion to RV128 and/or multi-register predicates.
 
+> it's the opcode and funct7 that are actually used to determine the
+> instruction for almost all RISC-V instructions, therefore, I think we
+> should use the lower bits of the immediate in I-type to encode MAXVL.
+> This also has the benefit of simple extension of VL/MAXVL since the
+> bits immediately above the MAXVL field aren't used. If a new
+> instruction wants to be able to use rs2, it simply uses the encoding
+> with bit 31 set, which already indicates that rs2 is wanted in the V
+> extension.
+
+>> yep, good logic.
 
 # pseudocode
 
