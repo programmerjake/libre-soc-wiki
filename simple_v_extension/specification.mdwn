@@ -133,12 +133,15 @@ And likewise for M-Mode:
 * meSTATE
 
 The u/m/s CSRs are treated and handled exactly like their (x)epc
-equivalents. On entry to or exit from a privilege level, the contents of its (x)eSTATE are swapped with STATE.
+equivalents. On entry to or exit from a privilege level, the contents
+of its (x)eSTATE are swapped with STATE.
 
 Thus for example, a User Mode trap will end up swapping STATE and ueSTATE
 (on both entry and exit), allowing User Mode traps to have their own
 Vectorisation Context set up, separated from and unaffected by normal
-user applications.  If an M Mode trap occurs in the middle of the U Mode trap, STATE is swapped with meSTATE, and restored on exit: the U Mode trap continues unaware that the M Mode trap even occurred.
+user applications.  If an M Mode trap occurs in the middle of the U Mode
+trap, STATE is swapped with meSTATE, and restored on exit: the U Mode
+trap continues unaware that the M Mode trap even occurred.
 
 Likewise, Supervisor Mode may perform context-switches, safe in the
 knowledge that its Vectorisation State is unaffected by User Mode.
@@ -154,15 +157,13 @@ same pattern for other CSRs that have M-Mode and S-Mode "mirrors":
 * In U-Mode, accessing and changing of the S-Mode and U-Mode CSRs
   is prohibited.
 
-An interesting side effect of SV STATE being
-separate and distinct in S Mode
-is that
-Vectorised saving of an entire register file to the stack is a single
-instruction (through accidental provision of LOAD-MULTI semantics).  If the
-SVPrefix P64-LD-type format is used, LOAD-MULTI may even be done with a
-single standalone 64 bit opcode (P64 may set up SUBVL, VL and MVL from an
-immediate field, to cover the full regfile). It can even be predicated, which opens up some very
-interesting possibilities.
+An interesting side effect of SV STATE being separate and distinct in S
+Mode is that Vectorised saving of an entire register file to the stack
+is a single instruction (through accidental provision of LOAD-MULTI
+semantics).  If the SVPrefix P64-LD-type format is used, LOAD-MULTI may
+even be done with a single standalone 64 bit opcode (P64 may set up SUBVL,
+VL and MVL from an immediate field, to cover the full regfile). It can
+even be predicated, which opens up some very interesting possibilities.
 
 (x)EPCVBLK CSRs must be treated exactly like their corresponding (x)epc
 equivalents. See VBLOCK section for details.
