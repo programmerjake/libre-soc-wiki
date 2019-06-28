@@ -15,10 +15,10 @@ that is zero", however with traps, the first element has to
 be given the opportunity to throw the exact same trap that would
 be thrown if this were a scalar operation (when VL=1).
 
-Note that implementors are required to mutually exclusively choose one or
-the other modes: an instruction is **not** permitted to fail on a trap
-*and* fail a conditional test.  This advice to custom opcode writers as
-well as future extension writers.
+Note that implementors are required to mutually exclusively choose one
+or the other modes: an instruction is **not** permitted to fail on a
+trap *and* fail a conditional test at the same time.  This advice to
+custom opcode writers as well as future extension writers.
 
 ## Fail-on-first traps
 
