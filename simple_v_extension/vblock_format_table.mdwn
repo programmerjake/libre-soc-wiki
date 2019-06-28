@@ -13,8 +13,10 @@ of the RISC-V ISA, is as follows:
 
 The VL/MAXVL/SubVL Block format:
 
-| 31-30 | 29:28 | 27:22  | 21:17  - 16  |
-| -     | ----- | ------ | ------ - -   |
-| 0     | SubVL | VLdest | VLEN     vlt |
-| 1     | SubVL | VLdest | VLEN         |
+| 31-30 | 29:28 | 27:22  | 21:17  | 16  | comment |
+| -     | ----- | ------ | ------ | -   | -|
+| 0     | SubVL | VLdest | VLimm  | 0   | |
+| 0     | SubVL | MVLimm | VLreg  | 1   | VLdest=t0 |
+| 1     | SubVL | VLdest | VLimm  | imm | VL & MVL, bits 16-21 |
+
 
