@@ -280,7 +280,7 @@ See SUBVL Pseudocode illustration in the [[appendix]], for details.
 
 ## STATE
 
-out of date, see http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2019-June/001896.html
+out of date, see <http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2019-June/001896.html>
 
 This is a standard CSR that contains sufficient information for a
 full context save/restore.  It contains (and permits setting of):
@@ -293,8 +293,6 @@ full context save/restore.  It contains (and permits setting of):
 * SUBVL
 * svdestoffs - the subvector destination element offset of the current
   parallel instruction being executed
-* svsrcoffs - for twin-predication, the subvector source element offset
-  as well.
 
 Interestingly STATE may hypothetically also be modified to make the
 immediately-following instruction to skip a certain number of elements,
@@ -311,9 +309,9 @@ and seSTATE).
 
 The format of the STATE CSR is as follows:
 
-| (29..28 | (27..26) | (25..24) | (23..18) | (17..12) | (11..6) | (5...0) |
-| ------- | -------- | -------- | -------- | -------- | ------- | ------- |
-| dsvoffs | ssvoffs  | subvl    | destoffs | srcoffs  | vl      | maxvl   |
+| (31..28) | (27..26) | (25..24) | (23..18) | (17..12) | (11..6) | (5...0) |
+| -------- | -------- | -------- | -------- | -------- | ------- | ------- |
+| rsvd     | dsvoffs  | subvl    | destoffs | srcoffs  | vl      | maxvl   |
 
 The relationship between SUBVL and the subvl field is:
 
@@ -332,12 +330,14 @@ When setting this CSR, the following characteristics will be enforced:
   are no changes needed
 * **srcoffs** will be truncated to be within the range 0 to VL-1
 * **destoffs** will be truncated to be within the range 0 to VL-1
-* **ssvoffs** will be truncated to be within the range 0 to SUBVL-1
 * **dsvoffs** will be truncated to be within the range 0 to SUBVL-1
 
 NOTE: if the following instruction is not a twin predicated instruction,
 and destoffs or dsvoffs has been set to non-zero, subsequent execution
 behaviour is undefined. **USE WITH CARE**.
+
+NOTE: sub-vector looping does not require a twin-predicate corresponding
+index, because sub-vectors use the *main* (VL) loop predicate bit.
 
 ### Hardware rules for when to increment STATE offsets
 
