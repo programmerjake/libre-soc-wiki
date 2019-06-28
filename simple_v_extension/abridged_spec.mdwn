@@ -106,16 +106,14 @@ full context save/restore.  It contains (and permits setting of):
   instruction being executed
 * srcoffs - for twin-predication, the source element offset as well.
 * SUBVL
-* svdestoffs - the subvector destination element offset of the current
+* dsvoffs - the subvector destination element offset of the current
   parallel instruction being executed
-* svsrcoffs - for twin-predication, the subvector source element offset
-  as well.
 
 The format of the STATE CSR is as follows:
 
-| (29..28 | (27..26) | (25..24) | (23..18) | (17..12) | (11..6) | (5...0) |
-| ------- | -------- | -------- | -------- | -------- | ------- | ------- |
-| dsvoffs | ssvoffs  | subvl    | destoffs | srcoffs  | vl      | maxvl   |
+| (31..28) | (27..26) | (25..24) | (23..18) | (17..12) | (11..6) | (5...0) |
+| -------- | -------- | -------- | -------- | -------- | ------- | ------- |
+| rsvd     | dsvoffs  | subvl    | destoffs | srcoffs  | vl      | maxvl   |
 
 The relationship between SUBVL and the subvl field is:
 
