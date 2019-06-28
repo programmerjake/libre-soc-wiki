@@ -24,17 +24,17 @@ following order:
   Individual predicate bits from VL loops apply to the *group* of SUBVL
   elements.
 
-An ancillary "SVPrefix" Format (P48/P64) [[sv_prefix_proposal]] may
-run its own VL/SUBVL "loops" and specifies its own Register and Predication
+An ancillary "SVPrefix" Format (P48/P64) [[sv_prefix_proposal]] may run
+its own VL/SUBVL "loops" and specifies its own Register and Predication
 format on the 32-bit RV scalar opcode embedded within it.
 
 The [[vblock_format]] specifies how VBLOCK sub-execution contexts
 operate.
 
-SV is never actually switched "off".  VL or SUBVL may be equal to 1, and
-Register or Predicate over-ride tables may be empty: under such circumstances
-the behaviour becomes effectively identical to standard RV execution, however
-SV is never truly actually "off".
+SV is never actually switched "off".  VL or SUBVL may be equal to 1,
+and Register or Predicate over-ride tables may be empty: under such
+circumstances the behaviour becomes effectively identical to standard
+RV execution, however SV is never truly actually "off".
 
 Note: **there are *no* new opcodes**. The scheme works *entirely*
 on hidden context that augments (nests) *scalar* RISC-V instructions.
@@ -149,12 +149,13 @@ reduced range of the 5 bit immediate.
 | SETMVLi rd, #n  | CSRRWI MVL,rd, #n-1  |
 | GETMVL rd       | CSRRW  MVL, rd, x0   |
 
-Note: CSRRC and other bitsetting may still be used, they are however not particularly useful (very obscure).
+Note: CSRRC and other bitsetting may still be used, they are however
+not particularly useful (very obscure).
 
 ## Register key-value (CAM) table <a name="regcsrtable" />
 
-The purpose of the Register table is to mark which registers change behaviour
-if used in a "Standard" (normally scalar) opcode.
+The purpose of the Register table is to mark which registers change
+behaviour if used in a "Standard" (normally scalar) opcode.
 
 [[!inline raw="yes" pages="simple_v_extension/reg_table_format" ]]
 
@@ -220,11 +221,14 @@ Pseudocode for predication:
 ## Fail-on-First Mode <a name="ffirst-mode"></a>
 
 ffirst is a special data-dependent predicate mode.  There are two
-variants: one is for faults: typically for LOAD/STORE operations,
-which may encounter end of page faults during a series of operations.
-The other variant is comparisons, and anything that returns "zero" or "fail". Note: no instruction may operate in both fault mode and "condition fail" mode.
+variants: one is for faults: typically for LOAD/STORE operations, which
+may encounter end of page faults during a series of operations.  The other
+variant is comparisons, and anything that returns "zero" or "fail". Note:
+no instruction may operate in both fault mode and "condition fail" mode.
 
-Fail on first critically relies on the program order being sequential, even for elements. Out of order designs must *commit* in-order, and are required to cancel elements at and beyond the fail point.
+Fail on first critically relies on the program order being sequential,
+even for elements. Out of order designs must *commit* in-order, and are
+required to cancel elements at and beyond the fail point.
 
 See [[appendix]] for more details on fail-on-first modes.
 

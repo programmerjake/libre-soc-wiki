@@ -2,7 +2,7 @@
 
 * Copyright (C) 2017, 2018, 2019 Luke Kenneth Casson Leighton
 * Status: DRAFTv0.6
-* Last edited: 25 jun 2019
+* Last edited: 28 jun 2019
 * main spec [[specification]]
 
 [[!toc ]]
@@ -15,7 +15,10 @@ that is zero", however with traps, the first element has to
 be given the opportunity to throw the exact same trap that would
 be thrown if this were a scalar operation (when VL=1).
 
-Note that implementors are required to mutually exclusively choose one or the other modes: an instruction is **not** permitted to fail on a trap *and* fail a conditional test.  This advice to custom opcode writers as well as future extension writers.
+Note that implementors are required to mutually exclusively choose one or
+the other modes: an instruction is **not** permitted to fail on a trap
+*and* fail a conditional test.  This advice to custom opcode writers as
+well as future extension writers.
 
 ## Fail-on-first traps
 
@@ -23,44 +26,46 @@ Except for the first element, ffirst stops sequential element processing
 when a trap occurs.  The first element is treated normally (as if ffirst
 is clear).  Should any subsequent element instruction require a trap,
 instead it and subsequent indexed elements are ignored (or cancelled in
-out-of-order designs), and VL is set to the *last* in-sequence instruction that did
-not take the trap.
+out-of-order designs), and VL is set to the *last* in-sequence instruction
+that did not take the trap.
 
-Note that predicated-out elements (where the predicate mask bit is zero)
-are clearly excluded (i.e. the trap will not occur).  However, note that
-the loop still had to test the predicate bit: thus on return,
+Note that predicated-out elements (where the predicate mask bit is
+zero) are clearly excluded (i.e. the trap will not occur).  However,
+note that the loop still had to test the predicate bit: thus on return,
 VL is set to include elements that did not take the trap *and* includes
 the elements that were predicated (masked) out (not tested up to the
 point where the trap occurred).
 
 If SUBVL is being used (SUBVL!=1), the first *sub-group* of elements
-will cause a trap as normal (as if ffirst is not set); subsequently,
-the trap must not occur in the *sub-group* of elements.  SUBVL will **NOT**
-be modified.
+will cause a trap as normal (as if ffirst is not set); subsequently, the
+trap must not occur in the *sub-group* of elements.  SUBVL will **NOT**
+be modified.  Traps must analyse (x)eSTATE (subvl offset indices) to
+determine the element that caused the trap.
 
 Given that predication bits apply to SUBVL groups, the same rules apply
-to predicated-out (masked-out) sub-groups in calculating the value that VL
-is set to.
+to predicated-out (masked-out) sub-groups in calculating the value that
+VL is set to.
 
 ## Fail-on-first conditional tests
 
-ffirst stops sequential (or sequentially-appearing in the case of out-of-order designs)
-element conditional testing on the first element result
-being zero (or other "fail" condition).
-VL is set to the number of elements that were (sequentially) processed before
-the fail-condition was encountered.
+ffirst stops sequential (or sequentially-appearing in the case of
+out-of-order designs) element conditional testing on the first element
+result being zero (or other "fail" condition).  VL is set to the number
+of elements that were (sequentially) processed before the fail-condition
+was encountered.
 
-Note that just as with traps, if SUBVL!=1, the first of any of the *sub-group*
-will cause the processing to end, and, even if there were elements within
-the *sub-group* that passed the test, that sub-group is still (entirely)
-excluded from the count (from setting VL).  i.e. VL is set to the total
-number of *sub-groups* that had no fail-condition up until execution was
-stopped.
+Note that just as with traps, if SUBVL!=1, the first trap in the
+*sub-group* will cause the processing to end, and, even if there were
+elements within the *sub-group* that passed the test, that sub-group is
+still (entirely) excluded from the count (from setting VL).  i.e. VL is
+set to the total number of *sub-groups* that had no fail-condition up
+until execution was stopped.  However, again: SUBVL must not be modified:
+traps must analyse (x)eSTATE (subvl offset indices) to determine the
+element that caused the trap.
 
 Note again that, just as with traps, predicated-out (masked-out) elements
-are included in the (sequential)
-count leading up to the fail-condition, even though they
-were not tested.
+are included in the (sequential) count leading up to the fail-condition,
+even though they were not tested.
 
 # Instructions <a name="instructions" />
 
@@ -322,12 +327,12 @@ The BEQ that follows will *also* compare x1==x0, x2==x0, x3==x0 and
 so on.  Consequently, unlike integer-branch, FP Compare needs no
 modification in its behaviour.
 
-In addition, it is noted that an entry "FNE" (the opposite of FEQ) is missing,
-and whilst in ordinary branch code this is fine because the standard
-RVF compare can always be followed up with an integer BEQ or a BNE (or
-a compressed comparison to zero or non-zero), in predication terms that
-becomes more of an impact.  To deal with this, SV's predication has
-had "invert" added to it.
+In addition, it is noted that an entry "FNE" (the opposite of FEQ) is
+missing, and whilst in ordinary branch code this is fine because the
+standard RVF compare can always be followed up with an integer BEQ or
+a BNE (or a compressed comparison to zero or non-zero), in predication
+terms that becomes more of an impact.  To deal with this, SV's predication
+has had "invert" added to it.
 
 Also: note that FP Compare may be predicated, using the destination
 integer register (rd) to determine the predicate.  FP Compare is **not**
@@ -794,15 +799,15 @@ to those produced by the above algorithm.
 
 ## Polymorphic floating-point operation exceptions and error-handling
 
-For floating-point operations, conversion takes place without
-raising any kind of exception.  Exactly as specified in the standard
-RV specification, NAN (or appropriate) is stored if the result
-is beyond the range of the destination, and, again, exactly as
-with the standard RV specification just as with scalar
-operations, the floating-point flag is raised (FCSR).  And, again, just as
-with scalar operations, it is software's responsibility to check this flag.
-Given that the FCSR flags are "accrued", the fact that multiple element
-operations could have occurred is not a problem.
+For floating-point operations, conversion takes place without raising any
+kind of exception.  Exactly as specified in the standard RV specification,
+NAN (or appropriate) is stored if the result is beyond the range of the
+destination, and, again, exactly as with the standard RV specification
+just as with scalar operations, the floating-point flag is raised
+(FCSR).  And, again, just as with scalar operations, it is software's
+responsibility to check this flag.  Given that the FCSR flags are
+"accrued", the fact that multiple element operations could have occurred
+is not a problem.
 
 Note that it is perfectly legitimate for floating-point bitwidths of
 only 8 to be specified.  However whilst it is possible to apply IEEE 754
@@ -813,11 +818,11 @@ proceeding.
 
 ## Polymorphic shift operators
 
-A special note is needed for changing the element width of left and right
-shift operators, particularly right-shift.  Even for standard RV base,
-in order for correct results to be returned, the second operand RS2 must
-be truncated to be within the range of RS1's bitwidth.  spike's implementation
-of sll for example is as follows:
+A special note is needed for changing the element width of left and
+right shift operators, particularly right-shift.  Even for standard RV
+base, in order for correct results to be returned, the second operand
+RS2 must be truncated to be within the range of RS1's bitwidth.
+spike's implementation of sll for example is as follows:
 
     WRITE_RD(sext_xlen(zext_xlen(RS1) << (RS2 & (xlen-1))));
 
@@ -1031,13 +1036,12 @@ This is:
 * from register x5 (actually x5-x6) to x8 (actually x8 to half of x11)
 * RV64, where XLEN=64 is assumed.
 
-First, the memory table, which, due to the
-element width being 16 and the operation being LD (64), the 64-bits
-loaded from memory are subdivided into groups of **four** elements.
-And, with VL being 7 (deliberately to illustrate that this is reasonable
-and possible), the first four are sourced from the offset addresses pointed
-to by x5, and the next three from the ofset addresses pointed to by
-the next contiguous register, x6:
+First, the memory table, which, due to the element width being 16 and the
+operation being LD (64), the 64-bits loaded from memory are subdivided
+into groups of **four** elements.  And, with VL being 7 (deliberately
+to illustrate that this is reasonable and possible), the first four are
+sourced from the offset addresses pointed to by x5, and the next three
+from the ofset addresses pointed to by the next contiguous register, x6:
 
 [[!table  data="""
 addr | byte 0 | byte 1 | byte 2 | byte 3 | byte 4 | byte 5 | byte 6 | byte 7 |
@@ -1286,9 +1290,9 @@ rs1 equals the bitwidth of rs2, no sign-extending will occur.  It is
 only where the bitwidth of either rs1 or rs2 are different, will the
 lesser-width operand be sign-extended.
 
-Effectively however, both rs1 and rs2 are being sign-extended (or truncated),
-where for add they are both zero-extended.  This holds true for all arithmetic
-operations ending with "W".
+Effectively however, both rs1 and rs2 are being sign-extended (or
+truncated), where for add they are both zero-extended.  This holds true
+for all arithmetic operations ending with "W".
 
 ### addiw
 
@@ -1514,7 +1518,7 @@ RVV version: <a name="strncpy"></>
         vlbff.v v1, (a1)        # Get src bytes 
         vseq.vi v0, v1, 0       # Flag zero bytes 
         vmfirst a4, v0          # Zero found? 
-        vmsif.v v0, v0          # Set mask up to and including zero byte. Ppplio
+        vmsif.v v0, v0          # Set mask up to and including zero byte.
         vsb.v v1, (a3), v0.t    # Write out bytes 
         bgez a4, exit           # Done 
         csrr t1, vl             # Get number of bytes fetched 
@@ -1557,24 +1561,39 @@ SV version (WIP):
 
 Notes:
 
-* Setting MVL to 8 is just an example. If enough registers are spare it may be set to XLEN which will require a bank of 8 scalar registers for a1, a3 and t0.
-* obviously if that is done, t0 is not separated by 8 full registers, and would overwrite t1 thru t7. x80 would work well, as an example, instead.
-* with the exception of the GETVL (a pseudo code alias for csrr), every single instruction above may use RVC.
-* RVC C.BNEZ can be used because rs1' may be extended to the full 128 registers through redirection
-* RVC C.LW and C.SW may be used because the W format may be overridden by the 8 bit format. All of t0, a3 and a1 are overridden to make that work.
-* with the exception of the GETVL, all Vector Context may be done in VBLOCK form.
-* setting predication to x0 (zero) and invert on t0 is a trick to enable just ffirst on t0
+* Setting MVL to 8 is just an example. If enough registers are spare it
+  may be set to XLEN which will require a bank of 8 scalar registers for
+  a1, a3 and t0.
+* obviously if that is done, t0 is not separated by 8 full registers, and
+  would overwrite t1 thru t7. x80 would work well, as an example, instead.
+* with the exception of the GETVL (a pseudo code alias for csrr), every
+  single instruction above may use RVC.
+* RVC C.BNEZ can be used because rs1' may be extended to the full 128
+  registers through redirection
+* RVC C.LW and C.SW may be used because the W format may be overridden by
+  the 8 bit format. All of t0, a3 and a1 are overridden to make that work.
+* with the exception of the GETVL, all Vector Context may be done in
+  VBLOCK form.
+* setting predication to x0 (zero) and invert on t0 is a trick to enable
+  just ffirst on t0
 * ldb and bne are both using t0, both in ffirst mode
-* t0 vectorised, a1 scalar, both elwidth 8 bit: ldb enters "unit stride, vectorised, no (un)sign-extension or truncation" mode.
-* ldb will end on illegal mem, reduce VL, but copied all sorts of stuff into t0 (could contain zeros).
-* bne t0 x0 tests up to the NEW VL for nonzero, vector t0 against scalar x0
-* however as t0 is in ffirst mode, the first fail wil ALSO stop the compares, and reduce VL as well
+* t0 vectorised, a1 scalar, both elwidth 8 bit: ldb enters "unit stride,
+  vectorised, no (un)sign-extension or truncation" mode.
+* ldb will end on illegal mem, reduce VL, but copied all sorts of stuff
+  into t0 (could contain zeros).
+* bne t0 x0 tests up to the NEW VL for nonzero, vector t0 against
+  scalar x0
+* however as t0 is in ffirst mode, the first fail wil ALSO stop the
+  compares, and reduce VL as well
 * the branch only goes to allnonzero if all tests succeed
-* if it did not, we can safely increment VL by 1 (using a4) to include the zero.
+* if it did not, we can safely increment VL by 1 (using a4) to include
+  the zero.
 * SETVL sets *exactly* the requested amount into VL.
-* the SETVL just after allnonzero label is needed in case the ldb ffirst activates but the bne allzeros does not.
+* the SETVL just after allnonzero label is needed in case the ldb ffirst
+  activates but the bne allzeros does not.
 * this would cause the stb to copy up to the end of the legal memory
-* of course, on the next loop the ldb would throw a trap, as a1 now points to the first illegal mem location.
+* of course, on the next loop the ldb would throw a trap, as a1 now
+  points to the first illegal mem location.
 
 ## strcpy
 
