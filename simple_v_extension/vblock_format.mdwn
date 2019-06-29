@@ -29,8 +29,8 @@ Note: The VL Block format is similar to that used in [[sv_prefix_proposal]].
 
 * Mode 0b00: set VL to the immediate, truncated to not exceed
   MVL. Register rd is also set to the same value, if not x0.
-* Mode 0b01: follow [[sv.setvl]] rules except with RVC style registers
-  in the range x8-x15 for rs1 and rd.
+* Mode 0b01: follow [[specification/sv.setvl]] rules, with RVC
+  style registers in the range x8-x15 for rs1 and rd.
 * Mode 0b10: set both MVL and VL to the immediate. Register rd is also
   set if not x0.
 * Mode 0b11: reserved. All fields must be zero.
