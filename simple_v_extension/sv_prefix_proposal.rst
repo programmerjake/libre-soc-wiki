@@ -234,7 +234,7 @@ VLtyp field encoding
 
 NOTE: VL and MVL below are modified (potentially damaging) and so is
 the STATE CSR. It is the responsibility of the programmer to ensure that
-modifications to STATE do not compromise loops or VBLOCK Group opetations,
+modifications to STATE do not compromise loops or VBLOCK Group operations,
 by saving and restoring the STATE CSR (if needed).
 
 +-----------+-------------+--------------+----------+----------------------+
