@@ -61,7 +61,7 @@ in a single instruction.
   of entries are needed the last may be set to 0x00, indicating "unused".
 * Bit 15 specifies if the VL Block is present. If set to 1, the VL Block
   immediately follows the VBLOCK instruction Prefix
-* Bits 8 and 9 define how many RegCam entries (0,1,2,4 if bit 15 is 1,
+* Bits 8 and 9 define how many RegCam entries (0,1,2,4 if bit 7 is 1,
   otherwise 0,2,4,8) follow the (optional) VL Block.
 * Bits 10 and 11 define how many PredCam entries (0,1,2,4 if bit 7 is 1,
   otherwise 0,2,4,8) follow the (optional) RegCam entries
@@ -74,7 +74,7 @@ in a single instruction.
   operation (and the Vectorisation loop activated)
 * P48 and P64 opcodes do **not** take their Register or predication
   context from the VBLOCK tables: they do however have VL or SUBVL
-  applied (unless VLtyp or svlen are set).
+  applied (overridden when VLtyp or svlen are set).
 * At the end of the VBLOCK Group, the RegCam and PredCam entries
   *no longer apply*.  VL, MAXVL and SUBVL on the other hand remain at
   the values set by the last instruction (whether a CSRRW or the VL
