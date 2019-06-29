@@ -235,7 +235,9 @@ a sequence of P48 and P64 ops.
 Can bit 60 of P64 be put to use (in all but the FR4 case)?
 
 
-# experiment VLtyp
+
+experiment VLtyp
+================
 
 experiment 1:
 
