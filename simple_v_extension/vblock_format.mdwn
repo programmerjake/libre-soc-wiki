@@ -27,21 +27,27 @@ as follows:
 
 Note: The VL Block format is similar to that used in [[sv_prefix_proposal]].
 
-* Mode 0b00: set VL to the immediate, truncated to not exceed MVL. Register rd is also set to the same value, if not x0.
-* Mode 0b01: follow [[sv.setvl]] rules except with RVC style registers in the range x8-x15 for rs1 and rd.
-* Mode 0b10: set both MVL and VL to the immediate. Register rd is also set if not x0.
+* Mode 0b00: set VL to the immediate, truncated to not exceed
+  MVL. Register rd is also set to the same value, if not x0.
+* Mode 0b01: follow [[sv.setvl]] rules except with RVC style registers
+  in the range x8-x15 for rs1 and rd.
+* Mode 0b10: set both MVL and VL to the immediate. Register rd is also
+  set if not x0.
 * Mode 0b11: reserved. All fields must be zero.
 
 Mode 0b01 will typically be used to start vectorised loops, where
 the VBLOCK instruction effectively embeds an optional "SETSUBVL, SETVL"
 sequence (in compact form).
 
-Modes 0b00 and 0b10 will typically not be used so much for loops as they will be
-for one-off instructions such as saving the entire register file to the
-stack with a single one-off Vectorised and predicated LD/ST, or as a way
-to save or restore registers in a function call with a single instruction.
+Modes 0b00 and 0b10 will typically not be used so much for loops as they
+will be for one-off instructions such as saving the entire register file
+to the stack with a single one-off Vectorised and predicated LD/ST,
+or as a way to save or restore registers in a function call with a
+single instruction.
 
-Unlike in RVV, VL is set (within the limits of MVL) to exactly the value requested, specifically so that LD/ST-MULTI style behaviour can be done in a single instruction.
+Unlike in RVV, VL is set (within the limits of MVL) to exactly the value
+requested, specifically so that LD/ST-MULTI style behaviour can be done
+in a single instruction.
 
 # VBLOCK Prefix
 
