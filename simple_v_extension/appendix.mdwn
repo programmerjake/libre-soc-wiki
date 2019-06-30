@@ -262,7 +262,7 @@ complex), this becomes:
     rd = get_pred_val(I/F==INT, rs2); # this may not exist
 
     if not exists(rd) or zeroing:
-        result = 0
+        result = (1<<VL)-1 # all 1s
     else
         result = preg[rd]
 
