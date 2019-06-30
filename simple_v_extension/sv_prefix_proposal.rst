@@ -5,7 +5,11 @@ SimpleV Prefix (SVprefix) Proposal v0.3
 * Copyright (c) Luke Kenneth Casson Leighton, 2019
 
 This proposal is designed to be able to operate without SVorig, but not to
-require the absence of SVorig See Specification_.
+require the absence of SVorig. See Specification_.
+
+Principle: SVprefix embeds (unmodified) RVC and 32-bit scalar opcodes
+into 32, 48 and 64 bit RV formats, to provide Vectorisation context
+on a per-instruction basis.
 
 .. _Specification: http://libre-riscv.org/simple_v_extension/specification/
 
