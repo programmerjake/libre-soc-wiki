@@ -112,6 +112,18 @@ It leaves space for future expansion to RV128 and/or multi-register predicates.
         regs[rd] = vl
     }
 
+# questions
+
+<https://libre-riscv.org/simple_v_extension/appendix/#strncpy>
+
+GETVL add1 SETVL is a pain. 3 operations because VL is a CSR it is not possible to perform arithmetic on it.
+
+What about actually marking one of the registers *as* VL?
+
+----
+
+Setting VL from an immed without altering MVL is not possible in the above pseudocode. It is covered by VLtyp and the VL block in VBLOCK, however is that enough?
+
 # links
 
 * <http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2019-June/001881.html>
