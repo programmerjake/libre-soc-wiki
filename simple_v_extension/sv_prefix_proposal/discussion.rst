@@ -12,16 +12,27 @@ Taking an entire major 32 bit opcode (or two) seems logical (RV128 space). I typ
 Or, just "to hell with it" and just take the entire opcode and stuff C into it, no regard for R/I/U/S and instead do whatever we like.
 
 
-| 15 14 13 |  12  |   11 10 9     8   7 | 6    5    4   3   2 | 1   0
-    funct4            rd/rs1                rs2           op
-funct3 imm            rd/rs1               imm            op
-funct3              imm                     rs2           op
-funct3                  imm                       rd â²    op
-funct3        imm          rs1 â²      imm         rd â²    op
-funct3        imm          rs1 â²      imm        rs2 â²    op
-       funct6            rd â² /rs1 â² funct2      rs2 â²    op
-funct3       offset        rs1 â²           offset         op
-funct3                    jump target                     op
++----------+------+---------------------+---------------------+-------+
+| 15 14 13 |  12  |   11 10 9     8   7 | 6    5    4   3   2 | 1   0 |
++----------+------+---------------------+---------------------+-------+
+|    funct4       |     rd/rs1          |      rs2            | op    |
++----------+------+---------------------+---------------------+-------+
+|funct3    | imm  |     rd/rs1          |     imm             | op    |
++----------+------+---------------------+---------------------+-------+
+|funct3    |          imm               |      rs2            | op    |
++----------+----------------------------+---------+-----------+-------+
+|funct3    |              imm                     |  rd'      | op    |
++----------+----------------------------+---------+-----------+-------+
+|funct3    |    imm         | rs1'      | imm     |  rd'      | op    |
++----------+----------------+-----------+---------+-----------+-------+
+|funct3    |    imm         | rs1'      | imm     |  rs2'     | op    |
++----------+----------------+-----------+---------+-----------+-------+
+|       funct6              | rd'/rs1'  | funct2  |  rs2'     | op    |
++----------+----------------+-----------+---------+-----------+-------+
+|funct3    |   offset       |  rs1'     |     offset          | op    |
++----------+----------------+-----------+---------------------+-------+
+|funct3    |                jump target                       | op    |
++----------+--------------------------------------------------+-------+
 
 Questions
 =========
