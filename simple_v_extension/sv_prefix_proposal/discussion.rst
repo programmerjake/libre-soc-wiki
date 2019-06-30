@@ -1,15 +1,23 @@
 RVC
 ===
 
-The comment in the RVC section says that the Opcodes will be evaluated to see which are most useful to provide.
+The comment in the RVC section says that the Opcodes will be evaluated
+to see which are most useful to provide.
 
-This takes a huge amount of time and, if not *exactly* RVC, would require a special decode engine, taking up extra gates as well as need time to develop.
+This takes a huge amount of time and, if not *exactly* RVC, would require
+a special decode engine, taking up extra gates as well as need time
+to develop.
 
-Far better to just embed RVC into the opcode and prefix it. This is inline with the strategic principle behind SV: "No new opcodes, only prefixed augmentation"
+Far better to just embed RVC into the opcode and prefix it. This is
+inline with the strategic principle behind SV: "No new opcodes, only
+prefixed augmentation"
 
-Taking an entire major 32 bit opcode (or two) seems logical (RV128 space). I type funct3 to specify the C type page, Imm 12 bits for the operation.
+Taking an entire major 32 bit opcode (or two) seems logical (RV128
+space). I type funct3 to specify the C type page, Imm 12 bits for the
+operation.
 
-Or, just "to hell with it" and just take the entire opcode and stuff C into it, no regard for R/I/U/S and instead do whatever we like.
+Or, just "to hell with it" and just take the entire opcode and stuff C
+into it, no regard for R/I/U/S and instead do whatever we like.
 
 
 +----------+------+---------------------+---------------------+-------+--------+
@@ -94,6 +102,14 @@ Mapping P32-* Quadrants 0-2 to CUSTOM OPCODEs 0-2:
 +-------------+--------+-----------+----------+
 | P32C RVC-Q2 | P32-*  | RVC[15:2] | OPCODE-2 |
 +-------------+--------+-----------+----------+
+
+Notes:
+
+* Branch type requires 2 predicate registers as the second
+  is used to store the combined results of the comparisons
+  (not as twin-predication).  The tpred field is therefore
+  used to determine whether x10 is enabled as the second
+  register.  TDB, there may be a better (unique) encoding
 
 Questions
 =========
