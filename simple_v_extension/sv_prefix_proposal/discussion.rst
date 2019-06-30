@@ -40,14 +40,17 @@ Or, just "to hell with it" and just take the entire opcode and stuff C into it, 
 * 32-bit opcode prefix takes 7 bits, therefore 10 bits remain to fit
   a SVPrefix.
 * compared to P48, 11 bits are needed.
-* however, with the exception of LD/ST these all provide *three* operands:
-  rs1, rs2 and rs3.
+* however, with the exception of LD/ST (and C.MV) these all provide *three*
+  operands: rs1, rs2 and rs3.
 * therefore, 1 field can go, and that just leaves what to do with LD/ST
+  and C.MV
 * should twin-predication be sacrificed?
 * should one of the vectorisation modes be sacrificed?
 * is there room in ohe of the other "MAJOR CUSTOM OPCODEs" (0,1) to
   fit the "other" mode somehow?
 * can one of the vew bits be sacrificed instead, reducing vitp7 by 1 bit?
+
+P48:
 
 +---------------+--------+--------+----------+-----+--------+-------------+------+--------+--------+
 | Encoding      | 17     | 16     | 15       | 14  | 13     | 12          | 11:7 | 6      | 5:0    |
@@ -68,6 +71,26 @@ Or, just "to hell with it" and just take the entire opcode and stuff C into it, 
 +---------------+--------+--------+----------+-----+--------+-------------+------+--------+--------+
 | P32C-FR4-type | rd[5]  | rs1[5] | rs2[5]   | vs2 | rs3[5] | vs3 [#fr4]_ | vtp5 | *Rsvd* | 011111 |
 +---------------+--------+--------+----------+-----+--------+-------------+------+--------+--------+
+
+P32C:
+
++---------------+--------+--------+----------+--------+-------------+------+--------+--------+
+| Encoding      | 17     | 16     | 15       | 13     | 12          | 11:7 | 6      | 5:0    |
++---------------+--------+--------+----------+--------+-------------+------+--------+--------+
+| P32C-CL-type  | rd[5]  | rs1[5] | vitp7[6] | vs1    | vitp7[5:0]         | *Rsvd* | 011111 |
++---------------+--------+--------+----------+--------+--------------------+--------+--------+
+| P32C-CS-type  |vitp7[6]| rs1[5] | rs2[5]   | vs1    | vitp7[5:0]         | *Rsvd* | 011111 |
++---------------+--------+--------+----------+--------+-------------+------+--------+--------+
+| P32C-FR-type  | rd[5]  | rs1[5] | rs2[5]   | vs1    | *Rsvd*      | vtp5 | *Rsvd* | 011111 |
++---------------+--------+--------+----------+--------+-------------+------+--------+--------+
+| P32C-FR-type  | rd[5]  | rs1[5] | rs2[5]   | vs1    | *Rsvd*      | vtp5 | *Rsvd* | 011111 |
++---------------+--------+--------+----------+--------+-------------+------+--------+--------+
+| P32C-CR-type  | rd[5]  | rs1[5] | rs2[5]   | vs1    | vitp6              | *Rsvd* | 011111 |
++---------------+--------+--------+----------+--------+--------------------+--------+--------+
+| P32C-CA-type  | rd[5]  | rs1[5] | vitp7[6] | vs1    | vitp7[5:0]         | *Rsvd* | 011111 |
++---------------+--------+--------+----------+--------+--------------------+--------+--------+
+| P32C-CU-type  | rd[5]  | *Rsvd* | *Rsvd*   | *Rsvd* | vitp6              | *Rsvd* | 011111 |
++---------------+--------+--------+----------+--------+--------------------+--------+--------+
 
 Questions
 =========
