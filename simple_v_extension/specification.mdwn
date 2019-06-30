@@ -663,11 +663,17 @@ The other variant is comparisons such as FEQ (or the augmented behaviour
 of Branch), and any operation that returns a result of zero (whether
 integer or floating-point).  In the FP case, this includes negative-zero.
 
-Note that the execution order must "appear" to be sequential for ffirst
-mode to work correctly.  An in-order architecture must execute the element
+ffirst interacts with zero- and non-zero predication.  In non-zeroing
+mode, masked-out operations are simply excluded from testing (can never
+fail).  However for fail-comparisons (not faults) in zeroing mode, the
+result will be zero: this *always* "fails", thus on the very first
+masked-out element ffirst will always terminate.
+
+Note that ffirst mode works because the execution order must "appear" to be
+(in "program order").  An in-order architecture must execute the element
 operations in sequence, whilst an out-of-order architecture must *commit*
-the element operations in sequence (giving the appearance of in-order
-execution).
+the element operations in sequence and cancel speculatively-executed
+ones (giving the appearance of in-order execution).
 
 Note also, that if ffirst mode is needed without predication, a special
 "always-on" Predicate Table Entry may be constructed by setting

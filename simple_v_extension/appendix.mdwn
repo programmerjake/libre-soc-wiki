@@ -36,6 +36,9 @@ VL is set to include elements that did not take the trap *and* includes
 the elements that were predicated (masked) out (not tested up to the
 point where the trap occurred).
 
+Unlike conditional tests, "fail-on-first trap" instruction behaviour is
+unaltered by setting zero or non-zero predication mode.
+
 If SUBVL is being used (SUBVL!=1), the first *sub-group* of elements
 will cause a trap as normal (as if ffirst is not set); subsequently, the
 trap must not occur in the *sub-group* of elements.  SUBVL will **NOT**
@@ -53,6 +56,13 @@ out-of-order designs) element conditional testing on the first element
 result being zero (or other "fail" condition).  VL is set to the number
 of elements that were (sequentially) processed before the fail-condition
 was encountered.
+
+Unlike trap fail-on-first, fail-on-first conditional testing behaviour
+responds to changes in the zero or non-zero predication mode.  Whilst
+in non-zeroing mode, masked-out elements are simply not tested (and
+thus considered "never to fail"), in zeroing mode, masked-out elements
+may be viewed as *always* (unconditionally) failing.  This effectively
+turns VL into something akin to a software-controlled loop.
 
 Note that just as with traps, if SUBVL!=1, the first trap in the
 *sub-group* will cause the processing to end, and, even if there were
@@ -1511,24 +1521,24 @@ TODO evaluate strncpy and strlen
 
 RVV version: <a name="strncpy"></>
 
-    strncpy: 
-        mv a3, a0               # Copy dst 
-    loop: 
-        setvli x0, a2, vint8    # Vectors of bytes. 
-        vlbff.v v1, (a1)        # Get src bytes 
-        vseq.vi v0, v1, 0       # Flag zero bytes 
-        vmfirst a4, v0          # Zero found? 
+    strncpy:
+        mv a3, a0               # Copy dst
+    loop:
+        setvli x0, a2, vint8    # Vectors of bytes.
+        vlbff.v v1, (a1)        # Get src bytes
+        vseq.vi v0, v1, 0       # Flag zero bytes
+        vmfirst a4, v0          # Zero found?
         vmsif.v v0, v0          # Set mask up to and including zero byte.
-        vsb.v v1, (a3), v0.t    # Write out bytes 
-        bgez a4, exit           # Done 
-        csrr t1, vl             # Get number of bytes fetched 
-        add a1, a1, t1          # Bump src pointer 
-        sub a2, a2, t1          # Decrement count. 
-        add a3, a3, t1          # Bump dst pointer 
-        bnez a2, loop           # Anymore? 
+        vsb.v v1, (a3), v0.t    # Write out bytes
+        bgez a4, exit           # Done
+        csrr t1, vl             # Get number of bytes fetched
+        add a1, a1, t1          # Bump src pointer
+        sub a2, a2, t1          # Decrement count.
+        add a3, a3, t1          # Bump dst pointer
+        bnez a2, loop           # Anymore?
 
-    exit: 
-        ret 
+    exit:
+        ret
 
 SV version (WIP):
 
@@ -1552,10 +1562,10 @@ SV version (WIP):
     allnonzero:
         stb t0, (a3)    # VL legal range
         GETVL t4        # from bne tests
-        add a1, a1, t4  # Bump src pointer 
-        sub a2, a2, t4  # Decrement count. 
-        add a3, a3, t4  # Bump dst pointer 
-        bnez a2, loop   # Anymore? 
+        add a1, a1, t4  # Bump src pointer
+        sub a2, a2, t4  # Decrement count.
+        add a3, a3, t4  # Bump dst pointer
+        bnez a2, loop   # Anymore?
     exit:
         ret
 
@@ -1599,19 +1609,19 @@ Notes:
 
 RVV version:
 
-        mv a3, a0             # Save start 
-    loop: 
+        mv a3, a0             # Save start
+    loop:
         setvli a1, x0, vint8  # byte vec, x0 (Zero reg) => use max hardware len
         vldbff.v v1, (a3)     # Get bytes
         csrr a1, vl           # Get bytes actually read e.g. if fault
-        vseq.vi v0, v1, 0     # Set v0[i] where v1[i] = 0 
+        vseq.vi v0, v1, 0     # Set v0[i] where v1[i] = 0
         add a3, a3, a1        # Bump pointer
         vmfirst a2, v0        # Find first set bit in mask, returns -1 if none
         bltz a2, loop         # Not found?
         add a0, a0, a1        # Sum start + bump
         add a3, a3, a2        # Add index of zero byte
         sub a0, a3, a0        # Subtract start address+bump
-        ret 
+        ret
 
 ## DAXPY
 
