@@ -1544,13 +1544,12 @@ SV version (WIP):
 
     strncpy:
         mv a3, a0
-        SETMVLI 8 # set max vector to 8
         RegCSR[a3] = 8bit, a3, scalar
         RegCSR[a1] = 8bit, a1, scalar
         RegCSR[t0] = 8bit, t0, vector
         PredTb[t0] = ffirst, x0, inv
     loop:
-        SETVLI a2, t4 # t4 and VL now 1..8
+        SETVLI a2, t4, 8 # t4 and VL now 1..8 (MVL=8)
         ldb t0, (a1) # t0 fail first mode
         bne t0, x0, allnonzero # still ff
         # VL points to last nonzero
