@@ -51,23 +51,23 @@ in a single instruction.
 
 # VBLOCK Prefix
 
-* Bit 7 specifies if the prefix block format is the full 16 bit format
-  (1) or the compact less expressive format (0). In the 8 bit format,
-  pplen is multiplied by 2.
+* Bit 7 specifies if the register prefix block format is the full 16 bit format
+  (1) or the compact less expressive format (0).
 * 8 bit format predicate numbering is implicit and begins from x9. Thus
   it is critical to put blocks in the correct order as required.
-* Bit 7 also specifies if the register block format is 16 bit (1) or 8 bit
-  (0). In the 8 bit format, rplen is multiplied by 2. If only an odd number
-  of entries are needed the last may be set to 0x00, indicating "unused".
+* Bit 8 specifies if the predicate block format is 16 bit (1) or 8 bit
+  (0).
 * Bit 15 specifies if the VL Block is present. If set to 1, the VL Block
   immediately follows the VBLOCK instruction Prefix
-* Bits 8 and 9 define how many RegCam entries (0,1,2,4 if bit 7 is 1,
+* Bits 10 and 11 define how many RegCam entries (0,1,2,4 if bit 7 is 1,
   otherwise 0,2,4,8) follow the (optional) VL Block.
-* Bits 10 and 11 define how many PredCam entries (0,1,2,4 if bit 7 is 1,
-  otherwise 0,2,4,8) follow the (optional) RegCam entries
+* Bit 9 define how many PredCam entries follow the (optional) RegCam block.
+  If pplen is 1, it is equal to rplen. Otherwise, half rplen, rounded up.
+* If the exact number of entries are not required, PredCam and RegCam
+  entries may be set to all zero to indicate "unused" (no effect).
 * Bits 14 to 12 (IL) define the actual length of the instruction: total
   number of bits is 80 + 16 times IL.  Standard RV32, RVC and also
-  SVPrefix (P48/64-\*-Type) instructions fit into this space, after the
+  SVPrefix (P32C/P48/64-\*-Type) instructions fit into this space, after the
   (optional) VL / RegCam / PredCam entries
 * In any RVC or 32 Bit opcode, any registers within the VBLOCK-prefixed
   format *MUST* have the RegCam and PredCam entries applied to the
