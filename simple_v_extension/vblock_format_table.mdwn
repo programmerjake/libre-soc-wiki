@@ -7,9 +7,9 @@ A suitable prefix, which fits the Expanded Instruction-Length encoding
 for "(80 + 16 times instruction-length)", as defined in Section 1.5
 of the RISC-V ISA, is as follows:
 
-| 15    | 14:12 | 11:10 | 9:8   | 7    | 6:0     |
-| -     | ----- | ----- | ----- | ---  | ------- |
-| vlset | 16xil | pplen | rplen | mode | 1111111 |
+| 15    | 14:12 | 11:10 | 9     | 8     | 7    | 6:0     |
+| -     | ----- | ----- | ----- | ----  | ---  | ------- |
+| vlset | 16xil | pplen | rplen | pmode | rmode | 1111111 |
 
 The VL/MAXVL/SubVL Block format:
 
