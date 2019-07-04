@@ -2,7 +2,7 @@
 
 * Copyright (C) 2017, 2018, 2019 Luke Kenneth Casson Leighton
 * Status: DRAFTv0.6
-* Last edited: 29 jun 2019
+* Last edited: 5 jul 2019
 
 [[!toc ]]
 
@@ -50,6 +50,14 @@ requested, specifically so that LD/ST-MULTI style behaviour can be done
 in a single instruction.
 
 # VBLOCK Prefix
+
+The purpose of the VBLOCK Prefix is to specify the context in which a block of RV Scalar instructions are "vectorised" and/or predicated.
+
+As there are not very many bits available without going into a prefix format longer than 16 bits, some abbreviations are used. Two bits are dedicated to specifying whether the Register and Predicate formats are 16 or 8 bit.
+
+Also, the number of entries in each table is specified with an unusual encoding, on the basis that if registers are to be Vectorised, it is highly likely that they will be predicated as well.
+
+The format is explained as follows:
 
 * Bit 7 specifies if the register prefix block format is the full 16 bit format
   (1) or the compact less expressive format (0).
