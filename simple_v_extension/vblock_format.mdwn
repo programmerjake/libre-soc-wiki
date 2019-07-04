@@ -57,6 +57,8 @@ As there are not very many bits available without going into a prefix format lon
 
 Also, the number of entries in each table is specified with an unusual encoding, on the basis that if registers are to be Vectorised, it is highly likely that they will be predicated as well.
 
+The VL Block is optional and also only 16 bits: this because an RVC opcode is limited by comparison.
+
 The format is explained as follows:
 
 * Bit 7 specifies if the register prefix block format is the full 16 bit format
