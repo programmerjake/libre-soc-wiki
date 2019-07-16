@@ -2,7 +2,8 @@
 
 **Note: out-of-date as of review 31apr2018, requires updating to reflect
 "mvendorid-marchid-isamux" concept.**  Recent discussion 10jun2019
-<https://groups.google.com/a/groups.riscv.org/d/msg/isa-dev/x-uFZDXiOxY/_ISBs1enCgAJ>
+<https://groups.google.com/a/groups.riscv.org/d/msg/isa-dev/x-uFZDXiOxY/_ISBs1enCgAJ>.
+Now updated with its own spec [[isamux_isans]].
 
 ## Executive Summary
 
@@ -349,6 +350,51 @@ thus definitely worthwhile pursuing, it is non-trivial and more
 invasive than the mvendor/march-id WARL concept.
 
 ==RB==
+
+# Dynamic runtime hardware-adjustable custom opcode encodings <a name="dynamic_opcodes"></a>
+
+Perhaps this is a misunderstanding, that what is being advocated
+below (see link for full context):
+
+> The best that  can be done is to allow each custom extension to have
+> its opcodes  easily re positioned depending on what other custom extensions
+> the  user wants available in the same program (without mode switches). 
+
+It was suggested to use markers in the object files as a way to
+identify opcodes that can be "re-encoded".  Contrast this with Jacob
+Bachmeyer's original idea where the *assembly code* (only) contains
+such markers (on a global world-wide unique basis, using mvendorid-marchid-isamux
+tuples to do so).
+
+<https://groups.google.com/a/groups.riscv.org/d/msg/isa-dev/Jnon96tVQD0/XuHWvduvDQAJ>
+
+There are two possible interpretations of this:
+
+* (1) the Hardware RTL is reconfigureable (parameterisable) to allow
+  easy selection of *static* moving (adjustment) of which opcodes a
+  particular instruction uses.  This runs into the same difficulties
+  as outlined in other areas of this document.
+* (2) the Hardware RTL contains DYNAMIC and RUN-TIME CONFIGUREABLE
+  opcodes (presumably using additional CSRs to move meanings)
+
+This would help any implementation to adjust to whatever future (official)
+uses a particular encoding was selected.  It would be particularly useful
+if an implementation used certain brownfield encodings.
+
+The only downsides are:
+
+* (1) Compiler support for dynamic opcode reconfiguration would be...
+  complex.
+* (2) The instruction decode phase is also made more complex, now
+  involving reconfigureable lookup tables.  Whilst major opcodes
+  can be easily redirected, brownfield encodings are more involved.
+
+Compared to a stark choice of having to move (exclusively) to 48-bit
+or 64-bit encodings, dynamic runtime opcode reconfiguration is
+comparatively much more palatable.
+
+In effect, it is a much more advanced version of ISAMUX/NS
+(see [[isamux_isans]]).
 
 # Comments, Discussion and analysis
 
