@@ -13,6 +13,11 @@ Simple-V is a uniform parallelism API for RISC-V hardware that allows
 the Program Counter to enter "sub-contexts" in which, ultimately, standard
 RISC-V scalar opcodes are executed.
 
+Regardless of the actual amount of hardware parallelism (if any is
+added at all by the implementor),
+in direct contrast to SIMD
+hardware parallelism is entirely transparent to software.
+
 The sub-context execution is "nested" in "re-entrant" form, in the
 following order:
 
@@ -20,7 +25,7 @@ following order:
 * VBLOCK sub-execution context (PCVBLK increments whilst PC is paused).
 * VL element loops (STATE srcoffs and destoffs increment, PC and PCVBLK pause).
   Predication bits may be individually applied per element.
-* SUBVL element loops (STATE svdestoffs increments, VL pauses).
+* Optional SUBVL element loops (STATE svdestoffs increments, VL pauses).
   Individual predicate bits from VL loops apply to the *group* of SUBVL
   elements.
 
