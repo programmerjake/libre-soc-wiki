@@ -2,14 +2,27 @@
 
 Note: this is a **hybrid** CPU, VPU and GPU.  It is not, as many news articles
 are implying, a "dedicated exclusive GPU".  The option exists to **create**
-a stand-alone GPU product.  It is being *designed* to be a **complete**
-all-in-one processor (System-on-a-Chip).
+a stand-alone GPU product (contact us if this is a product that you want).
+Our primary goal is to design a **complete** all-in-one processor
+(System-on-a-Chip) that happens to include a libre-licensed VPU and GPU.
 
 We seek investors, sponsors, engineers and potential customers, who are
 interested in the creation and use of an entirely libre low-power mobile
 class system-on-a-chip.  Comparative benchmark performance, pincount and
 price is the Allwinner A64, except that the power budget target is 2.5 watts
 in a 16x16mm 320 to 360 pin 0.8mm FBGA package.
+
+The lower pincount, lower power, and higher BGA pitch is all to reduce
+the cost of product development when it comes to PCB design and layout:
+
+* Above 4 watts requires metal packages, thermal management and much
+  pricier PMICs.
+* 0.6mm pitch BGA and below requires much more expensive PCBA techniques.
+* Above 600 pins begins to reduce production yields as well as increase
+  the cost of testing and packaging.
+
+We can look at larger higher-power ASICs either later or, if funding
+is made available, immediately.
 
 See:
 
@@ -27,6 +40,8 @@ See:
 
 Progress:
 
+* Jul 2019: Sponsorship from Purism received.  IEEE754 FP Mul, Add, DIV,
+  FCLASS and FCVT pipelines completed.
 * Jun 2019: IEEE754 FP Mul, Add, and FSM "DIV" completed.
 * May 2019: 6600-style scoreboard started
 * Apr 2019: NLnet funding approved by independent review committee
