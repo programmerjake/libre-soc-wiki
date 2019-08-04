@@ -5,10 +5,13 @@ by identifying and listing in full both publicly-known proposals
 and the full brownfield encoding space available in the 0b010011
 major opcode.
 
+A primary critical use-case for extending FP is for 3D and supercomputing.
+
 Publicly-known FP proposals:
 
 * Zfrsqrt - Reciprocal SQRT <http://bugs.libre-riscv.org/show_bug.cgi?id=110>
 * Zftrans - Transcendentals (FSIN, FCOS, FATAN, FPOW, FEXP, FLOG, FRCP)
+* Extension of formats to cover FP16 (RISC-V ISA Manual Table 11.3 "fmt field")
 * HI-half FP MV - <https://github.com/riscv/riscv-isa-manual/pull/301>
   <https://groups.google.com/a/groups.riscv.org/forum/m/#!topic/isa-dev/kXgfFqgBv-c>
 * (Add new entries here: Zextname - Description and URL)
@@ -132,27 +135,39 @@ Brownfield encodings available.
 
 ## funct5 = 01000
 
-This table uses rs2 for encoding 1-operand FP operations that require "rounding"
+This table uses rs2 for encoding 1-operand FP operations, using
+funct3 to specify the "rounding" mode
 
 Notes:
 
-* TODO FP16 (trivial)
-
+* FP16 logically deduced from fmt field encoding (bits 25-26)
 
 [[!table  data="""
 31..27  | 26..25  | 24..20 |19..15| 14...12| 11..7 | 6....0  | function    |
 funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
  5      | 2       | 5      | 5    | 3      | 5     |   7     |             |
+01000   | 00      | 00000  | rs1  | rm     | rd    | 1010011 | ????????    |
 01000   | 00      | 00001  | rs1  | rm     | rd    | 1010011 | FCVT.S.D    |
+01000   | 00      | 00010  | rs1  | rm     | rd    | 1010011 | **FCVT.S.H**|
 01000   | 00      | 00011  | rs1  | rm     | rd    | 1010011 | FCVT.S.Q    |
 01000   | 00      | xxxxx  | rs1  | rm     | rd    | 1010011 | rs2?        |
 ------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
 01000   | 01      | 00000  | rs1  | rm     | rd    | 1010011 | FCVT.D.S    |
+01000   | 01      | 00001  | rs1  | rm     | rd    | 1010011 | ????????    |
+01000   | 01      | 00010  | rs1  | rm     | rd    | 1010011 | **FCVT.D.H**|
 01000   | 01      | 00011  | rs1  | rm     | rd    | 1010011 | FCVT.D.Q    |
 01000   | 01      | xxxxx  | rs1  | rm     | rd    | 1010011 | rs2?        |
 ------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
+01000   | 10      | 00000  | rs1  | rm     | rd    | 1010011 | FCVT.H.S    |
+01000   | 10      | 00001  | rs1  | rm     | rd    | 1010011 | **FCVT.H.D**|
+01000   | 10      | 00010  | rs1  | rm     | rd    | 1010011 | ????????    |
+01000   | 10      | 00011  | rs1  | rm     | rd    | 1010011 | FCVT.H.Q    |
+01000   | 10      | xxxxx  | rs1  | rm     | rd    | 1010011 | rs2?        |
+------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
 01000   | 11      | 00000  | rs1  | rm     | rd    | 1010011 | FCVT.Q.S    |
 01000   | 11      | 00001  | rs1  | rm     | rd    | 1010011 | FCVT.Q.D    |
+01000   | 11      | 00010  | rs1  | rm     | rd    | 1010011 | **FCVT.Q.H**|
+01000   | 11      | 00011  | rs1  | rm     | rd    | 1010011 | ????????    |
 01000   | 11      | xxxxx  | rs1  | rm     | rd    | 1010011 | rs2?        |
 """]]
 
@@ -166,7 +181,8 @@ Brownfield encodings available.
 
 ## funct5 = 01011
 
-This table uses rs2 for encoding 1-operand FP operations that require "rounding"
+This table uses rs2 for encoding 1-operand FP operations, using
+funct3 to specify the "rounding" mode
 
 [[!table  data="""
 31..27  | 26..25  | 24..20 |19..15| 14...12| 11..7 | 6....0  | function      |
@@ -275,11 +291,12 @@ Brownfield encodings available.
 
 ## funct5 = 11000
 
-This table uses rs2 for encoding 1-operand FP operations that require "rounding"
+This table uses rs2 for encoding 1-operand FP operations, using
+funct3 to specify the "rounding" mode
 
 Notes:
 
-* TODO FP16 (trivial)
+* FP16 logically deduced from fmt field (bits 25-26)
 
 [[!table  data="""
 31..27  | 26..25  | 24..20 |19..15| 14...12| 11..7 | 6....0  | function    |
@@ -297,6 +314,12 @@ funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
 11000   | 01      | 00011  | rs1  | rm     | rd    | 1010011 | FCVT.LU.D   |
 11000   | 01      | xxxxx  | rs1  | rm     | rd    | 1010011 | rs2?        |
 ------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
+11000   | 10      | 00000  | rs1  | rm     | rd    | 1010011 |**FCVT.W.H** |
+11000   | 10      | 00001  | rs1  | rm     | rd    | 1010011 |**FCVT.WU.H**|
+11000   | 10      | 00010  | rs1  | rm     | rd    | 1010011 |**FCVT.L.H** |
+11000   | 10      | 00011  | rs1  | rm     | rd    | 1010011 |**FCVT.LU.H**|
+11000   | 10      | xxxxx  | rs1  | rm     | rd    | 1010011 | rs2?        |
+------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
 11000   | 11      | 00000  | rs1  | rm     | rd    | 1010011 | FCVT.W.Q    |
 11000   | 11      | 00001  | rs1  | rm     | rd    | 1010011 | FCVT.WU.Q   |
 11000   | 11      | 00010  | rs1  | rm     | rd    | 1010011 | FCVT.L.Q    |
@@ -310,7 +333,10 @@ Brownfield encodings available.
 
 ## funct5 = 11010
 
-This table uses rs2 for encoding 1-operand FP operations that require "rounding"
+This table uses rs2 for encoding 1-operand FP operations, using
+funct3 to specify the "rounding" mode
+
+* FP16 logically deduced from fmt field (bits 25-26)
 
 [[!table  data="""
 31..27  | 26..25  | 24..20 |19..15| 14...12| 11..7 | 6....0  | function    |
@@ -328,6 +354,12 @@ funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
 11010   | 01      | 00011  | rs1  | rm     | rd    | 1010011 | FCVT.D.LU   |
 11010   | 01      | xxxxx  | rs1  | rm     | rd    | 1010011 | rs2?        |
 ------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
+11010   | 10      | 00000  | rs1  | rm     | rd    | 1010011 |**FCVT.H.W** |
+11010   | 10      | 00001  | rs1  | rm     | rd    | 1010011 |**FCVT.H.WU**|
+11010   | 10      | 00010  | rs1  | rm     | rd    | 1010011 |**FCVT.H.L** |
+11010   | 10      | 00011  | rs1  | rm     | rd    | 1010011 |**FCVT.H.LU**|
+11010   | 10      | xxxxx  | rs1  | rm     | rd    | 1010011 | rs2?        |
+------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
 11010   | 11      | 00000  | rs1  | rm     | rd    | 1010011 | FCVT.Q.W    |
 11010   | 11      | 00001  | rs1  | rm     | rd    | 1010011 | FCVT.Q.WU   |
 11010   | 11      | 00010  | rs1  | rm     | rd    | 1010011 | FCVT.Q.L    |
@@ -342,7 +374,7 @@ This table uses *both* rs2 *and* funct3 for encoding 1-operand FP operations.
 Notes:
 
 * FMV.X.Q is missing (alias of FMVH.X.D if it existed)
-* TODO FP16 (trivial)
+* FP16 logically deduced from fmt field (bits 25-26)
 * FMVH.X.HW (half-word) missing?
 
 [[!table  data="""
@@ -355,7 +387,11 @@ funct5| SDHQ  | rs2    | rs1  |funct3 | rd    | opcode  | name        |
 ------| ----- | -----  | -----| ----- | ----- | ------- | --------    |
 11100 | 01    | 00000  | rs1  | 000   | rd    | 1010011 | FMV.X.D **FMVH.X.W** |
 11100 | 01    | 00000  | rs1  | 001   | rd    | 1010011 | FCLASS.D    |
-11100 | xx    | xxxxx  | rs1  | yyy   | rd    | 1010011 | rs2? f3?    |
+11100 | 01    | xxxxx  | rs1  | yyy   | rd    | 1010011 | rs2? f3?    |
+------| ----- | -----  | -----| ----- | ----- | ------- | --------    |
+11100 | 10    | 00000  | rs1  | 000   | rd    | 1010011 |**FMV.X.H**  |
+11100 | 10    | 00000  | rs1  | 001   | rd    | 1010011 |**FCLASS.H** |
+11100 | 10    | xxxxx  | rs1  | yyy   | rd    | 1010011 | rs2? f3?    |
 ------| ----- | -----  | -----| ----- | ----- | ------- | --------    |
 11100 | 11    | 00000  | rs1  | 000   | rd    | 1010011 | **FMVH.X.D** |
 11100 | 11    | 00000  | rs1  | 001   | rd    | 1010011 | FCLASS.Q    |
@@ -374,7 +410,7 @@ Notes:
 
 * FMV.Q.X is missing (as is FMVH.D.X)
 * FMVH.W.X is missing (alias of FMV.D.X)
-* TODO FP16 (trivial)
+* FP16 logically deduced from fmt field (bits 25-26)
 * FMVH.HW.X (half-word) missing?
 
 [[!table  data="""
@@ -386,6 +422,9 @@ funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
 ------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
 11110   | 01      | 00000  | rs1  | 000    | rd    | 1010011 | FMV.D.X     |
 11110   | 01      | xxxxx  | rs1  | yyy    | rd    | 1010011 | rs2? f3?    |
+------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
+11110   | 10      | 00000  | rs1  | 000    | rd    | 1010011 |**FMV.H.X**  |
+11110   | 10      | xxxxx  | rs1  | yyy    | rd    | 1010011 | rs2? f3?    |
 ------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
 11110   | 11      | 00000  | rs1  | 000    | rd    | 1010011 | ?           |
 11110   | 11      | xxxxx  | rs1  | yyy    | rd    | 1010011 | rs2? f3?    |
