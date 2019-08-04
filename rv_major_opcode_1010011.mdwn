@@ -11,10 +11,20 @@ Publicly-known FP proposals:
 * Zftrans - Transcendentals (FSIN, FCOS, FATAN, FPOW, FEXP, FLOG, FRCP)
 * HI-half FP MV - <https://github.com/riscv/riscv-isa-manual/pull/301>
   <https://groups.google.com/a/groups.riscv.org/forum/m/#!topic/isa-dev/kXgfFqgBv-c>
+* (Add new entries here: Zextname - Description and URL)
 
 # Main FP opcode 1010011 table
 
-Proposed new encodings in **bold**
+Notes:
+
+* Proposed new encodings in **bold**.
+* *Use funct5 sparingly!* - 2-operand functions only.
+* Single-argument FP operations should go under one of the funct5 tables
+* Both dual and single argument FP operations that do not require
+  "rounding mode" should go in one of the funct5 tables that already use
+  "funct3".
+* Be careful not to use encoding space for which FP16 has already been
+  reserved.
 
 [[!table  data="""
 31..27  | 26..25  | 24..20 |19..15| 14...12| 11..7 | 6....0  | function    |
@@ -55,6 +65,8 @@ funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
 
 ## funct5 = 00100
 
+This table uses funct3 for encoding 2-operand FP operations
+
 [[!table  data="""
 31..27  | 26..25  | 24..20 |19..15| 14...12| 11..7 | 6....0  | function    |
 funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
@@ -70,6 +82,9 @@ funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
 """]]
 
 # funct5 = 00101
+
+This table uses funct3 for encoding 2-operand FP operations where the result
+register is a **floating-point** value.
 
 [[!table  data="""
 31..27  | 26..25  | 24..20 |19..15| 14...12| 11..7 | 6....0  | function    |
@@ -87,9 +102,12 @@ funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
 
 # funct5 = 01000
 
+This table uses rs2 for encoding 1-operand FP operations that require "rounding"
+
 Notes:
 
 * TODO FP16 (trivial)
+
 
 [[!table  data="""
 31..27  | 26..25  | 24..20 |19..15| 14...12| 11..7 | 6....0  | function    |
@@ -110,45 +128,50 @@ funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
 
 # funct5 = 01011
 
+This table uses rs2 for encoding 1-operand FP operations that require "rounding"
+
 [[!table  data="""
 31..27  | 26..25  | 24..20 |19..15| 14...12| 11..7 | 6....0  | function      |
 funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name          |
  5      | 2       | 5      | 5    | 3      | 5     |   7     |               |
-01011   | xx      | 00000  | rs1  | yyy    | rd    | 1010011 | FSQRT.xx      |
-01011   | xx      | 00001  | rs1  | yyy    | rd    | 1010011 | **FRSQRT.xx** |
-01011   | xx      | 00010  | rs1  | yyy    | rd    | 1010011 | **FSIN.xx**   |
-01011   | xx      | 00011  | rs1  | yyy    | rd    | 1010011 | **FCOS.xx**   |
-01011   | xx      | 00100  | rs1  | yyy    | rd    | 1010011 | **FATAN.xx**  |
-01011   | xx      | 00101  | rs1  | yyy    | rd    | 1010011 | **FEXP.xx**   |
-01011   | xx      | 00110  | rs1  | yyy    | rd    | 1010011 | **FLOG.xx**   |
-01011   | xx      | 00111  | rs1  | yyy    | rd    | 1010011 | **FRCP.xx**   |
-01011   | xx      | 01000  | rs1  | yyy    | rd    | 1010011 | ?             |
-01011   | xx      | 01001  | rs1  | yyy    | rd    | 1010011 | ?             |
-01011   | xx      | 01010  | rs1  | yyy    | rd    | 1010011 | ?             |
-01011   | xx      | 01011  | rs1  | yyy    | rd    | 1010011 | ?             |
-01011   | xx      | 01100  | rs1  | yyy    | rd    | 1010011 | ?             |
-01011   | xx      | 01101  | rs1  | yyy    | rd    | 1010011 | ?             |
-01011   | xx      | 01110  | rs1  | yyy    | rd    | 1010011 | ?             |
-01011   | xx      | 01111  | rs1  | yyy    | rd    | 1010011 | ?             |
-01011   | xx      | 10000  | rs1  | yyy    | rd    | 1010011 | ?             |
-01011   | xx      | 10001  | rs1  | yyy    | rd    | 1010011 | ?             |
-01011   | xx      | 10010  | rs1  | yyy    | rd    | 1010011 | ?             |
-01011   | xx      | 10011  | rs1  | yyy    | rd    | 1010011 | ?             |
-01011   | xx      | 10100  | rs1  | yyy    | rd    | 1010011 | ?             |
-01011   | xx      | 10101  | rs1  | yyy    | rd    | 1010011 | ?             |
-01011   | xx      | 10110  | rs1  | yyy    | rd    | 1010011 | ?             |
-01011   | xx      | 10111  | rs1  | yyy    | rd    | 1010011 | ?             |
-01011   | xx      | 11000  | rs1  | yyy    | rd    | 1010011 | ?             |
-01011   | xx      | 11001  | rs1  | yyy    | rd    | 1010011 | ?             |
-01011   | xx      | 11010  | rs1  | yyy    | rd    | 1010011 | ?             |
-01011   | xx      | 11011  | rs1  | yyy    | rd    | 1010011 | ?             |
-01011   | xx      | 11100  | rs1  | yyy    | rd    | 1010011 | ?             |
-01011   | xx      | 11101  | rs1  | yyy    | rd    | 1010011 | ?             |
-01011   | xx      | 11110  | rs1  | yyy    | rd    | 1010011 | ?             |
-01011   | xx      | 11111  | rs1  | yyy    | rd    | 1010011 | ?             |
+01011   | xx      | 00000  | rs1  | rm     | rd    | 1010011 | FSQRT.xx      |
+01011   | xx      | 00001  | rs1  | rm     | rd    | 1010011 | **FRSQRT.xx** |
+01011   | xx      | 00010  | rs1  | rm     | rd    | 1010011 | **FSIN.xx**   |
+01011   | xx      | 00011  | rs1  | rm     | rd    | 1010011 | **FCOS.xx**   |
+01011   | xx      | 00100  | rs1  | rm     | rd    | 1010011 | **FATAN.xx**  |
+01011   | xx      | 00101  | rs1  | rm     | rd    | 1010011 | **FEXP.xx**   |
+01011   | xx      | 00110  | rs1  | rm     | rd    | 1010011 | **FLOG.xx**   |
+01011   | xx      | 00111  | rs1  | rm     | rd    | 1010011 | **FRCP.xx**   |
+01011   | xx      | 01000  | rs1  | rm     | rd    | 1010011 | ?             |
+01011   | xx      | 01001  | rs1  | rm     | rd    | 1010011 | ?             |
+01011   | xx      | 01010  | rs1  | rm     | rd    | 1010011 | ?             |
+01011   | xx      | 01011  | rs1  | rm     | rd    | 1010011 | ?             |
+01011   | xx      | 01100  | rs1  | rm     | rd    | 1010011 | ?             |
+01011   | xx      | 01101  | rs1  | rm     | rd    | 1010011 | ?             |
+01011   | xx      | 01110  | rs1  | rm     | rd    | 1010011 | ?             |
+01011   | xx      | 01111  | rs1  | rm     | rd    | 1010011 | ?             |
+01011   | xx      | 10000  | rs1  | rm     | rd    | 1010011 | ?             |
+01011   | xx      | 10001  | rs1  | rm     | rd    | 1010011 | ?             |
+01011   | xx      | 10010  | rs1  | rm     | rd    | 1010011 | ?             |
+01011   | xx      | 10011  | rs1  | rm     | rd    | 1010011 | ?             |
+01011   | xx      | 10100  | rs1  | rm     | rd    | 1010011 | ?             |
+01011   | xx      | 10101  | rs1  | rm     | rd    | 1010011 | ?             |
+01011   | xx      | 10110  | rs1  | rm     | rd    | 1010011 | ?             |
+01011   | xx      | 10111  | rs1  | rm     | rd    | 1010011 | ?             |
+01011   | xx      | 11000  | rs1  | rm     | rd    | 1010011 | ?             |
+01011   | xx      | 11001  | rs1  | rm     | rd    | 1010011 | ?             |
+01011   | xx      | 11010  | rs1  | rm     | rd    | 1010011 | ?             |
+01011   | xx      | 11011  | rs1  | rm     | rd    | 1010011 | ?             |
+01011   | xx      | 11100  | rs1  | rm     | rd    | 1010011 | ?             |
+01011   | xx      | 11101  | rs1  | rm     | rd    | 1010011 | ?             |
+01011   | xx      | 11110  | rs1  | rm     | rd    | 1010011 | ?             |
+01011   | xx      | 11111  | rs1  | rm     | rd    | 1010011 | ?             |
 """]]
 
 # funct5 = 10100
+
+This table uses funct3 for encoding 2-operand FP "comparison" operations
+where the result register is an **integer**
 
 Notes:
 
@@ -169,6 +192,8 @@ funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
 """]]
 
 # funct5 = 11000
+
+This table uses rs2 for encoding 1-operand FP operations that require "rounding"
 
 Notes:
 
@@ -199,6 +224,8 @@ funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
 
 # funct5 = 11010
 
+This table uses rs2 for encoding 1-operand FP operations that require "rounding"
+
 [[!table  data="""
 31..27  | 26..25  | 24..20 |19..15| 14...12| 11..7 | 6....0  | function    |
 funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
@@ -224,6 +251,8 @@ funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
 
 # funct5 = 11100
 
+This table uses *both* rs2 *and* funct3 for encoding 1-operand FP operations.
+
 Notes:
 
 * FMV.X.Q is missing (alias of FMVH.X.D if it existed)
@@ -248,6 +277,8 @@ funct5| SDHQ  | rs2    | rs1  |funct3 | rd    | opcode  | name        |
 """]]
 
 # funct5 = 11110
+
+This table uses *both* rs2 *and* funct3 for encoding 1-operand FP operations.
 
 Notes:
 
