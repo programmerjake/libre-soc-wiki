@@ -1,6 +1,13 @@
 # Summary FP Opcodes
 
-* Zfrsqrt - Recip SQRT <http://bugs.libre-riscv.org/show_bug.cgi?id=110>
+This page aids and assists in the development of FP proposals,
+by identifying and listing in full both publicly-known proposals
+and the full brownfield encoding space available in the 0b010011
+major opcode.
+
+Publicly-known FP proposals:
+
+* Zfrsqrt - Reciprocal SQRT <http://bugs.libre-riscv.org/show_bug.cgi?id=110>
 * Zftrans - Transcendentals (FSIN, FCOS, FATAN, FPOW, FEXP, FLOG, FRCP)
 * HI-half FP MV - <https://github.com/riscv/riscv-isa-manual/pull/301>
   <https://groups.google.com/a/groups.riscv.org/forum/m/#!topic/isa-dev/kXgfFqgBv-c>
@@ -13,7 +20,6 @@ Proposed new encodings in **bold**
 31..27  | 26..25  | 24..20 |19..15| 14...12| 11..7 | 6....0  | function    |
 funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
  5      | 2       | 5      | 5    | 3      | 5     |   7     |             |
-------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
 00000   | xx      | rs2    | rs1  | rm     | rd    | 1010011 | FADD.xx     |
 00001   | xx      | rs2    | rs1  | rm     | rd    | 1010011 | FSUB.xx     |
 00010   | xx      | rs2    | rs1  | rm     | rd    | 1010011 | FMUL.xx     |
@@ -53,7 +59,6 @@ funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
 31..27  | 26..25  | 24..20 |19..15| 14...12| 11..7 | 6....0  | function    |
 funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
  5      | 2       | 5      | 5    | 3      | 5     |   7     |             |
-------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
 00100   | xx      | rs2    | rs1  | 000    | rd    | 1010011 | FSGNJ.xx    |
 00100   | xx      | rs2    | rs1  | 001    | rd    | 1010011 | FSGNJN.xx   |
 00100   | xx      | rs2    | rs1  | 010    | rd    | 1010011 | FSGNJX.xx   |
@@ -70,7 +75,6 @@ funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
 31..27  | 26..25  | 24..20 |19..15| 14...12| 11..7 | 6....0  | function    |
 funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
  5      | 2       | 5      | 5    | 3      | 5     |   7     |             |
-------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
 00101   | xx      | rs2    | rs1  | 000    | rd    | 1010011 | FMIN.S      |
 00101   | xx      | rs2    | rs1  | 001    | rd    | 1010011 | FMAX.S      |
 00101   | xx      | rs2    | rs1  | 010    | rd    | 1010011 | ?f3=010     |
@@ -91,7 +95,6 @@ Notes:
 31..27  | 26..25  | 24..20 |19..15| 14...12| 11..7 | 6....0  | function    |
 funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
  5      | 2       | 5      | 5    | 3      | 5     |   7     |             |
-------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
 01000   | 00      | 00001  | rs1  | rm     | rd    | 1010011 | FCVT.S.D    |
 01000   | 00      | 00011  | rs1  | rm     | rd    | 1010011 | FCVT.S.Q    |
 01000   | 00      | xxxxx  | rs1  | rm     | rd    | 1010011 | rs2?        |
@@ -103,7 +106,6 @@ funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
 01000   | 11      | 00000  | rs1  | rm     | rd    | 1010011 | FCVT.Q.S    |
 01000   | 11      | 00001  | rs1  | rm     | rd    | 1010011 | FCVT.Q.D    |
 01000   | 11      | xxxxx  | rs1  | rm     | rd    | 1010011 | rs2?        |
-------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
 """]]
 
 # funct5 = 01011
@@ -112,7 +114,6 @@ funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
 31..27  | 26..25  | 24..20 |19..15| 14...12| 11..7 | 6....0  | function      |
 funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name          |
  5      | 2       | 5      | 5    | 3      | 5     |   7     |               |
-------  | -----   | -----  | -----| -----  | ----- | ------- | --------      |
 01011   | xx      | 00000  | rs1  | yyy    | rd    | 1010011 | FSQRT.xx      |
 01011   | xx      | 00001  | rs1  | yyy    | rd    | 1010011 | **FRSQRT.xx** |
 01011   | xx      | 00010  | rs1  | yyy    | rd    | 1010011 | **FSIN.xx**   |
@@ -157,7 +158,6 @@ Notes:
 31..27  | 26..25  | 24..20 |19..15| 14...12| 11..7 | 6....0  | function    |
 funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
  5      | 2       | 5      | 5    | 3      | 5     |   7     |             |
-------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
 10100   | xx      | rs2    | rs1  | 000    | rd    | 1010011 | FLE.xx      |
 10100   | xx      | rs2    | rs1  | 001    | rd    | 1010011 | FLT.xx      |
 10100   | xx      | rs2    | rs1  | 010    | rd    | 1010011 | FEQ.xx      |
@@ -178,7 +178,6 @@ Notes:
 31..27  | 26..25  | 24..20 |19..15| 14...12| 11..7 | 6....0  | function    |
 funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
  5      | 2       | 5      | 5    | 3      | 5     |   7     |             |
-------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
 11000   | 00      | 00000  | rs1  | rm     | rd    | 1010011 | FCVT.W.S    |
 11000   | 00      | 00001  | rs1  | rm     | rd    | 1010011 | FCVT.WU.S   |
 11000   | 00      | 00010  | rs1  | rm     | rd    | 1010011 | FCVT.L.S    |
@@ -196,7 +195,6 @@ funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
 11000   | 11      | 00010  | rs1  | rm     | rd    | 1010011 | FCVT.L.Q    |
 11000   | 11      | 00011  | rs1  | rm     | rd    | 1010011 | FCVT.LU.Q   |
 11000   | 11      | xxxxx  | rs1  | rm     | rd    | 1010011 | rs2?        |
-------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
 """]]
 
 # funct5 = 11010
@@ -205,7 +203,6 @@ funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
 31..27  | 26..25  | 24..20 |19..15| 14...12| 11..7 | 6....0  | function    |
 funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
  5      | 2       | 5      | 5    | 3      | 5     |   7     |             |
-------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
 11010   | 00      | 00000  | rs1  | rm     | rd    | 1010011 | FCVT.S.W    |
 11010   | 00      | 00001  | rs1  | rm     | rd    | 1010011 | FCVT.S.WU   |
 11010   | 00      | 00010  | rs1  | rm     | rd    | 1010011 | FCVT.S.L    |
@@ -223,7 +220,6 @@ funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
 11010   | 11      | 00010  | rs1  | rm     | rd    | 1010011 | FCVT.Q.L    |
 11010   | 11      | 00011  | rs1  | rm     | rd    | 1010011 | FCVT.Q.LU   |
 11010   | 11      | xxxxx  | rs1  | rm     | rd    | 1010011 | rs2?        |
-------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
 """]]
 
 # funct5 = 11100
@@ -238,7 +234,6 @@ Notes:
 31..27| 26..25| 24..20 |19..15|14...12| 11..7 | 6....0  | function    |
 funct5| SDHQ  | rs2    | rs1  |funct3 | rd    | opcode  | name        |
  5    | 2     | 5      | 5    | 3     | 5     |   7     |             |
------ | ----- | -----  | -----| ----- | ----- | ------- | --------    |
 11100 | 00    | 00000  | rs1  | 000   | rd    | 1010011 | FMV.X.W     |
 11100 | 00    | 00000  | rs1  | 001   | rd    | 1010011 | FCLASS.S    |
 11100 | 00    | xxxxx  | rs1  | yyy   | rd    | 1010011 | rs2? f3?    |
@@ -250,7 +245,6 @@ funct5| SDHQ  | rs2    | rs1  |funct3 | rd    | opcode  | name        |
 11100 | 11    | 00000  | rs1  | 000   | rd    | 1010011 | **FMVH.X.D** |
 11100 | 11    | 00000  | rs1  | 001   | rd    | 1010011 | FCLASS.Q    |
 11100 | xx    | xxxxx  | rs1  | yyy   | rd    | 1010011 | rs2? f3?    |
------ | ----- | -----  | -----| ----- | ----- | ------- | --------    |
 """]]
 
 # funct5 = 11110
@@ -266,7 +260,6 @@ Notes:
 31..27  | 26..25  | 24..20 |19..15| 14...12| 11..7 | 6....0  | function    |
 funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
  5      | 2       | 5      | 5    | 3      | 5     |   7     |             |
-------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
 11110   | 00      | 00000  | rs1  | 000    | rd    | 1010011 | FMV.W.X     |
 11110   | 00      | xxxxx  | rs1  | yyy    | rd    | 1010011 | rs2? f3?    |
 ------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
@@ -275,7 +268,6 @@ funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
 ------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
 11110   | 11      | 00000  | rs1  | 000    | rd    | 1010011 | ?           |
 11110   | 11      | xxxxx  | rs1  | yyy    | rd    | 1010011 | rs2? f3?    |
-------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
 """]]
 
 # funct5 = ?????
