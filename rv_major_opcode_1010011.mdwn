@@ -1,4 +1,11 @@
+# Summary FP Opcodes
+
+* Zfrsqrt - Recip SQRT <http://bugs.libre-riscv.org/show_bug.cgi?id=110>
+* Zftrans - Transcendentals (FSIN, FCOS, FATAN, FPOW, FEXP, FLOG, FRCP)
+
 # Main FP opcode 1010011 table
+
+Proposed new encodings in **bold**
 
 [[!table  data="""
 31..27  | 26..25  | 24..20 |19..15| 14...12| 11..7 | 6....0  | function    |
@@ -20,7 +27,7 @@ funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  |             |
 01100   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?           |
 01101   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?           |
 01110   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?           |
-01111   | xx      | xxxxx  | rs1  | yyy    | rd    | 1010011 | tb=01111    |
+01111   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | **FPOW.XX** |
 10000   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?           |
 10001   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?           |
 10010   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?           |
@@ -81,7 +88,36 @@ funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  |               |
 ------  | -----   | -----  | -----| -----  | ----- | ------- | --------      |
 01011   | xx      | 00000  | rs1  | yyy    | rd    | 1010011 | FSQRT.xx      |
 01011   | xx      | 00001  | rs1  | yyy    | rd    | 1010011 | **FRSQRT.xx** |
-01011   | xx      | rs2!=0 | rs1  | yyy    | rd    | 1010011 | ?rs2          |
+01011   | xx      | 00010  | rs1  | yyy    | rd    | 1010011 | **FSIN.xx**   |
+01011   | xx      | 00011  | rs1  | yyy    | rd    | 1010011 | **FCOS.xx**   |
+01011   | xx      | 00100  | rs1  | yyy    | rd    | 1010011 | **FATAN.xx**  |
+01011   | xx      | 00101  | rs1  | yyy    | rd    | 1010011 | **FEXP.xx**   |
+01011   | xx      | 00110  | rs1  | yyy    | rd    | 1010011 | **FLOG.xx**   |
+01011   | xx      | 00111  | rs1  | yyy    | rd    | 1010011 | **FRCP.xx**   |
+01011   | xx      | 01000  | rs1  | yyy    | rd    | 1010011 | ?             |
+01011   | xx      | 01001  | rs1  | yyy    | rd    | 1010011 | ?             |
+01011   | xx      | 01010  | rs1  | yyy    | rd    | 1010011 | ?             |
+01011   | xx      | 01011  | rs1  | yyy    | rd    | 1010011 | ?             |
+01011   | xx      | 01100  | rs1  | yyy    | rd    | 1010011 | ?             |
+01011   | xx      | 01101  | rs1  | yyy    | rd    | 1010011 | ?             |
+01011   | xx      | 01110  | rs1  | yyy    | rd    | 1010011 | ?             |
+01011   | xx      | 01111  | rs1  | yyy    | rd    | 1010011 | ?             |
+01011   | xx      | 10000  | rs1  | yyy    | rd    | 1010011 | ?             |
+01011   | xx      | 10001  | rs1  | yyy    | rd    | 1010011 | ?             |
+01011   | xx      | 10010  | rs1  | yyy    | rd    | 1010011 | ?             |
+01011   | xx      | 10011  | rs1  | yyy    | rd    | 1010011 | ?             |
+01011   | xx      | 10100  | rs1  | yyy    | rd    | 1010011 | ?             |
+01011   | xx      | 10101  | rs1  | yyy    | rd    | 1010011 | ?             |
+01011   | xx      | 10110  | rs1  | yyy    | rd    | 1010011 | ?             |
+01011   | xx      | 10111  | rs1  | yyy    | rd    | 1010011 | ?             |
+01011   | xx      | 11000  | rs1  | yyy    | rd    | 1010011 | ?             |
+01011   | xx      | 11001  | rs1  | yyy    | rd    | 1010011 | ?             |
+01011   | xx      | 11010  | rs1  | yyy    | rd    | 1010011 | ?             |
+01011   | xx      | 11011  | rs1  | yyy    | rd    | 1010011 | ?             |
+01011   | xx      | 11100  | rs1  | yyy    | rd    | 1010011 | ?             |
+01011   | xx      | 11101  | rs1  | yyy    | rd    | 1010011 | ?             |
+01011   | xx      | 11110  | rs1  | yyy    | rd    | 1010011 | ?             |
+01011   | xx      | 11111  | rs1  | yyy    | rd    | 1010011 | ?             |
 """]]
 
 # funct5 = 10100
