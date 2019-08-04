@@ -2,6 +2,7 @@
 
 * Zfrsqrt - Recip SQRT <http://bugs.libre-riscv.org/show_bug.cgi?id=110>
 * Zftrans - Transcendentals (FSIN, FCOS, FATAN, FPOW, FEXP, FLOG, FRCP)
+* HI-half FP MV - <https://github.com/riscv/riscv-isa-manual/pull/301>
 
 # Main FP opcode 1010011 table
 
@@ -9,7 +10,7 @@ Proposed new encodings in **bold**
 
 [[!table  data="""
 31..27  | 26..25  | 24..20 |19..15| 14...12| 11..7 | 6....0  | function    |
-funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  |             |
+funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
  5      | 2       | 5      | 5    | 3      | 5     |   7     |             |
 ------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
 00000   | xx      | rs2    | rs1  | rm     | rd    | 1010011 | FADD.xx     |
@@ -20,7 +21,7 @@ funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  |             |
 00101   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | tb=00101    |
 00110   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?           |
 00111   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?           |
-01000   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?           |
+01000   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | tb=01000    |
 01001   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?           |
 01010   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?           |
 01011   | xx      | xxxxx  | rs1  | yyy    | rd    | 1010011 | tb=01011    |
@@ -49,7 +50,7 @@ funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  |             |
 
 [[!table  data="""
 31..27  | 26..25  | 24..20 |19..15| 14...12| 11..7 | 6....0  | function    |
-funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  |             |
+funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
  5      | 2       | 5      | 5    | 3      | 5     |   7     |             |
 ------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
 00100   | xx      | rs2    | rs1  | 000    | rd    | 1010011 | FSGNJ.xx    |
@@ -66,7 +67,7 @@ funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  |             |
 
 [[!table  data="""
 31..27  | 26..25  | 24..20 |19..15| 14...12| 11..7 | 6....0  | function    |
-funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  |             |
+funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
  5      | 2       | 5      | 5    | 3      | 5     |   7     |             |
 ------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
 00101   | xx      | rs2    | rs1  | 000    | rd    | 1010011 | FMIN.S      |
@@ -79,11 +80,36 @@ funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  |             |
 00101   | xx      | rs2    | rs1  | 111    | rd    | 1010011 | ?f3=111     |
 """]]
 
+# funct5 = 01000
+
+Notes:
+
+* TODO FP16 (trivial)
+
+[[!table  data="""
+31..27  | 26..25  | 24..20 |19..15| 14...12| 11..7 | 6....0  | function    |
+funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
+ 5      | 2       | 5      | 5    | 3      | 5     |   7     |             |
+------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
+01000   | 00      | 00001  | rs1  | rm     | rd    | 1010011 | FCVT.S.D    |
+01000   | 00      | 00011  | rs1  | rm     | rd    | 1010011 | FCVT.S.Q    |
+01000   | 00      | xxxxx  | rs1  | rm     | rd    | 1010011 | rs2?        |
+------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
+01000   | 01      | 00000  | rs1  | rm     | rd    | 1010011 | FCVT.D.S    |
+01000   | 01      | 00011  | rs1  | rm     | rd    | 1010011 | FCVT.D.Q    |
+01000   | 01      | xxxxx  | rs1  | rm     | rd    | 1010011 | rs2?        |
+------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
+01000   | 11      | 00000  | rs1  | rm     | rd    | 1010011 | FCVT.Q.S    |
+01000   | 11      | 00001  | rs1  | rm     | rd    | 1010011 | FCVT.Q.D    |
+01000   | 11      | xxxxx  | rs1  | rm     | rd    | 1010011 | rs2?        |
+------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
+"""]]
+
 # funct5 = 01011
 
 [[!table  data="""
 31..27  | 26..25  | 24..20 |19..15| 14...12| 11..7 | 6....0  | function      |
-funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  |               |
+funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name          |
  5      | 2       | 5      | 5    | 3      | 5     |   7     |               |
 ------  | -----   | -----  | -----| -----  | ----- | ------- | --------      |
 01011   | xx      | 00000  | rs1  | yyy    | rd    | 1010011 | FSQRT.xx      |
@@ -122,9 +148,13 @@ funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  |               |
 
 # funct5 = 10100
 
+Notes:
+
+* FNE missing?
+
 [[!table  data="""
 31..27  | 26..25  | 24..20 |19..15| 14...12| 11..7 | 6....0  | function    |
-funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  |             |
+funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
  5      | 2       | 5      | 5    | 3      | 5     |   7     |             |
 ------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
 10100   | xx      | rs2    | rs1  | 000    | rd    | 1010011 | FLE.xx      |
@@ -139,60 +169,119 @@ funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  |             |
 
 # funct5 = 11000
 
+Notes:
+
+* TODO FP16 (trivial)
+
 [[!table  data="""
 31..27  | 26..25  | 24..20 |19..15| 14...12| 11..7 | 6....0  | function    |
-funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  |             |
+funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
  5      | 2       | 5      | 5    | 3      | 5     |   7     |             |
 ------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
-11000   | xx      | 00000  | rs1  | rm     | rd    | 1010011 | FCVT.W.xx   |
-11000   | xx      | 00001  | rs1  | rm     | rd    | 1010011 | FCVT.WU.xx  |
-11000   | xx      | 00010  | rs1  | rm     | rd    | 1010011 | FCVT.L.xx   |
-11000   | xx      | 00011  | rs1  | rm     | rd    | 1010011 | FCVT.LU.xx  |
-11000   | xx      | xxxxx  | rs1  | rm     | rd    | 1010011 | rs2?        |
+11000   | 00      | 00000  | rs1  | rm     | rd    | 1010011 | FCVT.W.S    |
+11000   | 00      | 00001  | rs1  | rm     | rd    | 1010011 | FCVT.WU.S   |
+11000   | 00      | 00010  | rs1  | rm     | rd    | 1010011 | FCVT.L.S    |
+11000   | 00      | 00011  | rs1  | rm     | rd    | 1010011 | FCVT.LU.S   |
+11000   | 00      | xxxxx  | rs1  | rm     | rd    | 1010011 | rs2?        |
+------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
+11000   | 01      | 00000  | rs1  | rm     | rd    | 1010011 | FCVT.W.D    |
+11000   | 01      | 00001  | rs1  | rm     | rd    | 1010011 | FCVT.WU.D   |
+11000   | 01      | 00010  | rs1  | rm     | rd    | 1010011 | FCVT.L.D    |
+11000   | 01      | 00011  | rs1  | rm     | rd    | 1010011 | FCVT.LU.D   |
+11000   | 01      | xxxxx  | rs1  | rm     | rd    | 1010011 | rs2?        |
+------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
+11000   | 11      | 00000  | rs1  | rm     | rd    | 1010011 | FCVT.W.Q    |
+11000   | 11      | 00001  | rs1  | rm     | rd    | 1010011 | FCVT.WU.Q   |
+11000   | 11      | 00010  | rs1  | rm     | rd    | 1010011 | FCVT.L.Q    |
+11000   | 11      | 00011  | rs1  | rm     | rd    | 1010011 | FCVT.LU.Q   |
+11000   | 11      | xxxxx  | rs1  | rm     | rd    | 1010011 | rs2?        |
+------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
 """]]
 
 # funct5 = 11010
 
 [[!table  data="""
 31..27  | 26..25  | 24..20 |19..15| 14...12| 11..7 | 6....0  | function    |
-funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  |             |
+funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
  5      | 2       | 5      | 5    | 3      | 5     |   7     |             |
 ------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
-11010   | xx      | 00000  | rs1  | rm     | rd    | 1010011 | FCVT.xx.W   |
-11010   | xx      | 00001  | rs1  | rm     | rd    | 1010011 | FCVT.xx.WU  |
-11010   | xx      | 00010  | rs1  | rm     | rd    | 1010011 | FCVT.xx.L   |
-11010   | xx      | 00011  | rs1  | rm     | rd    | 1010011 | FCVT.xx.LU  |
-11010   | xx      | xxxxx  | rs1  | rm     | rd    | 1010011 | rs2?        |
+11010   | 00      | 00000  | rs1  | rm     | rd    | 1010011 | FCVT.S.W    |
+11010   | 00      | 00001  | rs1  | rm     | rd    | 1010011 | FCVT.S.WU   |
+11010   | 00      | 00010  | rs1  | rm     | rd    | 1010011 | FCVT.S.L    |
+11010   | 00      | 00011  | rs1  | rm     | rd    | 1010011 | FCVT.S.LU   |
+11010   | 00      | xxxxx  | rs1  | rm     | rd    | 1010011 | rs2?        |
+------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
+11010   | 01      | 00000  | rs1  | rm     | rd    | 1010011 | FCVT.D.W    |
+11010   | 01      | 00001  | rs1  | rm     | rd    | 1010011 | FCVT.D.WU   |
+11010   | 01      | 00010  | rs1  | rm     | rd    | 1010011 | FCVT.D.L    |
+11010   | 01      | 00011  | rs1  | rm     | rd    | 1010011 | FCVT.D.LU   |
+11010   | 01      | xxxxx  | rs1  | rm     | rd    | 1010011 | rs2?        |
+------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
+11010   | 11      | 00000  | rs1  | rm     | rd    | 1010011 | FCVT.Q.W    |
+11010   | 11      | 00001  | rs1  | rm     | rd    | 1010011 | FCVT.Q.WU   |
+11010   | 11      | 00010  | rs1  | rm     | rd    | 1010011 | FCVT.Q.L    |
+11010   | 11      | 00011  | rs1  | rm     | rd    | 1010011 | FCVT.Q.LU   |
+11010   | 11      | xxxxx  | rs1  | rm     | rd    | 1010011 | rs2?        |
+------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
 """]]
 
 # funct5 = 11100
 
+Notes:
+
+* FMV.X.Q is missing (alias of FMVH.X.D if it existed)
+* TODO FP16 (trivial)
+* FMVH.X.HW (half-word) missing?
+
 [[!table  data="""
-31..27  | 26..25  | 24..20 |19..15| 14...12| 11..7 | 6....0  | function    |
-funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  |             |
- 5      | 2       | 5      | 5    | 3      | 5     |   7     |             |
-------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
-11100   | xx      | 00000  | rs1  | 000    | rd    | 1010011 | FMV.xx.W    |
-11100   | xx      | 00000  | rs1  | 001    | rd    | 1010011 | FCLASS.xx   |
-11100   | xx      | xxxxx  | rs1  | yyy    | rd    | 1010011 | rs2? f3?    |
+31..27| 26..25| 24..20 |19..15|14...12| 11..7 | 6....0  | function    |
+funct5| SDHQ  | rs2    | rs1  |funct3 | rd    | opcode  | name        |
+ 5    | 2     | 5      | 5    | 3     | 5     |   7     |             |
+----- | ----- | -----  | -----| ----- | ----- | ------- | --------    |
+11100 | 00    | 00000  | rs1  | 000   | rd    | 1010011 | FMV.X.W     |
+11100 | 00    | 00000  | rs1  | 001   | rd    | 1010011 | FCLASS.S    |
+11100 | 00    | xxxxx  | rs1  | yyy   | rd    | 1010011 | rs2? f3?    |
+------| ----- | -----  | -----| ----- | ----- | ------- | --------    |
+11100 | 01    | 00000  | rs1  | 000   | rd    | 1010011 | FMV.X.D **FMVH.X.W** |
+11100 | 01    | 00000  | rs1  | 001   | rd    | 1010011 | FCLASS.D    |
+11100 | xx    | xxxxx  | rs1  | yyy   | rd    | 1010011 | rs2? f3?    |
+------| ----- | -----  | -----| ----- | ----- | ------- | --------    |
+11100 | 11    | 00000  | rs1  | 000   | rd    | 1010011 | **FMVH.X.D** |
+11100 | 11    | 00000  | rs1  | 001   | rd    | 1010011 | FCLASS.Q    |
+11100 | xx    | xxxxx  | rs1  | yyy   | rd    | 1010011 | rs2? f3?    |
+----- | ----- | -----  | -----| ----- | ----- | ------- | --------    |
 """]]
 
 # funct5 = 11110
 
+Notes:
+
+* FMV.Q.X is missing (as is FMVH.D.X)
+* FMVH.W.X is missing (alias of FMV.D.X)
+* TODO FP16 (trivial)
+* FMVH.HW.X (half-word) missing?
+
 [[!table  data="""
 31..27  | 26..25  | 24..20 |19..15| 14...12| 11..7 | 6....0  | function    |
-funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  |             |
+funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
  5      | 2       | 5      | 5    | 3      | 5     |   7     |             |
 ------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
-11110   | xx      | 00000  | rs1  | 000    | rd    | 1010011 | FMV.W.xx    |
-11110   | xx      | xxxxx  | rs1  | yyy    | rd    | 1010011 | rs2? f3?    |
+11110   | 00      | 00000  | rs1  | 000    | rd    | 1010011 | FMV.W.X     |
+11110   | 00      | xxxxx  | rs1  | yyy    | rd    | 1010011 | rs2? f3?    |
+------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
+11110   | 01      | 00000  | rs1  | 000    | rd    | 1010011 | FMV.D.X     |
+11110   | 01      | xxxxx  | rs1  | yyy    | rd    | 1010011 | rs2? f3?    |
+------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
+11110   | 11      | 00000  | rs1  | 000    | rd    | 1010011 | ?           |
+11110   | 11      | xxxxx  | rs1  | yyy    | rd    | 1010011 | rs2? f3?    |
+------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
 """]]
 
 # funct5 = ?????
 
 [[!table  data="""
 31..27  | 26..25  | 24..20 |19..15| 14...12| 11..7 | 6....0  | function    |
-funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  |             |
+funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
  5      | 2       | 5      | 5    | 3      | 5     |   7     |             |
 ------  | -----   | -----  | -----| -----  | ----- | ------- | --------    |
 """]]
