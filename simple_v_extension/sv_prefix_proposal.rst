@@ -90,12 +90,11 @@ base FP instructions by using 10 (H) in the floating-point format field
 Compressed Instructions
 =======================
 
-This proposal does not include any prefixed RVC instructions, instead,
-it will include 32-bit instructions that are compressed forms of
-SVprefix 48-bit instructions, in the same manner that RVC instructions
-are compressed forms of RVI instructions. The compressed instructions
-will be defined later by considering which 48-bit instructions are the
-most common.
+Compressed instructions are under evaluation by taking the same
+prefix as used in P48, embedding that and standard RVC opcodes (minus
+their RVC prefix) into a 32-bit space.  This by taking the three remaining
+Major "custom" opcodes (0-2), one for each of the three RVC Quadrants.
+see [[discussion]].
 
 48-bit Prefixed Instructions
 ============================
