@@ -59,7 +59,7 @@ funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name           |
 01101   | xx      | rs2    | rs1  | rm     | rd    | 1010011 | **FATAN2.xx**  |
 01110   | xx      | rs2    | rs1  | rm     | rd    | 1010011 | **FATAN2PI.xx**|
 01111   | xx      | rs2    | rs1  | rm     | rd    | 1010011 | **FPOW.xx**    |
-10000   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?              |
+10000   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | **FROOT.xx**   |
 10001   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?              |
 10010   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?              |
 10011   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?              |
@@ -207,35 +207,41 @@ funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name          |
 01011   | xx      | 00001  | rs1  | rm     | rd    | 1010011 | **FRSQRT.xx** |
 01011   | xx      | 00010  | rs1  | rm     | rd    | 1010011 | **FRCP.xx**   |
 01011   | xx      | 00011  | rs1  | rm     | rd    | 1010011 | **FCBRT.xx**  |
-01011   | xx      | 00100  | rs1  | rm     | rd    | 1010011 | ?             |
-01011   | xx      | 00101  | rs1  | rm     | rd    | 1010011 | ?             |
-01011   | xx      | 00110  | rs1  | rm     | rd    | 1010011 | ?             |
-01011   | xx      | 00111  | rs1  | rm     | rd    | 1010011 | ?             |
-01011   | xx      | 01000  | rs1  | rm     | rd    | 1010011 | **FEXP2.xx**  |
-01011   | xx      | 01001  | rs1  | rm     | rd    | 1010011 | **FLOG2.xx**  |
-01011   | xx      | 01010  | rs1  | rm     | rd    | 1010011 | **FEXPM1.xx** |
-01011   | xx      | 01011  | rs1  | rm     | rd    | 1010011 | **FLOGP1.xx** |
-01011   | xx      | 01100  | rs1  | rm     | rd    | 1010011 | **FEXP.xx**   |
-01011   | xx      | 01101  | rs1  | rm     | rd    | 1010011 | **FLOG.xx**   |
-01011   | xx      | 01110  | rs1  | rm     | rd    | 1010011 | **FEXP10.xx** |
-01011   | xx      | 01111  | rs1  | rm     | rd    | 1010011 | **FLOG10.xx** |
+01011   | xx      | 00100  | rs1  | rm     | rd    | 1010011 | **FEXP2.xx**  |
+01011   | xx      | 00101  | rs1  | rm     | rd    | 1010011 | **FLOG2.xx**  |
+01011   | xx      | 00110  | rs1  | rm     | rd    | 1010011 | **FEXPM1.xx** |
+01011   | xx      | 00111  | rs1  | rm     | rd    | 1010011 | **FLOGP1.xx** |
+01011   | xx      | 01000  | rs1  | rm     | rd    | 1010011 | **FEXP.xx**   |
+01011   | xx      | 01001  | rs1  | rm     | rd    | 1010011 | **FLOG.xx**   |
+01011   | xx      | 01010  | rs1  | rm     | rd    | 1010011 | **FEXP10.xx** |
+01011   | xx      | 01011  | rs1  | rm     | rd    | 1010011 | **FLOG10.xx** |
+01011   | xx      | 01100  | rs1  | rm     | rd    | 1010011 | **FASINH.xx** |
+01011   | xx      | 01101  | rs1  | rm     | rd    | 1010011 | **FACOSH.xx** |
+01011   | xx      | 01110  | rs1  | rm     | rd    | 1010011 | **FATANH.xx** |
+01011   | xx      | 01111  | rs1  | rm     | rd    | 1010011 | ?             |
 01011   | xx      | 10000  | rs1  | rm     | rd    | 1010011 | **FSIN.xx**   |
-01011   | xx      | 10001  | rs1  | rm     | rd    | 1010011 | **FCOS.xx**   |
-01011   | xx      | 10010  | rs1  | rm     | rd    | 1010011 | **FTAN.xx**   |
-01011   | xx      | 10011  | rs1  | rm     | rd    | 1010011 | ?             |
-01011   | xx      | 10100  | rs1  | rm     | rd    | 1010011 | **FSINPI.xx** |
-01011   | xx      | 10101  | rs1  | rm     | rd    | 1010011 | **FCOSPI.xx** |
-01011   | xx      | 10110  | rs1  | rm     | rd    | 1010011 | **FTANPI.xx** |
-01011   | xx      | 10111  | rs1  | rm     | rd    | 1010011 | ?             |
-01011   | xx      | 11000  | rs1  | rm     | rd    | 1010011 | **FSINH.xx**  |
-01011   | xx      | 11001  | rs1  | rm     | rd    | 1010011 | **FCOSH.xx**  |
-01011   | xx      | 11010  | rs1  | rm     | rd    | 1010011 | **FTANH.xx**  |
-01011   | xx      | 11011  | rs1  | rm     | rd    | 1010011 | ?             |
-01011   | xx      | 11100  | rs1  | rm     | rd    | 1010011 | **FASINH.xx** |
-01011   | xx      | 11101  | rs1  | rm     | rd    | 1010011 | **FACOSH.xx** |
-01011   | xx      | 11110  | rs1  | rm     | rd    | 1010011 | **FATANH.xx** |
+01011   | xx      | 10001  | rs1  | rm     | rd    | 1010011 | **FASIN.xx**  |
+01011   | xx      | 10010  | rs1  | rm     | rd    | 1010011 | **FSINPI.xx** |
+01011   | xx      | 10011  | rs1  | rm     | rd    | 1010011 | **FASINPI.xx**|
+01011   | xx      | 10100  | rs1  | rm     | rd    | 1010011 | **FCOS.xx**   |
+01011   | xx      | 10101  | rs1  | rm     | rd    | 1010011 | **FACOS.xx**  |
+01011   | xx      | 10110  | rs1  | rm     | rd    | 1010011 | **FCOSPI.xx** |
+01011   | xx      | 10111  | rs1  | rm     | rd    | 1010011 | **FACOSPI.xx**|
+01011   | xx      | 11000  | rs1  | rm     | rd    | 1010011 | **FTAN.xx**   |
+01011   | xx      | 11001  | rs1  | rm     | rd    | 1010011 | **FATAN.xx**  |
+01011   | xx      | 11010  | rs1  | rm     | rd    | 1010011 | **FTANPI.xx** |
+01011   | xx      | 11011  | rs1  | rm     | rd    | 1010011 | **FATANPI.xx**|
+01011   | xx      | 11100  | rs1  | rm     | rd    | 1010011 | **FSINH.xx**  |
+01011   | xx      | 11101  | rs1  | rm     | rd    | 1010011 | **FCOSH.xx**  |
+01011   | xx      | 11110  | rs1  | rm     | rd    | 1010011 | **FTANH.xx**  |
 01011   | xx      | 11111  | rs1  | rm     | rd    | 1010011 | ?             |
 """]]
+
+
+
+
+
+
 
 ## funct5 = 01100 - unused
 
@@ -252,7 +258,11 @@ Rationale: Gives better accuracy than if using FMUL with the constant, PI.
 
 ## funct5 = 01111 - **FPOW**
 
-Proposed for Zftrans - FPOW: "FP rs2 to the power of rs1"
+Proposed for ZftransAdv - FPOW: "FP rs1 to the power of rs2"
+
+## funct5 = 10000 - **FROOT**
+
+Proposed for ZftransAdv - FPROOT: "FP rs1 to the power of (1/rs2)"
 
 ## funct5 = 10000 - unused
 

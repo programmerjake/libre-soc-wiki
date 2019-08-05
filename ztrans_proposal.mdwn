@@ -5,6 +5,12 @@ See:
 * <http://bugs.libre-riscv.org/show_bug.cgi?id=127>
 * <https://www.khronos.org/registry/spir-v/specs/unified1/OpenCL.ExtendedInstructionSet.100.html>
 
+Extension subsets:
+
+* **Ztrans**: standard transcendentals (best suited to 3D)
+* **ZtransExt**: extra functions (useful, not generally needed for 3D)
+* **ZtransAdv**: much more complex to implement in hardware
+
 [[!toc levels=2]]
 
 # List of 2-arg opcodes
@@ -12,35 +18,39 @@ See:
 [[!table  data="""
 opcode    | Description           | pseudo-code                | Extension |
 FATAN2    | atan2 arc tangent     | rd = atan2(rs2, rs1)       | Ztrans    |
-FATAN2PI  | atan arc tangent / pi | rd = atan2(rs2, rs1) / pi  |           |
-FPOW      | power of              | rd = pow(rs1, rs2)         | Ztrans    |
+FATAN2PI  | atan arc tangent / pi | rd = atan2(rs2, rs1) / pi  | ZtransExt |
+FPOW      | x power of y          | rd = pow(rs1, rs2)         | ZtransAdv |
+FROOT     | x power 1/y           | rd = pow(rs1, 1/rs2)       | ZtransAdv |
 """]]
 
 # List of 1-arg opcodes
 
 [[!table  data="""
 opcode   | Description              | pseudo-code             | Extension |
-FCBRT    | Cube Root                | rd = pow(rs1, 3)        |           |
-FEXP2    | power-of-2               | rd = pow(2, rs1)        |           |
-FLOG2    | log2                     | rd = log2(rs1)          |           |
-FEXPM1   | exponent minus 1         | rd = pow(e, rs1) - 1.0  |           |
-FLOG1P   | log plus 1               | rd = log(e, 1 + rs1)    |           |
-FEXP     | exponent                 | rd = pow(e, rs1)        |           |
-FLOG     | natural log (base e)     | rd = log(e, rs1)        |           |
-FEXP10   | power-of-10              | rd = pow(10, rs1)       |           |
-FLOG10   | log base 10              | rd = log10(rs1)         |           |
+FCBRT    | Cube Root                | rd = pow(rs1, 3)        | Ztrans    |
+FEXP2    | power-of-2               | rd = pow(2, rs1)        | Ztrans    |
+FLOG2    | log2                     | rd = log2(rs1)          | Ztrans    |
+FEXPM1   | exponent minus 1         | rd = pow(e, rs1) - 1.0  | Ztrans    |
+FLOG1P   | log plus 1               | rd = log(e, 1 + rs1)    | Ztrans    |
+FEXP     | exponent                 | rd = pow(e, rs1)        | ZtransExt |
+FLOG     | natural log (base e)     | rd = log(e, rs1)        | ZtransExt |
+FEXP10   | power-of-10              | rd = pow(10, rs1)       | ZtransExt |
+FLOG10   | log base 10              | rd = log10(rs1)         | ZtransExt |
 FSIN     | sin (radians)            |                         | Ztrans    |
 FCOS     | cos (radians)            |                         | Ztrans    |
 FTAN     | tan (radians)            |                         | Ztrans    |
-FSINPI   | sin times pi             | rd = sin(pi * rs1)      |           |
-FCOSPI   | cos times pi             | rd = cos(pi * rs1)      |           |
-FTANPI   | tan times pi             | rd = tan(pi * rs1)      |           |
-FSINH    | hyperbolic sin (radians) |                         |           |
-FCOSH    | hyperbolic cos (radians) |                         |           |
-FTANH    | hyperbolic tan (radians) |                         |           |
-FASINH   | inverse hyperbolic sin   |                         |           |
-FACOSH   | inverse hyperbolic cos   |                         |           |
-FATANH   | inverse hyperbolic tan   |                         |           |
+FASIN    | arcsin (radians)         | rd = asin(rs1)          | Ztrans    |
+FACOS    | arccos (radians)         | rd = acos(rs1)          | Ztrans    |
+FATAN    | arctan (radians)         | rd = atan(rs1)          | Ztrans    |
+FSINPI   | sin times pi             | rd = sin(pi * rs1)      | ZtransExt |
+FCOSPI   | cos times pi             | rd = cos(pi * rs1)      | ZtransExt |
+FTANPI   | tan times pi             | rd = tan(pi * rs1)      | ZtransExt |
+FSINH    | hyperbolic sin (radians) |                         | ZtransExt |
+FCOSH    | hyperbolic cos (radians) |                         | ZtransExt |
+FTANH    | hyperbolic tan (radians) |                         | ZtransExt |
+FASINH   | inverse hyperbolic sin   |                         | ZtransExt |
+FACOSH   | inverse hyperbolic cos   |                         | ZtransExt |
+FATANH   | inverse hyperbolic tan   |                         | ZtransExt |
 """]]
 
 # Pseudo-code ops
