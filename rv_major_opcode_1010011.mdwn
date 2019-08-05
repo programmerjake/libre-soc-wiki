@@ -29,45 +29,59 @@ Notes:
 * Both dual and single argument FP operations that do not require
   "rounding mode" should go in one of the funct5 tables that already use
   "funct3".
+* The rs2 field can be best used to sub-select a considerable number
+  of 1-op operations, with "rounding" in funct3
+* The funct3 field can be best used to sub-select a considerable number
+  of 2-op operations
+* 1-op operations that do not need "rounding" have the best brownfield
+  availability: 8 bit sub-selection (rs2=5 + funct3=3).  This however is
+  rare as most FP operations need "rounding" selection.
 * Be careful not to use encoding space for which FP16 has already been
-  reserved.
+  reserved (mostly FP conversion opcodes)
 
 [[!table  data="""
-31..27  | 26..25  | 24..20 |19..15| 14...12| 11..7 | 6....0  | function    |
-funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name        |
- 5      | 2       | 5      | 5    | 3      | 5     |   7     |             |
-00000   | xx      | rs2    | rs1  | rm     | rd    | 1010011 | FADD.xx     |
-00001   | xx      | rs2    | rs1  | rm     | rd    | 1010011 | FSUB.xx     |
-00010   | xx      | rs2    | rs1  | rm     | rd    | 1010011 | FMUL.xx     |
-00011   | xx      | rs2    | rs1  | rm     | rd    | 1010011 | FDIV.xx     |
-00100   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?           |
-00101   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | tb=00101    |
-00110   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?           |
-00111   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?           |
-01000   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | tb=01000    |
-01001   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?           |
-01010   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?           |
-01011   | xx      | xxxxx  | rs1  | yyy    | rd    | 1010011 | tb=01011    |
-01100   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?           |
-01101   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?           |
-01110   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?           |
-01111   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | **FPOW.xx** |
-10000   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?           |
-10001   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?           |
-10010   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?           |
-10011   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?           |
-10100   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | tb=10100    |
-10101   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?           |
-10110   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?           |
-10111   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?           |
-11000   | xx      | xxxxx  | rs1  | yyy    | rd    | 1010011 | tb=11000    |
-11001   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?           |
-11010   | xx      | xxxxx  | rs1  | yyy    | rd    | 1010011 | tb=11010    |
-11100   | xx      | xxxxx  | rs1  | 000    | rd    | 1010011 | tb=11100    |
-11101   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?           |
-11110   | xx      | xxxxx  | rs1  | 000    | rd    | 1010011 | tb=11110    |
-11111   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?           |
+31..27  | 26..25  | 24..20 |19..15| 14...12| 11..7 | 6....0  | function       |
+funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name           |
+ 5      | 2       | 5      | 5    | 3      | 5     |   7     |                |
+00000   | xx      | rs2    | rs1  | rm     | rd    | 1010011 | FADD.xx        |
+00001   | xx      | rs2    | rs1  | rm     | rd    | 1010011 | FSUB.xx        |
+00010   | xx      | rs2    | rs1  | rm     | rd    | 1010011 | FMUL.xx        |
+00011   | xx      | rs2    | rs1  | rm     | rd    | 1010011 | FDIV.xx        |
+00100   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?              |
+00101   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | tb=00101       |
+00110   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?              |
+00111   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?              |
+01000   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | tb=01000       |
+01001   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?              |
+01010   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?              |
+01011   | xx      | xxxxx  | rs1  | yyy    | rd    | 1010011 | tb=01011       |
+01100   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?              |
+01101   | xx      | rs2    | rs1  | rm     | rd    | 1010011 | **FATAN2.xx**  |
+01110   | xx      | rs2    | rs1  | rm     | rd    | 1010011 | **FATAN2PI.xx**|
+01111   | xx      | rs2    | rs1  | rm     | rd    | 1010011 | **FPOW.xx**    |
+10000   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?              |
+10001   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?              |
+10010   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?              |
+10011   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?              |
+10100   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | tb=10100       |
+10101   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?              |
+10110   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?              |
+10111   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?              |
+11000   | xx      | xxxxx  | rs1  | yyy    | rd    | 1010011 | tb=11000       |
+11001   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?              |
+11010   | xx      | xxxxx  | rs1  | yyy    | rd    | 1010011 | tb=11010       |
+11100   | xx      | xxxxx  | rs1  | yyy    | rd    | 1010011 | tb=11100       |
+11101   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?              |
+11110   | xx      | xxxxx  | rs1  | yyy    | rd    | 1010011 | tb=11110       |
+11111   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?              |
 """]]
+
+Code:
+
+* xx: Opcode format field "fmt" - Table 11.3
+* xxxxx: 5-bit selection field (usually 1-op selection)
+* yyy: funct3 selection field (usually 2-op selection)
+* rm: "rounding mode"
 
 ## funct5 = 00000 - FADD
 
@@ -192,7 +206,7 @@ funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name          |
 01011   | xx      | 00000  | rs1  | rm     | rd    | 1010011 | FSQRT.xx      |
 01011   | xx      | 00001  | rs1  | rm     | rd    | 1010011 | **FRSQRT.xx** |
 01011   | xx      | 00010  | rs1  | rm     | rd    | 1010011 | **FRCP.xx**   |
-01011   | xx      | 00011  | rs1  | rm     | rd    | 1010011 | **CBRT.xx**   |
+01011   | xx      | 00011  | rs1  | rm     | rd    | 1010011 | **FCBRT.xx**  |
 01011   | xx      | 00100  | rs1  | rm     | rd    | 1010011 | ?             |
 01011   | xx      | 00101  | rs1  | rm     | rd    | 1010011 | ?             |
 01011   | xx      | 00110  | rs1  | rm     | rd    | 1010011 | ?             |
@@ -208,11 +222,11 @@ funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name          |
 01011   | xx      | 10000  | rs1  | rm     | rd    | 1010011 | **FSIN.xx**   |
 01011   | xx      | 10001  | rs1  | rm     | rd    | 1010011 | **FCOS.xx**   |
 01011   | xx      | 10010  | rs1  | rm     | rd    | 1010011 | **FTAN.xx**   |
-01011   | xx      | 10011  | rs1  | rm     | rd    | 1010011 | **FTAN2.xx**  |
+01011   | xx      | 10011  | rs1  | rm     | rd    | 1010011 | ?             |
 01011   | xx      | 10100  | rs1  | rm     | rd    | 1010011 | **FSINPI.xx** |
 01011   | xx      | 10101  | rs1  | rm     | rd    | 1010011 | **FCOSPI.xx** |
 01011   | xx      | 10110  | rs1  | rm     | rd    | 1010011 | **FTANPI.xx** |
-01011   | xx      | 10111  | rs1  | rm     | rd    | 1010011 | **FATAN2PI.xx**|
+01011   | xx      | 10111  | rs1  | rm     | rd    | 1010011 | ?             |
 01011   | xx      | 11000  | rs1  | rm     | rd    | 1010011 | **FSINH.xx**  |
 01011   | xx      | 11001  | rs1  | rm     | rd    | 1010011 | **FCOSH.xx**  |
 01011   | xx      | 11010  | rs1  | rm     | rd    | 1010011 | **FTANH.xx**  |
@@ -227,13 +241,14 @@ funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name          |
 
 Brownfield encodings available.
 
-## funct5 = 01101 - unused
+## funct5 = 01101 - **FATAN2**
 
-Brownfield encodings available.
+Proposed for Zftrans - FATAN: "atan(rs1, rs2)"
 
-## funct5 = 01110 - unused
+## funct5 = 01110 - **FATAN2PI**
 
-Brownfield encodings available.
+Proposed for ZftransExt - FATAN2PI: "atan2(rs1, rs2) * PI".
+Rationale: Gives better accuracy than if using FMUL with the constant, PI.
 
 ## funct5 = 01111 - **FPOW**
 
