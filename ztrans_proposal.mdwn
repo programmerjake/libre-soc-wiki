@@ -59,3 +59,9 @@ FATANH   | inverse hyperbolic tan   |                         | ZtransExt |
 * FSINCOS - fused macro-op between FSIN and FCOS (issued in that order).
 * FSINCOSPI - fused macro-op between FSINPI and FCOSPI (issued in that order).
 
+FATANPI example pseudo-code:
+
+    lui t0, 0x3F800 // upper bits of f32 1.0
+    fmv.x.s ft0, t0
+    fatan2pi.s rd, rs1, ft0
+
