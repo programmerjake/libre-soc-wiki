@@ -56,6 +56,8 @@ FATANH   | inverse hyperbolic tan   |                         | ZtransExt |
 # Pseudo-code ops
 
 * FRCP rd, rs1 - pseudo-code alias for rd = 1.0 / rs1
-* SINCOS - fused macro-op between FSIN and FCOS (issued in that order).
-* SINCOSPI - fused macro-op between FSINPI and FCOSPI (issued in that order).
+* FATAN - pseudo-code alias for rd = atan2(rs1, 1.0) - FATAN2
+* FATANPI - pseudo alias for rd = atan2pi(rs1, 1.0) - FATAN2PI
+* FSINCOS - fused macro-op between FSIN and FCOS (issued in that order).
+* FSINCOSPI - fused macro-op between FSINPI and FCOSPI (issued in that order).
 
