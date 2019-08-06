@@ -14,7 +14,7 @@ Extension subsets:
 * **Ztrignpi**: trig non-xxx-pi sin cos tan
 * **Zarctrigpi**: arc-trig. a-xxx-pi: atan2pi asinpi acospi
 * **Zarctrignpi**: arc-trig. non-a-xxx-pi: atan2, asin, acos
-* **Ztrignh**: trig/arc-trig hyperbolic.  sinh cosh tanh, asinh, acosh, atanh
+* **Zfhyp**: trig/arc-trig hyperbolic.  sinh cosh tanh, asinh, acosh, atanh
 * **ZftransAdv**: much more complex to implement in hardware
 
 Minimum recommended requirements for 3D: Zftrans, Ztrigpi, Zarctrigpi,
@@ -62,12 +62,12 @@ FTANPI   | tan times pi             | rd = tan(pi * rs1)      | Ztrigpi |
 FASINPI  | arcsin times pi          | rd = asin(pi * rs1)     | Zarctrigpi |
 FACOSPI  | arccos times pi          | rd = acos(pi * rs1)     | Zarctrigpi |
 FATANPI  | arctan times pi          | rd = atan(pi * rs1)     | Zarctrigpi |
-FSINH    | hyperbolic sin (radians) | rd = sinh(rs1)          | Ztrigh |
-FCOSH    | hyperbolic cos (radians) | rd = cosh(rs1)          | Ztrigh |
-FTANH    | hyperbolic tan (radians) | rd = tanh(rs1)          | Ztrigh |
-FASINH   | inverse hyperbolic sin   | rd = asinh(rs1)         | Ztrigh |
-FACOSH   | inverse hyperbolic cos   | rd = acosh(rs1)         | Ztrigh |
-FATANH   | inverse hyperbolic tan   | rd = atanh(rs1)         | Ztrigh |
+FSINH    | hyperbolic sin (radians) | rd = sinh(rs1)          | Zfhyp |
+FCOSH    | hyperbolic cos (radians) | rd = cosh(rs1)          | Zfhyp |
+FTANH    | hyperbolic tan (radians) | rd = tanh(rs1)          | Zfhyp |
+FASINH   | inverse hyperbolic sin   | rd = asinh(rs1)         | Zfhyp |
+FACOSH   | inverse hyperbolic cos   | rd = acosh(rs1)         | Zfhyp |
+FATANH   | inverse hyperbolic tan   | rd = atanh(rs1)         | Zfhyp |
 """]]
 
 # Pseudo-code ops and macro-ops
