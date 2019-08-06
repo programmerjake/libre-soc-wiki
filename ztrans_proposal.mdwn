@@ -9,11 +9,15 @@ Extension subsets:
 
 * **Ztrans**: standard transcendentals (best suited to 3D)
 * **ZtransExt**: extra functions (useful, not generally needed for 3D)
-* Ztrigpi: trig. *-pi sinpi cospi tanpi
-* Ztrignpi: trig non-*pi sin cos tan
-* Zarctrigpi: arc-trig. *pi atan2pi asinpi acospi
-* Zarctrignpi: arc-trig. non-*pi
+* **Ztrigpi**: trig. xxx-pi sinpi cospi tanpi
+* **Ztrignpi**: trig non-xxx-pi sin cos tan
+* **Zarctrigpi**: arc-trig. a-xxx-pi: atan2pi asinpi acospi
+* **Zarctrignpi**: arc-trig. non-a-xxx-pi: atan2, asin, acos
+* **Ztrignh**: trig/arc-trig hyperbolic.  sinh cosh tanh, asinh, acosh, atanh
 * **ZtransAdv**: much more complex to implement in hardware
+
+Minimum recommended requirements for 3D: Ztrans, Ztrigpi, Zarctrigpi,
+Zarctrignpi
 
 [[!toc levels=2]]
 
@@ -21,13 +25,13 @@ Extension subsets:
 
 [[!table  data="""
 opcode    | Description           | pseudo-code                | Extension |
-FATAN2    | atan2 arc tangent     | rd = atan2(rs2, rs1)       | Ztrans    |
-FATAN2PI  | atan arc tangent / pi | rd = atan2(rs2, rs1) / pi  | ZtransExt |
+FATAN2    | atan2 arc tangent     | rd = atan2(rs2, rs1)       | Zarctrignpi |
+FATAN2PI  | atan arc tangent / pi | rd = atan2(rs2, rs1) / pi  | Zarctrigpi |
 FPOW      | x power of y          | rd = pow(rs1, rs2)         | ZtransAdv |
 FROOT     | x power 1/y           | rd = pow(rs1, 1/rs2)       | ZtransAdv |
 """]]
 
-# List of 1-arg opcodes
+# List of 1-arg transcendental opcodes
 
 [[!table  data="""
 opcode   | Description              | pseudo-code             | Extension |
@@ -40,22 +44,37 @@ FEXP     | exponent                 | rd = pow(e, rs1)        | ZtransExt |
 FLOG     | natural log (base e)     | rd = log(e, rs1)        | ZtransExt |
 FEXP10   | power-of-10              | rd = pow(10, rs1)       | ZtransExt |
 FLOG10   | log base 10              | rd = log10(rs1)         | ZtransExt |
-FSIN     | sin (radians)            |                         | Ztrignpi    |
-FCOS     | cos (radians)            |                         | Ztrignpi    |
-FTAN     | tan (radians)            |                         | Ztrignpi    |
-FASIN    | arcsin (radians)         | rd = asin(rs1)          | Zarctrignpi   |
-FACOS    | arccos (radians)         | rd = acos(rs1)          | Zarctrignpi    |
+"""]]
+
+# List of 1-arg trigonometric opcodes
+
+[[!table  data="""
+opcode   | Description              | pseudo-code             | Extension |
+FSIN     | sin (radians)            | rd = sin(rs1)           | Ztrignpi    |
+FCOS     | cos (radians)            | rd = cos(rs1)           | Ztrignpi    |
+FTAN     | tan (radians)            | rd = tan(rs1)           | Ztrignpi    |
+FASIN    | arcsin (radians)         | rd = asin(rs1)          | Zarctrignpi |
+FACOS    | arccos (radians)         | rd = acos(rs1)          | Zarctrignpi |
 FSINPI   | sin times pi             | rd = sin(pi * rs1)      | Ztrigpi |
 FCOSPI   | cos times pi             | rd = cos(pi * rs1)      | Ztrigpi |
-FSINH    | hyperbolic sin (radians) |                         | ZtransExt |
-FCOSH    | hyperbolic cos (radians) |                         | ZtransExt |
-FTANH    | hyperbolic tan (radians) |                         | ZtransExt |
-FASINH   | inverse hyperbolic sin   |                         | ZtransExt |
-FACOSH   | inverse hyperbolic cos   |                         | ZtransExt |
-FATANH   | inverse hyperbolic tan   |                         | ZtransExt |
+FTANPI   | tan times pi             | rd = tan(pi * rs1)      | Ztrigpi |
+FASINPI  | arcsin times pi          | rd = asin(pi * rs1)     | Zarctrigpi |
+FACOSPI  | arccos times pi          | rd = acos(pi * rs1)     | Zarctrigpi |
+FATANPI  | arctan times pi          | rd = atan(pi * rs1)     | Zarctrigpi |
+FSINH    | hyperbolic sin (radians) | rd = sinh(rs1)          | Ztrigh |
+FCOSH    | hyperbolic cos (radians) | rd = cosh(rs1)          | Ztrigh |
+FTANH    | hyperbolic tan (radians) | rd = tanh(rs1)          | Ztrigh |
+FASINH   | inverse hyperbolic sin   | rd = asinh(rs1)         | Ztrigh |
+FACOSH   | inverse hyperbolic cos   | rd = acosh(rs1)         | Ztrigh |
+FATANH   | inverse hyperbolic tan   | rd = atanh(rs1)         | Ztrigh |
 """]]
 
 # Pseudo-code ops and macro-ops
+
+The pseudo-ops are best left up to the compiler rather than being actual
+pseudo-ops, by allocating one scalar FP register for use as a constant
+(loop invariant) set to "1.0" at the beginning of a function or other
+suitable code block.
 
 * FRCP rd, rs1 - pseudo-code alias for rd = 1.0 / rs1
 * FATAN - pseudo-code alias for rd = atan2(rs1, 1.0) - FATAN2
