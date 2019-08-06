@@ -9,6 +9,10 @@ Extension subsets:
 
 * **Ztrans**: standard transcendentals (best suited to 3D)
 * **ZtransExt**: extra functions (useful, not generally needed for 3D)
+* Ztrigpi: trig. *-pi sinpi cospi tanpi
+* Ztrignpi: trig non-*pi sin cos tan
+* Zarctrigpi: arc-trig. *pi atan2pi asinpi acospi
+* Zarctrignpi: arc-trig. non-*pi
 * **ZtransAdv**: much more complex to implement in hardware
 
 [[!toc levels=2]]
@@ -36,13 +40,13 @@ FEXP     | exponent                 | rd = pow(e, rs1)        | ZtransExt |
 FLOG     | natural log (base e)     | rd = log(e, rs1)        | ZtransExt |
 FEXP10   | power-of-10              | rd = pow(10, rs1)       | ZtransExt |
 FLOG10   | log base 10              | rd = log10(rs1)         | ZtransExt |
-FSIN     | sin (radians)            |                         | Ztrans    |
-FCOS     | cos (radians)            |                         | Ztrans    |
-FTAN     | tan (radians)            |                         | Ztrans    |
-FASIN    | arcsin (radians)         | rd = asin(rs1)          | Ztrans    |
-FACOS    | arccos (radians)         | rd = acos(rs1)          | Ztrans    |
-FSINPI   | sin times pi             | rd = sin(pi * rs1)      | ZtransExt |
-FCOSPI   | cos times pi             | rd = cos(pi * rs1)      | ZtransExt |
+FSIN     | sin (radians)            |                         | Ztrignpi    |
+FCOS     | cos (radians)            |                         | Ztrignpi    |
+FTAN     | tan (radians)            |                         | Ztrignpi    |
+FASIN    | arcsin (radians)         | rd = asin(rs1)          | Zarctrignpi   |
+FACOS    | arccos (radians)         | rd = acos(rs1)          | Zarctrignpi    |
+FSINPI   | sin times pi             | rd = sin(pi * rs1)      | Ztrigpi |
+FCOSPI   | cos times pi             | rd = cos(pi * rs1)      | Ztrigpi |
 FSINH    | hyperbolic sin (radians) |                         | ZtransExt |
 FCOSH    | hyperbolic cos (radians) |                         | ZtransExt |
 FTANH    | hyperbolic tan (radians) |                         | ZtransExt |
@@ -51,7 +55,7 @@ FACOSH   | inverse hyperbolic cos   |                         | ZtransExt |
 FATANH   | inverse hyperbolic tan   |                         | ZtransExt |
 """]]
 
-# Pseudo-code ops
+# Pseudo-code ops and macro-ops
 
 * FRCP rd, rs1 - pseudo-code alias for rd = 1.0 / rs1
 * FATAN - pseudo-code alias for rd = atan2(rs1, 1.0) - FATAN2
