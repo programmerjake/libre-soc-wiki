@@ -56,7 +56,7 @@ funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name           |
 01001   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?              |
 01010   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?              |
 01011   | xx      | xxxxx  | rs1  | yyy    | rd    | 1010011 | tb=01011       |
-01100   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?              |
+01100   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | **FHYPOT.xx**  |
 01101   | xx      | rs2    | rs1  | rm     | rd    | 1010011 | **FATAN2.xx**  |
 01110   | xx      | rs2    | rs1  | rm     | rd    | 1010011 | **FATAN2PI.xx**|
 01111   | xx      | rs2    | rs1  | rm     | rd    | 1010011 | **FPOW.xx**    |
@@ -238,9 +238,9 @@ funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name          |
 01011   | xx      | 11111  | rs1  | rm     | rd    | 1010011 | ?             |
 """]]
 
-## funct5 = 01100 - unused
+## funct5 = 01100 - **FHYPOT**
 
-Brownfield encodings available.
+Proposed for Zftrans - FHYPOT: "sqrt(rs1 * rs1 + rs2 * rs2)"
 
 ## funct5 = 01101 - **FATAN2**
 
