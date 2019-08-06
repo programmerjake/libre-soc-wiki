@@ -8,16 +8,16 @@ See:
 
 Extension subsets:
 
-* **Ztrans**: standard transcendentals (best suited to 3D)
-* **ZtransExt**: extra functions (useful, not generally needed for 3D, can be synthesised using Ztrans)
+* **Zftrans**: standard transcendentals (best suited to 3D)
+* **ZftransExt**: extra functions (useful, not generally needed for 3D, can be synthesised using Ztrans)
 * **Ztrigpi**: trig. xxx-pi sinpi cospi tanpi
 * **Ztrignpi**: trig non-xxx-pi sin cos tan
 * **Zarctrigpi**: arc-trig. a-xxx-pi: atan2pi asinpi acospi
 * **Zarctrignpi**: arc-trig. non-a-xxx-pi: atan2, asin, acos
 * **Ztrignh**: trig/arc-trig hyperbolic.  sinh cosh tanh, asinh, acosh, atanh
-* **ZtransAdv**: much more complex to implement in hardware
+* **ZftransAdv**: much more complex to implement in hardware
 
-Minimum recommended requirements for 3D: Ztrans, Ztrigpi, Zarctrigpi,
+Minimum recommended requirements for 3D: Zftrans, Ztrigpi, Zarctrigpi,
 Zarctrignpi
 
 [[!toc levels=2]]
@@ -28,23 +28,23 @@ Zarctrignpi
 opcode    | Description           | pseudo-code                | Extension |
 FATAN2    | atan2 arc tangent     | rd = atan2(rs2, rs1)       | Zarctrignpi |
 FATAN2PI  | atan arc tangent / pi | rd = atan2(rs2, rs1) / pi  | Zarctrigpi |
-FPOW      | x power of y          | rd = pow(rs1, rs2)         | ZtransAdv |
-FROOT     | x power 1/y           | rd = pow(rs1, 1/rs2)       | ZtransAdv |
+FPOW      | x power of y          | rd = pow(rs1, rs2)         | ZftransAdv |
+FROOT     | x power 1/y           | rd = pow(rs1, 1/rs2)       | ZftransAdv |
 """]]
 
 # List of 1-arg transcendental opcodes
 
 [[!table  data="""
 opcode   | Description              | pseudo-code             | Extension |
-FCBRT    | Cube Root                | rd = pow(rs1, 3)        | Ztrans    |
-FEXP2    | power-of-2               | rd = pow(2, rs1)        | Ztrans    |
-FLOG2    | log2                     | rd = log2(rs1)          | Ztrans    |
-FEXPM1   | exponent minus 1         | rd = pow(e, rs1) - 1.0  | Ztrans    |
-FLOG1P   | log plus 1               | rd = log(e, 1 + rs1)    | Ztrans    |
-FEXP     | exponent                 | rd = pow(e, rs1)        | ZtransExt |
-FLOG     | natural log (base e)     | rd = log(e, rs1)        | ZtransExt |
-FEXP10   | power-of-10              | rd = pow(10, rs1)       | ZtransExt |
-FLOG10   | log base 10              | rd = log10(rs1)         | ZtransExt |
+FCBRT    | Cube Root                | rd = pow(rs1, 3)        | Zftrans    |
+FEXP2    | power-of-2               | rd = pow(2, rs1)        | Zftrans    |
+FLOG2    | log2                     | rd = log2(rs1)          | Zftrans    |
+FEXPM1   | exponent minus 1         | rd = pow(e, rs1) - 1.0  | Zftrans    |
+FLOG1P   | log plus 1               | rd = log(e, 1 + rs1)    | Zftrans    |
+FEXP     | exponent                 | rd = pow(e, rs1)        | ZftransExt |
+FLOG     | natural log (base e)     | rd = log(e, rs1)        | ZftransExt |
+FEXP10   | power-of-10              | rd = pow(10, rs1)       | ZftransExt |
+FLOG10   | log base 10              | rd = log10(rs1)         | ZftransExt |
 """]]
 
 # List of 1-arg trigonometric opcodes
