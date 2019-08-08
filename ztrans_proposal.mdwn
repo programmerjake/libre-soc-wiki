@@ -123,3 +123,16 @@ RISC principle says "exclude LOG because it's covered by LOGP1 plus an ADD".
 Research needed to ensure that implementors are not compromised by such
 a decision
 <http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2019-August/002358.html>
+
+# Dynamic accuracy CSR
+
+maybe a solution would be to add an extra field to the fp control csr to allow selecting one of several accurate or fast modes:
+
+- machine-learning-mode: fast as possible
+    -- maybe need additional requirements such as monotonicity for atanh?
+- GPU-mode: accurate to within a few ULP
+    -- see Vulkan, OpenGL, and OpenCL specs for accuracy guidelines
+- almost-accurate-mode: accurate to <1 ULP
+     (would 0.51 or some other value be better?)
+- fully-accurate-mode: correctly rounded in all cases
+- maybe more modes?
