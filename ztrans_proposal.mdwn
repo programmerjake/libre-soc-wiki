@@ -19,6 +19,7 @@ Extension subsets:
 * **Zfhyp**: hyperbolic/inverse-hyperbolic.  sinh, cosh, tanh, asinh,
   acosh, atanh (can be synthesised - see below)
 * **ZftransAdv**: much more complex to implement in hardware
+* **Zfrsqrt**: Reciprocal square-root.
 
 Minimum recommended requirements for 3D: Zftrans, Ztrigpi, Zarctrigpi,
 Zarctrignpi
@@ -32,6 +33,9 @@ Zarctrignpi
 * Errors **MUST** be repeatable.
 * How about three Platform Specifications? 3D, UNIX and Embedded?
 <http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2019-August/002361.html>
+* Reciprocal Square-root is in its own separate extension (Zfrsqrt) as
+  it is desirable on its own by other implementors.  This to be evaluated.
+
 
 # List of 2-arg opcodes
 
@@ -48,6 +52,7 @@ FHYPOT    | hypotenuse            | rd = sqrt(rs1^2 + rs2^2)       | Zftrans    
 
 [[!table  data="""
 opcode   | Description              | pseudo-code             | Extension |
+FRSQRT   | Reciprocal Square-root   | rd = sqrt(rs1)          | Zfrsqrt    |
 FCBRT    | Cube Root                | rd = pow(rs1, 3)        | Zftrans    |
 FEXP2    | power-of-2               | rd = pow(2, rs1)        | Zftrans    |
 FLOG2    | log2                     | rd = log2(rs1)          | Zftrans    |
