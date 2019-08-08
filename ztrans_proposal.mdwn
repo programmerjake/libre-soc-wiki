@@ -10,12 +10,14 @@ See:
 Extension subsets:
 
 * **Zftrans**: standard transcendentals (best suited to 3D)
-* **ZftransExt**: extra functions (useful, not generally needed for 3D, can be synthesised using Ztrans)
+* **ZftransExt**: extra functions (useful, not generally needed for 3D,
+  can be synthesised using Ztrans)
 * **Ztrigpi**: trig. xxx-pi sinpi cospi tanpi
 * **Ztrignpi**: trig non-xxx-pi sin cos tan
 * **Zarctrigpi**: arc-trig. a-xxx-pi: atan2pi asinpi acospi
 * **Zarctrignpi**: arc-trig. non-a-xxx-pi: atan2, asin, acos
-* **Zfhyp**: hyperbolic/inverse-hyperbolic.  sinh, cosh, tanh, asinh, acosh, atanh
+* **Zfhyp**: hyperbolic/inverse-hyperbolic.  sinh, cosh, tanh, asinh,
+  acosh, atanh (can be synthesised - see below)
 * **ZftransAdv**: much more complex to implement in hardware
 
 Minimum recommended requirements for 3D: Zftrans, Ztrigpi, Zarctrigpi,
@@ -76,7 +78,7 @@ FACOSH   | inverse hyperbolic cos   | rd = acosh(rs1)         | Zfhyp |
 FATANH   | inverse hyperbolic tan   | rd = atanh(rs1)         | Zfhyp |
 """]]
 
-# Pseudo-code ops and macro-ops
+# Synthesis, Pseudo-code ops and macro-ops
 
 The pseudo-ops are best left up to the compiler rather than being actual
 pseudo-ops, by allocating one scalar FP register for use as a constant
@@ -99,10 +101,12 @@ Hypotenuse example (obviates need for Zfhyp except for high-performance):
 
     ASINH( x ) = ln( x + SQRT(x**2+1)
 
-# To evaluate: should LOG be replaced with LOG1P (and EXP with EXPM1)?
+LOG / LOGP1 example:
 
     LOG(x) = LOGP1(x) + 1.0
     EXP(x) = EXPM1(x-1.0)
+
+# To evaluate: should LOG be replaced with LOG1P (and EXP with EXPM1)?
 
 RISC principle says "exclude LOG because it's covered by LOGP1 plus an ADD".
 Research needed to ensure that implementors are not compromised by such
