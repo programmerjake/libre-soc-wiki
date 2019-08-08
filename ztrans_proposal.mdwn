@@ -4,6 +4,7 @@ See:
 
 * <http://bugs.libre-riscv.org/show_bug.cgi?id=127>
 * <https://www.khronos.org/registry/spir-v/specs/unified1/OpenCL.ExtendedInstructionSet.100.html>
+* Discussion: <http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2019-August/002342.html>
 * [[rv_major_opcode_1010011]] for opcode listing.
 
 Extension subsets:
@@ -21,6 +22,10 @@ Minimum recommended requirements for 3D: Zftrans, Ztrigpi, Zarctrigpi,
 Zarctrignpi
 
 [[!toc levels=2]]
+
+# TODO:
+
+* Decision on accuracy <http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2019-August/002355.html>
 
 # List of 2-arg opcodes
 
@@ -90,3 +95,16 @@ FATANPI example pseudo-code:
     fmv.x.s ft0, t0
     fatan2pi.s rd, rs1, ft0
 
+Hypotenuse example (obviates need for Zfhyp except for high-performance):
+
+    ASINH( x ) = ln( x + SQRT(x**2+1)
+
+# To evaluate: should LOG be replaced with LOG1P (and EXP with EXPM1)?
+
+    LOG(x) = LOGP1(x) + 1.0
+    EXP(x) = EXPM1(x-1.0)
+
+RISC principle says "exclude LOG because it's covered by LOGP1 plus an ADD".
+Research needed to ensure that implementors are not compromised by such
+a decision
+<http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2019-August/002358.html>
