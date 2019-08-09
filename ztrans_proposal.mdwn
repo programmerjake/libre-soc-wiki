@@ -126,15 +126,37 @@ a decision
 
 # Dynamic accuracy CSR
 
-maybe a solution would be to add an extra field to the fp control csr to allow selecting one of several accurate or fast modes:
+maybe a solution would be to add an extra field to the fp control csr
+to allow selecting one of several accurate or fast modes:
 
 - machine-learning-mode: fast as possible
-    -- maybe need additional requirements such as monotonicity for atanh?
+  (maybe need additional requirements such as monotonicity for atanh?)
 - GPU-mode: accurate to within a few ULP
-    -- see Vulkan, OpenGL, and OpenCL specs for accuracy guidelines
+  (see Vulkan, OpenGL, and OpenCL specs for accuracy guidelines)
 - almost-accurate-mode: accurate to <1 ULP
      (would 0.51 or some other value be better?)
 - fully-accurate-mode: correctly rounded in all cases
 - maybe more modes?
 
-Question: should better accuracy than is requested be permitted? Example: Ahmdahl-370 issues.
+Question: should better accuracy than is requested be permitted? Example:
+Ahmdahl-370 issues.
+
+Comments:
+
+    Yes, embedded systems typically can do with 12, 16 or 32 bit
+    accuracy. Rarely does it require 64 bits. But the idea of making
+    a low power 32 bit FPU/DSP that can accommodate 64 bits is already
+    being done in other designs such as PIC etc I believe. For embedded
+    graphics 16 bit is more than adequate. In fact, Cornell had a very
+    innovative 18-bit floating point format described here (useful for
+    FPGA designs with 18-bit DSPs):
+
+    <https://people.ece.cornell.edu/land/courses/ece5760/FloatingPoint/index.html>
+
+    A very interesting GPU using the 18-bit FPU is also described here:
+
+    <https://people.ece.cornell.edu/land/courses/ece5760/FinalProjects/f2008/ap328_sjp45/website/hardwaredesign.html>
+
+    There are also 8 and 9-bit floating point formats that could be useful
+
+    <https://en.wikipedia.org/wiki/Minifloat>
