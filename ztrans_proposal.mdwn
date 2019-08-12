@@ -90,6 +90,29 @@ FACOSH   | inverse hyperbolic cos   | rd = acosh(rs1)         | Zfhyp |
 FATANH   | inverse hyperbolic tan   | rd = atanh(rs1)         | Zfhyp |
 """]]
 
+# List of Our Proposed Functions vs Khronos OpenCL Functions
+
+[[!table data="""
+Our proposed opcode | OpenCL FP32 | OpenCL FP16 | OpenCL native | OpenCL fast |
+FSIN                              | sin                   | half_sin           | native_sin         | NONE |
+FCOS                            | cos                  | half_cos          | native_cos        | NONE |
+FTAN                             | tan                  | half_tan           | native_tan        | NONE |
+FASIN                            | asin                 | NONE             | NONE               | NONE |
+FACOS                          | acos                | NONE              | NONE               | NONE |
+FSINPI                           | sinpi                | NONE              | NONE               | NONE |
+FCOSPI                         | cospi               | NONE              | NONE               | NONE |
+FTANPI                          | tanpi               | NONE              | NONE               | NONE |
+FASINPI                         | asinpi              | NONE              | NONE              | NONE |
+FACOSPI                       | acospi             | NONE              | NONE               | NONE |
+FATANPI                        | atanpi              | NONE             | NONE               | NONE |
+FSINH                            | sinh                 | NONE             | NONE               | NONE |
+FCOSH                          | cosh                | NONE             | NONE               | NONE |
+FTANH                           | tanh                | NONE             | NONE               | NONE |
+FASINH                          | asinh               | NONE             | NONE               | NONE |
+FACOSH                         | acosh             | NONE              | NONE              | NONE |
+FATANH                          | atanh              | NONE             | NONE               | NONE |
+"""]]
+
 # Synthesis, Pseudo-code ops and macro-ops
 
 The pseudo-ops are best left up to the compiler rather than being actual
