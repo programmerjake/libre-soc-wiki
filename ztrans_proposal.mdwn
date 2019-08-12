@@ -68,7 +68,7 @@ FCOS            | cos         | half\_cos   | native\_cos   | NONE        |
 FTAN            | tan         | half\_tan   | native\_tan   | NONE        |
 FASIN           | asin        | NONE        | NONE          | NONE        |
 FACOS           | acos        | NONE        | NONE          | NONE        |
-NONE (3)        | atan2       | NONE        | NONE          | NONE        |
+NONE (3)        | atan        | NONE        | NONE          | NONE        |
 FSINPI          | sinpi       | NONE        | NONE          | NONE        |
 FCOSPI          | cospi       | NONE        | NONE          | NONE        |
 FTANPI          | tanpi       | NONE        | NONE          | NONE        |
@@ -109,25 +109,25 @@ Note (3) FATAN2 is a sythesised alias, below.
 # List of 2-arg opcodes
 
 [[!table  data="""
-opcode    | Description           | pseudo-code                | Extension |
-FATAN2    | atan2 arc tangent     | rd = atan2(rs2, rs1)       | Zarctrignpi |
-FATAN2PI  | atan arc tangent / pi | rd = atan2(rs2, rs1) / pi  | Zarctrigpi |
-FPOW      | x power of y          | rd = pow(rs1, rs2)         | ZftransAdv |
-FROOT     | x power 1/y           | rd = pow(rs1, 1/rs2)       | ZftransAdv |
-FHYPOT    | hypotenuse            | rd = sqrt(rs1^2 + rs2^2)       | Zftrans    |
+opcode    | Description            | pseudo-code                | Extension   |
+FATAN2    | atan2 arc tangent      | rd = atan2(rs2, rs1)       | Zarctrignpi |
+FATAN2PI  | atan2 arc tangent / pi | rd = atan2(rs2, rs1) / pi  | Zarctrigpi  |
+FPOW      | x power of y           | rd = pow(rs1, rs2)         | ZftransAdv  |
+FROOT     | x power 1/y            | rd = pow(rs1, 1/rs2)       | ZftransAdv  |
+FHYPOT    | hypotenuse             | rd = sqrt(rs1^2 + rs2^2)   | Zftrans     |
 """]]
 
 # List of 1-arg transcendental opcodes
 
 [[!table  data="""
-opcode   | Description              | pseudo-code             | Extension |
+opcode   | Description              | pseudo-code             | Extension  |
 FRSQRT   | Reciprocal Square-root   | rd = sqrt(rs1)          | Zfrsqrt    |
 FCBRT    | Cube Root                | rd = pow(rs1, 3)        | Zftrans    |
 FEXP2    | power-of-2               | rd = pow(2, rs1)        | Zftrans    |
 FLOG2    | log2                     | rd = log2(rs1)          | Zftrans    |
-FEXPM1   | exponent minus 1         | rd = pow(e, rs1) - 1.0  | Zftrans    |
+FEXPM1   | exponential minus 1      | rd = pow(e, rs1) - 1.0  | Zftrans    |
 FLOG1P   | log plus 1               | rd = log(e, 1 + rs1)    | Zftrans    |
-FEXP     | exponent                 | rd = pow(e, rs1)        | ZftransExt |
+FEXP     | exponential              | rd = pow(e, rs1)        | ZftransExt |
 FLOG     | natural log (base e)     | rd = log(e, rs1)        | ZftransExt |
 FEXP10   | power-of-10              | rd = pow(10, rs1)       | ZftransExt |
 FLOG10   | log base 10              | rd = log10(rs1)         | ZftransExt |
@@ -145,9 +145,9 @@ FACOS    | arccos (radians)         | rd = acos(rs1)          | Zarctrignpi |
 FSINPI   | sin times pi             | rd = sin(pi * rs1)      | Ztrigpi |
 FCOSPI   | cos times pi             | rd = cos(pi * rs1)      | Ztrigpi |
 FTANPI   | tan times pi             | rd = tan(pi * rs1)      | Ztrigpi |
-FASINPI  | arcsin times pi          | rd = asin(pi * rs1)     | Zarctrigpi |
-FACOSPI  | arccos times pi          | rd = acos(pi * rs1)     | Zarctrigpi |
-FATANPI  | arctan times pi          | rd = atan(pi * rs1)     | Zarctrigpi |
+FASINPI  | arcsin / pi              | rd = asin(rs1) / pi     | Zarctrigpi |
+FACOSPI  | arccos / pi              | rd = acos(rs1) / pi     | Zarctrigpi |
+FATANPI  | arctan / pi              | rd = atan(rs1) / pi     | Zarctrigpi |
 FSINH    | hyperbolic sin (radians) | rd = sinh(rs1)          | Zfhyp |
 FCOSH    | hyperbolic cos (radians) | rd = cosh(rs1)          | Zfhyp |
 FTANH    | hyperbolic tan (radians) | rd = tanh(rs1)          | Zfhyp |
@@ -175,14 +175,14 @@ FATANPI example pseudo-code:
     fmv.x.s ft0, t0
     fatan2pi.s rd, rs1, ft0
 
-Hypotenuse example (obviates need for Zfhyp except for high-performance):
+Hyperbolic function example (obviates need for Zfhyp except for high-performance or correctly-rounding):
 
-    ASINH( x ) = ln( x + SQRT(x**2+1)
+    ASINH( x ) = ln( x + SQRT(x**2+1))
 
 LOG / LOGP1 example:
 
-    LOG(x) = LOGP1(x) + 1.0
-    EXP(x) = EXPM1(x-1.0)
+    LOG(x) = LOGP1(x - 1.0)
+    EXP(x) = EXPM1(x) + 1.0
 
 # To evaluate: should LOG be replaced with LOG1P (and EXP with EXPM1)?
 
@@ -190,4 +190,7 @@ RISC principle says "exclude LOG because it's covered by LOGP1 plus an ADD".
 Research needed to ensure that implementors are not compromised by such
 a decision
 <http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2019-August/002358.html>
+
+correctly-rounded LOG will return different results than LOGP1 and ADD.
+Likewise for EXP and EXPM1
 
