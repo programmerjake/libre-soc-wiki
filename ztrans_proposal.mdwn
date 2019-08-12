@@ -97,6 +97,7 @@ FATAN2PI        | atan2pi     | NONE        | NONE          | NONE        |
 FPOW            | pow         | NONE        | NONE          | NONE        |
 FROOT           | rootn       | NONE        | NONE          | NONE        |
 FHYPOT          | hypot       | NONE        | NONE          | NONE        |
+NONE (4)        | NONE        | half\_recip | native\_recip | NONE        |
 """]]
 
 Note (1) FSINCOS is macro-op fused (see below).
@@ -104,6 +105,8 @@ Note (1) FSINCOS is macro-op fused (see below).
 Note (2) FATANPI is a synthesised alias, below.
 
 Note (3) FATAN2 is a sythesised alias, below.
+
+Note (4) FCRECIP is a sythesised alias, below.
 
 # List of 2-arg opcodes
 
@@ -178,11 +181,6 @@ Hyperbolic function example (obviates need for Zfhyp except for high-performance
 
     ASINH( x ) = ln( x + SQRT(x**2+1))
 
-LOG / LOGP1 example:
-
-    LOG(x) = LOGP1(x - 1.0)
-    EXP(x) = EXPM1(x) + 1.0
-
 # To evaluate: should LOG be replaced with LOG1P (and EXP with EXPM1)?
 
 RISC principle says "exclude LOG because it's covered by LOGP1 plus an ADD".
@@ -190,6 +188,7 @@ Research needed to ensure that implementors are not compromised by such
 a decision
 <http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2019-August/002358.html>
 
-correctly-rounded LOG will return different results than LOGP1 and ADD.
-Likewise for EXP and EXPM1
+> > correctly-rounded LOG will return different results than LOGP1 and ADD.
+> > Likewise for EXP and EXPM1
+> ok, they stay in as real opcodes, then.
 
