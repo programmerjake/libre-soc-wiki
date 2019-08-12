@@ -192,3 +192,82 @@ a decision
 > > Likewise for EXP and EXPM1
 > ok, they stay in as real opcodes, then.
 
+# ATAN / ATAN2 commentary
+
+from Mitch Alsup:
+
+would like to point out that the general implementations of ATAN2 do a
+bunch of special case checks and then simply call ATAN.
+
+    double ATAN2( double y, double x )
+    {   // IEEE 754-2008 quality ATAN2
+
+        // deal with NANs
+        if( ISNAN( x )             ) return x;
+        if( ISNAN( y )             ) return y;
+
+        // deal with infinities
+        if( x == +∞    && |y|== +∞  ) return copysign(  π/4, y );
+        if( x == +∞                 ) return copysign(  0.0, y );
+        if( x == -∞    && |y|== +∞  ) return copysign( 3π/4, y );
+        if( x == -∞                 ) return copysign(    π, y );
+        if(               |y|== +∞  ) return copysign(  π/2, y );
+
+        // deal with signed zeros
+        if( x == 0.0  &&  y != 0.0 ) return copysign(  π/2, y );
+        if( x >=+0.0  &&  y == 0.0 ) return copysign(  0.0, y );
+        if( x <=-0.0  &&  y == 0.0 ) return copysign(    π, y );
+
+        // calculate ATAN2 textbook style
+        if( x  > 0.0               ) return     ATAN( |y / x| );
+        if( x  < 0.0               ) return π - ATAN( |y / x| );
+    }
+
+
+Yet the proposed encoding makes ATAN2 the primitive and has ATAN invent
+a constant and then call/use ATAN2.
+
+When one considers an implementation of ATAN, one must consider several
+ranges of evaluation::
+
+     x  [  -∞, -1.0]:: ATAN( x ) = -π/2 + ATAN( 1/x );
+     x  (-1.0, +1.0]:: ATAN( x ) =      + ATAN(   x );
+     x  [ 1.0,   +∞]:: ATAN( x ) = +π/2 - ATAN( 1/x );
+
+I should point out that the add/sub of π/2 can not lose significance
+since the result of ATAN(1/x) is bounded 0..π/2
+
+The bottom line is that I think you are choosing to make too many of
+these into OpCodes, making the hardware function/calculation unit (and
+sequencer) more complicated that necessary.
+
+--------------------------------------------------------
+
+I might suggest that if there were a way for a calculation to be performed
+and the result of that calculation
+
+chained to a subsequent calculation such that the precision of the
+result-becomes-operand is wider than
+
+what will fit in a register, then you can dramatically reduce the count
+of instructions in this category while retaining
+
+acceptable accuracy:
+
+     z = x / y
+
+can be calculated as::
+
+     z = x * (1/y)
+
+Where 1/y has about 26-to-32 bits of fraction. No, it's not IEEE 754-2008
+accurate, but GPUs want speed and
+
+1/y is fully pipelined (F32) while x/y cannot be (at reasonable area). It
+is also not "that inaccurate" displaying 0.625-to-0.52 ULP.
+
+Given that one has the ability to carry (and process) more fraction bits,
+one can then do high precision multiplies of  π or other transcendental
+radixes.
+
+And GPUs have been doing this almost since the dawn of 3D.
