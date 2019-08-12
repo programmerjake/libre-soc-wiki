@@ -66,6 +66,7 @@ Proposed opcode | OpenCL FP32 | OpenCL FP16 | OpenCL native | OpenCL fast |
 FSIN            | sin         | half\_sin   | native\_sin   | NONE        |
 FCOS            | cos         | half\_cos   | native\_cos   | NONE        |
 FTAN            | tan         | half\_tan   | native\_tan   | NONE        |
+NONE (1)        | sincos      | NONE        | NONE          | NONE        |
 FASIN           | asin        | NONE        | NONE          | NONE        |
 FACOS           | acos        | NONE        | NONE          | NONE        |
 NONE (3)        | atan        | NONE        | NONE          | NONE        |
@@ -97,6 +98,8 @@ FPOW            | pow         | NONE        | NONE          | NONE        |
 FROOT           | rootn       | NONE        | NONE          | NONE        |
 FHYPOT          | hypot       | NONE        | NONE          | NONE        |
 """]]
+
+Note (1) FSINCOS is macro-op fused (see below).
 
 Note (2) FATANPI is a synthesised alias, below.
 
