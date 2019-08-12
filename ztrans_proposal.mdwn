@@ -68,12 +68,13 @@ FCOS            | cos         | half\_cos   | native\_cos   | NONE        |
 FTAN            | tan         | half\_tan   | native\_tan   | NONE        |
 FASIN           | asin        | NONE        | NONE          | NONE        |
 FACOS           | acos        | NONE        | NONE          | NONE        |
+NONE (3)        | atan2       | NONE        | NONE          | NONE        |
 FSINPI          | sinpi       | NONE        | NONE          | NONE        |
 FCOSPI          | cospi       | NONE        | NONE          | NONE        |
 FTANPI          | tanpi       | NONE        | NONE          | NONE        |
 FASINPI         | asinpi      | NONE        | NONE          | NONE        |
 FACOSPI         | acospi      | NONE        | NONE          | NONE        |
-FATANPI         | atanpi      | NONE        | NONE          | NONE        |
+NONE (2)        | atanpi      | NONE        | NONE          | NONE        |
 FSINH           | sinh        | NONE        | NONE          | NONE        |
 FCOSH           | cosh        | NONE        | NONE          | NONE        |
 FTANH           | tanh        | NONE        | NONE          | NONE        |
@@ -100,6 +101,10 @@ FHYPOT          | hypot       | NONE        | NONE          | NONE        |
 Note (1): See "synthesis", below.  FEXPM1, FEXP and FLOG1P, FLOG, may
 be synthesised in terms of the other.  FEXPM1 and FLOG1P are more accurate.
 It is likely therefore that FLOG and FEXP will be removed.
+
+Note (2) FATANPI is a synthesised alias, below.
+
+Note (3) FATAN2 is a sythesised alias, below.
 
 # List of 2-arg opcodes
 
