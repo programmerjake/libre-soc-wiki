@@ -68,6 +68,7 @@ FCOS            | cos         | half\_cos   | native\_cos   | NONE        |
 FTAN            | tan         | half\_tan   | native\_tan   | NONE        |
 FASIN           | asin        | NONE        | NONE          | NONE        |
 FACOS           | acos        | NONE        | NONE          | NONE        |
+NONE (1)        | atan        | NONE        | NONE          | NONE        |
 NONE (3)        | atan        | NONE        | NONE          | NONE        |
 FSINPI          | sinpi       | NONE        | NONE          | NONE        |
 FCOSPI          | cospi       | NONE        | NONE          | NONE        |
@@ -85,10 +86,10 @@ FRSQRT          | rsqrt       | half\_rsqrt | native\_rsqrt | NONE        |
 FCBRT           | cbrt        | NONE        | NONE          | NONE        |
 FEXP2           | exp2        | half\_exp2  | native\_exp2  | NONE        |
 FLOG2           | log2        | half\_log2  | native\_log2  | NONE        |
-FEXPM1 (1)      | expm1       | NONE        | NONE          | NONE        |
-FLOG1P (1)      | log1p       | NONE        | NONE          | NONE        |
-FEXP (1)        | exp         | half\_exp   | native\_exp   | NONE        |
-FLOG (1)        | log         | half\_log   | native\_log   | NONE        |
+FEXPM1          | expm1       | NONE        | NONE          | NONE        |
+FLOG1P          | log1p       | NONE        | NONE          | NONE        |
+FEXP            | exp         | half\_exp   | native\_exp   | NONE        |
+FLOG            | log         | half\_log   | native\_log   | NONE        |
 FEXP10          | exp10       | half\_exp10 | native\_exp10 | NONE        |
 FLOG10          | log10       | half\_log10 | native\_log10 | NONE        |
 FATAN2          | atan2       | NONE        | NONE          | NONE        |
@@ -98,9 +99,7 @@ FROOT           | rootn       | NONE        | NONE          | NONE        |
 FHYPOT          | hypot       | NONE        | NONE          | NONE        |
 """]]
 
-Note (1): See "synthesis", below.  FEXPM1, FEXP and FLOG1P, FLOG, may
-be synthesised in terms of the other.  FEXPM1 and FLOG1P are more accurate.
-It is likely therefore that FLOG and FEXP will be removed.
+Note (1) FATAN is a synthesised alias, below.
 
 Note (2) FATANPI is a synthesised alias, below.
 
