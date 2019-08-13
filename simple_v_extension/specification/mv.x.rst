@@ -55,3 +55,9 @@ macro-op fusion
 
 there is the potential for macro-op fusion of mv-swizzle with the following instruction and/or preceding instruction.
 <http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2019-August/002486.html>
+
+VBLOCK context?
+===============
+
+additional idea: a VBLOCK context that says that if a given register is used, it indicates that the
+register is to be "swizzled", and the VBLOCK swizzle context contains the swizzling to be carried out.
