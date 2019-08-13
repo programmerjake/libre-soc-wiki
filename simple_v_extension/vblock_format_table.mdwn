@@ -11,7 +11,7 @@ of the RISC-V ISA, is as follows:
 | -     | ----- | ----- | ----- | ----  | ---  | ------- |
 | vlset | 16xil | rplen | pplen | pmode | rmode | 1111111 |
 
-The VL/MAXVL/SubVL Block format:
+The VL/MAXVL/SubVL Block format, when 16xil != 0b111, is:
 
 [[!table  data="""
 31:30 | 29:28 | 27:22    | 21 | 20:19   | 18:16    | comment                              |
@@ -23,3 +23,21 @@ The VL/MAXVL/SubVL Block format:
 0b11  | rsvd  | rsvd     |rsvd| rsvd              || reserved, all 0s                     |
 """]]
 
+When 16xil is 0b111, this is the "Extended" Format, using the >= 192-bit
+RISC-V ISA format.  Note that the length is 80+16\*nnnnnn, not 192+
+
+| base+5 ... base+3         | base+1  | base             | no. of bits   |
+| ------ -----------------  |         | ---------------- | ------------- |
+| ..xxxx  xxxxxxxxxxxxxxxx  |         | x111xxxxx1111111 | 80+16\*nnnnnn |
+| {ops}{Pred}{Reg}{VL Block}| VBLOCK2 | VBLOCK Prefix    |               |
+
+VBLOCK2 extends the VBLOCK fields:
+
+| 15:13 | 12:11  | 10:9   | 8:6   | 5:0  |
+| ----- | -----  | ----   | ---   | ---- |
+| rsvd  | rplen2 | pplen2 | swlen | ilen |
+
+* ilen is the instruction length (number of 16-bit blocks)
+* swlen specifies the number of "swizzle" blocks
+* rplen2 extends rplen by 2 bits
+* pplen2 extends pplen by 2 bits
