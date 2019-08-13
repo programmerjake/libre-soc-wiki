@@ -228,8 +228,9 @@ register is used, and SUBVL is 2, 3 or 4) that the sub-elements are to
 be re-ordered according to the indices in the Swizzle format.
 Like the Predication Table, it is an indirect lookup: use of a
 source or destination register in any given operation, if that register
-occurs in the table, "activates" swizzling for that register.
-Note that the target is taken from the "Register Table" (regidx).
+occurs in the table, "activates" sub-vector element swizzling for
+that register.  Note that the target is taken from the "Register Table"
+(regidx).
 
 Source vectors are free to have the swizzle indices point to the same
 sub-vector element.  However when using swizzling on destination vectors,
