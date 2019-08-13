@@ -235,6 +235,21 @@ if this occurs.
 
 [[!inline raw="yes" pages="simple_v_extension/swizzle_table_format" ]]
 
+Pseudocode when SUBVL=4 and swizzle is set on rd:
+
+    # decode the swizzle table entry for rd
+    x = swizzle[0:1]
+    y = swizzle[2:3]
+    z = swizzle[4:5]
+    w = swizzle[6:7]
+
+    # loop on VL: SUBVL loop is unrolled
+    for (i in 0; i < VL; i++)
+        ireg[rd+i*4+x] = OPERATION(ireg[rs1+i*4+0], ireg[rs2+i*4+0])
+        ireg[rd+i*4+y] = OPERATION(ireg[rs1+i*4+1], ireg[rs2+i*4+1])
+        ireg[rd+i*4+z] = OPERATION(ireg[rs1+i*4+2], ireg[rs2+i*4+2])
+        ireg[rd+i*4+w] = OPERATION(ireg[rs1+i*4+3], ireg[rs2+i*4+3])
+
 For more information on swizzling, see the Khronos wiki page
 <https://www.khronos.org/opengl/wiki/Data_Type_(GLSL)#Swizzling>
 
