@@ -259,7 +259,7 @@ Simplified pseudocode example, when SUBVL=4 and swizzle is set on rd:
     rs1 = int_vec[rs1].isvector ? int_vec[rs1].regidx : rs1;
     rs2 = int_vec[rs2].isvector ? int_vec[rs2].regidx : rs2;
 
-    # loop on VL: SUBVL loop is unrolled
+    # loop on VL: SUBVL loop is unrolled (SUBVL=4)
     for (i in 0; i < VL; i++)
         ireg[rd+i*4+x] = OPERATION(ireg[rs1+i*4+0], ireg[rs2+i*4+0])
         ireg[rd+i*4+y] = OPERATION(ireg[rs1+i*4+1], ireg[rs2+i*4+1])
