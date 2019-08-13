@@ -226,6 +226,10 @@ Pseudocode for predication:
 The swizzle table is a key-value store that indicates (if a given
 register is used, and SUBVL is 2, 3 or 4) that the sub-elements are to
 be re-ordered according to the indices in the Swizzle format.
+Like the Predication Table, it is an indirect lookup: use of a
+source or destination register in any given operation, if that register
+occurs in the table, "activates" swizzling for that register.
+Note that the target is taken from the "Register Table" (regidx).
 
 Source vectors are free to have the swizzle indices point to the same
 sub-vector element.  However when using swizzling on destination vectors,
@@ -235,13 +239,25 @@ if this occurs.
 
 [[!inline raw="yes" pages="simple_v_extension/swizzle_table_format" ]]
 
-Pseudocode when SUBVL=4 and swizzle is set on rd:
+Simplified pseudocode example, when SUBVL=4 and swizzle is set on rd:
+
+    # default indices if no swizzling table entry present
+    swizzle = {0b11, 0b10, 0b01, 0b00 };
+
+    # lookup swizzling in table for rd
+    if swizzle_table[rd].active:
+        swizzle = swizzle_table[rd].swizzle
 
     # decode the swizzle table entry for rd
     x = swizzle[0:1] # sub-element 0
     y = swizzle[2:3] # sub-element 1
     z = swizzle[4:5] # sub-element 2
     w = swizzle[6:7] # sub-element 3
+
+    # redirect register numbers through Register Table
+    rd  = int_vec[rd ].isvector ? int_vec[rd ].regidx : rd;
+    rs1 = int_vec[rs1].isvector ? int_vec[rs1].regidx : rs1;
+    rs2 = int_vec[rs2].isvector ? int_vec[rs2].regidx : rs2;
 
     # loop on VL: SUBVL loop is unrolled
     for (i in 0; i < VL; i++)
