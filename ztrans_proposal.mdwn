@@ -275,3 +275,24 @@ one can then do high precision multiplies of  π or other transcendental
 radixes.
 
 And GPUs have been doing this almost since the dawn of 3D.
+
+    // calculate ATAN2 high performance style
+    // Note: at this point x != y
+    //
+    if( x  > 0.0             )
+    {
+        if( y < 0.0 && |y| < |x| ) return - π/2 - ATAN( x / y );
+        if( y < 0.0 && |y| > |x| ) return       + ATAN( y / x );
+        if( y > 0.0 && |y| < |x| ) return       + ATAN( y / x );
+        if( y > 0.0 && |y| > |x| ) return + π/2 - ATAN( x / y );
+    }
+    if( x  < 0.0             )
+    {
+        if( y < 0.0 && |y| < |x| ) return + π/2 + ATAN( x / y );
+        if( y < 0.0 && |y| > |x| ) return + π   - ATAN( y / x );
+        if( y > 0.0 && |y| < |x| ) return + π   - ATAN( y / x );
+        if( y > 0.0 && |y| > |x| ) return +3π/2 + ATAN( x / y );
+    }
+
+This way the adds and subtracts from the constant are not in a precision
+precarious position.
