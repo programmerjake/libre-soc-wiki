@@ -24,11 +24,11 @@ The VL/MAXVL/SubVL Block format, when 16xil != 0b111, is:
 """]]
 
 When 16xil is 0b111, this is the "Extended" Format, using the >= 192-bit
-RISC-V ISA format.  Note that the length is 80+16\*nnnnnn, not 192+
+RISC-V ISA format.  Note that the length is 96+16\*nnnnnn, not 192+
 
 | base+5 ... base+3         | base+1  | base             | no. of bits   |
 | ------ -----------------  |         | ---------------- | ------------- |
-| ..xxxx  xxxxxxxxxxxxxxxx  |         | x111xxxxx1111111 | 80+16\*nnnnnn |
+| ..xxxx  xxxxxxxxxxxxxxxx  |         | x111xxxxx1111111 | 96+16\*nnnnnn |
 | {ops}{Pred}{Reg}{VL Block}| VBLOCK2 | VBLOCK Prefix    |               |
 
 VBLOCK2 extends the VBLOCK fields:

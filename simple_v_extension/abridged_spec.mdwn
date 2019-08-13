@@ -221,6 +221,23 @@ Pseudocode for predication:
 [[!inline raw="yes" pages="simple_v_extension/pred_table" ]]
 [[!inline raw="yes" pages="simple_v_extension/get_pred_value" ]]
 
+## Swizzle Table <a name="swizzle_table></a>
+
+The swizzle table is a key-value store that indicates (if a given
+register is used, and SUBVL is 2, 3 or 4) that the sub-elements are to
+be re-ordered according to the indices in the Swizzle format.
+
+Source vectors are free to have the swizzle indices point to the same
+sub-vector element.  However when using swizzling on destination vectors,
+the swizzle **must** be a permutation (no two swizzle indices point to
+the same sub-element).  An illegal instruction exception must be raised
+if this occurs.
+
+[[!inline raw="yes" pages="simple_v_extension/swizzle_table_format" ]]
+
+For more information on swizzling, see the Khronos wiki page
+<https://www.khronos.org/opengl/wiki/Data_Type_(GLSL)#Swizzling>
+
 ## Fail-on-First Mode <a name="ffirst-mode"></a>
 
 ffirst is a special data-dependent predicate mode.  There are two
