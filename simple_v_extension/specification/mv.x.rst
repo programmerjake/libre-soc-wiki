@@ -1,4 +1,5 @@
-= MV.X and MV.swizzle
+MV.X and MV.swizzle
+===================
 
 swizzle needs a MV.  see below for a potential way to use the funct7 to do a swizzle in rs2.
 
@@ -49,7 +50,8 @@ potential MV.X?  register-version of MV-swizzle?
 
 question: do we need a swizzle MV.X as well?
 
-= macro-op fusion
+macro-op fusion
+===============
 
 there is the potential for macro-op fusion of mv-swizzle with the following instruction.
 <http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2019-August/002486.html>
