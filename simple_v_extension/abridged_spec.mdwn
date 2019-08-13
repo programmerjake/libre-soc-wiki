@@ -242,17 +242,17 @@ if this occurs.
 Simplified pseudocode example, when SUBVL=4 and swizzle is set on rd:
 
     # default indices if no swizzling table entry present
-    swizzle = {0b11, 0b10, 0b01, 0b00 };
+    x, y, z, w = 0, 1, 2, 3
 
     # lookup swizzling in table for rd
     if swizzle_table[rd].active:
         swizzle = swizzle_table[rd].swizzle
 
-    # decode the swizzle table entry for rd
-    x = swizzle[0:1] # sub-element 0
-    y = swizzle[2:3] # sub-element 1
-    z = swizzle[4:5] # sub-element 2
-    w = swizzle[6:7] # sub-element 3
+        # decode the swizzle table entry for rd
+        x = swizzle[0:1] # sub-element 0
+        y = swizzle[2:3] # sub-element 1
+        z = swizzle[4:5] # sub-element 2
+        w = swizzle[6:7] # sub-element 3
 
     # redirect register numbers through Register Table
     rd  = int_vec[rd ].isvector ? int_vec[rd ].regidx : rd;
