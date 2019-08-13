@@ -53,5 +53,5 @@ question: do we need a swizzle MV.X as well?
 macro-op fusion
 ===============
 
-there is the potential for macro-op fusion of mv-swizzle with the following instruction.
+there is the potential for macro-op fusion of mv-swizzle with the following instruction and/or preceding instruction.
 <http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2019-August/002486.html>
