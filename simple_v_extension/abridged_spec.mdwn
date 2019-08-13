@@ -238,10 +238,10 @@ if this occurs.
 Pseudocode when SUBVL=4 and swizzle is set on rd:
 
     # decode the swizzle table entry for rd
-    x = swizzle[0:1]
-    y = swizzle[2:3]
-    z = swizzle[4:5]
-    w = swizzle[6:7]
+    x = swizzle[0:1] # sub-element 0
+    y = swizzle[2:3] # sub-element 1
+    z = swizzle[4:5] # sub-element 2
+    w = swizzle[6:7] # sub-element 3
 
     # loop on VL: SUBVL loop is unrolled
     for (i in 0; i < VL; i++)
