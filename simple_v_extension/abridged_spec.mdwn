@@ -41,11 +41,17 @@ and Register or Predicate over-ride tables may be empty: under such
 circumstances the behaviour becomes effectively identical to standard
 RV execution, however SV is never truly actually "off".
 
-Note: **there are *no* new opcodes**. The scheme works *entirely*
+Note: **there are *no* new vector opcodes**. The scheme works *entirely*
 on hidden context that augments (nests) *scalar* RISC-V instructions.
 Thus it may cover existing, future and custom scalar extensions, turning
 all existing, all future and all custom scalar operations parallel,
 without requiring any special (identical, parallel variant) opcodes to do so.
+
+Associated proposals for use with 3D and HPC:
+
+* [[sv.setvl]] - replaces the use of CSRs to set VL (saves 32 bits)
+* [[mv.x]] - provides MV.swizzle and MVX (reg[rd] = reg[reg[rs]])
+* [[ztrans_proposal]] - provides trigonometric and transcendental operations
 
 # CSRs <a name="csrs"></a>
 
