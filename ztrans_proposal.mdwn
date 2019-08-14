@@ -69,13 +69,13 @@ FTAN            | tan         | half\_tan   | native\_tan   | NONE        |
 NONE (1)        | sincos      | NONE        | NONE          | NONE        |
 FASIN           | asin        | NONE        | NONE          | NONE        |
 FACOS           | acos        | NONE        | NONE          | NONE        |
-NONE (3)        | atan        | NONE        | NONE          | NONE        |
+FATAN           | atan        | NONE        | NONE          | NONE        |
 FSINPI          | sinpi       | NONE        | NONE          | NONE        |
 FCOSPI          | cospi       | NONE        | NONE          | NONE        |
 FTANPI          | tanpi       | NONE        | NONE          | NONE        |
 FASINPI         | asinpi      | NONE        | NONE          | NONE        |
 FACOSPI         | acospi      | NONE        | NONE          | NONE        |
-NONE (2)        | atanpi      | NONE        | NONE          | NONE        |
+FATANPI         | atanpi      | NONE        | NONE          | NONE        |
 FSINH           | sinh        | NONE        | NONE          | NONE        |
 FCOSH           | cosh        | NONE        | NONE          | NONE        |
 FTANH           | tanh        | NONE        | NONE          | NONE        |
@@ -101,10 +101,6 @@ NONE (4)        | NONE        | half\_recip | native\_recip | NONE        |
 """]]
 
 Note (1) FSINCOS is macro-op fused (see below).
-
-Note (2) FATANPI is a synthesised alias, below.
-
-Note (3) FATAN2 is a sythesised alias, below.
 
 Note (4) FCRECIP is a sythesised alias, below.
 
@@ -144,6 +140,7 @@ FCOS     | cos (radians)            | rd = cos(rs1)           | Ztrignpi    |
 FTAN     | tan (radians)            | rd = tan(rs1)           | Ztrignpi    |
 FASIN    | arcsin (radians)         | rd = asin(rs1)          | Zarctrignpi |
 FACOS    | arccos (radians)         | rd = acos(rs1)          | Zarctrignpi |
+FATAN    | arctan (radians)         | rd = atan(rs1)          | Zarctrignpi |
 FSINPI   | sin times pi             | rd = sin(pi * rs1)      | Ztrigpi |
 FCOSPI   | cos times pi             | rd = cos(pi * rs1)      | Ztrigpi |
 FTANPI   | tan times pi             | rd = tan(pi * rs1)      | Ztrigpi |
@@ -166,8 +163,6 @@ pseudo-ops, by allocating one scalar FP register for use as a constant
 suitable code block.
 
 * FRCP rd, rs1 - pseudo-code alias for rd = 1.0 / rs1
-* FATAN - pseudo-code alias for rd = atan2(rs1, 1.0) - FATAN2
-* FATANPI - pseudo alias for rd = atan2pi(rs1, 1.0) - FATAN2PI
 * FSINCOS - fused macro-op between FSIN and FCOS (issued in that order).
 * FSINCOSPI - fused macro-op between FSINPI and FCOSPI (issued in that order).
 
@@ -177,7 +172,8 @@ FATANPI example pseudo-code:
     fmv.x.s ft0, t0
     fatan2pi.s rd, rs1, ft0
 
-Hyperbolic function example (obviates need for Zfhyp except for high-performance or correctly-rounding):
+Hyperbolic function example (obviates need for Zfhyp except for
+high-performance or correctly-rounding):
 
     ASINH( x ) = ln( x + SQRT(x**2+1))
 

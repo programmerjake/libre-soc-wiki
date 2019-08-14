@@ -11,8 +11,10 @@ Publicly-known FP proposals:
 
 * Zfrsqrt - Reciprocal SQRT <http://bugs.libre-riscv.org/show_bug.cgi?id=110>
 * Zftrans - see [[ztrans_proposal]]: Transcendentals
-  (FSIN, FCOS, FATAN, FPOW, FEXP, FLOG, FRCP)
+  (FPOW, FEXP, FLOG, FCBRT)
   <http://bugs.libre-riscv.org/show_bug.cgi?id=127>
+* Ztrig\* - see [[ztrans_proposal]]: Trigonometriics
+  (FSIN, FCOS, FTAN, arc-variants, hypotenuse-variants)
 * Extension of formats to cover FP16 (RISC-V ISA Manual Table 11.3 "fmt field")
 * HI-half FP MV - <https://github.com/riscv/riscv-isa-manual/pull/301>
   <https://groups.google.com/a/groups.riscv.org/forum/m/#!topic/isa-dev/kXgfFqgBv-c>
@@ -230,8 +232,8 @@ funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name          |
 01011   | xx      | 10111  | rs1  | rm     | rd    | 1010011 | **FACOSPI.xx**|
 01011   | xx      | 11000  | rs1  | rm     | rd    | 1010011 | **FTAN.xx**   |
 01011   | xx      | 11001  | rs1  | rm     | rd    | 1010011 | **FTANPI.xx** |
-01011   | xx      | 11010  | rs1  | rm     | rd    | 1010011 | ?             |
-01011   | xx      | 11011  | rs1  | rm     | rd    | 1010011 | ?             |
+01011   | xx      | 11010  | rs1  | rm     | rd    | 1010011 | **FATAN.xx**  |
+01011   | xx      | 11011  | rs1  | rm     | rd    | 1010011 | **FATANPI.xx**|
 01011   | xx      | 11100  | rs1  | rm     | rd    | 1010011 | **FSINH.xx**  |
 01011   | xx      | 11101  | rs1  | rm     | rd    | 1010011 | **FCOSH.xx**  |
 01011   | xx      | 11110  | rs1  | rm     | rd    | 1010011 | **FTANH.xx**  |
