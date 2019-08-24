@@ -1,0 +1,224 @@
+\documentclass[slidestop]{beamer}
+\usepackage{beamerthemesplit}
+\usepackage{graphics}
+\usepackage{pstricks}
+
+\title{Open 3D Alliance RISC-V}
+\author{Luke Kenneth Casson Leighton}
+
+
+\begin{document}
+
+\frame{
+   \begin{center}
+    \huge{Open 3D Alliance: RISC-V}\\
+    \vspace{32pt}
+    \Large{An open invitation to collaborate on 3D Graphics}\\
+    \Large{Hardware and Software}\\
+    \Large{for mobile, embedded, and innovative purposes}\\
+    \vspace{24pt}
+    \Large{With thanks to Pixilica, GoWin, and Western Digital}\\
+    \vspace{16pt}
+    \large{\today}
+  \end{center}
+}
+
+
+\frame{\frametitle{Why collaborate?}
+
+ \begin{itemize}
+   \item 3D is hard. It's also not the same as HPC\vspace{15pt}
+   \item NVIDIA, AMD, Imagination - cannot meet "unusual" needs\vspace{15pt}
+   \item Working together on flexible standards, everyone wins\vspace{15pt}
+   \item Without collaboration: 10-20 man-years development\vspace{10pt}
+   \item With collaboration: cross-verification (avoids mistakes)
+  \end{itemize}
+}
+
+
+\frame{\frametitle{What is the goal?}
+
+ \begin{itemize}
+   \item You get to decide! No, really!\vspace{12pt}
+   \item Outlined here: some ideas and cost/time-saving approaches\vspace{12pt}
+   \item Two new platforms: 3D "Embedded", 3D "UNIX"\vspace{12pt}
+   \item Flexible optional extensions (Transcendentals, Vectors,\\
+		 Texturisation, Pixel/Z-Buffers - all optional)\vspace{12pt}
+   \item Good software support absolutely essential\\
+	     (basically, that means Vulkan)\vspace{15pt}
+  \end{itemize}
+}
+
+\frame{\frametitle{Libre RISC-V Team}
+
+ \begin{itemize}
+   \item Small team, sponsored by Purism and the NLNet Foundation\vspace{8pt}
+   \item Therefore, focus is on efficiency: leap-frogging ahead\\
+	     without requiring huge resources.\vspace{8pt}
+   \item OpenGL API? Gallium3D / Vulkan is better\vspace{8pt}
+   \item Gallium3D turns out to be a single-threaded interpreter\\
+	     (Vulkan is compiled, and can be parallelised)\vspace{8pt}
+   \item Independent teams have provided OpenGL to Vulkan adaptors\vspace{8pt}
+   \item Same approach on hardware: seek highest bang-per-buck\\
+		 Save design time, save implementation time\vspace{8pt}   
+  \end{itemize}
+}
+
+\frame{\frametitle{What (optional) things are needed?}
+
+ \begin{itemize}
+   \item Vectorisation.  (SIMD? RVV? Other?)\vspace{12pt}
+   \item Transcendentals (SIN, COS, EXP, LOG)\vspace{12pt}
+   \item Texture opcodes, Pixel/Z-Buffers\vspace{12pt}
+   \item Pixel conversion (YUV/RGB etc.)\vspace{12pt}
+   \item Optional accuracy (embedded space needs less accuracy)\vspace{12pt}
+   \item Options give implementors flexibility.  No imposition:\\
+         imposition risks fragmentation (however, collaboration does\\
+         need some hard easily-logically-justifiable rules)
+  \end{itemize}
+}
+
+\frame{\frametitle{What is essential (not really optional)}
+
+ \begin{itemize}
+   \item The software, basically.  Anything other than Vulkan\\
+	     is a 10+ man-year effort\vspace{12pt}
+   \item Respecting that standards are hard to get right\\
+         (and that consequences of mistakes are severe:\\
+         no opportunity for corrections after a freeze)\vspace{12pt}
+   \item Respecting that, for collaboration and interoperability,\\
+         some things go into a standard that you might not "need"\vspace{12pt}
+   \item Mutually respectful open and fully transparent collaboration.\\
+         No NDAs, no "closed forums".  We need the help of experts\\
+         (such as Mitch Alsup) in this highly technical specialist area.
+  \end{itemize}
+}
+
+\frame{\frametitle{What has our team done already?}
+
+ \begin{itemize}
+   \item Decided to go the "Hybrid" Route (Separate GPUs requires a\\
+         full-blown RPC/IPC mechanism to transfer all 3D API calls\\
+         to and from userspace memory to GPU memory... and back).
+   \item Developed Simple-V (a "Parallelising API)\\
+		 (Simple-V is very hard to describe, because it is unique:\\
+		 there is no common Computer Science terminology)
+   \item Started on Kazan (a Vulkan SPIR-V to LLVM compiler)
+   \item Started work on a highly flexible IEEE754 FPU
+   \item Started work on a "Precise" CDC 6600 style OoO Engine,\\
+	     with help from Mitch Alsup, the designer of the M68000
+   \item Variable-issue, predicated SIMD backend, Vector front-end\\
+	     "precise" exceptions, branch shadowing, much more
+  \end{itemize}
+}
+
+\frame{\frametitle{Why Simple-V? Why not RVV?}
+
+ \begin{itemize}
+   \item RVV is designed exclusively for supercomputing\vspace{8pt}
+   \item Like SIMD, RVV uses dedicated opcodes\\
+	     (google "SIMD considered harmful")\vspace{8pt}
+   \item 98\% of FP opcodes are duplicated in RVV. Large portion\\
+         of BitManip opcodes duplicated in predicate Masks\vspace{8pt}
+   \item OP32 space is extremely precious: 48 and 64 bit opcode space\\
+         comes with an inherent I-Cache power consumption penalty\vspace{8pt}
+   \item Simple-V "prefixes" scalar opcodes (all of them)\\
+	     No need for any new "vector" opcodes (at all).\\
+	     Can therefore use the RVV major opcode for 3D\vspace{8pt}
+  \end{itemize}
+}
+
+\frame{\frametitle{Simple-V "Prefixing"}
+
+ \begin{itemize}
+   \item SV "Prefix" does exactly that: takes RVC and OP32 opcodes\\
+         and "prefixes" them with predication and a "vector" tag\vspace{8pt}
+   \item Three prefix types: SV P32 (prefixed RVC), P48 and P64\vspace{8pt}
+   \item Prefixed RVC takes 3 "Custom" OP32 opcodes.\\
+	     P48 takes standard OP32 scalar opcodes and "prefixes" them\\
+	     P64 adds additional vector context on top of P48\\
+	     \vspace{8pt}
+   \item "Prefixing" is a bit like SIMD.  Vectors may be specified\\
+	     of length 2 to 4, elements may be "packed" into registers,\\
+	     opcode element widths over-ridden.\vspace{8pt}
+   \item Convenient, but not very space-efficient (and VBLOCK is)\vspace{8pt}
+  \end{itemize}
+}
+
+\frame{\frametitle{VBLOCK Format}
+
+ \begin{itemize}
+   \item Again: hard to describe.  It is a bit like VLIW (only not really)\\
+	     A "block" of instructions is "prefixed" with register "tags"\\
+		 which give extra context to scalar instructions within the block
+  \item Sub-blocks include: Vector Length, Swizzling, Vector/Width\\
+         overrides, and predication.  All this is added to scalar opcodes!\\
+         \textbf{There are NO vector opcodes} (and no need for any)
+   \item In the "context", it goes like this: "if a register is used\\
+         by a scalar opcode, and the register is listed in the "context",\\
+         SV mode is "activated"
+   \item "Activation" results in a hardware-level "for-loop" issuing\\
+         \textbf{multiple} contiguous scalar operations (instead of just one).
+   \item Implementors are free to implement the "loop" in any fashion\\
+         they see fit.  SIMD, Multi-issue, single-execution: anything.
+  \end{itemize}
+}
+
+\frame{\frametitle{Other Standard Proposals}
+
+ \begin{itemize}
+   \item Ztrans and Ztrig* - Transcendentals and Trigonometrics\\
+         (optional so that Embedded implementors have some leeway)
+   \item ISAMUX / ISANS - stops arguments over OP32 space\\
+         (also allows clean "paging" of new opcodes into e.g. RVC)
+   \item MV.SWIZZLE and MV.X - RV does not have a MV opcode.
+   \item Zfacc - dynamic FP accuracy.  Needed for "fast" Vulkan native\\
+	     and to switch between fast 3D accuracy and IEEE754 modes.
+   \item These - and more - need your input! 3D is hard!
+   \item The key strategic premise: these are required as \textbf{public}\\
+         standards, because the \textbf{software} is to be public.
+   \item This is \textbf{not} understood by the RISC-V Foundation.\\
+         ("custom" status not appropriate for high-profile mass-volume\\
+         end-user APIs such as Vulkan).
+  \end{itemize}
+}
+
+
+\frame{\frametitle{Summary}
+
+ \begin{itemize}
+   \item 3D is hard (and pure Vectorisation gets you 25\% of \\
+         commercially-acceptable performance).
+   \item Layered optional extensions are going to be key to\\
+         acceptance by a wide variety of 3D Alliance Members.
+   \item With a custom specialised SPIR-V (Vulkan) Compiler\\
+         being an absolutely critical strategic requirement,\\
+         RVV and its associated compiler (still not developed)\\
+         is, surprisingly, of marginal value.
+   \item Question everything!  Your input, and a willingness to\\
+	     take active responsibility for tasks that your Company\\
+	     is critically dependent on, are extremely important.
+   \item Public and transparent Collaboration is key.  There is simply\\
+         too much to do.         
+  \end{itemize}
+}
+
+
+\frame{
+  \begin{center}
+    {\Huge \vspace{20pt}
+		   The end\vspace{20pt}\\
+		   Thank you\vspace{20pt}\\
+	}
+  \end{center}
+  
+  \begin{itemize}
+	\item http://lists.libre-riscv.org/pipermail/libre-riscv-dev/
+	\item http://libre-riscv.org/simple\_v\_extension/abridged\_spec/
+	\item https://libre-riscv.org/ztrans\_proposal/
+	\item https://libre-riscv.org/simple\_v\_extension/specification/mv.x/
+  \end{itemize}
+}
+
+
+\end{document}
