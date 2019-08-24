@@ -82,16 +82,38 @@
 
  \begin{itemize}
    \item The software, basically.  Anything other than Vulkan\\
-	     is a 10+ man-year effort\vspace{12pt}
+	     is a 10+ man-year effort
+   \item Two new 3D "platforms".  Vulkan compliance has implications\\
+	     for hardware, and, with the API being public, interoperability\\
+	     (and Khronos Compliance - which is Trademarked) is critical.
    \item Respecting that standards are hard to get right\\
          (and that consequences of mistakes are severe:\\
-         no opportunity for corrections after a freeze)\vspace{12pt}
+         no opportunity for corrections after a freeze)
    \item Respecting that, for collaboration and interoperability,\\
-         some things go into a standard that you might not "need"\vspace{12pt}
+         some things go into a standard that you might not "need"
    \item Mutually respectful open and fully transparent collaboration.\\
          No NDAs, no "closed forums".  We need the help of experts\\
          (such as Mitch Alsup) in this highly technical specialist area.
   \end{itemize}
+}
+
+\frame{\frametitle{Why Two new Platforms?}
+
+ \begin{itemize}
+   \item Unique pragmatic consequences of "Hybrid" CPU/GPU
+   \item Embedded - no traps need be raised. Interoperability is\\ 
+   impossible, software toolchain collaboration is incidental).
+   \item UNIX - illegal instruction traps mandatory: software\\
+   interoperability is mandatory and essential.
+   \item 3D Embedded - failure to allow implementors the freedom\\
+   to reduce FP accuracy automatically results in product failure\\
+   (too many gates, too much power, equals end-user rejection).
+   \item 3D UNIX - likewise.  Also: failure to comply with Khronos\\
+   Specifications (then use "Vulkan") is a Trademark violation.
+   \item Solution: allow software to select FP accuracy level\\
+   \textbf{at runtime}. (UNIX Platform: IEEE754. 3D UNIX: Vulkan).\\
+   \item HW: slow for IEEE754, fast for 3D. Product now competitive!
+ \end{itemize}
 }
 
 \frame{\frametitle{What has our team done already?}
