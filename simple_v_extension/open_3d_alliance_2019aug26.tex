@@ -115,16 +115,17 @@
 \frame{\frametitle{Why Simple-V? Why not RVV?}
 
  \begin{itemize}
-   \item RVV is designed exclusively for supercomputing\vspace{8pt}
+   \item RVV is designed exclusively for supercomputing\\
+         (RVV simply has not been designed with 3D in mind).\vspace{6pt}
    \item Like SIMD, RVV uses dedicated opcodes\\
-	     (google "SIMD considered harmful")\vspace{8pt}
+	     (google "SIMD considered harmful")\vspace{6pt}
    \item 98\% of FP opcodes are duplicated in RVV. Large portion\\
-         of BitManip opcodes duplicated in predicate Masks\vspace{8pt}
+         of BitManip opcodes duplicated in predicate Masks\vspace{6pt}
    \item OP32 space is extremely precious: 48 and 64 bit opcode space\\
-         comes with an inherent I-Cache power consumption penalty\vspace{8pt}
+         comes with an inherent I-Cache power consumption penalty\vspace{6pt}
    \item Simple-V "prefixes" scalar opcodes (all of them)\\
 	     No need for any new "vector" opcodes (at all).\\
-	     Can therefore use the RVV major opcode for 3D\vspace{8pt}
+	     Can therefore use the RVV major opcode for 3D\vspace{6pt}
   \end{itemize}
 }
 
