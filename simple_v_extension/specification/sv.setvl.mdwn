@@ -1,7 +1,7 @@
 # SV setvl exploration
 
 Formats for Vector Configuration Instructions under OP-V major opcode:
-                                                             
+
 | 31|30         25|24      20|19      15|14   12|11      7|6     0| name    |
 |---|------------------------|----------|-------|---------|-------|---------|
 | 0 |  imm[10:6]  |imm[4:0]  |    rs1   | 1 1 1 |    rd   |1010111| vsetvli |
@@ -9,7 +9,7 @@ Formats for Vector Configuration Instructions under OP-V major opcode:
 | 1 |      6      |     5    |     5    |   3   |    5    |   7   |         |
 
 Requirement: fit MVL into this format.
-                                                             
+
 | 31|30         25|24      20|19      15|14   12|11      7|6     0| name    |
 |---|-------------|----------|----------|-------|---------|-------|---------|
 | 0 |  imm[10:6]  |imm[4:0]  |    rs1   | 1 1 1 |    rd   |1010111| vsetvli |
@@ -116,24 +116,38 @@ It leaves space for future expansion to RV128 and/or multi-register predicates.
 
 <https://libre-riscv.org/simple_v_extension/appendix/#strncpy>
 
-GETVL add1 SETVL is a pain. 3 operations because VL is a CSR it is not possible to perform arithmetic on it.
+GETVL add1 SETVL is a pain. 3 operations because VL is a CSR it is not
+possible to perform arithmetic on it.
 
-What about actually marking one of the registers *as* VL?  this would save a *lot* of instructions.
+What about actually marking one of the registers *as* VL?  this would
+save a *lot* of instructions.
 
 <https://groups.google.com/a/groups.riscv.org/d/msg/isa-dev/7lt9YNCR_bI/8Hh2-UY6AAAJ>
 
-    (2) as it is the only one, VL may be hardware-cached, i.e. the fact that it points to a scalar register, well, that's only 5 bits: that's not very much to pass round and through pipelines.
-
-    (3) if it's not very much to pass around, then the possibility exists to *rewrite* a CSRR VL instruction to become a MV operation, *at execution time*!
-
-    yes, really: at instruction *decode* time, with there being only the 5 bits to check "if VL-cache-register is non-zero and CSR register == VL", it's really not that much extra logic to *directly* substitute the CSRR instruction with "MV rd, VL-where-VL-is-actually-the-contents-of-the-VL-cache"
-
-    that would then allow the substituted-instruction to go directly into dependency-tracking *on the scalar register*, nipping in the bud the need for special CSR-related dependency logic, and no longer requiring the sub-par "stall" solution, either.
-
+> (2) as it is the only one, VL may be hardware-cached, i.e. the
+> fact that it points to a scalar register, well, that's only 5 bits:
+> that's not very much to pass round and through pipelines.
+>
+> (3) if it's not very much to pass around, then the possibility
+> exists to *rewrite* a CSRR VL instruction to become a MV operation,
+> *at execution time*!
+>
+> yes, really: at instruction *decode* time, with there being
+> only the 5 bits to check "if VL-cache-register is non-zero and
+> CSR register == VL", it's really not that much extra logic
+> to *directly* substitute the CSRR instruction with "MV rd,
+> VL-where-VL-is-actually-the-contents-of-the-VL-cache"
+>
+> that would then allow the substituted-instruction to go directly
+> into dependency-tracking *on the scalar register*, nipping in the
+> bud the need for special CSR-related dependency logic, and no longer
+> requiring the sub-par "stall" solution, either.
 
 ----
 
-Setting VL from an immed without altering MVL is not possible in the above pseudocode. It is covered by VLtyp and the VL block in VBLOCK, however is that enough?
+Setting VL from an immed without altering MVL is not possible in the
+above pseudocode. It is covered by VLtyp and the VL block in VBLOCK,
+however is that enough?
 
 # links
 
