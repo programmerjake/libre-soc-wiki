@@ -1,69 +1,14 @@
-# SV setvl exploration
+# SV setvl
 
-Formats for Vector Configuration Instructions under OP-V major opcode:
+sv.setvl allows optional setting of both MVL and of indirectly marking one of the scalar registers as being VL.
 
-| 31|30         25|24      20|19      15|14   12|11      7|6     0| name    |
-|---|------------------------|----------|-------|---------|-------|---------|
-| 0 |  imm[10:6]  |imm[4:0]  |    rs1   | 1 1 1 |    rd   |1010111| vsetvli |
-| 1 |   000000    |   rs2    |    rs1   | 1 1 1 |    rd   |1010111| vsetvl  |
-| 1 |      6      |     5    |     5    |   3   |    5    |   7   |         |
+Unlike the majority of other CSRs, which contain status bits that change behaviour, VL is closely interlinked with the instructions it affects and often requires arithmetic interaction.
 
-Requirement: fit MVL into this format.
+Thus it makes more sense to actually *use* one of the scalar registers *as* VL.
 
-| 31|30         25|24      20|19      15|14   12|11      7|6     0| name    |
-|---|-------------|----------|----------|-------|---------|-------|---------|
-| 0 |  imm[10:6]  |imm[4:0]  |    rs1   | 1 1 1 |    rd   |1010111| vsetvli |
-| 1 |   imm[5:0]  |   rs2    |    rs1   | 1 1 1 |    rd   |1010111| vsetvl  |
-| 1 |      6      |     5    |     5    |   3   |    5    |   7   |         |
+A potential implementation optimisation technique involves keeping 5 bits which specify the scalar register in use as VL actually in the instruction decode phase.  On detection of a CSRR rd, VL, if the cached copy of VL is not pointing to x0, the CSRR instruction is *replaced* with a "MV rd, vlcachedreg" instruction. See [[discussion]] for further details.
 
-where:
-
-* when bit 31==0, both MVL and VL are set to imm(10:6) - plus one to
-  get it out of the "NOP" scenario.
-* when bit 31==1, MVL is set to imm(5:0) plus one.
-
-hang on... no, that's a 4-argument setvl!  what about this?
-
-
-| 31|30         25|24      20|19      15|14   12|11      7|6     0| name    | variant#   |
-|---|-------------|----------|----------|-------|---------|-------|---------|------------|
-| 0 | imm[5:0]    | 0b00000  |    rs1   | 1 1 1 |    rd   |1010111| vsetvli | 1          |
-| 0 | imm[5:0]    | 0b00000  |  0b00000 | 1 1 1 |    rd   |1010111| vsetvli | 2          |
-| 0 |   imm[5:0]  | rs2!=x0  |    rs1   | 1 1 1 |    rd   |1010111| vsetvli | 3          |
-| 0 |   imm[5:0]  | rs2!=x0  |  0b00000 | 1 1 1 |    rd   |1010111| vsetvli | 4          |
-| 1 | imm[5:0]    | 0b00000  |    rs1   | 1 1 1 |    rd   |1010111| vsetvl  | 5          |
-| 1 | imm[5:0]    | 0b00000  |  0b00000 | 1 1 1 |    rd   |1010111| vsetvl  | 6          |
-| 1 |   imm[5:0]  | rs2!=x0  |    rs1   | 1 1 1 |    rd   |1010111| vsetvl  | 7          |
-| 1 |   imm[5:0]  | rs2!=x0  |  0b00000 | 1 1 1 |    rd   |1010111| vsetvl  | 8          |
-| 1 |      6      |     5    |     5    |   3   |    5    |   7   |         |            |
-
-i think those are the 8 permutations: what can those be used for?  some of them for actual
-instructions (brownfield encodings).
-
-| name    | variant# - | purpose                                        |
-|---------|------------|------------------------------------------------|
-| vsetvli | 1          | vl = min(rf[rs1], VLMAX), if (!rd) rf[rd]=rd   |
-| vsetvli | 2          | vl = VLMAX immed        , if (!rd) rf[rd]=rd   |
-| vsetvli | 3          | TBD                                            |
-| vsetvli | 4          | TBD                                            |
-| vsetvl  | 5          | TBD                                            |
-| vsetvl  | 6          | TBD                                            |
-| vsetvl  | 7          | TBD                                            |
-| vsetvl  | 8          | TBD                                            |
-
-notes:
-
-* there's no behavioural difference between the vsetvl version and the
-  vsetvli version.  that needs fixing (somehow, doing something)
-* the above 4 fit into the "rs2 == x0" case, leaving "rs2 != x0" for
-  brownfield encodings.
-
-# original encoding
-
-Selected encoding for sv.setvl, see
-<http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2019-June/001898.html>
-
-The encoding I (programmerjake) was planning on using is:
+Format for Vector Configuration Instructions under OP-V major opcode:
 
 | 31|30   20|19    15|14   12|11 7|6     0| name       |
 |---|-------|--------|-------|----|-------|------------|
@@ -71,23 +16,12 @@ The encoding I (programmerjake) was planning on using is:
 | 0 | VLMAX | 0 (x0) | 1 1 1 | rd |1010111| sv.setvl   |
 | 1 | --    | --     | 1 1 1 | -- |1010111| *reserved* |
 
-It leaves space for future expansion to RV128 and/or multi-register predicates.
-
-> it's the opcode and funct7 that are actually used to determine the
-> instruction for almost all RISC-V instructions, therefore, I think we
-> should use the lower bits of the immediate in I-type to encode MAXVL.
-> This also has the benefit of simple extension of VL/MAXVL since the
-> bits immediately above the MAXVL field aren't used. If a new
-> instruction wants to be able to use rs2, it simply uses the encoding
-> with bit 31 set, which already indicates that rs2 is wanted in the V
-> extension.
-
->> yep, good logic.
 
 # pseudocode
 
     regs = [0u64; 128];
-    vl = 0;
+    vlval = 0;
+    vl = rd;
 
     // instruction fields:
     rd = get_rd_field();
@@ -101,55 +35,18 @@ It leaves space for future expansion to RV128 and/or multi-register predicates.
 
     // calculate VL
     if rs1 == 0 { // rs1 is x0
-        vl = vlmax
+        vlval = vlmax
     } else {
-        vl = min(regs[rs1], vlmax)
+        vlval = min(regs[rs1], vlmax)
     }
 
     // write rd
     if rd != 0 {
         // rd is not x0
-        regs[rd] = vl
+        regs[rd] = vlval;
     }
 
 # questions <a name="questions"></>
 
-<https://libre-riscv.org/simple_v_extension/appendix/#strncpy>
+Moved to [[discussion]]
 
-GETVL add1 SETVL is a pain. 3 operations because VL is a CSR it is not
-possible to perform arithmetic on it.
-
-What about actually marking one of the registers *as* VL?  this would
-save a *lot* of instructions.
-
-<https://groups.google.com/a/groups.riscv.org/d/msg/isa-dev/7lt9YNCR_bI/8Hh2-UY6AAAJ>
-
-> (2) as it is the only one, VL may be hardware-cached, i.e. the
-> fact that it points to a scalar register, well, that's only 5 bits:
-> that's not very much to pass round and through pipelines.
->
-> (3) if it's not very much to pass around, then the possibility
-> exists to *rewrite* a CSRR VL instruction to become a MV operation,
-> *at execution time*!
->
-> yes, really: at instruction *decode* time, with there being
-> only the 5 bits to check "if VL-cache-register is non-zero and
-> CSR register == VL", it's really not that much extra logic
-> to *directly* substitute the CSRR instruction with "MV rd,
-> VL-where-VL-is-actually-the-contents-of-the-VL-cache"
->
-> that would then allow the substituted-instruction to go directly
-> into dependency-tracking *on the scalar register*, nipping in the
-> bud the need for special CSR-related dependency logic, and no longer
-> requiring the sub-par "stall" solution, either.
-
-----
-
-Setting VL from an immed without altering MVL is not possible in the
-above pseudocode. It is covered by VLtyp and the VL block in VBLOCK,
-however is that enough?
-
-# links
-
-* <http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2019-June/001881.html>
-* <https://groups.google.com/d/msg/comp.arch/MLfqE8Rm-X4/zHLCHg6UAQAJ>
