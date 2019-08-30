@@ -3,10 +3,7 @@
 sv.setvl allows optional setting of both MVL and of indirectly marking one of the scalar registers as being VL.
 
 Unlike the majority of other CSRs, which contain status bits that change behaviour, VL is closely interlinked with the instructions it affects and often requires arithmetic interaction.
-
 Thus it makes more sense to actually *use* one of the scalar registers *as* VL.
-
-A potential implementation optimisation technique involves keeping 5 bits which specify the scalar register in use as VL actually in the instruction decode phase.  On detection of a CSRR rd, VL, if the cached copy of VL is not pointing to x0, the CSRR instruction is *replaced* with a "MV rd, vlcachedreg" instruction. See [[discussion]] for further details.
 
 Format for Vector Configuration Instructions under OP-V major opcode:
 
