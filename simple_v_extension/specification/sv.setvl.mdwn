@@ -7,11 +7,11 @@ Thus it makes more sense to actually *use* one of the scalar registers *as* VL.
 
 Format for Vector Configuration Instructions under OP-V major opcode:
 
-| 31|30   20|19    15|14   12|11 7|6     0| name       |
-|---|-------|--------|-------|----|-------|------------|
-| 0 | VLMAX | rs1    | 1 1 1 | rd |1010111| sv.setvl   |
-| 0 | VLMAX | 0 (x0) | 1 1 1 | rd |1010111| sv.setvl   |
-| 1 | --    | --     | 1 1 1 | -- |1010111| *reserved* |
+| 31|30   20|19    15|14..12|11 7|6     0| name       |
+|---|-------|--------|------|----|-------|------------|
+| 0 | VLMAX | rs1    | 111  | rd |1010111| sv.setvl   |
+| 0 | VLMAX | 0 (x0) | 111  | rd |1010111| sv.setvl   |
+| 1 | --    | --     | 111  | -- |1010111| *reserved* |
 
 
 # pseudocode
