@@ -263,6 +263,10 @@ function call may only be taken by letting the VBLOCK group finish,
 returning to "normal" standard RV mode, and then using standard RVC,
 32 bit or P48/64-\*-type opcodes.
 
+The exception to this rule is if the branch or jump within the VBLOCK is back to the start of the same VBLOCK. If this is used, the VBLOCK is, clearly, to be re-executed, including any optional VL blocks and any predication, register table context etc.
+
+Given however that the tables are already established, it is only the VL block that needs to be re-run.  The other tables may be left as-is.
+
 # Links
 
 * <https://groups.google.com/d/msg/comp.arch/yIFmee-Cx-c/jRcf0evSAAAJ>
