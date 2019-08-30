@@ -143,6 +143,8 @@ save a *lot* of instructions.
 > bud the need for special CSR-related dependency logic, and no longer
 > requiring the sub-par "stall" solution, either.
 
+Hang on - CSRR rd, VL needs to return the register number, not the contents of tgat register number. So it's ok.
+
 ----
 
 Setting VL from an immed without altering MVL is not possible in the
