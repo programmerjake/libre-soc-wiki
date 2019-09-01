@@ -87,10 +87,10 @@ Example (contrived):
 
 Writing those out separately, for clarity:
 
-  ADD vector-x3, vector-x5, scalar-x12 # from vs1=1, vs2=0, vd=vs1|vs2
-  ADD vector-x7, vector-x5, vector-x3  # x7: v-x5 | v-x3
-  ADD scalar-x9, scalar-x4, scalar-x4  # x9, x4 not prefixed, therefore scalar
-  ADD vector-x7, vector-x5, scalar-x4  # x4 marked as scalar, x7, x5 vector
+  ADD vector-x3, vector-x5, scalar-x12 # from vs1=1, vs2=0, vd=vs1|vs2  
+  ADD vector-x7, vector-x5, vector-x3  # x7: v-x5 | v-x3  
+  ADD scalar-x9, scalar-x4, scalar-x4  # x9, x4 not prefixed, therefore scalar  
+  ADD vector-x7, vector-x5, scalar-x4  # x4 marked as scalar, x7, x5 vector  
 
 Twin-SVP mode allows certain registers to be explicitly marked as "scalar",
 where some of the rules might otherwise start to cascade through and cause
