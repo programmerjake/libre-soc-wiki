@@ -1,1 +1,92 @@
 # Alternative (SVPrefix) format
+
+This VBLOCK mode effectively extends [[sv_prefix_proposal]] to cover multiple
+registers.  Its advantage over the main format is that the main format requires
+explicit naming of the registers to be tagged (taking up 5 bits each time).
+
+| 15    | 14:12 | 11:10 | 9     | 8:7     | 6:0     |
+| -     | ----- | ----- | ----- | --------| ------- |
+| rsvd  | 16xil | rsvd  | rsvd  | SVPMode | 1111111 |
+
+| SVPMode  | 1:0  |
+| -------  | ---  |
+| non-SVP  | 0b00 |
+| P48 Mode | 0b00 |
+| P64 Mode | 0b00 |
+| Twin-SVP | 0b00 |
+
+non-SVP mode uses the extended format (see main VBLOCK spec [[vblock_format]])
+
+When P48 Mode is enabled (0b01), the P48 prefix follows the VBLOCK header
+
+| 15:11 | 10:0       |
+| -     | ---------- |
+| rsvd  | P48-Prefix |
+
+When P64 Mode is enabled (0b10), the P64 prefix also follows:
+
+| 31:16      | 15:11 | 10:0       |
+| ---------- | -     | ---------- |
+| P64-prefix | rsvd  | P48-Prefix |
+
+When Twin-SVP Mode is enabled (0b11), a *second* P48-P64 prefix pair follows
+in the VBLOCK, which applies vector-context from the *second* instruction's
+registers.
+
+# Rules
+
+* SVP-VBLOCK is read (48/64), and indicates that certain registers are
+  to be "tagged".  Element widths and predication are also specified
+* The very first instruction (RVC, OP32) within the VBLOCk says **which**
+  registers those tags are to be associated with
+* Those registers **remain** tagged with that context *for the entire duration
+   of the VBLOCK*.
+* At the end of the VBLOCK the context terminates and the tags are discarded.
+* There is rule in SVP about vs#/vd# fields, if they are not present in
+  a given P48/P64 prefix, an "implicit" field is created for that src or
+  dest register in the form of a bitwise "OR" of all present vs#/vd# fields.
+  *This rule continues to apply* to the instructions following the first
+  in the VBLOCK, cascading throughout the subsequent instructions, on an
+  ongoing basis.
+* If an instruction is used where registers are implicitly determined to be
+  scalars, they *remain* scalars when used in subsequent instructions.
+
+Example (contrived):
+
+    * VBLOCK, P48 prefix only (SVP0=1), vs1=1, vs2=0
+    * 1st instruction in VBLOCK: ADD x3, x5, x12
+    * 2nd instruction in VBLOCK: ADD x7, x5, x3
+    * 3rd instruction in VBLOCK: ADD x9, x4, x4
+    * 4th instruction in VBLOCK: ADD x7, x5, x4
+
+* vs1=1 indicates that the source register rs1 is to be considered a vector,
+  whilst rs2 is to be a "scalar".
+* The first instruction has "x5" as rs1.  It is therefore "marked" as a vector
+* However with there being no "specifier" for vd in the P48 prefix, vd is
+  calculated as "vd = vs1 | vs2" and is therefore set to "1".
+* The "full" specification for the 1st add is therefore
+  "ADD vector-x3, vector-x5, scalar-x12".
+* The second instruction also uses x5, however x3 is also now considered
+  a "vector", and, consequently, so is x7.
+* The "full" specification for the 2nd add is therefore
+  "ADD vector-x7, vector-x5, vector-x3".
+* The 3rd instruction has no context applied to any of its registers, therefore
+  x9 and x4 are determined to be "scalar"
+* The specification for the 3rd add is therefore
+  "ADD scalar-x9, scalar-x4, scalar-x4"
+* The determination of x4 as "scalar" is now frozen for this VBLOCK, such
+  that it *remains* a scalar for its use in the 4th instruction.
+* Therefore, the "full" specification for the 4th add is:
+  "ADD vector-x7, vector-x5, scalar-x4"
+
+Writing those out separately, for clarity:
+
+  ADD vector-x3, vector-x5, scalar-x12 # from vs1=1, vs2=0, vd=vs1|vs2
+  ADD vector-x7, vector-x5, vector-x3  # x7: v-x5 | v-x3
+  ADD scalar-x9, scalar-x4, scalar-x4  # x9, x4 not prefixed, therefore scalar
+  ADD vector-x7, vector-x5, scalar-x4  # x4 marked as scalar, x7, x5 vector
+
+Twin-SVP mode allows certain registers to be explicitly marked as "scalar",
+where some of the rules might otherwise start to cascade through and cause
+registers to be come undesirably marked as "vectors".
+
