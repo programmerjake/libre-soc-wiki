@@ -39,7 +39,7 @@ When Twin-SVP Mode is enabled (0b11), a *second* P48 prefix follows after a P48-
 in the VBLOCK (another 16 bits after the 32 bit P48/P64 block), which applies vector-context from the *second* instruction's
 registers. The reason why Twin-SVP's prefix is only P48 is because P64 can change VL and MVL. It makes no srnse to try to reset VL/MVL twice in succession.
 
-VL/MVL from a P64 prefix is applied as if a [[sv.setvl]] instruction had been executed as a hidden (first, implicit) instruction in the VBLOCK.
+VL/MVL from a P64 prefix is applied as if a [[specification/sv.setvl]] instruction had been executed as a hidden (first, implicit) instruction in the VBLOCK.
 
 # Rules
 
