@@ -25,21 +25,23 @@ non-SVP mode uses the extended format (see main VBLOCK spec [[vblock_format]])
 
 When P48 Mode is enabled (0b01), the P48 prefix follows the VBLOCK header, and an additional itype may be applied to the src operand(s).
 
-| 15:13 | 12:11 | 10:0       |
-| -     | -     | ---------- |
-| rsvd  | itype | P48-Prefix |
+| 15:11 | 10:0       |
+| -     | ---------- |
+| ioffs | P48-Prefix |
 
 When P64 Mode is enabled (0b10), the P64 prefix also follows:
 
 | 31:16      | 15:11 | 10:0       |
 | ---------- | -     | ---------- |
-| P64-prefix | rsvd  | P48-Prefix |
+| P64-prefix | ioffs | P48-Prefix |
 
 When Twin-SVP Mode is enabled (0b11), a *second* P48 prefix follows after a P48-P64 pair,
 in the VBLOCK (another 16 bits after the 32 bit P48/P64 block), which applies vector-context from the *second* instruction's
 registers. The reason why Twin-SVP's prefix is only P48 is because P64 can change VL and MVL. It makes no srnse to try to reset VL/MVL twice in succession.
 
 VL/MVL from a P64 prefix is applied as if a [[specification/sv.setvl]] instruction had been executed as a hidden (first, implicit) instruction in the VBLOCK. This *includes* modification of SV CSR STATE.
+
+ioffs is the instruction counter in multiples of 16 bits (matching PCVBLK) at which the prefix "activates". When PCVBLK matches ioffs, the Prefix applies. It is ignored on all instructions in the VBBLOCK prior to that point. This allows a degree of fine-grain control over which registers are to be "vectorised". 
 
 itype is described in [[sv_prefix_proposal]]. The additional itype on the src operand(s) allows, for example, a LD of 8 bit vectors to be auto-converted to 16 bit signed in a single instruction.  More examples on elwidth polymorphism is in the [[appendix]].
 
