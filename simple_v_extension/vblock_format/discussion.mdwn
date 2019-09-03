@@ -23,11 +23,11 @@ explicit naming of the registers to be tagged (taking up 5 bits each time).
 
 non-SVP mode uses the extended format (see main VBLOCK spec [[vblock_format]])
 
-When P48 Mode is enabled (0b01), the P48 prefix follows the VBLOCK header
+When P48 Mode is enabled (0b01), the P48 prefix follows the VBLOCK header, and an additional itype may be applied to the src operand(s).
 
-| 15:11 | 10:0       |
-| -     | ---------- |
-| rsvd  | P48-Prefix |
+| 15:13 | 12:11 | 10:0       |
+| -     | -     | ---------- |
+| rsvd  | itype | P48-Prefix |
 
 When P64 Mode is enabled (0b10), the P64 prefix also follows:
 
@@ -40,6 +40,8 @@ in the VBLOCK (another 16 bits after the 32 bit P48/P64 block), which applies ve
 registers. The reason why Twin-SVP's prefix is only P48 is because P64 can change VL and MVL. It makes no srnse to try to reset VL/MVL twice in succession.
 
 VL/MVL from a P64 prefix is applied as if a [[specification/sv.setvl]] instruction had been executed as a hidden (first, implicit) instruction in the VBLOCK. This *includes* modification of SV CSR STATE.
+
+itype is described in [[sv_prefix_ptoposal]]. The additional itype on the src operand(s) allows, for example, a LD of 8 bit vectors to be auto-converted to 16 bit signed in a single instruction.  More examples on elwidth polymorphism is in the [[appendix]].
 
 # Rules
 
