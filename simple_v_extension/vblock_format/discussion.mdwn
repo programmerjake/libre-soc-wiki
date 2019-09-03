@@ -77,16 +77,16 @@ Example (contrived):
   calculated as "vd = vs1 | vs2" and is therefore set to "1".
 * The "full" specification for the 1st add is therefore
   "ADD vector-x3, vector-x5, scalar-x12".
-* The second instruction also uses x5, however x3 is also now considered
-  a "vector", and, consequently, so is x7.
+* The second instruction also uses x5, and x3 was determined by the OR rule as
+  a "vector". A second apication of the "OR" rule, as it is not listed as an operand in the first instruction, gives x7 also as a vector.
 * The "full" specification for the 2nd add is therefore
   "ADD vector-x7, vector-x5, vector-x3".
 * The 3rd instruction has no context applied to any of its registers, therefore
   x9 and x4 are determined to be "scalar"
 * The specification for the 3rd add is therefore
   "ADD scalar-x9, scalar-x4, scalar-x4"
-* The 4th instruction. **despite** using x7 as vector in instruction 2, x7 is **not** listed in the 1st instruction's operands. Likewise for x4. Therefore the "OR" rule applies to them.
-* x5 on the other hand *is* in the 1st instruction's operands, and, given that x4 and x7 have the "OR" rule applied, are also marked as "vector" *despite x4 being fornerly scalar in the 3rd instruction*.
+* The 4th instruction. **despite** determining x7 as vector in instruction 2, x7 is **not** listed in the 1st instruction's operands. Likewise for x4. Therefore the "OR" rule applies to them.
+* x5 on the other hand *is* in the 1st instruction's operands, and, given that x4 and x7 have the "OR" rule applied, are also marked as "vector" *despite x4 being formerly scalar in the 3rd instruction*.
 * Therefore, the "full" specification for the 4th add is:
   "ADD vector-x7, vector-x5, vector-x4"
 
@@ -97,9 +97,13 @@ Writing those out separately, for clarity:
     ADD scalar-x9, scalar-x4, scalar-x4  # x9, x4 not prefixed, therefore scalar  
     ADD vector-x7, vector-x5, vector-x4  # x4, x7, x5 vector  
 
+This kind of counterintuitive weirdness (for x4) is important for reducing the amount of state for context switching.
+
 Twin-SVP mode allows even more registers to be explicitly marked, including some specifically as "scalar",
 where the rules might otherwise start to cascade through and cause
-registers to be come undesirably marked as "vectors".
+registers to be come undesirably marked as "vectors", but also to give more opportunity to mark registers that would otherwise flip between scalar and vector.
+
+If ultimately a compiler determines that the rules cannot be applied to get the desired cascading, another VBLOCK can always be started. They are a lot more compact than use of CSR setup and teardown (VBLOCKs end and the context is revoked automatically), requiring only between 32 and 80 bytes to establish, where CSRs, due to the OP32 overhead of the CSR instruction(s) themselves, the teardown cost, and the lack of a long immediate instruction in RISC-V could easily require 80 to 160 bytes to achieve the same task.
 
 The reason why the OR rule cannot cascade onwards is because if a trap occurs and the context has to be reestablished on return, it may be reestablished purely with the VBLOCK header and by decoding the first (and second) instruction.
 
