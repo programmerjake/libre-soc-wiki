@@ -52,14 +52,15 @@ registers.
   a given P48/P64 prefix, an "implicit" field is created for that src or
   dest register in the form of a bitwise "OR" of all present vs#/vd# fields.
   *This rule continues to apply* to the instructions following the first
-  in the VBLOCK, cascading throughout the subsequent instructions, on an
-  ongoing basis.
+  (and second, if applicable)
+  in the VBLOCK, however the ORing rule
+  *stops* i.e does not cascade via rd in the following instructions.
 * If an instruction is used where registers are implicitly determined to be
   scalars, they *remain* scalars when used in subsequent instructions.
 
 Example (contrived):
 
-    * VBLOCK, P48 prefix only (SVP0=1), vs1=1, vs2=0
+    * VBLOCK, P48 prefix only (SVPMode=0b01), vs1=1, vs2=0
     * 1st instruction in VBLOCK: ADD x3, x5, x12
     * 2nd instruction in VBLOCK: ADD x7, x5, x3
     * 3rd instruction in VBLOCK: ADD x9, x4, x4
@@ -80,21 +81,25 @@ Example (contrived):
   x9 and x4 are determined to be "scalar"
 * The specification for the 3rd add is therefore
   "ADD scalar-x9, scalar-x4, scalar-x4"
-* The determination of x4 as "scalar" is now frozen for this VBLOCK, such
-  that it *remains* a scalar for its use in the 4th instruction.
+* The 4th instruction. **despite** using x7 as vector in instruction 2, x7 is **not** listed in the 1st instruction's operands. Likewise for x4. Therefore the "OR" rule applies to them.
+* x5 on the other hand *is* in the 1st instruction's operands, and, given that x4 abd x7 have the "OR" rule applied, are also marked as "vector" *despite x4 being fornerly scalar in the 3rd instruction*.
 * Therefore, the "full" specification for the 4th add is:
-  "ADD vector-x7, vector-x5, scalar-x4"
+  "ADD vector-x7, vector-x5, vector-x4"
 
 Writing those out separately, for clarity:
 
   ADD vector-x3, vector-x5, scalar-x12 # from vs1=1, vs2=0, vd=vs1|vs2  
   ADD vector-x7, vector-x5, vector-x3  # x7: v-x5 | v-x3  
   ADD scalar-x9, scalar-x4, scalar-x4  # x9, x4 not prefixed, therefore scalar  
-  ADD vector-x7, vector-x5, scalar-x4  # x4 marked as scalar, x7, x5 vector  
+  ADD vector-x7, vector-x5, vector-x4  # x4, x7, x5 vector  
 
 Twin-SVP mode allows certain registers to be explicitly marked as "scalar",
 where some of the rules might otherwise start to cascade through and cause
 registers to be come undesirably marked as "vectors".
+
+The reason why the OR rule cannot cascade onwards is because if a trap occurs and the context has to be reestablished, it may be reestablished purely with the VBLOCK header and by decoding the first (and second) instruction.
+
+If the cascade of what was marked "vector" was allowed to continue, it would require re-reading of every opcode up to the point where execution of the VBLOCK left off, on order to reestablish the full cascade context.
 
 # Discussion
 
