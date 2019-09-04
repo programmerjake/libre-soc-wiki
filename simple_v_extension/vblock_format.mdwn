@@ -1,15 +1,15 @@
 # Simple-V (Parallelism Extension Proposal) Vector Block Format
 
 * Copyright (C) 2017, 2018, 2019 Luke Kenneth Casson Leighton
-* Status: DRAFTv0.7
-* Last edited: 30 aug 2019
+* Status: DRAFTv0.7.1
+* Last edited: 2 sep 2019
 
 [[!toc ]]
 
 # Vector Block Format <a name="vliw-format"></a>
 
 This is a way to give Vector and Predication Context to a group of
-standard scalar RISC-V instructions, in a highly compact form.
+standard scalar RISC-V instructions, in a highly compact form. Program Execution Order is still preserved (unlike VLIW), just with "context" that would otherwise require much longer instructions.
 
 The format is:
 
