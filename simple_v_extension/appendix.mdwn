@@ -1522,7 +1522,7 @@ TODO evaluate strncpy and strlen
 RVV version:
 
     strncpy:
-        mv a3, a0               # Copy dst
+        c.mv a3, a0               # Copy dst
     loop:
         setvli x0, a2, vint8    # Vectors of bytes.
         vlbff.v v1, (a1)        # Get src bytes
@@ -1530,43 +1530,40 @@ RVV version:
         vmfirst a4, v0          # Zero found?
         vmsif.v v0, v0          # Set mask up to and including zero byte.
         vsb.v v1, (a3), v0.t    # Write out bytes
-        bgez a4, exit           # Done
+        c.bgez a4, exit           # Done
         csrr t1, vl             # Get number of bytes fetched
-        add a1, a1, t1          # Bump src pointer
-        sub a2, a2, t1          # Decrement count.
-        add a3, a3, t1          # Bump dst pointer
-        bnez a2, loop           # Anymore?
+        c.add a1, a1, t1          # Bump src pointer
+        c.sub a2, a2, t1          # Decrement count.
+        c.add a3, a3, t1          # Bump dst pointer
+        c.bnez a2, loop           # Anymore?
 
     exit:
-        ret
+        c.ret
 
 SV version (WIP):
 
     strncpy:
-        mv a3, a0
-        RegCSR[a3] = 8bit, a3, scalar
-        RegCSR[a1] = 8bit, a1, scalar
-        RegCSR[t0] = 8bit, t0, vector
-        PredTb[t0] = ffirst, x0, inv
+        c.mv a3, a0
+        VBLK.RegCSR[a3] = 8bit, a3, scalar
+        VBLK.RegCSR[a1] = 8bit, a1, scalar
+        VBLK.RegCSR[t0] = 8bit, t0, vector
+        VBLK.PredTb[t0] = ffirst, x0, inv
     loop:
-        SETVLI a2, t4, 8 # t4 and VL now 1..8 (MVL=8)
-        ldb t0, (a1) # t0 fail first mode
-        bne t0, x0, allnonzero # still ff
-        # VL points to last nonzero
-        GETVL t4       # from bne tests
-        addi t4, t4, 1 # include zero
-        SETVL t4       # set exactly to t4
-        stb t0, (a3)   # store incl zero
-        ret            # end subroutine
+        VBLK.SETVLI a2, t4, 8 # t4 and VL now 1..8 (MVL=8)
+        c.ldb t0, (a1) # t0 fail first mode
+        c.bne t0, x0, allnonzero # still ff
+        # VL (t4) points to last nonzero
+        c.addi t4, t4, 1 # include zero
+        c.stb t0, (a3)   # store incl zero
+        c.ret            # end subroutine
     allnonzero:
-        stb t0, (a3)    # VL legal range
-        GETVL t4        # from bne tests
-        add a1, a1, t4  # Bump src pointer
-        sub a2, a2, t4  # Decrement count.
-        add a3, a3, t4  # Bump dst pointer
-        bnez a2, loop   # Anymore?
+        c.stb t0, (a3)    # VL legal range
+        c.add a1, a1, t4  # Bump src pointer
+        c.sub a2, a2, t4  # Decrement count.
+        c.add a3, a3, t4  # Bump dst pointer
+        c.bnez a2, loop   # Anymore?
     exit:
-        ret
+        c.ret
 
 Notes:
 
