@@ -1,6 +1,14 @@
-    # a0 is n, a1 is ptr to x[0], a2 is ptr to y[0], fa0 is a
-     VBLK.REG[0] = {type: F, regkey: a3, regidx: a3, elwidth: dflt}
-     VBLK.REG[1] = {type: F, regkey: a7, regidx: a7, elwidth: dflt}
+    # c code
+    void daxpy(size_t n, double a, const double x[], double y[])
+    {
+     for (size_t i = 0; i < n; i++) {
+       y[i] = a*x[i] + y[i];
+     }
+    }
+
+    # a0 is n, a1 is ptr to x[0], a2 is ptr to y[0], fa0 is a (scalar)
+     VBLK.REG[0] = {type: F, isvec: 1, regkey: a3, regidx: a3, elwidth: dflt}
+     VBLK.REG[1] = {type: F, isvec: 1, regkey: a7, regidx: a7, elwidth: dflt}
      VBLK.MVL = 4
     loop:
      setvl  t0, a0          # vl = t0 = min(a0, MVL))
