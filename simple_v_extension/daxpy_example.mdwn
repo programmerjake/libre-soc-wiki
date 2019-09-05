@@ -13,7 +13,7 @@
     loop:
       VBLK.SETVL  t0, a0, #4   # MVL=4, vl = t0 = min(a0, MVL))
       c.ld     a3, a1          # load 4 registers a3-6 from x
-      c.slli   t1, t0, 3       # t1 = vl * 8 (in bytes)
+      c.slli   t1, t0, 3       # t1 = vl * 8 (in bytes: FP is double)
       c.ld     a7, a2          # load 4 registers a7-10 from y
       c.add    a1, a1, t1      # increment pointer to x by vl*8
       fmadd  a7, a3, fa0, a7   # v1 += v0 * fa0 (y = a * x + y)
