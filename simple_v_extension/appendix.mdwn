@@ -1544,8 +1544,6 @@ SV version (WIP):
 
     strncpy:
         c.mv a3, a0
-        VBLK.RegCSR[a3] = 8bit, a3, scalar
-        VBLK.RegCSR[a1] = 8bit, a1, scalar
         VBLK.RegCSR[t0] = 8bit, t0, vector
         VBLK.PredTb[t0] = ffirst, x0, inv
     loop:
