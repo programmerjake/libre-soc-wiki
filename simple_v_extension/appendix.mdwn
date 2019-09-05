@@ -1625,3 +1625,15 @@ RVV version:
 ## DAXPY
 
 [[!inline raw="yes" pages="simple_v_extension/daxpy_example" ]]
+
+Notes:
+
+* Setting MVL to 4 is just an example.  With enough space between the
+  FP regs, MVL may be set to larger values
+* VBLOCK header takes 16 bits, 8-bit mode may be used on the registers,
+  taking only another 16 bits, VBLOCK.SETVL requires 16 bits.  Total
+  overhead for use of VBLOCK: 48 bits (3 16-bit words).
+* All instructions except fmadd may use Compressed variants.  Total
+  number of 16-bit instruction words: 11.
+* Total: 14 16-bit words.  By contrast, RVV requires around 18 16-bit words.
+

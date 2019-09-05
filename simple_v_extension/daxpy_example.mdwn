@@ -6,12 +6,13 @@
      }
     }
 
+    # SV Version
     # a0 is n, a1 is ptr to x[0], a2 is ptr to y[0], fa0 is a (scalar)
      VBLK.REG[0] = {type: F, isvec: 1, regkey: a3, regidx: a3, elwidth: dflt}
      VBLK.REG[1] = {type: F, isvec: 1, regkey: a7, regidx: a7, elwidth: dflt}
     loop:
      VBLK.SETVL  t0, a0, #4   # MVL=4, vl = t0 = min(a0, MVL))
-     ld     a3, a1            # load 4 registers a3-6 from x
+     c.ld     a3, a1          # load 4 registers a3-6 from x
      c.slli   t1, t0, 3       # t1 = vl * 8 (in bytes)
      c.ld     a7, a2          # load 4 registers a7-10 from y
      c.add    a1, a1, t1      # increment pointer to x by vl*8
@@ -20,3 +21,20 @@
      c.st     a7, a2          # store 4 registers a7-10 to y
      c.add    a2, a2, t1      # increment pointer to y by vl*8
      c.bnez   a0, loop        # repeat if n != 0
+
+    # RVV version
+    # a0 is n, a1 is pointer to x[0], a2 is pointer to y[0], fa0 is a
+      0:  li t0, 2<<25
+      4:  vsetdcfg t0             # enable 2 64b Fl.Pt. registers
+    loop:
+      8:  setvl  t0, a0           # vl = t0 = min(mvl, n)
+      c:  vld    v0, a1           # load vector x
+      10:  slli   t1, t0, 3        # t1 = vl * 8 (in bytes)
+      14:  vld    v1, a2           # load vector y
+      18:  add    a1, a1, t1       # increment pointer to x by vl*8
+      1c:  vfmadd v1, v0, fa0, v1  # v1 += v0 * fa0 (y = a * x + y)
+      20:  sub    a0, a0, t0       # n -= vl (t0)
+      24:  vst    v1, a2           # store Y
+      28:  add    a2, a2, t1       # increment pointer to y by vl*8
+      2c:  bnez   a0, loop         # repeat if n != 0
+      30:  ret                     # return
