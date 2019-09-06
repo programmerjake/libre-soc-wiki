@@ -40,6 +40,58 @@ p{
 ol{
 	margin-left: 2em;
 }
+/* Counter Headings */
+body {
+counter-reset : h2;
+    }
+
+h2 {
+counter-reset : h3;
+    }
+
+h3 {
+counter-reset : h4;
+    }
+
+h4 {
+counter-reset : h5;
+    }
+
+h5 {
+counter-reset : h6;
+    }
+
+#content h2:before {
+content : counter(h2,decimal) ". ";
+counter-increment : h2;
+    }
+
+#content h3:before {
+content : counter(h2,decimal) "." counter(h3,decimal) ". ";
+counter-increment : h3;
+    }
+
+#content h4:before {
+content : counter(h2,decimal) "." counter(h3,decimal) "." counter(h4,decimal) ". ";
+counter-increment : h4;
+    }
+
+#content h5:before {
+content : counter(h2,decimal) "." counter(h3,decimal) "." counter(h4,decimal) "." counter(h5,decimal) ". ";
+counter-increment : h5;
+    }
+
+#content h6:before {
+content : counter(h2,decimal) "." counter(h3,decimal) "." counter(h4,decimal) "." counter(h5,decimal) "." counter(h6,decimal) ". ";
+counter-increment : h6;
+    }
+
+h2.nocount:before, h3.nocount:before, h4.nocount:before, h5.nocount:before, h6.nocount:before {
+content : "";
+counter-increment : none;
+    }
+
+
 /* Headings */
 
 .pageheader { min-height: 100px; overflow: none; width: 95%; margin: 4px; }
