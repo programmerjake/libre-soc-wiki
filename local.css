@@ -42,6 +42,10 @@ ol{
 }
 /* Counter Headings */
 body {
+counter-reset : h1;
+    }
+
+h1 {
 counter-reset : h2;
     }
 
@@ -59,6 +63,11 @@ counter-reset : h5;
 
 h5 {
 counter-reset : h6;
+    }
+
+#content h1:before {
+content : counter(h1,decimal) ". ";
+counter-increment : h1;
     }
 
 #content h2:before {
@@ -86,7 +95,7 @@ content : counter(h2,decimal) "." counter(h3,decimal) "." counter(h4,decimal) ".
 counter-increment : h6;
     }
 
-h2.nocount:before, h3.nocount:before, h4.nocount:before, h5.nocount:before, h6.nocount:before {
+h1.nocount:before, h2.nocount:before, h3.nocount:before, h4.nocount:before, h5.nocount:before, h6.nocount:before {
 content : "";
 counter-increment : none;
     }
