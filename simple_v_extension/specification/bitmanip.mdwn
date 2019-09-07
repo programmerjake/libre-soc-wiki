@@ -1,0 +1,67 @@
+# Bitmanip opcodes
+
+These are bit manipulation opcodes that, if provided, augment SimpleV for
+the purposes of efficiently accelerating Vector Processing, 3D Graphics
+and Video Processing.
+
+# Predicate Masks
+
+SV uses standard integer scalar registers as a predicate bitmask.  Therefore,
+the majority of RISC-V RV32I / RV64I bit-level instructions are perfectly
+adequate.  Some exceptions however present themselves from RVV.
+
+## logical bit-wise instructions
+
+TODO: there is an extensive table in RVV of bit-level operations
+
+## pcnt - population count
+
+population-count
+
+## ffirst - find first bit
+
+finds the first bit set as an index.
+
+## sbf - set before first bit
+
+Sets all LSBs leading up to where an LSB in the src is set.  If the second
+operand is non-zero, this process begins each time from where 1s are set in the
+second operand.
+
+     # Example
+
+     7 6 5 4 3 2 1 0   Bit number
+
+     1 0 0 1 0 1 0 0   a3 contents
+                       sbf a2, a3, x0
+     0 0 0 0 0 0 1 1   a2 contents
+
+     1 0 0 1 0 1 0 1   a3 contents
+                       sbf a2, a3, x0
+     0 0 0 0 0 0 0 0   a2
+
+     0 0 0 0 0 0 0 0   a3 contents
+                       sbf a2, a3, x0
+     1 1 1 1 1 1 1 1   a2
+
+     1 1 0 0 0 0 1 1   a0 vcontents
+     1 0 0 1 0 1 0 0   a3 contents
+                       sbf a2, a3, a0
+     0 1 0 0 0 0 1 1   a2 contents
+
+Pseudo-code:
+
+    def sbf(rd, rs1, rs2):
+        rd = 0
+        setting_mode = rs2 == x0 or (regs[rs2] & 1)
+        while i < XLEN:
+            bit = 1<<i
+            if setting_mode:
+                if regs[rs1] & bit: # found a bit in rs1: stop setting rd
+                    setting_mode = False
+                else:
+                    regs[rd] |= bit
+            else if rs2 != x0: # searching mode
+                if (regs[rs2] & bit):
+                    setting_mode = True # back into "setting" mode
+            i += 1
