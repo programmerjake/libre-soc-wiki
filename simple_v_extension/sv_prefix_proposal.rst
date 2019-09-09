@@ -39,7 +39,7 @@ Options
 The following partial / full implementation options are possible:
 
 * SVPrefix augments the main Specification_
-* SVPregix operates independently, without the main spec VL (and MVL)
+* SVPrefix operates independently, without the main spec VL (and MVL)
   CSRs (in any priv level)
 * SVPrefix operates independently, without the main spec SUBVL CSRs
   (in any priv level)
@@ -88,7 +88,7 @@ instructions.
 ============================
 
 The 48 bit format is further extended with the full 128-bit range on all
-source and destination registers, and the option to set both VL and MVL
+source and destination registers, and the option to set both SVSTATE.VL and SVSTATE.MVL
 is provided.
 
 48-bit Instruction Encodings
@@ -130,9 +130,9 @@ Table showing correspondance between P48-*-type and RV32-*-type.
 These are bits 47:18 (RV32 shifted up by 16 bits):
 
 +---------------+---------------+
-| Encoding      | 47:18         |
+| Encoding      | RV32 Encoding |
 +---------------+---------------+
-| RV32 Encoding | 31:2          |
+| 47:32         | 31:2          |
 +---------------+---------------+
 | P48-LD-type   | RV32-I-type   |
 +---------------+---------------+
@@ -210,7 +210,7 @@ this is now set to "0b0111111".
 
 The extra bit for src and dest registers provides the full range of
 up to 128 registers, when combined with the extra bit from the 48 bit
-prefix as well.  VLtyp encodes how (whether) to set VL and MAXVL.
+prefix as well.  VLtyp encodes how (whether) to set SVPSTATE.VL and SVPSTATE.MAXVL.
 
 VLtyp field encoding
 ====================
@@ -255,10 +255,11 @@ operations such as LOAD-MULTI / STORE-MULTI, for saving and restoration
 of large batches of registers in context-switches or function calls.
 
 Note that VLtyp's VL and MVL are not the same as the main Specification_
-VL or MVL, and that loops will alter srcoffs and destoffs in SVPSTATE in VLtype nondefault mode, but in STATE if VLtype=0.
+VL or MVL, and that loops will alter srcoffs and destoffs in SVPSTATE in VLtype nondefault mode, but the srcoffs and destoffs in STATE, if VLtype=0.
 
 Furthermore, the execution order and exception handling must be exactly
-the same as in the main spec.
+the same as in the main spec
+(Program Order must be preserved)
 
 vs#/vd Fields' Encoding
 =======================
@@ -341,8 +342,7 @@ immediate. Should this be considered?
 Sub-Vector Length (svlen) Field Encoding
 ========================================
 
-NOTE: svlen is the same as the main spec SUBVL, and modifies the STATE
-CSR. The same caveats apply to svlen as do to SUBVL.
+NOTE: svlen is not the same as the main spec SUBVL.  When nondefault (not zero) SVPSTATE context is used for Sub vector loops. However is svlen is zero, STATE and SUBVL is used instead.
 
 Bitwidth, from VL's perspective, is a multiple of the elwidth times svlen.
 So within each loop of VL there are svlen sub-elements of elwidth in size,
@@ -583,17 +583,16 @@ the main specification.
 
 * VL
 * MVL
-* STATE
+* SVPSTATE
 * SUBVL
 
 Associated SET and GET on the CSRs is exactly as in the main spec as well
 (including CSRRWI and CSRRW differences).
 
-Note that if all of VL/MVL, SUBVL, VLtyp and svlen are all chosen by an
-implementor not to be implemented, the STATE CSR is not required.
+Note that if both VLtyp and svlen are not implemented, SVPSTATE is not required. Also if VL and SUBVL are not implemented, STATE from the main Specification_ is not required either.
 
 However if partial functionality is implemented, the unimplemented bits
-in STATE must be zero, and, in the UNIX Platform, an illegal exception
+in STATE and SVPSTATE must be zero, and, in the UNIX Platform, an illegal exception
 **MUST** be raised if unsupported bits are written to.
 
 Additional Instructions
