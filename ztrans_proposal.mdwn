@@ -185,41 +185,43 @@ FHYPOT    | hypotenuse             | rd = sqrt(rs1^2 + rs2^2)   | Zftrans     |
 [[!table  data="""
 opcode   | Description              | pseudo-code             | Extension  |
 FRSQRT   | Reciprocal Square-root   | rd = sqrt(rs1)          | Zfrsqrt    |
-FCBRT    | Cube Root                | rd = pow(rs1, 3)        | Zftrans    |
-FRECIP   | Reciprocal               | rd = 1.0 /   rs1        | Zftrans    |
+FCBRT    | Cube Root                | rd = pow(rs1, 1.0 / 3)  | Zftrans    |
+FRECIP   | Reciprocal               | rd = 1.0 / rs1          | Zftrans    |
 FEXP2    | power-of-2               | rd = pow(2, rs1)        | Zftrans    |
-FLOG2    | log2                     | rd = log2(rs1)          | Zftrans    |
+FLOG2    | log2                     | rd = log(2. rs1)        | Zftrans    |
 FEXPM1   | exponential minus 1      | rd = pow(e, rs1) - 1.0  | Zftrans    |
 FLOG1P   | log plus 1               | rd = log(e, 1 + rs1)    | Zftrans    |
 FEXP     | exponential              | rd = pow(e, rs1)        | ZftransExt |
 FLOG     | natural log (base e)     | rd = log(e, rs1)        | ZftransExt |
 FEXP10   | power-of-10              | rd = pow(10, rs1)       | ZftransExt |
-FLOG10   | log base 10              | rd = log10(rs1)         | ZftransExt |
+FLOG10   | log base 10              | rd = log(10, rs1)       | ZftransExt |
 """]]
 
 # List of 1-arg trigonometric opcodes
 
 [[!table  data="""
-opcode   | Description              | pseudo-code             | Extension |
-FSIN     | sin (radians)            | rd = sin(rs1)           | Ztrignpi    |
-FCOS     | cos (radians)            | rd = cos(rs1)           | Ztrignpi    |
-FTAN     | tan (radians)            | rd = tan(rs1)           | Ztrignpi    |
-FASIN    | arcsin (radians)         | rd = asin(rs1)          | Zarctrignpi |
-FACOS    | arccos (radians)         | rd = acos(rs1)          | Zarctrignpi |
-FATAN    | arctan (radians)         | rd = atan(rs1)          | Zarctrignpi |
-FSINPI   | sin times pi             | rd = sin(pi * rs1)      | Ztrigpi |
-FCOSPI   | cos times pi             | rd = cos(pi * rs1)      | Ztrigpi |
-FTANPI   | tan times pi             | rd = tan(pi * rs1)      | Ztrigpi |
-FASINPI  | arcsin / pi              | rd = asin(rs1) / pi     | Zarctrigpi |
-FACOSPI  | arccos / pi              | rd = acos(rs1) / pi     | Zarctrigpi |
-FATANPI  | arctan / pi              | rd = atan(rs1) / pi     | Zarctrigpi |
-FSINH    | hyperbolic sin (radians) | rd = sinh(rs1)          | Zfhyp |
-FCOSH    | hyperbolic cos (radians) | rd = cosh(rs1)          | Zfhyp |
-FTANH    | hyperbolic tan (radians) | rd = tanh(rs1)          | Zfhyp |
-FASINH   | inverse hyperbolic sin   | rd = asinh(rs1)         | Zfhyp |
-FACOSH   | inverse hyperbolic cos   | rd = acosh(rs1)         | Zfhyp |
-FATANH   | inverse hyperbolic tan   | rd = atanh(rs1)         | Zfhyp |
+opcode      | Description              | pseudo-code             | Extension |
+FSIN        | sin (radians)            | rd = sin(rs1)           | Ztrignpi    |
+FCOS        | cos (radians)            | rd = cos(rs1)           | Ztrignpi    |
+FTAN        | tan (radians)            | rd = tan(rs1)           | Ztrignpi    |
+FASIN       | arcsin (radians)         | rd = asin(rs1)          | Zarctrignpi |
+FACOS       | arccos (radians)         | rd = acos(rs1)          | Zarctrignpi |
+FATAN (1)   | arctan (radians)         | rd = atan(rs1)          | Zarctrignpi |
+FSINPI      | sin times pi             | rd = sin(pi * rs1)      | Ztrigpi |
+FCOSPI      | cos times pi             | rd = cos(pi * rs1)      | Ztrigpi |
+FTANPI      | tan times pi             | rd = tan(pi * rs1)      | Ztrigpi |
+FASINPI     | arcsin / pi              | rd = asin(rs1) / pi     | Zarctrigpi |
+FACOSPI     | arccos / pi              | rd = acos(rs1) / pi     | Zarctrigpi |
+FATANPI (1) | arctan / pi              | rd = atan(rs1) / pi     | Zarctrigpi |
+FSINH       | hyperbolic sin (radians) | rd = sinh(rs1)          | Zfhyp |
+FCOSH       | hyperbolic cos (radians) | rd = cosh(rs1)          | Zfhyp |
+FTANH       | hyperbolic tan (radians) | rd = tanh(rs1)          | Zfhyp |
+FASINH      | inverse hyperbolic sin   | rd = asinh(rs1)         | Zfhyp |
+FACOSH      | inverse hyperbolic cos   | rd = acosh(rs1)         | Zfhyp |
+FATANH      | inverse hyperbolic tan   | rd = atanh(rs1)         | Zfhyp |
 """]]
+
+Note (1): FATAN/FATANPI is a pseudo-op expanding to FATAN2/FATAN2PI (needs deciding)
 
 # Synthesis, Pseudo-code ops and macro-ops
 
