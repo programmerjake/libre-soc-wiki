@@ -54,31 +54,11 @@ that do not support each option.  For example, an implementation that
 has no support for VLtyp that sees an opcode with a nonzero VLtyp must
 raise an illegal instruction exception.
 
-Note that SVPrefix (VLtyp and svlen) and the main spec share (modify) the
-STATE CSR. P48 and P64 opcodes must **NOT** set VLtyp or svlen inside
-loops that also use VL or SUBVL. Doing so will result in undefined
-behaviour, as STATE will be affected by doing so.
+Note that SVPrefix (VLtyp and svlen) has its own STATE CSR, SVPSTATE. This allows Prefixed operations to be re-entrant on traps, and to not affect VBLOCK use of VL or SUBVL.
 
-However, using VLtyp or svlen in standalone operations, or pushing (and
-restoring) the contents of the STATE CSR to the stack, or just storing
-its contents in a temporary register whilst executing a sequence of P48
-or P64 opcodes, is perfectly fine.
+If the main Specification_ CSRs and features are to be supported (VBLOCK), then when VLtyp or svlen are "default" they utilise the main Specification_ VBLOCK VL and/or SUBVL, and, correspondingly, the main VBLOCK STATE CSR will be updated and used to track hardware loops.
 
-If the main Specification_ CSRs are to be supported, the STATE, VL, MVL
-and SUBVL CSRs all operate according to the main specification. Under
-the options above, hypothetically an implementor could choose not to
-support setting of VL, MVL or SUBVL (only allowing them to be set to
-a value of 1). Under such circumstances, where *neither* VL/MVL *nor*
-SUBVL are supported, STATE would then not be required either.
-
-If however support for SUBVL is to be provided, storing of the sub-vector
-offsets and SUBVL itself (and context switching of the same) in the
-STATE CSRs are mandatory.
-
-Likewise if support for VL is to be provided, storing of VL, MVL and the
-dest and src offsets (and context switching of the same) in the STATE
-CSRs are mandatory.
-
+If however VLtyp is set to nondefault, then the SVPSTATE src and destoffs fields are used instead to create the hardware loops, and likewise if svlen is set to nondefault, SVPSTATE's svoffs field is used.
 
 Half-Precision Floating Point (FP16)
 ====================================
@@ -235,10 +215,7 @@ prefix as well.  VLtyp encodes how (whether) to set VL and MAXVL.
 VLtyp field encoding
 ====================
 
-NOTE: VL and MVL below are modified (potentially damaging) and so is
-the STATE CSR. It is the responsibility of the programmer to ensure that
-modifications to STATE do not compromise loops or VBLOCK Group operations,
-by saving and restoring the STATE CSR (if needed).
+NOTE: VL and MVL below are local to SVPregix and, if non-default, are tracked through SVPSTATE, not the main Specification_ STATE. If default (all zeros) then STATE VL and MVL apply to this instruction.
 
 +-----------+-------------+--------------+----------+----------------------+
 | VLtyp[11] | VLtyp[10:6] | VLtyp[5:1]   | VLtyp[0] | comment              |
@@ -252,7 +229,7 @@ by saving and restoring the STATE CSR (if needed).
 | 1         |  VLdest     |  MVL-immed   | 1        | MVL immed mode       |
 +-----------+-------------+--------------+----------+----------------------+
 
-Note: when VLtyp is all zeros, neither VL nor MVL are changed.
+Note: when VLtyp is all zeros, the main Specification_ VL and MVL apply to this instruction. If called outside of a VBLOCK or if sv.setvl has not set VL, the operation is "scalar".
 
 Just as in the VBLOCK format, when bit 11 of VLtyp is zero:
 
@@ -264,23 +241,21 @@ Just as in the VBLOCK format, when bit 11 of VLtyp is zero:
 
 When bit 11 of VLtype is 1:
 
-* if VLtyp[0] is zero, both MAXVL and VL are set to (imm+1).  The same
+* if VLtyp[0] is zero, both SVPSTATE.MAXVL and SVPSTATE.VL are set to (imm+1).  The same
   value goes into the scalar register VLdest (if VLdest is not x0)
-* if VLtyp[0] is 1, MAXVL is set to (imm+1).
-  VL will be truncated to within the new range (if VL was greater
+* if VLtyp[0] is 1, SVPSTATE.MAXVL is set to (imm+1).
+  SVPSTATE.VL will be truncated to within the new range (if VL was greater
   than the new MAXVL).  The new VL goes into the scalar register VLdest
   (if VLdest is not x0).
 
-This gives the option to set up VL in a "loop mode" (VLtype[11]=0) or
+This gives the option to set up SVPSTATE.VL in a "loop mode" (VLtype[11]=0) or
 in a "one-off" mode (VLtype[11]=1) which sets both MVL and VL to the
 same immediate value.  This may be most useful for one-off Vectorised
 operations such as LOAD-MULTI / STORE-MULTI, for saving and restoration
 of large batches of registers in context-switches or function calls.
 
-Note that VLtyp's VL and MVL are the same as the main Specification_
-VL or MVL, and that loops will also alter srcoffs and destoffs. It is
-the programmer's responsibility to ensure that STATE is not compromised
-(e.g saved to a temp reg or to the stack).
+Note that VLtyp's VL and MVL are not the same as the main Specification_
+VL or MVL, and that loops will alter srcoffs and destoffs in SVPSTATE in VLtype nondefault mode, but in STATE if VLtype=0.
 
 Furthermore, the execution order and exception handling must be exactly
 the same as in the main spec.
