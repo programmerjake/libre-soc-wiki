@@ -595,13 +595,15 @@ However if partial functionality is implemented, the unimplemented bits
 in STATE and SVPSTATE must be zero, and, in the UNIX Platform, an illegal exception
 **MUST** be raised if unsupported bits are written to.
 
-SVPSTATE fields are exactly the sane layout as STATE:
+SVPSTATE fields are exactly the same layout as STATE:
 
 +----------+----------+----------+----------+----------+---------+---------+
 | (31..28) | (27..26) | (25..24) | (23..18) | (17..12) | (11..6) | (5...0) |
 +----------+----------+----------+----------+----------+---------+---------+
 | rsvd     | dsvoffs  | subvl    | destoffs | srcoffs  | vl      | maxvl   |
 +----------+----------+----------+----------+----------+---------+---------+
+
+However note that where STATE stores the scalar register number to be used as VL, SVPSTATE.VL actually contains the actual VL value, in an identical fashion to RVV.
 
 Additional Instructions
 =======================
