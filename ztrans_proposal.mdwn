@@ -39,6 +39,73 @@ Zarctrignpi
 * Reciprocal Square-root is in its own separate extension (Zfrsqrt) as
   it is desirable on its own by other implementors.  This to be evaluated.
 
+# Requirements <a name="requirements"></a>
+
+This proposal is designed to meet a wide range of extremely diverse needs,
+allowing implementors from all of them to benefit from the tools and hardware
+cost reductions associated with common standards adoption.
+
+**There are *four* different, disparate platform's needs (two new)**:
+
+* 3D Embedded Platform
+* Embedded Platform
+* 3D UNIX Platform
+* UNIX Platform
+
+3D Embedded will require significantly less accuracy and will need to make
+power budget and die area compromises that other platforms (including Embedded)
+will not need to make.
+
+3D UNIX Platform has to be performance-price-competitive: subtly-reduced
+accuracy in FP32 is acceptable where, conversely, in the UNIX Platform,
+IEEE754 compliance is a hard requirement that would compromise power
+and efficiency on a 3D UNIX Platform.
+
+**The use-cases are**:
+
+* 3D GPUs
+* Numerical Computation
+* (Potentially) A.I. / Machine-learning (1)
+
+(1) although approximations suffice in this field, making it more likely
+to use a custom extension.  High-end ML would inherently definitely
+be excluded.
+
+**The power and die-area requirements vary from**:
+
+* Ultra-low-power (smartwatches where GPU power budgets are in milliwatts)
+* Mobile-Embedded (good performance with high efficiency for battery life)
+* Desktop Computing
+* Server / HPC (2)
+
+(2) Supercomputing is left out of the requirements as it is traditionally
+covered by Supercomputer Vectorisation Standards (such as RVV).
+
+**The software requirements are**:
+
+* Full public integration into GNU math libraries (libm)
+* Full public integration into well-known Numerical Computation systems (numpy)
+* Full public integration into upstream GNU and LLVM Compiler toolchains
+* Full public integration into Khronos OpenCL SPIR-V compatible Compilers
+  seeking public Certification and Endorsement from the Khronos Group
+  under their Trademarked Certification Programme.
+
+**The "contra"-requirements are**:
+
+* The requirements are **not** for the purposes of developing a full custom
+  proprietary GPU with proprietary firmware.
+* A full custom proprietary GPU ASIC Manufacturer *may* benefit from
+  this proposal however the fact that they typically develop proprietary
+  software that is not shared with the rest of the community likely to
+  use this proposal means that they have completely different needs.
+
+This proposal is for *sharing* of effort in reducing development costs,
+and as such needs to be entirely public, transparent, and fully integrated
+into public upstream libre-licensed libraries and toolchains.
+
+*Overall this proposal is categorically and wholly unsuited to
+relegation of "custom" status*.
+
 # Proposed Opcodes vs Khronos OpenCL Opcodes <a name="khronos_equiv"></a>
 
 This list shows the (direct) equivalence between proposed opcodes and
