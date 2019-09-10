@@ -415,6 +415,14 @@ Note (1): FATAN/FATANPI is a pseudo-op expanding to FATAN2/FATAN2PI (needs decid
 
 # Subsets
 
+The subsets are organised by hardware complexity, need (3D, HPC), however due to synthesis producing inaccurate results at the range limits, the less common subsets are still required for IEEE754 HPC.
+
+Also a general point, that customised optimised hardware targetting FP32 3D with less accuracy simply can neither be used for IEEE754 nor for FP64 (except as a starting point for hardware or software driven Newton Raphson or other iterative method).
+
+Also in cost/area sensitive applications even the extra ROM lookup tables for certain algorithms may be too costly.
+
+These wildly differing and incompatible driving factors lead to the subset subdivisions, below.
+
 ## Zftrans
 
 Zftrans contains standard transcendentals best suited to 3D. They are also the minimum subset for synthesising atan, acos and so on.
@@ -459,8 +467,15 @@ Their forced inclusion would be inappropriate as it would penalise embedded syst
 
 Therefore they are their own subset extension.
 
-* **Zfhyp**: hyperbolic/inverse-hyperbolic.  sinh, cosh, tanh, asinh,
-  acosh, atanh (can be synthesised - see below)
+## Zfhyp
+
+These are the hyperbolic/inverse-hyperbolic finctions: sinh, cosh, tanh, asinh, acosh, atanh
+
+They can all be synthesised using LOG, SQRT and so on, so depend on Zftrans.
+However, once again, at the limits of the range, IEEE754 compliance becomes impossible, and thus a hardware implementation may be required.
+
+
+
 * **ZftransAdv**: much more complex to implement in hardware
 * **Zfrsqrt**: Reciprocal square-root.
 
