@@ -296,19 +296,19 @@ their Khronos OpenCL equivalents.
 See
 <https://www.khronos.org/registry/spir-v/specs/unified1/OpenCL.ExtendedInstructionSet.100.html>
 
-Special FP16 opcodes are *not* being proposed, except by indirect / inherent
-use of the "fmt" field that is already present in the RISC-V Specification.
-
-"Native" opcodes are *not* being proposed: implementors will be expected
-to use the (equivalent) proposed opcode covering the same function.
-
-"Fast" opcodes are *not* being proposed, because the Khronos Specification
-fast\_length, fast\_normalise and fast\_distance OpenCL opcodes require
-vectors (or can be done as scalar operations using other RISC-V instructions).
+* Special FP16 opcodes are *not* being proposed, except by indirect / inherent
+  use of the "fmt" field that is already present in the RISC-V Specification.
+* "Native" opcodes are *not* being proposed: implementors will be expected
+  to use the (equivalent) proposed opcode covering the same function.
+* "Fast" opcodes are *not* being proposed, because the Khronos Specification
+  fast\_length, fast\_normalise and fast\_distance OpenCL opcodes require
+  vectors (or can be done as scalar operations using other RISC-V instructions).
 
 The OpenCL FP32 opcodes are **direct** equivalents to the proposed opcodes.
 Deviation from conformance with the Khronos Specification - including the
-Khronos Specification accuracy requirements - is not an option.
+Khronos Specification accuracy requirements - is not an option, as it
+results in non-compliance, and the vendor may not use the Trademarked words
+"Vulkan" etc. in conjunction with their product.
 
 [[!table data="""
 Proposed opcode | OpenCL FP32 | OpenCL FP16 | OpenCL native | OpenCL fast |
