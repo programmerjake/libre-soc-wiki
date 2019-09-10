@@ -258,7 +258,8 @@ compared to LOG(1+P).
 ATAN and ATAN2 is another example area in which one market's needs
 conflict directly with another: the only viable solution, without compromising
 one market to the detriment of the other, is to provide both opcodes
-and let implementors make the call as to which (or both) to optimise.
+and let implementors make the call as to which (or both) to optimise,
+at the *hardware* level.
 
 Likewise it is well-known that loops involving "0 to 2 times pi", often
 done in subdivisions of powers of two, are costly to do because they
@@ -268,14 +269,19 @@ and perform the multiply *inside* the hardware itself.  In the case of
 CORDIC, it turns out that the multiply by PI is not even needed (is a
 loop invariant magic constant).
 
-However, some markets may not be able to *use* CORDIC, for reasons
-mentioned above, and, again, one market would be penalised if SINPI
-was prioritised over SIN, or vice-versa.
+However, some markets may not wish to *use* CORDIC, for reasons mentioned
+above, and, again, one market would be penalised if SINPI was prioritised
+over SIN, or vice-versa.
 
 Thus the best that can be done is to use Quantitative Analysis to work
 out which "subsets" - sub-Extensions - to include, and be as "inclusive"
 as possible, and thus allow implementors to decide what to add to their
 implementation, and how best to optimise them.
+
+This approach *only* works due to the uniformity of the function space,
+and is **not** an appropriate methodology for use in other Extensions
+with diverse markets and large numbers of potential opcodes.
+BitManip is the perfect counter-example.
 
 # Proposed Opcodes vs Khronos OpenCL Opcodes <a name="khronos_equiv"></a>
 
