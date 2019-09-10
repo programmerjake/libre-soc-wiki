@@ -208,6 +208,66 @@ and shared public compliance with those standards brooks no argument.
 *Overall this proposal is categorically and wholly unsuited to
 relegation of "custom" status*.
 
+# Quantitative Analysis
+
+This is extremely challenging.  Normally, an Extension would require full,
+comprehensive and detailed analysis of every single instruction, for every
+single possible use-case, in every single market.  The amount of silicon
+area required would be balanced against the benefits of introducing extra
+opcodes, as well as a full market analysis performed to see which divisions
+of Computer Science benefit from the introduction of the instruction,
+in each and every case.
+
+With 34 instructions, four possible Platforms, and sub-categories of
+implementations even within each Platform, over 136 separate and distinct
+analyses is not a practical proposition.
+
+A little more intelligence has to be applied to the problem space,
+to reduce it down to manageable levels.
+
+Fortunately, the subdivision by Platform, in combination with the
+identification of only two primary markets (Numerical Computation and
+3D), means that the logical reasoning applies *uniformly* and broadly
+across *groups* of instructions rather than individually.
+
+In addition, hardware algorithms such as CORDIC can cover such a wide
+range of operations (simply by changing the input parameters) that the
+normal argument of compromising and excluding certain opcodes because they
+would significantly increase the silicon area is knocked down.
+
+However, CORDIC, whilst space-efficient, and thus well-suited to
+Embedded, is an old iterative algorithm not well-suited to High-Performance
+Computing or Mid to High-end GPUs, where commercially-competitive
+FP32 pipeline lengths are only around 5 stages.
+
+Not only that, but some operations such as LOG1P, which would normally
+be excluded from one market (due to there being an alternative macro-op
+fused sequence replacing it) are required for other markets due to
+the higher accuracy obtainable at the lower range of input values when
+compared to LOG(1+P).
+
+ATAN and ATAN2 is another example area in which one market's needs
+conflict directly with another: the only viable solution, without compromising
+one market to the detriment of the other, is to provide both opcodes
+and let implementors make the call as to which (or both) to optimise.
+
+Likewise it is well-known that loops involving "0 to 2 times pi", often
+done in subdivisions of powers of two, are costly to do because they
+involve floating-point multiplication by PI in each and every loop.
+3D GPUs solved this by providing SINPI variants which range from 0 to 1
+and perform the multiply *inside* the hardware itself.  In the case of
+CORDIC, it turns out that the multiply by PI is not even needed (is a
+loop invariant magic constant).
+
+However, some markets may not be able to *use* CORDIC, for reasons
+mentioned above, and, again, one market would be penalised if SINPI
+was prioritised over SIN, or vice-versa.
+
+Thus the best that can be done is to use Quantitative Analysis to work
+out which "subsets" - sub-Extensions - to include, and be as "inclusive"
+as possible, and thus allow implementors to decide what to add to their
+implementation, and how best to optimise them.
+
 # Proposed Opcodes vs Khronos OpenCL Opcodes <a name="khronos_equiv"></a>
 
 This list shows the (direct) equivalence between proposed opcodes and
