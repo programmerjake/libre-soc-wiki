@@ -367,7 +367,7 @@ FATAN2    | atan2 arc tangent      | rd = atan2(rs2, rs1)       | Zarctrignpi |
 FATAN2PI  | atan2 arc tangent / pi | rd = atan2(rs2, rs1) / pi  | Zarctrigpi  |
 FPOW      | x power of y           | rd = pow(rs1, rs2)         | ZftransAdv  |
 FROOT     | x power 1/y            | rd = pow(rs1, 1/rs2)       | ZftransAdv  |
-FHYPOT    | hypotenuse             | rd = sqrt(rs1^2 + rs2^2)   | Zftrans     |
+FHYPOT    | hypotenuse             | rd = sqrt(rs1^2 + rs2^2)   | ZftransAdv  |
 """]]
 
 # List of 1-arg transcendental opcodes
@@ -375,7 +375,7 @@ FHYPOT    | hypotenuse             | rd = sqrt(rs1^2 + rs2^2)   | Zftrans     |
 [[!table  data="""
 opcode   | Description              | pseudo-code             | Extension  |
 FRSQRT   | Reciprocal Square-root   | rd = sqrt(rs1)          | Zfrsqrt    |
-FCBRT    | Cube Root                | rd = pow(rs1, 1.0 / 3)  | Zftrans    |
+FCBRT    | Cube Root                | rd = pow(rs1, 1.0 / 3)  | ZftransAdv |
 FRECIP   | Reciprocal               | rd = 1.0 / rs1          | Zftrans    |
 FEXP2    | power-of-2               | rd = pow(2, rs1)        | Zftrans    |
 FLOG2    | log2                     | rd = log(2. rs1)        | Zftrans    |
@@ -416,6 +416,22 @@ Note (1): FATAN/FATANPI is a pseudo-op expanding to FATAN2/FATAN2PI (needs decid
 # Subsets
 
 The subsets are organised by hardware complexity, need (3D, HPC), however due to synthesis producing inaccurate results at the range limits, the less common subsets are still required for IEEE754 HPC.
+
+MALI Midgard, an embedded 3D GPI, for example only has the following opcodes:
+
+    E8 - fatan_pt2
+    F0 - frcp (reciprocal)
+    F2 - frsqrt (inverse square root, 1/sqrt(x))
+    F3 - fsqrt (square root)
+    F4 - fexp2 (2^x)
+    F5 - flog2
+    F6 - fsin
+    F7 - fcos
+    F9 - fatan_pt1
+
+These in FP32 and FP16 only: no FP32 hardware, at all.
+
+Vivante 3D (etnaviv <https://github.com/laanwj/etna_viv/blob/master/rnndb/isa.xml>) has sin, cos, sin2pi, cos2pi, log2, exp, sqrt and rsqrt and recip. It also has fast variants of some of these, as a CSR Mode.
 
 Also a general point, that customised optimised hardware targetting FP32 3D with less accuracy simply can neither be used for IEEE754 nor for FP64 (except as a starting point for hardware or software driven Newton Raphson or other iterative method).
 
