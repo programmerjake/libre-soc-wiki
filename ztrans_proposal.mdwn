@@ -417,7 +417,7 @@ Note (1): FATAN/FATANPI is a pseudo-op expanding to FATAN2/FATAN2PI (needs decid
 
 The subsets are organised by hardware complexity, need (3D, HPC), however due to synthesis producing inaccurate results at the range limits, the less common subsets are still required for IEEE754 HPC.
 
-MALI Midgard, an embedded 3D GPI, for example only has the following opcodes:
+MALI Midgard, an embedded / mobile 3D GPU, for example only has the following opcodes:
 
     E8 - fatan_pt2
     F0 - frcp (reciprocal)
@@ -431,7 +431,7 @@ MALI Midgard, an embedded 3D GPI, for example only has the following opcodes:
 
 These in FP32 and FP16 only: no FP32 hardware, at all.
 
-Vivante 3D (etnaviv <https://github.com/laanwj/etna_viv/blob/master/rnndb/isa.xml>) has sin, cos, sin2pi, cos2pi, log2, exp, sqrt and rsqrt and recip. It also has fast variants of some of these, as a CSR Mode.
+Vivante Embedded/Mobile 3D (etnaviv <https://github.com/laanwj/etna_viv/blob/master/rnndb/isa.xml>) has sin, cos, sin2pi, cos2pi, log2, exp, sqrt and rsqrt and recip. It also has fast variants of some of these, as a CSR Mode.
 
 Also a general point, that customised optimised hardware targetting FP32 3D with less accuracy simply can neither be used for IEEE754 nor for FP64 (except as a starting point for hardware or software driven Newton Raphson or other iterative method).
 
@@ -445,11 +445,12 @@ Zftrans contains the minimum standard transcendentals best suited to 3D: log2, e
 
 ## ZftransExt
 
-LOG, EXP, EXP10, LOG10
+LOG, EXP, EXP10, LOG10, LOGP1, EXP1M
 
 These are extra transcendental functions that are useful, not generally needed for 3D, however for Numerical Computation they may be useful.
 
-Although they can be synthesised using Ztrans (LOG2 multiplied by a constant), there is both a performance penalty as well as an accuracy penalty towards the limits, which for IEEE754 compliance is unacceptable.
+Although they can be synthesised using Ztrans (LOG2 multiplied by a constant), there is both a performance penalty as well as an accuracy penalty towards the limits, which for IEEE754 compliance is unacceptable. In particular, LOG(1+rs1) in hardware 
+ may give much better accuracy at the lower end (very small rs1) than LOG(rs1).
 
 Their forced inclusion would be inappropriate as it would penalise embedded systems with tight power and area budgets.  However if they were completely excluded the HPC applications would be penalised on performance and accuracy.
 
@@ -464,7 +465,7 @@ Ztrignpi are the basic trigonometric functions through which all others could be
 
 However as can be correspondingly seen from other sections, there is an accuracy penalty for doing so which will not be acceptable for IEEE754 compliance.
 
-In the case of the Ztrigpi subset, these are commonly used in for loops with a power of two number of subdivisions, and the cost of multiplying by PI is not an acceptable one.
+In the case of the Ztrigpi subset, these are commonly used in for loops with a power of two number of subdivisions, and the cost of multiplying by PI inside each loop (or cumulative addition, resulting in cumulative errors) is not acceptable.
 
 In for example CORDIC the multiplication by PI may be moved outside of the hardware algorithm as a loop invariant, with no power or area penalty.
 
@@ -475,11 +476,9 @@ Thus again, the same general argument applies to give Ztrignpi and Ztrigpi as su
 * **Zarctrigpi**: arc-trig. a-xxx-pi: atan2pi asinpi acospi
 * **Zarctrignpi**: arc-trig. non-a-xxx-pi: atan2, asin, acos
 
-These are extra trigonometric functions that are useful in some applications, but even for 3D GPUs, particularly embedded GPUs, they are not so common and so are synthesised, there.
+These are extra trigonometric functions that are useful in some applications, but even for 3D GPUs, particularly embedded and mobile class GPUs, they are not so common and so are synthesised, there.
 
-Although they can be synthesised using Ztrigpi and Ztrignpi, there is both a performance penalty as well as an accuracy penalty towards the limits, which for IEEE754 compliance is unacceptable, yet is acceptable for 3D.
-
-Their forced inclusion would be inappropriate as it would penalise embedded systems with tight power and area budgets.  However if they were completely excluded the HPC applications would be penalised on performance and accuracy.
+Although they can be synthesised using Ztrigpi and Ztrignpi, there is, once again, both a performance penalty as well as an accuracy penalty towards the limits, which for IEEE754 compliance is unacceptable, yet is acceptable for 3D.
 
 Therefore they are their own subset extension.
 
@@ -492,7 +491,10 @@ However, once again, at the limits of the range, IEEE754 compliance becomes impo
 
 HPC and high-end GPUs are likely markets for these.
 
-* **ZftransAdv**: much more complex to implement in hardware
+## ZftransAdv
+
+These are simply much more complex to implement in hardware, and typically will only be put into HPC applications.
+
 * **Zfrsqrt**: Reciprocal square-root.
 
 # Synthesis, Pseudo-code ops and macro-ops
