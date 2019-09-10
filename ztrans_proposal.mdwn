@@ -52,15 +52,6 @@ cost reductions associated with common standards adoption.
 * 3D UNIX Platform
 * UNIX Platform
 
-3D Embedded will require significantly less accuracy and will need to make
-power budget and die area compromises that other platforms (including Embedded)
-will not need to make.
-
-3D UNIX Platform has to be performance-price-competitive: subtly-reduced
-accuracy in FP32 is acceptable where, conversely, in the UNIX Platform,
-IEEE754 compliance is a hard requirement that would compromise power
-and efficiency on a 3D UNIX Platform.
-
 **The use-cases are**:
 
 * 3D GPUs
@@ -89,6 +80,121 @@ covered by Supercomputer Vectorisation Standards (such as RVV).
 * Full public integration into Khronos OpenCL SPIR-V compatible Compilers
   seeking public Certification and Endorsement from the Khronos Group
   under their Trademarked Certification Programme.
+
+**The "contra"-requirements are**:
+
+* The requirements are **not** for the purposes of developing a full custom
+  proprietary GPU with proprietary firmware.
+* A full custom proprietary GPU ASIC Manufacturer *may* benefit from
+  this proposal however the fact that they typically develop proprietary
+  software that is not shared with the rest of the community likely to
+  use this proposal means that they have completely different needs.
+* This proposal is for *sharing* of effort in reducing development costs
+
+# Requirements Analysis <a name="requirements_analysis"></a>
+
+**Platforms**:
+
+3D Embedded will require significantly less accuracy and will need to make
+power budget and die area compromises that other platforms (including Embedded)
+will not need to make.
+
+3D UNIX Platform has to be performance-price-competitive: subtly-reduced
+accuracy in FP32 is acceptable where, conversely, in the UNIX Platform,
+IEEE754 compliance is a hard requirement that would compromise power
+and efficiency on a 3D UNIX Platform.
+
+Even in the Embedded platform, IEEE754 interoperability is beneficial,
+where if it was a hard requirement the 3D Embedded platform would be severely
+compromised in its ability to meet the demanding power budgets of that market.
+
+Thus, learning from the lessons of
+[SIMD considered harmful](https://www.sigarch.org/simd-instructions-considered-harmful/)
+this proposal works in conjunction with the [[zfpacc_proposal]], so as
+not to overburden the OP32 ISA space with extra "reduced-accuracy" opcodes.
+
+**Use-cases**:
+
+There really is little else in the way of suitable markets.  3D GPUs
+have extremely competitive power-efficiency and power-budget requirements
+that are completely at odds with the other market at the other end of
+the spectrum: Numerical Computation.
+
+Interoperability in Numerical Computation is absolutely critical: it implies
+IEEE754 compliance.  However full IEEE754 compliance automatically and
+inherently penalises a GPU, where accuracy is simply just not necessary.
+
+To meet the needs of both markets, the two new platforms have to be created,
+and [[zfpacc_proposal]] is a critical dependency.  Runtime selection of
+FP accuracy allows an implementation to be "Hybrid" - cover UNIX IEEE754
+compliance *and* 3D performance in a single ASIC.
+
+**Power and die-area requirements**:
+
+This is where the conflicts really start to hit home.
+
+A "Numerical High performance only" proposal (suitable for Server / HPC
+only) would customise and target the Extension based on a quantitative
+analysis of the value of certain opcodes *for HPC only*.  It would
+conclude, reasonably and rationally, that it is worthwhile adding opcodes
+to RVV as parallel Vector operations, and that further discussion of
+the matter is pointless.
+
+A "Proprietary GPU effort" (even one that was intended for publication
+of its API through, for example, a public libre-licensed Vulkan SPIR-V
+Compiler) would conclude, reasonably and rationally, that, likewise, the
+opcodes were best suited to be added to RVV, and, further, that their
+requirements conflict with the HPC world, due to the reduced accuracy.
+This on the basis that the silicon die area required for IEEE754 is far
+greater than that needed for reduced-accuracy, and thus their product would
+be completely unacceptable in the market.
+
+An "Embedded 3D" GPU has radically different performance, power
+and die-area requirements (and may even target SoftCores in FPGA).
+Sharing of the silicon to cover multi-function uses (CORDIC for example)
+is absolutely essential in order to keep cost and power down, and high
+performance simply is not.  Multi-cycle FSMs instead of pipelines may
+be considered acceptable, and so on.  Subsets of functionality are
+also essential.
+
+An "Embedded Numerical" platform has requirements that are separate and
+distinct from all of the above!
+
+Mobile Computing needs (tablets, smartphones) again pull in a different
+direction: high performance, reasonable accuracy, but efficiency is
+critical.  Screen sizes are not at the 4K range: they are within the
+800x600 range at the low end (320x240 at the extreme budget end), and
+only the high-performance smartphones and tablets provide 1080p (1920x1080).
+With lower resolution, accuracy compromises are possible which the Desktop
+market (4k and soon to be above) would find unacceptable.
+
+Meeting these disparate markets may be achieved, again, through
+[[zfpacc_proposal]], by subdividing into four platforms, yet, in addition
+to that, subdividing the extension into subsets that best suit the different
+market areas.
+
+**Software requirements**:
+
+A "custom" extension is developed in near-complete isolation from the
+rest of the RISC-V Community.  Cost savings to the Corporation are
+large, with no direct beneficial feedback to (or impact on) the rest
+of the RISC-V ecosystem.
+
+However given that 3D revolves around Standards - DirectX, Vulkan, OpenGL,
+OpenCL - users have much more influence than first appears.  Compliance
+with these standards is critical as the userbase (Games writers, scientific
+applications) expects not to have to rewrite large codebases to conform
+with non-standards-compliant hardware.
+
+Therefore, compliance with public APIs is paramount, and compliance with
+Trademarked Standards is critical.  Any deviation from Trademarked Standards
+means that an implementation may not be sold and also make a claim of being,
+for example, "Vulkan compatible".
+
+This in turn reinforces and makes a hard requirement a need for public
+compliance with such standards, over-and-above what would otherwise be
+set by a RISC-V Standards Development Process, including both the
+software compliance and the knock-on implications that has for hardware.
 
 **The "contra"-requirements are**:
 
