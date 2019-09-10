@@ -429,7 +429,11 @@ high-performance or correctly-rounding):
 
 # Reciprocal
 
-Used to be an alias. Some imolementors may wish to implement divide as y times recip(x)
+Used to be an alias. Some implementors may wish to implement divide as y times recip(x).
+
+Others may have shared hardware for recip and divide, others may not.
+
+To avoid penalising one implementor over another, recip stays.
 
 # To evaluate: should LOG be replaced with LOG1P (and EXP with EXPM1)?
 
