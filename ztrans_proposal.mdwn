@@ -362,7 +362,7 @@ Note (1) FSINCOS is macro-op fused (see below).
 # List of 2-arg opcodes
 
 [[!table  data="""
-opcode    | Description            | pseudo-code                | Extension   |
+opcode    | Description            | pseudocode                 | Extension   |
 FATAN2    | atan2 arc tangent      | rd = atan2(rs2, rs1)       | Zarctrignpi |
 FATAN2PI  | atan2 arc tangent / pi | rd = atan2(rs2, rs1) / pi  | Zarctrigpi  |
 FPOW      | x power of y           | rd = pow(rs1, rs2)         | ZftransAdv  |
@@ -373,14 +373,14 @@ FHYPOT    | hypotenuse             | rd = sqrt(rs1^2 + rs2^2)   | ZftransAdv  |
 # List of 1-arg transcendental opcodes
 
 [[!table  data="""
-opcode   | Description              | pseudo-code             | Extension  |
+opcode   | Description              | pseudocode              | Extension  |
 FRSQRT   | Reciprocal Square-root   | rd = sqrt(rs1)          | Zfrsqrt    |
 FCBRT    | Cube Root                | rd = pow(rs1, 1.0 / 3)  | ZftransAdv |
 FRECIP   | Reciprocal               | rd = 1.0 / rs1          | Zftrans    |
 FEXP2    | power-of-2               | rd = pow(2, rs1)        | Zftrans    |
 FLOG2    | log2                     | rd = log(2. rs1)        | Zftrans    |
-FEXPM1   | exponential minus 1      | rd = pow(e, rs1) - 1.0  | Zftrans    |
-FLOG1P   | log plus 1               | rd = log(e, 1 + rs1)    | Zftrans    |
+FEXPM1   | exponential minus 1      | rd = pow(e, rs1) - 1.0  | ZftransExt |
+FLOG1P   | log plus 1               | rd = log(e, 1 + rs1)    | ZftransExt |
 FEXP     | exponential              | rd = pow(e, rs1)        | ZftransExt |
 FLOG     | natural log (base e)     | rd = log(e, rs1)        | ZftransExt |
 FEXP10   | power-of-10              | rd = pow(10, rs1)       | ZftransExt |
@@ -441,9 +441,7 @@ These wildly differing and incompatible driving factors lead to the subset subdi
 
 ## Zftrans
 
-Zftrans contains standard transcendentals best suited to 3D. They are also the minimum subset for synthesising atan, acos and so on.
-
-
+Zftrans contains the minimum standard transcendentals best suited to 3D: log2, exp2, recip, rsqrt. They are also the minimum subset for synthesising log10, exp10, exp1m, log1p, the hyperbolic trigonometric functions sinh and so on.
 
 ## ZftransExt
 
@@ -462,20 +460,22 @@ Therefore they are their own subset extension.
 * **Ztrigpi**: trig. xxx-pi sinpi cospi tanpi
 * **Ztrignpi**: trig non-xxx-pi sin cos tan
 
-Ztrignpi are the basic trigonometric functions through which all others could be synthesised. However as can be seen from other sections, there is an accuracy penalty for doing so which will not be acceptable for IEEE754 compliance.
+Ztrignpi are the basic trigonometric functions through which all others could be synthesised, and they are typically the base trigonometrics provided by GPUs for 3D, warranting their own subset.
+
+However as can be correspondingly seen from other sections, there is an accuracy penalty for doing so which will not be acceptable for IEEE754 compliance.
 
 In the case of the Ztrigpi subset, these are commonly used in for loops with a power of two number of subdivisions, and the cost of multiplying by PI is not an acceptable one.
 
 In for example CORDIC the multiplication by PI may be moved outside of the hardware algorithm as a loop invariant, with no power or area penalty.
 
-Thus again, the same argument applies to give Ztrignpi and Ztrigpi as subsets.
+Thus again, the same general argument applies to give Ztrignpi and Ztrigpi as subsets.
 
 ## Zarctrigpi and Zarctrignpi
 
 * **Zarctrigpi**: arc-trig. a-xxx-pi: atan2pi asinpi acospi
 * **Zarctrignpi**: arc-trig. non-a-xxx-pi: atan2, asin, acos
 
-These are extra trigonometric functions that are useful in some applications.
+These are extra trigonometric functions that are useful in some applications, but even for 3D GPUs, particularly embedded GPUs, they are not so common and so are synthesised, there.
 
 Although they can be synthesised using Ztrigpi and Ztrignpi, there is both a performance penalty as well as an accuracy penalty towards the limits, which for IEEE754 compliance is unacceptable, yet is acceptable for 3D.
 
@@ -485,12 +485,12 @@ Therefore they are their own subset extension.
 
 ## Zfhyp
 
-These are the hyperbolic/inverse-hyperbolic finctions: sinh, cosh, tanh, asinh, acosh, atanh
+These are the hyperbolic/inverse-hyperbolic finctions: sinh, cosh, tanh, asinh, acosh, atanh. Their use in 3D is limited.
 
 They can all be synthesised using LOG, SQRT and so on, so depend on Zftrans.
 However, once again, at the limits of the range, IEEE754 compliance becomes impossible, and thus a hardware implementation may be required.
 
-
+HPC and high-end GPUs are likely markets for these.
 
 * **ZftransAdv**: much more complex to implement in hardware
 * **Zfrsqrt**: Reciprocal square-root.
