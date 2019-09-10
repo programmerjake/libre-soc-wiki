@@ -238,7 +238,8 @@ to reduce it down to manageable levels.
 Fortunately, the subdivision by Platform, in combination with the
 identification of only two primary markets (Numerical Computation and
 3D), means that the logical reasoning applies *uniformly* and broadly
-across *groups* of instructions rather than individually.
+across *groups* of instructions rather than individually, making it a primarily
+hardware-centric and accuracy-centric decision-making process.
 
 In addition, hardware algorithms such as CORDIC can cover such a wide
 range of operations (simply by changing the input parameters) that the
@@ -279,14 +280,20 @@ However, some markets may not wish to *use* CORDIC, for reasons mentioned
 above, and, again, one market would be penalised if SINPI was prioritised
 over SIN, or vice-versa.
 
+In essence, then, even when only the two primary markets (3D and Numerical Computation) have been identified, this still leaves two (three) diametrically-opposed *accuracy* sub-markets as the prime conflict drivers:
+
+* Embedded Ultra Low Power
+* IEEE754 compliance
+* Khronos Vulkan compliance
+
 Thus the best that can be done is to use Quantitative Analysis to work
-out which "subsets" - sub-Extensions - to include, and be as "inclusive"
+out which "subsets" - sub-Extensions - to include, provide an additional "accuracy" extension, be as "inclusive"
 as possible, and thus allow implementors to decide what to add to their
 implementation, and how best to optimise them.
 
 This approach *only* works due to the uniformity of the function space,
 and is **not** an appropriate methodology for use in other Extensions
-with diverse markets and large numbers of potential opcodes.
+with huge (non-uniform) market diversity even with similarly large numbers of potential opcodes.
 BitManip is the perfect counter-example.
 
 # Proposed Opcodes vs Khronos OpenCL Opcodes <a name="khronos_equiv"></a>
