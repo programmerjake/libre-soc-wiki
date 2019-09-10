@@ -476,12 +476,25 @@ sequencer) more complicated that necessary.
 
 --------------------------------------------------------
 
+We therefore I think have a case for bringing back ATAN and including ATAN2.
+
+The reason is that whilst a microcode-like GPU-centric platform would do ATAN2 in terms of ATAN, a UNIX-centric platform would do it the other way round.
+
+(that is the hypothesis, to be evaluated for correctness. feedback requested).
+
+Thie because we cannot compromise or prioritise one platfrom's speed/accuracy over another. That is not reasonable or desirable, to penalise one implementor over another.
+
+Thus, all implementors, to keep interoperability, must both have both opcodes and may choose, at the architectural and routing level, which one to implement in terms of the other.
+
+Allowing implementors to choose to add either opcode and let traps sort it out leaves an uncertainty in the software developer's mind: they cannot trust the hardware, available from many vendors, to be performant right across the board.
+
+Standards are a pig.
+
+---
+
 I might suggest that if there were a way for a calculation to be performed
-and the result of that calculation
-
-chained to a subsequent calculation such that the precision of the
-result-becomes-operand is wider than
-
+and the result of that calculation chained to a subsequent calculation
+such that the precision of the result-becomes-operand is wider than
 what will fit in a register, then you can dramatically reduce the count
 of instructions in this category while retaining
 
