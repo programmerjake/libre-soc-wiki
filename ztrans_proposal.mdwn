@@ -446,8 +446,8 @@ following opcodes:
     F3 - fsqrt (square root)
     F4 - fexp2 (2^x)
     F5 - flog2
-    F6 - fsin
-    F7 - fcos
+    F6 - fsin1pi
+    F7 - fcos1pi
     F9 - fatan_pt1
 
 These in FP32 and FP16 only: no FP32 hardware, at all.
@@ -465,13 +465,13 @@ It also has fast variants of some of these, as a CSR Mode.
 AMD's R600 GPU (R600\_Instruction\_Set\_Architecture.pdf) and the
 RDNA ISA (RDNA\_Shader\_ISA\_5August2019.pdf, Table 22, Section 6.3) have:
 
-    COS (appx)
+    COS2PI (appx)
     EXP2
     LOG (IEEE754)
     RECIP
     RSQRT
     SQRT
-    SIN (appx)
+    SIN2PI (appx)
 
 AMD RDNA has F16 and F32 variants of all the above, and also has F64
 variants of SQRT, RSQRT and RECIP.  It is interesting that even the
