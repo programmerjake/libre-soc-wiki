@@ -7,10 +7,11 @@ TODO: complete writeup
 
 Zfpacc: a proposal to allow implementations to dynamically set the
 bit-accuracy of floating-point results, trading speed (reduced latency)
-*at runtime* for accuracy (higher latency).  IEE754 format is preserved
-(instruction requirements unmodified): only ULP (Unit in Last Place)
-of the instruction result is permitted to meet alternative accuracy
-requirements.
+*at runtime* for accuracy (higher latency).  IEEE754 format is preserved:
+instruction operand and result format requirements are unmodified by
+this proposal.  Only ULP (Unit in Last Place) of the instruction *result*
+is permitted to meet alternative accuracy requirements, whilst still
+retaining the instruction's requested format.
 
 # Extension of FCSR
 
