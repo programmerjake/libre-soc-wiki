@@ -415,6 +415,7 @@ FACOS       | arccos (radians)         | rd = acos(rs1)          | Zarctrignpi |
 FATAN       | arctan (radians)         | rd = atan(rs1)          | Zarctrignpi |
 FSINPI      | sin times pi             | rd = sin(pi * rs1)      | Ztrigpi |
 FCOSPI      | cos times pi             | rd = cos(pi * rs1)      | Ztrigpi |
+
 FTANPI      | tan times pi             | rd = tan(pi * rs1)      | Ztrigpi |
 FASINPI     | arcsin / pi              | rd = asin(rs1) / pi     | Zarctrigpi |
 FACOSPI     | arccos / pi              | rd = acos(rs1) / pi     | Zarctrigpi |
@@ -461,6 +462,16 @@ Vivante Embedded/Mobile 3D (etnaviv <https://github.com/laanwj/etna_viv/blob/mas
 
 It also has fast variants of some of these, as a CSR Mode.
 
+AMD's R600 GPU has:
+
+    COS (appx)
+    EXP2
+    LOG (IEEE754)
+    RECIP
+    RSQRT
+    SQRT
+    SIN (appx)
+
 Also a general point, that customised optimised hardware targetting
 FP32 3D with less accuracy simply can neither be used for IEEE754 nor
 for FP64 (except as a starting point for hardware or software driven
@@ -492,9 +503,8 @@ needed for 3D, however for Numerical Computation they may be useful.
 Although they can be synthesised using Ztrans (LOG2 multiplied
 by a constant), there is both a performance penalty as well as an
 accuracy penalty towards the limits, which for IEEE754 compliance is
-unacceptable. In particular, LOG(1+rs1) in hardware
- may give much better accuracy at the lower end (very small rs1)
- than LOG(rs1).
+unacceptable. In particular, LOG(1+rs1) in hardware may give much better
+accuracy at the lower end (very small rs1) than LOG(rs1).
 
 Their forced inclusion would be inappropriate as it would penalise
 embedded systems with tight power and area budgets.  However if they
