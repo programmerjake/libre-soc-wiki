@@ -5,9 +5,12 @@ TODO: complete writeup
 * <http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2019-August/002400.html>
 * <http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2019-August/002412.html>
 
-Zfpacc: a proposal to allow implementations to dynamically set the bit-accuracy
-of results, trading speed (reduced latency) for accuracy (higher latency).
-IEE754 format is preserved: only ULP (Unit in Last Place) is permitted to be non-zero.
+Zfpacc: a proposal to allow implementations to dynamically set the
+bit-accuracy of floating-point results, trading speed (reduced latency)
+*at runtime* for accuracy (higher latency).  IEE754 format is preserved
+(instruction requirements unmodified): only ULP (Unit in Last Place)
+of the instruction result is permitted to meet alternative accuracy
+requirements.
 
 # Extension of FCSR
 
@@ -87,9 +90,15 @@ The values for the field facc to include the following:
 | 0b10H | Vulkan  | Vulkan compliant    | 
 | 0b11H | Appx    | Machine Learning    |
 
-When bit 0 (H) of facc is set to zero, half-precision mode is disabled. When set, an automatic down conversion (FCVT) to half the instruction bitwidth (FP32 opcode would convert to FP16) on operands is performed, followed by the operation occuring at half precision, followed by automatic up conversion back to the instruction's bitwidth.
+When bit 0 (H) of facc is set to zero, half-precision mode is
+disabled. When set, an automatic down conversion (FCVT) to half the
+instruction bitwidth (FP32 opcode would convert to FP16) on operands
+is performed, followed by the operation occuring at half precision,
+followed by automatic up conversion back to the instruction's bitwidth.
 
-Note that the format of the operands and result remain the same for all opcodes. The only change is in the *accuracy* of the result, not its format.
+Note that the format of the operands and result remain the same for
+all opcodes. The only change is in the *accuracy* of the result, not
+its format.
 
 Pseudocode for half accuracy mode:
 
