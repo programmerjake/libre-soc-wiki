@@ -95,11 +95,12 @@ covered by Supercomputer Vectorisation Standards (such as RVV).
 **The "contra"-requirements are**:
 
 * NOT for use with RVV (RISC-V Vector Extension). These are *scalar* opcodes.
-  Ultra Low Power Embedded platforms (smart watches) are sufficiently resource constrained that Vectorisation
-  (of any kind) is likely to be unnecessary and inappropriate.
+  Ultra Low Power Embedded platforms (smart watches) are sufficiently
+  resource constrained that Vectorisation (of any kind) is likely to be
+  unnecessary and inappropriate.
 * The requirements are **not** for the purposes of developing a full custom
-  proprietary GPU with proprietary firmware
-  driven by *hardware* centric optimised design decisions as a priority over collaboration.
+  proprietary GPU with proprietary firmware driven by *hardware* centric
+  optimised design decisions as a priority over collaboration.
 * A full custom proprietary GPU ASIC Manufacturer *may* benefit from
   this proposal however the fact that they typically develop proprietary
   software that is not shared with the rest of the community likely to
@@ -135,9 +136,10 @@ have extremely competitive power-efficiency and power-budget requirements
 that are completely at odds with the other market at the other end of
 the spectrum: Numerical Computation.
 
-Interoperability in Numerical Computation is absolutely critical: it implies (correlates directly with)
-IEEE754 compliance.  However full IEEE754 compliance automatically and
-inherently penalises a GPU on performance and die area, where accuracy is simply just not necessary.
+Interoperability in Numerical Computation is absolutely critical: it
+implies (correlates directly with) IEEE754 compliance.  However full
+IEEE754 compliance automatically and inherently penalises a GPU on
+performance and die area, where accuracy is simply just not necessary.
 
 To meet the needs of both markets, the two new platforms have to be created,
 and [[zfpacc_proposal]] is a critical dependency.  Runtime selection of
@@ -161,8 +163,9 @@ Compiler) would conclude, reasonably and rationally, that, likewise, the
 opcodes were best suited to be added to RVV, and, further, that their
 requirements conflict with the HPC world, due to the reduced accuracy.
 This on the basis that the silicon die area required for IEEE754 is far
-greater than that needed for reduced-accuracy, and thus their product would
-be completely unacceptable in the market if it had to meet IEEE754, unnecessarily.
+greater than that needed for reduced-accuracy, and thus their product
+would be completely unacceptable in the market if it had to meet IEEE754,
+unnecessarily.
 
 An "Embedded 3D" GPU has radically different performance, power
 and die-area requirements (and may even target SoftCores in FPGA).
@@ -197,14 +200,15 @@ of the RISC-V ecosystem.
 
 However given that 3D revolves around Standards - DirectX, Vulkan, OpenGL,
 OpenCL - users have much more influence than first appears.  Compliance
-with these standards is critical as the userbase (Games writers, scientific
-applications) expects not to have to rewrite extremely large and costly codebases to conform
-with *non-standards-compliant* hardware.
+with these standards is critical as the userbase (Games writers,
+scientific applications) expects not to have to rewrite extremely large
+and costly codebases to conform with *non-standards-compliant* hardware.
 
-Therefore, compliance with public APIs (Vulkan, OpenCL, OpenGL, DirectX) is paramount, and compliance with
-Trademarked Standards is critical.  Any deviation from Trademarked Standards
-means that an implementation may not be sold and also make a claim of being,
-for example, "Vulkan compatible".
+Therefore, compliance with public APIs (Vulkan, OpenCL, OpenGL, DirectX)
+is paramount, and compliance with Trademarked Standards is critical.
+Any deviation from Trademarked Standards means that an implementation
+may not be sold and also make a claim of being, for example, "Vulkan
+compatible".
 
 This in turn reinforces and makes a hard requirement a need for public
 compliance with such standards, over-and-above what would otherwise be
@@ -220,9 +224,9 @@ these primitives well-established in high-profile software libraries and
 compilers in both GPU and HPC Computer Science divisions.  Collaboration
 and shared public compliance with those standards brooks no argument.
 
-The combined requirements of collaboration and multi accuracy requirements mean that
-*overall this proposal is categorically and wholly unsuited to
-relegation of "custom" status*.
+The combined requirements of collaboration and multi accuracy requirements
+mean that *overall this proposal is categorically and wholly unsuited
+to relegation of "custom" status*.
 
 # Quantitative Analysis <a name="analysis"></a>
 
@@ -286,21 +290,25 @@ However, some markets may not wish to *use* CORDIC, for reasons mentioned
 above, and, again, one market would be penalised if SINPI was prioritised
 over SIN, or vice-versa.
 
-In essence, then, even when only the two primary markets (3D and Numerical Computation) have been identified, this still leaves two (three) diametrically-opposed *accuracy* sub-markets as the prime conflict drivers:
+In essence, then, even when only the two primary markets (3D and
+Numerical Computation) have been identified, this still leaves two
+(three) diametrically-opposed *accuracy* sub-markets as the prime
+conflict drivers:
 
 * Embedded Ultra Low Power
 * IEEE754 compliance
 * Khronos Vulkan compliance
 
 Thus the best that can be done is to use Quantitative Analysis to work
-out which "subsets" - sub-Extensions - to include, provide an additional "accuracy" extension, be as "inclusive"
-as possible, and thus allow implementors to decide what to add to their
-implementation, and how best to optimise them.
+out which "subsets" - sub-Extensions - to include, provide an additional
+"accuracy" extension, be as "inclusive" as possible, and thus allow
+implementors to decide what to add to their implementation, and how best
+to optimise them.
 
 This approach *only* works due to the uniformity of the function space,
 and is **not** an appropriate methodology for use in other Extensions
-with huge (non-uniform) market diversity even with similarly large numbers of potential opcodes.
-BitManip is the perfect counter-example.
+with huge (non-uniform) market diversity even with similarly large
+numbers of potential opcodes.  BitManip is the perfect counter-example.
 
 # Proposed Opcodes vs Khronos OpenCL Opcodes <a name="khronos_equiv"></a>
 
@@ -421,11 +429,15 @@ FATANH      | inverse hyperbolic tan   | rd = atanh(rs1)         | Zfhyp |
 
 # Subsets
 
-The full set is based on the Khronos OpenCL opcodes. If implemented entirely it would be too much for both Embedded and also 3D.
+The full set is based on the Khronos OpenCL opcodes. If implemented
+entirely it would be too much for both Embedded and also 3D.
 
-The subsets are organised by hardware complexity, need (3D, HPC), however due to synthesis producing inaccurate results at the range limits, the less common subsets are still required for IEEE754 HPC.
+The subsets are organised by hardware complexity, need (3D, HPC), however
+due to synthesis producing inaccurate results at the range limits,
+the less common subsets are still required for IEEE754 HPC.
 
-MALI Midgard, an embedded / mobile 3D GPU, for example only has the following opcodes:
+MALI Midgard, an embedded / mobile 3D GPU, for example only has the
+following opcodes:
 
     E8 - fatan_pt2
     F0 - frcp (reciprocal)
@@ -449,17 +461,24 @@ Vivante Embedded/Mobile 3D (etnaviv <https://github.com/laanwj/etna_viv/blob/mas
 
 It also has fast variants of some of these, as a CSR Mode.
 
-Also a general point, that customised optimised hardware targetting FP32 3D with less accuracy simply can neither be used for IEEE754 nor for FP64 (except as a starting point for hardware or software driven Newton Raphson or other iterative method).
+Also a general point, that customised optimised hardware targetting
+FP32 3D with less accuracy simply can neither be used for IEEE754 nor
+for FP64 (except as a starting point for hardware or software driven
+Newton Raphson or other iterative method).
 
-Also in cost/area sensitive applications even the extra ROM lookup tables for certain algorithms may be too costly.
+Also in cost/area sensitive applications even the extra ROM lookup tables
+for certain algorithms may be too costly.
 
-These wildly differing and incompatible driving factors lead to the subset subdivisions, below.
+These wildly differing and incompatible driving factors lead to the
+subset subdivisions, below.
 
 ## Zftrans
 
 LOG2 EXP2 RECIP RSQRT
 
-Zftrans contains the minimum standard transcendentals best suited to 3D. They are also the minimum subset for synthesising log10, exp10, exp1m, log1p, the hyperbolic trigonometric functions sinh and so on.
+Zftrans contains the minimum standard transcendentals best suited to
+3D. They are also the minimum subset for synthesising log10, exp10,
+exp1m, log1p, the hyperbolic trigonometric functions sinh and so on.
 
 They are therefore considered "base" (essential) transcendentals.
 
@@ -467,55 +486,81 @@ They are therefore considered "base" (essential) transcendentals.
 
 LOG, EXP, EXP10, LOG10, LOGP1, EXP1M
 
-These are extra transcendental functions that are useful, not generally needed for 3D, however for Numerical Computation they may be useful.
+These are extra transcendental functions that are useful, not generally
+needed for 3D, however for Numerical Computation they may be useful.
 
-Although they can be synthesised using Ztrans (LOG2 multiplied by a constant), there is both a performance penalty as well as an accuracy penalty towards the limits, which for IEEE754 compliance is unacceptable. In particular, LOG(1+rs1) in hardware 
- may give much better accuracy at the lower end (very small rs1) than LOG(rs1).
+Although they can be synthesised using Ztrans (LOG2 multiplied
+by a constant), there is both a performance penalty as well as an
+accuracy penalty towards the limits, which for IEEE754 compliance is
+unacceptable. In particular, LOG(1+rs1) in hardware
+ may give much better accuracy at the lower end (very small rs1)
+ than LOG(rs1).
 
-Their forced inclusion would be inappropriate as it would penalise embedded systems with tight power and area budgets.  However if they were completely excluded the HPC applications would be penalised on performance and accuracy.
+Their forced inclusion would be inappropriate as it would penalise
+embedded systems with tight power and area budgets.  However if they
+were completely excluded the HPC applications would be penalised on
+performance and accuracy.
 
 Therefore they are their own subset extension.
 
 ## Ztrigpi vs Ztrignpi
 
-* **Ztrigpi**: SINPI COSPI TANPI
-* **Ztrignpi**: SIN COS TAN
+* **Ztrigpi**: SINPI COSPI TANPI * **Ztrignpi**: SIN COS TAN
 
-Ztrignpi are the basic trigonometric functions through which all others could be synthesised, and they are typically the base trigonometrics provided by GPUs for 3D, warranting their own subset.
+Ztrignpi are the basic trigonometric functions through which all others
+could be synthesised, and they are typically the base trigonometrics
+provided by GPUs for 3D, warranting their own subset.
 
-However as can be correspondingly seen from other sections, there is an accuracy penalty for doing so which will not be acceptable for IEEE754 compliance.
+However as can be correspondingly seen from other sections, there is an
+accuracy penalty for doing so which will not be acceptable for IEEE754
+compliance.
 
-In the case of the Ztrigpi subset, these are commonly used in for loops with a power of two number of subdivisions, and the cost of multiplying by PI inside each loop (or cumulative addition, resulting in cumulative errors) is not acceptable.
+In the case of the Ztrigpi subset, these are commonly used in for loops
+with a power of two number of subdivisions, and the cost of multiplying
+by PI inside each loop (or cumulative addition, resulting in cumulative
+errors) is not acceptable.
 
-In for example CORDIC the multiplication by PI may be moved outside of the hardware algorithm as a loop invariant, with no power or area penalty.
+In for example CORDIC the multiplication by PI may be moved outside of
+the hardware algorithm as a loop invariant, with no power or area penalty.
 
-Thus again, the same general argument applies to give Ztrignpi and Ztrigpi as subsets.
+Thus again, the same general argument applies to give Ztrignpi and
+Ztrigpi as subsets.
 
 ## Zarctrigpi and Zarctrignpi
 
-* **Zarctrigpi**: ATAN2PI ASINPI ACOSPI
-* **Zarctrignpi**: ATAN2 ACOS ADIN
+* **Zarctrigpi**: ATAN2PI ASINPI ACOSPI * **Zarctrignpi**: ATAN2 ACOS ADIN
 
-These are extra trigonometric functions that are useful in some applications, but even for 3D GPUs, particularly embedded and mobile class GPUs, they are not so common and so are typically synthesised, there.
+These are extra trigonometric functions that are useful in some
+applications, but even for 3D GPUs, particularly embedded and mobile class
+GPUs, they are not so common and so are typically synthesised, there.
 
-Although they can be synthesised using Ztrigpi and Ztrignpi, there is, once again, both a performance penalty as well as an accuracy penalty towards the limits, which for IEEE754 compliance is unacceptable, yet is acceptable for 3D.
+Although they can be synthesised using Ztrigpi and Ztrignpi, there is,
+once again, both a performance penalty as well as an accuracy penalty
+towards the limits, which for IEEE754 compliance is unacceptable, yet
+is acceptable for 3D.
 
 Therefore they are their own subset extensions.
 
 ## Zfhyp
 
-These are the hyperbolic/inverse-hyperbolic finctions: SINH, COSH, TANH, ASINH, ACOSH, ATANH. Their use in 3D is limited.
+These are the hyperbolic/inverse-hyperbolic finctions: SINH, COSH, TANH,
+ASINH, ACOSH, ATANH. Their use in 3D is limited.
 
-They can all be synthesised using LOG, SQRT and so on, so depend on Zftrans.
-However, once again, at the limits of the range, IEEE754 compliance becomes impossible, and thus a hardware implementation may be required.
+They can all be synthesised using LOG, SQRT and so on, so depend
+on Zftrans.  However, once again, at the limits of the range, IEEE754
+compliance becomes impossible, and thus a hardware implementation may
+be required.
 
 HPC and high-end GPUs are likely markets for these.
 
 ## ZftransAdv
 
-CBRT, POW, ROOT (inverse of POW): these are simply much more complex to implement in hardware, and typically will only be put into HPC applications.
+CBRT, POW, ROOT (inverse of POW): these are simply much more complex
+to implement in hardware, and typically will only be put into HPC
+applications.
 
-ROOT is included as well as POW because at the extreme ranges one is more accurate than the other.
+ROOT is included as well as POW because at the extreme ranges one is
+more accurate than the other.
 
 * **Zfrsqrt**: Reciprocal square-root.
 
@@ -546,7 +591,8 @@ This section will move later to discussion.
 
 ## Reciprocal
 
-Used to be an alias. Some implementors may wish to implement divide as y times recip(x).
+Used to be an alias. Some implementors may wish to implement divide as
+y times recip(x).
 
 Others may have shared hardware for recip and divide, others may not.
 
@@ -624,11 +670,18 @@ The reason is that whilst a microcode-like GPU-centric platform would do ATAN2 i
 
 (that is the hypothesis, to be evaluated for correctness. feedback requested).
 
-Thie because we cannot compromise or prioritise one platfrom's speed/accuracy over another. That is not reasonable or desirable, to penalise one implementor over another.
+This because we cannot compromise or prioritise one platfrom's
+speed/accuracy over another. That is not reasonable or desirable, to
+penalise one implementor over another.
 
-Thus, all implementors, to keep interoperability, must both have both opcodes and may choose, at the architectural and routing level, which one to implement in terms of the other.
+Thus, all implementors, to keep interoperability, must both have both
+opcodes and may choose, at the architectural and routing level, which
+one to implement in terms of the other.
 
-Allowing implementors to choose to add either opcode and let traps sort it out leaves an uncertainty in the software developer's mind: they cannot trust the hardware, available from many vendors, to be performant right across the board.
+Allowing implementors to choose to add either opcode and let traps sort it
+out leaves an uncertainty in the software developer's mind: they cannot
+trust the hardware, available from many vendors, to be performant right
+across the board.
 
 Standards are a pig.
 
