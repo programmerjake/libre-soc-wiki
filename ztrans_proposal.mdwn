@@ -94,6 +94,9 @@ covered by Supercomputer Vectorisation Standards (such as RVV).
 
 **The "contra"-requirements are**:
 
+* NOT for use with RVV (RISC-V Vector Extension). These are *scalar* opcodes.
+  Ultra Low Power Embedded platforms (smart watches) are sufficiently resource constrained that Vectorisation
+  (of any kind) is likely to be unnecessary and inappropriate.
 * The requirements are **not** for the purposes of developing a full custom
   proprietary GPU with proprietary firmware
   driven by *hardware* centric optimised design decisions as a priority over collaboration.
