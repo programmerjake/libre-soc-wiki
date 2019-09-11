@@ -303,6 +303,8 @@ BitManip is the perfect counter-example.
 
 This list shows the (direct) equivalence between proposed opcodes and
 their Khronos OpenCL equivalents.
+For RISCV opcode encodings see 
+[[rv_major_opcode_1010011]]
 
 See
 <https://www.khronos.org/registry/spir-v/specs/unified1/OpenCL.ExtendedInstructionSet.100.html>
@@ -362,7 +364,7 @@ FRECIP          | NONE        | half\_recip | native\_recip | NONE        |
 
 Note (1) FSINCOS is macro-op fused (see below).
 
-# List of 2-arg opcodes
+## List of 2-arg opcodes
 
 [[!table  data="""
 opcode    | Description            | pseudocode                 | Extension   |
@@ -373,7 +375,7 @@ FROOT     | x power 1/y            | rd = pow(rs1, 1/rs2)       | ZftransAdv  |
 FHYPOT    | hypotenuse             | rd = sqrt(rs1^2 + rs2^2)   | ZftransAdv  |
 """]]
 
-# List of 1-arg transcendental opcodes
+## List of 1-arg transcendental opcodes
 
 [[!table  data="""
 opcode   | Description              | pseudocode              | Extension  |
@@ -390,7 +392,7 @@ FEXP10   | power-of-10              | rd = pow(10, rs1)       | ZftransExt |
 FLOG10   | log base 10              | rd = log(10, rs1)       | ZftransExt |
 """]]
 
-# List of 1-arg trigonometric opcodes
+## List of 1-arg trigonometric opcodes
 
 [[!table  data="""
 opcode      | Description              | pseudo-code             | Extension |
