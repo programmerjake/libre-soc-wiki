@@ -82,12 +82,28 @@ The values for the field facc to include the following:
 
 | facc  | mode    | description         |
 | ----- | ------- | ------------------- |
-| 0b000 | IEEE754 | correctly rounded   | 
-| 0b010 | ULP<1   | Unit Last Place < 1 | 
-| 0b100 | Vulkan  | Vulkan compliant    | 
-| 0b110 | Appx    | Machine Learning    |
+| 0b00H | IEEE754 | correctly rounded   | 
+| 0b01H | ULP<1   | Unit Last Place < 1 | 
+| 0b10H | Vulkan  | Vulkan compliant    | 
+| 0b11H | Appx    | Machine Learning    |
+
+When bit 0 (H) of facc is set to zero, half-precision mode is disabled. When set, an automatic down conversion (FCVT) to half the instruction bitwidth (FP32 opcode would convert to FP16) on operands is performed, followed by the operation occuring at half precision, followed by automatic up conversion back to the instruction's bitwidth.
 
 Note that the format of the operands and result remain the same for all opcodes. The only change is in the *accuracy* of the result, not its format.
+
+Pseudocode for half accuracy mode:
+
+    def fpadd32(op1, op2):
+        if FCSR.facc.halfmode:
+            op1 = fcvt32to16(op1)
+            op2 = fcvt32to16(op2)
+            result = fpadd32(op1, op2)
+            return fcvt16to32(result)
+         else:
+            # TODO, reduced accuracy if requested
+            return op1 + op2
+
+## Discussion
 
 maybe a solution would be to add an extra field to the fp control csr
 to allow selecting one of several accurate or fast modes:
