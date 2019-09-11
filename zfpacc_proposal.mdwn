@@ -72,13 +72,16 @@ TODO: reduced accuracy
 # Dynamic accuracy CSR <a name="dynamic"></a>
 
 | 31....11 | 10..8  | 7..5 | 4....0 |
+| -------- | ------ | ---- | ------ |
 | reserved | facc   | frm  | fflags |
 
+[[!table data="""
 | facc  | mode    | description         | 
 | 0b000 | IEEE754 | correctly rounded   | 
 | 0b010 | ULP<1   | Unit Last Place < 1 | 
 | 0b100 | Vulkan  | Vulkan compliant    | 
 | 0b110 | Appx    | Machine Learning    | 
+"""]]
 
 maybe a solution would be to add an extra field to the fp control csr
 to allow selecting one of several accurate or fast modes:
