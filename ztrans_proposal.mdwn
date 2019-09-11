@@ -556,10 +556,6 @@ Ztrignpi are the basic trigonometric functions through which all others
 could be synthesised, and they are typically the base trigonometrics
 provided by GPUs for 3D, warranting their own subset.
 
-However as can be correspondingly seen from other sections, there is an
-accuracy penalty for doing so which will not be acceptable for IEEE754
-compliance.
-
 In the case of the Ztrigpi subset, these are commonly used in for loops
 with a power of two number of subdivisions, and the cost of multiplying
 by PI inside each loop (or cumulative addition, resulting in cumulative
@@ -568,13 +564,15 @@ errors) is not acceptable.
 In for example CORDIC the multiplication by PI may be moved outside of
 the hardware algorithm as a loop invariant, with no power or area penalty.
 
-Thus again, the same general argument applies to give Ztrignpi and
-Ztrigpi as subsets.
+Again, therefore, if SINPI (etc.) were excluded, programmers would be penalised by being forced to divide by PI in some circumstances. Likewise if SIN were excluded, programmers would be penaslised by being forced to *multiply* by PI in some circumstances.
+
+Thus again, a slightly different application of the same general argument applies to give Ztrignpi and
+Ztrigpi as subsets.  3D GPUs will almost certainly provide both.
 
 ### Zarctrigpi and Zarctrignpi
 
 * **Zarctrigpi**: ATAN2PI ASINPI ACOSPI
-* **Zarctrignpi**: ATAN2 ACOS ADIN
+* **Zarctrignpi**: ATAN2 ACOS ASIN
 
 These are extra trigonometric functions that are useful in some
 applications, but even for 3D GPUs, particularly embedded and mobile class
