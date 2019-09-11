@@ -462,7 +462,8 @@ Vivante Embedded/Mobile 3D (etnaviv <https://github.com/laanwj/etna_viv/blob/mas
 
 It also has fast variants of some of these, as a CSR Mode.
 
-AMD's R600 GPU (R600\_Instruction\_Set\_Architecture.pdf) has:
+AMD's R600 GPU (R600\_Instruction\_Set\_Architecture.pdf) and the
+RDNA ISA (RDNA\_Shader\_ISA\_5August2019.pdf, Table 22, Section 6.3) have:
 
     COS (appx)
     EXP2
@@ -471,6 +472,11 @@ AMD's R600 GPU (R600\_Instruction\_Set\_Architecture.pdf) has:
     RSQRT
     SQRT
     SIN (appx)
+
+AMD RDNA has F16 and F32 variants of all the above, and also has F64
+variants of SQRT, RSQRT and RECIP.  It is interesting that even the
+modern high-end AMD GPU does not have TAN or ATAN, where MALI Midgard
+does.
 
 Also a general point, that customised optimised hardware targetting
 FP32 3D with less accuracy simply can neither be used for IEEE754 nor
