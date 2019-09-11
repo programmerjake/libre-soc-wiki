@@ -531,7 +531,11 @@ high-performance or correctly-rounding):
 
     ASINH( x ) = ln( x + SQRT(x**2+1))
 
-# Reciprocal
+# Evaluation and commentary
+
+This section will move later to discussion.
+
+## Reciprocal
 
 Used to be an alias. Some implementors may wish to implement divide as y times recip(x).
 
@@ -539,7 +543,7 @@ Others may have shared hardware for recip and divide, others may not.
 
 To avoid penalising one implementor over another, recip stays.
 
-# To evaluate: should LOG be replaced with LOG1P (and EXP with EXPM1)?
+## To evaluate: should LOG be replaced with LOG1P (and EXP with EXPM1)?
 
 RISC principle says "exclude LOG because it's covered by LOGP1 plus an ADD".
 Research needed to ensure that implementors are not compromised by such
@@ -551,7 +555,7 @@ a decision
 
 > ok, they stay in as real opcodes, then.
 
-# ATAN / ATAN2 commentary
+## ATAN / ATAN2 commentary
 
 Discussion starts here:
 <http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2019-August/002470.html>
