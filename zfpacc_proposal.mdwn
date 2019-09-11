@@ -91,9 +91,13 @@ The values for the field facc to include the following:
 | 0b100 | Vulkan  | Vulkan compliant    | 
 | 0b110 | Appx    | Machine Learning    
 
-Note that the format of the operands and result remain the same for
+Notes: 
+
+* facc=0 to match current RISC-V behaviour, where these bits were formerly reserved and set to zero.
+* The format of the operands and result remain the same for
 all opcodes. The only change is in the *accuracy* of the result, not
 its format.
+* facc sets the *minimum* accuracy. It is acceptable to provide *more* accurate results than is requested by a given facc mode (although, clearly, the opportunity for reduced power and latency would be missed).
 
 ## Discussion
 
