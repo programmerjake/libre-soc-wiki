@@ -135,3 +135,30 @@ Comments:
     There are also 8 and 9-bit floating point formats that could be useful
 
     <https://en.wikipedia.org/wiki/Minifloat>
+
+### Compliance
+
+Dan Petroski:
+
+    It’s a bit more complicated than that. Different FP
+    representations/algorithms have different quantization ranges, so you
+    can get more or less precise depending on how large the arguments are.
+
+    For instance, machine A can compute within ULP3 from 0 to 10000, but
+    ULP2 from 10000 upwards. Machine B can compute within ULP2 from 0 to
+    6000, then ULP3 for 6000+. How do you design a compliance suite which
+    guarantees behavior across all fpaccs?
+
+and from Allen Baum:
+
+    In the example above, you'd need a ratified spec with the defined
+    ranges  (possbily per range and per op) - and then implementations
+    would need to at least meet that spec (but could be more accurate)
+
+    so - not impossible, but a lot more work to write different kinds
+    of tests than standard IEEE compatible test would have.
+
+    And, by the way, if you want it to be a ratified spec, it needs a
+    compliance suite, and whoever has defined the spec is responsible
+    for writing it.,
+
