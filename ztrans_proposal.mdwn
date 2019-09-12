@@ -310,7 +310,7 @@ and is **not** an appropriate methodology for use in other Extensions
 with huge (non-uniform) market diversity even with similarly large
 numbers of potential opcodes.  BitManip is the perfect counter-example.
 
-# Proposed Opcodes vs Khronos OpenCL Opcodes <a name="khronos_equiv"></a>
+# Proposed Opcodes vs Khronos OpenCL vs IEEE754-2019<a name="khronos_equiv"></a>
 
 This list shows the (direct) equivalence between proposed opcodes and
 their Khronos OpenCL equivalents.
@@ -319,6 +319,7 @@ For RISCV opcode encodings see
 
 See
 <https://www.khronos.org/registry/spir-v/specs/unified1/OpenCL.ExtendedInstructionSet.100.html>
+and <https://ieeexplore.ieee.org/document/8766229>
 
 * Special FP16 opcodes are *not* being proposed, except by indirect / inherent
   use of the "fmt" field that is already present in the RISC-V Specification.
@@ -334,46 +335,65 @@ Khronos Specification accuracy requirements - is not an option, as it
 results in non-compliance, and the vendor may not use the Trademarked words
 "Vulkan" etc. in conjunction with their product.
 
+IEEE754-2019 Table 9.1 lists "additional mathematical operations".
+Interestingly the only functions missing when compared to OpenCL are
+compound, exp2m1, exp10m1, log2p1, log10p1, pown (integer power) and powr.
+
 [[!table data="""
-Proposed opcode | OpenCL FP32 | OpenCL FP16 | OpenCL native | OpenCL fast |
-FSIN            | sin         | half\_sin   | native\_sin   | NONE        |
-FCOS            | cos         | half\_cos   | native\_cos   | NONE        |
-FTAN            | tan         | half\_tan   | native\_tan   | NONE        |
-NONE (1)        | sincos      | NONE        | NONE          | NONE        |
-FASIN           | asin        | NONE        | NONE          | NONE        |
-FACOS           | acos        | NONE        | NONE          | NONE        |
-FATAN           | atan        | NONE        | NONE          | NONE        |
-FSINPI          | sinpi       | NONE        | NONE          | NONE        |
-FCOSPI          | cospi       | NONE        | NONE          | NONE        |
-FTANPI          | tanpi       | NONE        | NONE          | NONE        |
-FASINPI         | asinpi      | NONE        | NONE          | NONE        |
-FACOSPI         | acospi      | NONE        | NONE          | NONE        |
-FATANPI         | atanpi      | NONE        | NONE          | NONE        |
-FSINH           | sinh        | NONE        | NONE          | NONE        |
-FCOSH           | cosh        | NONE        | NONE          | NONE        |
-FTANH           | tanh        | NONE        | NONE          | NONE        |
-FASINH          | asinh       | NONE        | NONE          | NONE        |
-FACOSH          | acosh       | NONE        | NONE          | NONE        |
-FATANH          | atanh       | NONE        | NONE          | NONE        |
-FRSQRT          | rsqrt       | half\_rsqrt | native\_rsqrt | NONE        |
-FCBRT           | cbrt        | NONE        | NONE          | NONE        |
-FEXP2           | exp2        | half\_exp2  | native\_exp2  | NONE        |
-FLOG2           | log2        | half\_log2  | native\_log2  | NONE        |
-FEXPM1          | expm1       | NONE        | NONE          | NONE        |
-FLOG1P          | log1p       | NONE        | NONE          | NONE        |
-FEXP            | exp         | half\_exp   | native\_exp   | NONE        |
-FLOG            | log         | half\_log   | native\_log   | NONE        |
-FEXP10          | exp10       | half\_exp10 | native\_exp10 | NONE        |
-FLOG10          | log10       | half\_log10 | native\_log10 | NONE        |
-FATAN2          | atan2       | NONE        | NONE          | NONE        |
-FATAN2PI        | atan2pi     | NONE        | NONE          | NONE        |
-FPOW            | pow         | NONE        | NONE          | NONE        |
-FROOT           | rootn       | NONE        | NONE          | NONE        |
-FHYPOT          | hypot       | NONE        | NONE          | NONE        |
-FRECIP          | NONE        | half\_recip | native\_recip | NONE        |
+opcode   | OpenCL FP32 | OpenCL FP16 | OpenCL native | OpenCL fast | IEEE754  |
+FSIN     | sin         | half\_sin   | native\_sin   | NONE        | sin      |
+FCOS     | cos         | half\_cos   | native\_cos   | NONE        | cos      |
+FTAN     | tan         | half\_tan   | native\_tan   | NONE        | tan      |
+NONE (1) | sincos      | NONE        | NONE          | NONE        | NONE     |
+FASIN    | asin        | NONE        | NONE          | NONE        | asin     |
+FACOS    | acos        | NONE        | NONE          | NONE        | acos     |
+FATAN    | atan        | NONE        | NONE          | NONE        | atan     |
+FSINPI   | sinpi       | NONE        | NONE          | NONE        | sinPi    |
+FCOSPI   | cospi       | NONE        | NONE          | NONE        | cosPi    |
+FTANPI   | tanpi       | NONE        | NONE          | NONE        | tanPi    |
+FASINPI  | asinpi      | NONE        | NONE          | NONE        | asinPi   |
+FACOSPI  | acospi      | NONE        | NONE          | NONE        | acosPi   |
+FATANPI  | atanpi      | NONE        | NONE          | NONE        | atanPi   |
+FSINH    | sinh        | NONE        | NONE          | NONE        | sinh     |
+FCOSH    | cosh        | NONE        | NONE          | NONE        | cosh     |
+FTANH    | tanh        | NONE        | NONE          | NONE        | tanh     |
+FASINH   | asinh       | NONE        | NONE          | NONE        | asinh    |
+FACOSH   | acosh       | NONE        | NONE          | NONE        | acosh    |
+FATANH   | atanh       | NONE        | NONE          | NONE        | atanh    |
+FATAN2   | atan2       | NONE        | NONE          | NONE        | atan2    |
+FATAN2PI | atan2pi     | NONE        | NONE          | NONE        | atan2pi  |
+FRSQRT   | rsqrt       | half\_rsqrt | native\_rsqrt | NONE        | rSqrt    |
+FCBRT    | cbrt        | NONE        | NONE          | NONE        | NONE (4) |
+FEXP2    | exp2        | half\_exp2  | native\_exp2  | NONE        | exp2     |
+FLOG2    | log2        | half\_log2  | native\_log2  | NONE        | log2     |
+FEXPM1   | expm1       | NONE        | NONE          | NONE        | expm1    |
+FLOG1P   | log1p       | NONE        | NONE          | NONE        | logp1    |
+FEXP     | exp         | half\_exp   | native\_exp   | NONE        | exp      |
+FLOG     | log         | half\_log   | native\_log   | NONE        | log      |
+FEXP10   | exp10       | half\_exp10 | native\_exp10 | NONE        | exp10    |
+FLOG10   | log10       | half\_log10 | native\_log10 | NONE        | log10    |
+FPOW     | pow         | NONE        | NONE          | NONE        | pow      |
+FROOT    | rootn       | NONE        | NONE          | NONE        | rootn    |
+FHYPOT   | hypot       | NONE        | NONE          | NONE        | hypot    |
+FRECIP   | NONE        | half\_recip | native\_recip | NONE        | NONE (5) |
+NONE     | NONE        | NONE        | NONE          | NONE        | compound |
+NONE     | NONE        | NONE        | NONE          | NONE        | exp2m1   |
+NONE     | NONE        | NONE        | NONE          | NONE        | exp10m1  |
+NONE     | NONE        | NONE        | NONE          | NONE        | log2p1   |
+NONE     | NONE        | NONE        | NONE          | NONE        | log10p1  |
+NONE     | NONE        | NONE        | NONE          | NONE        | pown (2) |
+NONE     | NONE        | NONE        | NONE          | NONE        | powr (3) |
 """]]
 
 Note (1) FSINCOS is macro-op fused (see below).
+
+Note (2) IEEE754-2019 pown(x, n) - n is an integer
+
+Note (3) IEEE754-2019 powr(x, y) is defined as "exp(y log (x))"
+
+Note (4) synthesised in IEEE754-2019 as "pown(x, 3)"
+
+Note (5) synthesised in IEEE754-2019 using "1.0 / x"
 
 ## List of 2-arg opcodes
 
