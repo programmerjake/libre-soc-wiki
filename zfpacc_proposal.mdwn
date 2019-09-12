@@ -1,5 +1,12 @@
 # FP Accuracy proposal
 
+Credits:
+
+* Bruce Hoult
+* Allen Baum
+* Dan Petroski
+* Jacob Lifshay
+
 TODO: complete writeup
 
 * <http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2019-August/002400.html>
@@ -91,6 +98,8 @@ The values for the field facc to include the following:
 | 0b100 | Vulkan  | Vulkan compliant    | 
 | 0b110 | Appx    | Machine Learning    
 
+(TODO: review alternative idea: ULP0.5, ULP1, ULP2, ULP4, ULP16)
+
 Notes: 
 
 * facc=0 to match current RISC-V behaviour, where these bits were formerly reserved and set to zero.
@@ -112,6 +121,12 @@ to allow selecting one of several accurate or fast modes:
      (would 0.51 or some other value be better?)
 - fully-accurate-mode: correctly rounded in all cases
 - maybe more modes?
+
+extra mode suggestions:
+
+    it might be reasonable to add a mode saying you're prepared to accept
+    worse then 0.5 ULP accuracy, perhaps with a few options: 1, 2, 4,
+    16 or something like that.
 
 Question: should better accuracy than is requested be permitted? Example:
 Ahmdahl-370 issues.
