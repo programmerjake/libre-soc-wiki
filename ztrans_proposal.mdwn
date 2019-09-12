@@ -373,7 +373,7 @@ FLOG     | log         | half\_log   | native\_log   | NONE        | log      |
 FEXP10   | exp10       | half\_exp10 | native\_exp10 | NONE        | exp10    |
 FLOG10   | log10       | half\_log10 | native\_log10 | NONE        | log10    |
 FPOW     | pow         | NONE        | NONE          | NONE        | pow      |
-FROOT    | rootn       | NONE        | NONE          | NONE        | rootn    |
+FROOTN   | rootn       | NONE        | NONE          | NONE        | rootn    |
 FHYPOT   | hypot       | NONE        | NONE          | NONE        | hypot    |
 FRECIP   | NONE        | half\_recip | native\_recip | NONE        | NONE (5) |
 NONE     | NONE        | NONE        | NONE          | NONE        | compound |
@@ -402,7 +402,7 @@ opcode    | Description            | pseudocode                 | Extension   |
 FATAN2    | atan2 arc tangent      | rd = atan2(rs2, rs1)       | Zarctrignpi |
 FATAN2PI  | atan2 arc tangent / pi | rd = atan2(rs2, rs1) / pi  | Zarctrigpi  |
 FPOW      | x power of y           | rd = pow(rs1, rs2)         | ZftransAdv  |
-FROOT     | x power 1/y            | rd = pow(rs1, 1/rs2)       | ZftransAdv  |
+FROOTN    | x power 1/n (n integer)| rd = pow(rs1, 1/rs2)       | ZftransAdv  |
 FHYPOT    | hypotenuse             | rd = sqrt(rs1^2 + rs2^2)   | ZftransAdv  |
 """]]
 
@@ -556,12 +556,10 @@ HPC and high-end GPUs are likely markets for these.
 
 ### ZftransAdv
 
-CBRT, POW, ROOT (inverse of POW): these are simply much more complex
-to implement in hardware, and typically will only be put into HPC
-applications.
+CBRT, POW, ROOTN
 
-ROOT is included as well as POW because at the extreme ranges one is
-more accurate than the other.
+These are simply much more complex to implement in hardware, and typically
+will only be put into HPC applications.
 
 * **Zfrsqrt**: Reciprocal square-root.
 

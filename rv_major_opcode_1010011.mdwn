@@ -62,7 +62,7 @@ funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name           |
 01101   | xx      | rs2    | rs1  | rm     | rd    | 1010011 | **FATAN2.xx**  |
 01110   | xx      | rs2    | rs1  | rm     | rd    | 1010011 | **FATAN2PI.xx**|
 01111   | xx      | rs2    | rs1  | rm     | rd    | 1010011 | **FPOW.xx**    |
-10000   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | **FROOT.xx**   |
+10000   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | **FROOTN.xx**  |
 10001   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?              |
 10010   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?              |
 10011   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?              |
@@ -257,9 +257,10 @@ Rationale: Gives better accuracy than if using FMUL with the constant, PI.
 
 Proposed for ZftransAdv - FPOW: "FP rs1 to the power of rs2"
 
-## funct5 = 10000 - **FROOT**
+## funct5 = 10000 - **FROOTN**
 
-Proposed for ZftransAdv - FPROOT: "FP rs1 to the power of (1/rs2)"
+Proposed for ZftransAdv - FPROOTN: "FP rs1 to the power of (1/rs2)".
+rs1 is FP, rs2 is **integer**.
 
 ## funct5 = 10000 - unused
 
