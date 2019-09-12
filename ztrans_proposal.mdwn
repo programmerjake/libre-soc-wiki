@@ -210,10 +210,13 @@ Any deviation from Trademarked Standards means that an implementation
 may not be sold and also make a claim of being, for example, "Vulkan
 compatible".
 
-This in turn reinforces and makes a hard requirement a need for public
+For 3D, this in turn reinforces and makes a hard requirement a need for public
 compliance with such standards, over-and-above what would otherwise be
 set by a RISC-V Standards Development Process, including both the
 software compliance and the knock-on implications that has for hardware.
+
+For libraries such as libm and numpy, accuracy is paramount, for software  interoperability across multiple platforms. Some algorithms critically rely on correct IEEE754, for example.
+The conflicting accuracy requirements can be met through the zfpacc extension.
 
 **Collaboration**:
 
