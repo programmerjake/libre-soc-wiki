@@ -63,8 +63,8 @@ funct5  | SDHQ    | rs2    | rs1  | funct3 | rd    | opcode  | name           |
 01110   | xx      | rs2    | rs1  | rm     | rd    | 1010011 | **FATAN2PI.xx**|
 01111   | xx      | rs2    | rs1  | rm     | rd    | 1010011 | **FPOW.xx**    |
 10000   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | **FROOTN.xx**  |
-10001   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?              |
-10010   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?              |
+10001   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | **FPOWN.xx**   |
+10010   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | **FPOWR.xx**   |
 10011   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?              |
 10100   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | tb=10100       |
 10101   | xx      | rs2    | rs1  | yyy    | rd    | 1010011 | ?              |
@@ -262,13 +262,15 @@ Proposed for ZftransAdv - FPOW: "FP rs1 to the power of rs2"
 Proposed for ZftransAdv - FPROOTN: "FP rs1 to the power of (1/rs2)".
 rs1 is FP, rs2 is **integer**.
 
-## funct5 = 10000 - unused
+## funct5 = 10000 - **FPOWN**
 
-Brownfield encodings available.
+Proposed for ZftransAdv - FPOW: "FP rs1 to the power of rs2"
+rs1 is FP, rs2 is **integer**.
 
-## funct5 = 10001 - unused
+## funct5 = 10001 - **FPOW**
 
-Brownfield encodings available.
+Proposed for ZftransAdv - FPOWN: "FP rs1 to the power of rs2, rs1 +ve"
+rs1 and rs2 are FP, rs1 must be +ve.  Equivalent to "exp(rs2 * log(rs1))"
 
 ## funct5 = 10010 - unused
 
