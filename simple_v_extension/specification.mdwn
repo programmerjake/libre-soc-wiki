@@ -113,6 +113,7 @@ There are five additional CSRs, available in any privilege level:
 * VL (which has different characteristics from standard CSRs)
 * SUBVL (effectively a kind of SIMD)
 * STATE (containing copies of MVL, VL and SUBVL as well as context information)
+* SVPSTATE (state information for SVPrefix)
 * PCVBLK (the current operation being executed within a VBLOCK Group)
 
 For User Mode there are the following CSRs:
@@ -121,18 +122,20 @@ For User Mode there are the following CSRs:
   to the start of the current VBLOCK Group, set on a trap).
 * ueSTATE (useful for saving and restoring during context switch,
   and for providing fast transitions)
-* ueSTATE2 on RV32 systems and when VBLOCK is not implemented.
- Note: ueSTATE2 is mirrored in the top 32 bits of ueSTATE.
+* ueSVPSTATE when SVPrefix is implemented
+ Note: ueSVPSTATE is mirrored in the top 32 bits of ueSTATE.
 
-There are also two additional CSRs for Supervisor-Mode:
+There are also three additional CSRs for Supervisor-Mode:
 
 * sePCVBLK
-* seSTATE / seSTATE2
+* seSTATE (which contains seSVPSTATE)
+* seSVPSTATE
 
 And likewise for M-Mode:
 
 * mePCVBLK
-* meSTATE / meSTATE2
+* meSTATE (which contains meSVPSTATE)
+* meSVPSTATE
 
 The u/m/s CSRs are treated and handled exactly like their (x)epc
 equivalents. On entry to or exit from a privilege level, the contents
@@ -163,8 +166,8 @@ An interesting side effect of SV STATE being separate and distinct in S
 Mode is that Vectorised saving of an entire register file to the stack
 is a single instruction (through accidental provision of LOAD-MULTI
 semantics).  If the SVPrefix P64-LD-type format is used, LOAD-MULTI may
-even be done with a single standalone 64 bit opcode (P64 may set up SUBVL,
-VL and MVL from an immediate field, to cover the full regfile). It can
+even be done with a single standalone 64 bit opcode (P64 may set up SVPSTATE.SUBVL,
+SVPSTATE.VL and SVPSTATE.MVL from an immediate field, to cover the full regfile). It can
 even be predicated, which opens up some very interesting possibilities.
 
 (x)EPCVBLK CSRs must be treated exactly like their corresponding (x)epc
