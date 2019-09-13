@@ -1,8 +1,8 @@
 # Simple-V (Parallelism Extension Proposal) Specification
 
 * Copyright (C) 2017, 2018, 2019 Luke Kenneth Casson Leighton
-* Status: DRAFTv0.6
-* Last edited: 30 jun 2019
+* Status: DRAFTv0.6.1
+* Last edited: 10 sep 2019
 * Ancillary resource: [[opcodes]]
 * Ancillary resource: [[sv_prefix_proposal]]
 * Ancillary resource: [[abridged_spec]]
@@ -110,7 +110,7 @@ on hidden context that augments *scalar* RISCV instructions.
 There are five additional CSRs, available in any privilege level:
 
 * MVL (the Maximum Vector Length)
-* VL (which has different characteristics from standard CSRs)
+* VL (sets which scalar register is to be the Vector Length)
 * SUBVL (effectively a kind of SIMD)
 * STATE (containing copies of MVL, VL and SUBVL as well as context information)
 * SVPSTATE (state information for SVPrefix)
@@ -193,15 +193,9 @@ section, where there are subtle differences between CSRRW and CSRRWI.
 
 ## Vector Length (VL) <a name="vl" />
 
-VSETVL is slightly different from RVV.  Similar to RVV, VL is set to be within
-the range 1 <= VL <= MVL (where MVL in turn is limited to 1 <= MVL <= XLEN)
+VL is very different from RVV's VL.  It contains the scalar register *number* that is to be treated as the Vector Length. It is a sub-field of STATE. When set to zero (x0) VL (vectorisation) is disabled.
 
-    VL = rd = MIN(vlen, MVL)
-
-where 1 <= MVL <= XLEN
-
-However just like MVL it is important to note that the range for VL has
-subtle design implications, covered in the "CSR pseudocode" section
+Implementations realistically should keep a cached copy of the register pointed to by VL in the instruction issue engine, passing it through as a parameter to ALUs. Out of Order Engines must then, if it is not x0, add this register to Vectorised instructions as an additional read/write hazard as appropriate.
 
 The fixed (specific) setting of VL allows vector LOAD/STORE to be used
 to switch the entire bank of registers using a single instruction (see
