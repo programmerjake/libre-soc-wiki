@@ -195,57 +195,9 @@ section, where there are subtle differences between CSRRW and CSRRWI.
 
 VL is very different from RVV's VL.  It contains the scalar register *number* that is to be treated as the Vector Length. It is a sub-field of STATE. When set to zero (x0) VL (vectorisation) is disabled.
 
-Implementations realistically should keep a cached copy of the register pointed to by VL in the instruction issue engine, passing it through as a parameter to ALUs. Out of Order Engines must then, if it is not x0, add this register to Vectorised instructions as an additional read/write hazard as appropriate.
+Implementations realistically should keep a cached copy of the register pointed to by VL in the instruction issue and decode phases. Out of Order Engines must then, if it is not x0, add this register to Vectorised instruction Dependency Checking as an additional read/write hazard as appropriate.
 
-The fixed (specific) setting of VL allows vector LOAD/STORE to be used
-to switch the entire bank of registers using a single instruction (see
-Appendix, "Context Switch Example").  The reason for limiting VL to XLEN
-is down to the fact that predication bits fit into a single register of
-length XLEN bits.
-
-The second and most important change is that, within the limits set by
-MVL, the value passed in **must** be set in VL (and in the
-destination register).
-
-This has implication for the microarchitecture, as VL is required to be
-set (limits from MVL notwithstanding) to the actual value
-requested.  RVV has the option to set VL to an arbitrary value that suits
-the conditions and the micro-architecture: SV does *not* permit this.
-
-The reason is so that if SV is to be used for a context-switch or as a
-substitute for LOAD/STORE-Multiple, the operation can be done with only
-2-3 instructions (setup of the CSRs, VSETVL x0, x0, #{regfilelen-1},
-single LD/ST operation).  If VL does *not* get set to the register file
-length when VSETVL is called, then a software-loop would be needed.
-To avoid this need, VL *must* be set to exactly what is requested
-(limits notwithstanding).
-
-Therefore, in turn, unlike RVV, implementors *must* provide
-pseudo-parallelism (using sequential loops in hardware) if actual
-hardware-parallelism in the ALUs is not deployed.  A hybrid is also
-permitted (as used in Broadcom's VideoCore-IV) however this must be
-*entirely* transparent to the ISA.
-
-The third change is that VSETVL is implemented as a CSR, where the
-behaviour of CSRRW (and CSRRWI) must be changed to specifically store
-the *new* value in the destination register, **not** the old value.
-Where context-load/save is to be implemented in the usual fashion
-by using a single CSRRW instruction to obtain the old value, the
-*secondary* CSR must be used (STATE).  This CSR by contrast behaves
-exactly as standard CSRs, and contains more than just VL.
-
-One interesting side-effect of using CSRRWI to set VL is that this
-may be done with a single instruction, useful particularly for a
-context-load/save.  There are however limitations: CSRWI's immediate
-is limited to 0-31 (representing VL=1-32).
-
-Note that when VL is set to 1, vector operations cease (but not subvector
-operations: that requires setting SUBVL=1) the hardware loop is reduced
-to a single element: scalar operations.  This is in effect the default,
-normal operating mode. However it is important to appreciate that this
-does **not** result in the Register table or SUBVL being disabled. Only
-when the Register table is empty (P48/64 prefix fields notwithstanding)
-would SV have no effect.
+Setting VL via this CSR is very unusual. It should not normally be needed except when [[specification/sv.setvl]] is not implemented.  Note that unlike in sv.setvl, setting VL does not change the contents of the scalar register that it points to, although if the scalar register's contents are not within the range of MVL at the time that VL is set, an illegal instruction exception must be raised.
 
 ## SUBVL - Sub Vector Length
 
@@ -256,7 +208,7 @@ operation issued, SUBVL operations are issued.
 
 Another way to view SUBVL is that each element in the VL length vector is
 now SUBVL times elwidth bits in length and now comprises SUBVL discrete
-sub operations.  An inner SUBVL for-loop within a VL for-loop in effect,
+sub operations.  This can be viewed as an inner SUBVL hardware for-loop within a VL hardware for-loop in effect,
 with the sub-element increased every time in the innermost loop. This
 is best illustrated in the (simplified) pseudocode example, in the
 [[appendix]].
@@ -312,6 +264,8 @@ The format of the STATE CSR is as follows:
 | -------- | -------- | -------- | -------- | -------- | ------- | ------- |
 | rsvd     | dsvoffs  | subvl    | destoffs | srcoffs  | vl      | maxvl   |
 
+Legal values of vl are between 0 and 31.
+
 The relationship between SUBVL and the subvl field is:
 
 | SUBVL | (25..24) |
@@ -324,7 +278,7 @@ The relationship between SUBVL and the subvl field is:
 When setting this CSR, the following characteristics will be enforced:
 
 * **MAXVL** will be truncated (after offset) to be within the range 1 to XLEN
-* **VL** will be truncated (after offset) to be within the range 1 to MAXVL
+* **VL** must be set to a scalar register between 0 and 31.
 * **SUBVL** which sets a SIMD-like quantity, has only 4 values so there
   are no changes needed
 * **srcoffs** will be truncated to be within the range 0 to VL-1
@@ -338,14 +292,13 @@ behaviour is undefined. **USE WITH CARE**.
 NOTE: sub-vector looping does not require a twin-predicate corresponding
 index, because sub-vectors use the *main* (VL) loop predicate bit.
 
-When SVPrefix is implemented, it can have its own VL, MVL and SUBVL. VL will act slightly differently in that it is no longer a pointer to a scalar register but is an actual value just like RVV's VL.
+When SVPrefix is implemented, it can have its own VL, MVL and SUBVL, as well as element offsets. SVSTATE.VL acts slightly differently in that it is no longer a pointer to a scalar register but is an actual value just like RVV's VL.
 
 The format of SVSTATE, which fits into *both* the top bits of STATE and also into a separate CSR, is as follows:
 
 | (31..28) | (27..26) | (25..24) | (23..18) | (17..12) | (11..6) | (5...0) |
 | -------- | -------- | -------- | -------- | -------- | ------- | ------- |
 | rsvd     | dsvoffs  | subvl    | destoffs | srcoffs  | vl      | maxvl   |
-
 
 ### Hardware rules for when to increment STATE offsets
 
@@ -380,19 +333,16 @@ The pseudo-code for get and set of VL and MVL use the following internal
 functions as follows:
 
     set_mvl_csr(value, rd):
-        regs[rd] = STATE.MVL
         STATE.MVL = MIN(value, STATE.MVL)
 
     get_mvl_csr(rd):
         regs[rd] = STATE.VL
 
     set_vl_csr(value, rd):
-        STATE.VL = MIN(value, STATE.MVL)
-        regs[rd] = STATE.VL # yes returning the new value NOT the old CSR
+        STATE.VL = rd
         return STATE.VL
 
     get_vl_csr(rd):
-        regs[rd] = STATE.VL
         return STATE.VL
 
 Note that where setting MVL behaves as a normal CSR (returns the old
