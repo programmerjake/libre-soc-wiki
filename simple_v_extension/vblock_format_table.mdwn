@@ -23,6 +23,9 @@ The VL/MAXVL/SubVL Block format, when 16xil != 0b111, is:
 
 Note (1) - Registers are in RVC format (x8-x15)
 
+Note (2) - [[specification/sv.setvl]] behaviour is expected, as if an sv.setvl
+instruction had actually been called.
+
 When 16xil is 0b111, this is the "Extended" Format, using the >= 192-bit
 RISC-V ISA format.  Note that the length is 96+16\*nnnnn, not 192+
 
