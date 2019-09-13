@@ -215,7 +215,8 @@ prefix as well.  VLtyp encodes how (whether) to set SVPSTATE.VL and SVPSTATE.MAX
 VLtyp field encoding
 ====================
 
-NOTE: VL and MVL below are local to SVPregix and, if non-default, are tracked through SVPSTATE, not the main Specification_ STATE. If default (all zeros) then STATE VL and MVL apply to this instruction.
+NOTE: VL and MVL below are local to SVPrefix and, if non-default, will update the src and dest element offsets in SVPSTATE, not the main Specification_ STATE. If default (all zeros) then STATE VL and MVL apply to this instruction,
+and STATE.srcoffs (etc) will be used.
 
 +-----------+-------------+--------------+----------+----------------------+
 | VLtyp[11] | VLtyp[10:6] | VLtyp[5:1]   | VLtyp[0] | comment              |
