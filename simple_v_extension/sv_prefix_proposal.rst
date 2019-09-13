@@ -215,8 +215,10 @@ prefix as well.  VLtyp encodes how (whether) to set SVPSTATE.VL and SVPSTATE.MAX
 VLtyp field encoding
 ====================
 
-NOTE: VL and MVL below are local to SVPrefix and, if non-default, will update the src and dest element offsets in SVPSTATE, not the main Specification_ STATE. If default (all zeros) then STATE VL and MVL apply to this instruction,
-and STATE.srcoffs (etc) will be used.
+NOTE: VL and MVL below are local to SVPrefix and, if non-default,
+will update the src and dest element offsets in SVPSTATE, not the main
+Specification_ STATE. If default (all zeros) then STATE VL and MVL apply
+to this instruction, and STATE.srcoffs (etc) will be used.
 
 +-----------+-------------+--------------+----------+----------------------+
 | VLtyp[11] | VLtyp[10:6] | VLtyp[5:1]   | VLtyp[0] | comment              |
@@ -230,7 +232,9 @@ and STATE.srcoffs (etc) will be used.
 | 1         |  VLdest     |  MVL-immed   | 1        | MVL immed mode       |
 +-----------+-------------+--------------+----------+----------------------+
 
-Note: when VLtyp is all zeros, the main Specification_ VL and MVL apply to this instruction. If called outside of a VBLOCK or if sv.setvl has not set VL, the operation is "scalar".
+Note: when VLtyp is all zeros, the main Specification_ VL and MVL apply
+to this instruction. If called outside of a VBLOCK or if sv.setvl has
+not set VL, the operation is "scalar".
 
 Just as in the VBLOCK format, when bit 11 of VLtyp is zero:
 
@@ -259,8 +263,38 @@ Note that VLtyp's VL and MVL are not the same as the main Specification_
 VL or MVL, and that loops will alter srcoffs and destoffs in SVPSTATE in VLtype nondefault mode, but the srcoffs and destoffs in STATE, if VLtype=0.
 
 Furthermore, the execution order and exception handling must be exactly
-the same as in the main spec
-(Program Order must be preserved)
+the same as in the main spec (Program Order must be preserved)
+
+Pseudocode for SVPSTATE.VL:
+
+.. parsed-literal::
+
+    # pseudocode
+
+    regs = [0u64; 128];
+    vl = 0;
+
+    // instruction fields:
+    rd = get_rd_field();
+    vlmax = get_immed_field();
+
+    // handle illegal instruction decoding
+    if vlmax > XLEN {
+        trap()
+    }
+
+    // calculate VL
+    if rs1 == 0 { // rs1 is x0
+        vl = vlmax
+    } else {
+        vl = min(regs[rs1], vlmax)
+    }
+
+    // write rd
+    if rd != 0 {
+        // rd is not x0
+        regs[rd] = vl
+    }
 
 vs#/vd Fields' Encoding
 =======================
