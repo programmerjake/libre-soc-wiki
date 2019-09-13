@@ -14,11 +14,11 @@ of the RISC-V ISA, is as follows:
 The VL/MAXVL/SubVL Block format, when 16xil != 0b111, is:
 
 [[!table  data="""
-31:30 | 29:28 | 27:22    | 21 | 20:19   | 18:16    | comment                              |
+31:30 | 29:28 | 27:22    | 21 | 20:19   | 18:16    | comment................ |
 0b00  | SubVL | imm[5:0] |rsvd| rd[4:0]           || sv.setvl rd, x0, imm    |
-0b01  | SubVL | imm[5:0] | rs1[2:0]    || rd[2:0]  | RVC reg format, sv.setvl rd, rs, imm |
-0b10  | SubVL | imm[5:0] |rsvd|  rs1[4:0]         || sv.setvl x0, rs1, imm        |
-0b11  | rsvd  | rsvd     |rsvd| rsvd              || reserved, all 0s                     |
+0b01  | SubVL | imm[5:0] | rs1[2:0]    || rd[2:0]  | RVC format, sv.setvl rd, rs, imm |
+0b10  | SubVL | imm[5:0] |rsvd|  rs1[4:0]         || sv.setvl x0, rs1, imm   |
+0b11  | rsvd  | rsvd     |rsvd| rsvd              || reserved, all 0s        |
 """]]
 
 When 16xil is 0b111, this is the "Extended" Format, using the >= 192-bit
