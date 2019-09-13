@@ -121,16 +121,18 @@ For User Mode there are the following CSRs:
   to the start of the current VBLOCK Group, set on a trap).
 * ueSTATE (useful for saving and restoring during context switch,
   and for providing fast transitions)
+* ueSTATE2 on RV32 systems and when VBLOCK is not implemented.
+ Note: ueSTATE2 is mirrored in the top 32 bits of ueSTATE.
 
 There are also two additional CSRs for Supervisor-Mode:
 
 * sePCVBLK
-* seSTATE
+* seSTATE / seSTATE2
 
 And likewise for M-Mode:
 
 * mePCVBLK
-* meSTATE
+* meSTATE / meSTATE2
 
 The u/m/s CSRs are treated and handled exactly like their (x)epc
 equivalents. On entry to or exit from a privilege level, the contents
@@ -338,6 +340,15 @@ behaviour is undefined. **USE WITH CARE**.
 
 NOTE: sub-vector looping does not require a twin-predicate corresponding
 index, because sub-vectors use the *main* (VL) loop predicate bit.
+
+When SVPrefix is implemented, it can have its own VL, MVL and SUBVL. VL will act slightly differently in that it is no longer a pointer to a scalar register but is an actual value just like RVV's VL.
+
+The format of SVSTATE, which fits into *both* the top bits of STATE and also into a separate CSR, is as follows:
+
+| (31..28) | (27..26) | (25..24) | (23..18) | (17..12) | (11..6) | (5...0) |
+| -------- | -------- | -------- | -------- | -------- | ------- | ------- |
+| rsvd     | dsvoffs  | subvl    | destoffs | srcoffs  | vl      | maxvl   |
+
 
 ### Hardware rules for when to increment STATE offsets
 
