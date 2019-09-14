@@ -1,0 +1,23 @@
+# This page aims to collect all the resources and specifications we need in one place for quick access.
+
+We will try our best to keep links here up-to-date. Feel free to add more links here.
+
+# RISC-V Instruction Set Architecture
+
+The Libre RISC-V Project is building a hybrid CPU/GPU SoC. As the name of the project implies, we will be following the RISC-V ISA due to it being open-source and also because of the huge software and hardware ecosystem building around it. There are other open-source ISAs but none of them have the same momentum and energy behind it as RISC-V.
+
+To fully take advantage of the RISC-V ecosystem, it is important to be compliant with the RISC-V standards. Doing so will allow us to to reuse most software as-is and avoid major forks.
+
+* Official compiled PDFs of RISC-V ISA Manual: <https://github.com/riscv/riscv-isa-manual/releases/latest>
+* Working draft of the proposed RISC-V Bitmanipulation extension: <https://github.com/riscv/riscv-bitmanip/blob/master/bitmanip-draft.pdf>
+* RISC-V "V" Vector Extension: <https://riscv.github.io/documents/riscv-v-spec/>
+
+Note: As far as I know, we aren't using the RISC-V V Extension directly at the moment. But, I am putting it here for informative comparison purposes to our own vector extension called SV.
+
+# IEEE Standard for Floating-Point Arithmetic (IEEE 754)
+
+Almost all modern computers follow the IEEE Floating-Point Standard. Of course, we will follow it as well for interoperability.
+
+* <https://standards.ieee.org/standard/754-2019.html>
+
+Note: Even though this is such an important standard used by everyone, it is unfortunately not freely available and requires a payment to access. However, each of the Libre RISC-V members already have access to the document.
