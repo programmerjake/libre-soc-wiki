@@ -18,6 +18,20 @@ Note: As far as I know, we aren't using the RISC-V V Extension directly at the m
 
 Almost all modern computers follow the IEEE Floating-Point Standard. Of course, we will follow it as well for interoperability.
 
-* <https://standards.ieee.org/standard/754-2019.html>
+* IEEE 754-2019: <https://standards.ieee.org/standard/754-2019.html>
 
 Note: Even though this is such an important standard used by everyone, it is unfortunately not freely available and requires a payment to access. However, each of the Libre RISC-V members already have access to the document.
+
+# Khronos Standards
+
+The Khronos Group creates open standards for authoring and acceleration of graphics, media, and computation. It is a requirement for our hybrid CPU/GPU to be compliant with these standards, especially Vulkan and OpenCL being the most important. SPIR-V is also important for the Kazan driver.
+
+* SPIR-V 1.5 Specification Revision 1: <https://www.khronos.org/registry/spir-v/specs/unified1/SPIRV.html>
+* SPIR-V OpenCL Extended Instruction Set: <https://www.khronos.org/registry/spir-v/specs/unified1/OpenCL.ExtendedInstructionSet.100.html>
+* SPIR-V GLSL Extended Instruction Set: <https://www.khronos.org/registry/spir-v/specs/unified1/GLSL.std.450.html>
+* Vulkan 1.1.122: <https://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html>
+* OpenCL 2.2 API Specification: <https://www.khronos.org/registry/OpenCL/specs/2.2/html/OpenCL_API.html>
+* OpenCL 2.2 Extension Specification: <https://www.khronos.org/registry/OpenCL/specs/2.2/html/OpenCL_Ext.html>
+* OpenCL 2.2 SPIR-V Environment Specification: <https://www.khronos.org/registry/OpenCL/specs/2.2/html/OpenCL_Env.html>
+
+Note: I'm not sure what the plan is for OpenGL. Are we doing that in hardware or using Zink to run OpenGL on top of Vulkan?
