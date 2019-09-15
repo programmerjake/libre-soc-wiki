@@ -41,9 +41,9 @@ The Khronos Group creates open standards for authoring and acceleration of graph
 * OpenCL 2.2 Extension Specification: <https://www.khronos.org/registry/OpenCL/specs/2.2/html/OpenCL_Ext.html>
 * OpenCL 2.2 SPIR-V Environment Specification: <https://www.khronos.org/registry/OpenCL/specs/2.2/html/OpenCL_Env.html>
 
-Note: I'm not sure what the plan is for OpenGL. Are we doing that in hardware or using Zink to run OpenGL on top of Vulkan?
+Note: We are implementing hardware accelerated Vulkan (and possibly OpenCL) while relying on other software projects to translate APIs to Vulkan. E.g. Zink allows for OpenGL-->Vulkan in software.
 
-# Graphics and Computer API Stack
+# Graphics and Compute API Stack
 
 I found this informative post that mentions Kazan and a whole bunch of other stuff. It looks like *many* APIs can be emulated on top of Vulkan, although performance is not evaluated.
 
