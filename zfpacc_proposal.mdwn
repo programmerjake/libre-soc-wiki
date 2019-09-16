@@ -20,6 +20,20 @@ this proposal.  Only ULP (Unit in Last Place) of the instruction *result*
 is permitted to meet alternative accuracy requirements, whilst still
 retaining the instruction's requested format.
 
+This proposal is *only* suitable for adding pre-existing accuracy standards
+where it is clearly established, well in advance of applications being
+written that conform to that standard, that dealing with variations in
+accuracy across hardware implementations is the responsibility of the
+application writer.  This is the case for both Vulkan and OpenCL.
+
+This proposal is *not* suitable for inclusion of "de-facto" (proprietary)
+accuracy standards (historic IBM Mainframe vs Ahmdahl incompatibility)
+where there was no prior agreement or notification to applications
+writers that variations in accuracy across hardware implementations
+would occur.  In the unlikely event that they *are* ever to be included
+(n the future, rather than as a Custom Extension, then, unlike Vulkan
+and OpenCL, they must **only** be added as "bit-for-bit compatible".
+
 # Extension of FCSR
 
 Zfpacc would use some of the the reserved bits of FCSR.  It would be treated
