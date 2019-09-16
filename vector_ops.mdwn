@@ -6,9 +6,25 @@ Normally in SV all operations are scalar and independent.  In this extension, th
 
 ## Vector cross product
 
+Result is the cross product of x and y, i.e., the resulting components are, in order:
+
+    x[1] * y[2] - y[1] * x[2]
+    x[2] * y[0] - y[2] * x[0]
+    x[0] * y[1] - y[0] * x[1]
+
+All the operands must be vectors of 3 components of a floating-point type.
+
 ## Vector dot product
 
 ## Vector length
+
+The scalar length of a vector
+
+    sqrt(x[0]^2 + x[1]^2 + ...).
+
+## Vector distance
+
+The scalar distance between two vectors. Subtracts one vector from the other and returns length
 
 ## Vector LERP
 
