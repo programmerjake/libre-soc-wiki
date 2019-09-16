@@ -1,8 +1,12 @@
 # Vector Operations Extension to SV
 
-This extension is dependent on SV SUBVL being implemented. When SUBVL is set to define the length of a subvector the operations in this extension interpret the elements as a single vector.
+This extension is usually dependent on SV SUBVL being implemented. When SUBVL is set to define the length of a subvector the operations in this extension interpret the elements as a single vector.
 
-Normally in SV all operations are scalar and independent.  In this extension, the subvector itself is the unit. Examples include cross product and may in future involve complex numbers.
+Normally in SV all operations are scalar and independent, and the operations on them may inherently be independently parallelised, with the result being a vector of length exactly equal to the input vectors.
+
+In this extension, the subvector itself is typically the unit, although some operations will work on scalars or standard vectors as well, or the result is a scalar that is dependent on all elements within the vector arguments.
+
+Examples which can require SUBVL include cross product and may in future involve complex numbers.
 
 ## Vector cross product
 
@@ -16,9 +20,12 @@ All the operands must be vectors of 3 components of a floating-point type.
 
 ## Vector dot product
 
+Computes the dot product of two vectors. Internal accuracy must be greater than the 
+input vectors and the result.
+
 ## Vector length
 
-The scalar length of a vector
+The scalar length of a vector:
 
     sqrt(x[0]^2 + x[1]^2 + ...).
 
@@ -28,5 +35,10 @@ The scalar distance between two vectors. Subtracts one vector from the other and
 
 ## Vector LERP
 
+Known as **fmix** in GLSL.
+
+<https://en.m.wikipedia.org/wiki/Linear_interpolation>
+
 ## Vector SLERP
 
+<https://en.m.wikipedia.org/wiki/Slerp>
