@@ -54,16 +54,50 @@ I found this informative post that mentions Kazan and a whole bunch of other stu
 The conference brought together experts and enthusiasts who want to build a complete Free and Open Source CAD ecosystem for designing analog and digital integrated circuits.
 The conference covered the full spectrum of the design process, from system architecture, to layout and verification.
 
-<https://wiki.f-si.org/index.php/FSiC2019#Foundries.2C_PDKs_and_cell_libraries>
+* <https://wiki.f-si.org/index.php/FSiC2019#Foundries.2C_PDKs_and_cell_libraries>
 
-LIP6's Coriolis - a set of backend design tools: <https://www-soc.lip6.fr/equipe-cian/logiciels/coriolis/>
+* LIP6's Coriolis - a set of backend design tools: <https://www-soc.lip6.fr/equipe-cian/logiciels/coriolis/>
 
 Note: The rest of LIP6's website is in French, but there is a UK flag in the corner that gives the English version.
 
-KLayout - Layout viewer and editor: <https://www.klayout.de/>
+* KLayout - Layout viewer and editor: <https://www.klayout.de/>
 
 # The OpenROAD Project
 
 OpenROAD seeks to develop and foster an autonomous, 24-hour, open-source layout generation flow (RTL-to-GDS).
 
-<https://theopenroadproject.org/>
+* <https://theopenroadproject.org/>
+
+# Tests, Benchmarks, Conformance, Compliance, Verification, etc.
+
+## RISC-V Tests
+
+RISC-V Foundation is in the process of creating an official conformance test. It's still in development as far as I can tell.
+
+* //TODO LINK TO RISC-V CONFORMANCE TEST
+
+## IEEE 754 Tests
+
+IEEE 754 has no official tests for floating-point but there are several well-known third party tools to check such as John Hauser's SoftFloat and TestFloat.
+
+* <http://www.jhauser.us/arithmetic/>
+
+Jacob is also making a Rust library to check IEEE 754 operations.
+
+* <http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2019-September/002737.html>
+
+A cool paper I came across in my research is "IeeeCC754++ : An Advanced Set of Tools to Check IEEE 754-2008 Conformity" by Dr. Matthias Hüsken.
+
+* Direct link to PDF: <http://elpub.bib.uni-wuppertal.de/servlets/DerivateServlet/Derivate-7505/dc1735.pdf>
+
+## Khronos Tests
+
+OpenCL Conformance Tests
+
+* <https://github.com/KhronosGroup/OpenCL-CTS>
+
+Vulkan Conformance Tests
+
+* <https://github.com/KhronosGroup/VK-GL-CTS>
+
+MAJOR NOTE: We are **not** allowed to say we are compliant with any of the Khronos standards until we actually make an official submission and do the paperwork.
