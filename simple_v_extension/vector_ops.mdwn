@@ -8,6 +8,50 @@ In this extension, the subvector itself is typically the unit, although some ope
 
 Examples which can require SUBVL include cross product and may in future involve complex numbers.
 
+## CORDIC
+
+CORDIC is an extremely general-purpose algorithm useful for a huge number
+of diverse purposes.  In its full form it does however require quite a
+few parameters, one of which is a vector, making it awkward to include in
+a standard "scalar" ISA.  Additionally the coordinates can be set to circular,
+linear or hyperbolic, producing three different modes, and the algorithm
+may also be run in either "vector" mode or "rotation" mode.  See [[discussion]]
+
+vx, vy = CORDIC(vx, vy, coordinate\_mode, beta)
+
+     int i = 0;
+     int iterations = 0; // Number of times to run the algorithm
+     float arctanTable[iterations]; // in Radians
+     float K = 0.6073; // K
+     float v_x,v_y; // Vector v; x and y components
+
+     for(i=0; i < iterations; i++) {
+        arctanTable[i] = atan(pow(2,-i));
+     }
+
+     float vnew_x;   // To store the new value of x;
+     for(i = 0; i < iterations; i++) {
+         // If beta is negative, we need to do a counter-clockwise rotation:
+         if( beta < 0) {
+            vnew_x = v_x + (v_y*pow(2,-i)); 
+            v_y -= (v_x*pow(2,-i));  
+            beta += arctanTable[i]; 
+         }
+         // If beta is positive, we need to do a clockwise rotation:
+         else {
+            vnew_x = v_x - (v_y*pow(2,-i));
+            v_y += (v_x*pow(2,-i));
+            beta -= arctanTable[i];
+         }
+         v_x = vnew_x;
+     }
+     v_x *= K;
+     v_y *= K;
+
+Links:
+
+* <http://www.myhdl.org/docs/examples/sinecomp/>
+
 ## Vector cross product
 
 Result is the cross product of x and y, i.e., the resulting components are, in order:
@@ -18,10 +62,36 @@ Result is the cross product of x and y, i.e., the resulting components are, in o
 
 All the operands must be vectors of 3 components of a floating-point type.
 
+Pseudocode:
+
+    vec3 a, b; // elements in order a.x, a.y, a.z
+    // compute a cross b:
+    vec3 t1 = a.yzx; // produce vector [a.y, a.z, a.x]
+    vec3 t2 = b.zxy;
+    vec3 t3 = a.zxy;
+    vec3 t4 = b.yzx;
+    vec3 p = t3 * t4;
+    vec3 cross = t1 * t2 - p;
+
 ## Vector dot product
 
-Computes the dot product of two vectors. Internal accuracy must be greater than the
-input vectors and the result.
+Computes the dot product of two vectors. Internal accuracy must be
+greater than the input vectors and the result.
+
+Pseudocode in python:
+
+    from operator import mul
+    sum(map(mul, A, B))
+
+Pseudocode in c:
+
+    double dot_product(float v[], float u[], int n)
+    {
+        double result = 0.0;
+        for (int i = 0; i < n; i++)
+            result += v[i] * u[i];
+        return result;
+    }
 
 ## Vector length
 
@@ -31,7 +101,10 @@ The scalar length of a vector:
 
 ## Vector distance
 
-The scalar distance between two vectors. Subtracts one vector from the other and returns length
+The scalar distance between two vectors. Subtracts one vector from the
+other and returns length:
+
+    length(v0 - v1)
 
 ## Vector LERP
 
@@ -55,6 +128,9 @@ Pseudocode:
     }
 
 ## Vector SLERP
+
+Not recommended as it is not commonly used and has several trigonometric
+functions.
 
 <https://en.m.wikipedia.org/wiki/Slerp>
 
@@ -99,6 +175,100 @@ Pseudocode:
 
         return (s0 * v0) + (s1 * v1);
     }
+
+However this algorithm does not involve transcendentals except in
+the computation of the tables: <https://en.wikipedia.org/wiki/CORDIC#Rotation_mode>
+
+    function v = cordic(beta,n)
+        % This function computes v = [cos(beta), sin(beta)] (beta in radians)
+        % using n iterations. Increasing n will increase the precision.
+
+        if beta < -pi/2 || beta > pi/2
+            if beta < 0
+                v = cordic(beta + pi, n);
+            else
+                v = cordic(beta - pi, n);
+            end
+            v = -v; % flip the sign for second or third quadrant
+            return
+        end
+
+        % Initialization of tables of constants used by CORDIC
+        % need a table of arctangents of negative powers of two, in radians:
+        % angles = atan(2.^-(0:27));
+        angles =  [  ...
+            0.78539816339745   0.46364760900081   
+            0.24497866312686   0.12435499454676 ...
+            0.06241880999596   0.03123983343027   
+            0.01562372862048   0.00781234106010 ...
+            0.00390623013197   0.00195312251648   
+            0.00097656218956   0.00048828121119 ...
+            0.00024414062015   0.00012207031189   
+            0.00006103515617   0.00003051757812 ...
+            0.00001525878906   0.00000762939453   
+            0.00000381469727   0.00000190734863 ...
+            0.00000095367432   0.00000047683716   
+            0.00000023841858   0.00000011920929 ...
+            0.00000005960464   0.00000002980232   
+            0.00000001490116   0.00000000745058 ];
+        % and a table of products of reciprocal lengths of vectors [1, 2^-2j]:
+        % Kvalues = cumprod(1./abs(1 + 1j*2.^(-(0:23))))
+        Kvalues = [ ...
+            0.70710678118655   0.63245553203368   
+            0.61357199107790   0.60883391251775 ...
+            0.60764825625617   0.60735177014130   
+            0.60727764409353   0.60725911229889 ...
+            0.60725447933256   0.60725332108988   
+            0.60725303152913   0.60725295913894 ...
+            0.60725294104140   0.60725293651701   
+            0.60725293538591   0.60725293510314 ...
+            0.60725293503245   0.60725293501477   
+            0.60725293501035   0.60725293500925 ...
+            0.60725293500897   0.60725293500890   
+            0.60725293500889   0.60725293500888 ];
+        Kn = Kvalues(min(n, length(Kvalues)));
+
+        % Initialize loop variables:
+        v = [1;0]; % start with 2-vector cosine and sine of zero
+        poweroftwo = 1;
+        angle = angles(1);
+
+        % Iterations
+        for j = 0:n-1;
+            if beta < 0
+                sigma = -1;
+            else
+                sigma = 1;
+            end
+            factor = sigma * poweroftwo;
+            % Note the matrix multiplication can be done using scaling by 
+            % powers of two and addition subtraction
+            R = [1, -factor; factor, 1];
+            v = R * v; % 2-by-2 matrix multiply
+            beta = beta - sigma * angle; % update the remaining angle
+            poweroftwo = poweroftwo / 2;
+            % update the angle from table, or eventually by just dividing by two
+            if j+2 > length(angles)
+                angle = angle / 2;
+            else
+                angle = angles(j+2);
+            end
+        end
+
+        % Adjust length of output vector to be [cos(beta), sin(beta)]:
+        v = v * Kn;
+        return
+
+    endfunction
+
+2x2 matrix multiply can be done with shifts and adds:
+
+    x = v[0] - sigma * (v[1] * 2^(-j));
+    y = sigma * (v[0] * 2^(-j)) + v[1];
+    v = [x; y];
+
+The technique is outlined in a paper as being applicable to 3D:
+<https://www.atlantis-press.com/proceedings/jcis2006/232>
 
 # Expensive 3-operand OP32 operations
 

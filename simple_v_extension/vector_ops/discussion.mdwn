@@ -1,0 +1,126 @@
+# CORDIC Implementations
+
+From <https://github.com/suyashmahar/cordic-algorithm-python>
+
+    circular = 1
+    linear = 0
+    hyperbolic = -1
+
+    def ROM_lookup(iteration, coord_mode):
+        if (coord_mode == circular):
+            return math.degrees(math.atan(2**(-1*iteration)))
+        elif (coord_mode == linear):
+            return 2**(-1*iteration)
+        elif (coord_mode == hyperbolic):
+            return (math.atanh(2**(-1*iteration)))
+
+    def rotation_mode(x, y, z, coord_mode, iterations):
+        a = 0.607252935;   # = 1/K
+        
+        x_val_list = []
+        y_val_list = []
+        z_val_list = []
+        iterations_list = []
+
+        i = 0;                  # Keeps count on number of iterations
+        
+        current_x = x         # Value of X on ith iteration 
+        current_y = y         # Value of Y on ith iteration
+        current_z = z         # Value of Z on ith iteration
+        
+        di = 0
+        
+        if (coord_mode == hyperbolic):
+            i = 1
+        else:
+            i = 0
+            
+        flag = 0
+        
+        if (iterations > 0):
+            while (i < iterations):
+                if (current_z < 0):
+                    di = -1
+                else:
+                    di = +1
+                next_z = current_z - di * ROM_lookup(i, coord_mode)
+                next_x = current_x - coord_mode * di * current_y * (2**(-1*i))
+                next_y = current_y + di * current_x * 2**(-1*i)
+                
+                current_x = next_x
+                current_y = next_y
+                current_z = next_z
+
+                x_val_list.append(current_x)
+                y_val_list.append(current_y)
+                z_val_list.append(current_z)
+                
+                iterations_list.append(i)
+                
+                if (coord_mode == hyperbolic):
+                    if ((i != 4) & (i != 13) & (i!=40)):
+                        i = i+1
+                    elif (flag == 0):
+                        flag = 1
+                    elif (flag == 1):
+                        flag = 0
+                        i = i+1
+                else:
+                    i = i+1
+        return { 'x':x_val_list, 'y':y_val_list, 'z':z_val_list,
+                 'iteration':iterations_list, }
+
+    def vector_mode(x, y, z, coord_mode, iterations):
+        a = 1.2075;   # = 1/K
+        
+        x_val_list = []
+        y_val_list = []
+        z_val_list = []
+        iterations_list = []
+
+        i = 0;                  # Keeps count on number of iterations
+        
+        current_x = x         # Value of X on ith iteration 
+        current_y = y         # Value of Y on ith iteration
+        current_z = z         # Value of Z on ith iteration
+        
+        di = 0
+        
+        # This is neccesary since result for i=0 doesn't exists for hyperbolic 
+        # co-ordinate system.
+        if (coord_mode == hyperbolic):
+            i = 1
+        else:
+            i = 0
+            
+        flag = 0
+        
+        if (iterations > 0):
+            while (i < iterations):
+                di = -1*math.copysign(1, current_y);#*current_x);
+                next_x = current_x - coord_mode * di * current_y * (2**(-1*i))
+                next_y = current_y + di * current_x * 2**(-1*i)
+                next_z = current_z - di * ROM_lookup(i, coord_mode)
+                
+                current_x = next_x
+                current_y = next_y
+                current_z = next_z
+
+                x_val_list.append(current_x)
+                y_val_list.append(current_y)
+                z_val_list.append(current_z)
+                
+                iterations_list.append(i)
+                
+                if (coord_mode == hyperbolic):
+                    if ((i != 4) & (i != 13) & (i!=40)):
+                        i = i+1
+                    elif (flag == 0):
+                        flag = 1
+                    elif (flag == 1):
+                        flag = 0
+                        i = i+1
+                else:
+                    i = i+1
+        return { 'x':x_val_list, 'y':y_val_list, 'z':z_val_list,
+                 'iteration':iterations_list }
