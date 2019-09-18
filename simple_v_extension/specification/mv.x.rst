@@ -156,3 +156,5 @@ output:
 | m10 m11 m12 m13 |
 | m20 m21 m22 m23 |
 | m30 m31 m32 m33 |
+
+<http://web.archive.org/web/20100111104515/http://www.randombit.net:80/bitbashing/programming/integer_matrix_transpose_in_sse2.html>
