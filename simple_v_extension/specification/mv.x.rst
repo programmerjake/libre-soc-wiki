@@ -11,13 +11,12 @@ swizzle needs a MV.  see below for a potential way to use the funct7 to do a swi
 | RV32-I-type   + fn4[3:0]    + swizzle[7:0]     + rs1[4:0] + 0b000  | rd[4:0]  + OP-V   + 0b11   |
 +---------------+-------------+-------+----------+----------+--------+----------+--------+--------+
 
-* funct3 = MV
+* funct3 = MV: 0b000 for FP, 0b001 for INT
 * OP-V = 0b1010111
 * fn4 = 4 bit function.
-* fn4 = 0b0000 - INT MV-SWIZZLE ?
-* fn4 = 0b0001 - FP MV-SWIZZLE ?
-* fn4 = 0bNN10 - INT MV-X, NN=elwidth (default/8/16/32)
-* fn4 = 0bNN11 - FP MV-X NN=elwidth (default/8/16/32)
+* fn4 = 0b0000 - MV-SWIZZLE
+* fn4 = 0bNN01 - MV-X, NN=elwidth (default/8/16/32)
+* fn4 = 0bNN11 - MV-X.SUBVL NN=elwidth (default/8/16/32)
 
 swizzle (only active on SV or P48/P64 when SUBVL!=0):
 
@@ -26,6 +25,24 @@ swizzle (only active on SV or P48/P64 when SUBVL!=0):
 +-----+-----+-----+-----+
 |   w |   z |   y |   x |
 +-----+-----+-----+-----+
+
+MV.X has two modes: SUBVL mode applies the element offsets only within a SUBVL inner loop. This can be used for transposition.
+
+::
+
+  for i in range(VL):
+     for j in range(SUBVL):
+        regs[rd] = regs[rd+regs[rs+j]]
+
+Normal mode will apply the element offsets incrementally:
+
+::
+
+  for i in range(VL):
+     for j in range(SUBVL):
+        regs[rd] = regs[rd+regs[rs+k]]
+          k++
+
 
 Pseudocode for element width part of MV.X:
 
