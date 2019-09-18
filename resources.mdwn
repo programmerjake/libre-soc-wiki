@@ -1,70 +1,113 @@
 # Resources and Specifications
 
-This page aims to collect all the resources and specifications we need in one place for quick access. We will try our best to keep links here up-to-date. Feel free to add more links here.
+This page aims to collect all the resources and specifications we need
+in one place for quick access. We will try our best to keep links here
+up-to-date. Feel free to add more links here.
 
 # RISC-V Instruction Set Architecture
 
-The Libre RISC-V Project is building a hybrid CPU/GPU SoC. As the name of the project implies, we will be following the RISC-V ISA due to it being open-source and also because of the huge software and hardware ecosystem building around it. There are other open-source ISAs but none of them have the same momentum and energy behind it as RISC-V.
+The Libre RISC-V Project is building a hybrid CPU/GPU SoC. As the name
+of the project implies, we will be following the RISC-V ISA due to it
+being open-source and also because of the huge software and hardware
+ecosystem building around it. There are other open-source ISAs but none
+of them have the same momentum and energy behind it as RISC-V.
 
-To fully take advantage of the RISC-V ecosystem, it is important to be compliant with the RISC-V standards. Doing so will allow us to to reuse most software as-is and avoid major forks.
+To fully take advantage of the RISC-V ecosystem, it is important to be
+compliant with the RISC-V standards. Doing so will allow us to to reuse
+most software as-is and avoid major forks.
 
-* Official compiled PDFs of RISC-V ISA Manual: <https://github.com/riscv/riscv-isa-manual/releases/latest>
-* Working draft of the proposed RISC-V Bitmanipulation extension: <https://github.com/riscv/riscv-bitmanip/blob/master/bitmanip-draft.pdf>
-* RISC-V "V" Vector Extension: <https://riscv.github.io/documents/riscv-v-spec/>
+* Official compiled PDFs of RISC-V ISA Manual:
+  <https://github.com/riscv/riscv-isa-manual/releases/latest>
+* Working draft of the proposed RISC-V Bitmanipulation extension:
+  <https://github.com/riscv/riscv-bitmanip/blob/master/bitmanip-draft.pdf>
+* RISC-V "V" Vector Extension:
+  <https://riscv.github.io/documents/riscv-v-spec/>
 
-Note: As far as I know, we aren't using the RISC-V V Extension directly at the moment. However, there are many wiki pages that make a reference to the V extension so it would be good to include it here as a reference for comparative/informative purposes with regard to Simple-V.
+Note: As far as I know, we aren't using the RISC-V V Extension directly
+at the moment. However, there are many wiki pages that make a reference
+to the V extension so it would be good to include it here as a reference
+for comparative/informative purposes with regard to Simple-V.
+
 # IEEE Standard for Floating-Point Arithmetic (IEEE 754)
 
-Almost all modern computers follow the IEEE Floating-Point Standard. Of course, we will follow it as well for interoperability.
+Almost all modern computers follow the IEEE Floating-Point Standard. Of
+course, we will follow it as well for interoperability.
 
 * IEEE 754-2019: <https://standards.ieee.org/standard/754-2019.html>
 
-Note: Even though this is such an important standard used by everyone, it is unfortunately not freely available and requires a payment to access. However, each of the Libre RISC-V members already have access to the document.
+Note: Even though this is such an important standard used by everyone,
+it is unfortunately not freely available and requires a payment to
+access. However, each of the Libre RISC-V members already have access
+to the document.
 
 # Khronos Standards
 
-The Khronos Group creates open standards for authoring and acceleration of graphics, media, and computation. It is a requirement for our hybrid CPU/GPU to be compliant with these standards, especially Vulkan and OpenCL being the most important. SPIR-V is also important for the Kazan driver.
+The Khronos Group creates open standards for authoring and acceleration
+of graphics, media, and computation. It is a requirement for our hybrid
+CPU/GPU to be compliant with these standards *as well* as with IEEE754,
+in order to be commercially-competitive in both areas: especially Vulkan
+and OpenCL being the most important. SPIR-V is also important for the
+Kazan driver.
+
+Thus the [[zfpacc_proposal]] has been created which permits runtime dynamic
+switching between different accuracy levels, in userspace applications.
 
 **SPIR-V Main Page <https://www.khronos.org/registry/spir-v/>**
 
-* SPIR-V 1.5 Specification Revision 1: <https://www.khronos.org/registry/spir-v/specs/unified1/SPIRV.html>
-* SPIR-V OpenCL Extended Instruction Set: <https://www.khronos.org/registry/spir-v/specs/unified1/OpenCL.ExtendedInstructionSet.100.html>
-* SPIR-V GLSL Extended Instruction Set: <https://www.khronos.org/registry/spir-v/specs/unified1/GLSL.std.450.html>
+* SPIR-V 1.5 Specification Revision 1:
+  <https://www.khronos.org/registry/spir-v/specs/unified1/SPIRV.html>
+* SPIR-V OpenCL Extended Instruction Set:
+  <https://www.khronos.org/registry/spir-v/specs/unified1/OpenCL.ExtendedInstructionSet.100.html>
+* SPIR-V GLSL Extended Instruction Set:
+  <https://www.khronos.org/registry/spir-v/specs/unified1/GLSL.std.450.html>
 
 **Vulkan Main Page <https://www.khronos.org/registry/vulkan/>**
 
-* Vulkan 1.1.122: <https://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/index.html>
+* Vulkan 1.1.122:
+  <https://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/index.html>
 
 **OpenCL Main Page <https://www.khronos.org/registry/OpenCL/>**
 
-* OpenCL 2.2 API Specification: <https://www.khronos.org/registry/OpenCL/specs/2.2/html/OpenCL_API.html>
-* OpenCL 2.2 Extension Specification: <https://www.khronos.org/registry/OpenCL/specs/2.2/html/OpenCL_Ext.html>
-* OpenCL 2.2 SPIR-V Environment Specification: <https://www.khronos.org/registry/OpenCL/specs/2.2/html/OpenCL_Env.html>
+* OpenCL 2.2 API Specification:
+  <https://www.khronos.org/registry/OpenCL/specs/2.2/html/OpenCL_API.html>
+* OpenCL 2.2 Extension Specification:
+  <https://www.khronos.org/registry/OpenCL/specs/2.2/html/OpenCL_Ext.html>
+* OpenCL 2.2 SPIR-V Environment Specification:
+  <https://www.khronos.org/registry/OpenCL/specs/2.2/html/OpenCL_Env.html>
 
-Note: We are implementing hardware accelerated Vulkan (and possibly OpenCL) while relying on other software projects to translate APIs to Vulkan. E.g. Zink allows for OpenGL-->Vulkan in software.
+Note: We are implementing hardware accelerated Vulkan (and possibly
+OpenCL) while relying on other software projects to translate APIs to
+Vulkan. E.g. Zink allows for OpenGL-to-Vulkan in software.
 
 # Graphics and Compute API Stack
 
-I found this informative post that mentions Kazan and a whole bunch of other stuff. It looks like *many* APIs can be emulated on top of Vulkan, although performance is not evaluated.
+I found this informative post that mentions Kazan and a whole bunch of
+other stuff. It looks like *many* APIs can be emulated on top of Vulkan,
+although performance is not evaluated.
 
 <https://synappsis.wordpress.com/2017/06/03/opengl-over-vulkan-dev/>
 
 # Free Silicon Conference
 
-The conference brought together experts and enthusiasts who want to build a complete Free and Open Source CAD ecosystem for designing analog and digital integrated circuits.
-The conference covered the full spectrum of the design process, from system architecture, to layout and verification.
+The conference brought together experts and enthusiasts who want to build
+a complete Free and Open Source CAD ecosystem for designing analog and
+digital integrated circuits.  The conference covered the full spectrum of
+the design process, from system architecture, to layout and verification.
 
 * <https://wiki.f-si.org/index.php/FSiC2019#Foundries.2C_PDKs_and_cell_libraries>
 
-* LIP6's Coriolis - a set of backend design tools: <https://www-soc.lip6.fr/equipe-cian/logiciels/coriolis/>
+* LIP6's Coriolis - a set of backend design tools:
+  <https://www-soc.lip6.fr/equipe-cian/logiciels/coriolis/>
 
-Note: The rest of LIP6's website is in French, but there is a UK flag in the corner that gives the English version.
+Note: The rest of LIP6's website is in French, but there is a UK flag
+in the corner that gives the English version.
 
 * KLayout - Layout viewer and editor: <https://www.klayout.de/>
 
 # The OpenROAD Project
 
-OpenROAD seeks to develop and foster an autonomous, 24-hour, open-source layout generation flow (RTL-to-GDS).
+OpenROAD seeks to develop and foster an autonomous, 24-hour, open-source
+layout generation flow (RTL-to-GDS).
 
 * <https://theopenroadproject.org/>
 
@@ -72,13 +115,16 @@ OpenROAD seeks to develop and foster an autonomous, 24-hour, open-source layout 
 
 ## RISC-V Tests
 
-RISC-V Foundation is in the process of creating an official conformance test. It's still in development as far as I can tell.
+RISC-V Foundation is in the process of creating an official conformance
+test. It's still in development as far as I can tell.
 
 * //TODO LINK TO RISC-V CONFORMANCE TEST
 
 ## IEEE 754 Tests
 
-IEEE 754 has no official tests for floating-point but there are several well-known third party tools to check such as John Hauser's SoftFloat and TestFloat.
+IEEE 754 has no official tests for floating-point but there are several
+well-known third party tools to check such as John Hauser's SoftFloat
+and TestFloat.
 
 * <http://www.jhauser.us/arithmetic/>
 
@@ -86,9 +132,11 @@ Jacob is also making a Rust library to check IEEE 754 operations.
 
 * <http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2019-September/002737.html>
 
-A cool paper I came across in my research is "IeeeCC754++ : An Advanced Set of Tools to Check IEEE 754-2008 Conformity" by Dr. Matthias Hüsken.
+A cool paper I came across in my research is "IeeeCC754++ : An Advanced
+Set of Tools to Check IEEE 754-2008 Conformity" by Dr. Matthias Hüsken.
 
-* Direct link to PDF: <http://elpub.bib.uni-wuppertal.de/servlets/DerivateServlet/Derivate-7505/dc1735.pdf>
+* Direct link to PDF:
+  <http://elpub.bib.uni-wuppertal.de/servlets/DerivateServlet/Derivate-7505/dc1735.pdf>
 
 ## Khronos Tests
 
@@ -100,4 +148,7 @@ Vulkan Conformance Tests
 
 * <https://github.com/KhronosGroup/VK-GL-CTS>
 
-MAJOR NOTE: We are **not** allowed to say we are compliant with any of the Khronos standards until we actually make an official submission and do the paperwork.
+MAJOR NOTE: We are **not** allowed to say we are compliant with any of
+the Khronos standards until we actually make an official submission,
+do the paperwork, and pay the relevant fees.
+
