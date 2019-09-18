@@ -29,7 +29,7 @@ swizzle (only active on SV or P48/P64 when SUBVL!=0):
 
 Pseudocode for element width part of MV.X:
 
-.. code:: 
+::
   def mv_x(rd, rs1, funct4):
       elwidth = (funct4>>2) & 0x3
       bitwidth = {0:XLEN, 1:8, 2:16, 3:32}[elwidth] # get bits per el
