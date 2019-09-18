@@ -111,3 +111,31 @@ Interleave inputs into low 2 floats and high 2 floats of output. Basically
 
 For example, _mm_shuffle_ps(a,a,_MM_SHUFFLE(i,i,i,i)) copies the float
 a[i] into all 4 output floats.
+
+Transpose
+=========
+
+assuming a vector of 4x4 matrixes is stored as 4 separate vectors with subvl=4 in struct-of-array-of-struct form (the form I've been planning on using):
+using standard (4+4) -> 4 swizzle instructions with 2 input vectors with subvl=4 and 1 output vector with subvl, a vectorized matrix transpose operation can be done in 2 steps with 4 instructions per step to give 8 instructions in total:
+
+input:
+| m00 m10 m20 m30 |
+| m01 m11 m21 m31 |
+| m02 m12 m22 m32 |
+| m03 m13 m23 m33 |
+
+transpose 4 corner 2x2 matrices
+
+intermediate:
+| m00 m01 m20 m21 |
+| m10 m11 m30 m31 |
+| m02 m03 m22 m23 |
+| m12 m13 m32 m33 |
+
+finish transpose
+
+output:
+| m00 m01 m02 m03 |
+| m10 m11 m12 m13 |
+| m20 m21 m22 m23 |
+| m30 m31 m32 m33 |
