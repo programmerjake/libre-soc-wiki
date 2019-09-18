@@ -57,3 +57,17 @@ VBLOCK context?
 
 additional idea: a VBLOCK context that says that if a given register is used, it indicates that the
 register is to be "swizzled", and the VBLOCK swizzle context contains the swizzling to be carried out.
+
+mm_shuffle_ps?
+==============
+
+__m128 _mm_shuffle_ps(__m128 lo,__m128 hi,
+       _MM_SHUFFLE(hi3,hi2,lo1,lo0))
+Interleave inputs into low 2 floats and high 2 floats of output. Basically
+   out[0]=lo[lo0];
+   out[1]=lo[lo1];
+   out[2]=hi[hi2];
+   out[3]=hi[hi3];
+
+For example, _mm_shuffle_ps(a,a,_MM_SHUFFLE(i,i,i,i)) copies the float
+a[i] into all 4 output floats.
