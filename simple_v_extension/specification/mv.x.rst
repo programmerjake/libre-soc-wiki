@@ -30,18 +30,18 @@ swizzle (only active on SV or P48/P64 when SUBVL!=0):
 Pseudocode for element width part of MV.X:
 
 .. code:: python
-    def mv_x(rd, rs1, funct4):
-        elwidth = (funct4>>2) & 0x3
-        bitwidth = {0:XLEN, 1:8, 2:16, 3:32}[elwidth] # get bits per el
-        bytewidth = bitwidth / 8 # get bytes per el
-        for i in range(VL):
-            addr = (unsigned char *)&regs[rs1]
-            offset = addr + bytewidth # get offset within regfile as SRAM
-            # TODO, actually, needs to respect rd and rs1 element width,
-            # here, as well.  this pseudocode just illustrates that the
-            # MV.X operation contains a way to compact the indices into
-            # less space.
-            regs[rd] = (unsigned char*)(regs)[offset]
+  def mv_x(rd, rs1, funct4):
+      elwidth = (funct4>>2) & 0x3
+      bitwidth = {0:XLEN, 1:8, 2:16, 3:32}[elwidth] # get bits per el
+      bytewidth = bitwidth / 8 # get bytes per el
+      for i in range(VL):
+          addr = (unsigned char *)&regs[rs1]
+          offset = addr + bytewidth # get offset within regfile as SRAM
+          # TODO, actually, needs to respect rd and rs1 element width,
+          # here, as well.  this pseudocode just illustrates that the
+          # MV.X operation contains a way to compact the indices into
+          # less space.
+          regs[rd] = (unsigned char*)(regs)[offset]
 
 The idea here is to allow 8-bit indices to be stored inside XLEN-sized
 registers, such that rather than doing this:
