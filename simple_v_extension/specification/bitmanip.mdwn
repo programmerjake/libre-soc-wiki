@@ -4,6 +4,14 @@ These are bit manipulation opcodes that, if provided, augment SimpleV for
 the purposes of efficiently accelerating Vector Processing, 3D Graphics
 and Video Processing.
 
+The justification for their inclusion in BitManip is identical to the
+significant justification that went into their inclusion in the
+RISC-V Vector Extension (under the "Predicate Mask" opcodes section)
+
+See
+<https://github.com/riscv/riscv-v-spec/blob/master/v-spec.adoc#vector-mask-instructions>
+for details.
+
 # Predicate Masks
 
 SV uses standard integer scalar registers as a predicate bitmask.  Therefore,
@@ -12,7 +20,27 @@ adequate.  Some exceptions however present themselves from RVV.
 
 ## logical bit-wise instructions
 
-TODO: there is an extensive table in RVV of bit-level operations
+TODO: there is an extensive table in RVV of bit-level operations:
+
+output  instruction     pseudoinstruction
+
+| 0 | 1 | 2 | 3 | instruction                | pseudoinstruction |
+| - | - | - | - | -------------------------- | ----------------- |
+| 0 | 0 | 0 | 0 | vmxor.mm vd, vd, vd        | vmclr.m vd        |
+| 1 | 0 | 0 | 0 | vmnor.mm vd, src1, src2    |                   |
+| 0 | 1 | 0 | 0 | vmandnot.mm vd, src2, src1 |                   |
+| 1 | 1 | 0 | 0 | vmnand.mm vd, src1, src1   | vmnot.m vd, src1  |
+| 0 | 0 | 1 | 0 | vmandnot.mm vd, src1, src2 |                   |
+| 1 | 0 | 1 | 0 | vmnand.mm vd, src2, src2   | vmnot.m vd, src2  |
+| 0 | 1 | 1 | 0 | vmxor.mm vd, src1, src2    |                   |
+| 1 | 1 | 1 | 0 | vmnand.mm vd, src1, src2   |                   |
+| 0 | 0 | 0 | 1 | vmand.mm vd, src1, src2    |                   |
+| 1 | 0 | 0 | 1 | vmxnor.mm vd, src1, src2   |                   |
+| 0 | 1 | 0 | 1 | vmand.mm vd, src2, src2    | vmcpy.m vd, src2  |
+| 1 | 1 | 0 | 1 | vmornot.mm vd, src2, src1  |                   |
+| 0 | 0 | 1 | 1 | vmand.mm vd, src1, src1    | vmcpy.m vd, src1  |
+| 1 | 0 | 1 | 1 | vmornot.mm vd, src1, src2  |                   |
+| 1 | 1 | 1 | 1 | vmxnor.mm vd, vd, vd       | vmset.m vd        |
 
 ## pcnt - population count
 
