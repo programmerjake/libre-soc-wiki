@@ -91,12 +91,67 @@ be no proprietary software tools utilised in this process.  Note that
 
 # Does the project have other funding sources, both past and present?
 
+The overall project has sponsorship from Purism as well as a prior grant
+from NLNet.  However that is for specifically covering the development
+of the RTL (the hardware source code).
+
+There is no source of funds for the work on the *next* stage: the actual
+VLSI ASIC Layout.  Chips4Makers is however putting in an *additional*
+(and separate) funding application for the stage after *this*: the
+creation of the Cell Libraries that will be used in the VLSI ASIC Layout.
+
+All these three projects are separate and distinct (despite being related
+to the same CPU), and funding may not cross over from one project to
+the other.
 
 # Compare your own project with existing or historical efforts.
 
+There are several Open VLSI Tool suites:
+
+* GNU Electric: https://www.gnu.org/software/electric/
+* MAGIC: http://opencircuitdesign.com/magic/
+* The OpenROAD Project: https://theopenroadproject.org/ (using MAGIC)
+* QFlow: http://opencircuitdesign.com/qflow/
+* Toped: http://www.toped.org.uk/
+
+and a few more.  We choose Coriolis2 because of its python interface.
+The VLSI Layout is actually done as a *python* program.  With nmigen
+(the HDL) being in python, we anticipate the same OO benefits to be
+achievable in coriolis2 as well.
+
+The case for the Libre RISC-V SoC itself was made already in the initial
+2018.02 proposal.  That has not changed: there are no Libre / Open Projects
+approaching anything like the complexity and product market opportunities
+of the Libre RISC-V SoC, which is being designed to be a quad-core 800mhz
+multi-issue out-of-order design.  All other Libre / Open processors such
+as Raven, and many more, have a goal set in advance not to exceed around
+the 350mhz mark, and are single-core.
+
+Other projects which are "open", such as the Ariane Processor, are
+developed by universities, and in the case of Ariane were *SPECIFICALLY*
+designed by and for the use of proprietary toolchains, such as those from
+Cadence, Synopsys and Mentor Graphics.  Despite the source code being
+"open", there was absolutely no expectation that the processor of the
+same capability as the Libre RISC-V SoC would use Libre / Open tools.
+
+Although our first ASIC (thanks to Chips4Makers) will be only 180nm,
+single-core and a maximum of around 350mhz, this is just the first
+stepping stone to a much larger processor.
 
 ## What are significant technical challenges you expect to solve during the project, if any?
 
+Some of these have been mentioned above:
+
+* NDAs by Foundries may interfere with the ability for Chips4Makers to
+  communicate with LIP6 regarding the necessary changes to NSXLIB which
+  meet the TSMC Foundry "Design Rule Checks" (DRCs).
+* Bugs or missing features in nmigen, yosys, coriolis2, NSXLIB, OpenRAM,
+  and the knock-on implications throughout the chain, right the way up
+  to the *actual* Libre RISC-V SoC's HDL source code itself, all need to
+  be dealt with.
+* Circuit simulation and unit testing is going to be a major factor, and
+  a huge utilisation of Computing power.  Machines with "only" 16 GB of RAM
+  and high-end quad-core processors are going to be hopelessly inadequate.
 
 ## Describe the ecosystem of the project, and how you will engage with relevant actors and promote the outcomes?
 
