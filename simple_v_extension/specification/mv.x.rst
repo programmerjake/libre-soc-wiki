@@ -159,4 +159,20 @@ output:
 
 <http://web.archive.org/web/20100111104515/http://www.randombit.net:80/bitbashing/programming/integer_matrix_transpose_in_sse2.html>
 
-Transforms for DCT https://opencores.org/websvn/filedetails?repname=mpeg2fpga&path=%2Fmpeg2fpga%2Ftrunk%2Frtl%2Fmpeg2%2Fidct.v
+https://opencores.org/websvn/filedetails?repname=mpeg2fpga&path=%2Fmpeg2fpga%2Ftrunk%2Frtl%2Fmpeg2%2Fidct.v
+
+Transforms for DCT
+=======
+::
+
+   __m128i T0 = _mm_unpacklo_epi32(I0, I1);
+   __m128i T1 = _mm_unpacklo_epi32(I2, I3);
+   __m128i T2 = _mm_unpackhi_epi32(I0, I1);
+   __m128i T3 = _mm_unpackhi_epi32(I2, I3);
+
+   /* Assigning transposed values back into I[0-3] */
+   I0 = _mm_unpacklo_epi64(T0, T1);
+   I1 = _mm_unpackhi_epi64(T0, T1);
+   I2 = _mm_unpacklo_epi64(T2, T3);
+   I3 = _mm_unpackhi_epi64(T2, T3);
+
