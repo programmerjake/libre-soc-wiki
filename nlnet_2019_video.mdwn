@@ -1,0 +1,170 @@
+# NL.net proposal
+
+## Project name
+
+The Libre-RISCV SoC, Video Decoding
+
+## Website / wiki 
+
+<https://libre-riscv.org/nlnet_2019_video>
+
+Please be short and to the point in your answers; focus primarily on
+the what and how, not so much on the why. Add longer descriptions as
+attachments (see below). If English isn't your first language, don't
+worry - our reviewers don't care about spelling errors, only about
+great ideas. We apologise for the inconvenience of having to submit in
+English. On the up side, you can be as technical as you need to be (but
+you don't have to). Do stay concrete. Use plain text in your reply only,
+if you need any HTML to make your point please include this as attachment.
+
+## Abstract: Can you explain the whole project and its expected outcome(s).
+
+The Libre RISC-V SoC is being developed to provide a privacy-respecting
+modern processor, developed transparently and as libre to the bedrock
+as possible.  
+
+One of the main "hardware accelerated blocks" of any processor intended for user applications is Video Encode and Decode. This usually means an opaque, proprietary piece of hardware, and it usually comes with proprietary firmware as well.
+
+
+In a 
+
+# Have you been involved with projects or organisations relevant to this project before? And if so, can you tell us a bit about your contributions?
+
+Luke Leighton is an ethical technology specialist who has a consistent
+24-year track record of developing code in a real-time transparent
+(fully libre) fashion, and in managing Software Libre teams.  He is the
+lead developer on the Libre RISC-V SoC.
+
+Jean-Paul Chaput is the lead engineer on the Alliance and Coriolis2
+tools for VLSI backend layout, from the Laboratoire d'Informatique de
+Paris 6.
+
+# Requested Amount    
+
+EUR 50,000.
+
+# Explain what the requested budget will be used for? 
+
+The key initial milestone for the 2018 NLNet Libre RISC-V SoC Project
+is the FPGA target: a working design that can run in an FPGA at approximately
+50Mhz.  The next logical step is to do the layout.
+
+However, FPGA targets have some quirks which help accelerate FPGAs (not ASICs):
+an on-board DSP, specialist memory, and so on.  Without these "crutches"
+the design must be augmented and adapted to suit ASIC layout.
+
+As we are using nmigen for the HDL front-end and yosys for the HDL
+back-end, we will need to work with the nmigen developers in order to
+augment nmigen to cope with the task of creating "netlists" suitable for
+ASICs.  Whilst yosys (the actual "netlist" generator) has been utilised
+for this task repeatedly and successfully, and whilst the prior version,
+"migen", was also used, nmigen has not yet been ASIC proven.
+
+Once a "netlist" is available, the Coriolis2 VLSI tool will be used to
+actually create the layers of the chip.  Given the size and capabilities
+of the chip, we anticipate issues here, which we will need the support
+of LIP6's engineers to solve.
+
+The layout itself is also dependent on what is called "Cell Libraries".
+One is "NSXLIB" which contains OR and AND gates to create MUXes and XORs.
+Another is an "SRAM" Library (memory), and another is a "GPIO" Cell
+Library.  Chips4Makers will be working on these low-level blocks for
+us (under a separate Programme), however we again anticipate issues -
+related to Foundry NDAs - which will hamper the communications process.
+
+So therefore, the requested budget will be used for:
+
+* Augmentation and adaptation of the Libre RISC-V SoC HDL to ASIC layout
+* Engineers to work on the layout using Alliance / Coriolos2 VLSI, from lip6
+* Engineers to bug-fix or augment Alliance / Coriolis2
+* Essential augmentations to nmigen to make it ASIC-layout-capable
+
+All of these will be and are entirely libre-licensed software: there will
+be no proprietary software tools utilised in this process.  Note that
+
+
+# Does the project have other funding sources, both past and present?
+
+The overall project has sponsorship from Purism as well as a prior grant
+from NLNet.  However that is for specifically covering the development
+of the RTL (the hardware source code).
+
+There is no source of funds for the work on the *next* stage: the actual
+VLSI ASIC Layout.  Chips4Makers is however putting in an *additional*
+(and separate) funding application for the stage after *this*: the
+creation of the Cell Libraries that will be used in the VLSI ASIC Layout.
+
+All these three projects are separate and distinct (despite being related
+to the same CPU), and funding may not cross over from one project to
+the other.
+
+# Compare your own project with existing or historical efforts.
+
+There are several Open VLSI Tool suites:
+
+* GNU Electric: https://www.gnu.org/software/electric/
+* MAGIC: http://opencircuitdesign.com/magic/
+* The OpenROAD Project: https://theopenroadproject.org/ (using MAGIC)
+* QFlow: http://opencircuitdesign.com/qflow/
+* Toped: http://www.toped.org.uk/
+
+and a few more.  We choose Coriolis2 because of its python interface.
+The VLSI Layout is actually done as a *python* program.  With nmigen
+(the HDL) being in python, we anticipate the same OO benefits to be
+achievable in coriolis2 as well.
+
+The case for the Libre RISC-V SoC itself was made already in the initial
+2018.02 proposal.  That has not changed: there are no Libre / Open Projects
+approaching anything like the complexity and product market opportunities
+of the Libre RISC-V SoC, which is being designed to be a quad-core 800mhz
+multi-issue out-of-order design.  All other Libre / Open processors such
+as Raven, and many more, have a goal set in advance not to exceed around
+the 350mhz mark, and are single-core.
+
+Other projects which are "open", such as the Ariane Processor, are
+developed by universities, and in the case of Ariane were *SPECIFICALLY*
+designed by and for the use of proprietary toolchains, such as those from
+Cadence, Synopsys and Mentor Graphics.  Despite the source code being
+"open", there was absolutely no expectation that the processor of the
+same capability as the Libre RISC-V SoC would use Libre / Open tools.
+
+Although our first ASIC (thanks to Chips4Makers) will be only 180nm,
+single-core and a maximum of around 350mhz, this is just the first
+stepping stone to a much larger processor.
+
+## What are significant technical challenges you expect to solve during the project, if any?
+
+Some of these have been mentioned above:
+
+* NDAs by Foundries may interfere with the ability for Chips4Makers to
+  communicate with LIP6 regarding the necessary changes to NSXLIB which
+  meet the TSMC Foundry "Design Rule Checks" (DRCs).
+* Bugs or missing features in nmigen, yosys, coriolis2, NSXLIB, OpenRAM,
+  and the knock-on implications throughout the chain, right the way up
+  to the *actual* Libre RISC-V SoC's HDL source code itself, all need to
+  be dealt with.
+* Circuit simulation and unit testing is going to be a major factor, and
+  a huge utilisation of Computing power.  Machines with "only" 16 GB of RAM
+  and high-end quad-core processors are going to be hopelessly inadequate.
+
+## Describe the ecosystem of the project, and how you will engage with relevant actors and promote the outcomes?
+
+LIP6 have their own mailing list for the (transparent) discussion of
+issues related to coriolis2: <alliance-users@asim.lip6.fr>.  The Libre RISC-V
+SoC has a full set of resources for Libre Project Management and development:
+mailing list, bugtracker, git repository and wiki - all listed here:
+<https://libre-riscv.org/>
+
+In addition, we have a Crowdsupply page
+<https://www.crowdsupply.com/libre-risc-v/m-class> which provides a public
+gateway, and heise.de, reddit, phoronix, slashdot and other locations have
+all picked up the story.  The list is updated and maintained here:
+<https://libre-riscv.org/3d_gpu/>
+
+# Extra info to be submitted
+
+* <http://libre-riscv.org/3d_gpu/>
+* <https://www-soc.lip6.fr/equipe-cian/logiciels/coriolis/>
+* <https://nlnet.nl/project/Libre-RISCV/>
+* <https://chips4makers.io/blog/>
+
