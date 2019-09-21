@@ -2,7 +2,7 @@
 
 ## Project name
 
-The Libre-RISCV SoC, Video Decoding
+The Libre-RISCV SoC, Video Acceleration
 
 ## Website / wiki 
 
@@ -25,7 +25,7 @@ as possible.
 
 One of the main "hardware accelerated blocks" of any processor intended for user applications is Video Encode and Decode. This usually means an opaque, proprietary piece of hardware, and it usually comes with proprietary firmware as well.
 
-In a privacy-respecting world neither of these are acceptable, therefore the goal is to develop - in an iterative fashion - not just the software but the actual hardware instructions (similar to ARM NEON) which, if fully integrated into libswscale, ffmpeg, gstreamer and other software, would make RISC-V a truly commercially competitive peer of ARM and x86 systems when it comes to video decode.
+In a privacy-respecting world neither of these are acceptable, therefore the goal is to develop - in an iterative fashion - not just the software but the actual hardware instructions (similar to ARM NEON) which, if fully integrated into libswscale, ffmpeg, gstreamer and other software, would make RISC-V a truly commercially competitive peer of ARM and x86 systems when it comes to video acceleration.
 
 With such capability freely available, there would thus be no opportunity and no excuse for the inclusion of spying hardware blocks or coprocessors in modern RISC-V processors.
 
@@ -63,22 +63,15 @@ There is no source of funds for the work on Video ISA development (only for its 
 
 # Compare your own project with existing or historical efforts.
 
-There do exist on opencores a number of video encode and decode blocks: these are typically MPEG and h.264. In
+There do exist on opencores a number of video encode and decode blocks: these are typically MPEG and h.264. However, the problem is that these are dedicated blocks, specific to those algorithms. They do not help with h.265, Theora, Dirac, vp8, vp9 and anything else that may come out.
+
+Any instructions which exist for OpenRISC1200 or MIPS will not help either, because the instructions need to be evaluated specifically for RISC-V.
+
+So the answer is: this initiative is unique, and there are no peer projects: the RISC-V initiative itself is too recent.
 
 ## What are significant technical challenges you expect to solve during the project, if any?
 
-Some of these have been mentioned above:
-
-* NDAs by Foundries may interfere with the ability for Chips4Makers to
-  communicate with LIP6 regarding the necessary changes to NSXLIB which
-  meet the TSMC Foundry "Design Rule Checks" (DRCs).
-* Bugs or missing features in nmigen, yosys, coriolis2, NSXLIB, OpenRAM,
-  and the knock-on implications throughout the chain, right the way up
-  to the *actual* Libre RISC-V SoC's HDL source code itself, all need to
-  be dealt with.
-* Circuit simulation and unit testing is going to be a major factor, and
-  a huge utilisation of Computing power.  Machines with "only" 16 GB of RAM
-  and high-end quad-core processors are going to be hopelessly inadequate.
+The actual process is technically quite straightforward, and given that ffmpeg and so on are quite well established and platform independent, 
 
 ## Describe the ecosystem of the project, and how you will engage with relevant actors and promote the outcomes?
 
