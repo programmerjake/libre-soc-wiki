@@ -25,9 +25,9 @@ as possible.
 
 One of the main "hardware accelerated blocks" of any processor intended for user applications is Video Encode and Decode. This usually means an opaque, proprietary piece of hardware, and it usually comes with proprietary firmware as well.
 
-In a privacy-respecting world neither of these are acceptable, therefore the goal is to develop - in an iterative fashion - not just the software but the actual hardware instructions (similar to ARM NEON) which, if fully integrated into libswscale, ffmpeg, gstreamer and other software, would make RISC-V a trily commercially competitive peer of ARM and x86 systems when it comes to realtime video decode.
+In a privacy-respecting world neither of these are acceptable, therefore the goal is to develop - in an iterative fashion - not just the software but the actual hardware instructions (similar to ARM NEON) which, if fully integrated into libswscale, ffmpeg, gstreamer and other software, would make RISC-V a truly commercially competitive peer of ARM and x86 systems when it comes to video decode.
 
-There would also be no opportunity for spying hardware blocks or coprocessors.
+There would thus be no opportunity and no excuse for the inclusion of spying hardware blocks or coprocessors.
 
 # Have you been involved with projects or organisations relevant to this project before? And if so, can you tell us a bit about your contributions?
 
@@ -45,7 +45,12 @@ EUR 50,000.
 
 The tasks, which will need to be iteratively applied, are as follows:
 
-* to identify closely the key areas in video decode, across a wide range of algorithms, where a processor 
+* to identify closely the key areas in video decode, across a wide range of algorithms, where a non-accelerated processor spends considerable CPU time and power consumption.
+* to propose and then evaluate the instructions which, if included in RISC-V, would speed up video decode and reduce power consumption to within commercially competitive levels.
+* to simulate those proposed instructions and confirm their viability
+* to implement those instructions in actual hardware, for running in an FPGA
+* to follow through with the upstream submission and acceptance of customisation of relevant software libre video decode projects and toolchains.
+
 
 # Does the project have other funding sources, both past and present?
 
