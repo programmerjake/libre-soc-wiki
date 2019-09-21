@@ -25,8 +25,9 @@ as possible.
 
 One of the main "hardware accelerated blocks" of any processor intended for user applications is Video Encode and Decode. This usually means an opaque, proprietary piece of hardware, and it usually comes with proprietary firmware as well.
 
+In a privacy-respecting world neither of these are acceptable, therefore the goal is to develop - in an iterative fashion - not just the software but the actual hardware instructions (similar to ARM NEON) which, if fully integrated into libswscale, ffmpeg, gstreamer and other software, would make RISC-V a trily commercially competitive peer of ARM and x86 systems when it comes to realtime video decode.
 
-In a 
+There would also be no opportunity for spying hardware blocks or coprocessors.
 
 # Have you been involved with projects or organisations relevant to this project before? And if so, can you tell us a bit about your contributions?
 
@@ -35,9 +36,6 @@ Luke Leighton is an ethical technology specialist who has a consistent
 (fully libre) fashion, and in managing Software Libre teams.  He is the
 lead developer on the Libre RISC-V SoC.
 
-Jean-Paul Chaput is the lead engineer on the Alliance and Coriolis2
-tools for VLSI backend layout, from the Laboratoire d'Informatique de
-Paris 6.
 
 # Requested Amount    
 
@@ -45,43 +43,9 @@ EUR 50,000.
 
 # Explain what the requested budget will be used for? 
 
-The key initial milestone for the 2018 NLNet Libre RISC-V SoC Project
-is the FPGA target: a working design that can run in an FPGA at approximately
-50Mhz.  The next logical step is to do the layout.
+The tasks, which will need to be iteratively applied, are as follows:
 
-However, FPGA targets have some quirks which help accelerate FPGAs (not ASICs):
-an on-board DSP, specialist memory, and so on.  Without these "crutches"
-the design must be augmented and adapted to suit ASIC layout.
-
-As we are using nmigen for the HDL front-end and yosys for the HDL
-back-end, we will need to work with the nmigen developers in order to
-augment nmigen to cope with the task of creating "netlists" suitable for
-ASICs.  Whilst yosys (the actual "netlist" generator) has been utilised
-for this task repeatedly and successfully, and whilst the prior version,
-"migen", was also used, nmigen has not yet been ASIC proven.
-
-Once a "netlist" is available, the Coriolis2 VLSI tool will be used to
-actually create the layers of the chip.  Given the size and capabilities
-of the chip, we anticipate issues here, which we will need the support
-of LIP6's engineers to solve.
-
-The layout itself is also dependent on what is called "Cell Libraries".
-One is "NSXLIB" which contains OR and AND gates to create MUXes and XORs.
-Another is an "SRAM" Library (memory), and another is a "GPIO" Cell
-Library.  Chips4Makers will be working on these low-level blocks for
-us (under a separate Programme), however we again anticipate issues -
-related to Foundry NDAs - which will hamper the communications process.
-
-So therefore, the requested budget will be used for:
-
-* Augmentation and adaptation of the Libre RISC-V SoC HDL to ASIC layout
-* Engineers to work on the layout using Alliance / Coriolos2 VLSI, from lip6
-* Engineers to bug-fix or augment Alliance / Coriolis2
-* Essential augmentations to nmigen to make it ASIC-layout-capable
-
-All of these will be and are entirely libre-licensed software: there will
-be no proprietary software tools utilised in this process.  Note that
-
+* to identify closely the key areas in video decode, across a wide range of algorithms, where a processor 
 
 # Does the project have other funding sources, both past and present?
 
