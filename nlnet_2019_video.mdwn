@@ -27,7 +27,7 @@ One of the main "hardware accelerated blocks" of any processor intended for user
 
 In a privacy-respecting world neither of these are acceptable, therefore the goal is to develop - in an iterative fashion - not just the software but the actual hardware instructions (similar to ARM NEON) which, if fully integrated into libswscale, ffmpeg, gstreamer and other software, would make RISC-V a truly commercially competitive peer of ARM and x86 systems when it comes to video acceleration.
 
-With such capability freely available, there would thus be no opportunity and no excuse for the inclusion of spying hardware blocks or coprocessors in modern RISC-V processors.
+With such capability freely available for any implementor, there would be no excuse for the inclusion of spying hardware blocks or coprocessors in modern RISC-V processors, and certsinly not in the Libre RISC-V SoC.
 
 # Have you been involved with projects or organisations relevant to this project before? And if so, can you tell us a bit about your contributions?
 
@@ -51,7 +51,7 @@ The tasks, which will need to be iteratively applied, are as follows:
 * to implement those instructions in actual hardware, for running in an FPGA
 * to follow through with the upstream submission and acceptance of customisation of relevant software libre video decode projects and toolchains.
 
-This needs to be done iteratively because it is only when a certain high level of functionality is reached (FPGA, full simulation) will it be possible to properly determine if the proposed instructions actually meet the requirements. It may turn out that further optimisation is needed.
+This needs to be done iteratively because it is only when a certain high level of functionality is reached (FPGA, full simulation) will it be possible to properly determine if the proposed instructions actually meet the full requirements. In addition it may turn out that further optimisation is needed.
 
 # Does the project have other funding sources, both past and present?
 
@@ -71,12 +71,13 @@ So the answer is: this initiative is unique, and there are no peer projects: the
 
 ## What are significant technical challenges you expect to solve during the project, if any?
 
-The actual process is technically quite straightforward, and given that ffmpeg and so on are quite well established and platform independent, 
+The actual process is technically quite straightforward, and given that ffmpeg and so on are quite well established and platform independent, the hotspot areas are typically already identified and have NEON or SSE/AVX etc assembly routines.
+
+The main challenges will be communications, particularly as this is a huge cross project initiative, covering patches and additions to at least seven separate independent software projects, as well as requiring hardware development and simulations.
 
 ## Describe the ecosystem of the project, and how you will engage with relevant actors and promote the outcomes?
 
-LIP6 have their own mailing list for the (transparent) discussion of
-issues related to coriolis2: <alliance-users@asim.lip6.fr>.  The Libre RISC-V
+The Libre RISC-V
 SoC has a full set of resources for Libre Project Management and development:
 mailing list, bugtracker, git repository and wiki - all listed here:
 <https://libre-riscv.org/>
@@ -87,10 +88,11 @@ gateway, and heise.de, reddit, phoronix, slashdot and other locations have
 all picked up the story.  The list is updated and maintained here:
 <https://libre-riscv.org/3d_gpu/>
 
+It will also be necessary to coordinate transparently across the RISC-V community resources, particularly when it comes to developing the ISA Extensions.
+
 # Extra info to be submitted
 
 * <http://libre-riscv.org/3d_gpu/>
-* <https://www-soc.lip6.fr/equipe-cian/logiciels/coriolis/>
 * <https://nlnet.nl/project/Libre-RISCV/>
 * <https://chips4makers.io/blog/>
 
