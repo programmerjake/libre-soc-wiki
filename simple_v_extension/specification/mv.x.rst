@@ -174,6 +174,7 @@ output:
    I3 = _mm_unpackhi_epi64(T2, T3);
 
 Transforms for DCT 
-=======
+==================
+
 <https://opencores.org/websvn/filedetails?repname=mpeg2fpga&path=%2Fmpeg2fpga%2Ftrunk%2Frtl%2Fmpeg2%2Fidct.v>
 
