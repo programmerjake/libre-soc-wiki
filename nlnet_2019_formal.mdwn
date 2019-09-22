@@ -1,0 +1,94 @@
+# NL.net proposal
+
+## Project name
+
+The Libre-RISCV SoC, Formal Correctness Proofs
+
+## Website / wiki 
+
+<https://libre-riscv.org/nlnet_2019_formal>
+
+Please be short and to the point in your answers; focus primarily on
+the what and how, not so much on the why. Add longer descriptions as
+attachments (see below). If English isn't your first language, don't
+worry - our reviewers don't care about spelling errors, only about
+great ideas. We apologise for the inconvenience of having to submit in
+English. On the up side, you can be as technical as you need to be (but
+you don't have to). Do stay concrete. Use plain text in your reply only,
+if you need any HTML to make your point please include this as attachment.
+
+## Abstract: Can you explain the whole project and its expected outcome(s).
+
+The Libre RISC-V SoC is being developed to provide a privacy-respecting
+modern processor, developed transparently and as libre to the bedrock
+as possible.  
+
+The entire hardware design is libre licensed so that independent third party audits may be carried out, in order for endusers to have a degree of confidence that their privacy is not being violated through the addition of spying backdoor coprocessors or simply through hardware implementation oversights (SPECTRE, Meltdown, Intel Pentium FPU Divide Bug and so on)
+
+However: not only is that an extremely daunting task, but "quis custodiet custodiens?" Who guards the guards?
+
+A solution to this problem is to provide formal mathematical correctness proofs at every level of the hardware design. With mathematically inviolate proofs, even an enduser can run the tests for themselves.
+
+# Have you been involved with projects or organisations relevant to this project before? And if so, can you tell us a bit about your contributions?
+
+Luke Leighton is an ethical technology specialist who has a consistent
+24-year track record of developing code in a real-time transparent
+(fully libre) fashion, and in managing Software Libre teams.  He is the
+lead developer on the Libre RISC-V SoC.
+
+
+# Requested Amount    
+
+EUR 50,000.
+
+# Explain what the requested budget will be used for? 
+
+Working with mathematically-minded Software Engineers, every module in the Libre RISCV SoC will have a "formal proof unit test written". This is an unusual dedisn choice: most hardware designs will have monte carlo and corner case unit tests etc. written which, unfortunately, are both complex and often incomplete.
+
+Examples include the IEEE754 Floating Point Unit, where in the 1990s Intel managed to introduce an actual hardware division bug. We seek to formally *prove* that the output from the FP Divide unit outputs the correct answer, for all possible inputs.
+
+There are other areas which can benefit from correctness proofs, at the low level: pipelines, FIFOs, the basic building blocks. On this stable foundation the higher level capabilities will then also get their own proofs.
+
+Finally a high level formal proof will be run, which already exists in the form of RISCV Conformance Tests, as well as unofficial formal cotrectness tests from SymbioticEDA.
+
+# Does the project have other funding sources, both past and present?
+
+The overall project has sponsorship from Purism as well as a prior grant
+from NLNet.  However that is for specifically covering the development
+of the RTL (the hardware source code).
+
+The formal correctness testing requires specialist expertise involving formal logic mathematical training, which is a different skillset from hardware design. Our initial proposal does not cover this scope.
+
+# Compare your own project with existing or historical efforts.
+
+There do exist high level formal RISCV Cotrectness proofs in vqrious forms. One of these is the SymbioticEDA proof which can for example test the Register File, and test that the integer operation is correct and so on, working its way through all operations one by one.  This however is at a high level.
+
+The Kestrel 53000 Series of embedded controllers have some formal unit tests written in verilog. We are following their development and porting to nmigen closely, and consulting with their part time developer.
+
+A massive comprehensive suite of formal correctness proofs for a processor of the scope and size of the Libre RISCV SoC is just not normally done. The only reason we are considering it is because of the dramatic simplification of unit tests, and the mathematically inviolate guarantees it brings for endusers.
+
+## What are significant technical challenges you expect to solve during the project, if any?
+
+This project is critically dependent on having software engineers that have the mathematical acumen for formal logic correctness proofs. This is quite rare.
+
+In addition, we will be using an unusual choice of HDL: a python based tool. We will need to train engineers to adapt to the unique mathematics, or train mathematicians to the unique software quirks.
+
+Luckily we have several examples already, in the form of the work carried out by the developer of the Kestrel 53000 series of CPUs.
+
+## Describe the ecosystem of the project, and how you will engage with relevant actors and promote the outcomes?
+
+As mentioned in the 2018 submission, the Libre RISC-V
+SoC has a full set of resources for Libre Project Management and development:
+mailing list, bugtracker, git repository and wiki - all listed here:
+<https://libre-riscv.org/>
+
+In addition, we have a Crowdsupply page
+<https://www.crowdsupply.com/libre-risc-v/m-class> which provides a public
+gateway, and heise.de, reddit, phoronix, slashdot and other locations have
+all picked up the story.  The list is updated and maintained here:
+<https://libre-riscv.org/3d_gpu/>
+
+# Extra info to be submitted
+
+* <http://libre-riscv.org/3d_gpu/>
+* <https://nlnet.nl/project/Libre-RISCV/>
