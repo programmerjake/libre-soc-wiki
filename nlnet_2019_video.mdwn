@@ -71,7 +71,11 @@ So the answer is: this initiative is unique, and there are no peer projects: the
 
 ## What are significant technical challenges you expect to solve during the project, if any?
 
-The actual process is technically quite straightforward, and given that ffmpeg and so on are quite well established and platform independent, the hotspot areas are typically already identified and have NEON or SSE/AVX etc assembly routines.
+The actual process is technically quite straightforward, and given that
+ffmpeg and so on are quite well established and platform independent,
+the hotspot areas are typically already identified (CABAC, DCT,
+Motion-estimation, YUV2RGB) and have NEON or SSE/AVX etc assembly
+routines.
 
 The main challenges will be communications, particularly as this is a huge cross project initiative, covering patches and additions to at least seven separate independent software projects, as well as requiring hardware development and simulations.
 
