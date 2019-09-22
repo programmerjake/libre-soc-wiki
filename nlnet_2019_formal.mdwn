@@ -43,7 +43,7 @@ EUR 50,000.
 
 # Explain what the requested budget will be used for? 
 
-Working with mathematically-minded Software Engineers, every module in the Libre RISCV SoC will have a "formal proof unit test written". This is an unusual dedisn choice: most hardware designs will have monte carlo and corner case unit tests etc. written which, unfortunately, are both complex and often incomplete.
+Working with mathematically-minded Software Engineers, every module in the Libre RISCV SoC will have a "formal proof unit test written". This is an unusual design choice: most hardware designs will have monte carlo and corner case unit tests etc. written which, unfortunately, are both complex and often incomplete.
 
 Examples include the IEEE754 Floating Point Unit, where in the 1990s Intel managed to introduce an actual hardware division bug. We seek to formally *prove* that the output from the FP Divide unit outputs the correct answer, for all possible inputs.
 
@@ -74,6 +74,8 @@ This project is critically dependent on having software engineers that have the 
 In addition, we will be using an unusual choice of HDL: a python based tool. We will need to train engineers to adapt to the unique mathematics, or train mathematicians to the unique software quirks.
 
 Luckily we have several examples already, in the form of the work carried out by the developer of the Kestrel 53000 series of CPUs.
+
+The other main challenge is that as the size of the code being tested goes up, the CPU resources required go up exponentially. At the low level it is fine: tests can take several hours on a standard high end desktop.  However as things progress to larger levels we may actually need access to Beowulf Clusters or other supercomputing resources.
 
 ## Describe the ecosystem of the project, and how you will engage with relevant actors and promote the outcomes?
 
