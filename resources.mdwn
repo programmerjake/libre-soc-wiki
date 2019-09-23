@@ -75,8 +75,8 @@ switching between different accuracy levels, in userspace applications.
 * OpenCL 2.2 SPIR-V Environment Specification:
   <https://www.khronos.org/registry/OpenCL/specs/2.2/html/OpenCL_Env.html>
 
-Note: We are implementing hardware accelerated Vulkan (and possibly
-OpenCL) while relying on other software projects to translate APIs to
+Note: We are implementing hardware accelerated Vulkan and
+OpenCL while relying on other software projects to translate APIs to
 Vulkan. E.g. Zink allows for OpenGL-to-Vulkan in software.
 
 # Graphics and Compute API Stack
@@ -151,4 +151,22 @@ Vulkan Conformance Tests
 MAJOR NOTE: We are **not** allowed to say we are compliant with any of
 the Khronos standards until we actually make an official submission,
 do the paperwork, and pay the relevant fees.
+
+## Formal Verification
+Formal verification of Libre RISC-V ensures that it is bug-free in regards to what we specify.
+Of course, it is important to do the formal verification as a final step in the development process before
+we produce thousands or millions of silicon.
+
+Some learning resources I found in the community:
+
+* ZipCPU: <http://zipcpu.com/>
+
+ZipCPU provides a comprehensive tutorial for beginners and many exercises/quizzes/slides: <http://zipcpu.com/tutorial/>
+
+
+* Western Digital's SweRV CPU blog (I recommend looking at all their posts): <https://tomverbeure.github.io/>
+
+<https://tomverbeure.github.io/risc-v/2018/11/19/A-Bug-Free-RISC-V-Core-without-Simulation.html>
+
+<https://tomverbeure.github.io/rtl/2019/01/04/Under-the-Hood-of-Formal-Verification.html>
 
