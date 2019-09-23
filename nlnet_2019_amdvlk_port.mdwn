@@ -1,0 +1,163 @@
+# NL.net proposal
+
+## Project name
+
+Port of AMDVLK 3D Driver to the Libre RISC-V SoC
+
+## Website / wiki 
+
+<https://libre-riscv.org/nlnet_2019_amdvlk_port>
+
+Please be short and to the point in your answers; focus primarily on
+the what and how, not so much on the why. Add longer descriptions as
+attachments (see below). If English isn't your first language, don't
+worry - our reviewers don't care about spelling errors, only about
+great ideas. We apologise for the inconvenience of having to submit in
+English. On the up side, you can be as technical as you need to be (but
+you don't have to). Do stay concrete. Use plain text in your reply only,
+if you need any HTML to make your point please include this as attachment.
+
+## Abstract: Can you explain the whole project and its expected outcome(s).
+
+The Libre RISCV SoC is being developed to provide a privacy-respecting
+modern processor, developed transparently and as libre to the bedrock
+as possible.  As a hybrid processor, it is intended to be both a CPU
+*and* a GPU.  GPUs are normally proprietary (and thus are perfect candidate
+attack vectors), as is the 3D driver software.
+
+In January 2019, AMD released a fully-functioning libre-licensed Vulkan
+Driver for their Radeon GPUs.  A close examination of its source code
+shows that it would be relatively straightforward to replace the libraries
+that generate Radeon GPU assembly code with ones that generate assembly
+for the Libre RISC-V SoC, instead.
+
+Thus we intend to do exactly that: leverage AMD's excellent work to create
+a libre-licensed commercial-grade Vulkan 3D driver that takes full advantage
+of the parallelism and Vectorisation in the hybrid Libre RISC-V SoC.
+
+# Have you been involved with projects or organisations relevant to this project before? And if so, can you tell us a bit about your contributions?
+
+Luke Leighton is an ethical technology specialist who has a consistent
+24-year track record of developing code in a real-time transparent
+(fully libre) fashion, and in managing Software Libre teams.  He is the
+lead developer on the Libre RISC-V SoC.
+
+Jacob Lifshay is a software libre 3D expert who developed a Vulkan 3D
+software render engine under the GSoc2017 Programme.  He also developed
+his own libre-licensed 32-bit RISC-V processor, and has written an
+optimising javascript compiler.  Jacob is a valuable member of the team and is
+working on Kazan (https://salsa.debian.org/Kazan-team/kazan)
+
+# Requested Amount
+
+EUR 50,000.
+
+# Explain what the requested budget will be used for?
+
+We are aiming for a multi-stage process, starting with the basics:
+
+* The first stage is to remove AMD's "PAL" Library and replace it with
+  a straightforward upstream port of the current LLVM JIT compiler,
+  alongside a "support" library that will call OpenCL / OpenGL
+  functions directly on the main processor.  This "effectively"
+  turns AMDVLK into a peer of google swiftshader (a "Software 3D Renderer").
+* The second stage is to confirm that the standard RISC-V LLVM JIT
+  (which was recently upstreamed as of LLVM 9.0.0) is properly functional
+  under an emulator or other RV64GC system.
+* The third phase will be to begin the iterative process, tying in closely
+  with the work on Kazan, to experiment in both a software simulator
+  as well as in FPGAs, with the addition of both Vectorisation as well
+  as custom opcodes that will significantly improve performance as well
+  as meet commercially-acceptable power-performance demands.
+
+At the point where commercial power-performance requirements are met we may
+officially declare the project a "success".
+
+# Does the project have other funding sources, both past and present?
+
+The overall project has sponsorship from Purism as well as a prior grant
+from NLNet.  However that is for specifically covering the development
+of the RTL (the hardware source code), and for a "parallel" 3D Vulkan
+Driver effort, Kazan.
+
+Kazan is to be written in Rust and its inclusion in the initial 2018
+proposal was *before* AMDVLK was released (Jan 2019).  AMDVLK is written
+in c++, is a significant way along (further than Kazan), however there
+is a different design focus in each that makes choosing one over the
+other not only difficult but potentially a costly mistake.
+
+# Compare your own project with existing or historical efforts.
+
+Nyuzi is a Software-based 3D Engine that has an LLVM port.  The problem
+is that it has deliberately been designed to be a software-only Vector
+Processor.  As such, with no custom accelerated opcodes dedicated to 3D,
+its power-performance metric is a whopping 25% that of commercially-acceptable
+3D GPUs.  It also has no actual 3D Vulkan Driver: the developers focussed
+only on the "core algorithms".
+
+Google's swiftshader is a software-based 3D Driver/Engine that is compatible
+with at least one version of Vulkan.  On the face of it, this would be a
+perfect match for the Libre RISC-V SoC due to it being a hybrid CPU / GPU.
+The problem is that swiftshader was designed - from the ground up - never
+to have Vectorisation or any form of accelerated hardware beyond SIMD
+(NEON, Altivec, SSE/AVX).  As Nyuzi clearly shows, this approach is
+known to give a massive 400% power penalty.  Not only that, but our
+additions would not be welcome due to the primary focus of swiftshader
+being on non-hardware-accelerated, non-custom processors.
+
+Our initial proposal - Kazan - is much more interesting to discern and
+compare against.  Kazan is being specifically designed so that the
+SPIR-V compiler is capable of fully supporting "full-function vectorisation".
+LLVM IR does *NOT* normally support this (which is why SPIR-V was created
+by the Khronos Group in the first place).  However, AMDVLK, which is a
+hard fork of LLVM, has had its LLVM-IR specifically modified to support
+both full-function vectorisation, predication, and in addition, texturisation,
+such that this information may be "carried" down to the Radeon assembly level,
+through the PAL library.
+
+Standard LLVM does *not* support this full-function vectorisation
+capability: it is typically left up to any given assembly-level
+converter (such as the RISC-V Vector Engine) to "opportunistically"
+turn non-vectorised programs *into* vectorised ones, whereas AMDVLK
+*explicitly* carries this very same information.
+
+Kazan on the other hand intends to perform explicit Vectorisation
+code-transformations in a different location: inside the SPIR-V compiler
+itself.  This key radical technical difference is why we seek to explore
+the alternative approach taken by AMD side-by-side with that of Kazan,
+because it is just not possible to predict in advance which would be "better".
+
+## What are significant technical challenges you expect to solve during the project, if any?
+
+This is compiler technology, which is traditionally viewed as particularly
+challenging.  We are slightly fortunate in that much of the pieces of the
+puzzle already exist: AMDVLK, the upstreamed acceptance of RISC-V LLVM 9.0.0
+being the key ones.
+
+Whilst we know *technically* what they did and why they did it, the key
+challenge will be to unravel what exact changes AMD made which caused
+them to have to "fork" LLVM several years back, to keep track of their
+efforts to introduce "mainline" LLVM patches on an ongoing piecemeal
+basis, and at the same time *add our own assembler back-end* into the
+same fast-moving target.
+
+## Describe the ecosystem of the project, and how you will engage with relevant actors and promote the outcomes?
+
+As mentioned in the 2018 submission, the Libre RISC-V
+SoC has a full set of resources for Libre Project Management and development:
+mailing list, bugtracker, git repository and wiki - all listed here:
+<https://libre-riscv.org/>
+
+In addition, we have a Crowdsupply page
+<https://www.crowdsupply.com/libre-risc-v/m-class> which provides a public
+gateway, and heise.de, reddit, phoronix, slashdot and other locations have
+all picked up the story.  The list is updated and maintained here:
+<https://libre-riscv.org/3d_gpu/>
+
+# Extra info to be submitted
+
+* <http://libre-riscv.org/3d_gpu/>
+* <https://nlnet.nl/project/Libre-RISCV/>
+* <https://github.com/GPUOpen-Drivers/AMDVLK>
+* <https://github.com/google/swiftshader/>
+* <https://salsa.debian.org/Kazan-team/kazan>
