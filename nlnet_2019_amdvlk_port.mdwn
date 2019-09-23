@@ -60,7 +60,9 @@ We are aiming for a multi-stage process, starting with the basics:
   a straightforward upstream port of the current LLVM JIT compiler,
   alongside a "support" library that will call OpenCL / OpenGL
   functions directly on the main processor.  This "effectively"
-  turns AMDVLK into a peer of google swiftshader (a "Software 3D Renderer").
+  turns AMDVLK into a peer of google swiftshader (a "Software 3D Renderer")
+  which will allow us to carry out rapid testing on x86 systems before
+  moving on to the next stage.
 * The second stage is to confirm that the standard RISC-V LLVM JIT
   (which was recently upstreamed as of LLVM 9.0.0) is properly functional
   under an emulator or other RV64GC system.
