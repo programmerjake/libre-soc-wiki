@@ -50,7 +50,9 @@ Examples include the IEEE754 Floating Point Unit, where in the 1990s Intel manag
 
 There are other areas which can benefit from correctness proofs, at the low level: pipelines, FIFOs, the basic building blocks. On this stable foundation the higher level capabilities will then also get their own proofs.
 
-Finally a high level formal proof will be run, which already exists in the form of RISCV Conformance Tests, as well as unofficial formal cotrectness tests from SymbioticEDA.
+Finally a high level formal proof will be run, which already exists in the form of RISCV Conformance Tests, as well as unofficial formal correctness tests from SymbioticEDA.
+
+Throughout this process, bugs will be found, including in code already written. These will require fixing, where previously it was believed that the work was completed.
 
 # Does the project have other funding sources, both past and present?
 
@@ -62,9 +64,9 @@ The formal correctness testing requires specialist expertise involving formal lo
 
 # Compare your own project with existing or historical efforts.
 
-There do exist high level formal RISCV Cotrectness proofs in vqrious forms. One of these is the SymbioticEDA proof which can for example test the Register File, and test that the integer operation is correct and so on, working its way through all operations one by one.  This however is at a high level.
+There do exist high level formal RISCV Cotrectness proofs in various forms. One of these is the SymbioticEDA formal RISCV proof which can for example test the Register File, and test that the integer operation is correct and so on, working its way through all operations one by one.  This however is at a high level.
 
-The Kestrel 53000 Series of embedded controllers have some formal unit tests written in verilog. We are following their development and porting to nmigen closely, and consulting with their part time developer.
+The Kestrel 53000 Series of embedded controllers have some formal unit tests written in verilog, at the lowest level. We are following their development and porting to nmigen closely, and consulting with their part time developer.
 
 A massive comprehensive suite of formal correctness proofs for a processor of the scope and size of the Libre RISCV SoC is just not normally done. The only reason we are considering it is because of the dramatic simplification of unit tests, and the mathematically inviolate guarantees it brings for endusers.
 
@@ -95,3 +97,4 @@ all picked up the story.  The list is updated and maintained here:
 
 * <http://libre-riscv.org/3d_gpu/>
 * <https://nlnet.nl/project/Libre-RISCV/>
+* <https://symbiyosys.readthedocs.io>
