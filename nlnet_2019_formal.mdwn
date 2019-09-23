@@ -23,11 +23,18 @@ The Libre RISCV SoC is being developed to provide a privacy-respecting
 modern processor, developed transparently and as libre to the bedrock
 as possible.  
 
-The entire hardware design is libre licensed so that independent third party audits may be carried out, in order for endusers to have a degree of confidence that their privacy is not being violated through the addition of spying backdoor coprocessors or simply through hardware implementation oversights (SPECTRE, Meltdown, Intel Pentium FPU Divide Bug and so on)
+The entire hardware design is libre licensed so that independent third
+party audits may be carried out, in order for endusers to have a degree of
+confidence that their privacy is not being violated through the addition
+of spying backdoor coprocessors or simply through hardware implementation
+oversights (SPECTRE, Meltdown, Intel Pentium FPU Divide Bug and so on)
 
-However: not only is that an extremely daunting task, but "quis custodiet custodiens?" Who guards the guards?
+However: not only is that an extremely daunting task, but "quis custodiet
+custodiens?" Who guards the guards?
 
-A solution to this problem is to provide formal mathematical correctness proofs at every level of the hardware design. With mathematically inviolate proofs, even an enduser can run the tests for themselves.
+A solution to this problem is to provide formal mathematical correctness
+proofs at every level of the hardware design. With mathematically
+inviolate proofs, even an enduser can run the tests for themselves.
 
 # Have you been involved with projects or organisations relevant to this project before? And if so, can you tell us a bit about your contributions?
 
@@ -36,23 +43,43 @@ Luke Leighton is an ethical technology specialist who has a consistent
 (fully libre) fashion, and in managing Software Libre teams.  He is the
 lead developer on the Libre RISC-V SoC.
 
-Dan Leighton is a software entrepreneur and experienced tech leader. He has worked on delivering innovative open source software projects for over 25 years in education, publishing and internet infrastructure. He specialises in bridging the gap between engineering and commercial teams.
+Dan Leighton is a software entrepreneur and experienced tech leader. He
+has worked on delivering innovative open source software projects for
+over 25 years in education, publishing and internet infrastructure. He
+specialises in bridging the gap between engineering and commercial teams.
 
-# Requested Amount    
+# Requested Amount
 
 EUR 50,000.
 
-# Explain what the requested budget will be used for? 
+# Explain what the requested budget will be used for?
 
-Working with mathematically-minded Software Engineers, every module in the Libre RISC-V SoC will have a "formal proof unit test written". This is an unusual design choice: most hardware designs will have monte carlo and corner case unit tests etc. written which, unfortunately, are both complex (and a distraction) and often incomplete.
+Working with mathematically-minded Software Engineers, every module in
+the Libre RISC-V SoC will have a "formal proof unit test written". This
+is an unusual design choice: most hardware designs will have monte carlo
+and corner case unit tests etc. written which, unfortunately, are both
+complex (and a distraction) and often incomplete.
 
-Examples include the IEEE754 Floating Point Unit, where in the 1990s Intel managed to introduce an actual hardware division bug. We seek to formally *prove* that the output from the FP Divide unit outputs the correct answer, for all possible inputs.
+Examples include the IEEE754 Floating Point Unit, where in the 1990s
+Intel managed to introduce an actual hardware division bug. We seek to
+formally *prove* that the output from the FP Divide unit outputs the
+correct answer, for all possible inputs.
 
-There are other areas which can benefit from correctness proofs, at the low level: pipelines, FIFOs, the basic building blocks of a processor. nmigen, interestingly, already has a formal correctness proof for its FIFO library due to the complexity of testing FIFOs.  On this stable foundation the higher level capabilities will then also get their own proofs.
+There are other areas which can benefit from correctness proofs,
+at the low level: pipelines, FIFOs, the basic building blocks of a
+processor. nmigen, interestingly, already has a formal correctness
+proof for its FIFO library due to the complexity of testing FIFOs.
+On this stable foundation the higher level capabilities will then also
+get their own proofs.
 
-Finally a high level formal proof will be run, which already exists in the form of "official" RISC-V Conformance Tests (if it does not depend on proprietary software), as well as the unofficial formal correctness test suite from SymbioticEDA.
+Finally a high level formal proof will be run, which already exists in
+the form of "official" RISC-V Conformance Tests (if it does not depend
+on proprietary software), as well as the unofficial formal correctness
+test suite from SymbioticEDA.
 
-Throughout this process, bugs will be found, including in code already written. These will require fixing, where previously, with non-mathematical unit tests, it was believed that the work was completed.
+Throughout this process, bugs will be found, including in code
+already written. These will require fixing, where previously, with
+non-mathematical unit tests, it was believed that the work was completed.
 
 # Does the project have other funding sources, both past and present?
 
@@ -60,29 +87,53 @@ The overall project has sponsorship from Purism as well as a prior grant
 from NLNet.  However that is for specifically covering the development
 of the RTL (the hardware source code).
 
-The formal correctness testing requires specialist expertise involving formal logic mathematical training, which is a different skillset from hardware design. Our initial proposal does not cover this scope.
+The formal correctness testing requires specialist expertise involving
+formal logic mathematical training, which is a different skillset from
+hardware design. Our initial proposal does not cover this scope.
 
-Also not covered in the initial funding is the bugfixing that will be required should the more rigorous formal proofs discover any issues.
+Also not covered in the initial funding is the bugfixing that will be
+required should the more rigorous formal proofs discover any issues.
 
 # Compare your own project with existing or historical efforts.
 
-There do exist high level formal RISC-V Correctness proofs in various forms. One of these is the SymbioticEDA formal RISC-V proof which can for example test the Register File, and test that the integer operation is correct and so on, working its way through all operations one by one.  This however is at a high level.
+There do exist high level formal RISC-V Correctness proofs in various
+forms. One of these is the SymbioticEDA formal RISC-V proof which can
+for example test the Register File, and test that the integer operation
+is correct and so on, working its way through all operations one by one.
+This however is at a high level.
 
-The Kestrel 53000 Series of embedded controllers have some formal unit tests written in verilog, at the lowest level. We are following their development and porting to nmigen closely, and consulting with their part time developer.
+The Kestrel 53000 Series of embedded controllers have some formal unit
+tests written in verilog, at the lowest level. We are following their
+development and porting to nmigen closely, and consulting with their
+part time developer.
 
-A massive comprehensive suite of formal correctness proofs for a processor of the scope and size of the Libre RISC-V SoC is just not normally done. The only reason we are considering it is because of the dramatic simplification of unit tests that the approach brings, and the mathematically inviolate guarantees it brings for endusers and developers.
+A massive comprehensive suite of formal correctness proofs for a
+processor of the scope and size of the Libre RISC-V SoC is just not
+normally done. The only reason we are considering it is because of the
+dramatic simplification of unit tests that the approach brings, and the
+mathematically inviolate guarantees it brings for endusers and developers.
 
 ## What are significant technical challenges you expect to solve during the project, if any?
 
-This project is critically dependent on having software engineers that have the mathematical acumen for formal logic correctness proofs. This is quite a rare combination.
+This project is critically dependent on having software engineers that
+have the mathematical acumen for formal logic correctness proofs. This
+is quite a rare combination.
 
-In addition, we are using an unusual choice of HDL: a python based tool called nmigen. Fortunately its backend is yosys, which has well known industry recognised links to formal proof libraries, through symbiyosys.
+In addition, we are using an unusual choice of HDL: a python based tool
+called nmigen. Fortunately its backend is yosys, which has well known
+industry recognised links to formal proof libraries, through symbiyosys.
 
-We will need to train engineers to adapt to the unique mathematics, or train mathematicians to the unique software quirks.
+We will need to train engineers to adapt to the unique mathematics,
+or train mathematicians to the unique software quirks.
 
-Luckily we have several examples already, in the form of the work carried out by the developer of the Kestrel 53000 series of CPUs.
+Luckily we have several examples already, in the form of the work carried
+out by the developer of the Kestrel 53000 series of CPUs.
 
-The other main challenge is that as the size of the code being tested goes up, the CPU resources required go up exponentially. At the low level it is fine: tests can take several hours on a standard high end desktop.  However as things progress to larger levels we may actually need access to Beowulf Clusters or other supercomputing resources.
+The other main challenge is that as the size of the code being tested
+goes up, the CPU resources required go up exponentially. At the low level
+it is fine: tests can take several hours on a standard high end desktop.
+However as things progress to larger levels we may actually need access
+to Beowulf Clusters or other supercomputing resources.
 
 ## Describe the ecosystem of the project, and how you will engage with relevant actors and promote the outcomes?
 
