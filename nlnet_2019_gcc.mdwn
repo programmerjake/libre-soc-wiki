@@ -78,6 +78,22 @@ Whatever other compiler projects exist, they are just not compatible at the asse
 
 This is just a standard part of processor innovation.  We will also have to do the same thing for LLVM at some point.
 
+# What are significant technical challenges you expect to solve during the project, if any?
+
+Compiler development is known, traditionally, to be extremely technically
+challenging.  There are not many people in the world who work on it.
+Vectorisation support is even more challenging, and is a fast-moving
+research topic.  Fortunately there is convergent research in this area,
+however with this processor's Vectorisation being literally unique,
+and also in active development (requiring an iterative process), this is
+going to be a huge challenge.  Luckily, there is low-hanging fruit that
+will allow significant performance increases for relatively little compiler
+effort.
+
+Keeping the work upstream is made difficult because there is not yet any
+active silicon.  Part of the tasks will therefore be to ensure that the
+code is kept up-to-date until such time as active silicon is available.
+
 ## Describe the ecosystem of the project, and how you will engage with relevant actors and promote the outcomes?
 
 As mentioned in the 2018 submission, the Libre RISC-V
