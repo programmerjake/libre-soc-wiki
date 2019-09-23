@@ -6,21 +6,21 @@
     VBLK.reg.t4 = {vec}
     VBLK.VL = 8
     {
-     add t4, a0, a1
+     add t4, a0, a1 # vector add of int64
      sub t3, x0, a1 # invert a1
      BLT a0, t3, cont # stores tests in t0
-     ret
+     c.ret
     }
     VBLK.pred.t1 = {inv, t0}
     VBLK.pred.t4 = {t0}
     VBLK.reg.t4 = {vec}
     {
      cont:
-     slli t0, t0, 1 # shifts up carry by 1
-     addi t4, t4, 1 # predicated on t0
+     c.slli t0, 1 # shifts up carry by 1
+     c.addi t4, 1 # predicated on t0
      BLT t4, t1, cont2 # tests into t0
-     ret
+     c.ret
      cont2:
-     j cont
+     c.j cont
     }
 
