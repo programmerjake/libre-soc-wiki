@@ -1,0 +1,97 @@
+# NL.net proposal
+
+## Project name
+
+Libre RISC-V SoC, gcc upstream vector support
+
+## Website / wiki 
+
+<https://libre-riscv.org/nlnet_2019_gcc>
+
+Please be short and to the point in your answers; focus primarily on
+the what and how, not so much on the why. Add longer descriptions as
+attachments (see below). If English isn't your first language, don't
+worry - our reviewers don't care about spelling errors, only about
+great ideas. We apologise for the inconvenience of having to submit in
+English. On the up side, you can be as technical as you need to be (but
+you don't have to). Do stay concrete. Use plain text in your reply only,
+if you need any HTML to make your point please include this as attachment.
+
+## Abstract: Can you explain the whole project and its expected outcome(s).
+
+The Libre RISCV SoC is being developed to provide a privacy-respecting
+modern processor, developed transparently and as libre to the bedrock
+as possible.
+
+The design is a hybrid processor. That means that the same processor executes instructions designed for accelerating video, and 3D, where normally a separate coprocessor would be involved.
+
+To accelerate this processor, it has had "Vector" support added. This means that compilers have to be modified to support it.
+
+Therefore, this proposal is to add support to gcc and binutils in order that basic libraries and applications can take advantage of the accelerated capabilities of this processor.
+
+# Have you been involved with projects or organisations relevant to this project before? And if so, can you tell us a bit about your contributions?
+
+Luke Leighton is an ethical technology specialist who has a consistent
+24-year track record of developing code in a real-time transparent
+(fully libre) fashion, and in managing Software Libre teams.  He is the
+lead developer on the Libre RISC-V SoC.
+
+Jacob Lifshay is a software libre 3D expert who developed a Vulkan 3D
+software render engine under the GSoc2017 Programme.  He also developed
+his own libre-licensed 32-bit RISC-V processor, and has written an
+optimising javascript compiler.  Jacob is a valuable member of the team and is
+working on Kazan (https://salsa.debian.org/Kazan-team/kazan)
+
+# Requested Amount
+
+EUR 50,000.
+
+# Explain what the requested budget will be used for?
+
+The task is seemingly straightforward: augment gcc and binutils to add support for the Libre RISC-V processor's Vectorisation capabilities.
+
+In more detail, because the processor supports "tagging" of registers, it will be a little more involved as the design is quite unique.
+
+However it will at least be possible to make low-hanging-fruit incremental improvements, because there are SIMD-like capabilities for subvectors of length 2 to 4.  Full function vectorisation including predication will be an ongoing process.
+
+The task may also involve some iteration and overlap with the main project, given that the main project involves the simulator, riscv-spike-sv.
+
+It may turn out that during the course of the implementation, gcc is sufficiently functional so as to clearly demonstrate a better way of doing Vectorisation.
+
+# Does the project have other funding sources, both past and present?
+
+The overall project has sponsorship from Purism as well as a prior grant
+from NLNet.  However that is for specifically covering the development
+of the RTL (the hardware source code)
+
+Actual development of general purpose compilers for general purpose code, accelerated by the capabilities of this hybrid design, was not part of the original proposal.
+
+# Compare your own project with existing or historical efforts.
+
+The Libre RISCV SoC is intended to be compatible with RV64GC, the base UNIX Platform. This so that we can progress without being critically reliant on writing a compiler.
+
+However its accelerated Vectorisation is entirely unique. There is literally no commercial or academic design in existence with the same capabilities or advantages. Thus, comparisons are difficult to make.
+
+The closest analogous equivalent is the Cray Supercomputer, which inspired many Vector Processor designs including RISC-V RVV. However even here, RVV has explicit vector instructions, whereas our design "tags" scalar ones as being vectorised.
+
+Whatever other compiler projects exist, they are just not compatible at the assembly level. There just is no option but to bite the bullet and write a compiler.
+
+This is just a standard part of processor innovation.  We will also have to do the same thing for LLVM at some point.
+
+## Describe the ecosystem of the project, and how you will engage with relevant actors and promote the outcomes?
+
+As mentioned in the 2018 submission, the Libre RISC-V
+SoC has a full set of resources for Libre Project Management and development:
+mailing list, bugtracker, git repository and wiki - all listed here:
+<https://libre-riscv.org/>
+
+In addition, we have a Crowdsupply page
+<https://www.crowdsupply.com/libre-risc-v/m-class> which provides a public
+gateway, and heise.de, reddit, phoronix, slashdot and other locations have
+all picked up the story.  The list is updated and maintained here:
+<https://libre-riscv.org/3d_gpu/>
+
+# Extra info to be submitted
+
+* <http://libre-riscv.org/3d_gpu/>
+* <https://nlnet.nl/project/Libre-RISCV/>
