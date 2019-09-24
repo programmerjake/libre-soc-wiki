@@ -197,6 +197,32 @@ of multiple comparisons into a register (taken indirectly from the predicate
 table).  As such, "ffirst" - fail-on-first - condition mode can be enabled.
 See ffirst mode in the Predication Table section.
 
+There are two registers for the comparison operation, therefore there is
+the opportunity to associate two predicate registers.  The first is a
+"normal" predicate register, which acts just as it does on any other
+single-predicated operation: masks out elements where a bit is zero,
+applies an inversion to the predicate mask, and enables zeroing / non-zeroing
+mode.
+
+The second is utilised to indicate where the results of each comparison
+are to be stored, as a bitmask.  Additionally, the behaviour of the branch
+- when it occurs - may also be modified depending on whether the predicate
+"invert" bit is set.
+
+* If the "invert" bit is zero, then the branch will occur if and only
+  all tests pass
+* If the "invert" bit is set, the branch will occur if and only if all
+  tests *fail*.
+
+This inversion capability, with some careful boolean logic manipulation,
+covers AND, OR, NAND and NOR branching based on multiple element comparisons.
+Note that unlike normal computer programming early-termination of chains
+of AND or OR conditional tests, the chain does *not* terminate early except
+if fail-on-first is set, and even then ffirst ends on the first data-dependent
+zero.  When ffirst mode is not set, *all* conditional element tests must be
+performed (and the result optionally stored in the result mask), with a
+"post-analysis" phase carried out which checks whether to branch.
+
 ### Standard Branch <a name="standard_branch"></a>
 
 Branch operations use standard RV opcodes that are reinterpreted to
@@ -233,7 +259,8 @@ to zero if **zeroing** is enabled.
 
 Note that just as with the standard (scalar, non-predicated) branch
 operations, BLE, BGT, BLEU and BTGU may be synthesised by inverting
-src1 and src2.
+src1 and src2, however note that in doing so, the predicate table
+setup must also be correspondingly adjusted.
 
 In Hwacha EECS-2015-262 Section 6.7.2 the following pseudocode is given
 for predicated compare operations of function "cmp":
@@ -261,6 +288,12 @@ complex), this becomes:
     ps = get_pred_val(I/F==INT, rs1);
     rd = get_pred_val(I/F==INT, rs2); # this may not exist
 
+    ffirst_mode, zeroing = get_pred_flags(rs1)
+    if exists(rd):
+        pred_inversion = get_pred_invert(rs2)
+    else
+        pred_inversion = False
+
     if not exists(rd) or zeroing:
         result = (1<<VL)-1 # all 1s
     else
@@ -276,13 +309,17 @@ complex), this becomes:
               result |= 1<<i;
           else
               result &= ~(1<<i);
+              if ffirst_mode:
+                break
 
-     if not exists(rd)
-        if result == ps
-            goto branch
-     else
+    if exists(rd):
         preg[rd] = result # store in destination
-        if preg[rd] == ps
+
+    if pred_inversion:
+        if result == 0:
+            goto branch
+    else:
+        if (result & ps) == result:
             goto branch
 
 Notes:
