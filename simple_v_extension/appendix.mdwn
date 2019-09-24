@@ -207,21 +207,25 @@ mode.
 The second is utilised to indicate where the results of each comparison
 are to be stored, as a bitmask.  Additionally, the behaviour of the branch
 - when it occurs - may also be modified depending on whether the predicate
-"invert" bit is set.
+"invert" and "zeroing" bits are set.
 
-* If the "invert" bit is zero, then the branch will occur if and only
+* If "invert" is zero, and "zeroing" is zero, the branch will occur if and only
   all tests pass
-* If the "invert" bit is set, the branch will occur if and only if all
-  tests *fail*.
+* If "invert" is set and "zeroing" is zero, the branch will occur if all
+  tests *fail* (opposite of inv=0,zero=0)
+* If "invert" is zero, and "zeroing" is set, the branch will occur if
+  even *one* test passes
+* If "invert" is set and "zeroing" is set, the branch will occur if
+  even *one* test fails.
 
-This inversion capability, with some careful boolean logic manipulation,
-covers AND, OR, NAND and NOR branching based on multiple element comparisons.
-Note that unlike normal computer programming early-termination of chains
-of AND or OR conditional tests, the chain does *not* terminate early except
-if fail-on-first is set, and even then ffirst ends on the first data-dependent
-zero.  When ffirst mode is not set, *all* conditional element tests must be
-performed (and the result optionally stored in the result mask), with a
-"post-analysis" phase carried out which checks whether to branch.
+This inversion capability covers AND, OR, NAND and NOR branching based
+on multiple element comparisons.  Note that unlike normal computer
+programming early-termination of chains of AND or OR conditional tests,
+the chain does *not* terminate early except if fail-on-first is set,
+and even then ffirst ends on the first data-dependent zero.  When ffirst
+mode is not set, *all* conditional element tests must be performed (and
+the result optionally stored in the result mask), with a "post-analysis"
+phase carried out which checks whether to branch.
 
 ### Standard Branch <a name="standard_branch"></a>
 
@@ -290,9 +294,9 @@ complex), this becomes:
 
     ffirst_mode, zeroing = get_pred_flags(rs1)
     if exists(rd):
-        pred_inversion = get_pred_invert(rs2)
+        pred_inversion, pred_zeroing = get_pred_flags(rs2)
     else
-        pred_inversion = False
+        pred_inversion, pred_zeroing = False, False
 
     if not exists(rd) or zeroing:
         result = (1<<VL)-1 # all 1s
@@ -316,11 +320,19 @@ complex), this becomes:
         preg[rd] = result # store in destination
 
     if pred_inversion:
-        if result == 0:
-            goto branch
+        if pred_zeroing:
+            if result != 0:
+                goto branch
+        else:
+            if result == 0:
+                goto branch
     else:
-        if (result & ps) == result:
-            goto branch
+        if pred_zeroing:
+            if (result & ps) != result:
+                goto branch
+        else:
+            if (result & ps) == result:
+                goto branch
 
 Notes:
 
