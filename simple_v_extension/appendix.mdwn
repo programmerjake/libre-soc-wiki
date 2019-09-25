@@ -234,6 +234,13 @@ element tests must be performed (and the result optionally stored in
 the result mask), with a "post-analysis" phase carried out which checks
 whether to branch.
 
+Note also that whilst it may seem excessive to have all four (because
+conditional comparisons may be inverted by swapping src1 and src2),
+data-dependent fail-on-first is *not* invertible and *only* terminates
+on first zero-condition encountered.  Additionally it may be inconvenient
+to have to swap the predicate registers associated with src1 and src2,
+because this involves a new VBLOCK Context.
+
 ### Standard Branch <a name="standard_branch"></a>
 
 Branch operations use standard RV opcodes that are reinterpreted to
