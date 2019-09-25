@@ -194,7 +194,9 @@ comprehensive in its effect on instructions.
 Branch operations are augmented slightly to be a little more like FP
 Compares (FEQ, FNE etc.), by permitting the cumulation (and storage)
 of multiple comparisons into a register (taken indirectly from the predicate
-table).  As such, "ffirst" - fail-on-first - condition mode can be enabled.
+table) and enhancing them to branch "consensually" depending on *multiple*
+tests.  "ffirst" - fail-on-first - condition mode can also be enabled,
+to terminate the comparisons early.
 See ffirst mode in the Predication Table section.
 
 There are two registers for the comparison operation, therefore there
