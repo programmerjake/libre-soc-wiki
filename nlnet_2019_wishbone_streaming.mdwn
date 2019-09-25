@@ -19,11 +19,23 @@ if you need any HTML to make your point please include this as attachment.
 
 ## Abstract: Can you explain the whole project and its expected outcome(s).
 
-In projects such as the Libre RISCV SoC, commercial grade communications bus infrastructure is needed. Ordinarily this would mean AXI4 however it is not only patented but its patent holder has begun denying licenses due to the US trade war.
+In projects such as the Libre RISCV SoC, commercial grade communications
+bus infrastructure is needed. Ordinarily this would mean AXI4 however
+it is not only patented but its patent holder has begun denying licenses
+due to the US trade war.
 
-The main alternative with large adoption is Wishbone. However Wishbone does not have "streaming" capability, which is typically needed for audio and video streaming interfaces.
+The main alternative with large adoption is Wishbone. However Wishbone
+does not have "streaming" capability, which is typically needed for
+audio and video streaming interfaces.
 
-Therefore this project will write up an enhancement to the Wishbone B4 interface, provide Reference Implementations and unit tests, and also implement an example peripheral, an audio interface, for the Libre RISC-V SoC in order to prove the concept.
+Therefore this project will write up an enhancement to the Wishbone B4
+interface, provide Reference Implementations and unit tests, and also
+implement an example peripheral, an audio interface, for the Libre RISC-V
+SoC in order to prove the concept.
+
+A secondary objective will be to seek out Reference Implementations for
+Wishbone Master and Slave, provide formal correctness proofs, and add
+additional example peripherals - non-streaming ones - as resources permit.
 
 # Have you been involved with projects or organisations relevant to this project before? And if so, can you tell us a bit about your contributions?
 
@@ -32,9 +44,11 @@ Luke Leighton is an ethical technology specialist who has a consistent
 (fully libre) fashion, and in managing Software Libre teams.  He is the
 lead developer on the Libre RISC-V SoC.
 
-Hagen Sankowski is a Senior ASIC Design Engineer, with Experiences thru the whole Design Flow, from Digital Entry (Verilog HDL, VHDL) to DSM Backend and back. 
-FPGA knowledge for Xilinx, Altera, Lattice and MicroSemi. Inventor and Patentee for a FPGA structure. 
-Open Source Evangelist, always interested in challenging FPGA and migration projects.
+Hagen Sankowski is a Senior ASIC Design Engineer, with Experiences
+thru the whole Design Flow, from Digital Entry (Verilog HDL, VHDL)
+to DSM Backend and back.  FPGA knowledge for Xilinx, Altera, Lattice
+and MicroSemi. Inventor and Patentee for a FPGA structure.  Open Source
+Evangelist, always interested in challenging FPGA and migration projects.
 
 # Requested Amount
 
@@ -50,19 +64,36 @@ Design Reference Implementations in nmigen and verilog, with full unit tests.
 Use some of the Libre RISC-V SoC peripherals as a test platform
 (I2S Audio Streaming) for the proposed standard modifications.
 
+As a secondary objective: seek out existing (non-streaming) Wishbone
+Master and Slave Bus implementations (or implement them if necessary),
+provide formal proof unit tests of their correctness, and add additional
+example peripherals.
+
 # Does the project have other funding sources, both past and present?
 
-no.
+The concept of extending Wishbone to have streaming capability is entirely
+new: it has no source of funding.
+
+The Libre RISC-V SoC has funding from NLNet under a 2018 Grant.
 
 # Compare your own project with existing or historical efforts.
 
 AXI4 has streaming but it is proprietary and patented.
 
-TileLink is the alternative protocol but it is relatively new, quite complex, and does not have the same adoption as Wishbone.
+TileLink is the alternative protocol but it is relatively new, quite
+complex, and does not have the same adoption as Wishbone.
+
+There do exist a number of pre-existing Wishbone Bus Master and Slave
+implementations: Wishbone has been around for a significantly long time
+and has been the de-facto choice in the Libre/Open Hardware community.
+Formal correctness proofs for Wishbone have been written by Dan Gisselquist
+in verilog, but none are written in nmigen.
 
 ## What are significant technical challenges you expect to solve during the project, if any?
 
-This is a straightforward project. However the timing issues involved with Bus Negotiation can be awkward to get right and may need formal proofs to properly verify.
+This is a straightforward project. However the timing issues involved
+with Bus Negotiation can be awkward to get right and may need formal
+proofs to properly verify.
 
 ## Describe the ecosystem of the project, and how you will engage with relevant actors and promote the outcomes
 
@@ -81,3 +112,5 @@ all picked up the story.  The list is updated and maintained here:
 
 * <http://libre-riscv.org/3d_gpu/>
 * <https://nlnet.nl/project/Libre-RISCV/>
+* <https://cdn.opencores.org/downloads/wbspec_b4.pdf>
+* <https://zipcpu.com/zipcpu/2017/11/07/wb-formal.html>
