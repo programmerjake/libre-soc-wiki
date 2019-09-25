@@ -326,16 +326,20 @@ complex), this becomes:
 
     if pred_inversion:
         if pred_zeroing:
-            if result != 0:
+            # NOR
+            if result == 0:
                 goto branch
         else:
-            if result == 0:
+            # NAND
+            if (result & ps) != result:
                 goto branch
     else:
         if pred_zeroing:
-            if (result & ps) != result:
+            # OR
+            if result != 0:
                 goto branch
         else:
+            # AND
             if (result & ps) == result:
                 goto branch
 
