@@ -12,6 +12,7 @@ into 32, 48 and 64 bit RV formats, to provide Vectorisation context
 on a per-instruction basis.
 
 .. _Specification: http://libre-riscv.org/simple_v_extension/specification/
+.. _Appendix: http://libre-riscv.org/simple_v_extension/appendix/
 
 .. contents::
 
@@ -433,6 +434,13 @@ Predication (pred) Field Encoding
 
 Twin-predication (tpred) Field Encoding
 =======================================
+
+Twin-predication (ability to associate two predicate registers with an
+instruction) applies to MV, FCLASS, LD and ST.  The same format also
+applies to integer-branch-compare operations although it is **not** to be
+considered "twin" predication.  In the case of integer-branch-compare
+operations, the second register (if enabled) stores the results of the
+element comparisons.  See Appendix_ for details.
 
 +-------+------------+--------------------+----------------------------------------------+
 | tpred | Mnemonic   | Predicate Register | Meaning                                      |
