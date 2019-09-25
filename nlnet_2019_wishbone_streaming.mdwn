@@ -19,7 +19,11 @@ if you need any HTML to make your point please include this as attachment.
 
 ## Abstract: Can you explain the whole project and its expected outcome(s).
 
-TODO
+In projects such as the Libre RISCV SoC, commercial grade communications bus infrastructure is needed. Ordinarily this would mean AXI4 however it is not only patented but its patent holder has begun denying licenses due to the US trade war.
+
+The main alternative with large adoption is Wishbone. However Wishbone does not have "streaming" capability, which is typically needed for audio and video streaming interfaces.
+
+Therefore this project will write up an enhancement to the Wishbone B4 interface, provide Reference Implementations and unit tests, and also implement an example peripheral, an audio interface, for the Libre RISC-V SoC in order to prove the concept.
 
 # Have you been involved with projects or organisations relevant to this project before? And if so, can you tell us a bit about your contributions?
 
@@ -28,7 +32,9 @@ Luke Leighton is an ethical technology specialist who has a consistent
 (fully libre) fashion, and in managing Software Libre teams.  He is the
 lead developer on the Libre RISC-V SoC.
 
-TODO
+Hagen Sankowski is a Senior ASIC Design Engineer, with Experiences thru the whole Design Flow, from Digital Entry (Verilog HDL, VHDL) to DSM Backend and back. 
+FPGA knowledge for Xilinx, Altera, Lattice and MicroSemi. Inventor and Patentee for a FPGA structure. 
+Open Source Evangelist, always interested in challenging FPGA and migration projects.
 
 # Requested Amount
 
@@ -39,6 +45,8 @@ EUR 50,000.
 Improve the Wishbone B4 Specification to add streaming capability,
 similar to AXI4 Streams.
 
+Design Reference Implementations in nmigen and verilog, with full unit tests.
+
 Use some of the Libre RISC-V SoC peripherals as a test platform
 (I2S Audio Streaming) for the proposed standard modifications.
 
@@ -48,15 +56,15 @@ no.
 
 # Compare your own project with existing or historical efforts.
 
-AXI4 but it is proprietary and patented.
+AXI4 has streaming but it is proprietary and patented.
+
+TileLink is the alternative protocol but it is relatively new, quite complex, and does not have the same adoption as Wishbone.
 
 ## What are significant technical challenges you expect to solve during the project, if any?
 
-TODO
+This is a straightforward project. However the timing issues involved with Bus Negotiation can be awkward to get righ and may need formal proofs to properly verify.
 
-## Describe the ecosystem of the project, and how you will engage with relevant actors and promote the outcomes?
-
-TODO
+## Describe the ecosystem of the project, and how you will engage with relevant actors and promote the outcomes
 
 As mentioned in the 2018 submission, the Libre RISC-V
 SoC has a full set of resources for Libre Project Management and development:
