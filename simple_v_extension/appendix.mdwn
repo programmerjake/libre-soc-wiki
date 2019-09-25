@@ -197,18 +197,20 @@ of multiple comparisons into a register (taken indirectly from the predicate
 table).  As such, "ffirst" - fail-on-first - condition mode can be enabled.
 See ffirst mode in the Predication Table section.
 
-There are two registers for the comparison operation, therefore there is
-the opportunity to associate two predicate registers.  The first is a
-"normal" predicate register, which acts just as it does on any other
-single-predicated operation: masks out elements where a bit is zero,
-applies an inversion to the predicate mask, and enables zeroing / non-zeroing
-mode.
+There are two registers for the comparison operation, therefore there
+is the opportunity to associate two predicate registers (note: not in
+the same way as twin-predication).  The first is a "normal" predicate
+register, which acts just as it does on any other single-predicated
+operation: masks out elements where a bit is zero, applies an inversion
+to the predicate mask, and enables zeroing / non-zeroing mode.
 
-The second is utilised to indicate where the results of each comparison
-are to be stored, as a bitmask.  Additionally, the behaviour of the branch
-- when it occurs - may also be modified depending on whether the predicate
-"invert" and "zeroing" bits are set.
-These four combinations result in "consensual branches", cbranch.ifnone (NOR), cbranch.ifany (OR), cbranch.ifall (AND), cbranch.ifnotall (NAND).
+The second (not to be confused with a twin-predication 2nd register)
+is utilised to indicate where the results of each comparison are to
+be stored, as a bitmask.  Additionally, the behaviour of the branch -
+when it occurs - may also be modified depending on whether the 2nd predicate's
+"invert" and "zeroing" bits are set.  These four combinations result
+in "consensual branches", cbranch.ifnone (NOR), cbranch.ifany (OR),
+cbranch.ifall (AND), cbranch.ifnotall (NAND).
 
 | invert | zeroing | description                 | operation | cbranch |
 | ------ | ------- | --------------------------- | --------- | ------- |
@@ -222,13 +224,13 @@ based on multiple element comparisons. Without the full set of four,
 it is necessary to have two-sequence branch operations: one conditional, one
 unconditional.
 
-Note that unlike normal computer
-programming early-termination of chains of AND or OR conditional tests,
-the chain does *not* terminate early except if fail-on-first is set,
-and even then ffirst ends on the first data-dependent zero.  When ffirst
-mode is not set, *all* conditional element tests must be performed (and
-the result optionally stored in the result mask), with a "post-analysis"
-phase carried out which checks whether to branch.
+Note that unlike normal computer programming, early-termination of chains
+of AND or OR conditional tests, the chain does *not* terminate early
+except if fail-on-first is set, and even then ffirst ends on the first
+data-dependent zero.  When ffirst mode is not set, *all* conditional
+element tests must be performed (and the result optionally stored in
+the result mask), with a "post-analysis" phase carried out which checks
+whether to branch.
 
 ### Standard Branch <a name="standard_branch"></a>
 
