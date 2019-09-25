@@ -210,18 +210,17 @@ are to be stored, as a bitmask.  Additionally, the behaviour of the branch
 "invert" and "zeroing" bits are set.
 These four combinations result in "consensual branches", cbranch.ifnone (NOR), cbranch.ifany (OR), cbranch.ifall (AND), cbranch.ifnotall (NAND).
 
-* If "invert" is zero, and "zeroing" is zero, the branch will occur if and only
-  all tests pass (AND, ifall)
-* If "invert" is set and "zeroing" is zero, the branch will occur if all
-  tests *fail* (NAND, ifnotall)
-* If "invert" is set and "zeroing" is
-zero, the branch will occur if
-  even *one* test passes (OR, ifany)
-* If "invert" is set and "zeroing" is set, the branch will occur if
-  even *one* test fails (NOR, ifnone)
+| invert | zeroing | description                 | operation | cbranch |
+| ------ | ------- | --------------------------- | --------- | ------- |
+| 0      | 0       | branch if all pass          | AND       | ifall   |
+| 1      | 0       | branch if one fails         | NAND      | ifnall  |
+| 0      | 1       | branch if one passes        | OR        | ifany   |
+| 1      | 1       | branch if all fail          | NOR       | ifnone  |
 
-This inversion capability covers AND, OR, NAND and NOR branching based
-on multiple element comparisons. Without the full set of four, it is necessary to have two-sequence branches: one conditional, one unconditional.
+This inversion capability covers AND, OR, NAND and NOR branching
+based on multiple element comparisons. Without the full set of four,
+it is necessary to have two-sequence branch operations: one conditional, one
+unconditional.
 
 Note that unlike normal computer
 programming early-termination of chains of AND or OR conditional tests,
