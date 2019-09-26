@@ -2,7 +2,7 @@
 
 ## Project name
 
-Port of AMDVLK 3D Driver to the Libre RISC-V SoC
+Port of AMDVLK/RADV 3D Driver to the Libre RISC-V SoC
 
 ## Website / wiki 
 
@@ -31,8 +31,14 @@ shows that it would be relatively straightforward to replace the libraries
 that generate Radeon GPU assembly code with ones that generate assembly
 for the Libre RISC-V SoC, instead.
 
-Thus we intend to do exactly that: leverage AMD's excellent work to create
-a libre-licensed commercial-grade Vulkan 3D driver that takes full advantage
+In addition, further investigation shows that RADV, the libre-licensed
+MESA 3D Driver, also supports SPIR-V (by way of conversion to MESA NIR),
+and, likewise, may be a good candidate for replacing Radeon with Libre
+RISC-V assembly.
+
+Thus we intend to do exactly that: leverage the excellent work already
+done to create a libre-licensed commercial-grade Vulkan 3D driver that
+takes full advantage
 of the parallelism and Vectorisation in the hybrid Libre RISC-V SoC.
 
 # Have you been involved with projects or organisations relevant to this project before? And if so, can you tell us a bit about your contributions?
@@ -54,15 +60,17 @@ EUR 50,000.
 
 # Explain what the requested budget will be used for?
 
-We are aiming for a multi-stage process, starting with the basics:
+After a thorough and comprehensive evaluation to see which will be the
+best to choose (RADV or AMDVLK), we are aiming for a multi-stage process,
+starting with the basics:
 
-* The first stage is to remove AMD's "PAL" Library and replace it with
-  a straightforward upstream port of the current LLVM JIT compiler,
-  alongside a "support" library that will call OpenCL / OpenGL
-  functions directly on the main processor.  This "effectively"
-  turns AMDVLK into a peer of google swiftshader (a "Software 3D Renderer")
-  which will allow us to carry out rapid testing on stable x86 systems before
-  moving on to the next stage.
+* The first stage is to remove AMD's "PAL" Library in AMDVLK, or the
+  AMDGPU engine used in RADV, and replace it with a straightforward
+  upstream port of the current LLVM JIT compiler, alongside a "support"
+  library that will call OpenCL / OpenGL functions directly on the main
+  processor.  This "effectively" turns the engine into a peer of google
+  swiftshader (a "Software 3D Renderer") which will allow us to carry out
+  rapid testing on stable x86 systems before moving on to the next stage.
 * The second stage is to confirm that the standard RISC-V LLVM JIT
   (which was recently upstreamed as of LLVM 9.0.0) is properly functional
   under an emulator or other RV64GC system.
@@ -108,6 +116,12 @@ known to give a massive 400% power penalty.  Not only that, but our
 additions would not be welcome due to the primary focus of swiftshader
 being on non-hardware-accelerated, non-custom processors.
 
+RADV is the free software competitor to AMDVLK.  It takes a different
+route: converting SPIR-V to NIR (New Internal Representation) which will
+need close evaluation to ensure that it's directly suited to Vector
+Processing.  Like AMDVLK, it does not directly support RISC-V: it was
+purely intended to support Radeon GPUs.
+
 Our initial proposal - Kazan - is much more interesting to discern and
 compare against.  Kazan is being specifically designed so that the
 SPIR-V compiler is capable of fully supporting "full-function vectorisation".
@@ -133,9 +147,9 @@ because it is just not possible to predict in advance which would be "better".
 ## What are significant technical challenges you expect to solve during the project, if any?
 
 This is compiler technology, which is traditionally viewed as particularly
-challenging.  We are slightly fortunate in that much of the pieces of the
-puzzle already exist: AMDVLK, the upstreamed acceptance of RISC-V LLVM 9.0.0
-being the key ones.
+challenging.  We are slightly fortunate in that much of the pieces of
+the puzzle already exist: AMDVLK, RADV, the upstreamed acceptance of
+RISC-V LLVM 9.0.0 being the key ones.
 
 Whilst we know *technically* what they did and why they did it, the key
 challenge will be to unravel what exact changes AMD made which caused
@@ -164,3 +178,5 @@ all picked up the story.  The list is updated and maintained here:
 * <https://github.com/GPUOpen-Drivers/AMDVLK>
 * <https://github.com/google/swiftshader/>
 * <https://salsa.debian.org/Kazan-team/kazan>
+* <https://github.com/mesa3d/mesa/tree/master/src/amd/vulkan>
+
