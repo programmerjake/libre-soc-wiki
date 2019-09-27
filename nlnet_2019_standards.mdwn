@@ -1,0 +1,128 @@
+# NL.net proposal
+
+## Project name
+
+The Libre RISC-V SoC, Wishbone Streaming Proposal
+
+## Website / wiki 
+
+<https://libre-riscv.org/nlnet_2019_wishbone_streaming>
+
+Please be short and to the point in your answers; focus primarily on
+the what and how, not so much on the why. Add longer descriptions as
+attachments (see below). If English isn't your first language, don't
+worry - our reviewers don't care about spelling errors, only about
+great ideas. We apologise for the inconvenience of having to submit in
+English. On the up side, you can be as technical as you need to be (but
+you don't have to). Do stay concrete. Use plain text in your reply only,
+if you need any HTML to make your point please include this as attachment.
+
+## Abstract: Can you explain the whole project and its expected outcome(s).
+
+In projects such as the Libre RISC-V SoC, commercial grade System-on-Chip
+(SoC) bus infrastructure is needed. Nowadays this often means AMBA AXI4,
+AXI4-lite or AXI4-Stream, all published by ARM Limited. The AXI family is
+"royality-free" and it is not only patented but its patent holder has
+begun denying licenses due to the US Trade War.
+
+The main alternative with large adoption is Wishbone, which is an Open
+Standard in contrast to AXI. However Wishbone does not have a "streaming"
+capability, which is typically needed for high-throughput data pathes and
+interfaces, e.g. for video applications and High-Performance Computing
+(HPC).
+
+Therefore this project will write up an enhancement to the Wishbone B4 SoC
+Bus, provide Reference Implementations and Bus Function Models (BFM) which
+easily allows unit tests for all Wishbone BFM users. For demonstration
+we like to implement an example peripheral (here, an audio interface, for
+the Libre RISC-V SoC) also. This demonstrations proves our concept also.
+
+A secondary objective will be to seek out Reference Implementations for
+Wishbone Master and Slave, provide formal correctness proofs, and add
+additional example peripherals - non-streaming ones - as resources permit.
+
+# Have you been involved with projects or organisations relevant to this project before? And if so, can you tell us a bit about your contributions?
+
+Luke Leighton is an ethical technology specialist who has a consistent
+24-year track record of developing code in a real-time transparent
+(fully libre) fashion, and in managing Software Libre teams. He is the
+lead developer on the Libre RISC-V SoC.
+
+Hagen Sankowski is a Senior ASIC Design Engineer, with 20-year Experiences
+thru the whole Design Flow, from Digital Entry (Verilog HDL, VHDL) to
+DSM Backend and back. He has FPGA knowledge for Xilinx, Altera, Lattice
+and MicroSemi. Inventor and Patentee for a FPGA structure. Open Source
+Evangelist, member of the LibreSilicon project Team also.
+
+# Requested Amount
+
+EUR 50,000.
+
+# Explain what the requested budget will be used for?
+
+Improve the Wishbone B4 Specification to add streaming capability,
+comparable to AXI4-Stream, and feed the improvements back into the
+current stewardship for next Wishbone release.
+
+Design Reference Implementations in nmigen and (System-)Verilog, Bus
+Function Models and other functionality in SystemVerilog for verification
+with full unit tests aiming best code coverage.
+
+Use some of the Libre RISC-V SoC peripherals as a test platform
+and demonstrator (I2S Audio Streaming) for the proposed standard
+modifications.
+
+Traveling expenses for presenting the Wishbone improvements to the RISC-V
+community once at the annual ORConf in 2020.
+
+As a secondary objective: seek out existing (non-streaming) Wishbone
+Master and Slave Bus implementations (or implement them if necessary),
+provide formal proof unit tests of their correctness, and add additional
+example peripherals.
+
+# Does the project have other funding sources, both past and present?
+
+The concept of extending Wishbone to have streaming capability is entirely
+new: it has no source of funding.
+
+The Libre RISC-V SoC has funding from NLNet under a 2018 Grant: it was
+intending to use AXI4 prior to the U.S. Trade War.
+
+# Compare your own project with existing or historical efforts.
+
+AXI4 has streaming (as AXI4-Stream) but it is proprietary and patented.
+
+TileLink is an alternative protocol (with roots in the RISC-V academic
+community) but it is relatively new, quite complex, and does not have
+the same adoption as Wishbone.
+
+There do exist a number of pre-existing Wishbone Bus Master and
+Slave implementations: Wishbone has been around for a significantly
+long time and has been the de-facto choice in the Libre/Open Hardware
+community. Formal correctness proofs for Wishbone have been written by
+Dan Gisselquist in SystemVerilog, but none are written in nmigen.
+
+## What are significant technical challenges you expect to solve during the project, if any?
+
+This is a straightforward project. However the timing issues involved
+with Bus Negotiation can be awkward to get right and may need formal
+proofs to properly verify.  Dan Gisselquist's work in his area shows
+how it can be done.
+
+## Describe the ecosystem of the project, and how you will engage with relevant actors and promote the outcomes
+
+As mentioned in the 2018 submission, the Libre RISC-V
+SoC has a full set of resources for Libre Project Management and development:
+mailing list, bugtracker, git repository and wiki - all listed here:
+<https://libre-riscv.org/>
+
+In addition, we have a Crowdsupply page
+<https://www.crowdsupply.com/libre-risc-v/m-class> which provides a public
+gateway, and heise.de, reddit, phoronix, slashdot and other locations have
+all picked up the story.  The list is updated and maintained here:
+<https://libre-riscv.org/3d_gpu/>
+
+# Extra info to be submitted
+
+* <http://libre-riscv.org/3d_gpu/>
+* <https://nlnet.nl/project/Libre-RISCV/>
