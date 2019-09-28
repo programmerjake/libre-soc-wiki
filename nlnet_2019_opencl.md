@@ -1,0 +1,186 @@
+# NL.net proposal
+
+## Project name
+
+OpenCL hardware support on Libre RISC-V
+
+## Website / wiki
+
+<https://libre-riscv.org/nlnet_2019_opencl>
+
+Please be short and to the point in your answers; focus primarily on
+the what and how, not so much on the why. Add longer descriptions as
+attachments (see below). If English isn't your first language, don't
+worry - our reviewers don't care about spelling errors, only about
+great ideas. We apologise for the inconvenience of having to submit in
+English. On the up side, you can be as technical as you need to be (but
+you don't have to). Do stay concrete. Use plain text in your reply only,
+if you need any HTML to make your point please include this as attachment.
+
+## Abstract: Can you explain the whole project and its expected outcome(s).
+
+The Libre RISC-V SoC is being developed to provide a privacy-respecting
+modern processor, developed transparently and as libre to the bedrock
+as possible.
+
+As a hybrid processor, it is intended to be both a CPU
+*and* a GPU. GPUs are normally proprietary (and thus are perfect candidate
+attack vectors), as is the low-level software that runs on it.
+
+Despite the original meaning of GPU, GPUs are not only limited to graphics
+processing. In fact, there is a quite common use case of using GPUs for
+more general computation these days. The work of scientists, AI and ML
+developers, multimedia applications such as FFmpeg, etc., depend on
+unique traits of GPUs to accelerate their processing. A standard, open API
+to facilitate this is OpenCL.
+
+Almost all the major mobile-class GPUs, such as Vivante GC, ARM Mali,
+Broadcom VideoCore, and Qualcomm Adreno, support OpenCL, but of course
+they are proprietary implementations which cannot be trusted completely.
+
+While the mobile-class GPUs have terrible open-source support, at least
+the bigger GPU names such as AMD and Intel have open-sourced their OpenCL
+solutions. In addition, since we are reusing the SPIR-V/LLVM/Mesa stack
+for Vulkan (as detailed in our AMDVLK/RADV NlNet proposal) and OpenGL
+support, Mesa also happens to come with an OpenCL implementation which
+we can possibly reuse as well (Gallium/Clover).
+
+However, these OpenCL implementations tend to be very specific to the
+vendors processors so we will have to investigate which pieces to reuse
+and develop our own specific implementation. Furthermore, we cannot
+infinitely delay our first iteration of the Libre RISC-V SoC. Therefore,
+this proposal is limited to only doing the hardware requirements of
+OpenCL first. In a future proposal for the second iteration of
+Libre RISC-V, we will work on the software requirements of OpenCL.
+
+Thus we intend to do exactly that: leverage the excellent work already
+done to create a libre-licensed commercial-grade OpenCL driver that
+takes full advantage of the parallelism and vectorisation in the
+hybrid Libre RISC-V SoC to accelerate compute applications.
+
+# Have you been involved with projects or organisations relevant to this project before? And if so, can you tell us a bit about your contributions?
+
+Luke Leighton is an ethical technology specialist who has a consistent
+24-year track record of developing code in a real-time transparent
+(fully libre) fashion, and in managing Software Libre teams.  He is the
+lead developer on the Libre RISC-V SoC.
+
+Jacob Lifshay is a software libre 3D expert who developed a Vulkan 3D
+software render engine under the GSoc2017 Programme.  He also developed
+his own libre-licensed 32-bit RISC-V processor, and has written an
+optimising javascript compiler.  Jacob is a valuable member of the team and is
+working on Kazan (https://salsa.debian.org/Kazan-team/kazan)
+
+# Requested Amount
+
+EUR 50,000.
+
+# Explain what the requested budget will be used for?
+
+After a thorough and comprehensive evaluation to see which will be the
+best to choose (Intel NEO, AMD ROCm, Mesa Gallium/Clover), we are aiming
+for a multi-stage process, starting with the basics:
+
+* The first stage is to make sure we have the necessary hardware
+  support for hardware acceleration of OpenCL. OpenCL would be pointless
+  if all done in software.
+* The second stage (in a future proposal) is to create a basic OpenCL
+  driver by looking at how other OpenCL implementations are done.
+* The third phase (in a future proposal) will be to begin the iterative
+  process, to experiment in both a software simulator as well as in FPGAs,
+  with the addition of both vectorisation as well as custom opcodes that
+  will significantly improve performance as well as meet
+  commercially-acceptable power-performance demands.
+
+At the point where commercial power-performance requirements are met and
+OpenCL applications are able to run on Libre RISC-V without software
+emulation, we may officially declare the project a "success".
+
+# Does the project have other funding sources, both past and present?
+
+The overall project has sponsorship from Purism as well as a prior
+grant from NLNet. However that is for specifically covering the
+development of the RTL (the hardware source code).
+
+Actual development of OpenCL drivers, accelerated by the capabilities
+of this hybrid design, was not part of the original proposal.
+
+A previous proposal supported the creation of Kazan which will serve
+as a Vulkan graphics driver. While Vulkan does have some compute
+capabilities, its use is limited to the graphics domain. This OpenCL
+driver will allow for full compute cabilities on Libre RISC-V.
+
+# Compare your own project with existing or historical efforts.
+
+The Vivante GC800 is capable of OpenCL but as many other mobile-class
+GPUs, it is proprietary.
+
+The Broadcom VideoCore GPU used in Raspberry Pis are also capable of OpenCL.
+In the future, it is very likely that Libre RISC-V will be used to create
+a Single-board computer (SBC) just like a Raspberry Pi (possibly by us or
+third-party).
+
+Intel's NEO is a modern OpenCL driver that leverages an LLVM-based graphics
+compiler stack to provide OpenCL usage for Intel GPUs. Compared to other
+OpenCL implementations, the community considers Intel's to be the best one
+and NEO also is compliant with the latest OpenCL standard at 2.2.
+
+AMD's ROCm not only provides an OpenCL driver, but also AMD's own specific
+compute stack that deviates from OpenCL. ROCm supports an older version
+of OpenCL 2.0 but not higher.
+
+Kazan is our Vulkan graphics driver. While Vulkan can be used for a limited
+set of compute functionality geared towards graphics use-cases, Vulkan is
+not meant to be used for general-purpose compute.
+
+There are also some open-source projects (clvk, clspv) to adapt OpenCL on
+Vulkan, however, given that Vulkan is a completely different API than OpenCL,
+there will likely be drawbacks to this approach as well as a performance
+penalty for not having OpenCL support in hardware. Moreover, clvk and clspv
+only support OpenCL 1.2.
+
+Nvidia has very limited OpenCL support due mainly to the fact that they have
+a competing compute solution called CUDA. As such, they are stuck on OpenCL 1.2
+in order to promote their own proprietary API instead. As a libre project,
+we cannot support a closed solution such as CUDA and instead we will support
+the alternative open Khronos standard for compute - OpenCL.
+
+## What are significant technical challenges you expect to solve during the project, if any?
+
+There are many levels to supporting OpenCL. This proposal is only meant for
+funding the development of hardware acceleration for OpenCL which should be
+relatively easier to do given that Vulkan and OpenCL share some low-level
+details.
+
+A future proposal will detail the software side which will require *far* more
+engineering resources because we will have to handle the runtime and compiler
+technology for the OpenCL driver.
+
+## Describe the ecosystem of the project, and how you will engage with relevant actors and promote the outcomes?
+
+As mentioned in the 2018 submission, the Libre RISC-V
+SoC has a full set of resources for Libre Project Management and development:
+mailing list, bugtracker, git repository and wiki - all listed here:
+<https://libre-riscv.org/>
+
+In addition, we have a Crowdsupply page
+<https://www.crowdsupply.com/libre-risc-v/m-class> which provides a public
+gateway, and heise.de, reddit, phoronix, slashdot and other locations have
+all picked up the story.  The list is updated and maintained here:
+<https://libre-riscv.org/3d_gpu/>
+
+# Extra info to be submitted
+
+Applications of OpenCL/GPGPU:
+* <https://en.wikipedia.org/wiki/List_of_OpenCL_applications>
+* <https://en.wikipedia.org/wiki/General-purpose_computing_on_graphics_processing_units#Applications>
+* <https://wiki.archlinux.org/index.php/GPGPU>
+
+Implementations:
+* Intel Neo <https://01.org/compute-runtime>
+* AMD ROCm <https://rocm.github.io/>
+* Google clspv <https://github.com/google/clspv>
+* clvk <https://github.com/kpet/clvk>
+* Mesa OpenCL <https://gitlab.freedesktop.org/mesa/mesa/tree/master/include/CL>
+* <https://www.iwocl.org/resources/opencl-implementations/>
+
