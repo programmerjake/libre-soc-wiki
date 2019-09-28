@@ -172,11 +172,13 @@ all picked up the story.  The list is updated and maintained here:
 # Extra info to be submitted
 
 Applications of OpenCL/GPGPU:
+
 * <https://en.wikipedia.org/wiki/List_of_OpenCL_applications>
 * <https://en.wikipedia.org/wiki/General-purpose_computing_on_graphics_processing_units#Applications>
 * <https://wiki.archlinux.org/index.php/GPGPU>
 
 Implementations:
+
 * Intel Neo <https://01.org/compute-runtime>
 * AMD ROCm <https://rocm.github.io/>
 * Google clspv <https://github.com/google/clspv>
@@ -184,3 +186,6 @@ Implementations:
 * Mesa OpenCL <https://gitlab.freedesktop.org/mesa/mesa/tree/master/include/CL>
 * <https://www.iwocl.org/resources/opencl-implementations/>
 
+Khronos Vulkan/OpenCL Bridge for future revision of OpenCL which is still in development:
+
+* <https://www.phoronix.com/scan.php?page=news_item&px=Vulkan-OpenCL-Interop-2019>
