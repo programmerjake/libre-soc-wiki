@@ -1,3 +1,5 @@
+[[!tag standards]]
+
 SimpleV Prefix (SVprefix) Proposal v0.3
 =======================================
 

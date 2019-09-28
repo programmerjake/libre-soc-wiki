@@ -1,3 +1,5 @@
+[[!tag standards]]
+
 MV.X and MV.swizzle
 ===================
 
