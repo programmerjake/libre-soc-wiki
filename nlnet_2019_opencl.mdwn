@@ -47,16 +47,12 @@ we can possibly reuse as well (Gallium/Clover).
 
 However, these OpenCL implementations tend to be very specific to the
 vendors processors so we will have to investigate which pieces to reuse
-and develop our own specific implementation. Furthermore, we cannot
-infinitely delay our first iteration of the Libre RISC-V SoC. Therefore,
-this proposal is limited to only doing the hardware requirements of
-OpenCL first. In a future proposal for the second iteration of
-Libre RISC-V, we will work on the software requirements of OpenCL.
+and develop our own specific implementation. 
 
-Thus we intend to do exactly that: leverage the excellent work already
-done to create a libre-licensed commercial-grade OpenCL driver that
-takes full advantage of the parallelism and vectorisation in the
-hybrid Libre RISC-V SoC to accelerate compute applications.
+Thus we intend to leverage the excellent work already done to create a
+libre-licensed commercial-grade OpenCL driver that takes full advantage
+of the parallelism and vectorisation in the hybrid Libre RISC-V SoC to
+accelerate compute applications.
 
 # Have you been involved with projects or organisations relevant to this project before? And if so, can you tell us a bit about your contributions?
 
@@ -78,15 +74,15 @@ EUR 50,000.
 # Explain what the requested budget will be used for?
 
 After a thorough and comprehensive evaluation to see which will be the
-best to choose (Intel NEO, AMD ROCm, Mesa Gallium/Clover), we are aiming
-for a multi-stage process, starting with the basics:
+best to choose to start from (Intel NEO, AMD ROCm, Mesa Gallium/Clover),
+we are aiming for a multi-stage process, starting with the basics:
 
 * The first stage is to make sure we have the necessary hardware
   support for hardware acceleration of OpenCL. OpenCL would be pointless
   if all done in software.
-* The second stage (in a future proposal) is to create a basic OpenCL
+* The second stage is to create a basic OpenCL
   driver by looking at how other OpenCL implementations are done.
-* The third phase (in a future proposal) will be to begin the iterative
+* The third phase will be to begin the iterative
   process, to experiment in both a software simulator as well as in FPGAs,
   with the addition of both vectorisation as well as custom opcodes that
   will significantly improve performance as well as meet
@@ -147,14 +143,14 @@ the alternative open Khronos standard for compute - OpenCL.
 
 ## What are significant technical challenges you expect to solve during the project, if any?
 
-There are many levels to supporting OpenCL. This proposal is only meant for
-funding the development of hardware acceleration for OpenCL which should be
-relatively easier to do given that Vulkan and OpenCL share some low-level
-details.
+There are many levels to supporting OpenCL. This proposal is for
+funding the development of hardware acceleration for OpenCL which
+should be relatively easier to do given that Vulkan and OpenCL share
+some low-level details.
 
-A future proposal will detail the software side which will require *far* more
-engineering resources because we will have to handle the runtime and compiler
-technology for the OpenCL driver.
+We will also detail the software side which will require *far* more
+engineering resources because we will have to handle the runtime and
+compiler technology for the OpenCL driver.
 
 ## Describe the ecosystem of the project, and how you will engage with relevant actors and promote the outcomes?
 
