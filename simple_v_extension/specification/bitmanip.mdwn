@@ -127,3 +127,41 @@ Pseudo-code:
                 if (regs[rs2] & bit):
                     setting_mode = True # back into "setting" mode
             i += 1
+
+## sif - set including first bit
+
+     # Example
+
+     7 6 5 4 3 2 1 0   Element number
+
+     1 0 0 1 0 1 0 0   a3 contents
+                       sif a2, a3
+     0 0 0 0 0 1 1 1   a2 contents
+
+     1 0 0 1 0 1 0 1   a3 contents
+                       sif a2, a3
+     0 0 0 0 0 0 0 1   a2
+
+     1 1 0 0 0 0 1 1   a0 vcontents
+     1 0 0 1 0 1 0 0   a3 contents
+                       sif a2, a3, a0
+     1 1 x x x x 1 1   a2 contents
+
+## sof - set only first bit
+
+     # Example
+
+     7 6 5 4 3 2 1 0   Element number
+
+     1 0 0 1 0 1 0 0   a3 contents
+                       sof a2, a3
+     0 0 0 0 0 1 0 0   a2 contents
+
+     1 0 0 1 0 1 0 1   a3 contents
+                       sof a2, a3
+     0 0 0 0 0 0 0 1   a2
+
+     1 1 0 0 0 0 1 1   a0 vcontents
+     1 1 0 1 0 1 0 0   a3 contents
+                       sof a2, a3, a0
+     0 1 x x x x 0 0   a2 contents
