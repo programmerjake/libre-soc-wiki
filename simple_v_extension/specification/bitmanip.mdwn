@@ -22,6 +22,38 @@ adequate.  Some exceptions however present themselves from RVV.
 
 ## logical bit-wise instructions
 
+These are the available bitwise instructions in RVV:
+
+    vmand.mm vd, vs2, vs1     # vd[i] =   vs2[i].LSB &&  vs1[i].LSB
+    vmnand.mm vd, vs2, vs1    # vd[i] = !(vs2[i].LSB &&  vs1[i].LSB)
+    vmandnot.mm vd, vs2, vs1  # vd[i] =   vs2[i].LSB && !vs1[i].LSB
+    vmxor.mm  vd, vs2, vs1    # vd[i] =   vs2[i].LSB ^^  vs1[i].LSB
+    vmor.mm  vd, vs2, vs1     # vd[i] =   vs2[i].LSB ||  vs1[i].LSB
+    vmnor.mm  vd, vs2, vs1    # vd[i] = !(vs2[i[.LSB ||  vs1[i].LSB)
+    vmornot.mm  vd, vs2, vs1  # vd[i] =   vs2[i].LSB || !vs1[i].LSB
+    vmxnor.mm vd, vs2, vs1    # vd[i] = !(vs2[i].LSB ^^  vs1[i].LSB)
+
+The ones that exist in scalar RISC-V are:
+
+    AND rd, rs1, rs2          # rd = rs1 & rs2
+    OR  rd, rs1, rs2          # rd = rs1 | rs2
+    XOR rd, rs1, rs2          # rd = rs1 ^ rs2
+
+The ones in Bitmanip are:
+
+    ANDN rd, rs1, rs2         # rd = rs1 & ~rs2
+    ORN  rd, rs1, rs2         # rd = rs1 | ~rs2
+    XORN rd, rs1, rs2         # rd = rs1 ^ ~rs2
+
+This leaves:
+
+    NOR
+    NAND
+
+These are currently listed as "pseudo-ops" in BitManip-Draft (0.91)
+They need to be actual opcodes.
+
+
 TODO: there is an extensive table in RVV of bit-level operations:
 
 output  instruction     pseudoinstruction
