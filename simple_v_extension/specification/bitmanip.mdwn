@@ -143,6 +143,9 @@ Pseudo-code:
         setting_mode = rs2 == x0 or (regs[rs2] & 1)
         while i < XLEN:
             bit = 1<<i
+            if rs2 != x0 and (regs[rs2] & bit):
+                # reset searching
+                setting_mode = False
             if setting_mode:
                 if regs[rs1] & bit: # found a bit in rs1: stop setting rd
                     setting_mode = False
@@ -182,6 +185,9 @@ Pseudo-code:
         setting_mode = rs2 == x0 or (regs[rs2] & 1)
         while i < XLEN:
             bit = 1<<i
+            if rs2 != x0 and (regs[rs2] & bit):
+                # reset searching
+                setting_mode = False
             if setting_mode:
                 regs[rd] |= bit
                 if regs[rs1] & bit: # found a bit in rs1: stop setting rd
