@@ -95,6 +95,19 @@ This instruction is present in BitManip.
 
 finds the first bit set as an index.
 
+Pseudocode:
+
+
+    uint_xlen_t clz(uint_xlen_t rs1)
+    {
+        for (int count = 0; count < XLEN; count++)
+            if ((rs1 << count) >> (XLEN - 1))
+                return count;
+        return XLEN; // -1
+    }
+
+This is similar but not identical to BitManip "CLZ". CLZ returns XLEN when no bits are set, whereas RVV returns -1.
+
 ## sbf - set before first bit
 
 Sets all LSBs leading up to where an LSB in the src is set.  If the second
@@ -141,6 +154,8 @@ Pseudo-code:
             i += 1
 
 ## sif - set including first bit
+
+Similar to sbf except including the bit which ends a run.
 
      # Example
 
