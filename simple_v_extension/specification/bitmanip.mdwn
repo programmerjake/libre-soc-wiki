@@ -158,6 +158,22 @@ Pseudo-code:
                        sif a2, a3, a0
      1 1 x x x x 1 1   a2 contents
 
+Pseudo-code:
+
+    def sbf(rd, rs1, rs2):
+        rd = 0
+        setting_mode = rs2 == x0 or (regs[rs2] & 1)
+        while i < XLEN:
+            bit = 1<<i
+            if setting_mode:
+                regs[rd] |= bit
+                if regs[rs1] & bit: # found a bit in rs1: stop setting rd
+                    setting_mode = False
+            else if rs2 != x0: # searching mode
+                if (regs[rs2] & bit):
+                    setting_mode = True # back into "setting" mode
+            i += 1
+
 ## sof - set only first bit
 
      # Example
