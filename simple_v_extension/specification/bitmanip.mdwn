@@ -80,6 +80,15 @@ output  instruction     pseudoinstruction
 
 population-count
 
+Pseudocode:
+
+    unsigned int v; // count the number of bits set in v
+    unsigned int c; // c accumulates the total bits set in v
+    for (c = 0; v; c++)
+    {
+      v &= v - 1; // clear the least significant bit set
+    }
+
 ## ffirst - find first bit
 
 finds the first bit set as an index.
