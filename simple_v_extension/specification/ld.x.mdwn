@@ -8,8 +8,18 @@ SV is based on vectorisation of scalar opcodes. LD and ST from scalar RISCV can 
 
 In addition, Vulkan requires swizzled LD/ST covering:
 
-* constant 0, 1
-* min/max int/uint
-* 1.0 and
+* identity (no swizzle)
+* constant 0
+* 1 or 1.0 depending on Op type
 * x, y, z, or w.
 
+See <https://www.khronos.org/registry/vulkan/specs/1.1-extensions/man/html/VkComponentSwizzle.html>
+
+Note that the swizzle has to be on selecting the src that will go into a sequentially indexed dest:
+
+    for i in range(4):
+        srcidx = swizzle[i]
+        srcaddr = base + srcidx * elwidth
+        regs[rd+i] = mem[srcaddr]
+
+Swizzling on the dest would not work because xxyz would try to set the same dest twice.
