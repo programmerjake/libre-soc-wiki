@@ -1,0 +1,13 @@
+# LD.X and LD.Swizzle
+
+See <http://bugs.libre-riscv.org/show_bug.cgi?id=139>
+
+SV is based on vectorisation of scalar opcodes. LD and ST from scalar RISCV can be extended by either rd or rs1 being vectorised, however a third "immediate element strided" multiples do not fit.
+
+In addition, Vulkan requires swizzled LD/ST covering:
+
+* constant 0, 1
+* min/max int/uint
+* 1.0 and
+* x, y, z, or w.
+
