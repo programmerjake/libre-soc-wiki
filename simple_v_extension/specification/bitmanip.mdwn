@@ -110,9 +110,13 @@ This is similar but not identical to BitManip "CLZ". CLZ returns XLEN when no bi
 
 ## sbf - set before first bit
 
-Sets all LSBs leading up to where an LSB in the src is set.  If the second
-operand is non-zero, this process begins each time (including the first time) from where 1s are set in the
-second operand.
+Sets all LSBs leading up to (excluding) where an LSB in the src is set.
+If the second operand is non-zero, this process begins each time
+(including the first time) from where 1s are set in the second operand.
+
+A side-effect of the search is that when src is zero, the output is all ones.
+If the second operand is non-zero and the src is zero, the output is a
+copy of the second operand.
 
      # Example
 
@@ -137,6 +141,35 @@ second operand.
 
 Pseudo-code:
 
+    def sof(rd, rs1, rs2):
+        rd = 0
+        setting_mode = rs2 == x0 or (regs[rs2] & 1)
+
+        while i < XLEN:
+            bit = 1<<i
+
+            # only reenable when predicate in use, and bit valid
+            if !setting_mode && rs2 != x0:
+                if (regs[rs2] & bit):
+                    # back into "setting" mode
+                    setting_mode = True
+
+            # skipping mode
+            if !setting_mode:
+                # skip any more 1s
+                if regs[rs1] & bit == 1:
+                    i += 1
+                    continue
+
+            # setting mode, search for 1
+            if regs[rs1] & bit: # found a bit in rs1:
+                setting_mode = False
+                # next loop starts skipping
+            else:
+                regs[rd] |= bit # always set except when search succeeds
+
+            i += 1
+
     def sbf(rd, rs1, rs2):
         rd = 0
         # start setting if no predicate or if 1st predicate bit set
@@ -159,6 +192,7 @@ Pseudo-code:
 ## sif - set including first bit
 
 Similar to sbf except including the bit which ends a run.
+The side-effect of when the src is zero is also the same as for sbf.
 
      # Example
 
@@ -181,23 +215,38 @@ Pseudo-code:
 
     def sif(rd, rs1, rs2):
         rd = 0
-        # start setting if no predicate or if 1st predicate bit set
         setting_mode = rs2 == x0 or (regs[rs2] & 1)
+
         while i < XLEN:
             bit = 1<<i
-            if rs2 != x0 and (regs[rs2] & bit):
-                # reset searching
-                setting_mode = False
-            if setting_mode:
-                regs[rd] |= bit
-                if regs[rs1] & bit: # found a bit in rs1: stop setting rd
-                    setting_mode = False
-            else if rs2 != x0: # searching mode
+
+            # only reenable when predicate in use, and bit valid
+            if !setting_mode && rs2 != x0:
                 if (regs[rs2] & bit):
-                    setting_mode = True # back into "setting" mode
+                    # back into "setting" mode
+                    setting_mode = True
+
+            # skipping mode
+            if !setting_mode:
+                # skip any more 1s
+                if regs[rs1] & bit == 1:
+                    i += 1
+                    continue
+
+            # setting mode, search for 1
+            regs[rd] |= bit # always set during search
+            if regs[rs1] & bit: # found a bit in rs1:
+                setting_mode = False
+                # next loop starts skipping
+
             i += 1
 
 ## sof - set only first bit
+
+Similar to sbf and sif except *only* set the bit which ends a run.
+
+Unlike sbf and sif however, if the src is zero then the output is
+also guaranteed to be zero, irrespective of src2's contents.
 
      # Example
 
@@ -225,7 +274,7 @@ Pseudo-code:
         while i < XLEN:
             bit = 1<<i
 
-            # only reenable when predicate in use, and bit valid    
+            # only reenable when predicate in use, and bit valid
             if !setting_mode && rs2 != x0:
                 if (regs[rs2] & bit):
                     # back into "setting" mode
@@ -240,8 +289,7 @@ Pseudo-code:
 
             # setting mode, search for 1
             if regs[rs1] & bit: # found a bit in rs1:
-                # set bit, exit setting mode immediately
-                regs[rd] |= bit
+                regs[rd] |= bit # only set when search succeeds
                 setting_mode = False
                 # next loop starts skipping
 
