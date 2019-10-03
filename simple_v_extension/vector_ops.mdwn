@@ -12,6 +12,10 @@ Examples which can require SUBVL include cross product and may in future involve
 
 ## CORDIC
 
+* CORDIC.lin vd, vs, beta
+* CORDIC.rot vd, vs, beta
+* CORDIC.hyp vd, vs, beta
+
 CORDIC is an extremely general-purpose algorithm useful for a huge number
 of diverse purposes.  In its full form it does however require quite a
 few parameters, one of which is a vector, making it awkward to include in
@@ -59,6 +63,8 @@ Links:
 
 ## Vector cross product
 
+* VCROSS vd, vs1, vs1
+
 Result is the cross product of x and y, i.e., the resulting components are, in order:
 
     x[1] * y[2] - y[1] * x[2]
@@ -80,6 +86,8 @@ Pseudocode:
 
 ## Vector dot product
 
+* VDOT rd, vs1, vs2
+
 Computes the dot product of two vectors. Internal accuracy must be
 greater than the input vectors and the result.
 
@@ -100,11 +108,15 @@ Pseudocode in c:
 
 ## Vector length
 
+* VLEN rd, vs1
+
 The scalar length of a vector:
 
     sqrt(x[0]^2 + x[1]^2 + ...).
 
 ## Vector distance
+
+* VDIST rd, vs1, vs2
 
 The scalar distance between two vectors. Subtracts one vector from the
 other and returns length:
@@ -112,6 +124,8 @@ other and returns length:
     length(v0 - v1)
 
 ## Vector LERP
+
+* VLERP rd, vs1, rs2 # SUBVL=2: vs1.v0 vs1.v1
 
 Known as **fmix** in GLSL.
 
@@ -134,8 +148,10 @@ Pseudocode:
 
 ## Vector SLERP
 
+* VSLERP vd, vs1, vs2, rs3
+
 Not recommended as it is not commonly used and has several trigonometric
-functions.
+functions. Also a costly 4 arg operation.
 
 <https://en.m.wikipedia.org/wiki/Slerp>
 
@@ -278,3 +294,9 @@ The technique is outlined in a paper as being applicable to 3D:
 # Expensive 3-operand OP32 operations
 
 3-operand operations are extremely expensive in terms of OP32 encoding space.  A potential idea is to embed 3 RVC register formats across two out of three 5-bit fields rs1/rs2/rd
+
+Another is to overwrite one of the src registers.
+
+# Opcode Table
+
+TODO
