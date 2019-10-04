@@ -3,7 +3,8 @@
 MV.X and MV.swizzle
 ===================
 
-swizzle needs a MV.  see below for a potential way to use the funct7 to do a swizzle in rs2.
+swizzle needs a MV (there are 2 of them: swizzle and swizzle2).
+see below for a potential way to use the funct7 to do a swizzle in rs2.
 
 +---------------+-------------+-------+----------+----------+--------+----------+--------+--------+
 | Encoding      | 31:27       | 26:25 | 24:20    | 19:15    | 14:12  | 11:7     | 6:2    | 1:0    |
@@ -182,6 +183,8 @@ Transforms for DCT
 
 Table to evaluate
 =================
+
+swizzle2 takes 2 arguments, interleaving the two vectors depending on a 3rd (the swizzle selector)
 
 +-----------+-------+-------+-------+-------+-------+------+
 |           | 31:27 | 26:25 | 24:20 | 19:15 | 14:12 | 11:7 |
