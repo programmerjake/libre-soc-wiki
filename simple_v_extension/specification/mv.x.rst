@@ -201,3 +201,13 @@ swizzle2 takes 2 arguments, interleaving the two vectors depending on a 3rd (the
 +-----------+                       +-------+-------+------+
 | fswizzlei |                       | rs1   | 010   | rd   |
 +-----------+-------+-------+-------+-------+-------+------+
+
+Matrix 4x4 Vector mul
+=====================
+
+::
+
+    pfscale,3 F2, F1, F10
+    pfscaleadd,2 F2, F1, F11, F2
+    pfscaleadd,1 F2, F1, F12, F2
+    pfscaleadd,0 F2, F1, F13, F2
