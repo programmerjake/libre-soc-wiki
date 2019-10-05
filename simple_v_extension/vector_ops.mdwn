@@ -8,11 +8,13 @@ Normally in SV all operations are scalar and independent, and the operations on 
 
 In this extension, the subvector itself is typically the unit, although some operations will work on scalars or standard vectors as well, or the result is a scalar that is dependent on all elements within the vector arguments.
 
+However given that some of the parameters are vectors (with and without SUBVL set), and some are scalars (where SUBVL will not apply), some clear rules need to be defined as to how the operations work.
+
 Examples which can require SUBVL include cross product and may in future involve complex numbers.
 
 ## CORDIC
 
-SUBVL=2, vd, vs; SUBVL=1, beta.
+* SUBVL=2, vd, vs; SUBVL ignored on beta.
 
 * CORDIC.lin.rot vd, vs, beta
 * CORDIC.cir.rot vd, vs, beta
@@ -93,8 +95,8 @@ Pseudocode:
 
 ## Vector dot product
 
-* SUBVL=1, rd SUBVL=2,3,4 vs1,vs2
-* rd=scalar, SUBVL=default, vs1, vs2=vec
+* SUBVL ignored on rd.  SUBVL=2,3,4 vs1,vs2
+* rd=scalar, SUBVL=1, vs1, vs2=vec
 
 * VDOT rd, vs1, vs2
 
@@ -118,9 +120,10 @@ Pseudocode in c:
 
 ## Vector length
 
-* rd=scalar, vs1=vec (SUBVL=default)
-* rd=scalar, vs1=vec (SUBVL=2,3,4) only 1
-* rd=vec, SUBVL=1; vs1=vec, SUBVL=any
+* rd=scalar, vs1=vec (SUBVL=1)
+* rd=scalar, vs1=vec (SUBVL=2,3,4) only 1 (predication rules apply)
+* rd=vec, SUBVL ignored; vs1=vec, SUBVL=2,3,4
+* rd=vec, SUBVL ignored; vs1=vec, SUBVL=1: reserved encoding.
 
 * VLEN rd, vs1
 
