@@ -211,3 +211,5 @@ Matrix 4x4 Vector mul
     pfscaleadd,2 F2, F1, F11, F2
     pfscaleadd,1 F2, F1, F12, F2
     pfscaleadd,0 F2, F1, F13, F2
+
+pfscale is a 4 vec mv.shuffle followed by a fmul. pfscaleadd is a 4 vec mv.shuffle followed by a fmac.
