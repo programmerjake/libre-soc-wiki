@@ -97,6 +97,15 @@ Pseudocode:
     vec3 p = t3 * t4;
     vec3 cross = t1 * t2 - p;
 
+Assembler:
+
+    fpermute,2130 F4, F1
+    fpermute,1320 F5, F1
+    fpermute,2130 F6, F2
+    fpermute,1320 F7, F2
+    fmul F8, F5, F6
+    fmulsub F3, F4, F7, F8
+
 ## Vector dot product
 
 * SUBVL ignored on rd.  SUBVL=2,3,4 vs1,vs2, if all vectors, multiple results generated. If rd scalar, only first (unpredicated) SUBVector is used.
