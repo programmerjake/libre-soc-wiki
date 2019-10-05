@@ -18,6 +18,8 @@ Examples which can require SUBVL include cross product and may in future involve
 * VL nonzero ok.  beta as scalar ok (applies across all vectors)
 * non vector args vd, vs, or SUBVL!=2 reserved.
 
+6 opcode options (fmt3):
+
 * CORDIC.lin.rot vd, vs, beta
 * CORDIC.cir.rot vd, vs, beta
 * CORDIC.hyp.rot vd, vs, beta
@@ -72,7 +74,7 @@ Links:
 
 ## Vector cross product
 
-SUBVL=2,3,4 all regs
+SUBVL=2,3,4 all regs. VL nonzero produces multiple vd results.
 
 * VCROSS vd, vs1, vs1
 
