@@ -74,7 +74,7 @@ Links:
 
 ## Vector cross product
 
-SUBVL=2,3,4 all regs. VL nonzero produces multiple vd results.
+SUBVL=3, all regs. VL nonzero produces multiple vd results.
 
 * VCROSS vd, vs1, vs1
 
@@ -99,8 +99,8 @@ Pseudocode:
 
 ## Vector dot product
 
-* SUBVL ignored on rd.  SUBVL=2,3,4 vs1,vs2
-* rd=scalar, SUBVL=1, vs1, vs2=vec
+* SUBVL ignored on rd.  SUBVL=2,3,4 vs1,vs2, if all vectors, multiple results generated. If rd scalar, only first (unpredicated) SUBVector is used.
+* rd=scalar, SUBVL=1 and vs1, vs2=vec will produce one scalar result. Predication allowed on src vectors.
 
 * VDOT rd, vs1, vs2
 
