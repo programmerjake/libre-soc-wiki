@@ -12,7 +12,7 @@ Examples which can require SUBVL include cross product and may in future involve
 
 ## CORDIC
 
-SUBVL=2
+SUBVL=2, vd, vs; SUBVL=1, beta.
 
 * CORDIC.lin.rot vd, vs, beta
 * CORDIC.cir.rot vd, vs, beta
@@ -68,6 +68,8 @@ Links:
 
 ## Vector cross product
 
+SUBVL=2,3,4 all regs
+
 * VCROSS vd, vs1, vs1
 
 Result is the cross product of x and y, i.e., the resulting components are, in order:
@@ -91,6 +93,9 @@ Pseudocode:
 
 ## Vector dot product
 
+* SUBVL=1, rd SUBVL=2,3,4 vs1,vs2
+* rd=scalar, SUBVL=default, vs1, vs2=vec
+
 * VDOT rd, vs1, vs2
 
 Computes the dot product of two vectors. Internal accuracy must be
@@ -112,6 +117,10 @@ Pseudocode in c:
     }
 
 ## Vector length
+
+* rd=scalar, vs1=vec (SUBVL=default)
+* rd=scalar, vs1=vec (SUBVL=2,3,4) only 1
+* rd=vec, SUBVL=1; vs1=vec, SUBVL=any
 
 * VLEN rd, vs1
 
