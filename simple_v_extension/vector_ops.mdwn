@@ -131,6 +131,16 @@ Pseudocode in c:
         return result;
     }
 
+## Vector Normalisation (not included)
+
+Vector normalisation may be performed through dot product, recip square root and multiplication:
+
+    fdot F3, F1, F1 # vector dot with self
+    rcpsqrta F3, F3
+    fscale,0 F2, F3, F1
+
+Or it may be performed through VLEN (Vector length) and division.
+
 ## Vector length
 
 * rd=scalar, vs1=vec (SUBVL=1)
@@ -143,6 +153,8 @@ Pseudocode in c:
 The scalar length of a vector:
 
     sqrt(x[0]^2 + x[1]^2 + ...).
+
+One option is for this to be a macro op fusion sequence, with inverse-sqrt also being a second macro op sequence suitable for normalisation.
 
 ## Vector distance
 
