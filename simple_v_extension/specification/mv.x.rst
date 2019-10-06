@@ -106,6 +106,13 @@ potential MV.X?  register-version of MV-swizzle?
 
 question: do we need a swizzle MV.X as well?
 
+MV.X with 3 operands
+====================
+
+regs[rd] = regs[rs1 + regs[rs2]]
+
+Similar to LD/ST with the same twin predication rules
+
 macro-op fusion
 ===============
 
