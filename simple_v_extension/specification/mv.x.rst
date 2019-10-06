@@ -221,103 +221,103 @@ Swizzle:
 
 ::
 
-pub trait SwizzleConstants: Copy + 'static {
-    const CONSTANTS: &'static [Self; 4];
-}
+    pub trait SwizzleConstants: Copy + 'static {
+        const CONSTANTS: &'static [Self; 4];
+    }
 
-impl SwizzleConstants for u8 {
-    const CONSTANTS: &'static [Self; 4] = &[0, 1, 0xFF, 0x7F];
-}
+    impl SwizzleConstants for u8 {
+        const CONSTANTS: &'static [Self; 4] = &[0, 1, 0xFF, 0x7F];
+    }
 
-impl SwizzleConstants for u16 {
-    const CONSTANTS: &'static [Self; 4] = &[0, 1, 0xFFFF, 0x7FFF];
-}
+    impl SwizzleConstants for u16 {
+        const CONSTANTS: &'static [Self; 4] = &[0, 1, 0xFFFF, 0x7FFF];
+    }
 
-impl SwizzleConstants for f32 {
-    const CONSTANTS: &'static [Self; 4] = &[0.0, 1.0, -1.0, 0.5];
-}
+    impl SwizzleConstants for f32 {
+        const CONSTANTS: &'static [Self; 4] = &[0.0, 1.0, -1.0, 0.5];
+    }
 
-// impl for other types too...
+    // impl for other types too...
 
-pub fn swizzle<Elm, Selector>(
-    rd: &mut [Elm],
-    rs1: &[Elm],
-    rs2: &[Selector],
-    vl: usize,
-    destsubvl: usize,
-    srcsubvl: usize)
-where
-    Elm: SwizzleConstants,
-    // Selector is a copyable type that can be converted into u64
-    Selector: Copy + Into<u64>,
-{
-    const FIELD_SIZE: usize = 3;
-    const FIELD_MASK: u64 = 0b111;
-    for vindex in 0..vl {
-        let selector = rs2[vindex].into();
-        // selector's type is u64
-        if selector >> (FIELD_SIZE * destsubvl) != 0 {
-            // handle illegal instruction trap
-        }
-        for i in 0..destsubvl {
-            let mut sel_field = selector >> (FIELD_SIZE * i);
-            sel_field &= FIELD_MASK;
-            let src = if (sel_field & 0b100) == 0 {
-                &rs1[(vindex * srcsubvl)..]
-            } else {
-                SwizzleConstants::CONSTANTS
-            };
-            sel_field &= 0b11;
-            if sel_field as usize >= srcsubvl {
+    pub fn swizzle<Elm, Selector>(
+        rd: &mut [Elm],
+        rs1: &[Elm],
+        rs2: &[Selector],
+        vl: usize,
+        destsubvl: usize,
+        srcsubvl: usize)
+    where
+        Elm: SwizzleConstants,
+        // Selector is a copyable type that can be converted into u64
+        Selector: Copy + Into<u64>,
+    {
+        const FIELD_SIZE: usize = 3;
+        const FIELD_MASK: u64 = 0b111;
+        for vindex in 0..vl {
+            let selector = rs2[vindex].into();
+            // selector's type is u64
+            if selector >> (FIELD_SIZE * destsubvl) != 0 {
                 // handle illegal instruction trap
             }
-            let value = src[sel_field as usize];
-            rd[vindex * destsubvl + i] = value;
+            for i in 0..destsubvl {
+                let mut sel_field = selector >> (FIELD_SIZE * i);
+                sel_field &= FIELD_MASK;
+                let src = if (sel_field & 0b100) == 0 {
+                    &rs1[(vindex * srcsubvl)..]
+                } else {
+                    SwizzleConstants::CONSTANTS
+                };
+                sel_field &= 0b11;
+                if sel_field as usize >= srcsubvl {
+                    // handle illegal instruction trap
+                }
+                let value = src[sel_field as usize];
+                rd[vindex * destsubvl + i] = value;
+            }
         }
     }
-}
 
 Swizzle2:
 
 ::
 
-fn swizzle2<Elm, Selector>(
-    rd: &mut [Elm],
-    rs1: &[Elm],
-    rs2: &[Selector],
-    rs3: &[Elm],
-    vl: usize,
-    destsubvl: usize,
-    srcsubvl: usize)
-where
-    // Elm is a copyable type
-    Elm: Copy,
-    // Selector is a copyable type that can be converted into u64
-    Selector: Copy + Into<u64>,
-{
-    const FIELD_SIZE: usize = 3;
-    const FIELD_MASK: u64 = 0b111;
-    for vindex in 0..vl {
-        let selector = rs2[vindex].into();
-        // selector's type is u64
-        if selector >> (FIELD_SIZE * destsubvl) != 0 {
-            // handle illegal instruction trap
-        }
-        for i in 0..destsubvl {
-            let mut sel_field = selector >> (FIELD_SIZE * i);
-            sel_field &= FIELD_MASK;
-            let src = if (sel_field & 0b100) != 0 {
-                rs1
-            } else {
-                rs3
-            };
-            sel_field &= 0b11;
-            if sel_field as usize >= srcsubvl {
+    fn swizzle2<Elm, Selector>(
+        rd: &mut [Elm],
+        rs1: &[Elm],
+        rs2: &[Selector],
+        rs3: &[Elm],
+        vl: usize,
+        destsubvl: usize,
+        srcsubvl: usize)
+    where
+        // Elm is a copyable type
+        Elm: Copy,
+        // Selector is a copyable type that can be converted into u64
+        Selector: Copy + Into<u64>,
+    {
+        const FIELD_SIZE: usize = 3;
+        const FIELD_MASK: u64 = 0b111;
+        for vindex in 0..vl {
+            let selector = rs2[vindex].into();
+            // selector's type is u64
+            if selector >> (FIELD_SIZE * destsubvl) != 0 {
                 // handle illegal instruction trap
             }
-            let value = src[vindex * srcsubvl + (sel_field as usize)];
-            rd[vindex * destsubvl + i] = value;
+            for i in 0..destsubvl {
+                let mut sel_field = selector >> (FIELD_SIZE * i);
+                sel_field &= FIELD_MASK;
+                let src = if (sel_field & 0b100) != 0 {
+                    rs1
+                } else {
+                    rs3
+                };
+                sel_field &= 0b11;
+                if sel_field as usize >= srcsubvl {
+                    // handle illegal instruction trap
+                }
+                let value = src[vindex * srcsubvl + (sel_field as usize)];
+                rd[vindex * destsubvl + i] = value;
+            }
         }
     }
-}
 
