@@ -153,6 +153,28 @@ The swizzle table format is included here for convenience:
 
 Swizzle blocks are only accessible using the "VBLOCK2" format.
 
+# REMAP Area Format<a name="remap_format"></a>
+
+The REMAP area is divided into two areas:
+
+* Register-to-SHAPE.  This defines which registers have which shapes.
+  Each entry is 8-bits in length.
+* SHAPE Table entries.  These are 32-bits in length and are aligned
+  to (start on) a 16 bit boundary.
+
+REMAP Table Entries:
+
+| 7:5      | 4:0    |
+| -------- | ------ |
+| shapeidx | regnum |
+
+When both shapeidx and regnum are zero, this indicates the end of the
+REMAP Register-to-SHAPE section.  The REMAP Table section size is then
+aligned to a 16-bit boundary.  32-bit SHAPE Table Entries then fill the
+remainder of the REMAP area, and are indexed in order by shapeidx.
+
+In this way, multiple registers may share the same "shape" characteristics.
+
 # SHAPE Table Format<a name="shape_format"></a>
 
 The shape table format is included here for convenience:

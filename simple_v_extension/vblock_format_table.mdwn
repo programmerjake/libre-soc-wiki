@@ -36,12 +36,26 @@ RISC-V ISA format.  Note that the length is 96+16\*nnnnn, not 192+
 
 VBLOCK2 extends the VBLOCK fields:
 
-| 15:12 | 11:10  | 9:8    | 7:5   | 4:0  |
-| ----- | -----  | ----   | ---   | ---- |
-| rsvd  | rplen2 | pplen2 | swlen | ilen |
+| 15   | 14:12 | 11:10  | 9:8    | 7:5   | 4:0  |
+| ---- | ----- | -----  | ----   | ---   | ---- |
+| rsvd | mapsz | rplen2 | pplen2 | swlen | ilen |
 
 * ilen is the instruction length (number of 16-bit blocks)
 * swlen specifies the number of "swizzle" blocks
 * rplen2 extends rplen by 2 bits
 * pplen2 extends pplen by 2 bits
-* 4 bits are reserved for additional tables (Matrices?)
+* mapsz indicates the size of the "remap" area.  See table below for size
+* 1 bit is reserved for extensions
+
+Mapsz to Remap size is in number of 16-bit blocks:
+
+| mapsz | remap size |
+| ----- | ---------- |
+| 0     | 0          |
+| 1     | 6          |
+| 2     | 7          |
+| 3     | 8          |
+| 4     | 10         |
+| 5     | 12         |
+| 6     | 14         |
+| 7     | 16         |
