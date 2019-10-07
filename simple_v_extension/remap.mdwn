@@ -37,11 +37,11 @@ There are three "shape" CSRs, SHAPE0, SHAPE1, SHAPE2, 32-bits in each,
 which have the same format.  When each SHAPE CSR is set entirely to zeros,
 remapping is disabled: the register's elements are a linear (1D) vector.
 
-| 31..25 | 24..22  | 21-18   | 17..12  | 11..6   | 5..0    |
+| 27..25 | 24..22  | 21-18   | 17..12  | 11..6   | 5..0    |
 | ------ | ------- | --      | ------- | ------- | --      | ------- |
-| modulo | permute | offs    | zdimsz  | ydimsz  | xdimsz  |
+| invxyz | permute | offs    | zdimsz  | ydimsz  | xdimsz  |
 
-modulo is applied to the output, causing it to cycle within the range 0..modulo-1. Note that zero indicates "unlimited". With VL being a maximum of 64, modulo is also 6 bits. Modulo is applied after dimensional remapping.
+invxyz will invert the start index of each of x, y or z. If invxyz[0] is zero then x counting begins from 0, otherwise it begins from xdimsz-1 and iterates down to zero. Likewise for y and z.
 
 offs is a 4-bit field, spread out across bits 7, 15 and 23, which
 is added to the element index during the loop calculation. It is added prior to the dimensional remapping.
@@ -80,11 +80,15 @@ shows this more clearly, and may be executed as a python program:
     idxs = [0,0,0] # starting indices
     order = [1,0,2] # experiment with different permutations, here
     offs = 0        # experiment with different offsets, here
-    modulo = 64     # set different modulus, here
+    invxyz = [0,0,0] 
 
     for idx in range(xdim * ydim * zdim):
-        new_idx = offs + idxs[0] + idxs[1] * xdim + idxs[2] * xdim * ydim
-        print new_idx % modulo
+        for i in range(3):
+            ix[i] = idxs[i]
+            if invxyz[i]:
+                ix[i] = lims[i] - ix[i]
+        new_idx = offs + ix[0] + ix[1] * xdim + ix[2] * xdim * ydim
+        print new_idx
         for i in range(3):
             idxs[order[i]] = idxs[order[i]] + 1
             if (idxs[order[i]] != lims[order[i]]):
