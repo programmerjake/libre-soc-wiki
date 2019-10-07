@@ -11,7 +11,7 @@ if used in any operation, must be "reshaped" (re-mapped) from a linear
 form to a 2D or 3D transposed form, or "offset" to permit arbitrary
 access to elements within a register.
 
-Their primary use is for Matrix Multiplication, reordering of sequential data in-place.  Three CSRs are provided so that a single FMAC may be used in a single loop to perform 4x4 times 4x4 Matrix multiplication, generating 64 FMACs
+Their primary use is for Matrix Multiplication, reordering of sequential data in-place.  Three CSRs are provided so that a single FMAC may be used in a single loop to perform 4x4 times 4x4 Matrix multiplication, generating 64 FMACs.
 
 The 32-bit REMAP CSR may reshape up to 3 registers:
 
@@ -37,11 +37,13 @@ There are three "shape" CSRs, SHAPE0, SHAPE1, SHAPE2, 32-bits in each,
 which have the same format.  When each SHAPE CSR is set entirely to zeros,
 remapping is disabled: the register's elements are a linear (1D) vector.
 
-| 27..25 | 24..22  | 21-18   | 17..12  | 11..6   | 5..0    |
-| ------ | ------- | --      | ------- | ------- | --      | ------- |
-| invxyz | permute | offs    | zdimsz  | ydimsz  | xdimsz  |
+| 29..24 | 23..21  | 20..18  | 17..12  | 11..6   | 5..0    |
+| ------ | ------- | ------- | ------- | -------- | ------- |
+| modulo | invxyz | permute | zdimsz  | ydimsz  | xdimsz  |
 
-invxyz will invert the start index of each of x, y or z. If invxyz[0] is zero then x counting begins from 0, otherwise it begins from xdimsz-1 and iterates down to zero. Likewise for y and z.
+modulo will cause the output to wrap and remain within the range 0 to modulo. The value zero disables modulus application.
+
+invxyz will invert the start index of each of x, y or z. If invxyz[0] is zero then x-dimensional counting begins from 0 and increments, otherwise it begins from xdimsz-1 and iterates down to zero. Likewise for y and z.
 
 offs is a 4-bit field, spread out across bits 7, 15 and 23, which
 is added to the element index during the loop calculation. It is added prior to the dimensional remapping.
@@ -79,16 +81,17 @@ shows this more clearly, and may be executed as a python program:
     lims = [xdim, ydim, zdim]
     idxs = [0,0,0] # starting indices
     order = [1,0,2] # experiment with different permutations, here
-    offs = 0        # experiment with different offsets, here
+    modulo = 64     # experiment with different modulus, here
     invxyz = [0,0,0] 
 
     for idx in range(xdim * ydim * zdim):
+        ix = [0] * 3
         for i in range(3):
             ix[i] = idxs[i]
             if invxyz[i]:
                 ix[i] = lims[i] - ix[i]
-        new_idx = offs + ix[0] + ix[1] * xdim + ix[2] * xdim * ydim
-        print new_idx
+        new_idx = ix[0] + ix[1] * xdim + ix[2] * xdim * ydim
+        print new_idx % modulo
         for i in range(3):
             idxs[order[i]] = idxs[order[i]] + 1
             if (idxs[order[i]] != lims[order[i]]):
@@ -163,4 +166,33 @@ exact same underlying registers, resulting in data corruption due to
 pipeline overlaps.  Out-of-order / Superscalar micro-architectures with
 register-renaming will have an easier time dealing with this than
 DSP-style SIMD micro-architectures.
+
+# 4x4 Matrix to vec4 Multiply Example
+
+The following settings will allow a 4x4 matrix (starting at f8), expressed as a sequence of 16 numbers first by row then by column, to be multiplied by a vector of length 4 (starting at f0), using a single FMAC instruction.
+
+* SHAPE0: xdim=4, ydim=4, permute=yx, applied to f0
+* VL=16.
+* FMAC f4, f0, f8, f4
+
+The permutation on SHAPE0 will use f0 as a vec4 source. On the first four iterations through the hardware loop, the REMAPed index will not increment. On the second four, the index will increase by one. Likewise on each subsequent group of four.
+
+At the same time, VL will increment through the 16 values in the Matrix. The equivalent sequence thus is issued:
+
+    fmac f4, f0, f8, f4
+    fmac f5, f0, f9, f5
+    fmac f6, f0, f10, f6
+    fmac f7, f0, f11, f7
+    fmac f4, f1, f12, f4
+    fmac f5, f1, f13, f5
+    fmac f6, f1, f14, f6
+    fmac f7, f1, f15, f7
+    fmac f4, f2, f16, f4
+    fmac f5, f2, f17, f5
+    fmac f6, f2, f18, f6
+    fmac f7, f2, f19, f7
+    fmac f4, f3, f20, f4
+    fmac f5, f3, f21, f5
+    fmac f6, f3, f22, f6
+    fmac f7, f3, f23, f7
 
