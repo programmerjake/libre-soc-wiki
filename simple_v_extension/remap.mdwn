@@ -80,10 +80,11 @@ shows this more clearly, and may be executed as a python program:
     idxs = [0,0,0] # starting indices
     order = [1,0,2] # experiment with different permutations, here
     offs = 0        # experiment with different offsets, here
+    modulo = 64     # set different modulus, here
 
     for idx in range(xdim * ydim * zdim):
         new_idx = offs + idxs[0] + idxs[1] * xdim + idxs[2] * xdim * ydim
-        print new_idx,
+        print new_idx % modulo
         for i in range(3):
             idxs[order[i]] = idxs[order[i]] + 1
             if (idxs[order[i]] != lims[order[i]]):
