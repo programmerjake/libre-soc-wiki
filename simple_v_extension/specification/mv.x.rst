@@ -221,6 +221,17 @@ Matrix 4x4 Vector mul
 
 pfscale is a 4 vec mv.shuffle followed by a fmul. pfscaleadd is a 4 vec mv.shuffle followed by a fmac.
 
+In effect what this is doing is:
+
+::
+
+    fmul f2, f1.xxxx, f10
+    fmac f2, f1.yyyy, f11, f2
+    fmac f2, f1.zzzz, f12, f2
+    fmac f2, f1.wwww, f13, f2
+
+Where all of f2, f1, and f10-13 are vec4
+
 Pseudocode
 ==========
 
