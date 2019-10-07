@@ -6,9 +6,6 @@ This section is under revision (and is optional)
 
 # REMAP CSR <a name="remap" />
 
-(Note: both the REMAP and SHAPE sections are best read after the
- rest of the document has been read)
-
 There is one 32-bit CSR which may be used to indicate which registers,
 if used in any operation, must be "reshaped" (re-mapped) from a linear
 form to a 2D or 3D transposed form, or "offset" to permit arbitrary
@@ -36,19 +33,18 @@ whilst the CSR Register entries pointing to them are disabled, instead.
 
 # SHAPE 1D/2D/3D vector-matrix remapping CSRs
 
-(Note: both the REMAP and SHAPE sections are best read after the
- rest of the document has been read)
-
 There are three "shape" CSRs, SHAPE0, SHAPE1, SHAPE2, 32-bits in each,
 which have the same format.  When each SHAPE CSR is set entirely to zeros,
 remapping is disabled: the register's elements are a linear (1D) vector.
 
-| 26..24  | 23      | 22..16  | 15      | 14..8   | 7       | 6..0    |
-| ------- | --      | ------- | --      | ------- | --      | ------- |
-| permute | offs[2] | zdimsz  | offs[1] | ydimsz  | offs[0] | xdimsz  |
+| 31..25 | 24..22  | 21-18   | 17..12  | 11..6   | 5..0    |
+| ------ | ------- | --      | ------- | ------- | --      | ------- |
+| modulo | permute | offs    | zdimsz  | ydimsz  | xdimsz  |
 
-offs is a 3-bit field, spread out across bits 7, 15 and 23, which
-is added to the element index during the loop calculation.
+modulo is applied to the output, causing it to cycle within the range 0..modulo-1. Note that zero indicates "unlimited". With VL being a maximum of 64, modulo is also 6 bits. Modulo is applied after dimensional remapping.
+
+offs is a 4-bit field, spread out across bits 7, 15 and 23, which
+is added to the element index during the loop calculation. It is added prior to the dimensional remapping.
 
 xdimsz, ydimsz and zdimsz are offset by 1, such that a value of 0 indicates
 that the array dimensionality for that dimension is 1.  A value of xdimsz=2
