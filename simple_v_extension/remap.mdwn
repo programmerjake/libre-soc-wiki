@@ -45,9 +45,6 @@ modulo will cause the output to wrap and remain within the range 0 to modulo. Th
 
 invxyz will invert the start index of each of x, y or z. If invxyz[0] is zero then x-dimensional counting begins from 0 and increments, otherwise it begins from xdimsz-1 and iterates down to zero. Likewise for y and z.
 
-offs is a 4-bit field, spread out across bits 7, 15 and 23, which
-is added to the element index during the loop calculation. It is added prior to the dimensional remapping.
-
 xdimsz, ydimsz and zdimsz are offset by 1, such that a value of 0 indicates
 that the array dimensionality for that dimension is 1.  A value of xdimsz=2
 would indicate that in the first dimension there are 3 elements in the
