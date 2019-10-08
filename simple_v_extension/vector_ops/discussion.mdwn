@@ -16,27 +16,27 @@ From <https://github.com/suyashmahar/cordic-algorithm-python>
 
     def rotation_mode(x, y, z, coord_mode, iterations):
         a = 0.607252935;   # = 1/K
-        
+
         x_val_list = []
         y_val_list = []
         z_val_list = []
         iterations_list = []
 
         i = 0;                  # Keeps count on number of iterations
-        
-        current_x = x         # Value of X on ith iteration 
+
+        current_x = x         # Value of X on ith iteration
         current_y = y         # Value of Y on ith iteration
         current_z = z         # Value of Z on ith iteration
-        
+
         di = 0
-        
+
         if (coord_mode == hyperbolic):
             i = 1
         else:
             i = 0
-            
+
         flag = 0
-        
+
         if (iterations > 0):
             while (i < iterations):
                 if (current_z < 0):
@@ -46,7 +46,7 @@ From <https://github.com/suyashmahar/cordic-algorithm-python>
                 next_z = current_z - di * ROM_lookup(i, coord_mode)
                 next_x = current_x - coord_mode * di * current_y * (2**(-1*i))
                 next_y = current_y + di * current_x * 2**(-1*i)
-                
+
                 current_x = next_x
                 current_y = next_y
                 current_z = next_z
@@ -54,9 +54,9 @@ From <https://github.com/suyashmahar/cordic-algorithm-python>
                 x_val_list.append(current_x)
                 y_val_list.append(current_y)
                 z_val_list.append(current_z)
-                
+
                 iterations_list.append(i)
-                
+
                 if (coord_mode == hyperbolic):
                     if ((i != 4) & (i != 13) & (i!=40)):
                         i = i+1
@@ -72,36 +72,36 @@ From <https://github.com/suyashmahar/cordic-algorithm-python>
 
     def vector_mode(x, y, z, coord_mode, iterations):
         a = 1.2075;   # = 1/K
-        
+
         x_val_list = []
         y_val_list = []
         z_val_list = []
         iterations_list = []
 
         i = 0;                  # Keeps count on number of iterations
-        
-        current_x = x         # Value of X on ith iteration 
+
+        current_x = x         # Value of X on ith iteration
         current_y = y         # Value of Y on ith iteration
         current_z = z         # Value of Z on ith iteration
-        
+
         di = 0
-        
-        # This is neccesary since result for i=0 doesn't exists for hyperbolic 
+
+        # This is neccesary since result for i=0 doesn't exists for hyperbolic
         # co-ordinate system.
         if (coord_mode == hyperbolic):
             i = 1
         else:
             i = 0
-            
+
         flag = 0
-        
+
         if (iterations > 0):
             while (i < iterations):
                 di = -1*math.copysign(1, current_y);#*current_x);
                 next_x = current_x - coord_mode * di * current_y * (2**(-1*i))
                 next_y = current_y + di * current_x * 2**(-1*i)
                 next_z = current_z - di * ROM_lookup(i, coord_mode)
-                
+
                 current_x = next_x
                 current_y = next_y
                 current_z = next_z
@@ -109,9 +109,9 @@ From <https://github.com/suyashmahar/cordic-algorithm-python>
                 x_val_list.append(current_x)
                 y_val_list.append(current_y)
                 z_val_list.append(current_z)
-                
+
                 iterations_list.append(i)
-                
+
                 if (coord_mode == hyperbolic):
                     if ((i != 4) & (i != 13) & (i!=40)):
                         i = i+1
@@ -124,3 +124,16 @@ From <https://github.com/suyashmahar/cordic-algorithm-python>
                     i = i+1
         return { 'x':x_val_list, 'y':y_val_list, 'z':z_val_list,
                  'iteration':iterations_list }
+
+# Vector Length
+
+> With VLENGTH being also expressible as dotproduct followed by scalar
+> sqrt, is it reasonable to have both normalisation as well as VLENGTH
+> as macro op fused sequences?
+
+Vector length would presumably involve dotting a vector with itself.
+The potential advantage I see is that the dot product might be tempted
+to read that vector twice; whereas the length would only read it once.
+If some other mechanism eliminates the duplicate read, they would be
+pretty well equivalent.
+
