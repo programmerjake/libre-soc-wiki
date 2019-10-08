@@ -209,6 +209,40 @@ swizzle2 takes 2 arguments, interleaving the two vectors depending on a 3rd (the
 | fswizzlei |                       | rs1   | 010   | rd   |
 +-----------+-------+-------+-------+-------+-------+------+
 
+More:
+
+swizzlei would still need the 12-bit format due to not having enough immediate bits. we can get away with only 3 i-type funct3s used for [f]swizzlei by having one funct3 for destsubvl 1 through 3 for int and fp versions and a separate one for destsubvl = 4 that's shared between int/fp:
+
++--------+-----------+----+-----------+----------+-------+-------+------+
+| int/fp | DESTSUBVL | 31 | 30:29     | 28:20    | 19:15 | 14:12 | 11:7 |
++========+===========+====+===========+==========+=======+=======+======+
+| int    | 1 to 3    | 0  | DESTSUBVL | selector | rs    | 000   | rd   |
++--------+-----------+----+-----------+----------+-------+-------+------+
+| fp     | 1 to 3    | 1  | DESTSUBVL | selector | rs    | 000   | rd   |
++--------+-----------+----+-----------+----------+-------+-------+------+
+| int    | 4         | selector[11:0]            | rs    | 001   | rd   |
++--------+-----------+---------------------------+-------+-------+------+
+| fp     | 4         | selector[11:0]            | rs    | 010   | rd   |
++--------+-----------+---------------------------+-------+-------+------+
+
+the rest could be encoded as follows:
+
++-----------+-------+-----------+-------+-------+-------+------+
+|           | 31:27 | 26:25     | 24:20 | 19:15 | 14:12 | 11:7 |
++===========+=======+===========+=======+=======+=======+======+
+| swizzle2  | rs3   | DESTSUBVL | rs2   | rs1   | 100   | rd   |
++-----------+-------+-----------+-------+-------+-------+------+
+| swizzle   | rs1   | DESTSUBVL | rs2   | rs1   | 100   | rd   |
++-----------+-------+-----------+-------+-------+-------+------+
+| fswizzle2 | rs3   | DESTSUBVL | rs2   | rs1   | 101   | rd   |
++-----------+-------+-----------+-------+-------+-------+------+
+| fswizzle  | rs1   | DESTSUBVL | rs2   | rs1   | 101   | rd   |
++-----------+-------+-----------+-------+-------+-------+------+
+
+note how for [f]swizzle, rs3 == rs1
+
+so it uses 5 funct3 values overall, which is appropriate, since swizzle is probably right after muladd in usage in graphics shaders.
+
 Matrix 4x4 Vector mul
 =====================
 
