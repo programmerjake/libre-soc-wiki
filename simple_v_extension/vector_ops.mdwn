@@ -37,8 +37,9 @@ may also be run in either "vector" mode or "rotation" mode.  See [[discussion]]
 CORDIC can also be used for performing DCT.  See
 <https://arxiv.org/abs/1606.02424>
 
-vx, vy = CORDIC(vx, vy, coordinate\_mode, beta)
+CORDIC has several RADIX-4 papers for efficient pipelining.  Each stage requires its own ROM tables which can get costly.  Two combinatorial blocks may be chained together to double the RADIX and halve the pipeline depth, at the cost of doubling the latency.
 
+Also, to get good accuracy, particularly at the limits of CORDIC input range, requires double the bitwidth of the output in internal computations. This similar to how MUL requires double the bitwidth to compute.
 
 Links:
 
