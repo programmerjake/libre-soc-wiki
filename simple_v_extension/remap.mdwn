@@ -69,7 +69,7 @@ executed as a python program:
             if i >= applydim:
                 ix[i] = idxs[i]
             if invxyz[i]:
-                ix[i] = lims[i] - ix[i]
+                ix[i] = lims[i] - 1 - ix[i]
         new_idx = ix[0] + ix[1] * xdim + ix[2] * xdim * ydim
         print new_idx,
         break_count += 1
