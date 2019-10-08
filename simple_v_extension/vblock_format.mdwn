@@ -155,6 +155,8 @@ Swizzle blocks are only accessible using the "VBLOCK2" format.
 
 # REMAP Area Format<a name="remap_format"></a>
 
+REMAP is an algorithmic version of in-place vector "vgather" or "swizzle".
+
 The REMAP area is divided into two areas:
 
 * Register-to-SHAPE.  This defines which registers have which shapes.
@@ -177,12 +179,10 @@ In this way, multiple registers may share the same "shape" characteristics.
 
 # SHAPE Table Format<a name="shape_format"></a>
 
-The shape table format is included here for convenience:
+The shape table format is included here for convenience. See [[simple_v_extension/remap]] for full details on how SHAPE applies,
+including pseudo-code.
 
 [[!inline raw="yes" pages="simple_v_extension/shape_table_format" ]]
-
-See [[simple_v_extension/remap]] for full details on how SHAPE applies,
-including pseudo-code.
 
 REMAP Shape blocks are only accessible using the "VBLOCK2" format.
 
