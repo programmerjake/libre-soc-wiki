@@ -125,6 +125,37 @@ From <https://github.com/suyashmahar/cordic-algorithm-python>
         return { 'x':x_val_list, 'y':y_val_list, 'z':z_val_list,
                  'iteration':iterations_list }
 
+Alternative in c:
+
+     int i = 0;
+     int iterations = 0; // Number of times to run the algorithm
+     float arctanTable[iterations]; // in Radians
+     float K = 0.6073; // K
+     float v_x,v_y; // Vector v; x and y components
+
+     for(i=0; i < iterations; i++) {
+        arctanTable[i] = atan(pow(2,-i));
+     }
+
+     float vnew_x;   // To store the new value of x;
+     for(i = 0; i < iterations; i++) {
+         // If beta is negative, we need to do a counter-clockwise rotation:
+         if( beta < 0) {
+            vnew_x = v_x + (v_y*pow(2,-i)); 
+            v_y -= (v_x*pow(2,-i));  
+            beta += arctanTable[i]; 
+         }
+         // If beta is positive, we need to do a clockwise rotation:
+         else {
+            vnew_x = v_x - (v_y*pow(2,-i));
+            v_y += (v_x*pow(2,-i));
+            beta -= arctanTable[i];
+         }
+         v_x = vnew_x;
+     }
+     v_x *= K;
+     v_y *= K;
+
 # Vector Length
 
 <http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2019-October/002982.html>
