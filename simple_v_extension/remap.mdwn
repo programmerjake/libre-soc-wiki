@@ -34,57 +34,36 @@ whilst the CSR Register entries pointing to them are disabled, instead.
 # SHAPE 1D/2D/3D vector-matrix remapping CSRs
 
 There are three "shape" CSRs, SHAPE0, SHAPE1, SHAPE2, 32-bits in each,
-which have the same format.  When each SHAPE CSR is set entirely to zeros,
-remapping is disabled: the register's elements are a linear (1D) vector.
+which have the same format.  
 
-| 31..30   | 29..24 | 23..21  | 20..18  | 17..12  | 11..6   | 5..0    |
-| -------- | ------ | ------- | ------- | ------- | -------- | ------- |
-| applydim |modulo | invxyz | permute | zdimsz  | ydimsz  | xdimsz  |
+[[!inline raw="yes" pages="simple_v_extension/shape_table_format" ]]
 
-applydim will set to zero the dimensions less than this. applydim=0 applies all three. applydim=1 applies y and z. applydim=2 applys only z. applydim=3 is reserved.
+The algorithm below shows how REMAP works more clearly, and may be
+executed as a python program:
 
-invxyz will invert the start index of each of x, y or z. If invxyz[0] is zero then x-dimensional counting begins from 0 and increments, otherwise it begins from xdimsz-1 and iterates down to zero. Likewise for y and z.
-
-modulo will cause the output to wrap and remain within the range 0 to modulo. The value zero disables modulus application. Note that modulo arithmetic is applied after all other remapping calculations.
-
-xdimsz, ydimsz and zdimsz are offset by 1, such that a value of 0 indicates
-that the array dimensionality for that dimension is 1.  A value of xdimsz=2
-would indicate that in the first dimension there are 3 elements in the
-array.  The format of the array is therefore as follows:
-
-    array[xdim+1][ydim+1][zdim+1]
-
-However whilst illustrative of the dimensionality, that does not take the
-"permute" setting into account.  "permute" may be any one of six values
-(0-5, with values of 6 and 7 being reserved, and not legal).  The table
-below shows how the permutation dimensionality order works:
-
-| permute | order | array format             |
-| ------- | ----- | ------------------------ |
-| 000     | 0,1,2 | (xdim+1)(ydim+1)(zdim+1) |
-| 001     | 0,2,1 | (xdim+1)(zdim+1)(ydim+1) |
-| 010     | 1,0,2 | (ydim+1)(xdim+1)(zdim+1) |
-| 011     | 1,2,0 | (ydim+1)(zdim+1)(xdim+1) |
-| 100     | 2,0,1 | (zdim+1)(xdim+1)(ydim+1) |
-| 101     | 2,1,0 | (zdim+1)(ydim+1)(xdim+1) |
-
-In other words, the "permute" option changes the order in which
-nested for-loops over the array would be done.  The algorithm below
-shows this more clearly, and may be executed as a python program:
-
-    # mapidx = REMAP.shape2
-    xdim = 3 # SHAPE[mapidx].xdim_sz+1
-    ydim = 4 # SHAPE[mapidx].ydim_sz+1
-    zdim = 5 # SHAPE[mapidx].zdim_sz+1
+    xdim = 3
+    ydim = 4
+    zdim = 1
 
     lims = [xdim, ydim, zdim]
     idxs = [0,0,0] # starting indices
-    order = [1,0,2] # experiment with different permutations, here
-    modulo = 64     # experiment with different modulus, here
-    applydim=0
-    invxyz = [0,0,0] 
+    order = [0,1,2] # experiment with different permutations, here
+    offset = 2     # experiment with different offset, here
+    VL = xdim * ydim * zdim
+    applydim = 0
+    invxyz = [0,0,0]
 
-    for idx in range(xdim * ydim * zdim):
+    # run for offset iterations before actually starting
+    for idx in range(offset):
+        for i in range(3):
+            idxs[order[i]] = idxs[order[i]] + 1
+            if (idxs[order[i]] != lims[order[i]]):
+                break
+            idxs[order[i]] = 0
+
+    break_count = 0
+
+    for idx in range(VL):
         ix = [0] * 3
         for i in range(3):
             if i >= applydim:
@@ -92,12 +71,15 @@ shows this more clearly, and may be executed as a python program:
             if invxyz[i]:
                 ix[i] = lims[i] - ix[i]
         new_idx = ix[0] + ix[1] * xdim + ix[2] * xdim * ydim
-        print new_idx % modulo
+        print new_idx,
+        break_count += 1
+        if break_count == lims[order[0]]:
+            print
+            break_count = 0
         for i in range(3):
             idxs[order[i]] = idxs[order[i]] + 1
             if (idxs[order[i]] != lims[order[i]]):
                 break
-            print
             idxs[order[i]] = 0
 
 Here, it is assumed that this algorithm be run within all pseudo-code
