@@ -243,10 +243,9 @@ note how for [f]swizzle, rs3 == rs1
 
 so it uses 5 funct3 values overall, which is appropriate, since swizzle is probably right after muladd in usage in graphics shaders.
 
-Alternative
+Alternative immed encoding
 
-
-+--------+----+-----------+----------+-------+-------+------+
++--------+-----------+----------+-------+-------+------+
 | int/fp | 31:28     | 27:20    | 19:15 | 14:12 | 11:7 |
 +========+===========+==========+=======+=======+======+
 | int    | DESTMASK  | selector | rs    | 000   | rd   |
@@ -257,6 +256,9 @@ Alternative
 +--------+-----------+----------+-------+-------+------+
 | fp     | DESTMASK  | constsel | rs    | 011   | rd   |
 +--------+-----------+----------+-------+-------+------+
+
+Allows setting of arbitrary dest (xz, yw) without needing register-versions. Saves on instruction count.
+Needs 4 funct3 to express.
 
 Matrix 4x4 Vector mul
 =====================
