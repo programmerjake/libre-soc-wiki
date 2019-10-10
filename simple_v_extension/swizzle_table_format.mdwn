@@ -4,11 +4,46 @@ Swizzle format:
 | --- | --- | --- | --- |
 |   w |   z |   y |   x |
 
+Unsigned consts:
+
+| (1..0) | type   |
+| ------ | ------ | 
+| 0      | 0x00000     |
+| 1      | LSB Hi (0x00..001)  |
+| 2      | MSB Hi (0x10..000) |
+| 3      | 0xfff...ff |
+
+Signed consts:
+
+| (1..0) | type   |
+| ------ | ------ | 
+| 0      | 0x00000     |
+| 1      | LSB Hi (0x00..001)  |
+| 2      | MSB Hi (0x10..000) |
+| 3      | 0x7ff...ff |
+
+FP consts:
+
+| (1..0) | type   |
+| ------ | ------ | 
+| 0      | 0.0    |
+| 1      | 1.0    |
+| 2      | 0.5    |
+| 3      | pi     |
+
+Type:
+
+| (2..0) | type   |
+| ------ | ------ | 
+| 0      | xyzw   |
+| 1      | consts |
+| 2-7    | rsvd   |
+
 16 bit format:
 
 | SwzCAM | (15..13) | (12..8)  | (7..0)|
 | ------ | -        | -        | ----- | 
-| 0      | rsvd0    | regidx0  | swiz0 |
-| 1      | rsvd1    | regidx1  | swiz1 |
-| 2      | rsvd2    | regidx2  | swiz2 |
-| 3      | rsvd3    | regidx3  | swiz3 |
+| 0      | type0    | regidx0  | swiz0 |
+| 1      | type1    | regidx1  | swiz1 |
+| 2      | type2    | regidx2  | swiz2 |
+| 3      | type3    | regidx3  | swiz3 |
