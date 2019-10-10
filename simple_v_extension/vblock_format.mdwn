@@ -153,6 +153,13 @@ The swizzle table format is included here for convenience:
 
 Swizzle blocks are only accessible using the "VBLOCK2" format.
 
+The swizzles activate on SUBVL and only when used in an operation where a register matches with a SwizzleCAM register entry.
+
+On a match the register element index will be redirected through the swizzle format. If however the type is set to "constants" then instead of reading the register file the relevant constant is substituted instead.
+
+Setting const type on a destination element will cause an illegal instruction.
+
+
 # REMAP Area Format<a name="remap_format"></a>
 
 REMAP is an algorithmic version of in-place vector "vgather" or "swizzle".
