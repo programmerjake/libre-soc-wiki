@@ -2,6 +2,8 @@
 
 # Vector Operations Extension to SV
 
+This extension defines vector operations that would otherwise take several cycles to complete in software. With 3D priorities being to compute as many pixels per clock as possible, the normal RISC rules (reduce opcode count and make heavy use of macro op fusion) do not necessarily apply. 
+
 This extension is usually dependent on SV SUBVL being implemented. When SUBVL is set to define the length of a subvector the operations in this extension interpret the elements as a single vector.
 
 Normally in SV all operations are scalar and independent, and the operations on them may inherently be independently parallelised, with the result being a vector of length exactly equal to the input vectors.
@@ -50,11 +52,13 @@ Links:
 
 ## Vector cross product
 
-SUBVL=3, all regs. VL nonzero produces multiple vd results.
-
 * VCROSS vd, vs1, vs1
 
-Result is the cross product of x and y, i.e., the resulting components are, in order:
+Result is the cross product of x and y.
+
+SUBVL must be set to 3, and all regs must be vectors. VL nonzero produces multiple results in vd.
+
+The resulting components are, in order:
 
     x[1] * y[2] - y[1] * x[2]
     x[2] * y[0] - y[2] * x[0]
@@ -75,22 +79,25 @@ Pseudocode:
 
 Assembler:
 
-    fpermute,2130 F4, F1
-    fpermute,1320 F5, F1
-    fpermute,2130 F6, F2
-    fpermute,1320 F7, F2
+    fswizzlei,2130 F4, F1
+    fswizzlei,1320 F5, F1
+    fswizzlei,2130 F6, F2
+    fswizzlei,1320 F7, F2
     fmul F8, F5, F6
     fmulsub F3, F4, F7, F8
 
 ## Vector dot product
 
-* SUBVL ignored on rd.  SUBVL=2,3,4 vs1,vs2, if all vectors, multiple results generated. If rd scalar, only first (unpredicated) SUBVector is used.
-* rd=scalar, SUBVL=1 and vs1, vs2=vec will produce one scalar result. Predication allowed on src vectors.
 
 * VDOT rd, vs1, vs2
 
 Computes the dot product of two vectors. Internal accuracy must be
 greater than the input vectors and the result.
+
+There are two possible argument options:
+
+* SUBVL=2,3,4 vs1 and vs2 set as vectors,  multiple results are generated. When VL is set, only the first (unpredicated) SUBVector is used to create a result, if rd is scalar (standard behaviour for single predication). Otherwise, if rd is a vector, multiple scalar results are calculated (i.e. SUBVL is always ignored for rd). Swizzling may be applied.
+* When rd=scalar, SUBVL=1 and vs1=vec, vs2=vec, one scalar result is generated from the entire src vectors.  Predication is allowed on the src vectors.
 
 Pseudocode in python:
 
