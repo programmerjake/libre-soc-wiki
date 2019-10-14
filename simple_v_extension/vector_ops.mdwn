@@ -25,6 +25,12 @@ Examples which can require SUBVL include cross product and may in future involve
 * CORDIC.cir.vec vd, vs, beta
 * CORDIC.hyp.vec vd, vs, beta
 
+
+| Instr | result | src1 | src2 | SUBVL | VL | Notes |
+| ------------------ | ------ | ---- | ---- | ----- | -- | ------ |
+| CORDIC.x.t vd, vs1, rs2 | vec2 | vec2 | scal | 2 | any | src2 ignores SUBVL |
+
+
 SUBVL must be set to 2 and applies to vd and vs. SUBVL is *ignored* on beta.  vd and vs must be marked as vectors.
 
 VL may be applied.  beta as a scalar is ok (applies across all vectors vd and vs). Predication is also ok (single predication) sourced from vd. Use of swizzle is also ok.
