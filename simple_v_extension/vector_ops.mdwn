@@ -30,12 +30,11 @@ Examples which can require SUBVL include cross product and may in future involve
 | ------------------ | ------ | ---- | ---- | ----- | -- | ------ |
 | CORDIC.x.t vd, vs1, rs2 | vec2 | vec2 | scal | 2 | any | src2 ignores SUBVL |
 
-
 SUBVL must be set to 2 and applies to vd and vs. SUBVL is *ignored* on beta.  vd and vs must be marked as vectors.
 
 VL may be applied.  beta as a scalar is ok (applies across all vectors vd and vs). Predication is also ok (single predication) sourced from vd. Use of swizzle is also ok.
 
-Non vector args vd, vs, or SUBVL != 2 are reserved encodings.
+Non vector args vd, vs are reserved encodings.
 
 CORDIC is an extremely general-purpose algorithm useful for a huge number
 of diverse purposes.  In its full form it does however require quite a
@@ -104,6 +103,12 @@ There are two possible argument options:
 
 * SUBVL=2,3,4 vs1 and vs2 set as vectors,  multiple results are generated. When VL is set, only the first (unpredicated) SUBVector is used to create a result, if rd is scalar (standard behaviour for single predication). Otherwise, if rd is a vector, multiple scalar results are calculated (i.e. SUBVL is always ignored for rd). Swizzling may be applied.
 * When rd=scalar, SUBVL=1 and vs1=vec, vs2=vec, one scalar result is generated from the entire src vectors.  Predication is allowed on the src vectors.
+
+
+| Instr | result | src1 | src2 | SUBVL | VL |
+| ------------------ | ------ | ---- | ---- | ----- | -- |
+| VDOT rd, vs1, vs2 | scal | vec  | vec | 2-4 | any |
+| VDOT rd, vs1, vs2 | scal | vec  | vec | 1 | any |
 
 Pseudocode in python:
 
