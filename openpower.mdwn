@@ -6,3 +6,36 @@
 * c++11 atomics not very efficient
 * no 16/48/64 opcodes, needs a shuffle of opcodes
 * needs escape sequencing (ISAMUX/NS)
+
+# atomics
+
+Single instruction on RV, and x86, but multiple on Power. Needs investigation, particularly as to why cache flush exists.
+
+# FP16
+
+Doesn't exist in Power, need to work out suitable opcodes, basically means duplicating the entire range of FP32/64 ops, symmetrically.
+
+Usually done with a fmt field, 2 bit, last one is FP128
+
+# Escape Sequencing
+
+Absolutely critical, also to have official endorsement from OpenPower Foundation.
+
+# Compressed, 48, 64, VBLOCK
+
+Under Esc Seq, move mulli, twi, tdi out of major OP000 then use the entire row, 2 bits instead of 3.
+
+* OP 000-000 and 000-001 for 16 bit compressed, 11 bit instructions
+* OP 000-010 and 000-011 for 48 bit. 11 bits for SVP P48
+* OP 000-100 and 000-201 for 64 bit. 11 bits for SVP P64
+* OP 000-110 and 000-111 for VBLOCK. 11 bits available.
+
+# Compressed 16
+
+Only 11 bits. Idea: have "pages" where one instruction selects the page number. It also specifies for how long that page is activated (terminated on a branch)
+
+The length to be a maximum of 4 bits, where 0b1111 indicates "permanently active".
+
+Perhaps split OP000-000 and OP000-001 so that 2 pages can be active.
+
+Store activation length in a CSR.
