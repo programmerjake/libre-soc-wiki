@@ -44,3 +44,8 @@ Store activation length in a CSR.
 
 2nd idea: 11 bits can be used for extremely common operations, then length-encoding page selection for further ops, using the full 16 bit range and an entirely new encoding scheme. 1 bit specifies which of 2 pages was selected?
 
+3rd idea: "stack" mechanism. Allow subpages like a stack, to page in new pages.
+
+3 bits for subpage number. 4 bits for length, gives 7 bits. 4x7 is 28, then 3 bits can be used to specify "stack depth".
+
+Requirements are to have one instruction in each subpage which resets all the way back to PowerISA default. The other is a "back up stack by 1".
