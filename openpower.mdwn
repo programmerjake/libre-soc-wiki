@@ -4,7 +4,7 @@
 * FP16 needed
 * FCVT between 16/32/64 needed
 * c++11 atomics not very efficient
-* no 16/48/64 opcodes, needs a shuffle of opcodes
+* no 16/48/64 opcodes, needs a shuffle of opcodes.  TODO investigate Power VLE
 * needs escape sequencing (ISAMUX/NS)
 
 # atomics
@@ -13,9 +13,11 @@ Single instruction on RV, and x86, but multiple on Power. Needs investigation, p
 
 https://www.cl.cam.ac.uk/~pes20/cpp/cpp0xmappings.html
 
+Hot loops contain significant instruction count, really need new c++11 atomics.  To be proposed as new extension because other OpenPower members will need them too
+
 # FP16
 
-Doesn't exist in Power, need to work out suitable opcodes, basically means duplicating the entire range of FP32/64 ops, symmetrically.
+Doesn't exist in Power (does - as VLE?), need to work out suitable opcodes, basically means duplicating the entire range of FP32/64 ops, symmetrically.
 
 Usually done with a fmt field, 2 bit, last one is FP128
 
@@ -23,7 +25,11 @@ Usually done with a fmt field, 2 bit, last one is FP128
 
 Absolutely critical, also to have official endorsement from OpenPower Foundation.
 
+This will allow extending ISA (see ISAMUX/NS) in a clean fashion
+
 # Compressed, 48, 64, VBLOCK
+
+TODO investigate Power VLE
 
 Under Esc Seq, move mulli, twi, tdi out of major OP000 then use the entire row, 2 bits instead of 3.
 
