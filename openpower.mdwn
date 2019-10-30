@@ -17,7 +17,7 @@ Hot loops contain significant instruction count, really need new c++11 atomics. 
 
 # FP16
 
-Doesn't exist in Power (does - as VLE?), need to work out suitable opcodes, basically means duplicating the entire range of FP32/64 ops, symmetrically.
+Doesn't exist in Power, need to work out suitable opcodes, basically means duplicating the entire range of FP32/64 ops, symmetrically.
 
 Usually done with a fmt field, 2 bit, last one is FP128
 
@@ -29,7 +29,7 @@ This will allow extending ISA (see ISAMUX/NS) in a clean fashion
 
 # Compressed, 48, 64, VBLOCK
 
-TODO investigate Power VLE
+TODO investigate Power VLE (Freescale doc Ref 314-68105)
 
 Under Esc Seq, move mulli, twi, tdi out of major OP000 then use the entire row, 2 bits instead of 3.
 
