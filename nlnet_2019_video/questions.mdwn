@@ -1,0 +1,114 @@
+# Questions
+
+Dear Lauri and Luke,
+
+you applied to the 2019-10 open call from NLnet. We have some questions
+regarding your project The Libre-RISCV SoC, Video Acceleration.
+
+This is a very ambitious project, and involves a huge skill set across
+hardware, software and industry politics - and after that requires a lot
+of active downstream uptake to become viable. Who are the main drivers
+in addition to yourself that will push for this? Who will be involved?
+
+What amount of the work would be enough to validate the most risky
+assumptions and/or pick the first low hanging fruit? What happens if
+there is not enough buy in?
+
+To what extent is this work specific to the RISC-V community? How
+reusable would efforts be in say the (Open)Power ecosystem?  Is there a
+possibility to reuse ideas from e.g. the Cell processor that was used
+previously in a number of game consoles which were graphically very
+demanding (perhaps IBM would be willing to open source these)? That
+would also be a good way to get IP clearance, since there likely are a
+lot of patents from various parties. For Risc-V that was meticulously
+documented, but for these new ideas likely nothing exist.
+
+Can you provide a budget breakdown in terms of tasks, and in particular
+identify the rates used?
+
+# Answers (1)
+
+> Dear Lauri and Luke,
+> you applied to the 2019-10 open call from NLnet. We have some questions regarding your project The Libre-RISCV SoC, Video Acceleration.
+
+sure.
+ 
+> This is a very ambitious project, and involves a huge skill set across hardware, software and industry politics - and after that requires a lot of active downstream uptake to become viable. Who are the main drivers in addition to yourself that will push for this? Who will be involved?
+
+i sent out just the one message to mailing lists asking if anyone would like to help, and was surprised to get two responses in under 36 hours, from people with expertise in assembler: lauri was one of them.
+
+for the hardware side (which will come later in the project: the first priority is the simulator) if we absolutely have to use it there is work already done and released on opencores: https://opencores.org/projects/video_systems
+
+"active upstream uptake" is much later in the project's lifecycle.  there are several routes:
+
+(1) a large customer orders a large number of units for a custom project.  we provide a BSP: deployment and software maintenance becomes "their problem" (with assistance and therefore paid support contracts from us).  at this point, upstream is unlikely.
+
+(2) several large customers appear, resulting in mass-produced products ending up in the market which end-users expect to be able to re-program and re-purpose.  this results in pressure on upstream to accept patches
+
+(3) the project is adopted by (or becomes) "Samsung-like" or "Texas Instruments-like" at which point it is taken seriously and we do not have the political mess.
+
+(4) we become members of the OpenPower Foundation (which we can do because the Director, Hugh Blemings, has the same goals as we do: to permit Libre Members to join), and on the strength of that, what we do becomes part of *mainstream* official OpenPower Standards.  it should be clear at that point that support from IBM, NXP and other Members would kick in, and "upstreaming" is no longer a problem.
+
+all of these things take time - however there is one common theme: if we do not start, it is *guaranteed* that they will never reach upstream :)
+
+
+> What amount of the work would be enough to validate the most risky assumptions and/or pick the first low hanging fruit?
+
+the simulator will be key, here.  it has always been part of the strategy (even the "base" project - the 2018.02P one) to use cycle-accurate simulation with logging analysis to see how much time the *simulator* takes to execute applications.
+
+the most important part of using a simulator is that the assembly-instruction implementation is *not* written in a hardware language (HDL): it's written in *c* code.
+
+thus the iterative loop to "prove" that [proposed] instructions will do the job is actually extremely quick... and does *NOT* involve costly or time-consuming tasks.
+
+> What happens if there is not enough buy in?
+
+i believe this was partly answered above with 1-4?
+ 
+To what extent is this work specific to the RISC-V community? How
+reusable would efforts be in say the (Open)Power ecosystem?
+
+right.  assembly code as you know is very specific to that processor.  if we go with a particular processor, the hot-loops can only be used on that processor.
+
+i investigated avutil and associated libraries used by ffmpeg and found that there were already *eight* hard-coded assembler "#ifdefs" to bring in different implementations of the hot-loops.  YUV2RGB, RGB2YUV, at 15/16/24/32 BPP and so on.
+
+these are all actually not that big, they're extremely localised, and very specific.
+
+if however we need to use e.g. richard herveille's https://opencores.org/projects/video_systems and even if we end up implementing a hard-coded YUV2RGB instruction, these *can* be re-used (at the hardware level).
+
+just as with the IEEE754 FPU that is about... 80% completed already... the hardware engine is *not* specific to a particular processor [caveat: in the case of the IEEE754 FPU, RISC-V "NaNs" are slightly different from other NaN formats.  great, eh?  IEEE754 is a standard that isn't... a standard....  *sigh*]
+
+
+> Is there a possibility to reuse ideas from e.g. the Cell processor that was used previously in a number of game consoles which were graphically very demanding (perhaps IBM would be willing to open source these)?
+
+ok long story [apologies]
+
+we're going to have to switch off the IBM Vector Processor system (and not implement it).  there are several reasons for that: not least is that the number of instructions added is immense (which is detrimental in several ways).
+
+the "Simple-V" system that i invented takes *all* scalar instructions - all *scalar* instructions - and parallelises them with a "Vector Context".
+
+a "standard" vector processor is implemented as follows:
+
+* take all scalar instructions, duplicate them, and create "vector" versions of the exact same thing
+* now add scalar-vector operations as well (allowing some operands to be scalar, some to be vector)
+* now add scalar-to-vector data-moving instructions because you can't get data in and out between the two without them
+* now add vector-to-scalar data-moving instructions
+* now add "predication" instructions
+* now add "predicate mask manipulation instructions" which usually duplicate Bit-Manipulation opcodes
+* now add scalar-to-predicate and predicate-to-scalar instructions to get data between the two
+* now add vector-to-predicate instructions
+
+and much, much more.  you see how insane that is?  Simple-V *literally* adds *NO* new instructions.  at all.  (ok, there's one or two).
+
+IBM went the route that they did because it is "traditional".  they have the resources.  i've picked an "intelligent" route which is specifically designed to minimise time and resources for implementing it.
+ 
+That
+would also be a good way to get IP clearance, since there likely are a
+lot of patents from various parties. For Risc-V that was meticulously
+documented, but for these new ideas likely nothing exist.
+
+> Can you provide a budget breakdown in terms of tasks, and in particular identify the rates used?
+
+i'll get back to you on that one, it'll take a bit longer - the answers above are "off top of head".
+
+thanks michiel.
+
