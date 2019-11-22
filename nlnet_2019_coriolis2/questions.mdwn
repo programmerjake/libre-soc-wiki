@@ -1,4 +1,67 @@
 # Questions
 
-TODO
+Dear Jean-Paul and Luke,
+
+you applied to the 2019-10 open call from NLnet. We have some questions
+regarding your project The Libre-RISCV SoC, Coriolis2 ASIC Layout
+Collaboration.
+
+Can you provide a breakdown of the amount requested? We understand there
+are a number of different tasks you will undertake, but we need to
+understand the cost composition of the proposal.
+
+Are Coriolis2 python bindings ready for the upcoming switch to Python3,
+as python2 availability is decreasing? The same actually holds for Qt4,
+do you plan to upgrade this - or would you be open to others doing that?
+
+nmigen is a tool produced by others, how will this work? Will additional
+cost be needed to upstream this effort? Would it not make more sense for
+that project to be funded directly?
+
+# Answer (1)
+
+> you applied to the 2019-10 open call from NLnet. We have some questions
+> regarding your project The Libre-RISCV SoC, Coriolis2 ASIC Layout
+> Collaboration.
+> 
+> Can you provide a breakdown of the amount requested? We understand there
+> are a number of different tasks you will undertake, but we need to
+> understand the cost composition of the proposal.
+
+  I will let that point to Luke...
+
+> Are Coriolis2 python bindings ready for the upcoming switch to Python3,
+> as python2 availability is decreasing? The same actually holds for Qt4,
+> do you plan to upgrade this - or would you be open to others doing that?
+
+  * For Qt 5, the port is already done and working. It was needed to 
+    build for Debian 9 / Ubuntu 18.04 LTS.
+
+  * For Python 3, the move has not been done (yet), but I sure feel a 
+    rising pressure to do it.
+
+    Long answer is that my "reference build system" is Scientific Linux 7
+    (a free clone of RHEL 7) which allows me to both run my tool and the
+    commercial ones as well (Cadence/Mentor/Synospys) and keep me close to
+    the OSes used in the industry. And this system still uses Python 2.7
+    as it's primary (RedHat makes very stable systems, but the downside
+    is that they uses old versions of tools). So, of course I'm aware
+    that I will need to switch to Python 3 at some point, but it doesn't
+    feel urgent.
+      I'm perfectly happy with other people doing the port, I'm just not
+    very proud about the way the Python bindings are done. As I want to
+    perform very specific operations, I did develop a bunch of C macros
+    to do the job. They work well and do exactly what I want and there is
+    even a tutorial on how to use them, but they are a bit clumsy and
+    not that easy to understand.
+      Portability across systems is a dependency nightmare, so I try
+    to keep to most commonly shared ones.
+
+> nmigen is a tool produced by others, how will this work? Will additional
+> cost be needed to upstream this effort? Would it not make more sense for
+> that project to be funded directly?
+
+  To muddle the point even more (this is an info I wanted to pass on
+  Luke), we are also investigating on nmigen in the LIP6, with the same
+  goal of interfacing with Coriolis.
 
