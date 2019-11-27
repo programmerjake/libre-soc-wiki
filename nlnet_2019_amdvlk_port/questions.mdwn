@@ -21,8 +21,8 @@ assuming this is still actively developed?
 # Answer
 
 * the development strategy is iterative (described previously and used right across the board: simulation first, with improvements).  the improvements - the addition of extra instructions and extra iterative cycles - continue as long as funding is available, always with the "previous version" being stable and useable.
-* no, it will not be an "isolated effort".  TODO: jacob's help
+* no, it will not be an "isolated effort".  Jacob: I can help some, but will probably be spending most of my time on the hardware and Kazan development. Asking on the Mesa/LLVM mailing lists (for RADV) is probably the best course of action for getting useful answers, as they are much more familiar with the code.
 * no, we are not critically dependent on Mesa or AMD.
-* note that we haven't decided yet whether to go with AMDVLK or RADV.  RADV unfortunately was developed by David Airlie, who caused massive problems for Luc Verhagen.
-* upstreaming will come "over time" as part of wider adoption.
+* note that we haven't decided yet whether to go with AMDVLK or RADV.  RADV unfortunately was developed by David Airlie, who caused massive problems for Luc Verhagen. Jacob: I think we should probably fork RADV rather than AMDVLK due to the wide community support, AMDVLK is basically an AMD-only project where the code is thrown over the wall. David is not the only one working on RADV. Additionally, RADV is based on Intel's ANV driver, so we could probably get some help there as well.
+* upstreaming will come "over time" as part of wider adoption. We will most likely need to pick the same license (MIT?) if we want to upstream to Mesa.
 * TODO: describe that AMDVLK is a port of the windows driver
