@@ -1,3 +1,43 @@
 # Video Processing and Acceleration
 
-TODO
+Here's some preliminary planning for the video part. Top-level headings.
+Any actual work will need to know the ISA.
+
+Decoding is prioritized over encoding. In general, faster decoding
+speeds up a part of encoding.
+
+Codecs to target:
+
+* Audio: MP3, AC3, Vorbis, Opus
+* Video: MPEG1/2, MPEG4 ASP (xvid), H.264, H.265, VP8, VP9, AV1
+
+YUV-RGB conversion for the most common formats:
+
+* rgb/bgr24,
+* rgbx/bgrx/xrgb/xbgr32,
+* nv12,
+* nv21
+
+Most of these are DCT-based, meaning the instructions will likely
+benefit image formats like JPEG as well. However image formats are not
+a part of this project, though MJPEG could be considered a video codec?
+Should we include it and thus speed up JPEG decoding?
+
+Audio was not explicitly mentioned in the proposal, but fast audio
+decoding is necessary for smooth video playback. Otherwise a 300MHz
+chip may not even play Opus in realtime.
+
+The entropy part of codecs similarly has overlap with general
+compression.
+
+Any speedups should really be compared to C (what gcc generates), not a
+hand-made simple asm implementation. Both for no use in trying to match
+the compiler for simple loops, and for potential new instructions
+possibly needing entirely different approaches. We'll also need some
+guideline on what parallelism to target in the simulator (how many ops
+we can assume will be completed at once).
+
+The software part will be ffmpeg and binutils forks until the standards
+are set and  hw exists; then submission; then other projects
+(gstreamer, lib*).
+
