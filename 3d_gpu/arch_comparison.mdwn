@@ -4,16 +4,29 @@ This table compares important factors for a decision in which ISA to use
 and support
 
 [[!table  data="""
-Feature/Need   | RISC-V | MIPS    | OpenPOWER | OpenRISC |
-Open           | NO (1) | NO (2)  | NO (3)    | Yes      |
-Libre-friendly | NO (1) | unknown | Yes       | Yes      |
-Trademarked    | Yes    | Yes     | Yes       | No       |
-Extensible     | NO (4) | unknown | (5)       | Yes      |
-gcc            | Yes    | Yes     | Yes       | Yes      |
-llvm           | Yes    | Yes     | Yes       | Yes      |
-distros (deb)  | Yes    | Yes     | Yes       | No       |
-buildroot      | Yes    | Yes     | Yes       | Yes      |
-linux kernel   | Yes    | Yes     | Yes       | Yes      |
+Feature/Need        | RISC-V | MIPS    | OpenPOWER  | OpenRISC |
+Open                | NO (1) | NO (2)  | maybe (3)  | Yes      |
+Libre-friendly      | NO (1) | unknown | Yes        | Yes      |
+Trademarked         | Yes    | Yes     | Yes        | No       |
+Extensible          | NO (4) | unknown | (5)        | Yes      |
+gcc                 | Yes    | Yes     | Yes        | Yes      |
+llvm                | Yes    | Yes     | Yes        | Yes      |
+llvm upstream       | Yes    | Yes     | Yes        | No       |
+distros (debian)    | Yes    | Yes     | Yes        | No       |
+distros (ubuntu)    | No     | No      | Yes        | No       |
+distros (fedora)    | Yes    | Yes     | Yes        | No       |
+buildroot           | Yes    | Yes     | Yes        | Yes      |
+linux kernel        | Yes    | Yes     | Yes        | Yes      |
+64-bit linux        | Yes    | Yes     | Yes        | No       |
+virtualizable       | Yes    | unknown | Yes        | No (6)   |
+64-bit asics        | many   | many    | many       | none     |
+sw community size   | large  | medium  | very large | tiny (7) |
+little-endian asics | Yes    | Yes     | Yes        | No       |
+Java (OpenJDK)      | no JIT | unknown | Yes        | No       |
+Java (Android)      | No?    | Yes     | No         | No       |
+V8 node.js/chromium | no JIT | Yes     | Yes        | No       |
+PyPy                | No     | No      | Yes        | No       |
+Mono (.net)         | No?    | 32-bit  | Yes        | No       |
 """]]
 
 * (1) too numerous reasons to count, for well over 4 years.
@@ -24,3 +37,5 @@ linux kernel   | Yes    | Yes     | Yes       | Yes      |
   in direct violation of Trademark Law's clear-cut responsibilities.
 * (5) provisionally and in principle: yes.  however as of 2019jan21 this is
   yet to be tested and an agreement reached.
+* (6) no mentions of virtualization found in spec
+* (7) dozens to hundreds of people, several companies
