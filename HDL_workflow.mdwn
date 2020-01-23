@@ -102,9 +102,9 @@ regarding code structure: we decided to go with small modules that are both easy
 
 you can now fullsize the graphviz window and scroll around.  if it looks reasonably obvious, i.e the connections can be clearly related in your mind back to the actual code (by matching the graph names against signals and modules in the original nmigen code) and the words are not tiny when zoomed out, and connections are not total incomprehensible spaghetti, then congratulations, you have well-designed code. If not, then this indicates a need to split the code further into submodules.
 
-The reasons for doing a proper modulatisatoion job as several-fold.
+The reasons for doing a proper modularisatoion job are several-fold:
 
-* firstly, we will not be doing a full automated layout-and-hope using alliance/ciriolis2, we will be doing leaf-node thru tree node half-automated half-manual layout.
+* firstly, we will not be doing a full automated layout-and-hope using alliance/ciriolis2, we will be doing leaf-node thru tree node half-automated half-manual layout, finally getting to the floorplan, then revising and iteratively adjusting.
 * secondly, examining modules at the gate level (or close to it) is just good practice.  poor design creeps in by *not* knowing what the tools are actually doing.
 * thirdly, unit testing, particularly formal proofs, is far easier on small sections of code.
 
