@@ -91,12 +91,13 @@ the reason for the above is because python is a weakly typed language.  make one
 * unless they are very closely related, only have one module (one class) per file. a file only 25 lines long including imports and docstrings is perfectly fine.
 * *keep files short and simple*. see below as to why
 * create a decent directory hierarchy but do not go mad. ask for advice if unsure
-* please do not use "from module import *". it is extremely bad practice.
+* please do not use "from module import *". it is extremely bad practice, causes unnecessary resource utilisation, makes code readability extremely difficult, and results in unintended side-effects.
+* try to keep both filenames and variable names short but not ridiculously obtuse. an interesting compromise on imports is "from ridiculousfilename import longsillyname as lsn", and to assign variables as well: "comb = m.d.comb" followed by multiple "comb += nmigenstmt" lines is a good trick that can reduce code indentation by 6 characters without reducing clarity.
 
 regarding code structure: we decided to go with small modules that are both easy to analyse, as well as fit onto a single page and be readable when displayed as a visual graph on a full UHD monitor.  this is done as follows:
 
 * using the capability of nmigen (TODO crossref to example) output the module to a yosys ilang (.il) file
-* in a separte terminal window run yosys
+* in a separate terminal window, run yosys
 * at the yosys prompt type "read_ilang modulename.il"
 * type "show top" and a graphviz window should appear. note that typing show, then space, then pressing the tab key twice will give a full list of submodules (one of which will be "top")
 
