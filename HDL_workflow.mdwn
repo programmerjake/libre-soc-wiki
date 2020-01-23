@@ -227,6 +227,24 @@ The reasons for doing a proper modularisation job are several-fold:
 * secondly, examining modules at the gate level (or close to it) is just good practice.  poor design creeps in by *not* knowing what the tools are actually doing (word to experienced developers: yes, we know that the yosys graph != final netlist).
 * thirdly, unit testing, particularly formal proofs, is far easier on small sections of code, and complete in a reasonable time.
 
+## Unit tests
+
+This deserves its own special section.  It is extremely important to appreciate that without unit tests, python projects are simply unviable.  Python itself has over 25,000 individual tests.
+
+This can be quite overwhelming to a beginner developer, especially one used to writing scripts of only 100 lines in length.
+
+Thanks to Samuel Falvo we learned that writing unit tests as a formal proof is not only shorter, it's also far more readable and also, if written properly, provides 100% coverage of corner-cases that would otherwise be overlooked or require tens to hundreds of thousands of tests to be run.
+
+No this is not a joke or hypothetical.
+
+The ieee754fpu requires several hundreds of thousands of tests to be run, and even then we cannot be absolutely certain that all possible combinations of input have been tested.  With 2^128 permutations to try with 2 64 bit FP numbers it is simply impossible to even try.
+
+This is where formal proofs come into play.
+
+Samuel illustrated to us that "ordinary" unit tests can then be written to *augment* the formal ones, serving the purpose of illustrating how to use the module, more than anything.
+
+However it is appreciated that writing formal proofs is a bit of a black art.  This is where team collaboration particularly kicks in, so if you need help, ask on the mailing list.
+
 # TODO Tutorials
 
 Find appropriate tutorials for nmigen and yosys, as well as symbiyosys.
