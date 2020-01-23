@@ -47,3 +47,17 @@ nmigen may be installed as follows:
 
 testing can then be carried out with "python3 setp.py test"
 
+# Registering for git repository access
+
+After going through the onboarding process and having agreed to take responsibility for certain tasks, ask on the mailing list for git repository access, sending in a public key (id_rsa.pub). If you do not have one generate it with ssh-keygen -t rsa.
+
+NEVER SEND ANYONE THE PRIVATE KEY.
+
+Create a file ~/.ssh/config with the following lines:
+    Host git.libre-riscv.org
+    Port 922
+
+Wait for the Project Admin to confirm that the ssh key has been added to the required repositories.  Once confirmed,
+you can clone any of the repos at http://git.libre-riscv.org:
+    git clone gitolite3@git.libre-riscv.org:REPONAME.git
+
