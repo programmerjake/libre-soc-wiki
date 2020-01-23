@@ -4,18 +4,38 @@ This section describes the workflow for developing the LibreSoC.
 
 # Hardware
 
-RAM is the biggest requirement. Minimum 16GB, the more the better (32 or 64GB starts to reach "acceptable" levels.  Disk space is not hugely critical: 256GB SSD should be more than adequate.  Simulations however are where raw processing power is a must.  High end Graphics Cards are nonessential.
+RAM is the biggest requirement. Minimum 16GB, the more the better (32 or 64GB starts to reach "acceptable" levels.  Disk space is not hugely critical: 256GB SSD should be more than adequate.  Simulations and FPGA compilations however are where raw processing power is a must.  High end Graphics Cards are nonessential.
+
+What is particularly useful is to have not only hi-res screens (curved is *strongly* recommended if the LCD is over 24in wide), but to have several of them: the more the better.  Either a DisplayLink UD160A (or more modern variant) or simply using a second (lower spec hardware) machine is really effective.
+
+Also it is really recommended to have a UHD monitor (4k - 3840x2160), or at least 2560x1200.  However, caveat below: please when editing do not assume that everyone will have access to such high resolution screens.
 
 # Operating System
 
-First install Debian (ubuntu if you absolutely must) for standardisation cross-team and so that toochain installation is greatly simplified.
+First install and become familiar with Debian (ubuntu if you absolutely must) for standardisation cross-team and so that toolchain installation is greatly simplified.  yosys in particular warns that trying to use Windows or MacOS will get you into a world of pain.
 
-A basic GUI desktop is necessary: fvwm2, xfce, lxde are perfectly sufficient (alongside wicd-gtk for network management). Other more complex desktops can be used however may consume greater resources.
+Only a basic GUI desktop is necessary: fvwm2, xfce4, lxde are perfectly sufficient (alongside wicd-gtk for network management). Other more complex desktops can be used however may consume greater resources.
+
+# editors and editing
+
+Whilst this is often a personal choice, the fact that many editors are GUI based and run fullscreen with the entire right hand side *and* middle *and* the majority of the left side of the hi-res screen entirely unused and bereft of text leaves experienced developers both amused and puzzled.
+
+At the point where such fullscreen users commit code with line lengths well over 160 characters, that amusement quickly evaporates.
+
+Where the problems occur with fullscreen editor usage is when a project is split into dozens if not hundreds of small files (as this one is). At that point it becomes pretty much essential to have as many as six to eight files open *and on-screen* at once, without overlaps i.e. not in hidden tabs, next to at least two if not three additional free and clear terminals into which commands are regularly and routinely  typed (make, git commit, nosetests3 etc).
+
+Once this becomes necessary, it it turn implies that having greater than 80 chars per line - and running editors fullscreen -is a severe hindance to an essential *and highly effective* workflow technique.
+
+Additionally, care should be taken to respect that not everyone will have 200 column editor windows. They may only have a 1280 x 800 laptop which barely fits 2 80x60 xterms side by side.  Consequently, having excessively long functions is also a hindrance to others, as such developers with limited screen resources would need to continuously page-up and page-down to read code even of a single function, in full.
+
+This helps explain in part, below, why compliance with pep8 is enforced, including its 80 character limit.  In short: not everyone has the same "modern" GUI workflow or has access to the same computing resources as you, so please do respect that.
 
 # Software prerequisites
 
-Whilst many resources online advocate sudo in front of all of the root-level commands below, this is extremely irritating. run "sudo bash", get a root prompt, and save some typing.
+Whilst many resources online advocate "sudo" in front of all root-level commands below, this quickly becomes tiresome. run "sudo bash", get a root prompt, and save yourself some typing.
 
+* sudo bash
+* apt-get install vim exuberant-ctags
 * apt-get install build-essential
 * apt-get install git python3.7 python3.7-dev python-nosetest3
 * apt-get install graphviz xdot
@@ -25,13 +45,13 @@ Whilst many resources online advocate sudo in front of all of the root-level com
 
 Follow the source code (git clone) instructions here: <http://www.clifford.at/yosys/download.html>
 
-Do not try to use a fixed revision, nmigen is evolving and frequently interacts with yosys
+Do not try to use a fixed revision (currently 0.9), nmigen is evolving and frequently interacts with yosys
 
 ## symbiyosys
 
 Follow the instructions here: <https://symbiyosys.readthedocs.io/en/latest/quickstart.html#installing>
 
-You do not have to install all of those (avy, boolector can be left out if desired).
+You do not have to install all of those (avy, boolector can be left out if desired) however the more that are installed the more effective the formal proof scripts will be (less resource utilisation in certain circumstances).
 
 ## nmigen
 
@@ -103,9 +123,13 @@ regarding code structure: we decided to go with small modules that are both easy
 
 you can now fullsize the graphviz window and scroll around.  if it looks reasonably obvious, i.e the connections can be clearly related in your mind back to the actual code (by matching the graph names against signals and modules in the original nmigen code) and the words are not tiny when zoomed out, and connections are not total incomprehensible spaghetti, then congratulations, you have well-designed code. If not, then this indicates a need to split the code further into submodules.
 
-The reasons for doing a proper modularisatoion job are several-fold:
+The reasons for doing a proper modularisation job are several-fold:
 
 * firstly, we will not be doing a full automated layout-and-hope using alliance/ciriolis2, we will be doing leaf-node thru tree node half-automated half-manual layout, finally getting to the floorplan, then revising and iteratively adjusting.
 * secondly, examining modules at the gate level (or close to it) is just good practice.  poor design creeps in by *not* knowing what the tools are actually doing.
 * thirdly, unit testing, particularly formal proofs, is far easier on small sections of code.
+
+# TODO Tutorials
+
+Find appropriate tutorials for nmigen and yosys, as well as symbiyosys.
 
