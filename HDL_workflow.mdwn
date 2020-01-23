@@ -6,11 +6,47 @@ It is particularly important to bear in mind that we are not just "developing co
 
 It is also important to appreciate and respect that we are funded under NLNet's Privacy and Enhanced Trust Programme <http://nlnet.nl/PET>. Full transparency, readability, documentation, effective team communication and formal mathematical proofs for all code at all levels is therefore paramount.
 
+# Main contact method.
+
+To respect the transparency requirements, conversations need to be public and archived (i.e not skype, not telegram, not discord, and anyone seriously suggesting slack will be thrown to the lions).  Therefore we have a
+mailing list. Everything goes through there. <http://lists.libre-riscv.org/mailman/listinfo/libre-riscv-dev> therefore please do google "mailing list etiquette" and at the very minimum look up and understand the following:
+
+* This is a technical mailing list with complex topics. Top posting is completely inappropriate. Don't do it unless you have mitigating circumstances, and even then please apologise and explain ("hello sorry using phone at airport flight soon, v. quick reply: ....")
+* Always trim context but do not cut excessively to the point where people cannot follow the discussion.  Especially do not cut the attribution ("On monday xxx wrote")
+* Use inline replies i.e. reply at the point in the relevant part of the conversation, as if you were actually having a conversation.
+* Follow standard IETF reply formatting, using ">" for cascaded indentation of other people's replies.  If using gmail, please: SWITCH OFF RICH TEXT EDITING.
+* Please for god's sake do not use "my replies are in a different colour". Only old and highly regarded people still using AOL are allowed to get away with that (such as Mitch).
+* Start a new topic with a relevant topic. If an existing discussion changes direction, change the topic (or start a new conversation)
+* DMARC is a pain on the neck. Try to avoid GPG signed messages.
+* Don't send massive attachments. Put them online (no, not on facebook or google drive or anywhere else that demands privacy violations) and provide the link.  Which should not require any kind of login to access.
+
+If discussions result in any actionable items, it is important not to lose track of them. Create a bugreport, find the discussion in the archives <http://lists.libre-riscv.org/pipermail/libre-riscv-dev/>, and put the link actually in the bugtracker.  
+
+At some point it may become better to use the bugtracker itself to continue the discussion rather than to keep on dropping copies of links into the bugtracker.  The bugtracker sends copies of comments *to* the list however this is 'one-way'.
+
+Also, please do not use the mailing list as an "information or document store". We have the wiki for that.  Edit a page and tell people what you did and include the link to the page.
+
+Or, if it is more appropriate, commit a document (or source code) into the relevant git repository then look up the link in the gitweb source tree browser and post that (in the bugtracker or mailing list) See <http://git.libre-riscv.org>
+ 
+# Bugtracker
+
+bugzilla. old and highly effective. sign up in the usual way. any problems, ask on the list.
+
+Please do not ask for the project to be transferred to github or other proprietary nonfree service "because it's soooo  convenient", as the lions are getting wind and gout from overfeeding.
+
+# ikiwiki
+
+Runs the main libre-riscv.org site (including this page). effective, stunningly light on resources, and uses a git repository not a database.  That means it can be edited offline.
+
+Usual deal: register an account and you can start editing and contributing straight away.
+
+Assistance in creating a much better theme greatly appreciated.
+
 # Hardware
 
 RAM is the biggest requirement. Minimum 16GB, the more the better (32 or 64GB starts to reach "acceptable" levels.  Disk space is not hugely critical: 256GB SSD should be more than adequate.  Simulations and FPGA compilations however are where raw processing power is a must.  High end Graphics Cards are nonessential.
 
-What is particularly useful is to have not only hi-res screens (curved is *strongly* recommended if the LCD is over 24in wide, to avoid eyeballs going "prism" through longterm use), and to have several of them: the more the better.  Either a DisplayLink UD160A (or more modern variant) or simply using a second (lower spec hardware) machine is really effective.
+What is particularly useful is to have hi-res screens (curved is *strongly* recommended if the LCD is over 24in wide, to avoid eyeballs going "prism" through longterm use), and to have several of them: the more the better.  Either a DisplayLink UD160A (or more modern variant) or simply using a second machine (lower spec hardware because it will run editors) is really effective.
 
 Also it is really recommended to have a UHD monitor (4k - 3840x2160), or at least 2560x1200.  If given a choice, 4:3 aspect ratio is better than 16:9 particularly when using several of them. However, caveat (details below): please when editing do not assume that everyone will have access to such high resolution screens.
 
@@ -30,9 +66,9 @@ Where the problems occur with fullscreen editor usage is when a project is split
 
 (hint/tip: fvwm2 set up with "mouse-over to raise focus, rather than additionally requiring a mouseclick, can save a huge amount of cumulative development time here, switching between editor terminal(s) and the command terminals).
 
-Once this becomes necessary, it it turn implies that having greater than 80 chars per line - and running editors fullscreen -is a severe hindance to an essential *and highly effective* workflow technique.
+Once this becomes necessary, it it turn implies that having greater than 80 chars per line - and running editors fullscreen - is a severe hindance to an essential *and highly effective* workflow technique.
 
-Additionally, care should be taken to respect that not everyone will have 200+ column editor windows. They may only have a 1280 x 800 laptop which barely fits 2 80x53 xterms side by side.  Consequently, having excessively long functions is also a hindrance to others, as such developers with limited screen resources would need to continuously page-up and page-down to read the code even of a single function, in full.
+Additionally, care should be taken to respect that not everyone will have 200+ column editor windows and the eyesight of a hawk. They may only have a 1280 x 800 laptop which barely fits two 80x53 xterms side by side.  Consequently, having excessively long functions is also a hindrance to others, as such developers with limited screen resources would need to continuously page-up and page-down to read the code even of a single function, in full.
 
 This helps explain in part, below, why compliance with pep8 is enforced, including its 80 character limit.  In short: not everyone has the same "modern" GUI workflow or has access to the same computing resources as you, so please do respect that.
 
@@ -48,6 +84,12 @@ Whilst many resources online advocate "sudo" in front of all root-level commands
 * return to user prompt (ctrl-d)
 
 This will get you python3 and other tools that are needed. graphviz is essential fir showing the interconnections between cells, and gtkwave is essential for debugging.
+
+## git
+
+Look up good tutorials on how to use git effectively.  There are so many it is hard to recommend one. This is however essential. If you are not comfortable with git, and you let things stay that way, it will seriously impede development progress.
+
+If working all day you should expect to be making at least two commits per hour, so should become familiar with it very quickly.  If you are *not* doing around 2 commits per hour, something is wrong and you should read the workflow instructions below more carefully, and also ask for advice on the mailing list.
 
 ## yosys
 
@@ -77,7 +119,7 @@ testing can then be carried out with "python3 setp.py test"
 
 # Registering for git repository access
 
-After going through the onboarding process and having agreed to take responsibility for certain tasks, ask on the mailing list for git repository access, sending in a public key (id_rsa.pub). If you do not have one generate it with ssh-keygen -t rsa.
+After going through the onboarding process and having agreed to take responsibility for certain tasks, ask on the mailing list for git repository access, sending in a public key (id_rsa.pub). If you do not have one then generate it with ssh-keygen -t rsa. You will find it in ~/.ssh
 
 NEVER SEND ANYONE THE PRIVATE KEY.  By contrast the public key, on account of being public, is perfectly fine to make... err... public.
 
@@ -97,13 +139,15 @@ team communication:
 
 * communicate on the mailing list or the bugtracker an intent to take responsibility for a particular task.
 * assign yourself as the bug's owner
-* *keep in touch* about what you are doing, and why.
-* if you cannot do sonething that you gave taken responsibility for, then unless it is a dire emergency please say so, on-list. we won't mind. we'll help sort it out.
+* *keep in touch* about what you are doing, and why you are doing it.
+* if you cannot do something that you have taken responsibility for, then unless it is a dire personal emergency please say so, on-list. we won't mind. we'll help sort it out.
+
+regarding the above it is important that you read, understand, and agree to the [[charter]] because the charter is about ensuring that we operate as an effective organisation.  It's *not* about setting rules and meting out punishment".
 
 for actual code development:
 
 * **do not commit autogenerated output**. write a shell script and commit that, or add a Makefile to run the command that generates the output, but **do not** add the actual output of **any** command to the repository.  ever.  this is really important.  even if it is a human-readable file rather than a binary object file.
-* if the command needed to create any given autogenerated output is not currently in the list of dependencies, first consult on the list if it is okay to make that command become a hard dependency of the project (hint: java, node.js php and .NET commands will cause delays in responses due to list participants laughing hysterically too much), and after a decision is made, document the dependency and how its source code is obtained and built.
+* if the command needed to create any given autogenerated output is not currently in the list of kniwn project dependencies, first consult on the list if it is okay to make that command become a hard dependency of the project (hint: java, node.js php and .NET commands may cause delays in response time due to other list participants laughing hysterically), and after a decision is made, document the dependency and how its source code is obtained and built (hence why it has to be discussed)
 * if you find yourself repeating commands regularly, chances are high that someone else will need to run them, too. therefore, put them into a .sh shell script (and/or a Makefile) and document them at the very minimum in README or INSTALL.txt or somewhere in a docs folder as appopriate.  if unsure, ask on the mailing list for advice.
 * plan in advance to write not just code but a full test suite for that code.  **this is not optional**. large python projects that do not have unit tests **FAIL**.
 * edit files making minimal *single purpose* modifications (even if it involves multiple files. Good extreme example: globally changing a function name across an entire codebase is one purpose, one commit, yet hundreds of files).
