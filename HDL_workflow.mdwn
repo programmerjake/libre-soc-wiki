@@ -152,6 +152,21 @@ you can clone any of the repos at http://git.libre-riscv.org:
 
     git clone gitolite3@git.libre-riscv.org:REPONAME.git
 
+# Checking out the HDL repositories
+
+* mkdir ~/src
+* cd !$
+* git clone gitolite3@git.libre-riscv.org:soc.git
+* git clone gitolite3@git.libre-riscv.org:ieee754fpu.git
+
+In each of these directories, track down the setup.py file, then, as root (sudo bash) run the following:
+
+* python3 setup.py develop
+
+The reason for using "develop" mode is that the code may be edited in-place yet still imported "globally".  There are variants on this theme for multi-user machine use however it is often just easier to get your own machine these days.
+
+If "python3 setup.py install" is used it is a pain: edit, then install. edit, then install. It gets extremely tedious, hence why "develop" was created.
+
 # Development Rules
 
 team communication:
