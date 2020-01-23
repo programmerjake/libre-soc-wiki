@@ -14,5 +14,26 @@ A basic GUI desktop is necessary: fvwm2, xfce, lxde are perfectly sufficient (al
 
 # Software prerequisites
 
-* apt-get install build-essential
-* apt-get install git python3.7
+Whilst many resources advocate sudo in front of all of the root-level command below, this is extremely irritating. run "sudo bash", get a root prompt, and save some typing.
+
+* # apt-get install build-essential
+* # apt-get install git python3.7 python3.7-dev python-nosetest3
+* # apt-get install graphviz xdot
+* return to user prompt (ctrl-d)
+
+## yosys
+
+## nmigen
+
+nmigen may be installed as follows:
+
+* mkdir ~/src
+* cd !$
+* git clone https://github.com/m-labs/nmigen.git
+* cd nmigen
+* sudo bash
+* python3 setup.py develop
+* ctrl-d
+
+testing can then be carried out with "python3 setp.py test"
+
