@@ -1,6 +1,10 @@
 # HDL workflow
 
-This section describes the workflow for developing the LibreSoC.
+This section describes the workflow for developing the LibreSoC.  We use nmigen, yosys and symbiyosys, and this page is intended not just to help you get set up, it is intended to help advise you of dome tricks and practices that will help you become effective team contributors.
+
+It is particularly important to bear in mind that we are not just "developing code", here: we are creating a "lasting legacy educational resource" for other people to learn from, and for businesses and students alike to be able to use, learn from and augment for their own purposes.
+
+It is also important to appreciate and respect that we are funded under NLNet's Privacy and Enhanced Trust Programme <http://nlnet.nl/PET>. Full transparency, readability, documentation, effective team communication and formal mathematical proofs for all code at all levels is therefore paramount.
 
 # Hardware
 
@@ -125,7 +129,7 @@ you can now fullsize the graphviz window and scroll around.  if it looks reasona
 
 The reasons for doing a proper modularisation job are several-fold:
 
-* firstly, we will not be doing a full automated layout-and-hope using alliance/ciriolis2, we will be doing leaf-node thru tree node half-automated half-manual layout, finally getting to the floorplan, then revising and iteratively adjusting.
+* firstly, we will not be doing a full automated layout-and-hope using alliance/coriolis2, we will be doing leaf-node thru tree node half-automated half-manual layout, finally getting to the floorplan, then revising and iteratively adjusting.
 * secondly, examining modules at the gate level (or close to it) is just good practice.  poor design creeps in by *not* knowing what the tools are actually doing.
 * thirdly, unit testing, particularly formal proofs, is far easier on small sections of code.
 
