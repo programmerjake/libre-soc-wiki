@@ -4,7 +4,7 @@ This section describes the workflow for developing the LibreSoC.
 
 # Hardware
 
-RAM is the biggest requirement. Minimum 16GB, the more the better.  Disk space is not hugely critical: 256GB SSD should be more than adequate.  Simulations however are where raw processing power is a must.  High end Graphics Cards are nonessential.
+RAM is the biggest requirement. Minimum 16GB, the more the better (32 or 64GB starts to reach "acceptable" levels.  Disk space is not hugely critical: 256GB SSD should be more than adequate.  Simulations however are where raw processing power is a must.  High end Graphics Cards are nonessential.
 
 # Operating System
 
@@ -14,7 +14,7 @@ A basic GUI desktop is necessary: fvwm2, xfce, lxde are perfectly sufficient (al
 
 # Software prerequisites
 
-Whilst many resources advocate sudo in front of all of the root-level command below, this is extremely irritating. run "sudo bash", get a root prompt, and save some typing.
+Whilst many resources online advocate sudo in front of all of the root-level commands below, this is extremely irritating. run "sudo bash", get a root prompt, and save some typing.
 
 * apt-get install build-essential
 * apt-get install git python3.7 python3.7-dev python-nosetest3
@@ -51,7 +51,7 @@ testing can then be carried out with "python3 setp.py test"
 
 After going through the onboarding process and having agreed to take responsibility for certain tasks, ask on the mailing list for git repository access, sending in a public key (id_rsa.pub). If you do not have one generate it with ssh-keygen -t rsa.
 
-NEVER SEND ANYONE THE PRIVATE KEY.
+NEVER SEND ANYONE THE PRIVATE KEY.  By contrast the public key, on account of being public, is perfectly fine to make... err... public.
 
 Create a file ~/.ssh/config with the following lines:
 
@@ -63,3 +63,14 @@ you can clone any of the repos at http://git.libre-riscv.org:
 
     git clone gitolite3@git.libre-riscv.org:REPONAME.git
 
+# Development Rules
+
+* plan in advance to write not just code but a full test suite for that code.  **this is not optional**. large python projects that do not have unit tests **fail**.
+* edit files making minimal *single purpose* modifications.
+* prior to committing make sure that relevant unit tests pass, or that the change is a zero-impact addition.
+* commit no more than 5 to 10 lines at a time, with a CLEAR message (no "added this" or "changed that"). if the commit involves a list of changes or the word "and" it is a "red flag" that the commit has not been properly broken down.
+* if it is essential to commit large amounts of code, ensure that it is **not** in use **anywhere** by any other code.
+
+the reason for the above is because python is a weakly typed language.  make one tiny change at the base level of the class hierarchy and the effect may be disastrous.
+
+* all code needs to conform to pep8.
