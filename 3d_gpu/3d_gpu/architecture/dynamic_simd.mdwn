@@ -1,5 +1,13 @@
 # Dynamic Partitioned SIMD
 
+To save hugely on gate count the normal practice of having separate scalar ALUs and separate SIMD ALUs is not followed.
+
+Instead a suite of "partition points" identical in fashion to the Aspex Microelectronics ASP (Array-String-Architecture) architecture is deployed.
+
+Basic principle: when all partition gates are open the ALU is subdivided into isolated and independent 8 bit SIMD ALUs.  Whenever any one gate is opened, the relevant 8 bit "part-results" are chained together in a downstream cascade to create 16 bit, 32 bit, 64 bit and 128 bit compound results.
+
+Pages below describe the basic features of each and track the relevant bugreports.
+
 * [[3d_gpu/architecture/dynamic_simd/eq]]
 * [[3d_gpu/architecture/dynamic_simd/add]]
 * [[3d_gpu/architecture/dynamic_simd/mul]]
