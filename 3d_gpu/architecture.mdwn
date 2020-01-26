@@ -1,0 +1,9 @@
+# Top Level page for core architecture
+
+The primary design is based around the CDC 6600, specifically its Dependency Matrices which provide superscalar out-of-order execution and full register renaming with very little in the way of gates or power consumption.  Modifying the 6600 concept to be multi-issue, thanks to help from Mitch Alsup, is near-trivial and an O(N) linear complexity.
+
+The basic principle: the front-end ISA is variable-length Vectorised, with a hardware-level for-loop in front of a predicated SIMD backend suite of ALUs.  Instructions issued at the front-end are first SIMD-grouped, then the remaining "elements" (or groups of SIMD'd elements) are thrown at the multi-issue OoO execution engine and the augmented-6600 Matrices left to their own devices.
+
+Predication, branch speculation, register file bypass and exceptions all use the same mechanism: shadowing (thanks to Mitch for explaining how this is done). Shadowing holds a latch that prevents and prohibits the *write* commit phase of the OoO Matrices but not the *execution* phase, simply by hooking into GOWRITE.  Once the result is definitely known to be able to proceed the shadow latch is dropped.
+
+
