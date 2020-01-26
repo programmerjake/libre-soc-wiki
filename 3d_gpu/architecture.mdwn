@@ -31,3 +31,11 @@ Dynamically.
 This means that in low clock rate modes the length of the whole pipeline may be reduced in latency (the number of effective stages is halved).  Whilst in higher clock rate modes where the long stage latency would otherwise be a serious limiting factor, the intermediary latches are enabled, thus doubling the pipeline length into much shorter stages with lower latency, and the problem is solved.
 
 The only reason why this ingenious and elegant trick (deployed first by IBM in the 1990s) can be considered is down to the fact that the 6600 Style Dependency Matrices do not care about actual completion time, they only care about availability of the result.
+
+# Memory and Cache arrangement
+
+Section TODO, with own page [[3d_gpu/architecture/memory_and_cache]]  LD/ST accesses are controlled by the 6600-style Dependency Matrices
+
+# Bus arrangement
+
+Wishbone was chosen.  to expand why (related to patents).
