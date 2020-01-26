@@ -2,8 +2,32 @@
 
 The primary design is based around the CDC 6600, specifically its Dependency Matrices which provide superscalar out-of-order execution and full register renaming with very little in the way of gates or power consumption.  Modifying the 6600 concept to be multi-issue, thanks to help from Mitch Alsup, is near-trivial and an O(N) linear complexity.
 
+This allows a mixture of variable-length completion time ALUs, including dynamic pipelines and blocking FSMs, to be mixed together and the Dependency Matrices simply take care of it.
+
+The selection of the 6600 as the core engine has far-reaching implications.  Note: the standard academic literature on the 6600 - all of it - completely and systematically fails to comprehend or explain why it is so elegant.  In fact, several modern microarchitectures have *reinvented* aspects of the 6600, not realising that the 6600 was the first ever microarchitecture to provide full register renaming combined with out-of-order execution in such a superbly gate-efficient fashion.
+
+# Basic principle
+
 The basic principle: the front-end ISA is variable-length Vectorised, with a hardware-level for-loop in front of a predicated SIMD backend suite of ALUs.  Instructions issued at the front-end are first SIMD-grouped, then the remaining "elements" (or groups of SIMD'd elements) are thrown at the multi-issue OoO execution engine and the augmented-6600 Matrices left to their own devices.
 
 Predication, branch speculation, register file bypass and exceptions all use the same mechanism: shadowing (thanks to Mitch for explaining how this is done). Shadowing holds a latch that prevents and prohibits the *write* commit phase of the OoO Matrices but not the *execution* phase, simply by hooking into GOWRITE.  Once the result is definitely known to be able to proceed the shadow latch is dropped.
 
+If there was an exception (or a predicate bit is retrospectively found to be zero, or a branch found to go the other way) the "GODIE" is called instead, and because all downstream dependent instructions are also held by the same shadow line, no register writes nor memory writes were allowed to occur and consequently the instructions *can* be cancelled with impunity.
 
+# Dynamic SIMD partitioning
+
+There are no separate scalar ALUs and separate SIMD ALUs. The ALUs are dynamically partitioned. This adds 50% silicon when compared to a scalar ALU however it saves 200% or greater silicon due to ALU duplication removal.
+
+The only reason this design can even remotely be considered is down to the use of standard python Software Engineering Object-Orientated techniques, on top of nmigen, which industry-standard HDLs such as VHDL and Verilog completely lack.
+
+See [[3d_gpu/architecture/dynamic_simd]] for details.
+
+# Dynamic Pipeline length adjustment
+
+There are pipeline register bypasses on every other pipeline stage in the ALU, simply implemented as a combinatorial mux. This allows pairs of pipeline stages to *either* become a single higher-latency combinatorial block *or* a straight standard chain of clock-synced pipeline stages just like all other pipeline stages.
+
+Dynamically.
+
+This means that in low clock rate modes the length of the whole pipeline may be reduced in latency (the number of effective stages is halved).  Whilst in higher clock rate modes where the long stage latency would otherwise be a serious limiting factor, the intermediary latches are enabled, thus doubling the pipeline length into much shorter stages with lower latency, and the problem is solved.
+
+The only reason why this ingenious and elegant trick (deployed first by IBM in the 1990s) can be considered is down to the fact that the 6600 Style Dependency Matrices do not care about actual completion time, they only care about availability of the result.
