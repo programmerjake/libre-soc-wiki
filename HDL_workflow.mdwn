@@ -273,8 +273,42 @@ testing can then be carried out with "python3 setup.py test"
 
 These are a test suite dependency for the ieee754fpu library, and
 will be changed in the future to use Jacob's algorithmic numeric
-library.  In the meantime the README describing the process is here:
-<https://git.libre-riscv.org/?p=ieee754fpu.git;a=blob;f=README.md;h=d219864a341e4b656680de476e385b6a7f70fb9b;hb=HEAD>
+library.  In the meantime, sfpy can be built as follows:
+
+    git clone --recursive https://github.com/billzorn/sfpy.git
+    cd sfpy
+    cd SoftPosit
+    git apply ../softposit_sfpy_build.patch
+    git apply /path/to/ieee754fpu/SoftPosit.patch
+    cd ../berkely-softfloat-3
+    # Note: Do not apply the patch included in sfpy for berkely-softfloat, 
+    # it contains the same changes as this one
+    git apply /path/to/ieee754fpu/berkeley-softfloat.patch
+    cd ..
+
+    # install dependencies    
+    python -m venv .env
+    . .env/bin/activate
+    pip install --upgrade -r requirements.txt
+
+    # build
+    make lib -j8
+    make cython
+    make inplace -j8
+    make wheel
+
+    # install
+    deactivate # deactivates venv, optional 
+    pip install dist/sfpy*.whl
+
+You can test your installation by doing the following:
+
+    python
+    >>> from sfpy import *
+    >>> Posit8(1.3)
+
+It should print out `Posit8(1.3125)`
+  
 
 # Registering for git repository access
 
