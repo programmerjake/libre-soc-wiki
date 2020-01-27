@@ -302,6 +302,27 @@ Alternatively, the .ssh/config can be skipped and this used:
 
      git clone ssh://gitolite3@git.libre-riscv.org:922/REPONAME.git
 
+# git configuration
+
+Although there are methods online which describe how (and why) these
+settings are normally done, honestly it is simpler and easier to open
+~/.gitconfig and add them by hand.
+
+core.autocrlf is a good idea to ensure that anyone adding DOS-formatted
+files they don't become a pain.  pull.rebase is something that is greatly
+preferred for this project because it avoids the mess of "multiple
+extra merge git tree entries", and branch.autosetuprebase=always will,
+if you want it, always ensure that a new git checkout is set up with rebase.
+
+    [core]
+        autocrlf = input
+    [push]
+        default = simple
+    [pull]
+        rebase = true
+    [branch]
+        autosetuprebase = always
+
 # Checking out the HDL repositories
 
 * mkdir ~/src
