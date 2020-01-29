@@ -440,6 +440,7 @@ for actual code development:
   commits, and it actually becomes a nuisance).
 * prior to committing make sure that relevant unit tests pass, or that
   the change is a zero-impact addition (no unit tests fail at the minimum)
+* keep working code working **at all times**. find ways to ensure that this is the case. examples include writing alternative classes that replace existing functionality and adding runtime optiobs to select between old and new code.
 * commit no more than around 5 to 10 lines at a time, with a CLEAR message
   (no "added this" or "changed that").
 * if as you write you find that the commit message involves a *list* of
@@ -471,7 +472,8 @@ it (a large amount of code) is perfectly fine.
 
 as a general rule, however, do not use this an an excuse to write code
 first then write unit tests as an afterthought.  write *less* code *in
-conjunction* with its (more basic) unit tests, instead.
+conjunction* with its (more basic) unit tests, instead. then, folliw up with
+additions and improvements.
 
 the reason for separating out commits to single purpose only becomes
 obvious (and regretted if not followed) when, months later, a mistake
