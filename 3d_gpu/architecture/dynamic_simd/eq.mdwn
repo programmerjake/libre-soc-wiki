@@ -1,3 +1,10 @@
+# Partitioned "Eq" function
+
+The basic principle here is that the basic (lowest, split) input data
+is compared (eq'd), then, depending on the partitions, those partial
+results are ANDed together, on the basis that these chains will tell
+if *all* bits in a particular partition are equal.
+
 # Boolean truth table
 
 [[!table  data="""
