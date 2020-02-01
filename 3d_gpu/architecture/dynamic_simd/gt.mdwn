@@ -1,0 +1,10 @@
+# Dynamic SIMD gt
+
+This also covers le by swapping a and b.
+
+The logic is the same structure as eq except that the comparison, rather than being a straight AND of the constituent parts, must begin with a gt in the MSBlock, however if that is false then an EQ on MSBlock is performed, ANDed with the gt of the next lowest block.  This continues to cascade.  When all partition are open:
+
+    cmp3 = gt3 |
+           eq3 & gt2 |
+           eq3 & eq2 & gt1 |
+           eq3 & eq2 & eq1 & gt0
