@@ -50,20 +50,21 @@
                     <li <TMPL_IF ACTIVE>class="active"</TMPL_IF>><a href="<TMPL_VAR URL>"><TMPL_VAR PAGE></a></li>
                 </TMPL_IF>
             </TMPL_LOOP>
+
 <TMPL_IF EDITURL>
-<li><a href="<TMPL_VAR EDITURL>" rel="nofollow">Edit</a></li>
+<li><a href="<TMPL_VAR EDITURL>" class="active" rel="nofollow">Edit</a></li>
 </TMPL_IF>
 <TMPL_IF RECENTCHANGESURL>
-<li><a href="<TMPL_VAR RECENTCHANGESURL>">RecentChanges</a></li>
+<li><a href="<TMPL_VAR RECENTCHANGESURL>" class="active" >RecentChanges</a></li>
 </TMPL_IF>
 <TMPL_IF HISTORYURL>
-<li><a href="<TMPL_VAR HISTORYURL>">History</a></li>
+<li><a href="<TMPL_VAR HISTORYURL>" class="active">History</a></li>
 </TMPL_IF>
 <TMPL_IF GETSOURCEURL>
-<li><a href="<TMPL_VAR GETSOURCEURL>">Source</a></li>
+<li><a href="<TMPL_VAR GETSOURCEURL> class="active"">Source</a></li>
 </TMPL_IF>
 <TMPL_IF PREFSURL>
-<li><a href="<TMPL_VAR PREFSURL>">Preferences</a></li>
+<li><a href="<TMPL_VAR PREFSURL>" class="active">Preferences</a></li>
 </TMPL_IF>
 
 
