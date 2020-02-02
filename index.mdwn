@@ -1,13 +1,18 @@
 # Welcome to Libre-SoC ([provisionally renamed](http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2020-January/003580.html) from Libre-RISCV)!
 
-The Libre-SoC project is an effort to develop a complete modern capability
-SoC (quad core, 800mhz, dual issue,
-GPU, VPU, [and later an ML inference core] ) that is libre to the bedrock.
+Its quite hard to guarantee that a performant processors(think pipelined, out-of-order) are functionally perfectly correct. In fact, it often turns out that they [aren’t](https://meltdownattack.com):
 
-Libre has a very specific meaning and guarantees, where "open" does not.
-See <https://www.gnu.org/philosophy/open-source-misses-the-point.html>
-for an explanation of the distinction, and for additional examples:
-<https://wiki.opensourceecology.org/wiki/Fake_Open_Source>
+There are entire [dissertations](http://www.kroening.com/diss/diss-kroe.pdf) dedicated to the subject matter of merely functionally verifying a pipeline(this doesn’t even consider out of order execution).
+
+Given the fact that [high performing]bug free processors don’t exist anymore, how can you trust your processor? The next best thing is have access to a processor’s design files. Not only have access to them, you need to be able to study and improve them.
+
+Such a processor is referred to as a Libre processor. However, processors themselves are only a part of the picture. Nowadays, most contemporary computing tasks involve intelligence, media consumption, wireless connectivity, etc.
+
+LibreSOC strives to deliver a fully capable and competitive Libre integrated System on Chip. We want to maximize the degree of trust a customer can place in his or her processor. We do this by providing the customer the freedom to  study, modify, and redistribute the processor source from HDL to VLSI.
+
+Right now, we're targeting an (quad core, 800mhz, dual issue, GPU, VPU, [and later an ML inference core] ) SOC.
+
+# Wiki Structure
 
 This is a publicly editable wiki.
 
