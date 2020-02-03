@@ -1,45 +1,19 @@
-This page really needs more/better content!
+## Why a Libre SOC?
 
-# Who we are and why a LibreSOC
+Its quite hard to guarantee that a performant processors (think pipelined, out-of-order) are functionally perfectly correct. In fact, it often turns out that they [aren’t](https://meltdownattack.com).
 
-Short paragraph on how a libreSOC makes sense from a business perspective...
+There are entire [dissertations](http://www.kroening.com/diss/diss-kroe.pdf) dedicated to the subject matter of merely functionally verifying a pipeline (this doesn’t even consider out of order execution).
 
-we are develiping a secure trustworthy chip to give mass volume appliance manufacturers an alternative to expensive unauditable chips.
+Given the fact that performant bug-free processors no longer exist, how can you trust your processor? The next best thing is to have access to a processor’s design files. Not only have access to them, you must have the freedom to study and improve them.
 
-we are doing this with inexpensive and open toolsets, to ensure sustainability and full transparency.
+Such a processor is referred to as a Libre processor. However, processors themselves are only a part of the picture. Nowadays, most contemporary computing tasks involve artificial intelligence, media consumption, wireless connectivity, etc... Thus, we must deliver an entire LibreSOC.
 
-see [[3d_gpu/mission_statement]]
+## Benefits: Privacy, Safety-Critical, Peace of Mind...
+Our LibreSOC will not have backdoors that plague modern [processors](https://www.csoonline.com/article/3220476/researchers-say-now-you-too-can-disable-intel-me-backdoor-thanks-to-the-nsa.html).
 
-see [[3d_gpu/business_objectives]]
+There is a very real need for reliable safety critical processors (think airplane, smart car, nuclear power plant, pacemaker...).
+LibreSOC posits that it is impossible to trust a processor in a safety critical environment without both access
+to that processor's source and a cycle accurate HDL simulator that guarantees developers their code behaves as they 
+expect. An ISA level simulator is no longer satisfactory.
 
-# Our Gameplan
-
-## Customer Discovery
-
-Who are our competitors(Intel, ARM, AMD?)
-
-Who might be on our side?(Samsung, IBM)
-
-What is our market size
-
-Why are they going to buy this and why are customers not satisfied with what already exists on the market
-
- - secure processors - safety critical applications like medical applications
- - DARPA doesn’t have to order parts in bulk for big contracts for fear of obsolescence. DARPA can change designs more frequently… 
- - why is processor trust so important(SPECTRE MELTDOWN), JP Morgan recently replaced all their intel processors because of this
-
-## Customer Validation
-
-Give it to potential customer (who might be some direct customers? OnePlus Chinese Phone Manufacturers??)
-
-Customer likes it.
-
-Customer gives letter of intent that they will purchase this product.
-
-## Customer Creation
-
-First customer leads to more customers.
-
-#Company Building
-
-Lots of customers = start focusing on building the company.
+Refer to this [IEEE article](https://ieeexplore.ieee.org/document/4519604) by Cyberphysical System expert Ed-Lee for more details.
