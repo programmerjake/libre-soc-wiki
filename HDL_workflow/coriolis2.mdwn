@@ -1,0 +1,109 @@
+# Installing Coriolis2
+
+## debootstrap
+
+First set up an schroot debootstrap jail with debian 9.0.
+Follow these instructions taken from here:
+<https://www.debian.org/releases/stretch/amd64/apds03.html.en>
+
+In advance, edit /etc/fstab and add mount points: personally I prefer using
+mount --bind points
+
+    /dev    /home/chroot/coriolis/dev   none    bind    0   0
+    /dev/pts /home/chroot/coriolis/dev/pts  none    bind    0   0
+    /proc   /home/chroot/coriolis/proc  none    bind    0   0
+    /sys    /home/chroot/coriolis/sys   none    bind    0   0
+    /tmp    /home/chroot/coriolis/tmp   none    bind    0   0
+
+Then run these commands:
+
+    sudo bash
+    apt-get install debootstrap schroot
+    mkdir /opt/chroot/coriolis
+    /usr/sbin/debootstrap stretch !$ http://ftp.us.debian.org/debian
+    mount -a
+    echo "coriolis2" > /home/chroot/coriolis/etc/debian_chroot
+
+To do some preparation (users):
+
+    chroot /home/chroot/coriolis2 /bin/bash
+    adduser {yourpreferredusername}
+
+It is best to make the username the same as the first user that
+was added during the debian install, so that uid 1001 matches between
+both main and chroot.  Alternatively, /etc/passwd and /etc/group may
+be mount-bound as well as /home however if you later forget you did
+this and decide to delete the chroot, you will delete the entire /home
+of your main system, as well as /etc/passwd.
+
+You may wish to follow some of the other things such as configuring apt,
+locales and keyboard.  bootloader, kernel, ssh access, all these are
+unnecessary.  do run "apt clean" to clear out /var/cache/apt/archives
+in the chroot.
+
+## schroot
+
+Create an schroot file section:
+
+    [coriolis] 
+    description=Debian Stable for Coriolis
+    directory=/home/chroot/coriolis
+    groups=sbuild-security,lkcl,users
+
+Now as an *ordinary* user - not as root - you may type:
+
+    lkcl@fizzy:~$ schroot -c coriolis
+
+and, due to the contents of /etc/debian\_chroot, the prompt should become:
+
+    (coriolis2)lkcl@fizzy:~$ 
+
+## coriolis2
+
+These are nominally taken from
+<https://www-soc.lip6.fr/equipe-cian/logiciels/coriolis/>
+however there are errors in the original at the moment.
+Do not try qt5, it will not work.
+
+In ~/.bash\_profile add the following so that builds (rebuilds) if you need
+them will be quicker, and you can run the GUI from the chroot:
+
+    export PATH=/usr/lib/ccache:"$PATH"
+    export DISPLAY=:0.0
+
+Second (or at a new terminal / xterm), log in as root on the host (not
+the chroot) then do schroot -c coriolis to get to be root in the chroot
+(or, you can install sudo in the chroot and then do "sudo bash" in the
+chroot).
+
+Then run the following commands, as root, *in* the chroot:
+
+    apt-get update
+    apt-get install -y build-essential binutils-dev               \
+                  git cmake bison flex gcc python-dev               \
+                  libboost-all-dev libboost-python-dev               \
+                  zlib1g-dev                                         \
+                  libbz2-dev libxml2-dev rapidjson-dev libbz2-dev     \
+                  doxygen dvipng graphviz python-sphinx               \
+                  texlive-fonts-extra texlive-lang-french            \
+                  libqwt-dev qt4-dev-tools python-qt4
+
+    mkdir -p ~/coriolis-2.x/src
+    cd ~/coriolis-2.x/src
+    git clone https://www-soc.lip6.fr/git/coriolis.git
+
+    cd coriolis
+    git checkout devel
+    ./bootstrap/ccb.py --project=coriolis --make="-j4 install"
+
+To set up the alliance environment, run this:
+
+    eval `~/coriolis-2.x/src/coriolis/bootstrap/coriolisEnv.py`
+
+For convenience that may be placed in a file and "sourced", to avoid
+having to look this page up every time
+
+    echo "eval `~/coriolis-2.x/src/coriolis/bootstrap/coriolisEnv.py`" > \
+            ~/coriolisenv
+    source ~/coriolisenv
+
