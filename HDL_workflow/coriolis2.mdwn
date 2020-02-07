@@ -30,8 +30,14 @@ To do some preparation (users):
     adduser {yourpreferredusername}
 
 It is best to make the username the same as the first user that
-was added during the debian install, so that uid 1001 matches between
-both main and chroot.  Alternatively, /etc/passwd and /etc/group may
+was added during the *main* (non-chroot) debian install, so that
+uid 1000 matches between both main and chroot.  You can check
+this by looking at /etc/passwd as root, or by typing "id".
+
+    lkcl@fizzy:~$ id
+    uid=1000(lkcl) gid=1000(lkcl) groups=1000(lkcl),5(tty),....
+
+Alternatively, /etc/passwd and /etc/group may
 be mount-bound as well as /home however if you later forget you did
 this and decide to delete the chroot, you will delete the entire /home
 of your main system, as well as /etc/passwd.
@@ -55,7 +61,9 @@ Now as an *ordinary* user - not as root - you may type:
 
     lkcl@fizzy:~$ schroot -c coriolis
 
-and, due to the contents of /etc/debian\_chroot, the prompt should become:
+and, due to the contents of /etc/debian\_chroot, and that you were in
+fact logged in as uid 1000 and did in fact add a user to the chroot
+as uid 1000, the prompt should become:
 
     (coriolis2)lkcl@fizzy:~$ 
 
