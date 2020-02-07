@@ -1,0 +1,12 @@
+# Dynamic Partitioned Shift
+
+This is almost as complex as multiplication, except there is a trick that can be deployed.  In the partitioned multiplier, it is necessary to compute a full NxN matrix of partial multiplication results, then perform a cascade of adds, using PartitionedAdd to "automatically" break them down into segments.
+
+Partitioned Shifting will also require to have an NxN matrix, however it is slightly different.  first, define the following:
+
+    a0 = a[7..0], a1 = a[15..8], ....
+    b0 = b[7..0], b1 = b[15..8], ....
+
+then, we compute the following matrix:
+
+    a0 << b0    a1 << b0    a2 << b0   a3 << b0
