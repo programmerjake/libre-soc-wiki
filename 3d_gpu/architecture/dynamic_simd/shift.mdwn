@@ -9,4 +9,26 @@ Partitioned Shifting will also require to have an NxN matrix, however it is slig
 
 then, we compute the following matrix:
 
-    a0 << b0    a1 << b0    a2 << b0   a3 << b0
+    | a0 << b0 | a1 << b0 | a2 << b0 | a3 << b0
+    | a0 << b1 | a1 << b1 | a2 << b1 | a3 << b1
+    | a0 << b2 | a1 << b2 | a2 << b2 | a3 << b2
+    | a0 << b3 | a1 << b3 | a2 << b3 | a3 << b3
+
+Where multiply would perform a cascading-add across those partial results,
+shift is different in that we *know* (assume) that for each shift-amount
+(operand b), within each partition the topmost bits are **zero**.
+
+This because, in the typical 64-bit shift, the operation is actually:
+
+    result[63..0] = a[63..0] << b[5..0]
+
+**NOT** b[63..0], i.e. the amount to shift a 64-bit number by by is in the
+*lower* six bits of b.  Likewise, for a 32-bit number, this is 5 bits.
+
+Therefore, in principle, it should be possible to simply use Muxes on the
+partial-result matrix, ORing them together.  Assuming (again) a 32-bit
+input and a 4-way partition:
+
+    out0 = p00[7..0]
+    out1 = pmask[0] ? p01[7..0] : p00[15..8]
+
