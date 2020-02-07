@@ -1,0 +1,22 @@
+# Partitioned Add
+
+this principle also applies to subtract and negate (-)
+
+the basic principle is: the partition bits, when inverted, can actually
+be inserted into an (expanded) add, and, if the bit is set, it has
+the side-effect of "rolling through" the carry bit of the MSB from
+the previous partition.
+
+this is a really neat trick, basically, that allows the use of a
+straight "add" (DSP in an FPGA, add in a simulator) where
+otherwise it would be extraordinarily complex, CPU-intensive
+and take up large resources.
+
+    partition: .... P... P... P... P... (32 bits)
+    a        : .... .... .... .... .... (32 bits)
+    b        : .... .... .... .... .... (32 bits)
+    exp-a    : ....P....P....P....P.... (32+4 bits, P=1 if no partition)
+    exp-b    : ....0....0....0....0.... (32 bits plus 4 zeros)
+    exp-o    : ....xN...xN...xN...xN... (32+4 bits - x to be discarded)
+    o        : .... N... N... N... N... (32 bits - x ignored, N is carry-over)
+
