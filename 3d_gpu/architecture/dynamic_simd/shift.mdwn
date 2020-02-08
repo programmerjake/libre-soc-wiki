@@ -32,6 +32,21 @@ input and a 4-way partition:
     out0 = p00[7..0]
     out1 = pmask[0] ? p01[7..0] : p00[15..8]
 
+Table based on partitions:
+
+[[!table  data="""
+p2p1p0 | o0        | o1       | o2       | o3
+++++++ | ++++++++  | ++++++++ | ++++++++ | ++
+0 0 0  | a0b0      | a1b0     | a2b0     | a3b0
+0 0 1  | eq0       | &(eq1-3) | 0        | 0
+0 1 0  | &(eq0-1)  | 0        | &(eq2-3) | 0
+0 1 1  | eq0       | eq1      | &(eq2-3) | 0
+1 0 0  | &(eq0-2)  | 0        | 0        | eq3
+1 0 1  | eq0       | &(eq1-2) | 0        | eq3
+1 1 0  | &(eq0-1)  | 0        | eq2      | eq3
+1 1 1  | eq0       | eq1      | eq2      | eq3
+"""]]
+
 # Static Partitioned Shift
 
 Static shift is pretty straightforward: the input is the entire number
