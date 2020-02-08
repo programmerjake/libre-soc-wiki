@@ -33,7 +33,12 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="<TMPL_VAR BASEURL>"><TMPL_VAR WIKINAME></a>
+<div class="navbar-brand">
+<TMPL_IF SEARCHFORM>
+<TMPL_VAR SEARCHFORM>
+</TMPL_IF>
+</div>
+      <!--<a class="navbar-brand" href="<TMPL_VAR BASEURL>"><TMPL_VAR WIKINAME></a>-->
         </div>
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
