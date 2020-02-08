@@ -32,3 +32,12 @@ input and a 4-way partition:
     out0 = p00[7..0]
     out1 = pmask[0] ? p01[7..0] : p00[15..8]
 
+# Static Partitioned Shift
+
+Static shift is pretty straightforward: the input is the entire number
+shifted, however clearly due to partitioning some of the bits need to
+be masked out (to zero, or to 1 if it is an arithmetic shift right).
+This can therefore use the class currently known as "MultiShiftRMerge"
+or similar, which can merge in a 1 into the shifted data.  Luckily
+the amount to be 0'd/1'd is also statically computable: it is just that
+the location *where* is dynamic, based on the partition location(s).
