@@ -12,7 +12,7 @@ straight "add" (DSP in an FPGA, add in a simulator) where
 otherwise it would be extraordinarily complex, CPU-intensive
 and take up large resources.
 
-    partition: .... P... P... P... P... (32 bits)
+    partition:     P    P    P    P     (4 bits)
     a        : .... .... .... .... .... (32 bits)
     b        : .... .... .... .... .... (32 bits)
     exp-a    : ....P....P....P....P.... (32+4 bits, P=1 if no partition)
@@ -22,12 +22,25 @@ and take up large resources.
 
 new version:
 
-    partition:  .... P... P... P... P... (32 bits)
-    a        :  .... .... .... .... .... (32 bits)
-    b        :  .... .... .... .... .... (32 bits)
-    exp-a    : 0....P....P....P....P....1 (32+4 bits, P=1 if no partition)
-    exp-b    : 0....C....C....C....C....C (32 bits plus 4 zeros)
-    exp-o    : c....cN...cN...cN...cN...x (32+4 bits - x to be discarded)
-    o        : .... N... N... N... N... (32 bits - x ignored, N is carry-over)
+    partition:      p    p    p    p      (4 bits)
+    carry-in :           c    c    c    c (4 bits)
+    C = c & P:           C    C    C    c (4 bits)
+    a        :  AAAA AAAA AAAA AAAA AAAA  (32 bits)
+    b        :  BBBB BBBB BBBB BBBB BBBB  (32 bits)
+    exp-a    : 0AAAApAAAACAAAACAAAACAAAAc (32+4 bits, P=1 if no partition)
+    exp-b    : 0BBBB0BBBBCBBBBCBBBBCBBBBc (32 bits plus 4 zeros)
+    exp-o    : o....oN...oN...oN...oN...x (32+4 bits - x to be discarded)
+    o        :  .... N... N... N... N... (32 bits - x ignored, N is carry-over)
+    carry-out:      o    o    o    o      (4 bits)
 
-the new version brings in the carry-in (C)
+the new version
+
+* brings in the carry-in (C) bits which, in combination with
+  the Partition bits, are ANDed to create "C & p".
+* C is positioned twice (in both A and B) intermediates, which
+  has the effect of preserving carry-out, yet only performing a
+  carry-over if the carry-in bit (c) is set and this is part of
+  a partition
+* o (carry-out) must be "cascaded" down to the relevant partition
+  start-point.  this can be done with a Mux-cascade.
+
