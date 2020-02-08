@@ -51,8 +51,11 @@
                 </TMPL_IF>
             </TMPL_LOOP>
 
-<li><a href="/" class="active" >Home</a></li>
-<li><a href="/about_us" class="active" >About Us</a></li>
+<TMPL_LOOP PARENTLINKS>
+<li><a href="<TMPL_VAR URL>" class="active"><TMPL_VAR PAGE></a></li>
+</TMPL_LOOP>
+<li><a href="/sitemap/" class="active" >Site map</a></li>
+<li><a href="/about_us/" class="active" >About Us</a></li>
 <TMPL_IF EDITURL>
 <li><a href="<TMPL_VAR EDITURL>" class="active" rel="nofollow">Edit</a></li>
 </TMPL_IF>
