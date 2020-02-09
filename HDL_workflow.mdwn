@@ -364,11 +364,12 @@ if you want it, always ensure that a new git checkout is set up with rebase.
 
 * mkdir ~/src
 * cd !$
-* git clone gitolite3@git.libre-riscv.org:soc.git
+* git clone gitolite3@git.libre-riscv.org:nmutil.git
 * git clone gitolite3@git.libre-riscv.org:ieee754fpu.git
+* git clone gitolite3@git.libre-riscv.org:soc.git
 
-In each of these directories, track down the setup.py file, then, as root
-(sudo bash) run the following:
+In each of these directories, in the order listed, track down the
+setup.py file, then, as root (sudo bash), run the following:
 
 * python3 setup.py develop
 
@@ -376,6 +377,9 @@ The reason for using "develop" mode is that the code may be edited
 in-place yet still imported "globally".  There are variants on this theme
 for multi-user machine use however it is often just easier to get your
 own machine these days.
+
+The reason for the order is because soc depends on ieee754fpu, and
+ieee754fpu depends on nmutil
 
 If "python3 setup.py install" is used it is a pain: edit, then
 install. edit, then install. It gets extremely tedious, hence why
