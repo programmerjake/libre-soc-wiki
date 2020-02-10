@@ -208,3 +208,57 @@ You also have a third repository for various blocks/chip/examples here:
 
 (with a basic doc under "doc/"...)
 
+## More from JP
+
+You must create a configuration for alliance-check-toolkit:
+
+    alliance-check-toolkit/etc/mk/users.d/user-LOGIN.mk
+
+    where you define where the various tools are installed
+    (look in other ones to have an idea).
+
+  You can try the ARM in alliance-check-toolkit:
+
+    > cd alliance-check-toolkit/benchsARM/cmos/
+    > make lvx
+
+    Should take about five minutes. It's symbolic, but should be
+    a configuration compatible with 180nm. To actually see the
+    results:
+
+    > make cgt
+
+    Then "File -> Open", "arm_chip_cts_r"
+
+    To have a very rough approximation, you can say that one lambda
+    equal 180nm.
+
+> i'd expect such a chip to be in the alliance-check-toolkit however we
+> don't even know what we're looking at in order to know which bits we
+> need, let alone know what to do or how to run them.
+>
+> we're *literally* completely in the dark, here, having never done this
+> before - at all - so unless there's a specific tutorial which says, to
+> make a chip layout do this: "step 1: install these tools.  step 2: get
+> this project repo.  step 3: cd to this directory.  step 4: run make or
+> ./compile-place-and-route.sh" we're absolutely lost.
+>
+> thx jean-paul, and apologies for not knowing where to begin, here.
+
+  No problem. You're welcome.
+
+  The doc is mostly for people who already have a background in ASICs,
+  I will try to patch something from my lecture in VLSI to help people
+  to orient themselves.
+
+  The up-to-date documentation is supplied directly in the Coriolis
+  repository:
+
+     coriolis/documentation/output/index.html
+
+     The links toward the doxygen doc will be invalid a this point,
+     but everython else works.
+
+   After installation, it is put in:
+
+     coriolis-2.x/Linux.x86_64/Release.Shared/install/share/doc/coriolis2/en/html/index.html
