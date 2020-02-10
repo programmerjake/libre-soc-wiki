@@ -143,12 +143,15 @@ in the schroot:
 
 TODO: document how to build alliance, basically this:
 
-As root:
+In the chroot, as root:
 
     apt-get update
-    apt-get install git build-essential libtool automake aclocal
+    apt-get install git build-essential libtool automake aclocal \
+             flex bison xfig imagemagick \
+             texlive texlive-pictures texlive-latex-extra \
+             libx11-dev libxt-dev libxaw7-dev libxpm-dev libmotif-dev
 
-As the schroot user:
+In the chroot, as the ordinary schroot user:
 
     mkdir -p alliance/build alliance/install
     cd ~/alliance
