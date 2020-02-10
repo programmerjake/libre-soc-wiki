@@ -131,6 +131,25 @@ The following window will appear
 
 click on the chicken several times
 
+## check out alliance and alliance-check-toolkit
+
+in the schroot:
+
+    git clone https://gitlab.lip6.fr/jpc/alliance-check-toolkit.git
+
+TODO: document how to build alliance, basically this:
+
+    mkdir -p alliance/build alliance/install
+    cd ~/alliance
+    git clone https://www-soc.lip6.fr/git/alliance.git
+    cd alliance/src
+    ./autostuff
+    cd ~/alliance/build
+    export ALLIANCE_TOP=$HOME/alliance/install
+    export LD_LIBRARY_PATH=${ALLIANCE_TOP}/lib:${LD_LIBRARY_PATH}
+    ../alliance/src/configure --prefix=$ALLIANCE_TOP --enable-alc-shared
+    make -j1 install
+
 # Tutorials and checks
 
 * <https://gitlab.com/Chips4Makers/alliance-check-toolkit>
