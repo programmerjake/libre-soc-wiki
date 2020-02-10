@@ -76,6 +76,11 @@
 <li><a href="<TMPL_VAR PREFSURL>" class="active">Preferences</a></li>
 </TMPL_IF>
 <li><a href="/sitemap/" class="active" >Sitemap</a></li>
+<TMPL_IF ACTIONS>
+<TMPL_LOOP ACTIONS>
+<li><TMPL_VAR ACTION></li>
+</TMPL_LOOP>
+</TMPL_IF>
 
 
           </ul>
