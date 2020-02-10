@@ -67,6 +67,58 @@ as uid 1000, the prompt should become:
 
     (coriolis2)lkcl@fizzy:~$ 
 
+## check out alliance and alliance-check-toolkit
+
+in the schroot:
+
+    git clone https://gitlab.lip6.fr/jpc/alliance-check-toolkit.git
+
+TODO: document how to build alliance, basically this:
+
+In the chroot, as root:
+
+    apt-get update
+    apt-get install git build-essential libtool automake aclocal \
+             flex bison xfig imagemagick \
+             texlive texlive-pictures texlive-latex-extra \
+             libx11-dev libxt-dev libxaw7-dev libxpm-dev libmotif-dev
+
+In the chroot, as the ordinary schroot user:
+
+    mkdir -p alliance/build alliance/install
+    cd ~/alliance
+    git clone https://www-soc.lip6.fr/git/alliance.git
+    cd alliance/src
+
+Modify the following file (may not be necessary later):
+
+    diff --git a/alliance/src/pat/src/pat_desc_y.y b/alliance/src/pat/src/pat_desc_y.y
+    index 14720dbc..5390d2a4 100644
+    --- a/alliance/src/pat/src/pat_desc_y.y
+    +++ b/alliance/src/pat/src/pat_desc_y.y
+    @@ -85,8 +85,8 @@ unsigned short  position; /* # of statement since last comment    */
+     static struct papat *lcl_addpapat (lastpapat, label, line)
+
+     struct papat   *lastpapat; /* pointer on the last papat structure  */
+    -char           *label;     /* pattern's label          */
+    -unsigned short  line;      /* pattern' line number         */
+    +char           *label;
+    +unsigned short  line;
+
+       {
+       struct papat *ptpat;
+
+Continue running as user:
+
+    ./autostuff
+    cd ~/alliance/build
+    export ALLIANCE_TOP=$HOME/alliance/install
+    export LD_LIBRARY_PATH=${ALLIANCE_TOP}/lib:${LD_LIBRARY_PATH}
+    ../alliance/src/configure --prefix=$ALLIANCE_TOP --enable-alc-shared
+    make -j1 install
+
+the two exports are best added to ~/.bash_profile for later convenience
+
 ## coriolis2
 
 These are nominally taken from
@@ -134,56 +186,6 @@ The following window will appear
 [[!img chicken.png ]]
 
 click on the chicken several times
-
-## check out alliance and alliance-check-toolkit
-
-in the schroot:
-
-    git clone https://gitlab.lip6.fr/jpc/alliance-check-toolkit.git
-
-TODO: document how to build alliance, basically this:
-
-In the chroot, as root:
-
-    apt-get update
-    apt-get install git build-essential libtool automake aclocal \
-             flex bison xfig imagemagick \
-             texlive texlive-pictures texlive-latex-extra \
-             libx11-dev libxt-dev libxaw7-dev libxpm-dev libmotif-dev
-
-In the chroot, as the ordinary schroot user:
-
-    mkdir -p alliance/build alliance/install
-    cd ~/alliance
-    git clone https://www-soc.lip6.fr/git/alliance.git
-    cd alliance/src
-
-Modify the following file (may not be necessary later):
-
-    diff --git a/alliance/src/pat/src/pat_desc_y.y b/alliance/src/pat/src/pat_desc_y.y
-    index 14720dbc..5390d2a4 100644
-    --- a/alliance/src/pat/src/pat_desc_y.y
-    +++ b/alliance/src/pat/src/pat_desc_y.y
-    @@ -85,8 +85,8 @@ unsigned short  position; /* # of statement since last comment    */
-     static struct papat *lcl_addpapat (lastpapat, label, line)
-
-     struct papat   *lastpapat; /* pointer on the last papat structure  */
-    -char           *label;     /* pattern's label          */
-    -unsigned short  line;      /* pattern' line number         */
-    +char           *label;
-    +unsigned short  line;
-
-       {
-       struct papat *ptpat;
-
-Continue running as user:
-
-    ./autostuff
-    cd ~/alliance/build
-    export ALLIANCE_TOP=$HOME/alliance/install
-    export LD_LIBRARY_PATH=${ALLIANCE_TOP}/lib:${LD_LIBRARY_PATH}
-    ../alliance/src/configure --prefix=$ALLIANCE_TOP --enable-alc-shared
-    make -j1 install
 
 # Tutorials and checks
 
