@@ -21,7 +21,11 @@ Then run these commands:
     apt-get install debootstrap schroot
     mkdir /opt/chroot/coriolis
     /usr/sbin/debootstrap stretch !$ http://ftp.us.debian.org/debian
-    mount -a
+    mount /home/chroot/coriolis/dev
+    mount /home/chroot/coriolis/dev/pts
+    mount   /home/chroot/coriolis/proc
+    mount   /home/chroot/coriolis/sys
+    mount   /home/chroot/coriolis/tmp
     echo "coriolis2" > /home/chroot/coriolis/etc/debian_chroot
 
 To do some preparation (users):
