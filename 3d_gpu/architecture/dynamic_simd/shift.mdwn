@@ -5,7 +5,9 @@ This is almost as complex as multiplication, except there is a trick that can be
 Partitioned Shifting will also require to have an NxN matrix, however it is slightly different.  first, define the following:
 
     a0 = a[7..0], a1 = a[15..8], ....
-    b0 = b[7..0], b1 = b[15..8], ....
+    b0 = b[0+4..0], b1 = b[8+4..8], b2 = b[16+4..16], b3 = b[24+4..24]
+
+QUESTION: should b1 be limited to min(b[8+4..8], 24), b2 be similarly limited to 15, and b3 be limited/min'd to 8?
 
 then, we compute the following matrix, with the first column output being the full width (32 bit), the second being only 24 bit, the third only 16 bit and finally the top part (comprising the most significant byte of a and b as input) being only 8 bit
 
