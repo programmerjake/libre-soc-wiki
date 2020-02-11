@@ -3,11 +3,14 @@
 ## debootstrap
 
 First set up an schroot debootstrap jail with debian 9.0.
-Follow these instructions taken from here:
+These instructions are based on information taken from here:
 <https://www.debian.org/releases/stretch/amd64/apds03.html.en>
 
-In advance, edit /etc/fstab and add mount points: personally I prefer using
-mount --bind points
+In advance, on the host system, edit /etc/fstab and add mount points:
+
+(edit: personally I prefer using mount --bind points.  however if doing
+that then after a reboot the chroot will lose the bind mountpoints
+and the commands need to be re-run)
 
     /dev    /home/chroot/coriolis/dev   none    bind    0   0
     /dev/pts /home/chroot/coriolis/dev/pts  none    bind    0   0
