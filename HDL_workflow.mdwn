@@ -579,6 +579,35 @@ The reasons for doing a proper modularisation job are several-fold:
 * thirdly, unit testing, particularly formal proofs, is far easier on
   small sections of code, and complete in a reasonable time.
 
+## Special warning / alert to vim users!
+
+Some time around the beginning of 2019 some bright spark decided that
+an "auto-recommend-completion-of-stuff" option would be a nice, shiny
+idea to enable by default from that point onwards.
+
+This incredibly annoying "feature" results in tabs (or spaces) being
+inserted "on your behalf" when you press return on one line, for your
+"convenience" of not needing to type lots of spaces/tabs just to get
+to the same indentation level.
+
+Of course, this "feature", if you press return on one line in edit
+mode and then press "escape", leaves a bundle-of-joy extraneous
+whitespace **exactly** where you don't want it, and didn't ask for it,
+pooped all over your file.
+
+Therefore, *please*: **before** running "git commit", get into the
+habit of always running "git diff", and at the very minimum
+speed-skim the entire diff, looking for tell-tale "red squares"
+(these show up under bash diff colour-syntax-highlighting) that
+inform you that, without your knowledge or consent, vim has
+"helpfully" inserted extraneous whitespace.
+
+Remove them **before** git committing because they are not part
+of the actual desired code-modifications, and committing them
+is a major and constant distraction for reviewers about actual
+important things like "the code that actually *usefully* was
+modified for that commit"
+
 ## Unit tests
 
 This deserves its own special section.  It is extremely important to
