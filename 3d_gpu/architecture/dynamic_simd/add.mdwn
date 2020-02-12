@@ -45,3 +45,14 @@ the new version
 * o (carry-out) must be "cascaded" down to the relevant partition
   start-point.  this can be done with a Mux-cascade.
 
+carry-out-cascade example:
+
+    partition:      1    0    0    1      (4 bits)
+    actual   : <--->|<------------>|<---> actual numbers
+    carryotmp: o4   o3   o2   o1   o0     (5 bits)
+    cascade  : |    |    x    x    |
+             : v    v    x    x    v
+    carry-out: o4   \->  -->  o3   o0     (5 bits)
+
+
+
