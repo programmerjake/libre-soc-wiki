@@ -23,15 +23,16 @@ and take up large resources.
 new version:
 
     partition:      p    p    p    p      (4 bits)
-    carry-in :           c    c    c    c (4 bits)
-    C = c & P:           C    C    C    c (4 bits)
+    carry-in :      c    c    c    c    c (5 bits)
+    C = c & P:      C    C    C    C    c (5 bits)
+    I = P=>c :      I    I    I    I    c (5 bits)
     a        :  AAAA AAAA AAAA AAAA AAAA  (32 bits)
     b        :  BBBB BBBB BBBB BBBB BBBB  (32 bits)
-    exp-a    : 0AAAApAAAACAAAACAAAACAAAAc (32+4 bits, P=1 if no partition)
-    exp-b    : 0BBBB0BBBBCBBBBCBBBBCBBBBc (32 bits plus 4 zeros)
-    exp-o    : o....oN...oN...oN...oN...x (32+4 bits - x to be discarded)
+    exp-a    : 0AAAACAAAACAAAACAAAACAAAAc (32+4+2 bits, P=1 if no partition)
+    exp-b    : 0BBBBIBBBBIBBBBIBBBBIBBBBc (32+2 bits plus 4 zeros)
+    exp-o    : o....oN...oN...oN...oN...x (32+4+2 bits - x to be discarded)
     o        :  .... N... N... N... N... (32 bits - x ignored, N is carry-over)
-    carry-out:      o    o    o    o      (4 bits)
+    carry-out: o    o    o    o    o      (5 bits)
 
 the new version
 
