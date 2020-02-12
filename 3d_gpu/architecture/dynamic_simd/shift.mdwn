@@ -87,6 +87,10 @@ For o3:
 
 Where for o0 the output is simple a0b0 for all partition permutations.
 
+## Note
+
+One important part to remember is that the upper bits of the shift amount need to specifically *ignored* rather than assuming that they are zeros, this is because, for shift instructions: `a << b` actually is `a << (b % bit_len(a))`
+
 # Static Partitioned Shift
 
 Static shift is pretty straightforward: the input is the entire number
