@@ -316,7 +316,7 @@ chroot, add the following to /etc/apt/sources.list
 
 then, also as root:
 
-    echo 'APT::Default-Release "stable";' | tee -a /etc/apt/apt.conf.d/00local
+    echo 'APT::Default-Release "stretch";' | tee -a /etc/apt/apt.conf.d/00local
     sudo apt-get update
     apt-get -t testing install python3.7 python3-setuptools \
                python3-jinja2 python3-pip
