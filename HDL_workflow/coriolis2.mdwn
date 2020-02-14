@@ -272,7 +272,8 @@ You can also tweak the layer display:
 python 3.6 is a prerequisite for nmigen however something
 weird is going on, and it can't be installed.  instead,
 python 3.7 has to be installed instead.  we do this by
-adding debian/testing and 
+adding debian/testing but setting the default release
+as "stretch".
 
 as root, in the
 chroot, add the following to /etc/apt/sources.list
@@ -294,9 +295,9 @@ ieee754fpu, soc and nmutil.
 
 yosys in debian/stretch may not be enough to work with nmigen,
 therefore it's probably a good idea to upgrade.   if this was
-not a debian/stretch chroot, it would be a simple matter of
-"apt-get install yosys" however it's probably best, here to
-install from source.
+not a debian/stretch chroot (i.e. was a debian 10), it would be
+a simple matter of "apt-get install yosys" however it's probably best,
+here to install from source.
 
 **however**.. there is another way: once the instructions
 for installing python3.7 have been carried out.  As root,
