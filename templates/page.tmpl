@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html <TMPL_IF HTML_LANG_CODE>lang="<TMPL_VAR HTML_LANG_CODE>" dir="<TMPL_VAR HTML_LANG_DIR>"</TMPL_IF> xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<TMPL_IF DYNAMIC>
+	<TMPL_IF FORCEBASEURL><base href="<TMPL_VAR FORCEBASEURL>" />
+	<TMPL_ELSE><TMPL_IF BASEURL><base href="<TMPL_VAR BASEURL>" /></TMPL_IF>
+	</TMPL_IF>
+	</TMPL_IF>
+	<meta charset="utf-8" />
+	<title><TMPL_VAR TITLE></title>
+	<TMPL_IF RESPONSIVE_LAYOUT><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" /></TMPL_IF>
+	<TMPL_IF FAVICON><link rel="icon" href="<TMPL_VAR BASEURL><TMPL_VAR FAVICON>" type="image/x-icon" /></TMPL_IF>
+	<TMPL_IF BOOTSTRAP_LOCAL>
+	<link rel="stylesheet" href="<TMPL_VAR BASEURL>css/bootstrap.min.css" type="text/css" />
+	<link rel="stylesheet" href="<TMPL_VAR BASEURL>css/font-awesome.min.css" type="text/css" />
+	<TMPL_ELSE>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://unpkg.com/@fortawesome/fontawesome-free@5.10.1/css/all.min.css" integrity="sha256-fdcFNFiBMrNfWL6OcAGQz6jDgNTRxnrLEd4vJYFWScE=" crossorigin="anonymous" type="text/css" />
+	</TMPL_IF>
+	<link rel="stylesheet" href="<TMPL_VAR BASEURL>style.css" type="text/css" />
+	<TMPL_IF LOCAL_CSS>
+	<link rel="stylesheet" href="<TMPL_VAR BASEURL><TMPL_VAR LOCAL_CSS>" type="text/css" />
+	<TMPL_ELSE>
+	<link rel="stylesheet" href="<TMPL_VAR BASEURL>local.css" type="text/css" />
+	</TMPL_IF>
+	<TMPL_UNLESS DYNAMIC>
+	<TMPL_IF EDITURL>
+	<link rel="alternate" type="application/x-wiki" title="Edit this page" href="<TMPL_VAR EDITURL>" />
+	</TMPL_IF>
+	<TMPL_IF FEEDLINKS><TMPL_VAR FEEDLINKS></TMPL_IF>
+	<TMPL_IF RELVCS><TMPL_VAR RELVCS></TMPL_IF>
+	<TMPL_IF META><TMPL_VAR META></TMPL_IF>
+	<TMPL_LOOP TRAILLOOP>
+	<TMPL_IF PREVPAGE>
+	<link rel="prev" href="<TMPL_VAR PREVURL>" title="<TMPL_VAR PREVTITLE>" />
+	</TMPL_IF>
+	<link rel="up" href="<TMPL_VAR TRAILURL>" title="<TMPL_VAR TRAILTITLE>" />
+	<TMPL_IF NEXTPAGE>
+	<link rel="next" href="<TMPL_VAR NEXTURL>" title="<TMPL_VAR NEXTTITLE>" />
+	</TMPL_IF>
+	</TMPL_LOOP>
+	</TMPL_UNLESS>
+</head>
+
+<body>
+	<div id="notfooter">
+		<header id="header">
+		<nav class="navbar navbar-expand-md navbar-dark bg-dark">
+			<div class="container">
+				<TMPL_IF NAME="PARENTLINKS">
+				<TMPL_LOOP NAME="PARENTLINKS">
+				<TMPL_IF NAME="DEPTH_0"><a class="navbar-brand" href="<TMPL_VAR URL>"><TMPL_VAR PAGE></a></TMPL_IF>
+				</TMPL_LOOP>
+				<TMPL_ELSE>
+				<a class="navbar-brand" href="#"><TMPL_VAR TITLE></a>
+				</TMPL_IF>
+				 <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#header-nav" aria-controls="header-nav" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+
+				<div class="collapse navbar-collapse" id="header-nav">
+					<ul class="navbar-nav mr-auto">
+						<TMPL_LOOP NAME="PARENTLINKS">
+						<TMPL_UNLESS NAME="DEPTH_0"><li class="nav-item hidden-md-down"><a class="nav-link" href="<TMPL_VAR URL>"><TMPL_VAR PAGE></a></li></TMPL_UNLESS>
+						</TMPL_LOOP>
+						<TMPL_IF NAME="PARENTLINKS">
+						<li class="nav-item"><a class="nav-link active hidden-md-down" href="#"><TMPL_VAR TITLE><TMPL_IF ISTRANSLATION>&nbsp;(<TMPL_VAR PERCENTTRANSLATED>%)</TMPL_IF></a></li>
+						</TMPL_IF>
+					</ul>
+
+					<TMPL_UNLESS DYNAMIC>
+					<TMPL_VAR TRAILS>
+					</TMPL_UNLESS>
+
+					<TMPL_IF HAVE_ACTIONS>
+					<div class="actions">
+						<ul class="navbar-nav">
+							<TMPL_IF EDITURL>
+							<li class="nav-item"><a class="nav-link" href="<TMPL_VAR EDITURL>" rel="nofollow"><i class="fa fa-fw fa-edit"></i>Edit</a></li>
+							</TMPL_IF>
+							<TMPL_IF RECENTCHANGESURL>
+							<li class="nav-item"><a class="nav-link" href="<TMPL_VAR RECENTCHANGESURL>">RecentChanges</a></li>
+							</TMPL_IF>
+							<TMPL_IF HISTORYURL>
+							<li class="nav-item"><a class="nav-link" href="<TMPL_VAR HISTORYURL>">History</a></li>
+							</TMPL_IF>
+							<TMPL_IF GETSOURCEURL>
+							<li class="nav-item"><a class="nav-link" href="<TMPL_VAR GETSOURCEURL>">Source</a></li>
+							</TMPL_IF>
+							<TMPL_IF PREFSURL>
+							<li class="nav-item"><a class="nav-link" href="<TMPL_VAR PREFSURL>"><i class="fa fa-fw fa-cog"></i>Preferences</a></li>
+							</TMPL_IF>
+							<TMPL_IF ACTIONS>
+							<TMPL_LOOP ACTIONS>
+							<li class="nav-item nav-link"><TMPL_VAR ACTION></li>
+							</TMPL_LOOP>
+							</TMPL_IF>
+							<TMPL_IF COMMENTSLINK>
+							<li class="nav-item nav-link"><TMPL_VAR COMMENTSLINK></li>
+							<TMPL_ELSE>
+							<TMPL_IF DISCUSSIONLINK>
+							<li class="nav-item nav-link"><TMPL_VAR DISCUSSIONLINK></li>
+							</TMPL_IF>
+							</TMPL_IF>
+						</ul>
+					</div>
+					</TMPL_IF>
+
+					<TMPL_IF OTHERLANGUAGES>
+					<div id="otherlanguages">
+						<ul class="navbar-nav">
+							<TMPL_LOOP OTHERLANGUAGES>
+							<li class="nav-item">
+								<a class="nav-link" href="<TMPL_VAR URL>"><TMPL_VAR LANGUAGE></a>
+								<TMPL_IF MASTER>(master)<TMPL_ELSE>&nbsp;(<TMPL_VAR PERCENT>%)</TMPL_IF>
+							</li>
+							</TMPL_LOOP>
+						</ul>
+					</div>
+					</TMPL_IF>
+
+					<TMPL_UNLESS DYNAMIC>
+					<TMPL_IF SEARCHFORM>
+					<TMPL_VAR SEARCHFORM>
+					</TMPL_IF>
+					</TMPL_UNLESS>
+				</div>
+			</div>
+		</nav>
+		</header>
+
+		<div class="container">
+			<TMPL_UNLESS DYNAMIC>
+			<TMPL_IF SIDEBAR>
+			<div class="row">
+			<div class="col-sm-8 col-md-9">
+			</TMPL_IF>
+			</TMPL_UNLESS>
+
+			<main id="content">
+				<TMPL_VAR CONTENT>
+			</main>
+
+			<TMPL_IF ENCLOSURE>
+			<section id="enclosure" title="Download">
+				<a href="<TMPL_VAR ENCLOSURE>">Download</a>
+			</section>
+			</TMPL_IF>
+
+			<TMPL_UNLESS DYNAMIC>
+			<TMPL_IF COMMENTS>
+			<section id="comments" title="Comments">
+				<TMPL_IF ADDCOMMENTURL>
+				<a href="<TMPL_VAR ADDCOMMENTURL>" class="btn btn-primary">Add a comment</a>
+				<TMPL_ELSE>
+				<div class="addcomment">Comments on this page are closed.</div>
+				</TMPL_IF>
+				<TMPL_VAR COMMENTS>
+			</section>
+			</TMPL_IF>
+			</TMPL_UNLESS>
+
+			<TMPL_UNLESS DYNAMIC>
+			<TMPL_IF SIDEBAR>
+			</div>
+			<div class="col-sm-4 col-md-3">
+			<aside id="sidebar" class="card card-body mb-3">
+				<TMPL_VAR SIDEBAR>
+			</aside>
+			</div>
+			</div>
+			</TMPL_IF>
+			</TMPL_UNLESS>
+		</div>
+	</div>
+
+	<footer id="footer" class="container">
+		<TMPL_UNLESS DYNAMIC>
+		<nav id="pageinfo">
+			<TMPL_VAR TRAILS>
+			<TMPL_IF TAGS>
+			<span class="tags">
+				<i class="fa fa-fw fa-tag"></i>Tags:
+				<TMPL_LOOP TAGS>
+				<TMPL_VAR LINK>
+				</TMPL_LOOP>
+			</span>
+			</TMPL_IF>
+
+			<TMPL_IF BACKLINKS>
+			<span id="backlinks">
+				<i class="fa fa-fw fa-link"></i>Links:
+				<TMPL_LOOP BACKLINKS>
+				<a href="<TMPL_VAR URL>"><TMPL_VAR PAGE></a>
+				</TMPL_LOOP>
+				<TMPL_IF MORE_BACKLINKS>
+				<span class="popup">...
+					<span class="balloon">
+						<TMPL_LOOP MORE_BACKLINKS>
+						<a href="<TMPL_VAR URL>"><TMPL_VAR PAGE></a>
+						</TMPL_LOOP>
+					</span>
+				</span>
+				</TMPL_IF>
+			</span>
+			</TMPL_IF>
+
+			<TMPL_IF COPYRIGHT>
+			<span id="pagecopyright">
+				<a name="pagecopyright"/><TMPL_VAR COPYRIGHT>
+			</span>
+			</TMPL_IF>
+
+			<TMPL_IF LICENSE>
+			<span id="pagelicense">
+				<a name="pagelicense"/>License: <TMPL_VAR LICENSE>
+			</span>
+			</TMPL_IF>
+
+			<span id="pagedate">
+				Last edited <TMPL_VAR MTIME>.
+			</span>
+		</nav>
+		<TMPL_IF EXTRAFOOTER><TMPL_VAR EXTRAFOOTER></TMPL_IF>
+		</TMPL_UNLESS>
+	</footer>
+
+	<TMPL_IF BOOTSTRAP_JS>
+	<TMPL_IF BOOTSTRAP_LOCAL>
+	<script src="<TMPL_VAR BASEURL>js/jquery.min.js"></script>
+	<script src="<TMPL_VAR BASEURL>js/tether.min.js"></script>
+	<script src="<TMPL_VAR BASEURL>js/bootstrap.min.js"></script>
+	<TMPL_ELSE>
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+	</TMPL_IF>
+	</TMPL_IF>
+</body>
+</html>
