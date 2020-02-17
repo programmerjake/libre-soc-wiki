@@ -22,9 +22,13 @@ Also look up "boolean algebra", "Karnaugh maps", truth tables and thingw like th
 
 From there you can begin to appreciate how deeply ridiculously low level this all is, and why we are using nmigen.  nmigen constructs "useful" concepts like "32 bit numbers", which actually do not exist at the gate level: they only exist by way of being consteucted from chains of 1 bit (binary) numbers!
 
-So for example, a 32 bit adder is "constructed" from a batch of 32 FULL ADDERs.  This would drive you nuts if you had to think at this level all the time, consequently "High" in "High Level Language" was invented.  *behind the scenes* the HDL uses "cells" that in a massive hierarchical cascade ultimately end up at nothing more than "gates".
+So for example, a 32 bit adder is "constructed" from a batch of 32 FULL ADDERs.  Even things like comparing two numbers, the simple "==" or ">=" operators, are done entirely with a bit-level cascade!
 
-Yes you really do need to know this because those "gates" cost both power, space, and take time to switch.  So if you have too many of thrm in a chain, your chip is limited in its top speed.  This is the point at which you should be looking up "pipelines" and "register latches", as well as "combinatorial blocks".
+This would drive you nuts if you had to think at this level all the time, consequently "High" in "High Level Language" was invented, and, luckily in python, you can override __add__ and so on in order that "a + b" gives you the *impression* that two "actual" numbers are being added, whereas in fact you requested that the HDL create a massive bunch of "gates" on your behalf.
+
+i.e. *behind the scenes* the HDL uses "cells" that in a massive hierarchical cascade ultimately end up at nothing more than "gates".
+
+Yes you really do need to know this because those "gates" cost both power, space, and take time to switch.  So if you have too many of them in a chain, your chip is limited in its top speed.  This is the point at which you should be looking up "pipelines" and "register latches", as well as "combinatorial blocks".
 
 you also want to look up the concept of a FSM (Finite State Machine) and the difference between a Mealy and a Moore FSM.
 
