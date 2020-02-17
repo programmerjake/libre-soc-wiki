@@ -8,15 +8,21 @@ We are assuming here you know some programming language.  You know that it works
 
 Hardware basically comprises transistor circuits. There's nothing in the universe or the laws of physics that says light and electricity have to operate sequentially, and consequently all Digital ASICs are an absolutely massive arrays of unbelievably excruciatingly tediously low level "gates", in parallel, separated occasionally by clock-synchronised "latches" that capture data from one processing section before passing it on to the next.
 
-ASIC designers avoid going completely off their heads at the level of detail involved by "compartmentalising" designs into a huge hierarchy of modular design, where the tools selected aid and assist in isolating as much of that detail as practical, allowing the developer to think in relevant concepts without being overwhelmed.
+ASIC designers avoid going completely off their heads at the level of detail involved by "compartmentalising" designs into a huge hierarchy of modular design, where the tools selected aid and assist in isolating as much of the contextually-irrelevant detail as practical, allowing the developer to think in relevant concepts without being overwhelmed.
+
+Understanding this is particularly important because the level of hierarchy of design may be *one hundred* or more modules deep *just in nmigen alone*, (and that's before understanding the abstraction that nmigen itself provides); yosys goes through several layers as well, and finally, alliance / corilolis2 have their own separate layers.
+
+Throughout each layer, the abstractions of a higher layer are removed and replaced with topologically-equivalent but increasingly detailed equivalents.  nmigen has the *concept* of integers (not really: it has the concept of something that, when the tool is executed, will create a representation *of* an integer), and this is passed through intact to yosys.  yosys however knows that integers need to be replaced by wires, buses and gates, so that's what it does.
+
+Thus, you can think safely in terms of "integers" when designing and writing the HDL, confident that the details of converting to gates and wires is taken care of.
 
 # Debian
 
-Sorry, ubuntu lovers: start by installing debian either in actual hardware or in a VM.  A VM has the psychological disadvantage of making you feel like you are not taking things seriously (it's a toy), so consider dual booting or getting a second machine.
+Sorry, ubuntu, macosx and windows lovers: start by installing debian either in actual hardware or in a VM.  A VM has the psychological disadvantage of making you feel like you are not taking things seriously (it's a toy), so consider dual booting or getting a second machine.
 
 # Python
 
-First: learn python.  python3 to be precise.  Start by learnong the basic data types: string, int, float then dict, list and tuple.  Then move on to functions, then classes, exceptions and the "with" statement.  Along the way you will pick up imports. Do not use "import *".
+First: learn python.  python3 to be precise.  Start by learning the basic data types: string, int, float then dict, list and tuple.  Then move on to functions, then classes, exceptions and the "with" statement.  Along the way you will pick up imports. Do not use "import *" it will cause you a world of pain.
 
 # Git
 
@@ -24,7 +30,7 @@ Git is essential.  look up git workflow: clone, pull, push, add, commit.  Create
 
 # Basics of gates
 
-You need to understand what gates are.  look up AND, OR, NOT, NAND, NOR, MUX, DFF, SR latch on electronics forums and wikipedia. also look up "register latches", then HALF ADDER and FULL ADDER.
+You need to understand what gates are.  look up AND, OR, XOR, NOT, NAND, NOR, MUX, DFF, SR latch on electronics forums and wikipedia. also look up "register latches", then HALF ADDER and FULL ADDER.  ASIC designers call these "Cells".  There are some more complex "Cells" such as "4-input MUX" or "3-input XOR" and so on, which should be self-explanatory.
 
 Also look up "boolean algebra", "Karnaugh maps", truth tables and things like that.
 
