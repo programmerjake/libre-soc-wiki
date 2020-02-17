@@ -18,13 +18,13 @@ Git is essential.  look up git workflow: clone, pull, push, add, commit.  Create
 
 You need to understand what gates are.  look up AND, OR, NOT, NAND, NOR, MUX, DFF, SR latch on electronics forums and wikipedia. also look up "register latches", then HALF ADDER and FULL ADDER.
 
-Also look up "boolean algebra", "Karnaugh maps", truth tables and thingw like that.
+Also look up "boolean algebra", "Karnaugh maps", truth tables and things like that.
 
-From there you can begin to appreciate how deeply ridiculously low level this all is, and why we are using nmigen.  nmigen constructs "useful" concepts like "32 bit numbers", which actually do not exist at the gate level: they only exist by way of being consteucted from chains of 1 bit (binary) numbers!
+From there you can begin to appreciate how deeply ridiculously low level this all is, and why we are using nmigen.  nmigen constructs "useful" concepts like "32 bit numbers", which actually do not exist at the gate level: they only exist by way of being constructed from chains of 1 bit (binary) processing!
 
-So for example, a 32 bit adder is "constructed" from a batch of 32 FULL ADDERs.  Even things like comparing two numbers, the simple "==" or ">=" operators, are done entirely with a bit-level cascade!
+So for example, a 32 bit adder is "constructed" from a batch of 32 FULL ADDERs (actually, 31 FULL and one HALF).  Even things like comparing two numbers, the simple "==" or ">=" operators, are done entirely with a bit-level cascade!
 
-This would drive you nuts if you had to think at this level all the time, consequently "High" in "High Level Language" was invented, and, luckily in python, you can override \_\_add\_\_ and so on in order that when you put "a + b" into a nmigen program it gives you the *impression* that two "actual" numbers are being added, whereas in fact you requested that the HDL create a massive bunch of "gates" on your behalf.
+This would drive you nuts if you had to think at this level all the time, consequently "High" in "High Level Language" was invented. Luckily in python, you can override \_\_add\_\_ and so on in order that when you put "a + b" into a nmigen program it gives you the *impression* that two "actual" numbers are being added, whereas in fact you requested that the HDL create a massive bunch of "gates" on your behalf.
 
 i.e. *behind the scenes* the HDL uses "cells" that in a massive hierarchical cascade ultimately end up at nothing more than "gates".
 
