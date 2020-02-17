@@ -1,6 +1,14 @@
 # Tutorial on how to get into LibreSOC development
 
-This tutorial is a guide for anyone wishing, literally, to start from scratch and learn how to contribute to the LibreSOC.
+This tutorial is a guide for anyone wishing, literally, to start from scratch and learn how to contribute to the LibreSOC.  Much of this you should go through (skim and extract) the [[HDL_workflow]] document, however until you begin to participate much of that document is not fully relevant. This one is intended to get you "up to speed" with basic concepts.
+
+# Programming vs hardware.
+
+We are assuming here you know some programming language.  You know that it works in sequence (unless you went to Imperial College in the 80s and have heard of [Parlog](https://en.m.wikipedia.org/wiki/Parlog)).
+
+Hardware basically comprises transistor circuits. There's nothing in the universe or the laws of physics that says light and electricity have to operate sequentially, and consequently all Digital ASICs are an absolutely massive arrays of unbelievably excruciatingly tediously low level "gates", in parallel, separated occasionally by clock-synchronised "latches" that capture data from one processing section before passing it on to the next.
+
+ASIC designers avoid going completely off their heads at the level of detail involved by "compartmentalising" designs into a huge hierarchy of modular design, where the tools selected aid and assist in isolating as much of that detail as practical, allowing the developer to think in relevant concepts without being overwhelmed.
 
 # Debian
 
