@@ -24,7 +24,7 @@ From there you can begin to appreciate how deeply ridiculously low level this al
 
 So for example, a 32 bit adder is "constructed" from a batch of 32 FULL ADDERs.  Even things like comparing two numbers, the simple "==" or ">=" operators, are done entirely with a bit-level cascade!
 
-This would drive you nuts if you had to think at this level all the time, consequently "High" in "High Level Language" was invented, and, luckily in python, you can override __add__ and so on in order that "a + b" gives you the *impression* that two "actual" numbers are being added, whereas in fact you requested that the HDL create a massive bunch of "gates" on your behalf.
+This would drive you nuts if you had to think at this level all the time, consequently "High" in "High Level Language" was invented, and, luckily in python, you can override \_\_add\_\_ and so on in order that when you put "a + b" into a nmigen program it gives you the *impression* that two "actual" numbers are being added, whereas in fact you requested that the HDL create a massive bunch of "gates" on your behalf.
 
 i.e. *behind the scenes* the HDL uses "cells" that in a massive hierarchical cascade ultimately end up at nothing more than "gates".
 
@@ -34,7 +34,11 @@ you also want to look up the concept of a FSM (Finite State Machine) and the dif
 
 # nmigen
 
-once you understand gates and python, nmigen starts to make sense.
+once you understand gates and python, nmigen starts to make sense. 
+
+nmigen works by creating an in-memory "Abstract Syntax Tree" which is handed to yosys (via yosys "ILANG" format) which in turn actually generates the cells and netlists.
+
+so you write code in python, using the nmigen library of classes and helper routines, to construct an AST which *represents* the actual hardware. yosys takes care of the level *below* nmigen, and is just a tool.
 
 install nmigen (and yosys) by following [[HDL_workflow]] then follow the excellent tutorial by Robert <https://github.com/RobertBaruch/nmigen-tutorial>
 
