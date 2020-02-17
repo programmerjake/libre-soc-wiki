@@ -66,6 +66,7 @@
 						<TMPL_IF NAME="PARENTLINKS">
 						<li class="nav-item"><a class="nav-link active hidden-md-down" href="#"><TMPL_VAR TITLE><TMPL_IF ISTRANSLATION>&nbsp;(<TMPL_VAR PERCENTTRANSLATED>%)</TMPL_IF></a></li>
 						</TMPL_IF>
+
 					</ul>
 
 					<TMPL_UNLESS DYNAMIC>
@@ -75,6 +76,7 @@
 					<TMPL_IF HAVE_ACTIONS>
 					<div class="actions">
 						<ul class="navbar-nav">
+							<li class="nav-item"><a class="nav-link" href="/about_us/" rel="nofollow">About Us</a></li>
 							<TMPL_IF EDITURL>
 							<li class="nav-item"><a class="nav-link" href="<TMPL_VAR EDITURL>" rel="nofollow"><i class="fa fa-fw fa-edit"></i>Edit</a></li>
 							</TMPL_IF>
