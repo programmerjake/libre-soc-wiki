@@ -1,0 +1,39 @@
+# Tutorial on how to get into LibreSOC development
+
+This tutorial is a guide for anyone wishing, literally, to start from scratch and learn how to contribute to the LibreSOC.
+
+# Debian
+
+Sorry, ubuntu lovers: start by installing debian either in actual hardware or in a VM.  A VM has the psychological disadvantage of making you feel like you are not taking things seriously (it's a toy), so consider dual booting or getting a second machine.
+
+# Python
+
+First: learn python.  python3 to be precise.  Start by learnong the basic data types: string, int, float then dict, list and tuple.  Then move on to functions, then classes, exceptions and the "with" statement.  Along the way you will pick up imports. Do not use "import *".
+
+# Git
+
+Git is essential.  look up git workflow: clone, pull, push, add, commit.  Create some test repos and get familiar with it. Read the [[HDL_workflow]] document.
+
+# Basics of gates
+
+You need to understand what gates are.  look up AND, OR, NOT, NAND, NOR, MUX, DFF, SR latch on electronics forums and wikipedia. also look up "register latches", then HALF ADDER and FULL ADDER.
+
+Also look up "boolean algebra", "Karnaugh maps", truth tables and thingw like that.
+
+From there you can begin to appreciate how deeply ridiculously low level this all is, and why we are using nmigen.  nmigen constructs "useful" concepts like "32 bit numbers", which actually do not exist at the gate level: they only exist by way of being consteucted from chains of 1 bit (binary) numbers!
+
+So for example, a 32 bit adder is "constructed" from a batch of 32 FULL ADDERs.  This would drive you nuts if you had to think at this level all the time, consequently "High" in "High Level Language" was invented.  *behind the scenes* the HDL uses "cells" that in a massive hierarchical cascade ultimately end up at nothing more than "gates".
+
+Yes you really do need to know this because those "gates" cost both power, space, and take time to switch.  So if you have too many of thrm in a chain, your chip is limited in its top speed.  This is the point at which you should be looking up "pipelines" and "register latches", as well as "combinatorial blocks".
+
+you also want to look up the concept of a FSM (Finite State Machine) and the difference between a Mealy and a Moore FSM.
+
+# nmigen
+
+once you understand gates and python, nmigen starts to make sense.
+
+install nmigen (and yosys) by following [[HDL_workflow]] then follow the excellent tutorial by Robert <https://github.com/RobertBaruch/nmigen-tutorial>
+
+pay particular attention to the bits in HDL workflow about using yosys "show" command.  this is essential because the nmigen code gets turned into gates, and yosys show will bring up a graph that allows you to see that.
+
+pay particular attention to "comb" (combinatorial) and "sync" (synchronous).  comb is a sequence of gates without any clock-synxhronised latches.  "sync" will *automatically* create a clock synchronised register for you.  this is how you construct pipelines.
