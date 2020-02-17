@@ -8,7 +8,7 @@ We are assuming here you know some programming language.  You know that it works
 
 Hardware basically comprises transistor circuits. There's nothing in the universe or the laws of physics that says light and electricity have to operate sequentially, and consequently all Digital ASICs are an absolutely massive arrays of unbelievably excruciatingly tediously low level "gates", in parallel, separated occasionally by clock-synchronised "latches" that capture data from one processing section before passing it on to the next.
 
-Thus, it is imperative to conceptually remind yourself, at all times, that everything that you do is, at the gate level, done as massively-parallel processing, **not** as sequential processing, at all.  If you want "sequential" you have to store the results of one parallel block of processing in "latches", wait for the clock to "tick", and pass it on to the next block.
+Thus, it is imperative to conceptually remind yourself, at all times, that everything that you do, even when writing your HDL code line by line, is, in fact, at the gate level, done as massively-parallel processing, **not** as sequential processing, at all.  If you want "sequential" you have to store the results of one parallel block of processing in "latches", wait for the clock to "tick", and pass it on to the next block.
 
 ASIC designers avoid going completely off their heads at the level of detail involved by "compartmentalising" designs into a huge hierarchy of modular design, where the tools selected aid and assist in isolating as much of the contextually-irrelevant detail as practical, allowing the developer to think in relevant concepts without being overwhelmed.
 
