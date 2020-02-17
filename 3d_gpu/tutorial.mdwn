@@ -8,6 +8,8 @@ We are assuming here you know some programming language.  You know that it works
 
 Hardware basically comprises transistor circuits. There's nothing in the universe or the laws of physics that says light and electricity have to operate sequentially, and consequently all Digital ASICs are an absolutely massive arrays of unbelievably excruciatingly tediously low level "gates", in parallel, separated occasionally by clock-synchronised "latches" that capture data from one processing section before passing it on to the next.
 
+Thus, it is imperative to conceptually remind yourself, at all times, that everything that you do is, at the gate level, done as massively-parallel processing, **not** as sequential processing, at all.  If you want "sequential" you have to store the results of one parallel block of processing in "latches", wait for the clock to "tick", and pass it on to the next block.
+
 ASIC designers avoid going completely off their heads at the level of detail involved by "compartmentalising" designs into a huge hierarchy of modular design, where the tools selected aid and assist in isolating as much of the contextually-irrelevant detail as practical, allowing the developer to think in relevant concepts without being overwhelmed.
 
 Understanding this is particularly important because the level of hierarchy of design may be *one hundred* or more modules deep *just in nmigen alone*, (and that's before understanding the abstraction that nmigen itself provides); yosys goes through several layers as well, and finally, alliance / corilolis2 have their own separate layers.
@@ -57,5 +59,9 @@ so you write code in python, using the nmigen library of classes and helper rout
 install nmigen (and yosys) by following [[HDL_workflow]] then follow the excellent tutorial by Robert <https://github.com/RobertBaruch/nmigen-tutorial>
 
 pay particular attention to the bits in HDL workflow about using yosys "show" command.  this is essential because the nmigen code gets turned into gates, and yosys show will bring up a graph that allows you to see that.
+It's also very useful to run the "proc" and "opt" command followed by
+a second "show top" (or show {insert module name}).  yosys "process"
+and "optimise" commands transform the design into something closer to
+what is actually synthesised at the gate level.
 
-pay particular attention to "comb" (combinatorial) and "sync" (synchronous).  comb is a sequence of gates without any clock-synxhronised latches.  "sync" will *automatically* create a clock synchronised register for you.  this is how you construct pipelines.
+in nmigen, pay particular attention to "comb" (combinatorial) and "sync" (synchronous).  comb is a sequence of gates without any clock-synchronised latches.  with comb it is absolutely essential that you **do not** create a "loop" by mistake.  i.e. combinatorial output must never, under any circumstances, loop back to combinatorial input.  "comb" blocks must be DAGs (Directed Acyclic Graphs) in other words.  "sync" will *automatically* create a clock synchronised register for you.  this is how you construct pipelines.  Also, if you want to create cyclic graphs, you absolutely **must** store partial results of combinatorial blocks in registers (with sync) *before* passing those partial results back into more (or the same) combinatorial blocks.
