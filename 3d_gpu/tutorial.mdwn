@@ -32,7 +32,11 @@ Git is essential.  look up git workflow: clone, pull, push, add, commit.  Create
 
 # Basics of gates
 
-You need to understand what gates are.  look up AND, OR, XOR, NOT, NAND, NOR, MUX, DFF, SR latch on electronics forums and wikipedia. also look up "register latches", then HALF ADDER and FULL ADDER.  ASIC designers call these "Cells".  There are some more complex "Cells" such as "4-input MUX" or "3-input XOR" and so on, which should be self-explanatory.
+You need to understand what gates are.  look up AND, OR, XOR, NOT, NAND, NOR, MUX, DFF, SR latch on electronics forums and wikipedia. also look up "register latches", then HALF ADDER and FULL ADDER.  If you would like a particularly amusing relevant distraction, look up the guy who built an entire functional computer out of 74 series logic chips, on breadboards.  It's now in a museum.
+
+For some reason, ASIC designers call collections of gates (such as MUXers) "Cells", no matter how large they are.  There are some more complex "Cells" such as "4-input MUX" or "3-input XOR" and so on, which should be self-explanatory.  Thus you will see the words "Cell Library" used.
+
+Yes you can create your own cell libraries, however you will also see Foundries refer to things called "Standard Cell Libraries" which they  expect you to use (under NDA. sigh).
 
 Also look up "boolean algebra", "Karnaugh maps", truth tables and things like that.
 
@@ -65,3 +69,15 @@ and "optimise" commands transform the design into something closer to
 what is actually synthesised at the gate level.
 
 in nmigen, pay particular attention to "comb" (combinatorial) and "sync" (synchronous).  comb is a sequence of gates without any clock-synchronised latches.  with comb it is absolutely essential that you **do not** create a "loop" by mistake.  i.e. combinatorial output must never, under any circumstances, loop back to combinatorial input.  "comb" blocks must be DAGs (Directed Acyclic Graphs) in other words.  "sync" will *automatically* create a clock synchronised register for you.  this is how you construct pipelines.  Also, if you want to create cyclic graphs, you absolutely **must** store partial results of combinatorial blocks in registers (with sync) *before* passing those partial results back into more (or the same) combinatorial blocks.
+
+# verilog
+
+Verilog is really worth mentioning in passing.  You will see it a lot.  Verilog was designed in the 1980s, when the state of the art in computer programming was BASIC, FORTRAN, and, if you were lucky, PASCAL.
+
+Object-orientated design was a buzzword in Universities.  java did not exist.  c++ did not exist.  Consequently, even just for testing of ASICs, which were still being done at the gate level, some bright spark decided to write a test suite in a high level language.
+
+That language was: verilog.
+
+Soon afterwards, someone realised that actual ASICs themselves could be written *in* verilog.  Unfortunately, however, with verilog being designed on 1980s state of the art programming concepts, it has hampered ASiC design ever since.
+
+We use nmigen because we can do proper OO. we can do multiple inheritance, class MixIns.  proper parameterisation and much more, all of which would be absolute hell to do in verilog.  We would need some form of massive macro preprocessing system or a nonstandard version of verilog.
