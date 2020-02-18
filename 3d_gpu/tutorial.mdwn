@@ -70,6 +70,8 @@ what is actually synthesised at the gate level.
 
 in nmigen, pay particular attention to "comb" (combinatorial) and "sync" (synchronous).  comb is a sequence of gates without any clock-synchronised latches.  with comb it is absolutely essential that you **do not** create a "loop" by mistake.  i.e. combinatorial output must never, under any circumstances, loop back to combinatorial input.  "comb" blocks must be DAGs (Directed Acyclic Graphs) in other words.  "sync" will *automatically* create a clock synchronised register for you.  this is how you construct pipelines.  Also, if you want to create cyclic graphs, you absolutely **must** store partial results of combinatorial blocks in registers (with sync) *before* passing those partial results back into more (or the same) combinatorial blocks.
 
+* http://www.clifford.at/yosys/cmd_proc.html
+
 # verilog
 
 Verilog is really worth mentioning in passing.  You will see it a lot.  Verilog was designed in the 1980s, when the state of the art in computer programming was BASIC, FORTRAN, and, if you were lucky, PASCAL.
