@@ -54,21 +54,21 @@ you also want to look up the concept of a FSM (Finite State Machine) and the dif
 
 # nmigen
 
-once you understand gates and python, nmigen starts to make sense. 
+Once you understand gates and python, nmigen starts to make sense. 
 
-nmigen works by creating an in-memory "Abstract Syntax Tree" which is handed to yosys (via yosys "ILANG" format) which in turn actually generates the cells and netlists.
+Nmigen works by creating an in-memory "Abstract Syntax Tree" which is handed to yosys (via yosys "ILANG" format) which in turn actually generates the cells and netlists.
 
-so you write code in python, using the nmigen library of classes and helper routines, to construct an AST which *represents* the actual hardware. yosys takes care of the level *below* nmigen, and is just a tool.
+So you write code in python, using the nmigen library of classes and helper routines, to construct an AST which *represents* the actual hardware. Yosys takes care of the level *below* nmigen, and is just a tool.
 
-install nmigen (and yosys) by following [[HDL_workflow]] then follow the excellent tutorial by Robert <https://github.com/RobertBaruch/nmigen-tutorial>
+Install nmigen (and yosys) by following [[HDL_workflow]] then follow the excellent tutorial by Robert <https://github.com/RobertBaruch/nmigen-tutorial>
 
-pay particular attention to the bits in HDL workflow about using yosys "show" command.  this is essential because the nmigen code gets turned into gates, and yosys show will bring up a graph that allows you to see that.
+Pay particular attention to the bits in HDL workflow about using yosys "show" command.  This is essential because the nmigen code gets turned into gates, and yosys show will bring up a graph that allows you to see that.
 It's also very useful to run the "proc" and "opt" command followed by
-a second "show top" (or show {insert module name}).  yosys "process"
+a second "show top" (or show {insert module name}).  Yosys "process"
 and "optimise" commands transform the design into something closer to
 what is actually synthesised at the gate level.
 
-in nmigen, pay particular attention to "comb" (combinatorial) and "sync" (synchronous).  comb is a sequence of gates without any clock-synchronised latches.  with comb it is absolutely essential that you **do not** create a "loop" by mistake.  i.e. combinatorial output must never, under any circumstances, loop back to combinatorial input.  "comb" blocks must be DAGs (Directed Acyclic Graphs) in other words.  "sync" will *automatically* create a clock synchronised register for you.  this is how you construct pipelines.  Also, if you want to create cyclic graphs, you absolutely **must** store partial results of combinatorial blocks in registers (with sync) *before* passing those partial results back into more (or the same) combinatorial blocks.
+In nmigen, pay particular attention to "comb" (combinatorial) and "sync" (synchronous).  Comb is a sequence of gates without any clock-synchronised latches.  With comb it is absolutely essential that you **do not** create a "loop" by mistake:  i.e. combinatorial output must never, under any circumstances, loop back to combinatorial input.  "comb" blocks must be DAGs (Directed Acyclic Graphs) in other words.  "sync" will *automatically* create a clock synchronised register for you.  This is how you construct pipelines.  Also, if you want to create cyclic graphs, you absolutely **must** store partial results of combinatorial blocks in registers (with sync) *before* passing those partial results back into more (or the same) combinatorial blocks.
 
 * http://www.clifford.at/yosys/cmd_proc.html
 
