@@ -22,7 +22,7 @@ Throughout each layer, the abstractions of a higher layer are removed and replac
 
 Thus, you can think safely in terms of "integers" when designing and writing the HDL, confident that the details of converting to gates and wires is taken care of.
 
-It is also critically important to remember that unlike a software environment there is no memory or stack, only if you create an actual SRSM and lay out the gates to address it with a binary to unary selector. There is no register file unless you actually create one. There is no ALU unless you make one... and so on.  And beyond that hardware, if you forget to add something that might be needed for exceptional purposes, if it's not there you simply cannot add it later like you can in software. If it's not there, it's not there and that's the end of the discussion.  Consequently a vast amount of time goes into planning and simulation (software, FPGA and SPICE) as mistakes and omissions can literally cost tens of millions of dollars to rectify.
+It is also critically important to remember that unlike a software environment there is no memory or stack, only if you create an actual SRAM and lay out the gates to address it with a binary to unary selector. There is no register file unless you actually create one. There is no ALU unless you make one... and so on.  And beyond that hardware, if you forget to add something that might be needed for exceptional purposes, if it's not there you simply cannot add it later like you can in software. If it's not there, it's not there and that's the end of the discussion.  Consequently a vast amount of time goes into planning and simulation (software, FPGA and SPICE) as mistakes and omissions can literally cost tens of millions of dollars to rectify.
 
 # Debian
 
