@@ -19,6 +19,19 @@ Summary
 * no 16/48/64 opcodes, needs a shuffle of opcodes.  TODO investigate Power VLE
 * needs escape sequencing (ISAMUX/NS)
 
+# SimpleV
+
+see [[simple_v_extension]] - will fit into 48/64/VBLOCK, see below.
+SimpleV: a "hardware for-loop" which involves type-casting (both) the
+register files to "a sequence of elements".  The **one** instruction
+(an unmodified **scalar** instruction) is interpreted as a *hardware
+for-loop* that issues **multiple** internal instructions with
+sequentially-incrementing register numbers.
+
+Thus it is completely unnecessary to add any vector opcodes - at all -
+saving hugely on both hardware and compiler development time when
+the concept is dropped on top of a pre-existing ISA.
+
 # atomics
 
 Single instruction on RV, and x86, but multiple on Power. Needs investigation, particularly as to why cache flush exists.
