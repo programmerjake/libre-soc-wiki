@@ -90,13 +90,14 @@ Store activation length in a CSR.
 
 Requirements are to have one instruction in each subpage which resets all the way back to PowerISA default. The other is a "back up stack by 1".
 
-## Branches
+# Branches
 
-Branches are fine as it is up to the compiler to decide whether to let the countdown run out.
+Branches are fine as it is up to the compiler to decide whether to let the
+ISAMUX/NS/escape-sequence countdown run out.
 
 This is all a software / compiler / ABI issue.
 
-## Function calls.
+# Function calls.
 
 Storing and restoring the state of the page/subpage CSR should be done by the caller. Or, again, let the countdowns run out.
 
