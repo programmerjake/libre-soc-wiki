@@ -11,8 +11,9 @@ Links
 
 Summary
 
-* FP32 is converted to FP64. Requires SV to be active.
+* FP32 is converted to FP64. Requires SimpleV to be active.
 * FP16 needed
+* transcendental FP opcodes needed (sin, cos, atan2, root, log1p)
 * FCVT between 16/32/64 needed
 * c++11 atomics not very efficient
 * no 16/48/64 opcodes, needs a shuffle of opcodes.  TODO investigate Power VLE
@@ -36,15 +37,18 @@ idea: rather than add dozens of new opcodes, add "repurposer" instructions that 
 
 # Escape Sequencing
 
-Absolutely critical, also to have official endorsement from OpenPower Foundation.
+aka "ISAMUX/NS".  Absolutely critical, also to have official endorsement
+from OpenPower Foundation.
 
 This will allow extending ISA (see ISAMUX/NS) in a clean fashion
+(including for and by OpenPower Foundation)
 
 # Compressed, 48, 64, VBLOCK
 
 TODO investigate Power VLE (Freescale doc Ref 314-68105)
 
-Under Esc Seq, move mulli, twi, tdi out of major OP000 then use the entire row, 2 bits instead of 3.
+Under Esc Seq, move mulli, twi, tdi out of major OP000 then use the
+entire row, 2 bits instead of 3.  greatly simplifies decoder.
 
 * OP 000-000 and 000-001 for 16 bit compressed, 11 bit instructions
 * OP 000-010 and 000-011 for 48 bit. 11 bits for SVP P48
@@ -53,7 +57,11 @@ Under Esc Seq, move mulli, twi, tdi out of major OP000 then use the entire row, 
 
 # Compressed 16
 
-Only 11 bits. Idea: have "pages" where one instruction selects the page number. It also specifies for how long that page is activated (terminated on a branch)
+Further "escape-sequencing".
+
+Only 11 bits available. Idea: have "pages" where one instruction selects
+the page number. It also specifies for how long that page is activated
+(terminated on a branch)
 
 The length to be a maximum of 4 bits, where 0b1111 indicates "permanently active".
 
