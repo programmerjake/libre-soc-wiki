@@ -9,6 +9,13 @@ Where the opcode is normally loaded from the location at the PC, the extra
 bits, set via a CSR, are mandatorially appended to every instruction: hence why they are described as "hidden" opcode bits, and as a "namespace".
 
 The parallels with c++ "using namespace" are direct and clear.
+Alternative conceptual ways to understand this concept include
+"escape-sequencing".
+
+TODO: reserve some bits which permit the namespace (escape-sequence) to
+be relevant for a fixed number of instructions at a time.  Caveat:
+allowing such a countdown to cross branch-points is unwise (illegal
+instruction?)
 
 # Hypothetical Format
 
@@ -20,7 +27,8 @@ needs to be paid to the fact that there is an "immediate" version of CSRRW
    3                   2                   1
 |1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0|
 |------------------------------ |-------|---------------------|-|
-|reserved reserved reserved reserved reserved   | foreignarch |1|
+|1 custom custom   custom   custom   custom     | foreignarch |1|
+|0 reserved reserved reserved reserved reserved | foreignarch |1|
 |custom         | reserved    |           official|B| rvcpage |0|
 </pre>
 
@@ -113,7 +121,6 @@ fraught: a trap, on exit, causing another trap??
 Per-privilege-level pseudocode (there exists UISANS, UTRAPISANS, ULASTISANS,
 MISANS, MTRAPISANS, MLASTISANS and so on):
 
-<code>
 <pre>
 trap_entry()
 {
@@ -129,7 +136,6 @@ trap_exit():
     LAST-ISANS = TRAP_ISANS
 }
 </pre>
-</code>
 
 # Why not have TRAP-ISANS as a vector table, matching mtvec? <a name="trap-isans-vec"></a>
 
@@ -140,7 +146,6 @@ the trap handler routine is written.
 
 Open question: see <https://groups.google.com/a/groups.riscv.org/d/msg/isa-dev/IAhyOqEZoWA/BM0G3J2zBgAJ>
 
-<code>
 <pre>
 trap_entry(x_cause)
 {
@@ -156,7 +161,6 @@ trap_exit(x_cause):
     LAST-ISANS = TRAP_ISANS_VEC[x_cause]
 }
 </pre>
-</code>
 
 # Is this like MISA? <a name="misa"></a>
 
