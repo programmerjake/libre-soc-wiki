@@ -137,7 +137,29 @@ trap_exit():
 }
 </pre>
 
-# Why not have TRAP-ISANS as a vector table, matching mtvec? <a name="trap-isans-vec"></a>
+# Alternative RVC 16 Bit Opcode meanings
+
+Here is appropriate to raise an idea how to cover RVC and future
+variants, including RV16.
+
+Just as with foreign archs, and you quite rightly highlight above, it
+makes absolutely no sense to try to select both RVCv1, v2, v3 and so on,
+all simultaneously. An unary bit vector for RVC modes, changing the 16
+BIT opcode space meaning, is wasteful and again has us believe that WARL
+is the "solution".
+
+The correct thing to do is, again, just like with foreign archs, to
+treat RVCs as a *binary* namespace selector. Bits 1 thru 3 would give
+8 possible completely new alternative meanings, just like how the Z80
+and the 286 and 386 used to do bank switching.
+
+All zeros is clearly reserved for the present RVC. 0b001 for RVCv2. 0b010
+for RV16 (look it up) and there should definitely be room reserved here
+for custom reencodings of the 16 bit opcode space.
+
+# FAQ
+
+## Why not have TRAP-ISANS as a vector table, matching mtvec? <a name="trap-isans-vec"></a>
 
 Use case to be determined.  Rather than be a global per-priv-level value,
 TRAP-ISANS is a table of length exactly equal to the mtvec/utvec/stvec table,
@@ -162,7 +184,7 @@ trap_exit(x_cause):
 }
 </pre>
 
-# Is this like MISA? <a name="misa"></a>
+## Is this like MISA? <a name="misa"></a>
 
 No.
 
@@ -173,7 +195,7 @@ No.
 
 MISA is therefore wholly unsuited to U-Mode usage; ISANS is specifically permitted to be called by userspace to switch (with no stalling) between namespaces, repeatedly and in quick succession.
 
-# What happens if this scheme is not adopted? Why is it better than leaving things well alone? <a name="laissezfaire"></a>
+## What happens if this scheme is not adopted? Why is it better than leaving things well alone? <a name="laissezfaire"></a>
 
 At the first sign of an emergency non-backwards compatible and unavoidable
 change to the *frozen* RISCV *official* Standards, the entire RISCV
@@ -200,7 +222,7 @@ first sight not to make any sense.
 
 It's complicated in other words!
 
-# Surely it's okay to just tell people to use 48-bit encodings? <a name="use48bit"></a>
+## Surely it's okay to just tell people to use 48-bit encodings? <a name="use48bit"></a>
 
 Short answer: it doesn't help resolve conflicts, and costs hardware and
 redesigns to do so.  Softcores in cost-sensitive embedded applications may
@@ -212,7 +234,7 @@ Second answer: conflicts can still occur in the (unregulated, custom) 48-bit
 space, which *could* be resolved by ISAMUX/ISANS as applied to the *48* bit
 space in exactly the same way.  And the 64-bit space.
 
-# Why not leave this to individual custom vendors to solve on a case by case basis? <a name="case-by-case"></a>
+## Why not leave this to individual custom vendors to solve on a case by case basis? <a name="case-by-case"></a>
 
 The suggestion was raised that a custom extension vendor could create
 their own CSR that selects between conflicting namespaces that resolve
@@ -249,7 +271,7 @@ or binary) the above issues are solved. CSR space is no longer wasted,
 compiler and JIT software writers have an easier time, clashes are
 avoided, and RISCV is stabilised and has a trustable long term future.
 
-# Why ISAMUX / ISANS has to be WLRL and mandatory trap on illegal writes <a name="wlrlmandatorytrap"></a>
+## Why ISAMUX / ISANS has to be WLRL and mandatory trap on illegal writes <a name="wlrlmandatorytrap"></a>
 
 The namespaces, set by bits in the CSR, are functionally directly
 equivalent to c++ namespaces, even down to the use of braces.
@@ -383,27 +405,7 @@ Subdivision of the RV NS (support for RVCv3/4/5/RV16 without wasting
 precious CSR bits) best left for discussion another time, the above is
 a heck of a lot to absorb, already.
 
-# Alternative RVC 16 Bit Opcode meanings
-
-Ok, here is appropriate to raise an idea how to cover RVC and future
-variants, including RV16.
-
-Just as with foreign archs, and you quite rightly highlight above, it
-makes absolutely no sense to try to select both RVCv1, v2, v3 and so on,
-all simultaneously. An unary bit vector for RVC modes, changing the 16
-BIT opcode space meaning, is wasteful and again has us believe that WARL
-is the "solution".
-
-The correct thing to do is, again, just like with foreign archs, to
-treat RVCs as a *binary* namespace selector. Bits 1 thru 3 would give
-8 possible completely new alternative meanings, just like how the Z80
-and the 286 and 386 used to do bank switching.
-
-All zeros is clearly reserved for the present RVC. 0b001 for RVCv2. 0b010
-for RV16 (look it up) and there should definitely be room reserved here
-for custom reencodings of the 16 bit opcode space.
-
-# Why WARL will not work and why WLRL is required
+## Why WARL will not work and why WLRL is required
 
 WARL requires a follow-up read of the CSR to ascertain what heuristic
 the hardware *might* have applied, and if that procedure is followed in
@@ -420,7 +422,7 @@ is clearly impossible, this leaves no other option but to have the CSR
 be WLRL (on all platforms) and for traps to be mandatory (on the UNIX
 Platform).
 
-# Is it strictly necessary for foreign archs to switch back? <a name="foreignswitch"></a>
+## Is it strictly necessary for foreign archs to switch back? <a name="foreignswitch"></a>
 
 No, because LAST-ISANS handles the setting and unsetting of the ISANS CSR
 in a completely transparent fashion as far as the foreign arch is concerned.
@@ -437,7 +439,7 @@ are **out of scope** of this document and MUST be handled by the foreign
 architecture implementation in a completely transparent fashion that in
 no way interacts or interferes with this proposal.
 
-# Can we have dynamic declaration and runtime declaration of capabilities? <a name="dynamic"></a>
+## Can we have dynamic declaration and runtime declaration of capabilities? <a name="dynamic"></a>
 
 Answer: don't know (yet).  Quoted from Rogier:
 
