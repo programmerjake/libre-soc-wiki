@@ -56,6 +56,21 @@ from OpenPower Foundation.
 This will allow extending ISA (see ISAMUX/NS) in a clean fashion
 (including for and by OpenPower Foundation)
 
+## Branches in namespaces
+
+Branches are fine as it is up to the compiler to decide whether to let the
+ISAMUX/NS/escape-sequence countdown run out.
+
+This is all a software / compiler / ABI issue.
+
+## Function calls in namespaces
+
+Storing and restoring the state of the page/subpage CSR should be done by the caller. Or, again, let the countdowns run out.
+
+If certain alternative configs are expected, they are part of the function ABI which must be spec'd.
+
+All of this is a software issue (compiler / ABI).
+
 # Compressed, 48, 64, VBLOCK
 
 TODO investigate Power VLE (Freescale doc Ref 314-68105)
@@ -89,21 +104,6 @@ Store activation length in a CSR.
 3 bits for subpage number. 4 bits for length, gives 7 bits. 4x7 is 28, then 3 bits can be used to specify "stack depth".
 
 Requirements are to have one instruction in each subpage which resets all the way back to PowerISA default. The other is a "back up stack by 1".
-
-# Branches
-
-Branches are fine as it is up to the compiler to decide whether to let the
-ISAMUX/NS/escape-sequence countdown run out.
-
-This is all a software / compiler / ABI issue.
-
-# Function calls.
-
-Storing and restoring the state of the page/subpage CSR should be done by the caller. Or, again, let the countdowns run out.
-
-If certain alternative configs are expected, they are part of the function ABI which must be spec'd.
-
-All of this is a software issue (compiler / ABI).
 
 # RISCV userspace
 
