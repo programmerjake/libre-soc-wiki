@@ -17,6 +17,16 @@ be relevant for a fixed number of instructions at a time.  Caveat:
 allowing such a countdown to cross branch-points is unwise (illegal
 instruction?)
 
+An example of a pre-existing "namespace" switch that has been in
+prevalent use for several decades (SPARC and other architectures):
+dynamic runtime selectability of littel-endian / big-endian "meaning"
+of instructions by way of a "mode switch" instruction (of some kind).
+
+That "switch" is in effect a 33rd (hidden) bit that is part of the opcode,
+going directly into the mux / decode phase of instruction decode, and
+thus qualifies categorically as a "namespace".  This proposal both formalises
+and generalises that concept.
+
 # Hypothetical Format
 
 Note that this is a hypothetical format, yet TBD, where particular attention
