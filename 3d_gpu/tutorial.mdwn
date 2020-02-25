@@ -58,6 +58,19 @@ Yes you really do need to know this because those "gates" cost both power, space
 
 you also want to look up the concept of a FSM (Finite State Machine) and the difference between a Mealy and a Moore FSM.
 
+## NDAs...
+
+These are a nuisance.  There are around 4 levels of NDAs to bust through:
+Full chip designs, peripherals and other third party components, Cell
+Libraries, and Foundries.  Often, the Foundries supply their own Standard Cell Libraries (see above).
+
+Sometimes you want to design something not under NDA (as we do), but
+in order to do so you still need to know the "shape" of the Cells.
+Occasionally, then, the licensee of those Cells will allow you to use
+"phantoms", which are the same shape and have the same connections.
+The official Industry term for these is "phantom views".  See
+<http://bugs.libre-riscv.org/show_bug.cgi?id=178#c106> for discussion.
+
 # nmigen
 
 Once you understand gates and python, nmigen starts to make sense. 
