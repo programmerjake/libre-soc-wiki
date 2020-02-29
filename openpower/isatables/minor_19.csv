@@ -1,0 +1,5 @@
+--, unit, internal op, in1, in2, in3, out, CR in, CR out, inv A, inv out, cry in, cry out, ldst len, BR, sgn ext, upd, rsrv, 32b, sgn, rc, lk, sgl pipe
+0b000,ALU,OP_MCRF,NONE,NONE,NONE,NONE,1,1,0,0,ZERO,0,NONE,0,0,0,0,0,0,NONE,0,0,mcrf; and cr logical ops
+0b001,ALU,OP_ILLEGAL,NONE,NONE,NONE,NONE,0,0,0,0,ZERO,0,NONE,0,0,0,0,0,0,RC,0,1,add pcis not implemented yet
+0b100,ALU,OP_BCREG,SPR,SPR,NONE,SPR,1,0,0,0,ZERO,0,NONE,0,0,0,0,0,0,NONE,1,0,bclr bcctr bctar
+0b111,ALU,OP_ISYNC,NONE,NONE,NONE,NONE,0,0,0,0,ZERO,0,NONE,0,0,0,0,0,0,NONE,0,1,isync
