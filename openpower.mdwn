@@ -22,6 +22,12 @@ Summary
 * no 16/48/64 opcodes, needs a shuffle of opcodes.  TODO investigate Power VLE
 * needs escape sequencing (ISAMUX/NS)
 
+# What we are *NOT* doing:
+
+* Opcode 4 Signal Processing (SPE)
+* Opcode 4 Vectors
+* Avoidable legacy opcodes
+
 # SimpleV
 
 see [[simple_v_extension]] - will fit into 48/64/VBLOCK, see below.
@@ -34,6 +40,10 @@ sequentially-incrementing register numbers.
 Thus it is completely unnecessary to add any vector opcodes - at all -
 saving hugely on both hardware and compiler development time when
 the concept is dropped on top of a pre-existing ISA.
+
+# Integer Overflow / Saturate
+
+Typically used on vector operations (audio DSP), it makes no sense to have separate opcodes (Opcode 4 SPE).  To be done instead as CSRs / vector-flags on *standard* arithmetic operations.
 
 # atomics
 
