@@ -6,29 +6,46 @@ Based on Anton Blanchard's microwatt decode1.vhdl
 
 # Major opcodes
 
+decodes using f_in.insn(31 downto 26)
+
 [[!table format=csv file="openpower/isatables/major.csv"]]
 
 # Minor opcode 19
+
+valid from table using f_in.insn(10 downto 1)
+
+decodes using f_in.insn(5) & f_in.insn(3) & f_in.insn(2)
 
 [[!table format=csv file="openpower/isatables/minor_19.csv"]]
 
 # Minor opcode 30
 
+decodes using f_in.insn(4 downto 1)
+
 [[!table format=csv file="openpower/isatables/minor_30.csv"]]
 
 # Minor opcode 31
+
+decodes using f_in.insn(10 downto 1)
 
 [[!table format=csv file="openpower/isatables/minor_31.csv"]]
 
 # Minor opcode 58
 
+decodes using f_in.insn(1 downto 0)
+
 [[!table format=csv file="openpower/isatables/minor_58.csv"]]
 
 # Minor opcode 62
 
+decodes using f_in.insn(1 downto 0)
+
 [[!table format=csv file="openpower/isatables/minor_62.csv"]]
 
 # Extra opcodes
+
+These can match against the (full) row[0] spec: nmigen Case supports "-" as
+"don't care"
 
 [[!table format=csv file="openpower/isatables/extra.csv"]]
 
