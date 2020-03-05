@@ -7,8 +7,8 @@
    | OPCD |  BO|   BI  |   BD  |AA|LK |
 
 #1.6.3 SC-FORM
-   |0     |6    |11    |16    |20      27|  |30 |31  |
-   | OPCD |  ///|   ///|   // |   LEV    |//|  1|  / |
+   |0     |6    |11    |16    |20     |27  |30 |31  |
+   | OPCD |  ///|   ///|   // |   LEV |  //|  1|  / |
 
 #1.6.4 D-FORM
    |0     |6   |9  |10 |11   |16      |31 |
@@ -57,7 +57,7 @@
    | OPCD |       RS      | /|SR        |     ///     |   XO |  / |
    | OPCD |       RS      |     ///     |    RB       |   XO |  / |
    | OPCD |       RS      |     ///     |     ///     |   XO |  / |
-   | OPCD |       RS      |    ///  |L  |     ///     |   XO |  / |
+   | OPCD |       RS      |    ///   |L |     ///     |   XO |  / |
    | OPCD |       TH      |    RA       |    RB       |   XO |  / |
    | OPCD |  BF  |/  | L  |    RA       |    RB       |   XO |  / |
    | OPCD |  BF  |//      |   FRA       |   FRB       |   XO |  / |
@@ -152,7 +152,7 @@
    | OPCD |     T      |   A |   B |XO |DM  |   XO |AX|BX|TX |
 
 # 1.6.14 XX4-FORM
-   |0     |6   |11   |16   |21   |26  |28| 29|30|31 |
+   |0     |6   |11   |16   |21   |26  |28|29 |30|31 |
    | OPCD |  T |   A |   B |   C | XO |CX|AX |BX|TX |
 
 # 1.6.15 XS-FORM
@@ -212,14 +212,14 @@
    | OPCD  |      |///          | VRB  |   XO   |
 
 # 1.6.24 EVX-FORM
-   |0      |6      |11    |16    |21    |31|
+   |0      |6   |9 |11    |16    |21    |31|
    | OPCD  |   RS  |   RA |   RB |   XO    |
    | OPCD  |   RS  |   RA |   UI |   XO    |
    | OPCD  |   RT  |   ///|   RB |   XO    |
    | OPCD  |   RT  |   RA |   RB |   XO    |
    | OPCD  |   RT  |   RA |   ///|   XO    |
    | OPCD  |   RT  |   UI |   RB |   XO    |
-   | OPCD  |  BF //|   RA |   RB |   XO    |
+   | OPCD  |  BF|//|   RA |   RB |   XO    |
    | OPCD  |   RT  |   RA |   UI |   XO    |
    | OPCD  |   RT  |   SI |   ///|   XO    |
 
@@ -228,13 +228,13 @@
    | OPCD  |  RT|   RA |   RB |   XO |BFA    |
 
 # 1.6.26 Z22-FORM
-   |0      |6     |11     |15|16     |22    |31 |
-   | OPCD  | BF //|   FRA |  |   DCM |   XO | / |
-   | OPCD  | BF //|  FRAp |  |   DCM |   XO | / |
-   | OPCD  | BF //|   FRA |  |   DGM |   XO | / |
-   | OPCD  | BF //|  FRAp |  |   DGM |   XO | / |
-   | OPCD  |  FRT |   FRA |  |    SH |   XO |Rc |
-   | OPCD  |  FRTp|  FRAp |  |    SH |   XO |Rc |
+   |0      |6  |9 |11     |16     |22    |31 |
+   | OPCD  | BF|//|   FRA |   DCM |   XO | / |
+   | OPCD  | BF|//|  FRAp |   DCM |   XO | / |
+   | OPCD  | BF|//|   FRA |   DGM |   XO | / |
+   | OPCD  | BF|//|  FRAp |   DGM |   XO | / |
+   | OPCD  |  FRT |   FRA |    SH |   XO |Rc |
+   | OPCD  |  FRTp|  FRAp |    SH |   XO |Rc |
 
 # 1.6.27 Z23-FORM
    |0     |6     |11    |15 |16     |21 |23    |31 |
@@ -248,7 +248,7 @@
 
 # V3.0B 1.6.6 DX-FORM
    |0    |6   |11   |16   |26   |31
-   |   PO|  RT|   d1|   d0|   XO|d2
+   | OPCD|  RT|   d1|   d0|   XO|d2
 
 # 1.6.28 Instruction Fields
     A (6)
