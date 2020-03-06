@@ -29,7 +29,7 @@ Then run these commands:
     sudo bash
     apt-get install debootstrap schroot
     mkdir /opt/chroot/coriolis
-    /usr/sbin/debootstrap stretch !$ http://ftp.us.debian.org/debian
+    /usr/sbin/debootstrap buster !$ http://ftp.us.debian.org/debian
     mount /home/chroot/coriolis/dev
     mount /home/chroot/coriolis/dev/pts
     mount   /home/chroot/coriolis/proc
@@ -65,7 +65,7 @@ in the chroot.
 
 Create an schroot file section:
 
-    [coriolis] 
+    [coriolis]
     description=Debian Stable for Coriolis
     directory=/home/chroot/coriolis
     groups=sbuild-security,lkcl,users
@@ -78,7 +78,7 @@ and, due to the contents of /etc/debian\_chroot, and that you were in
 fact logged in as uid 1000 and did in fact add a user to the chroot
 as uid 1000, the prompt should become:
 
-    (coriolis2)lkcl@fizzy:~$ 
+    (coriolis2)lkcl@fizzy:~$
 
 If however you need to run as root, then from outside the chroot,
 as *root*, you run this:
@@ -170,7 +170,15 @@ Then, as the ordinary (non-root) user in the schroot:
     git checkout devel
     ./bootstrap/ccb.py --project=coriolis --make="-j4 install"
 
-To set up the alliance environment, run this:
+In debian/buster at the moment, this will fail half-way through, due to
+libraries not being found.  When that happens run this:
+
+    ln -s ~/coriolis-2.x/Linux.x86_64/Release.Shared/install/lib64 \
+          ~/coriolis-2.x/Linux.x86_64/Release.Shared/install/lib
+
+Then carry on with the build.
+
+To set up the coriolis2 environment, run this:
 
     eval `~/coriolis-2.x/src/coriolis/bootstrap/coriolisEnv.py`
 
@@ -181,15 +189,17 @@ having to look this page up every time
             ~/coriolisenv
     source ~/coriolisenv
 
+## Testing coriolis2
+
 To run the graphical editor go to the bin directory
- 
+
      cd ~/coriolis-2.x/Linux.MyARCH/Release.Shared/install/bin
     ./cgt
 
 Then run the following commands from the menubar
 
     Tutorials / Run Demo (Python Flavour)
-    
+
 If the following window appears you have an error.
 
 [[!img chicken.png ]]
@@ -305,24 +315,11 @@ You can also tweak the layer display:
 
      coriolis-2.x/Linux.x86_64/Release.Shared/install/share/doc/coriolis2/en/html/index.html
 
-# Installing python3.7 into debian/stretch chroot
+# Installing python3.7 into debian/buster chroot
 
-python 3.6 is a prerequisite for nmigen however something
-weird is going on, and it can't be installed.  instead,
-python 3.7 has to be installed instead.  we do this by
-adding debian/testing but setting the default release
-as "stretch".
+as root, in the chroot:
 
-as root, in the
-chroot, add the following to /etc/apt/sources.list
-
-    deb http://ftp.de.debian.org/debian testing main
-
-then, also as root:
-
-    echo 'APT::Default-Release "stretch";' | tee -a /etc/apt/apt.conf.d/00local
-    sudo apt-get update
-    apt-get -t testing install python3.7 python3-setuptools \
+    apt-get install python3.7 python3-setuptools \
                python3-jinja2 python3-pip
 
 At this point it becomes possible to follow the main
@@ -331,24 +328,12 @@ ieee754fpu, soc and nmutil.
 
 # Upgrading to latest yosys and nmigen in the chroot
 
-yosys in debian/stretch may not be enough to work with nmigen,
-therefore it's probably a good idea to upgrade.   if this was
-not a debian/stretch chroot (i.e. was a debian 10), it would be
-a simple matter of "apt-get install yosys" however it's probably best,
-here to install from source.
-
-**however**.. there is another way: once the instructions
-for installing python3.7 have been carried out.  As root,
-in the chroot:
-
-   apt-get -t testing install yosys
-
-That's all. 
-
-To install instead from source, add the following to
+yosys in debian may not be enough to work with nmigen,
+therefore it's probably a good idea to upgrade.
+To install from source, add the following to
 /etc/apt/sources.list:
 
-   deb-src http://ftp.uk.debian.org/debian stretch main
+   deb-src http://ftp.uk.debian.org/debian buster main
 
 then as root, in the chroot, run the following:
 
@@ -357,7 +342,7 @@ then as root, in the chroot, run the following:
     apt-get install clang
     apt-get remove yosys
 
-this will remove debian/stretch yosys however getting the build
+this will remove debian/buster yosys however getting the build
 dependencies is quick and easy enough.
 
 then, as the ordinary user, the following instructions can be followed
