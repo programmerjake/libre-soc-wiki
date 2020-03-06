@@ -80,6 +80,15 @@ as uid 1000, the prompt should become:
 
     (coriolis2)lkcl@fizzy:~$ 
 
+If however you need to run as root, then from outside the chroot,
+as *root*, you run this:
+
+    lkcl@fizzy:~# schroot -c coriolis
+
+and you will see this as a result:
+
+    (coriolis2)lkcl@fizzy:~#
+
 ## check out alliance and alliance-check-toolkit
 
 Adapted from <https://www-soc.lip6.fr/en/team-cian/softwares/alliance/>
@@ -93,10 +102,15 @@ TODO: document how to build alliance, basically this:
 In the chroot, as root:
 
     apt-get update
-    apt-get install git build-essential libtool automake \
+    apt-get install ccache git build-essential libtool automake \
              flex bison xfig imagemagick \
              texlive texlive-pictures texlive-latex-extra \
              libx11-dev libxt-dev libxaw7-dev libxpm-dev libmotif-dev
+
+In the chroot, as the ordinary schroot user, in ~/.bash\_profile add
+the following so that builds (rebuilds) if you need them will be quicker:
+
+    export PATH=/usr/lib/ccache:"$PATH"
 
 In the chroot, as the ordinary schroot user:
 
@@ -134,7 +148,7 @@ chroot).
 Then run the following commands, as root, *in* the chroot:
 
     apt-get update
-    apt-get install -y build-essential binutils-dev               \
+    apt-get install -y ccache build-essential binutils-dev          \
                   git cmake bison flex gcc python-dev               \
                   libboost-all-dev libboost-python-dev               \
                   zlib1g-dev                                         \
