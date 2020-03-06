@@ -122,6 +122,7 @@ In the chroot, as the ordinary schroot user:
     cd ~/alliance/build
     export ALLIANCE_TOP=$HOME/alliance/install
     export LD_LIBRARY_PATH=${ALLIANCE_TOP}/lib:${LD_LIBRARY_PATH}
+    export LD_LIBRARY_PATH=${ALLIANCE_TOP}/lib64:${LD_LIBRARY_PATH}
     ../alliance/src/configure --prefix=$ALLIANCE_TOP --enable-alc-shared
     make -j1 install
 
