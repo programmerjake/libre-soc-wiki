@@ -365,3 +365,24 @@ See [[HDL_workflow]] for git clone instructions
     $ git clone ssh://gitolite3@git.libre-riscv.org:922/libresoc.git
 
 TODO further, here.
+
+# Issues running from (e.g.) archlinux as host and debian as a chroot
+
+You may run into difficulties firing up GUI applications from the chroot.
+Try installing Xnest <https://box.matto.nl/xnest.html> which you should
+do in the *host* system.  Also remember to install a "basic" window manager
+(twm, fvwm2)
+
+On the *host*, run Xnest and a window manager:
+
+    Xnest :1 -ac &
+    twm -display :1 &
+
+Then, in the chroot, change DISPLAY environment variable (permanently
+in ~/.bash_profile if desired)
+
+    export DISPLAY=:1.0
+
+Then, in the chroot, follow the cgt instructions above, or use "make view"
+in any of the soclayout experiments or alliance-check-toolkit bench tests
+
