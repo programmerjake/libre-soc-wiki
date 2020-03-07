@@ -44,6 +44,10 @@ Thus it is completely unnecessary to add any vector opcodes - at all -
 saving hugely on both hardware and compiler development time when
 the concept is dropped on top of a pre-existing ISA.
 
+## Condition Registers
+
+Branch Facility (Section 2.3.1 V2.07B and V3.0B) has 4-bit registers: CR0 and CR1.  When SimpleV is active, it may be better to set CR6 (the Vector CR field) instead.
+
 # Integer Overflow / Saturate
 
 Typically used on vector operations (audio DSP), it makes no sense to have separate opcodes (Opcode 4 SPE).  To be done instead as CSRs / vector-flags on *standard* arithmetic operations.
