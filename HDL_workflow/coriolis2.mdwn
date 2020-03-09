@@ -123,7 +123,7 @@ In the chroot, as the ordinary schroot user:
     export ALLIANCE_TOP=$HOME/alliance/install
     export LD_LIBRARY_PATH=${ALLIANCE_TOP}/lib:${LD_LIBRARY_PATH}
     export LD_LIBRARY_PATH=${ALLIANCE_TOP}/lib64:${LD_LIBRARY_PATH}
-    ../alliance/src/configure --prefix=$ALLIANCE_TOP --enable-alc-shared
+    ../alliance/alliance/src/configure --prefix=$ALLIANCE_TOP --enable-alc-shared
     make -j1 install
 
 the two exports are best added to ~/.bash_profile for later convenience
