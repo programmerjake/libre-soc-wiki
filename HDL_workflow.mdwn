@@ -252,6 +252,8 @@ root prompt, and save yourself some typing.
 * apt-get install build-essential
 * apt-get install git python3.7 python3.7-dev python-nosetest3
 * apt-get install graphviz xdot gtkwave
+* apt-get install python3-venv
+* apt-get install python-virtualenv  # this is an alternative to python3-venv
 * return to user prompt (ctrl-d)
 
 This will get you python3 and other tools that are needed. graphviz is
@@ -327,11 +329,9 @@ library.  In the meantime, sfpy can be built as follows:
     cd ..
 
     # prepare a virtual environment for building
-    sudo apt-get install python3-venv
     python3 -m venv .env
 
-    # alternative method of preparing a virtual environment:
-    #    sudo apt get python-virtualenv
+    # or, if you prefer the old way:
     #    virtualenv -p python3 .env
 
     # install dependencies
