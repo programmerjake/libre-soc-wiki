@@ -326,9 +326,16 @@ library.  In the meantime, sfpy can be built as follows:
     git apply /path/to/ieee754fpu/berkeley-softfloat.patch
     cd ..
 
-    # install dependencies    
+    # prepare a virtual environment for building
+    sudo apt-get install python3-venv
     python3 -m venv .env
-    . .env/bin/activate
+
+    # alternative method of preparing a virtual environment:
+    #    sudo apt get python-virtualenv
+    #    virtualenv -p python3 .env
+
+    # install dependencies
+    source .env/bin/activate
     pip3 install --upgrade -r requirements.txt
 
     # build
