@@ -4,9 +4,14 @@ The decoder is in charge of translating the RISCV or POWER instruction stream in
 
 Source code: <https://git.libre-riscv.org/?p=soc.git;a=tree;f=src/soc/decoder;hb=HEAD>
 
-## POWER
+# POWER
 
-### Fixed point instructions
+The decoder has been written in python, to parse straight CSV files and othrr information taken directly from the Power ISA Standards PDF files. This significantly reduces the possibility of manual transcription errors and greatly reduces code size.  These tables are in [[openpower/isatables]].
+
+The top level decoder object recursively drops through progressive levels of case statement groups, covering additional portions of the incoming instruction bits.  More on this is outlined here <http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2020-March/004882.html>
+
+## Fixed point instructions
+
  - `addi`, `addis`, `mulli` - fairly straightforward - extract registers and immediate and translate to the appropriate op
  - `addic`, `addic.`, `subfic` - similar to above, but now carry needs to be saved somewhere
  - `add[o][.]`, `subf[o][.]`, `adde*`, `subfe*`, `addze*`, `neg*`, `mullw*`, `divw*` - These are more fun. They need to set the carry (if `.` is present) and overflow (if `o` is present) flags, as well as taking in the carry flag for the `e`xtended versions.
@@ -16,5 +21,4 @@ Source code: <https://git.libre-riscv.org/?p=soc.git;a=tree;f=src/soc/decoder;hb
  - `and*`, `or*`, `xor*`, `nand*`, `eqv*`, `andc*`, `orc*` - similar to the register-register arithmetic instructions above
 
 
-
-## RISCV
+# RISCV
