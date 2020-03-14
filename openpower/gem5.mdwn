@@ -6,6 +6,8 @@ Official instructions are sparse.  Under exploratory development:
                     libpython2.7-dev protobuf-compiler
     scons -j16 build/POWER/gem5.opt
 
+Two warnings are given about fallthrough on case statements... which are commented as such... and yet nobody thought to tell the compiler that.  TODO: investigate how to disable "-Werror" in scons...
+
 # gcc powerpc cross-compiler
 
 Note that this is not the same as the 64-bit powerpc64le or the 64-bit powerpc64 compiler
