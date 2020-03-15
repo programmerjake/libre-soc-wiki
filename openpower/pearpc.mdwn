@@ -1,7 +1,33 @@
 # PearPC
 
 A 32-bit PowerPC emulator with generic (cycle-accurate) and JIT compilation.
+We specifically do not want JIT because it will not allow us to see exactly
+what is going on.
 
 # Compiling
 
 Download from <https://github.com/sebastianbiallas/pearpc>
+
+    git clone https://github.com/sebastianbiallas/pearpc
+    ./configure --enable-cpu=generic
+    make -j16
+
+# Create a blank disk image:
+
+Create a disk image with:
+
+    dd if=/dev/zero of=ppcdisk3g.img bs=516096 seek=6241 count=0
+
+# Config file for booting Mandrake 9.1 PPC
+
+These lines are what need modifying.
+
+    ## PearPC Configuration File
+
+    pci_ide0_master_installed = 1
+    pci_ide0_master_image = "ppcdisk3g.img"
+
+    pci_ide0_slave_installed = 1
+    pci_ide0_slave_image = "MandrakeLinux-9.1-CD1.ppc.iso"
+    pci_ide0_slave_type = "cdrom"
+
