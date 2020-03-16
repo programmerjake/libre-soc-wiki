@@ -619,6 +619,12 @@ than it should be, the reversion process becomes extremely painful.
   causes unnecessary resource utilisation, makes code readability and
   tracking extremely difficult, and results in unintended side-effects.
 
+example: often you want to find the code from which a class was imported.  nirmally you go to the top of the file, check the imports, and you know exactly which file has the class because of the import path.  by using wildcards, you have absolutely *no clue* which wildcard imported which class or classes.
+
+example: sometimes you may accidentally have duplicate code maintained in two or more places.  editing one of them you find, puzzlingly, that the code behaves in some files with the old behaviour, but in others it works.  after a nassive amount of investigation, you find that the working files happen to have a wildcard import of the newer accidental duplicate class **after** the wildcard import of the older class with exactly the same name.  if you had used explicit imports, you would have spotted the double import of the class from two separate locations, immediately.
+
+really.  don't.  use.  wildcards.
+
 ### Keep file and variables short but clear
 
 * try to keep both filenames and variable names short but not ridiculously
