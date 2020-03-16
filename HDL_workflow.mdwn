@@ -633,6 +633,12 @@ really.  don't.  use.  wildcards.
   m.d.comb" followed by multiple "comb += nmigen_stmt" lines is a good trick
   that can reduce code indentation by 6 characters without reducing clarity.
 
+Additionally, use comments just above an obtuse variable in order to help explain what it is for.  In combination with keeping the the module itself short, other readers will not need to scroll back several pages in order to understand the code.
+
+Yes it is tempting to actually use the variables as self-explanatory-comments and generally this can be extremely good practice.  the problem comes when the variable is so long that a function with several parameters csn no longer fit on a single line, and takes up five to ten lines rather than one or two. at that point, the length of the code is adversely affected and thus so is readability by forcing readers to scroll through reams of pages.
+
+it is a tricky balance: basically use your common sense, or just ask someone else, "can you understand this code?"
+
 ### Reasons for code structure
 
 regarding code structure: we decided to go with small modules that are
