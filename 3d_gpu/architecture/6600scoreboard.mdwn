@@ -25,6 +25,31 @@ to the priority picker, which generates GoRead, so it is critical
 [[!img comp_unit_req_rel.jpg]]
 [[!img group_pick_rd_rel.jpg]]
 
+Source:
+
+* [Priority Pickers](https://git.libre-riscv.org/?p=nmutil.git;a=blob;f=src/nmutil/picker.py;hb=HEAD)
+* [ALU Comp Units](https://git.libre-riscv.org/?p=soc.git;a=blob;f=src/soc/experiment/compalu.py;h=f7b5e411a739e770777ceb71d7bd09fe4e70e8c0;hb=b08dee1c3e8cf0d635820693fe50cd0518caeed2)
+
+# Multi-in cascading Priority Picker
+
+Using the Group Picker as a fundamental unit, a cascading chain is created,
+with each output "masking" an output from being selected in all down-chain
+Pickers.  Whilst the input is a single unary array of bits, the output is
+*multiple* unary arrays where only one bit in each is set.
+
+This can be used for "port selection", for example when there are multiple
+Register File ports or multiple LOAD/STORE cache "ways", and there are many
+more devices seeking access to those "ports" than there are actual ports.
+(If the number of devices seeking access to ports were equal to the number
+of ports, each device could be allocated its own dedicated port).
+
+[[!img multi_priority_picker.png]]
+
+Links:
+
+* [Priority Pickers](https://git.libre-riscv.org/?p=nmutil.git;a=blob;f=src/nmutil/picker.py;hb=HEAD)
+* <http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2020-March/005204.html>
+
 # Modifications to Dependency Cell
 
 Note: this version still requires CLK to operate on a HI-LO cycle.
