@@ -30,31 +30,6 @@ Source:
 * [Priority Pickers](https://git.libre-riscv.org/?p=nmutil.git;a=blob;f=src/nmutil/picker.py;hb=HEAD)
 * [ALU Comp Units](https://git.libre-riscv.org/?p=soc.git;a=blob;f=src/soc/experiment/compalu.py;h=f7b5e411a739e770777ceb71d7bd09fe4e70e8c0;hb=b08dee1c3e8cf0d635820693fe50cd0518caeed2)
 
-# LD/ST Computation Unit
-
-The Load/Store Computation Unit is a little more complex, involving
-three functions: LOAD, STORE, and INT Addition.  The SR Latches create
-a cyclic chain (just as with the ALU Computation Unit) however here
-there are three possible chains.
-
-* INT Addition mode will activate Issue, GoRead, GoWrite
-* LD Mode will activate Issue, GoRead, GoAddr then finally GoWrite
-* ST Mode will activate Issue, GoRead, GoAddr then GoStore.
-
-These signals will be allowed to activate when the correct "Req" lines
-are active.  Cyclically respecting these request-response signals results in
-the SR Latches never going into "unstable / unknown" states.
-
-Note: there is an error in the diagram, compared to the source code.
-It was necessary to capture src2 (op2) separate from src1 (op1), so that
-for the ST, op2 goes into the STORE as the data, not op1.
-
-Source:
-
-* [LD/ST Comp Units](https://git.libre-riscv.org/?p=soc.git;a=blob;f=src/soc/experiment/compldst.py;h=206f44876b00b6c1d94716e624a03e81208120d4;hb=a0e1af6c5dab5c324a8bf3a7ce6eb665d26a65c1)
-
-[[!img ld_st_comp_unit.png]]
-
 # Multi-in cascading Priority Picker
 
 Using the Group Picker as a fundamental unit, a cascading chain is created,
@@ -155,7 +130,20 @@ a DFF (register).
 
 [[!img shadow.jpg]]
 
-# Store Computation Unit
+# LD/ST Computation Unit
+
+The Load/Store Computation Unit is a little more complex, involving
+three functions: LOAD, STORE, and INT Addition.  The SR Latches create
+a cyclic chain (just as with the ALU Computation Unit) however here
+there are three possible chains.
+
+* INT Addition mode will activate Issue, GoRead, GoWrite
+* LD Mode will activate Issue, GoRead, GoAddr then finally GoWrite
+* ST Mode will activate Issue, GoRead, GoAddr then GoStore.
+
+These signals will be allowed to activate when the correct "Req" lines
+are active.  Cyclically respecting these request-response signals results in
+the SR Latches never going into "unstable / unknown" states.
 
 * Issue will close the opcode latch and OPEN the operand latch AND
 trigger "Request-Read" (and set "Busy")
@@ -166,5 +154,50 @@ AND trigger "Request Write"
 * Go-Write will close the result latch and OPEN the opcode latch, and
 reset BUSY back to OFF, ready for a new cycle.
 
-[[!img st_comp_unit.jpg]]
+Note: there is an error in the diagram, compared to the source code.
+It was necessary to capture src2 (op2) separate from src1 (op1), so that
+for the ST, op2 goes into the STORE as the data, not op1.
 
+Source:
+
+* [LD/ST Comp Units](https://git.libre-riscv.org/?p=soc.git;a=blob;f=src/soc/experiment/compldst.py;h=206f44876b00b6c1d94716e624a03e81208120d4;hb=a0e1af6c5dab5c324a8bf3a7ce6eb665d26a65c1)
+
+[[!img ld_st_comp_unit.png]]
+
+# Memory-Memory Dependency Matrix
+
+Due to the possibility of more than on LD/ST being in flight, it is necessary
+to determine which memory operations are conflicting, and to preserve a
+semblance of order.  It turns out that as long as there is no *possibility*
+of overlaps (note this wording carefully), and that LOADs are done separately
+from STOREs, this is sufficient.
+
+The first step then is to ensure that only a mutually-exclusive batch of LDs
+*or* STs (not both) is detected, with the order between such batches being
+preserved.  This is what the memory-memory dependency matrix does.
+
+"WAR" stands for "Write After Read" and is an SR Latch.  "RAW" stands for
+"Read After Write" and likewise is an SR Latch.  Any LD which comes in
+when a ST is pending will result in the relevant RAW SR Latch going active.
+Likewise, any ST which comes in when a LD is pending results in the
+relevant WAR SR Latch going active.
+
+LDs can thus be prevented when it has any dependent RAW hazards active,
+and likewise STs can be prevented when any dependent WAR hazards are active.
+The matrix also ensures that ordering is preserved.
+
+Note however that this is the equivalent of an ALU "FU-FU" Matrix.  A
+separate Register-Mem Dependency Matrix is *still needed* in order to
+preserve the **register** read/write dependencies that occur between
+instructions, where the Mem-Mem Matrix simply protects against memory
+hazards.
+
+Note also that it does not detect address clashes: that is the responsibility
+of the Address Match Matrix.
+
+Source:
+
+* [Memory-Dependency Row](https://git.libre-riscv.org/?p=soc.git;a=blob;f=src/soc/scoreboard/mem_dependence_cell.py;h=2958d864cec75480b97a0725d9b3c44f53d2e7a0;hb=a0e1af6c5dab5c324a8bf3a7ce6eb665d26a65c1)
+* [Memory-Dependency Matrix](https://git.libre-riscv.org/?p=soc.git;a=blob;f=src/soc/scoreboard/mem_fu_matrix.py;h=6b9ce140312290a26babe2e3e3d821ae3036e3ab;hb=a0e1af6c5dab5c324a8bf3a7ce6eb665d26a65c1)
+
+[[!img ld_st_dep_matrix.png]]
