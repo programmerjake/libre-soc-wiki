@@ -30,6 +30,15 @@ Source:
 * [Priority Pickers](https://git.libre-riscv.org/?p=nmutil.git;a=blob;f=src/nmutil/picker.py;hb=HEAD)
 * [ALU Comp Units](https://git.libre-riscv.org/?p=soc.git;a=blob;f=src/soc/experiment/compalu.py;h=f7b5e411a739e770777ceb71d7bd09fe4e70e8c0;hb=b08dee1c3e8cf0d635820693fe50cd0518caeed2)
 
+# LD/ST Computation Unit
+
+The Load/Store Computation Unit is a little more complex, involving
+three functions: LOAD, STORE, and INT Addition.  The SR Latches create
+a cyclic chain (just as with the ALU Computation Unit) however here
+there are three possible chains
+
+[[!img ld_st_comp_unit.png]]
+
 # Multi-in cascading Priority Picker
 
 Using the Group Picker as a fundamental unit, a cascading chain is created,
