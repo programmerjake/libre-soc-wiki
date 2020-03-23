@@ -35,7 +35,23 @@ Source:
 The Load/Store Computation Unit is a little more complex, involving
 three functions: LOAD, STORE, and INT Addition.  The SR Latches create
 a cyclic chain (just as with the ALU Computation Unit) however here
-there are three possible chains
+there are three possible chains.
+
+* INT Addition mode will activate Issue, GoRead, GoWrite
+* LD Mode will activate Issue, GoRead, GoAddr then finally GoWrite
+* ST Mode will activate Issue, GoRead, GoAddr then GoStore.
+
+These signals will be allowed to activate when the correct "Req" lines
+are active.  Cyclically respecting these request-response signals results in
+the SR Latches never going into "unstable / unknown" states.
+
+Note: there is an error in the diagram, compared to the source code.
+It was necessary to capture src2 separate from src1, so that for the ST,
+src2 goes into the STORE as the data, not src1.
+
+Source:
+
+* [LD/ST Comp Units](https://git.libre-riscv.org/?p=soc.git;a=blob;f=src/soc/experiment/compldst.py;h=206f44876b00b6c1d94716e624a03e81208120d4;hb=a0e1af6c5dab5c324a8bf3a7ce6eb665d26a65c1)
 
 [[!img ld_st_comp_unit.png]]
 
