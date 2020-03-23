@@ -201,3 +201,63 @@ Source:
 * [Memory-Dependency Matrix](https://git.libre-riscv.org/?p=soc.git;a=blob;f=src/soc/scoreboard/mem_fu_matrix.py;h=6b9ce140312290a26babe2e3e3d821ae3036e3ab;hb=a0e1af6c5dab5c324a8bf3a7ce6eb665d26a65c1)
 
 [[!img ld_st_dep_matrix.png size="600x"]]
+
+# Address Match Matrix
+
+This is an important adjunct to the Memory Dependency Matrices: it ensures
+that no LDs or STs overlap, because if they did it could result in memory
+corruption.  Example: a 64-bit ST at address 0x0001 comes in at the
+same time as a 64-bit ST to address 0x0002: the second write will overwrite
+all writes to bytes in memory 0x0002 thru 0x0008 of the first write,
+and consequently the order of these two writes absolutely has to be
+preserved.
+
+The suggestion from Mitch Alsup was to use a match system based on bits
+4 thru 10/11 of the address.  The idea being: we don't care if the matching
+is "too inclusive", i.e. we don't care if it includes addresses that don't
+actually overlap: we care if it were to **miss** some addresses that do
+actually overlap.  Therefore it is perfectly acceptable to use only a few
+bits of the address.  This is fortunate because the matching has to be
+done in a huge NxN Pascal's Triangle, and if we were to compare against
+the entirety of the address it would consume vast amounts of power and gates.
+
+An enhancement of this idea is to turn the length of the operation
+(LD/ST 1 byte, 2 bytes, 4 or 8 bytes) into a byte-map "mask", using the
+bottom 4 bits of the address to offset this mask and "line up" with
+the Memory byte read/write enable wires on the underlying Memory used
+in the L1 Cache.
+
+Then, the bottom 4 bits and the LD/ST length, now turned into a 16-bit unary
+mask, can be "matched" using simple AND gate logic (instead of XOR for
+binary address matching), with the advantage that it is both trivial to
+use these masks as L1 Cache byte read/write enable lines, and furthermore
+it is straightforward to detect misaligned LD/STs crossing cache line
+boundaries.
+
+Crossing over cache line boundaries is trivial in that the creation of
+the byte-map mask is permitted to be 24 bits in length (actually, only
+23 needed).  When the bottom 4 bits of the address are 0b1111 and the
+LD/ST is an 8-byte operation, 0b1111 1111 (representing the 64-bit LD/ST)
+will be shifted up by 15 bits.  This can then be chopped into two
+segments:
+
+* First segment is 0b1000 0000 0000 0000 and indicates that the
+  first byte of the LD/ST is to go into byte 15 of the cache line
+* Second segment is 0b0111 1111 and indicates that bytes 2 through
+  8 of the LD/ST must go into bytes 0 thru 7 of the **second**
+  cache line at an address offset by 16 bytes from the first.
+
+Thus we have actually split the LD/ST operation into two.  The AddrSplit
+class takes care of synchronising the two, by issuing two *separate*
+sets of LD/ST requests, waiting for both of them to complete (or indicate
+an error), and (in the case of a LD) merging the two.
+
+The big advantage of this approach is that at no time does the L1 Cache
+need to know anything about the offsets from which the LD/ST came.  All
+it needs to know is: which bytes to read/write into which positions
+in the cache line(s).
+
+Source:
+
+* [Address Matcher](https://git.libre-riscv.org/?p=soc.git;a=blob;f=src/soc/scoreboard/addr_match.py;h=a47f635f4e9c56a7a13329810855576358110339;hb=a0e1af6c5dab5c324a8bf3a7ce6eb665d26a65c1)
+* [Address Splitter](https://git.libre-riscv.org/?p=soc.git;a=blob;f=src/soc/scoreboard/addr_split.py;h=bf89e0970e9a8b44c76018660114172f5a3061f4;hb=a0e1af6c5dab5c324a8bf3a7ce6eb665d26a65c1)
