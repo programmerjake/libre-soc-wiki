@@ -215,7 +215,10 @@ preserved.
 The suggestion from Mitch Alsup was to use a match system based on bits
 4 thru 10/11 of the address.  The idea being: we don't care if the matching
 is "too inclusive", i.e. we don't care if it includes addresses that don't
-actually overlap: we care if it were to **miss** some addresses that do
+actually overlap, because this just means "oh dear some LD/STs do not
+happen concurrently, they happen a few cycles later" (translation: Big Deal)
+
+What we care about is if it were to **miss** some addresses that **do**
 actually overlap.  Therefore it is perfectly acceptable to use only a few
 bits of the address.  This is fortunate because the matching has to be
 done in a huge NxN Pascal's Triangle, and if we were to compare against
