@@ -358,6 +358,28 @@ You can test your installation by doing the following:
 
 It should print out `Posit8(1.3125)`
 
+## qemu, cross-compilers, gdb
+
+As we are doing POWER ISA, POWER ISA compilers, toolchains and
+emulators are required.
+
+Install powerpc64 gcc:
+
+    apt-get install gcc-9-powerpc64-linux-gnu
+
+Install qemu:
+
+    apt-get install qemu-system-ppc
+
+Install gdb from source.  Obtain the latest tarball, unpack it, then:
+
+    cd gdb-9.1 (or other location)
+    mkdir build
+    cd build
+     ../configure --srcdir=.. --host=x86_64-linux --target=powerpc64-linux-gnu
+    make -j16
+    make install
+
 ## Coriolis2
 
 See [[coriolis2]] page, for those people doing layout work.
