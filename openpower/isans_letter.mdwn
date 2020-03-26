@@ -4,10 +4,15 @@ Hardware-level dynamic ISA Muxing (also known as ISA Namespaces and ISA
 escape-sequencing) is commonly used in instruction sets, in an arbitrary
 and ad-hoc fashion, added often on an on-demand basis.  Examples include:
 
-* Setting a SPR to switch the meaning of certain opcodes for Little-Endian
-/ Big-Endian behaviour (present in POWER and SPARC) * Setting a SPR to
-provide "backwards-compatibility" for features from older versions of
-an ISA (such as changing to new ratified versions of the IEEE754 standard)
+* Setting a SPR to switch the meaning of certain opcodes for Little-Endian /
+  Big-Endian behaviour (present in POWER and SPARC)
+* Setting a SPR to provide "backwards-compatibility" for features from
+  older versions of an ISA (such as changing to new ratified versions of
+  the IEEE754 standard)
+
+(These we term "ISA Muxing" because, ultimately, they are extra bits
+(or change existing bits) in the actual instruction decoder phase,
+which involves "MUXes" to switch them on and off).
 
 The Libre-SOC team, developing a hybrid CPU-VPU-GPU, needs to add
 significantly and strategically to the POWER ISA to support, for example,
