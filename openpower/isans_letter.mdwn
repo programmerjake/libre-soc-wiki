@@ -1,0 +1,82 @@
+# Letter regarding ISAMUX / NS
+
+Hardware-level dynamic ISA Muxing (also known as ISA Namespaces and ISA
+escape-sequencing) is commonly used in instruction sets, in an arbitrary
+and ad-hoc fashion, added often on an on-demand basis.  Examples include:
+
+* Setting a SPR to switch the meaning of certain opcodes for Little-Endian
+/ Big-Endian behaviour (present in POWER and SPARC) * Setting a SPR to
+provide "backwards-compatibility" for features from older versions of
+an ISA (such as changing to new ratified versions of the IEEE754 standard)
+
+The Libre-SOC team, developing a hybrid CPU-VPU-GPU, needs to add
+significantly and strategically to the POWER ISA to support, for example,
+Khronos Vulkan IEEE754 Conformance, whilst *at the same time being able
+to run full POWER9 compliant instructions*.
+
+There is absolutely no way that we are going to duplicate the
+entire FP opcode set as a custom extension to POWER, just to add a
+literally-identical suite of FP opcodes that are compliant with the
+Khronos Conformance Suites: this would be a significant and irresponsible
+use of opcode space.
+
+In addition, as this processor is likely to be used for parallel
+compute purposes in high-efficiency environments, we also need to add
+FP16 support.  Again: there is no way that we are going to add *triple*
+duplicated opcodes to POWER, given that the opcodes needed are absolutely
+identical to those that already exist, apart from the FP bitwidth (32
+/ 64).
+
+There are several other strategically critical uses to which we would
+like to put such a scheme (related to power consumption and reducing
+throughput bottlenecks needed for heavy-computation workloads in GPU
+and VPU scenarios).
+
+In addition, the scheme has several other key advantages over other ISA
+"extending" ideas (such as extending the general ISA POWER space to
+64 bit) in that, unlike 64 bit opcodes, its judicious and careful use
+does not require large increases in I-Cache size because all opcodes,
+ultimately, remain 32-bit.  The scheme also allows future *official*
+POWER extensions to the ISA - managed by the OpenPOWER Foundation -
+to be strategically managed in a controlled, long-term, non-damaging
+way to the reputation and stability of OpenPOWER.
+
+Therefore we advocate being able to set "ISAMUX/NS" mode-switching bits
+that, like the *existing* LE/BE mode-switching bits, change the behaviour
+of *existing* opcodes to an alternative "meaning" (followed by another
+mode-switch that returns them to their original meaning. Note: to reduce
+binary code-size, alternative schemes include setting a countdown which,
+when it expires, automatically disables the requested mode-switch)
+
+Note also that to ensure that kernels and hypervisors are not impacted
+by userspace ISAMUX/NS mode-switching, it is critical that Supervisor
+and Hypervisor modes have their own completely separate ISAMUX/NS SPRs
+(imagine a userspace application setting the LE/BE bit on a global basis,
+or setting a global IEEE754 FP Standards compatibility flag).
+
+Further, that Supervisor / Hypervisor modes have access to and control
+over userspace ISAMUX/NS SPRs (without themselves being affected by
+setting *of* userspace ISAMUX/NS SPRs), in order to be able to correctly
+context-switch userspace applications to their correct (former) running
+state.
+
+Given the number of mode-switch bits that we anticipate using, we advocate
+that such a scheme be formalised, and that the OpenPOWER Foundation be
+the "atomic arbiter" similar to IANA and JEDEC in the formal allocation
+of mode-switch bits to OpenPOWER implementors.
+
+We envisage that some of these bits will be unary, some will be binary,
+some will be allocated for exclusive use by the OpenPOWER Foundation,
+some allocated to OpenPOWER Members (by the OpenPOWER Foundation),
+and some reserved for "custom and experimentation usage".
+
+(This latter - custom experimentation - to be explicitly documented
+that upstream compiler and toolchain support will never, under any
+circumstances be accepted by the OpenPOWER Foundation, and that this be
+enforced through the EULA and through Trademark law).
+
+
+However as we are quite new to POWER 3.0B (1300+ page PDF), we do
+appreciate that such a formal scheme may already be present in POWER9
+3.0B, that we have simply overlooked.
+
