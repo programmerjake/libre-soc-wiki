@@ -6,25 +6,25 @@ Steps for setting up automatic mirroring cron jobs:
 
 * Add a new user:
 
-  .. code-block:: bash
+  .. code:: bash
 
     sudo adduser --disabled-login --system git-mirroring
 
-* Start a shell as the `git-mirroring` user:
+* Start a shell as the :code:`git-mirroring` user:
 
-  .. code-block:: bash
+  .. code:: bash
 
     sudo -H -u git-mirroring /bin/bash
 
 * Switch to home directory:
 
-  .. code-block:: bash
+  .. code:: bash
 
     cd
 
-* Create an executable file `sync.sh` (replace `nano` with the editor of your choice):
+* Create an executable file :code:`sync.sh` (replace :code:`nano` with the editor of your choice):
 
-  .. code-block:: bash
+  .. code:: bash
 
     touch sync.sh
     chmod +x sync.sh
@@ -32,7 +32,7 @@ Steps for setting up automatic mirroring cron jobs:
 
   * Type in the following contents:
 
-    .. code-block:: bash
+    .. code:: bash
 
       #!/bin/sh
       for repo in ~/*.git; do
@@ -43,7 +43,7 @@ Steps for setting up automatic mirroring cron jobs:
 
 * Create a ssh key:
 
-  .. code-block:: bash
+  .. code:: bash
 
     ssh-keygen
 
@@ -57,4 +57,4 @@ Steps for setting up automatic mirroring cron jobs:
 
       Following these steps will overwrite anything that is in the GitLab repo.
 
-  * Add the 
+  * Add the ssh key for the 
