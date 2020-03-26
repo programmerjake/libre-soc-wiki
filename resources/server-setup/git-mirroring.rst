@@ -16,7 +16,7 @@ Steps for setting up automatic mirroring cron jobs:
 
      sudo -H -u git-mirroring /bin/bash
 
-#) Switch to home directory:
+#) Switch to the home directory:
 
    .. code:: bash
 
@@ -92,4 +92,39 @@ Steps for setting up automatic mirroring cron jobs:
       .. code:: bash
 
         git push gitlab
-    
+
+#) Switch back to the home directory:
+
+   .. code:: bash
+
+     cd
+
+#) Ensure :code:`sync.sh` works properly:
+
+   .. code:: bash
+
+     ./sync.sh
+
+#) Set up the cron job for running :code:`sync.sh`:
+
+   a) Edit the user's :code:`crontab`:
+
+      .. code:: bash
+
+        crontab -u git-mirroring -e
+
+   #) Add the following line to the end, then save and exit:
+
+      .. code::
+
+        * * * * * exec ~/sync.sh >> ~/sync.log 2>&1
+
+#) Wait for the cron job to run (2 minutes should be sufficient), then check the log file:
+
+   .. code:: bash
+
+     less ~/sync.log
+
+   The log file should exist and be empty, if it isn't empty, it contains error messages. If it doesn't exist, the cron job didn't run yet for some reason, try waiting a little longer.
+
+#) Try pushing a commit to one of the upstream repos and seeing if it gets properly synced to the corresponding mirror repo. The sync job runs every minute, so wait 2 minutes and check.
