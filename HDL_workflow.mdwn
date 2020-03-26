@@ -765,6 +765,21 @@ However it is appreciated that writing formal proofs is a bit of a
 black art.  This is where team collaboration particularly kicks in,
 so if you need help, ask on the mailing list.
 
+## Don't comment out unit tests: add them first (as failures) and fix code later
+
+Unit tests serve an additional critical purpose of keeping track of code
+that needs to be written.  In many cases, you write the unit test *first*,
+despite knowing full well that the code doesn't even exist or is completely
+broken.  The unit test then serves as a constant and important reminder
+to actually fix (or write) the code.
+
+Therefore, *do not* comment out unit tests just because they "don't work".
+If you absolutely must stop a unit test from running, **do not delete it**.
+Simply mark it with an appropriate
+["skip" decorator](https://docs.python.org/3/library/unittest.html#skipping-tests-and-expected-failures),
+preferably with a link to a URL in the [bugtracker](http://bugs.libre-riscv.org)
+with further details as to why the unit test should not be run.
+
 # TODO Tutorials
 
 Find appropriate tutorials for nmigen and yosys, as well as symbiyosys.
