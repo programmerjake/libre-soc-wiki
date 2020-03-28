@@ -47,7 +47,7 @@
 
 # Move To Condition Register Fields
 
-mtcrf FXM,RS
+* mtcrf FXM,RS
 
     mask <- FXM[0]*4 || FXM[1]*4 || ... FXM[7]*4
     CR <- ((RS)[32:63] & mask) | (CR & ¬mask)

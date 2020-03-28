@@ -1,6 +1,6 @@
 # Convert Declets To Binary Coded Decimal  
 
-cdtbcd RA, RS
+* cdtbcd RA, RS
 
     do i = 0 to 1
       n <- i * 32
@@ -10,7 +10,7 @@ cdtbcd RA, RS
 
 # Add and Generate Sixes
 
-addg6s RT,RA,RB
+* addg6s RT,RA,RB
 
     do i = 0 to 15
         dci <- carry_out(RA[4xi:63] + RB[4xi:63])
@@ -19,7 +19,7 @@ addg6s RT,RA,RB
 
 # Convert Binary Coded Decimal To Declets  
 
-cbcdtd RA, RS
+* cbcdtd RA, RS
 
     do i = 0 to 1
       n <- i * 32
