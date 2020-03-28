@@ -1,4 +1,4 @@
-# Store Byte  
+# Store Byte
 
 stb RS,D(RA)
 
@@ -7,7 +7,7 @@ stb RS,D(RA)
     EA <- b + EXTS(D)
     MEM(EA, 1) <- (RS)[56:63]
 
-# Store Byte Indexed  
+# Store Byte Indexed
 
 stbx RS,RA,RB
 
@@ -16,7 +16,7 @@ stbx RS,RA,RB
     EA <- b + (RB)
     MEM(EA, 1) <- (RS)[56:63]
 
-# Store Byte with Update 
+# Store Byte with Update
 
 stbu RS,D(RA)
 
@@ -24,14 +24,14 @@ stbu RS,D(RA)
     MEM(EA, 1) <- (RS)[56:63]
     RA <- EA
 
-# Store Byte with Update Indexed 
+# Store Byte with Update Indexed
 
 stbux RS,RA,RB
 
     EA <- (RA) + (RB)
     MEM(EA, 1) <- (RS)[56:63]
     RA <- EA
-# Store Halfword 
+# Store Halfword
 
 sth RS,D(RA)
 
@@ -40,7 +40,7 @@ sth RS,D(RA)
     EA <- b + EXTS(D)
     MEM(EA, 2) <- (RS)[48:63]
 
-# Store Halfword Indexed 
+# Store Halfword Indexed
 
 sthx RS,RA,RB
 
@@ -57,8 +57,8 @@ sthu RS,D(RA)
     MEM(EA, 2) <- (RS)[48:63]
     RA <- EA
 
-# Store Halfword with Update Indexed 
- 
+# Store Halfword with Update Indexed
+
 sthux RS,RA,RB
 
     EA <- (RA) + (RB)
@@ -67,23 +67,23 @@ sthux RS,RA,RB
 
 # Store Word
 
-stw RS,D(RA) 
+stw RS,D(RA)
 
     if RA = 0 then b <-  0
     else           b <-  (RA)
     EA <- b + EXTS(D)
     MEM(EA, 4) <- (RS)[32:63]
 
-# Store Word Indexed 
+# Store Word Indexed
 
-stwx RS,RA,RB 
+stwx RS,RA,RB
 
     if RA = 0 then b <- 0
     else           b <- (RA)
     EA <- b + (RB)
     MEM(EA, 4) <- (RS)[32:63]
 
-# Store Word with Update 
+# Store Word with Update
 
 stwu RS,D(RA)
 
@@ -91,15 +91,15 @@ stwu RS,D(RA)
     MEM(EA, 4) <- (RS) 32:63
     RA <- EA
 
-# Store Word with Update Indexed  
+# Store Word with Update Indexed
 
-stwux RS,RA,RB 
+stwux RS,RA,RB
 
     EA <- (RA) + (RB)
     MEM(EA, 4) <- (RS) 32:63
     RA <- EA
 
-# Store Doubleword  
+# Store Doubleword
 
 std RS,DS(RA)
 
@@ -108,7 +108,7 @@ std RS,DS(RA)
     EA <- b + EXTS(DS || 0b00)
     MEM(EA, 8) <- (RS)
 
-# Store Doubleword Indexed 
+# Store Doubleword Indexed
 
 stdx RS,RA,RB
 
@@ -117,7 +117,7 @@ stdx RS,RA,RB
     EA <- b + (RB)
     MEM(EA, 8) <- (RS)
 
-# Store Doubleword with Update 
+# Store Doubleword with Update
 
 stdu RS,DS(RA)
 
@@ -125,7 +125,7 @@ EA <- (RA) + EXTS(DS || 0b00)
 MEM(EA, 8) <- (RS)
 RA <- EA
 
-Store Doubleword with Update Indexed 
+Store Doubleword with Update Indexed
 
 stdux RS,RA,RB
 
@@ -141,4 +141,36 @@ stq RSp,DS(RA)
     else           b <-  (RA)
     EA <- b + EXTS(DS || 0b00)
     MEM(EA, 16) <- RSp
+
+# Store Halfword Byte-Reverse Indexed
+
+sthbrx RS,RA,RB
+
+    if RA = 0 then b <- 0
+    else           b <- (RA)
+    EA <- b + (RB)
+    MEM(EA, 2) <- (RS) [56:63] || (RS)[48:55]
+
+# Store Word Byte-Reverse Indexed
+
+stwbrx RS,RA,RB
+
+    if RA = 0 then b <- 0
+    else           b <- (RA)
+    EA <- b + (RB)
+    MEM(EA, 4) <- (RS)[56:63] || (RS)[48:55] || (RS)[40:47]
+                   ||(RS)[32:39]
+
+# Store Doubleword Byte-Reverse Indexed
+
+stdbrx RS,RA,RB
+
+    if RA = 0 then b <- 0
+    else           b <- (RA)
+    EA <- b + (RB)
+    MEM(EA, 8) <- (RS) [56:63] || (RS)48:55]
+    || (RS)[40:47] || (RS)[32:39]
+    || (RS)[24:31] || (RS)[16:23]
+    || (RS)[8:15]  || (RS)[0:7]
+
 

@@ -1,4 +1,4 @@
-# Load Byte and Zero  
+# Load Byte and Zero
 
 lbz RT,D(RA)
 
@@ -16,7 +16,7 @@ lbzx RT,RA,RB
     EA <- b + (RB)
     RT <- [0] * 56 || MEM(EA, 1)
 
-# Load Byte and Zero with Update 
+# Load Byte and Zero with Update
 
 lbzu RT,D(RA)
 
@@ -25,14 +25,14 @@ lbzu RT,D(RA)
     RA <- EA
 
 # Load Byte and Zero with Update Indexed
- 
+
 lbzux RT,RA,RB
 
     EA <- (RA) + (RB)
     RT <- [0] * 56 || MEM(EA, 1)
     RA <- EA
 
-# Load Halfword and Zero 
+# Load Halfword and Zero
 
 lhz RT,D(RA)
 
@@ -51,14 +51,14 @@ lhzx RT,RA,RB
     RT <- [0] * 48 || MEM(EA, 2)
 
 # Load Halfword and Zero with Update
- 
+
 lhzu RT,D(RA)
 
     EA <- (RA) + EXTS(D)
     RT <- [0] * 48 || MEM(EA, 2)
     RA <- EA
 
-# Load Halfword and Zero with Update Indexed  
+# Load Halfword and Zero with Update Indexed
 
 lhzux RT,RA,RB
 
@@ -66,7 +66,7 @@ lhzux RT,RA,RB
     RT <- [0] * 48 || MEM(EA, 2)
     RA <- EA
 
-# Load Halfword Algebraic 
+# Load Halfword Algebraic
 
 lha RT,D(RA)
 
@@ -84,7 +84,7 @@ lhax RT,RA,RB
     EA <- b + (RB)
     RT <- EXTS(MEM(EA, 2))
 
-# Load Halfword Algebraic with Update  
+# Load Halfword Algebraic with Update
 
 lhau RT,D(RA)
 
@@ -92,7 +92,7 @@ lhau RT,D(RA)
     RT <- EXTS(MEM(EA, 2))
     RA <- EA
 
-# Load Halfword Algebraic with Update Indexed 
+# Load Halfword Algebraic with Update Indexed
 
 lhaux RT,RA,RB
 
@@ -126,8 +126,8 @@ lwzu RT,D(RA)
     RT <- [0]*32 || MEM(EA, 4)
     RA <- EA
 
-# Load Word and Zero with Update Indexed 
- 
+# Load Word and Zero with Update Indexed
+
 lwzux RT,RA,RB
 
     EA <- (RA) + (RB)
@@ -152,7 +152,7 @@ lwax RT,RA,RB
     EA <- b + (RB)
     RT <- EXTS(MEM(EA, 4))
 
-# Load Word Algebraic with Update Indexed 
+# Load Word Algebraic with Update Indexed
 
 lwaux RT,RA,RB
 
@@ -160,7 +160,7 @@ lwaux RT,RA,RB
     RT <- EXTS(MEM(EA, 4))
     RA <- EA
 
-# Load Doubleword 
+# Load Doubleword
 
 ld RT,DS(RA)
 
@@ -169,7 +169,7 @@ ld RT,DS(RA)
     EA <- b + EXTS(DS || 0b00)
     RT <- MEM(EA, 8)
 
-# Load Doubleword Indexed 
+# Load Doubleword Indexed
 
 ldx RT,RA,RB
 
@@ -178,7 +178,7 @@ ldx RT,RA,RB
     EA <- b + (RB)
     RT <- MEM(EA, 8)
 
-# Load Doubleword with Update Indexed 
+# Load Doubleword with Update Indexed
 
 ldu RT,DS(RA)
 
@@ -186,8 +186,8 @@ ldu RT,DS(RA)
     RT <- MEM(EA, 8)
     RA <- EA
 
-# Load Doubleword with Update Indexed 
- 
+# Load Doubleword with Update Indexed
+
 ldux RT,RA,RB
 
     EA <- (RA) + (RB)
@@ -202,3 +202,39 @@ lq RTp,DQ(RA)
     else           b <-  (RA)
     EA <- b + EXTS(DQ || 0b0000)
     RTp <- MEM(EA, 16)
+
+# Load Halfword Byte-Reverse Indexed
+
+lhbrx RT,RA,RB
+
+    if RA = 0 then b <-  0
+    else           b <-  (RA)
+    EA <- b + (RB)
+    load_data <- MEM(EA, 2)
+    RT <- [0]*48 || load_data[8:15] || load_data[0:7]
+
+# Load Word Byte-Reverse Indexed
+
+lwbrx RT,RA,RB
+
+    if RA = 0 then b <-  0
+    else           b <-  (RA)
+    EA <- b + (RB)
+    load_data <- MEM(EA, 4)
+    RT <- [0] * 32 || load_data[24:31] || load_data[16:23]
+             || load_data[8:15] || load_data[0:7]
+
+# Load Doubleword Byte-Reverse Indexed
+
+ldbrx RT,RA,RB
+
+    if RA = 0 then b <-  0
+    else           b <-  (RA)
+    EA <- b + (RB)
+    load_data <- MEM(EA, 8)
+    RT <-  load_data[56:63] || load_data[48:55]
+    || load_data[40:47 || load_data[32:39]
+    || load_data[24:31 || load_data[16:23]
+    || load_data[8:15  || load_data[0:7]
+
+
