@@ -1,12 +1,9 @@
 # Branch 
 
-b target_addr (AA=0 LK=0)
-
-ba target_addr (AA=1 LK=0)
-
-bl target_addr (AA=0 LK=1)
-
-bla target_addr (AA=1 LK=1)
+* b target_addr (AA=0 LK=0)
+* ba target_addr (AA=1 LK=0)
+* bl target_addr (AA=0 LK=1)
+* bla target_addr (AA=1 LK=1)
 
     if AA then NIA  <-iea EXTS(LI || 0b00)
     else       NIA  <-iea CIA + EXTS(LI || 0b00)
@@ -14,13 +11,10 @@ bla target_addr (AA=1 LK=1)
 
 # Branch Conditional
 
-bc BO,BI,target_addr (AA=0 LK=0)
-
-bca BO,BI,target_addr (AA=1 LK=0)
-
-bcl BO,BI,target_addr (AA=0 LK=1)
-
-bcla BO,BI,target_addr (AA=1 LK=1)
+* bc BO,BI,target_addr (AA=0 LK=0)
+* bca BO,BI,target_addr (AA=1 LK=0)
+* bcl BO,BI,target_addr (AA=0 LK=1)
+* bcla BO,BI,target_addr (AA=1 LK=1)
 
     if (64-bit mode)
       then M <- 0
@@ -35,9 +29,8 @@ bcla BO,BI,target_addr (AA=1 LK=1)
 
 # Branch Conditional to Link Register
 
-bclr BO,BI,BH (LK=0)
-
-bclrl BO,BI,BH (LK=1)
+* bclr BO,BI,BH (LK=0)
+* bclrl BO,BI,BH (LK=1)
 
     if (64-bit mode)
       then M <- 0
@@ -50,9 +43,8 @@ bclrl BO,BI,BH (LK=1)
 
 # Branch Conditional to Count Register
 
-bcctr BO,BI,BH (LK=0)
-
-bcctrl BO,BI,BH (LK=1)
+* bcctr BO,BI,BH (LK=0)
+* bcctrl BO,BI,BH (LK=1)
 
     cond_ok <- BO[0] | (CR[BI+32] => BO[1])
     if cond_ok then NIA <-iea CTR[0:61] || 0b00
@@ -61,9 +53,8 @@ bcctrl BO,BI,BH (LK=1)
 
 # Branch Conditional to Branch Target Address Register
 
-bctar BO,BI,BH (LK=0)
-
-bctarl BO,BI,BH (LK=1)
+* bctar BO,BI,BH (LK=0)
+* bctarl BO,BI,BH (LK=1)
 
     if (64-bit mode)
       then M <- 0
