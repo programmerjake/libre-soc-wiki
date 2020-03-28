@@ -1,0 +1,196 @@
+# Load Byte and Zero  
+
+lbz RT,D(RA)
+
+    if RA = 0 then b <-  0
+    else           b <-  (RA)
+    EA <- b + EXTS(D)
+    RT <- [0]*56 || MEM(EA, 1)
+
+# Load Byte and Zero Indexed
+
+lbzx RT,RA,RB
+
+    if RA = 0 then b <- 0
+    else           b <- (RA)
+    EA <- b + (RB)
+    RT <- [0] * 56 || MEM(EA, 1)
+
+# Load Byte and Zero with Update 
+
+lbzu RT,D(RA)
+
+    EA <- (RA) + EXTS(D)
+    RT <- [0] * 56 || MEM(EA, 1)
+    RA <- EA
+
+# Load Byte and Zero with Update Indexed
+ 
+lbzux RT,RA,RB
+
+    EA <- (RA) + (RB)
+    RT <- [0] * 56 || MEM(EA, 1)
+    RA <- EA
+
+# Load Halfword and Zero 
+
+lhz RT,D(RA)
+
+    if RA = 0 then b <-  0
+    else           b <-  (RA)
+    EA <- b + EXTS(D)
+    RT <- [0] * 48 || MEM(EA, 2)
+
+# Load Halfword and Zero Indexed X-form
+
+lhzx RT,RA,RB
+
+    if RA = 0 then b <- 0
+    else           b <- (RA)
+    EA <- b + (RB)
+    RT <- [0] * 48 || MEM(EA, 2)
+
+# Load Halfword and Zero with Update
+ 
+lhzu RT,D(RA)
+
+    EA <- (RA) + EXTS(D)
+    RT <- [0] * 48 || MEM(EA, 2)
+    RA <- EA
+
+# Load Halfword and Zero with Update Indexed  
+
+lhzux RT,RA,RB
+
+    EA <- (RA) + (RB)
+    RT <- [0] * 48 || MEM(EA, 2)
+    RA <- EA
+
+# Load Halfword Algebraic 
+
+lha RT,D(RA)
+
+    if RA = 0 then b <-  0
+    else           b <-  (RA)
+    EA <- b + EXTS(D)
+    RT <- EXTS(MEM(EA, 2))
+
+# Load Halfword Algebraic Indexed X-form
+
+lhax RT,RA,RB
+
+    if RA = 0 then b <- 0
+    else           b <- (RA)
+    EA <- b + (RB)
+    RT <- EXTS(MEM(EA, 2))
+
+# Load Halfword Algebraic with Update  
+
+lhau RT,D(RA)
+
+    EA <- (RA) + EXTS(D)
+    RT <- EXTS(MEM(EA, 2))
+    RA <- EA
+
+# Load Halfword Algebraic with Update Indexed 
+
+lhaux RT,RA,RB
+
+    EA <- (RA) + (RB)
+    RT <- EXTS(MEM(EA, 2))
+    RA <- EA
+
+# Load Word and Zero
+
+lwz RT,D(RA)
+
+    if RA = 0 then b <-  0
+    else           b <-  (RA)
+    EA <- b + EXTS(D)
+    RT <- [0] * 32 || MEM(EA, 4)
+
+Load Word and Zero Indexed
+
+lwzx RT,RA,RB
+
+    if RA = 0 then b <- 0
+    else           b <- (RA)
+    EA <- b + (RB)
+    RT <- [0] * 32 || MEM(EA, 4)
+
+# Load Word and Zero with Update
+
+lwzu RT,D(RA)
+
+    EA <- (RA) + EXTS(D)
+    RT <- [0]*32 || MEM(EA, 4)
+    RA <- EA
+
+# Load Word and Zero with Update Indexed 
+ 
+lwzux RT,RA,RB
+
+    EA <- (RA) + (RB)
+    RT <- [0] * 32 || MEM(EA, 4)
+    RA <- EA
+
+# Load Word Algebraic
+
+lwa RT,DS(RA)
+
+    if RA = 0 then b <-  0
+    else           b <-  (RA)
+    EA <- b + EXTS(DS || 0b00)
+    RT <- EXTS(MEM(EA, 4))
+
+# Load Word Algebraic Indexed
+
+lwax RT,RA,RB
+
+    if RA = 0 then b <- 0
+    else           b <- (RA)
+    EA <- b + (RB)
+    RT <- EXTS(MEM(EA, 4))
+
+# Load Word Algebraic with Update Indexed 
+
+lwaux RT,RA,RB
+
+    EA <- (RA) + (RB)
+    RT <- EXTS(MEM(EA, 4))
+    RA <- EA
+
+# Load Doubleword 
+
+ld RT,DS(RA)
+
+    if RA = 0 then b <-  0
+    else           b <-  (RA)
+    EA <- b + EXTS(DS || 0b00)
+    RT <- MEM(EA, 8)
+
+# Load Doubleword Indexed 
+
+ldx RT,RA,RB
+
+    if RA = 0 then b <- 0
+    else           b <- (RA)
+    EA <- b + (RB)
+    RT <- MEM(EA, 8)
+
+# Load Doubleword with Update Indexed 
+
+ldu RT,DS(RA)
+
+    EA <- (RA) + EXTS(DS || 0b00)
+    RT <- MEM(EA, 8)
+    RA <- EA
+
+# Load Doubleword with Update Indexed 
+ 
+ldux RT,RA,RB
+
+    EA <- (RA) + (RB)
+    RT <- MEM(EA, 8)
+    RA <- EA
+
