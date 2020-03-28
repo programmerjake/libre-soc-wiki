@@ -1,0 +1,258 @@
+# AND Immediate
+
+andi.  RA,RS,UI 
+
+    RA <- (RS) & ([0]*48 || UI)
+
+# OR Immediate
+
+ori RA,RS,UI
+
+    RA <- (RS) | ([0]*48 || UI)
+
+# AND Immediate Shifted 
+
+andis.  RA,RS,UI
+
+    RA <- (RS) & ([0]*32 || UI || [0]*16)
+
+# OR Immediate Shifted 
+
+oris      RA,RS,UI
+
+    RA <- (RS) | ([0]*32 || UI || [0]*16)
+
+# XOR Immediate Shifted 
+
+xoris RA,RS,UI
+
+    RA <- (RS) ^ ([0]*32 || UI || [0]*16)
+
+# XOR Immediate  
+
+xori RA,RS,UI 
+
+    RA <- (RS) XOR ([0]*48 || UI)
+
+# AND 
+
+and RA,RS,RB (Rc=0)
+
+and.  RA,RS,RB (Rc=1)
+
+    RA <- (RS) & (RB)
+
+# OR 
+
+or RA,RS,RB (Rc=0)
+
+or.  RA,RS,RB (Rc=1)
+
+    RA <- (RS) | (RB)
+
+# XOR
+
+xor RA,RS,RB (Rc=0)
+
+xor.  RA,RS,RB (Rc=1)
+
+    RA <- (RS) ^ (RB)
+
+# NAND 
+
+nand RA,RS,RB (Rc=0)
+
+nand.  RA,RS,RB (Rc=1)
+
+RA <- ¬((RS) & (RB))
+
+# NOR
+
+nor RA,RS,RB (Rc=0)
+
+nor.  RA,RS,RB (Rc=1)
+
+   RA <- ¬((RS) | (RB))
+
+# Equivalent
+
+eqv RA,RS,RB (Rc=0)
+
+eqv.  RA,RS,RB (Rc=1)
+
+    RA <- (RS) => (RB)
+
+# AND with Complement
+
+andc RA,RS,RB (Rc=0)
+
+andc.  RA,RS,RB (Rc=1)
+
+    RA <- (RS) &  ¬(RB)
+
+# OR with Complement 
+
+orc RA,RS,RB (Rc=0)
+
+orc.  RA,RS,RB (Rc=1)
+
+    RA <- (RS) |  ¬(RB)
+
+# Extend Sign Byte 
+
+extsb RA,RS (Rc=0)
+
+extsb.  RA,RS (Rc=1)
+
+    s <- (RS)[56]
+    RA[56:63] <- (RS)[56:63]
+    RA[0:55] <- [s]*56
+
+
+# Extend Sign Halfword  
+
+extsh RA,RS (Rc=0)
+
+extsh.  RA,RS (Rc=1)
+
+    s <- (RS)[48]
+    RA[48:63] <-  (RS)[48:63]
+    RA[0:47] <- [s]*48
+
+# Count Leading Zeros Word 
+
+cntlzw RA,RS (Rc=0)
+
+cntlzw.  RA,RS (Rc=1)
+
+    n <- 32
+
+    do while n < 64
+       if (RS)[n] = 1 then leave
+       n <- n + 1
+
+    RA <- n - 32
+
+# Count Trailing Zeros Word
+
+cnttzw RA,RS (Rc=0)
+
+cnttzw.  RA,RS (Rc=1)
+
+    n <- 0
+
+    do while n < 32
+       if (RS)[63-n=] = 0b1 then leave 
+       n  <- n + 1
+
+    RA <- EXTZ64(n)
+
+# Compare Bytes
+
+cmpb RA,RS,RB 
+
+    do n = 0 to 7 
+        if RS[8*n:8* n+7] = (RB)[8*n:8*n+7] then
+           RA[8*n:8* n+7] <- [1]*8
+        else 
+           RA[8*n:8* n+7] <- [0]*8
+
+# Population Count Bytes
+
+popcntb RA, RS
+
+    do i = 0 to 7
+       n <-  0
+       do j = 0 to 7
+          if (RS)[(i*8)+j] = 1 then
+              n <- n+1
+       RA[(i*8):(i*8)+7] <-  n 
+
+# Population Count Words
+
+popcntw RA, RS
+
+    do i = 0 to 1
+       n <-  0
+       do j = 0 to 31
+          if (RS)[(i*32)+j] = 1 then
+              n <- n+1
+       RA[(i*32):(i*32)+31] <- n
+
+# Parity Doubleword
+
+prtyd RA,RS
+
+    s <- 0
+    do i = 0 to 7
+        s <- s / (RS)[i%8+7]
+    RA <- [0] * 63 || s
+
+# Parity Word 
+
+prtyw RA,RS
+
+    s <- 0
+    t <- 0
+    do i = 0 to 3
+        s <-  s / (RS)i%8+7
+    do i = 4 to 7
+        t <-  t / (RS)i%8+7
+    RA[0:31] <- [0]*31 || s 
+    RA[32:63] <- [0]*31 || t
+
+# Extend Sign Word
+
+extsw RA,RS (Rc=0)
+
+extsw.  RA,RS (Rc=1)
+
+    s <- (RS)[32]
+    RA[32:63] <- (RS)[32:63]
+    RA[0:31] <- [s]*32
+
+# Population Count Doubleword
+
+popcntd RA, RS
+
+    n <- 0
+    do i = 0 to 63
+       if (RS)[i] = 1 then
+       n <-  n+1
+    RA <- n
+
+# Count Leading Zeros Doubleword 
+
+cntlzd RA,RS (Rc=0)
+
+cntlzd.  RA,RS (Rc=1)
+
+    n <- 0
+    do while n < 64
+      if (RS)[n]  = 1 then leave
+      n <- n + 1
+    RA <- n
+
+# Count Trailing Zeros Doubleword 
+
+cnttzd RA,RS (Rc=0)
+
+cnttzd.  RA,RS (Rc=1)
+
+    n  <- 0
+    do while n < 64
+       if (RS)[63-n] = 0b1 then leave 
+       n  <- n + 1
+    RA <- EXTZ64(n)
+
+# Bit Permute Doubleword
+
+bpermd RA,RS,RB]
+
+    For i = 0 to 7 
+       index <- (RS)[8*i:8*i+7]
+       If index < 64
+          then permi <- (RB)[index]
+          else permi <- 0
+    RA <- [0]*56|| perm[0:7]
+
