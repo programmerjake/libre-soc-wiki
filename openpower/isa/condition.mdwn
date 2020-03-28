@@ -16,7 +16,7 @@ cror BT,BA,BB
 
     CR[BT+32] <-  CR[BA+32] | CR[BB+32]
 
-Condition Register XOR
+# Condition Register XOR
 
 crxor     BT,BA,BB
 
@@ -46,11 +46,9 @@ crorc BT,BA,BB
 
     CR[BT+32] <- CR[BA+32] |  ¬CR[BB+32]
 
-
 # Move Condition Register Field
 
 mcrf BF,BFA
 
     CR[4*BF+32:4*BF+35] <- CR[4*BFA+32:4*BFA+35]
-
 
