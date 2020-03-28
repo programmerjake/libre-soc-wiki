@@ -1,6 +1,6 @@
 # Move To Special Purpose Register
 
-mtspr SPR,RS
+* mtspr SPR,RS
 
     n <- spr[5:9] || spr[0:4]
     switch (n)
@@ -14,7 +14,7 @@ mtspr SPR,RS
 
 # Move From Special Purpose Register 
 
-mfspr RT,SPR
+* mfspr RT,SPR
 
     n <- spr[5:9] || spr[0:4]
     switch (n)
@@ -28,13 +28,13 @@ mfspr RT,SPR
 
 # Move to CR from XER Extended
 
-mcrxrx BF
+* mcrxrx BF
 
-CR[4×BF+32:4×BF+35] <-  XER[OV] || XER[OV32] || XER[CA] || XER[CA32]
+    CR[4×BF+32:4×BF+35] <-  XER[OV] || XER[OV32] || XER[CA] || XER[CA32]
 
 # Move To One Condition Register Field
 
-mtocrf FXM,RS 
+* mtocrf FXM,RS 
 
     count <- 0
     do i = 0 to 7
@@ -54,7 +54,7 @@ mtcrf FXM,RS
 
 # Move From One Condition Register Field 
 
-mfocrf RT,FXM
+* mfocrf RT,FXM
 
     RT <- undefined
     count <- 0
@@ -68,13 +68,13 @@ mfocrf RT,FXM
 
 # Move From Condition Register  
 
-mfcr RT
+* mfcr RT
 
     RT <- [0]*32 || CR
 
 # Set Boolean 
 
-setb RT,BFA
+* setb RT,BFA
 
     if CR[4×BFA+32] = 1 then
        RT <-  0xFFFF_FFFF_FFFF_FFFF
