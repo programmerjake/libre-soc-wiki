@@ -173,4 +173,17 @@ stdbrx RS,RA,RB
     || (RS)[24:31] || (RS)[16:23]
     || (RS)[8:15]  || (RS)[0:7]
 
+# Store Multiple Word
+
+stmw RS,D(RA)
+
+    if RA = 0 then b <- 0
+    else           b <- (RA)
+    EA <- b + EXTS(D)
+    r <- RS
+    do while r <= 31
+        MEM(EA, 4) <- GPR(r)[32:63]
+        r <-  r + 1
+        EA <-  EA + 4
+
 

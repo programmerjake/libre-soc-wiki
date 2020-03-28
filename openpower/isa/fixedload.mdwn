@@ -237,4 +237,17 @@ ldbrx RT,RA,RB
     || load_data[24:31 || load_data[16:23]
     || load_data[8:15  || load_data[0:7]
 
+# Load Multiple Word
+
+lmw RT,D(RA)
+
+    if RA = 0 then b <-  0
+    else           b <-  (RA)
+    EA <- b + EXTS(D)
+    r <- RT
+    do while r <=  31
+        GPR(r) <- [0]*32 || MEM(EA, 4)
+        r <- r + 1
+        EA <- EA + 4
+
 
