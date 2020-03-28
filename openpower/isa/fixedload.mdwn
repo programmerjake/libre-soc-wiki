@@ -194,3 +194,11 @@ ldux RT,RA,RB
     RT <- MEM(EA, 8)
     RA <- EA
 
+# Load Quadword
+
+lq RTp,DQ(RA)
+
+    if RA = 0 then b <-  0
+    else           b <-  (RA)
+    EA <- b + EXTS(DQ || 0b0000)
+    RTp <- MEM(EA, 16)
