@@ -1,18 +1,18 @@
-# Add Immediate 
+# Add Immediate
 
-Add Immediate Shifted  
-
-addi RT,RA,SI 
+addi RT,RA,SI
 
     if RA = 0 then RT <- EXTS(SI)
     else           RT <- (RA) + EXTS(SI)
+
+# Add Immediate Shifted
 
 addis RT,RA,SI
 
     if RA = 0 then RT <- EXTS(SI || 160)
     else           RT <- (RA) + EXTS(SI || [0]*16)
 
-# Add PC Immediate Shifted  
+# Add PC Immediate Shifted
 
 addpcis RT,D
 
@@ -20,7 +20,7 @@ addpcis RT,D
     RT <- NIA + EXTS(D || [0]*16)
 
 
-# Add 
+# Add
 
 add RT,RA,RB (OE=0 Rc=0)
 
@@ -32,7 +32,7 @@ addo.  RT,RA,RB (OE=1 Rc=1)
 
     RT <- (RA) + (RB)
 
-# Subtract From 
+# Subtract From
 
 
 subf RT,RA,RB (OE=0 Rc=0)
@@ -41,25 +41,25 @@ subf.  RT,RA,RB (OE=0 Rc=1)
 
 subfo RT,RA,RB (OE=1 Rc=0)
 
-subfo.  RT,RA,RB (OE=1 Rc=1) 
+subfo.  RT,RA,RB (OE=1 Rc=1)
 
     RT <- ¬(RA) + (RB) + 1
 
 # Add Immediate Carrying
 
-addic RT,RA,SI 
+addic RT,RA,SI
 
     RT <- (RA) + EXTS(SI)
 
-# Add Immediate Carrying and Record 
- 
-addic. RT,RA,SI 
+# Add Immediate Carrying and Record
+
+addic. RT,RA,SI
 
     RT <- (RA) + EXTS(SI)
 
-# Subtract From Immediate Carrying 
+# Subtract From Immediate Carrying
 
-subfic RT,RA,SI 
+subfic RT,RA,SI
 
     RT <- ¬(RA) + EXTS(SI) + 1
 
@@ -71,7 +71,7 @@ addc.  RT,RA,RB (OE=0 Rc=1)
 
 addco RT,RA,RB (OE=1 Rc=0)
 
-addco.  RT,RA,RB (OE=1 Rc=1) 
+addco.  RT,RA,RB (OE=1 Rc=1)
 
     RT <- (RA) + (RB)
 
@@ -83,11 +83,11 @@ subfc.  RT,RA,RB (OE=0 Rc=1)
 
 subfco RT,RA,RB (OE=1 Rc=0)
 
-subfco.  RT,RA,RB (OE=1 Rc=1) 
+subfco.  RT,RA,RB (OE=1 Rc=1)
 
     RT <- ¬(RA) + (RB) + 1
 
-# Add Extended 
+# Add Extended
 
 adde RT,RA,RB (OE=0 Rc=0)
 
@@ -113,15 +113,15 @@ subfeo.  RT,RA,RB (OE=1 Rc=1)
 
 #Add to Minus One Extended
 
-# Subtract From Minus One Extended 
- 
+# Subtract From Minus One Extended
+
 addme RT,RA (OE=0 Rc=0)
 
 addme.  RT,RA (OE=0 Rc=1)
 
 addmeo RT,RA (OE=1 Rc=0)
 
-addmeo.  RT,RA (OE=1 Rc=1) 
+addmeo.  RT,RA (OE=1 Rc=1)
 
     RT <- (RA) + CA - 1
 
@@ -135,7 +135,7 @@ subfmeo.  RT,RA (OE=1 Rc=1)
 
     RT <- ¬(RA) + CA - 1
 
-# Add Extended using alternate carry bit 
+# Add Extended using alternate carry bit
 
 addex RT,RA,RB,CY
 
@@ -173,7 +173,7 @@ RT <- ¬(RA) + 1
 
 # Multiply Low Immediate
 
-mulli RT,RA,SI 
+mulli RT,RA,SI
 
     prod[0:127] <- (RA) * EXTS(SI)
     RT <- prod[64:127]
@@ -200,7 +200,7 @@ mullwo.  RT,RA,RB (OE=1 Rc=1)
 
     RT <- (RA)[32:63] * (RB)[32:63]
 
-# Multiply High Word Unsigned 
+# Multiply High Word Unsigned
 
 mulhwu RT,RA,RB (Rc=0)
 
@@ -256,7 +256,7 @@ divweo.  RT,RA,RB (OE=1 Rc=1)
     RT[32:63] <- dividend /  divisor
     RT[0:31] <- undefined
 
-# Divide Word Extended Unsigned  
+# Divide Word Extended Unsigned
 
 divweu RT,RA,RB (OE=0 Rc=0)
 
@@ -296,7 +296,7 @@ darn RT,L
 
     RT <- random(L)
 
-# Multiply Low Doubleword 
+# Multiply Low Doubleword
 
 mulld RT,RA,RB (OE=0 Rc=0)
 
@@ -309,7 +309,7 @@ mulldo.  RT,RA,RB (OE=1 Rc=1)
     prod[0:127] <- (RA) * (RB)
     RT <- prod[64:127]
 
-# Multiply High Doubleword 
+# Multiply High Doubleword
 
 mulhd RT,RA,RB (Rc=0)
 
@@ -318,7 +318,7 @@ mulhd.  RT,RA,RB (Rc=1)
     prod[0:127] <- (RA) *  (RB)
     RT <- prod[0:63]
 
-# Multiply High Doubleword Unsigned 
+# Multiply High Doubleword Unsigned
 
 mulhdu RT,RA,RB (Rc=0)
 
@@ -335,7 +335,7 @@ maddhd RT,RA.RB,RC
     sum[0:127] <- prod + EXTS(RC)
     RT <- sum[0:63]
 
-# Multiply-Add High Doubleword Unsigned 
+# Multiply-Add High Doubleword Unsigned
 
 maddhdu RT,RA.RB,RC
 
@@ -343,7 +343,7 @@ maddhdu RT,RA.RB,RC
     sum[0:127] <- prod + EXTZ(RC)
     RT <- sum[0:63]
 
-# Multiply-Add Low Doubleword 
+# Multiply-Add Low Doubleword
 
 maddld RT,RA.RB,RC
 
@@ -352,7 +352,7 @@ maddld RT,RA.RB,RC
     sum[0:127] <- prod + EXTS(RC)
     RT <- sum[64:127]
 
-# Divide Doubleword 
+# Divide Doubleword
 
 divd RT,RA,RB (OE=0 Rc=0)
 
@@ -366,7 +366,7 @@ divdo.  RT,RA,RB (OE=1 Rc=1)
     divisor[0:63] <- (RB)
     RT <- dividend / divisor
 
-# Divide Doubleword Unsigned 
+# Divide Doubleword Unsigned
 
 divdu RT,RA,RB (OE=0 Rc=0)
 
