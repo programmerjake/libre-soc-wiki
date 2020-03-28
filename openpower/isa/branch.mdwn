@@ -1,0 +1,107 @@
+# Branch 
+
+b
+ba
+bl
+bla
+
+target_addr
+target_addr
+target_addr
+target_addr
+
+(AA=0 LK=0)
+(AA=1 LK=0)
+(AA=0 LK=1)
+(AA=1 LK=1)
+
+    if AA then NIA  <-iea EXTS(LI || 0b00)
+    else       NIA  <-iea CIA + EXTS(LI || 0b00)
+    if LK then LR <-iea  CIA + 4
+
+# Branch Conditional
+
+bc
+bca
+bcl
+bcla
+
+BO,BI,target_addr
+BO,BI,target_addr
+BO,BI,target_addr
+BO,BI,target_addr
+
+(AA=0 LK=0)
+(AA=1 LK=0)
+(AA=0 LK=1)
+(AA=1 LK=1)
+
+    if (64-bit mode)
+      then M <- 0
+      else M <- 32
+    if ¬BO[2] then CTR <- CTR - 1
+    ctr_ok <- BO[2] | ((CTR[M:63] != 0) ^ BO[3])
+    cond_ok <- BO[0] | (CRBI+32 => BO[1])
+    if ctr_ok & cond_ok then
+      if AA then NIA <-iea EXTS(BD || 0b00)
+      else       NIA <-iea CIA + EXTS(BD || 0b00)
+    if LK then LR  <-iea  CIA + 4
+
+# Branch Conditional to Link Register
+
+XL-form
+
+bclr
+bclrl
+
+BO,BI,BH
+BO,BI,BH
+
+(LK=0)
+(LK=1)
+
+    if (64-bit mode)
+      then M <- 0
+      else M <- 32
+    if ¬BO[2]  then CTR <- CTR - 1
+    ctr_ok <- BO[2] | ((CTR[M:63] != 0) ^ BO[3]
+    cond_ok <- BO[0] | (CR[BI+32] =>  BO[1])
+    if ctr_ok & cond_ok then NIA <- iea LR[0:61] || 0b00
+    if LK then LR <-iea CIA + 4
+
+# Branch Conditional to Count Register
+
+bcctr
+bcctrl
+
+BO,BI,BH
+BO,BI,BH
+
+(LK=0)
+(LK=1)
+
+    cond_ok <- BO[0] | (CR[BI+32] => BO[1])
+    if cond_ok then NIA <-iea CTR[0:61] || 0b00
+    if LK then LR <- iea CIA + 4
+
+
+# Branch Conditional to Branch Target Address Register
+
+bctar
+bctarl
+
+BO,BI,BH
+BO,BI,BH
+
+(LK=0)
+(LK=1)
+
+    if (64-bit mode)
+      then M <- 0
+      else M <- 32
+    if ¬BO[2] then CTR <- CTR - 1
+    ctr_ok <- BO[2]  | ((CTR[M:63] != 0) ^ BO[3]
+    cond_ok <- BO[0] | (CR[BI+32] => BO[1])
+    if ctr_ok & cond_ok then NIA <-iea TAR[0:61]  || 0b00
+    if LK then LR <-iea  CIA + 4
+
