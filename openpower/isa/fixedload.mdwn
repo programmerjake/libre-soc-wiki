@@ -1,6 +1,6 @@
 # Load Byte and Zero
 
-lbz RT,D(RA)
+* lbz RT,D(RA)
 
     if RA = 0 then b <-  0
     else           b <-  (RA)
@@ -9,7 +9,7 @@ lbz RT,D(RA)
 
 # Load Byte and Zero Indexed
 
-lbzx RT,RA,RB
+* lbzx RT,RA,RB
 
     if RA = 0 then b <- 0
     else           b <- (RA)
@@ -18,7 +18,7 @@ lbzx RT,RA,RB
 
 # Load Byte and Zero with Update
 
-lbzu RT,D(RA)
+* lbzu RT,D(RA)
 
     EA <- (RA) + EXTS(D)
     RT <- [0] * 56 || MEM(EA, 1)
@@ -26,7 +26,7 @@ lbzu RT,D(RA)
 
 # Load Byte and Zero with Update Indexed
 
-lbzux RT,RA,RB
+* lbzux RT,RA,RB
 
     EA <- (RA) + (RB)
     RT <- [0] * 56 || MEM(EA, 1)
@@ -34,7 +34,7 @@ lbzux RT,RA,RB
 
 # Load Halfword and Zero
 
-lhz RT,D(RA)
+* lhz RT,D(RA)
 
     if RA = 0 then b <-  0
     else           b <-  (RA)
@@ -43,7 +43,7 @@ lhz RT,D(RA)
 
 # Load Halfword and Zero Indexed X-form
 
-lhzx RT,RA,RB
+* lhzx RT,RA,RB
 
     if RA = 0 then b <- 0
     else           b <- (RA)
@@ -52,7 +52,7 @@ lhzx RT,RA,RB
 
 # Load Halfword and Zero with Update
 
-lhzu RT,D(RA)
+* lhzu RT,D(RA)
 
     EA <- (RA) + EXTS(D)
     RT <- [0] * 48 || MEM(EA, 2)
@@ -60,7 +60,7 @@ lhzu RT,D(RA)
 
 # Load Halfword and Zero with Update Indexed
 
-lhzux RT,RA,RB
+* lhzux RT,RA,RB
 
     EA <- (RA) + (RB)
     RT <- [0] * 48 || MEM(EA, 2)
@@ -68,7 +68,7 @@ lhzux RT,RA,RB
 
 # Load Halfword Algebraic
 
-lha RT,D(RA)
+* lha RT,D(RA)
 
     if RA = 0 then b <-  0
     else           b <-  (RA)
@@ -77,7 +77,7 @@ lha RT,D(RA)
 
 # Load Halfword Algebraic Indexed X-form
 
-lhax RT,RA,RB
+* lhax RT,RA,RB
 
     if RA = 0 then b <- 0
     else           b <- (RA)
@@ -86,7 +86,7 @@ lhax RT,RA,RB
 
 # Load Halfword Algebraic with Update
 
-lhau RT,D(RA)
+* lhau RT,D(RA)
 
     EA <- (RA) + EXTS(D)
     RT <- EXTS(MEM(EA, 2))
@@ -94,7 +94,7 @@ lhau RT,D(RA)
 
 # Load Halfword Algebraic with Update Indexed
 
-lhaux RT,RA,RB
+* lhaux RT,RA,RB
 
     EA <- (RA) + (RB)
     RT <- EXTS(MEM(EA, 2))
@@ -102,7 +102,7 @@ lhaux RT,RA,RB
 
 # Load Word and Zero
 
-lwz RT,D(RA)
+* lwz RT,D(RA)
 
     if RA = 0 then b <-  0
     else           b <-  (RA)
@@ -111,7 +111,7 @@ lwz RT,D(RA)
 
 Load Word and Zero Indexed
 
-lwzx RT,RA,RB
+* lwzx RT,RA,RB
 
     if RA = 0 then b <- 0
     else           b <- (RA)
@@ -120,7 +120,7 @@ lwzx RT,RA,RB
 
 # Load Word and Zero with Update
 
-lwzu RT,D(RA)
+* lwzu RT,D(RA)
 
     EA <- (RA) + EXTS(D)
     RT <- [0]*32 || MEM(EA, 4)
@@ -128,7 +128,7 @@ lwzu RT,D(RA)
 
 # Load Word and Zero with Update Indexed
 
-lwzux RT,RA,RB
+* lwzux RT,RA,RB
 
     EA <- (RA) + (RB)
     RT <- [0] * 32 || MEM(EA, 4)
@@ -136,7 +136,7 @@ lwzux RT,RA,RB
 
 # Load Word Algebraic
 
-lwa RT,DS(RA)
+* lwa RT,DS(RA)
 
     if RA = 0 then b <-  0
     else           b <-  (RA)
@@ -145,7 +145,7 @@ lwa RT,DS(RA)
 
 # Load Word Algebraic Indexed
 
-lwax RT,RA,RB
+* lwax RT,RA,RB
 
     if RA = 0 then b <- 0
     else           b <- (RA)
@@ -154,7 +154,7 @@ lwax RT,RA,RB
 
 # Load Word Algebraic with Update Indexed
 
-lwaux RT,RA,RB
+* lwaux RT,RA,RB
 
     EA <- (RA) + (RB)
     RT <- EXTS(MEM(EA, 4))
@@ -162,7 +162,7 @@ lwaux RT,RA,RB
 
 # Load Doubleword
 
-ld RT,DS(RA)
+* ld RT,DS(RA)
 
     if RA = 0 then b <-  0
     else           b <-  (RA)
@@ -171,7 +171,7 @@ ld RT,DS(RA)
 
 # Load Doubleword Indexed
 
-ldx RT,RA,RB
+* ldx RT,RA,RB
 
     if RA = 0 then b <- 0
     else           b <- (RA)
@@ -180,7 +180,7 @@ ldx RT,RA,RB
 
 # Load Doubleword with Update Indexed
 
-ldu RT,DS(RA)
+* ldu RT,DS(RA)
 
     EA <- (RA) + EXTS(DS || 0b00)
     RT <- MEM(EA, 8)
@@ -188,7 +188,7 @@ ldu RT,DS(RA)
 
 # Load Doubleword with Update Indexed
 
-ldux RT,RA,RB
+* ldux RT,RA,RB
 
     EA <- (RA) + (RB)
     RT <- MEM(EA, 8)
@@ -196,7 +196,7 @@ ldux RT,RA,RB
 
 # Load Quadword
 
-lq RTp,DQ(RA)
+* lq RTp,DQ(RA)
 
     if RA = 0 then b <-  0
     else           b <-  (RA)
@@ -205,7 +205,7 @@ lq RTp,DQ(RA)
 
 # Load Halfword Byte-Reverse Indexed
 
-lhbrx RT,RA,RB
+* lhbrx RT,RA,RB
 
     if RA = 0 then b <-  0
     else           b <-  (RA)
@@ -215,7 +215,7 @@ lhbrx RT,RA,RB
 
 # Load Word Byte-Reverse Indexed
 
-lwbrx RT,RA,RB
+* lwbrx RT,RA,RB
 
     if RA = 0 then b <-  0
     else           b <-  (RA)
@@ -226,7 +226,7 @@ lwbrx RT,RA,RB
 
 # Load Doubleword Byte-Reverse Indexed
 
-ldbrx RT,RA,RB
+* ldbrx RT,RA,RB
 
     if RA = 0 then b <-  0
     else           b <-  (RA)
@@ -239,7 +239,7 @@ ldbrx RT,RA,RB
 
 # Load Multiple Word
 
-lmw RT,D(RA)
+* lmw RT,D(RA)
 
     if RA = 0 then b <-  0
     else           b <-  (RA)
