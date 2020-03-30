@@ -1,11 +1,15 @@
 # Add Immediate
 
+D-Form
+
 * addi RT,RA,SI
 
     if RA = 0 then RT <- EXTS(SI)
     else           RT <- (RA) + EXTS(SI)
 
 # Add Immediate Shifted
+
+D-Form
 
 * addis RT,RA,SI
 
@@ -14,6 +18,8 @@
 
 # Add PC Immediate Shifted
 
+DX-Form
+
 * addpcis RT,D
 
     D <- d0||d1||d2
@@ -21,6 +27,8 @@
 
 
 # Add
+
+XO-Form
 
 * add RT,RA,RB (OE=0 Rc=0)
 * add.  RT,RA,RB (OE=0 Rc=1)
@@ -31,6 +39,7 @@
 
 # Subtract From
 
+XO-Form
 
 * subf RT,RA,RB (OE=0 Rc=0)
 * subf.  RT,RA,RB (OE=0 Rc=1)
@@ -41,11 +50,15 @@
 
 # Add Immediate Carrying
 
+D-Form
+
 * addic RT,RA,SI
 
     RT <- (RA) + EXTS(SI)
 
 # Add Immediate Carrying and Record
+
+D-Form
 
 * addic. RT,RA,SI
 
@@ -53,11 +66,15 @@
 
 # Subtract From Immediate Carrying
 
+D-Form
+
 * subfic RT,RA,SI
 
     RT <- ¬(RA) + EXTS(SI) + 1
 
 # Add Carrying
+
+XO-Form
 
 * addc RT,RA,RB (OE=0 Rc=0)
 * addc.  RT,RA,RB (OE=0 Rc=1)
@@ -68,6 +85,8 @@
 
 # Subtract From Carrying
 
+XO-Form
+
 * subfc RT,RA,RB (OE=0 Rc=0)
 * subfc.  RT,RA,RB (OE=0 Rc=1)
 * subfco RT,RA,RB (OE=1 Rc=0)
@@ -76,6 +95,8 @@
     RT <- ¬(RA) + (RB) + 1
 
 # Add Extended
+
+XO-Form
 
 * adde RT,RA,RB (OE=0 Rc=0)
 * adde.  RT,RA,RB (OE=0 Rc=1)
@@ -86,6 +107,8 @@
 
 # Subtract From Extended
 
+XO-Form
+
 * subfe RT,RA,RB (OE=0 Rc=0)
 * subfe.  RT,RA,RB (OE=0 Rc=1)
 * subfeo RT,RA,RB (OE=1 Rc=0)
@@ -93,9 +116,9 @@
 
     RT <- ¬(RA) + (RB) + CA
 
-#Add to Minus One Extended
+# Add to Minus One Extended
 
-# Subtract From Minus One Extended
+XO-Form
 
 * addme RT,RA (OE=0 Rc=0)
 * addme.  RT,RA (OE=0 Rc=1)
@@ -103,6 +126,10 @@
 * addmeo.  RT,RA (OE=1 Rc=1)
 
     RT <- (RA) + CA - 1
+
+# Subtract From Minus One Extended
+
+XO-Form
 
 * subfme RT,RA (OE=0 Rc=0)
 * subfme.  RT,RA (OE=0 Rc=1)
@@ -113,11 +140,15 @@
 
 # Add Extended using alternate carry bit
 
+Z23-Form
+
 * addex RT,RA,RB,CY
 
     if CY=0 then RT <- (RA) + (RB) + OV
 
-# Subtract From Zero Extended   XO-form
+# Subtract From Zero Extended
+
+XO-form
 
 * subfze RT,RA (OE=0 Rc=0)
 * subfze.  RT,RA (OE=0 Rc=1)
@@ -128,6 +159,8 @@
 
 # Add to Zero Extended
 
+XO-form
+
 * addze RT,RA (OE=0 Rc=0)
 * addze.  RT,RA (OE=0 Rc=1)
 * addzeo RT,RA (OE=1 Rc=0)
@@ -136,6 +169,8 @@
     RT <- (RA) + CA
 
 # Negate
+
+XO-form
 
 * neg RT,RA (OE=0 Rc=0)
 * neg.  RT,RA (OE=0 Rc=1)
@@ -146,12 +181,16 @@ RT <- ¬(RA) + 1
 
 # Multiply Low Immediate
 
+D-form
+
 * mulli RT,RA,SI
 
     prod[0:127] <- (RA) * EXTS(SI)
     RT <- prod[64:127]
 
 # Multiply High Word
+
+XO-form
 
 * mulhw RT,RA,RB (Rc=0)
 * mulhw.  RT,RA,RB (Rc=1)
@@ -162,6 +201,8 @@ RT <- ¬(RA) + 1
 
 # Multiply Low Word
 
+XO-form
+
 * mullw RT,RA,RB (OE=0 Rc=0)
 * mullw.  RT,RA,RB (OE=0 Rc=1)
 * mullwo RT,RA,RB (OE=1 Rc=0)
@@ -171,6 +212,8 @@ RT <- ¬(RA) + 1
 
 # Multiply High Word Unsigned
 
+XO-form
+
 * mulhwu RT,RA,RB (Rc=0)
 * mulhwu.  RT,RA,RB (Rc=1)
 
@@ -179,6 +222,8 @@ RT <- ¬(RA) + 1
     RT[0:31] <- undefined
 
 # Divide Word
+
+XO-form
 
 * divw RT,RA,RB (OE=0 Rc=0)
 * divw.  RT,RA,RB (OE=0 Rc=1)
@@ -192,6 +237,7 @@ RT <- ¬(RA) + 1
 
 # Divide Word Unsigned
 
+XO-form
 
 * divwu RT,RA,RB (OE=0 Rc=0)
 * divwu.  RT,RA,RB (OE=0 Rc=1)
@@ -205,6 +251,8 @@ RT <- ¬(RA) + 1
 
 # Divide Word Extended
 
+XO-form
+
 * divwe RT,RA,RB (OE=0 Rc=0)
 * divwe.  RT,RA,RB (OE=0 Rc=1)
 * divweo RT,RA,RB (OE=1 Rc=0)
@@ -216,6 +264,8 @@ RT <- ¬(RA) + 1
     RT[0:31] <- undefined
 
 # Divide Word Extended Unsigned
+
+XO-form
 
 * divweu RT,RA,RB (OE=0 Rc=0)
 * divweu.  RT,RA,RB (OE=0 Rc=1)
@@ -229,6 +279,8 @@ RT <- ¬(RA) + 1
 
 # Modulo Signed Word X-form
 
+X-form
+
 * modsw RT,RA,RB
 
     dividend[0:31] <- (RA)[32:63]
@@ -237,6 +289,8 @@ RT <- ¬(RA) + 1
     RT[0:31 ] <- undefined
 
 # Modulo Unsigned Word X-form
+
+X-form
 
 * moduw RT,RA,RB
 
@@ -248,11 +302,15 @@ RT <- ¬(RA) + 1
 
 # Deliver A Random Number
 
+X-form
+
 * darn RT,L
 
     RT <- random(L)
 
 # Multiply Low Doubleword
+
+XO-form
 
 * mulld RT,RA,RB (OE=0 Rc=0)
 * mulld.  RT,RA,RB (OE=0 Rc=1)
@@ -264,6 +322,8 @@ RT <- ¬(RA) + 1
 
 # Multiply High Doubleword
 
+XO-form
+
 * mulhd RT,RA,RB (Rc=0)
 * mulhd.  RT,RA,RB (Rc=1)
 
@@ -271,6 +331,8 @@ RT <- ¬(RA) + 1
     RT <- prod[0:63]
 
 # Multiply High Doubleword Unsigned
+
+XO-form
 
 * mulhdu RT,RA,RB (Rc=0)
 * mulhdu.  RT,RA,RB (Rc=1)
@@ -280,6 +342,8 @@ RT <- ¬(RA) + 1
 
 # Multiply-Add High Doubleword VA-form
 
+VA-form
+
 * maddhd RT,RA.RB,RC
 
     prod[0:127] <- (RA) * (RB)
@@ -287,6 +351,8 @@ RT <- ¬(RA) + 1
     RT <- sum[0:63]
 
 # Multiply-Add High Doubleword Unsigned
+
+VA-form
 
 * maddhdu RT,RA.RB,RC
 
@@ -296,6 +362,8 @@ RT <- ¬(RA) + 1
 
 # Multiply-Add Low Doubleword
 
+VA-form
+
 * maddld RT,RA.RB,RC
 
 
@@ -304,6 +372,8 @@ RT <- ¬(RA) + 1
     RT <- sum[64:127]
 
 # Divide Doubleword
+
+XO-form
 
 * divd RT,RA,RB (OE=0 Rc=0)
 * divd.  RT,RA,RB (OE=0 Rc=1)
@@ -316,6 +386,8 @@ RT <- ¬(RA) + 1
 
 # Divide Doubleword Unsigned
 
+XO-form
+
 * divdu RT,RA,RB (OE=0 Rc=0)
 * divdu.  RT,RA,RB (OE=0 Rc=1)
 * divduo RT,RA,RB (OE=1 Rc=0)
@@ -326,6 +398,8 @@ RT <- ¬(RA) + 1
     RT <- dividend / divisor
 
 # Divide Doubleword Extended
+
+XO-form
 
 * divde RT,RA,RB (OE=0 Rc=0)
 * divde.  RT,RA,RB (OE=0 Rc=1)
@@ -338,6 +412,8 @@ RT <- ¬(RA) + 1
 
 # Divide Doubleword Extended Unsigned
 
+XO-form
+
 * divdeu RT,RA,RB (OE=0 Rc=0)
 * divdeu.  RT,RA,RB (OE=0 Rc=1)
 * divdeuo RT,RA,RB (OE=1 Rc=0)
@@ -347,7 +423,9 @@ RT <- ¬(RA) + 1
     divisor[0:63] <- (RB)
     RT <- dividend / divisor
 
-# Modulo Signed Doubleword X-form
+# Modulo Signed Doubleword
+
+X-form
 
 * modsd RT,RA,RB
 
@@ -355,7 +433,9 @@ RT <- ¬(RA) + 1
     divisor  <- (RB)
     RT       <- dividend % divisor
 
-# Modulo Unsigned Doubleword X-form
+# Modulo Unsigned Doubleword
+
+X-form
 
 * modud RT,RA,RB
 
