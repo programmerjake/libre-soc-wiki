@@ -6,6 +6,10 @@ D-Form
 
     RA <- (RS) & ([0]*48 || UI)
 
+Special Registers Altered:
+
+    CR0
+
 # OR Immediate
 
 D-Form
@@ -13,6 +17,10 @@ D-Form
 * ori RA,RS,UI
 
     RA <- (RS) | ([0]*48 || UI)
+
+Special Registers Altered:
+
+    None
 
 # AND Immediate Shifted
 
@@ -22,6 +30,10 @@ D-Form
 
     RA <- (RS) & ([0]*32 || UI || [0]*16)
 
+Special Registers Altered:
+
+    CR0
+
 # OR Immediate Shifted
 
 D-Form
@@ -29,6 +41,10 @@ D-Form
 * oris      RA,RS,UI
 
     RA <- (RS) | ([0]*32 || UI || [0]*16)
+
+Special Registers Altered:
+
+    None
 
 # XOR Immediate Shifted
 
@@ -38,6 +54,10 @@ D-Form
 
     RA <- (RS) ^ ([0]*32 || UI || [0]*16)
 
+Special Registers Altered:
+
+    None
+
 # XOR Immediate
 
 D-Form
@@ -45,6 +65,10 @@ D-Form
 * xori RA,RS,UI
 
     RA <- (RS) XOR ([0]*48 || UI)
+
+Special Registers Altered:
+
+    None
 
 # AND
 
@@ -55,6 +79,10 @@ X-Form
 
     RA <- (RS) & (RB)
 
+Special Registers Altered:
+
+    CR0                    (if Rc=1)
+
 # OR
 
 X-Form
@@ -63,6 +91,10 @@ X-Form
 * or.  RA,RS,RB (Rc=1)
 
     RA <- (RS) | (RB)
+
+Special Registers Altered:
+
+    CR0                    (if Rc=1)
 
 # XOR
 
@@ -73,6 +105,10 @@ X-Form
 
     RA <- (RS) ^ (RB)
 
+Special Registers Altered:
+
+    CR0                    (if Rc=1)
+
 # NAND
 
 X-Form
@@ -80,7 +116,11 @@ X-Form
 * nand RA,RS,RB (Rc=0)
 * nand.  RA,RS,RB (Rc=1)
 
-RA <- ¬((RS) & (RB))
+    RA <- ¬((RS) & (RB))
+
+Special Registers Altered:
+
+    CR0                    (if Rc=1)
 
 # NOR
 
@@ -91,6 +131,10 @@ X-Form
 
    RA <- ¬((RS) | (RB))
 
+Special Registers Altered:
+
+    CR0                    (if Rc=1)
+
 # Equivalent
 
 X-Form
@@ -99,6 +143,10 @@ X-Form
 * eqv.  RA,RS,RB (Rc=1)
 
     RA <- (RS) => (RB)
+
+Special Registers Altered:
+
+    CR0                    (if Rc=1)
 
 # AND with Complement
 
@@ -109,6 +157,10 @@ X-Form
 
     RA <- (RS) &  ¬(RB)
 
+Special Registers Altered:
+
+    CR0                    (if Rc=1)
+
 # OR with Complement
 
 X-Form
@@ -117,6 +169,10 @@ X-Form
 * orc.  RA,RS,RB (Rc=1)
 
     RA <- (RS) |  ¬(RB)
+
+Special Registers Altered:
+
+    CR0                    (if Rc=1)
 
 # Extend Sign Byte
 
@@ -129,6 +185,10 @@ X-Form
     RA[56:63] <- (RS)[56:63]
     RA[0:55] <- [s]*56
 
+Special Registers Altered:
+
+    CR0                    (if Rc=1)
+
 # Extend Sign Halfword
 
 X-Form
@@ -139,6 +199,10 @@ X-Form
     s <- (RS)[48]
     RA[48:63] <-  (RS)[48:63]
     RA[0:47] <- [s]*48
+
+Special Registers Altered:
+
+    CR0                    (if Rc=1)
 
 # Count Leading Zeros Word
 
@@ -156,6 +220,10 @@ X-Form
 
     RA <- n - 32
 
+Special Registers Altered:
+
+    CR0                    (if Rc=1)
+
 # Count Trailing Zeros Word
 
 X-Form
@@ -172,6 +240,10 @@ X-Form
 
     RA <- EXTZ64(n)
 
+Special Registers Altered:
+
+    CR0                    (if Rc=1)
+
 # Compare Bytes
 
 X-Form
@@ -183,6 +255,10 @@ X-Form
            RA[8*n:8* n+7] <- [1]*8
         else
            RA[8*n:8* n+7] <- [0]*8
+
+Special Registers Altered:
+
+    None
 
 # Population Count Bytes
 
@@ -197,6 +273,10 @@ X-Form
               n <- n+1
        RA[(i*8):(i*8)+7] <-  n
 
+Special Registers Altered:
+
+    None
+
 # Population Count Words
 
 X-Form
@@ -210,6 +290,10 @@ X-Form
               n <- n+1
        RA[(i*32):(i*32)+31] <- n
 
+Special Registers Altered:
+
+    None
+
 # Parity Doubleword
 
 X-Form
@@ -220,6 +304,10 @@ X-Form
     do i = 0 to 7
         s <- s / (RS)[i%8+7]
     RA <- [0] * 63 || s
+
+Special Registers Altered:
+
+    None
 
 # Parity Word
 
@@ -236,6 +324,10 @@ X-Form
     RA[0:31] <- [0]*31 || s
     RA[32:63] <- [0]*31 || t
 
+Special Registers Altered:
+
+    None
+
 # Extend Sign Word
 
 X-Form
@@ -246,6 +338,10 @@ X-Form
     s <- (RS)[32]
     RA[32:63] <- (RS)[32:63]
     RA[0:31] <- [s]*32
+
+Special Registers Altered:
+
+    CR0                    (if Rc=1)
 
 # Population Count Doubleword
 
@@ -258,6 +354,10 @@ X-Form
        if (RS)[i] = 1 then
            n <-  n+1
     RA <- n
+
+Special Registers Altered:
+
+    None
 
 # Count Leading Zeros Doubleword
 
@@ -273,6 +373,10 @@ X-Form
       n <- n + 1
     RA <- n
 
+Special Registers Altered:
+
+    CR0                    (if Rc=1)
+
 # Count Trailing Zeros Doubleword
 
 X-Form
@@ -286,6 +390,10 @@ X-Form
             leave
        n  <- n + 1
     RA <- EXTZ64(n)
+
+Special Registers Altered:
+
+    CR0                    (if Rc=1)
 
 # Bit Permute Doubleword
 
@@ -301,4 +409,8 @@ X-Form
        else
             perm[i] <- 0
     RA <- [0]*56 || perm[0:7]
+
+Special Registers Altered:
+
+    None
 
