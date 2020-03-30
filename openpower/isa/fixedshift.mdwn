@@ -1,41 +1,57 @@
-# Rotate Left Word Immediate then AND with Mask M-form
+# Rotate Left Word Immediate then AND with Mask
 
-rlwinm RA,RS,SH,MB,ME (Rc=0)
+M-form
 
-rlwinm.  RA,RS,SH,MB,ME (Rc=1)
+* rlwinm RA,RS,SH,MB,ME (Rc=0)
+* rlwinm.  RA,RS,SH,MB,ME (Rc=1)
 
     n <- SH
     r <- ROTL32((RS)[32:63], n)
     m <- MASK(MB+32, ME+32)
     RA <- r & m
 
-# Rotate Left Word then AND with Mask  
+Special Registers Altered:
 
-rlwnm RA,RS,RB,MB,ME (Rc=0)
+    CR0                    (if Rc=1)
 
-rlwnm.  RA,RS,RB,MB,ME (Rc=1)
+# Rotate Left Word then AND with Mask
+
+M-form
+
+* rlwnm RA,RS,RB,MB,ME (Rc=0)
+* rlwnm.  RA,RS,RB,MB,ME (Rc=1)
 
     n <- (RB)[59:63]
     r <- ROTL32((RS)[32:63], n)
     m <- MASK(MB+32, ME+32)
     RA <- r & m
 
-# Rotate Left Word Immediate then Mask Insert  
+Special Registers Altered:
 
-rlwimi RA,RS,SH,MB,ME (Rc=0)
+    CR0                    (if Rc=1)
 
-rlwimi.  RA,RS,SH,MB,ME (Rc=1)
+# Rotate Left Word Immediate then Mask Insert
+
+M-form
+
+* rlwimi RA,RS,SH,MB,ME (Rc=0)
+* rlwimi.  RA,RS,SH,MB,ME (Rc=1)
 
     n <- SH
     r <- ROTL32((RS)[32:63], n)
     m <- MASK(MB+32, ME+32)
     RA <- r&m | (RA) & ¬m
 
-# Rotate Left Doubleword Immediate then Clear Left  
+Special Registers Altered:
 
-rldicl RA,RS,SH,MB (Rc=0)
+    CR0                    (if Rc=1)
 
-rldicl.  RA,RS,SH,MB (Rc=1)
+# Rotate Left Doubleword Immediate then Clear Left
+
+MD-form
+
+* rldicl RA,RS,SH,MB (Rc=0)
+* rldicl.  RA,RS,SH,MB (Rc=1)
 
     n <- sh[5] || sh[0:4]
     r <- ROTL64((RS), n)
@@ -43,11 +59,16 @@ rldicl.  RA,RS,SH,MB (Rc=1)
     m <- MASK(b, 63)
     RA <- r & m
 
-# Rotate Left Doubleword Immediate then Clear Right  
+Special Registers Altered:
 
-rldicr RA,RS,SH,ME (Rc=0)
+    CR0                    (if Rc=1)
 
-rldicr.  RA,RS,SH,ME (Rc=1)
+# Rotate Left Doubleword Immediate then Clear Right
+
+MD-form
+
+* rldicr RA,RS,SH,ME (Rc=0)
+* rldicr.  RA,RS,SH,ME (Rc=1)
 
     n <- sh[5] || sh[0:4]
     r <- ROTL64((RS), n)
@@ -55,11 +76,16 @@ rldicr.  RA,RS,SH,ME (Rc=1)
     m <- MASK(0, e)
     RA <- r & m
 
-# Rotate Left Doubleword Immediate then Clear  
+Special Registers Altered:
 
-rldic RA,RS,SH,MB (Rc=0)
+    CR0                    (if Rc=1)
 
-rldic.  RA,RS,SH,MB (Rc=1)
+# Rotate Left Doubleword Immediate then Clear
+
+MD-form
+
+* rldic RA,RS,SH,MB (Rc=0)
+* rldic.  RA,RS,SH,MB (Rc=1)
 
     n <- sh[5] || sh[0:4]
     r <- ROTL64((RS), n)
@@ -67,11 +93,16 @@ rldic.  RA,RS,SH,MB (Rc=1)
     m <- MASK(b,  ¬n)
     RA <- r & m
 
-# Rotate Left Doubleword then Clear Left 
+Special Registers Altered:
 
-rldcl RA,RS,RB,MB (Rc=0)
+    CR0                    (if Rc=1)
 
-rldcl.  RA,RS,RB,MB (Rc=1)
+# Rotate Left Doubleword then Clear Left
+
+MDS-form
+
+* rldcl RA,RS,RB,MB (Rc=0)
+* rldcl.  RA,RS,RB,MB (Rc=1)
 
     n <- (RB)[58:63]
     r <- ROTL64((RS), n)
@@ -79,11 +110,16 @@ rldcl.  RA,RS,RB,MB (Rc=1)
     m <- MASK(b, 63)
     RA <- r & m
 
-# Rotate Left Doubleword then Clear Right 
+Special Registers Altered:
 
-rldcr RA,RS,RB,ME (Rc=0)
+    CR0                    (if Rc=1)
 
-rldcr.  RA,RS,RB,ME (Rc=1)
+# Rotate Left Doubleword then Clear Right
+
+MDS-form
+
+* rldcr RA,RS,RB,ME (Rc=0)
+* rldcr.  RA,RS,RB,ME (Rc=1)
 
     n <- (RB)[58:63]
     r <- ROTL64((RS), n)
@@ -91,11 +127,16 @@ rldcr.  RA,RS,RB,ME (Rc=1)
     m <- MASK(0, e)
     RA <- r & m
 
-# Rotate Left Doubleword Immediate then Mask Insert 
+Special Registers Altered:
 
-rldimi RA,RS,SH,MB (Rc=0)
+    CR0                    (if Rc=1)
 
-rldimi.  RA,RS,SH,MB (Rc=1)
+# Rotate Left Doubleword Immediate then Mask Insert
+
+MD-form
+
+* rldimi RA,RS,SH,MB (Rc=0)
+* rldimi.  RA,RS,SH,MB (Rc=1)
 
     n <- sh[5] || sh[0:4]
     r <- ROTL64((RS), n)
@@ -103,12 +144,17 @@ rldimi.  RA,RS,SH,MB (Rc=1)
     m <- MASK(b,  ¬n)
     RA <- r&m | (RA)& ¬m
 
+Special Registers Altered:
 
-# Shift Left Word 
+    CR0                    (if Rc=1)
 
-slw RA,RS,RB (Rc=0)
 
-slw.  RA,RS,RB (Rc=1)
+# Shift Left Word
+
+X-form
+
+* slw RA,RS,RB (Rc=0)
+* slw.  RA,RS,RB (Rc=1)
 
     n <- (RB)[59:63]
     r <- ROTL32((RS)[32:63], n)
@@ -117,12 +163,16 @@ slw.  RA,RS,RB (Rc=1)
     else m <- [0]*64
     RA <- r & m
 
+Special Registers Altered:
 
-# Shift Right Word  
+    CR0                    (if Rc=1)
 
-srw RA,RS,RB (Rc=0)
+# Shift Right Word
 
-srw.  RA,RS,RB (Rc=1)
+X-form
+
+* srw RA,RS,RB (Rc=0)
+* srw.  RA,RS,RB (Rc=1)
 
     n <- (RB)[59:63]
     r <- ROTL32((RS)[32:63], 64-n)
@@ -131,11 +181,16 @@ srw.  RA,RS,RB (Rc=1)
     else m <- [0]*64
     RA <- r & m
 
-# Shift Right Algebraic Word Immediate 
- 
-srawi RA,RS,SH (Rc=0)
+Special Registers Altered:
 
-srawi.  RA,RS,SH (Rc=1) 
+    CR0                    (if Rc=1)
+
+# Shift Right Algebraic Word Immediate
+
+X-form
+
+* srawi RA,RS,SH (Rc=0)
+* srawi.  RA,RS,SH (Rc=1)
 
     n <- SH
     r <- ROTL32((RS)[32:63], 64-n)
@@ -146,11 +201,17 @@ srawi.  RA,RS,SH (Rc=1)
     CA    <- carry
     CA32  <- carry
 
-# Shift Right Algebraic Word  
+Special Registers Altered:
 
-sraw RA,RS,RB (Rc=0)
+    CA CA32
+    CR0                    (if Rc=1)
 
-sraw.  RA,RS,RB (Rc=1) 
+# Shift Right Algebraic Word
+
+X-form
+
+* sraw RA,RS,RB (Rc=0)
+* sraw.  RA,RS,RB (Rc=1)
 
     n <- (RB)[59:63]
     r <- ROTL32((RS)[32:63], 64-n)
@@ -163,11 +224,17 @@ sraw.  RA,RS,RB (Rc=1)
     CA    <-  carry
     CA32  <-  carry
 
-# Shift Left Doubleword 
+Special Registers Altered:
 
-sld RA,RS,RB (Rc=0)
+    CA CA32
+    CR0                    (if Rc=1)
 
-sld.  RA,RS,RB (Rc=1)
+# Shift Left Doubleword
+
+X-form
+
+* sld RA,RS,RB (Rc=0)
+* sld.  RA,RS,RB (Rc=1)
 
     n <- (RB)[58:63]
     r <- ROTL64((RS), n)
@@ -176,12 +243,16 @@ sld.  RA,RS,RB (Rc=1)
     else m <- [0]*64
     RA <- r & m
 
+Special Registers Altered:
 
-# Shift Right Doubleword 
+    CR0                    (if Rc=1)
 
-srd RA,RS,RB (Rc=0)
+# Shift Right Doubleword
 
-srd.  RA,RS,RB (Rc=1)
+X-form
+
+* srd RA,RS,RB (Rc=0)
+* srd.  RA,RS,RB (Rc=1)
 
     n <- (RB)[58:63]
     r <- ROTL64((RS), 64-n)
@@ -190,11 +261,16 @@ srd.  RA,RS,RB (Rc=1)
     else m <- [0]*64
     RA <- r & m
 
+Special Registers Altered:
+
+    CR0                    (if Rc=1)
+
 # Shift Right Algebraic Doubleword Immediate
 
-sradi RA,RS,SH (Rc=0)
+XS-form
 
-sradi.  RA,RS,SH (Rc=1)
+* sradi RA,RS,SH (Rc=0)
+* sradi.  RA,RS,SH (Rc=1)
 
     n <- sh[5] || sh[0:4]
     r <- ROTL64((RS), 64-n)
@@ -205,12 +281,17 @@ sradi.  RA,RS,SH (Rc=1)
     CA    <- carry
     CA32  <- carry
 
+Special Registers Altered:
 
-# Shift Right Algebraic Doubleword  
+    CA CA32
+    CR0                    (if Rc=1)
 
-srad RA,RS,RB (Rc=0)
+# Shift Right Algebraic Doubleword
 
-srad.  RA,RS,RB (Rc=1)
+X-form
+
+* srad RA,RS,RB (Rc=0)
+* srad.  RA,RS,RB (Rc=1)
 
     n <- (RB)[58:63]
     r <- ROTL64((RS), 64-n)
@@ -223,14 +304,24 @@ srad.  RA,RS,RB (Rc=1)
     CA    <-  carry
     CA32  <-  carry
 
-# Extend-Sign Word and Shift Left Immediate 
+Special Registers Altered:
 
-extswsli RA,RS,SH (Rc=0)
+    CA CA32
+    CR0                    (if Rc=1)
 
-extswsli.  RA,RS,SH (Rc=1) 
+# Extend-Sign Word and Shift Left Immediate
+
+XS-form
+
+* extswsli RA,RS,SH (Rc=0)
+* extswsli.  RA,RS,SH (Rc=1)
 
     n  <- sh[5] || sh[0:4]
     r  <- ROTL64(EXTS64(RS[32:63]), n)
     m  <- MASK(0, 63-n)
     RA <- r & m
+
+Special Registers Altered:
+
+   CR0                     (if Rc=1)
 
