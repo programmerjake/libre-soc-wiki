@@ -1,6 +1,6 @@
-# Load String Word Immediate 
+# Load String Word Immediate
 
-lswi RT,RA,NB 
+* lswi RT,RA,NB
 
     if RA = 0 then EA <- 0
     else           EA <- (RA)
@@ -18,9 +18,9 @@ lswi RT,RA,NB
         EA <- EA + 1
         n <- n - 1
 
-# Load String Word Indexed 
+# Load String Word Indexed
 
-lswx RT,RA,RB 
+* lswx RT,RA,RB
 
     if RA = 0 then b <- 0
     else           b <- (RA)
@@ -42,7 +42,7 @@ lswx RT,RA,RB
 
 # Store String Word Immediate
 
-stswi RS,RA,NB 
+* stswi RS,RA,NB
 
     if RA = 0 then EA <- 0
     else           EA <- (RA)
@@ -58,9 +58,9 @@ stswi RS,RA,NB
       EA <-  EA + 1
       n <- n - 1
 
-# Store String Word Indexed 
+# Store String Word Indexed
 
-stswx RS,RA,RB
+* stswx RS,RA,RB
 
     if RA = 0 then b <- 0
     else           b <- (RA)
