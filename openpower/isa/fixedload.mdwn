@@ -1,5 +1,7 @@
 # Load Byte and Zero
 
+D-Form
+
 * lbz RT,D(RA)
 
     if RA = 0 then b <-  0
@@ -8,6 +10,8 @@
     RT <- [0]*56 || MEM(EA, 1)
 
 # Load Byte and Zero Indexed
+
+X-Form
 
 * lbzx RT,RA,RB
 
@@ -18,6 +22,8 @@
 
 # Load Byte and Zero with Update
 
+D-Form
+
 * lbzu RT,D(RA)
 
     EA <- (RA) + EXTS(D)
@@ -25,6 +31,8 @@
     RA <- EA
 
 # Load Byte and Zero with Update Indexed
+
+X-Form
 
 * lbzux RT,RA,RB
 
@@ -34,6 +42,8 @@
 
 # Load Halfword and Zero
 
+D-Form
+
 * lhz RT,D(RA)
 
     if RA = 0 then b <-  0
@@ -41,7 +51,9 @@
     EA <- b + EXTS(D)
     RT <- [0] * 48 || MEM(EA, 2)
 
-# Load Halfword and Zero Indexed X-form
+# Load Halfword and Zero Indexed
+
+X-Form
 
 * lhzx RT,RA,RB
 
@@ -52,6 +64,8 @@
 
 # Load Halfword and Zero with Update
 
+D-Form
+
 * lhzu RT,D(RA)
 
     EA <- (RA) + EXTS(D)
@@ -59,6 +73,8 @@
     RA <- EA
 
 # Load Halfword and Zero with Update Indexed
+
+X-Form
 
 * lhzux RT,RA,RB
 
@@ -68,6 +84,8 @@
 
 # Load Halfword Algebraic
 
+D-Form
+
 * lha RT,D(RA)
 
     if RA = 0 then b <-  0
@@ -75,7 +93,9 @@
     EA <- b + EXTS(D)
     RT <- EXTS(MEM(EA, 2))
 
-# Load Halfword Algebraic Indexed X-form
+# Load Halfword Algebraic Indexed
+
+X-form
 
 * lhax RT,RA,RB
 
@@ -86,6 +106,8 @@
 
 # Load Halfword Algebraic with Update
 
+D-Form
+
 * lhau RT,D(RA)
 
     EA <- (RA) + EXTS(D)
@@ -93,6 +115,8 @@
     RA <- EA
 
 # Load Halfword Algebraic with Update Indexed
+
+X-form
 
 * lhaux RT,RA,RB
 
@@ -102,6 +126,8 @@
 
 # Load Word and Zero
 
+D-Form
+
 * lwz RT,D(RA)
 
     if RA = 0 then b <-  0
@@ -109,7 +135,9 @@
     EA <- b + EXTS(D)
     RT <- [0] * 32 || MEM(EA, 4)
 
-Load Word and Zero Indexed
+# Load Word and Zero Indexed
+
+X-form
 
 * lwzx RT,RA,RB
 
@@ -120,6 +148,8 @@ Load Word and Zero Indexed
 
 # Load Word and Zero with Update
 
+D-Form
+
 * lwzu RT,D(RA)
 
     EA <- (RA) + EXTS(D)
@@ -128,6 +158,8 @@ Load Word and Zero Indexed
 
 # Load Word and Zero with Update Indexed
 
+X-form
+
 * lwzux RT,RA,RB
 
     EA <- (RA) + (RB)
@@ -135,6 +167,8 @@ Load Word and Zero Indexed
     RA <- EA
 
 # Load Word Algebraic
+
+D-Form
 
 * lwa RT,DS(RA)
 
@@ -145,6 +179,8 @@ Load Word and Zero Indexed
 
 # Load Word Algebraic Indexed
 
+X-form
+
 * lwax RT,RA,RB
 
     if RA = 0 then b <- 0
@@ -154,6 +190,8 @@ Load Word and Zero Indexed
 
 # Load Word Algebraic with Update Indexed
 
+X-form
+
 * lwaux RT,RA,RB
 
     EA <- (RA) + (RB)
@@ -161,6 +199,8 @@ Load Word and Zero Indexed
     RA <- EA
 
 # Load Doubleword
+
+DS-Form
 
 * ld RT,DS(RA)
 
@@ -180,6 +220,8 @@ Load Word and Zero Indexed
 
 # Load Doubleword with Update Indexed
 
+DS-Form
+
 * ldu RT,DS(RA)
 
     EA <- (RA) + EXTS(DS || 0b00)
@@ -196,6 +238,8 @@ Load Word and Zero Indexed
 
 # Load Quadword
 
+DQ-Form
+
 * lq RTp,DQ(RA)
 
     if RA = 0 then b <-  0
@@ -204,6 +248,8 @@ Load Word and Zero Indexed
     RTp <- MEM(EA, 16)
 
 # Load Halfword Byte-Reverse Indexed
+
+X-form
 
 * lhbrx RT,RA,RB
 
@@ -215,6 +261,8 @@ Load Word and Zero Indexed
 
 # Load Word Byte-Reverse Indexed
 
+X-form
+
 * lwbrx RT,RA,RB
 
     if RA = 0 then b <-  0
@@ -225,6 +273,8 @@ Load Word and Zero Indexed
              || load_data[8:15] || load_data[0:7]
 
 # Load Doubleword Byte-Reverse Indexed
+
+X-form
 
 * ldbrx RT,RA,RB
 
@@ -239,6 +289,8 @@ Load Word and Zero Indexed
 
 # Load Multiple Word
 
+DQ-Form
+
 * lmw RT,D(RA)
 
     if RA = 0 then b <-  0
@@ -249,5 +301,3 @@ Load Word and Zero Indexed
         GPR(r) <- [0]*32 || MEM(EA, 4)
         r <- r + 1
         EA <- EA + 4
-
-
