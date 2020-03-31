@@ -2,9 +2,25 @@
 
 # Letter regarding ISAMUX / NS
 
-This is a quick overview of the changes that we are proposing to the PowerPC  
-instruction set. 
-  
+This is a quick overview of the way that we would like to add changes
+that we are proposing to the PowerPC instruction set.  It is based on
+a Open Standardisation of the way that existing "mode switches",
+already found in the POWER instruction set, are added:
+
+* FPSCR's "NI" bit, setting non-IEEE754 FP mode
+* MSR's "LE" bit (and associated HILE bit), setting little-endian mode
+* MSR's "SF" bit, setting either 32-bit or 64-bit mode
+
+All of these are set by one instruction, that, once set, radically
+changes the entire behaviour and characteristics of subsequent instructions.
+
+With these (and other) long-established precedents already in POWER,
+there is therefore essentially conceptually nothing new about what we
+propose: we simply seek that the process by which such "switching" is
+added is formalised and standardised, such that we (and others) have
+a clear, standards-non-disruptive, atomic and non-intrusive path to
+extend the POWER ISA.
+
 ## Overview  
 
 The PowerPC Instruction Set Architecture (ISA) is an abstract model of a 
