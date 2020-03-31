@@ -21,48 +21,48 @@ added is formalised and standardised, such that we (and others) have
 a clear, standards-non-disruptive, atomic and non-intrusive path to
 extend the POWER ISA.
 
-## Overview  
+## Overview
 
-The PowerPC Instruction Set Architecture (ISA) is an abstract model of a 
+The PowerPC Instruction Set Architecture (ISA) is an abstract model of a
 computer. This is what programmers use when they write programs for the machine,
-even if indirectly via a compiler for a high level language. We must be  
-conservative in how we add to the ISA to:  
-  
-* not break existing programs	 
+even if indirectly via a compiler for a high level language. We must be
+conservative in how we add to the ISA to:
+
+* not break existing programs	
 * be mindful as to how others may wish to add to the ISA in the future
-  
-This document describes our strategy. 
-  
-  
-## ISA modes and escape sequences  
-  
-New chips usually need to be able to run older (legacy) software that is  
-incompatible with the latest and greatest ISA. Eg: 64 bit chip must be able to  
+
+This document describes our strategy.
+
+
+## ISA modes and escape sequences
+
+New chips usually need to be able to run older (legacy) software that is
+incompatible with the latest and greatest ISA. Eg: 64 bit chip must be able to
 run older 16 bit and 32 bit software.
-  
-To enable backwards compatability the CPU will be set into 'legacy' mode. This  
-is done with an ISA Mode switch, also known as ISA Muxing or ISA Namespaces. 
 
-The operating system is able to quickly change between 'modern' ISA mode and 
-various legacy modes. 
-  
-Another technique is an ISA escape-sequence. This is a type of mode that is  
+To enable backwards compatability the CPU will be set into 'legacy' mode. This
+is done with an ISA Mode switch, also known as ISA Muxing or ISA Namespaces.
+
+The operating system is able to quickly change between 'modern' ISA mode and
+various legacy modes.
+
+Another technique is an ISA escape-sequence. This is a type of mode that is
 only operational for a short time, unlike 32 or 64 bit which would be for the
-entire run of a program. 
+entire run of a program.
 
-  
+
 ## What are we adding to the ISA
-  
-When high quality graphical display were developed the CPUs at the time were 
-shown to not be able to run the display fast enough. The solution was the use of 
+
+When high quality graphical display were developed the CPUs at the time were
+shown to not be able to run the display fast enough. The solution was the use of
 Graphics cards, these are specialised computers that are good at rendering
 pixels; often by doing the same thing in different parts of the screen at the
 same time (in parallel). These specialised computers are called Graphical
-Processing Units (GPUs). 
-  
+Processing Units (GPUs).
+
 The parallelism of some GPUs is thousands. This has led to GPUs being used to
 solve non graphical problems where high parallelism is useful.
-  
+
 **break**
 
 # Letter regarding ISAMUX / NS
