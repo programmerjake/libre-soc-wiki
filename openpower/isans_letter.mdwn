@@ -21,6 +21,27 @@ added is formalised and standardised, such that we (and others) have
 a clear, standards-non-disruptive, atomic and non-intrusive path to
 extend the POWER ISA.
 
+# Summary of Libre-SOC Project
+
+TODO brief summary of Libre-SOC project (hybrid CPU-GPU-VPU), thereby
+helping explain exactly why we need extensive augmentation of POWER ISA.
+
+Basically it's because it is not a separate GPU-VPU, it's an *actual*
+CPU-GPU-VPU.  No separate GPU, because the CPU *is* the GPU.  No separate
+VPU, because the CPU *is* the GPU.  There is not even a separate "pipeline":
+the CPU pipelines *are* the GPU and VPU pipelines.
+
+Closest equivalents include the ARC core (which has VPU extensions and
+3D extensions in the form of Broadcom's VideoCore IV) and the ICubeCorp
+IC3128.  Both are considered "hybrid" CPU-GPU-VPU processors.
+
+With the project being Libre - not proprietary and secretive and never
+to be published, ever - it is no good having the extensions as "custom"
+because "custom" is specifically for the cases where the augmented
+toolchain is never, under any circumstances, published and made public by
+the proprietary company.  For business commercial reasons, Libre-SOC is
+the total opposite of this proprietary, secretive approach.
+
 ## Overview
 
 The PowerPC Instruction Set Architecture (ISA) is an abstract model of a
