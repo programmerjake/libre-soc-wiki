@@ -1,5 +1,7 @@
 # Load String Word Immediate
 
+X-Form
+
 * lswi RT,RA,NB
 
     if RA = 0 then EA <- 0
@@ -18,7 +20,12 @@
         EA <- EA + 1
         n <- n - 1
 
+Special Registers Altered:
+    None
+
 # Load String Word Indexed
+
+X-Form
 
 * lswx RT,RA,RB
 
@@ -40,7 +47,12 @@
         EA <-  EA + 1
         n <- n - 1
 
+Special Registers Altered:
+    None
+
 # Store String Word Immediate
+
+X-Form
 
 * stswi RS,RA,NB
 
@@ -58,7 +70,12 @@
       EA <-  EA + 1
       n <- n - 1
 
+Special Registers Altered:
+    None
+
 # Store String Word Indexed
+
+X-Form
 
 * stswx RS,RA,RB
 
@@ -75,4 +92,7 @@
       if i = 64 then i <- 32
       EA <-  EA + 1
       n <- n - 1
+
+Special Registers Altered:
+    None
 
