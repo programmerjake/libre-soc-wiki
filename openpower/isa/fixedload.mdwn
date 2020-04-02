@@ -9,6 +9,9 @@ D-Form
     EA <- b + EXTS(D)
     RT <- [0]*56 || MEM(EA, 1)
 
+Special Registers Altered:
+    None
+
 # Load Byte and Zero Indexed
 
 X-Form
@@ -20,6 +23,9 @@ X-Form
     EA <- b + (RB)
     RT <- [0] * 56 || MEM(EA, 1)
 
+Special Registers Altered:
+    None
+
 # Load Byte and Zero with Update
 
 D-Form
@@ -30,6 +36,9 @@ D-Form
     RT <- [0] * 56 || MEM(EA, 1)
     RA <- EA
 
+Special Registers Altered:
+    None
+
 # Load Byte and Zero with Update Indexed
 
 X-Form
@@ -39,6 +48,9 @@ X-Form
     EA <- (RA) + (RB)
     RT <- [0] * 56 || MEM(EA, 1)
     RA <- EA
+
+Special Registers Altered:
+    None
 
 # Load Halfword and Zero
 
@@ -51,6 +63,9 @@ D-Form
     EA <- b + EXTS(D)
     RT <- [0] * 48 || MEM(EA, 2)
 
+Special Registers Altered:
+    None
+
 # Load Halfword and Zero Indexed
 
 X-Form
@@ -62,6 +77,9 @@ X-Form
     EA <- b + (RB)
     RT <- [0] * 48 || MEM(EA, 2)
 
+Special Registers Altered:
+    None
+
 # Load Halfword and Zero with Update
 
 D-Form
@@ -72,6 +90,9 @@ D-Form
     RT <- [0] * 48 || MEM(EA, 2)
     RA <- EA
 
+Special Registers Altered:
+    None
+
 # Load Halfword and Zero with Update Indexed
 
 X-Form
@@ -81,6 +102,9 @@ X-Form
     EA <- (RA) + (RB)
     RT <- [0] * 48 || MEM(EA, 2)
     RA <- EA
+
+Special Registers Altered:
+    None
 
 # Load Halfword Algebraic
 
@@ -93,6 +117,9 @@ D-Form
     EA <- b + EXTS(D)
     RT <- EXTS(MEM(EA, 2))
 
+Special Registers Altered:
+    None
+
 # Load Halfword Algebraic Indexed
 
 X-form
@@ -104,6 +131,9 @@ X-form
     EA <- b + (RB)
     RT <- EXTS(MEM(EA, 2))
 
+Special Registers Altered:
+    None
+
 # Load Halfword Algebraic with Update
 
 D-Form
@@ -114,6 +144,9 @@ D-Form
     RT <- EXTS(MEM(EA, 2))
     RA <- EA
 
+Special Registers Altered:
+    None
+
 # Load Halfword Algebraic with Update Indexed
 
 X-form
@@ -123,6 +156,9 @@ X-form
     EA <- (RA) + (RB)
     RT <- EXTS(MEM(EA, 2))
     RA <- EA
+
+Special Registers Altered:
+    None
 
 # Load Word and Zero
 
@@ -135,6 +171,9 @@ D-Form
     EA <- b + EXTS(D)
     RT <- [0] * 32 || MEM(EA, 4)
 
+Special Registers Altered:
+    None
+
 # Load Word and Zero Indexed
 
 X-form
@@ -146,6 +185,9 @@ X-form
     EA <- b + (RB)
     RT <- [0] * 32 || MEM(EA, 4)
 
+Special Registers Altered:
+    None
+
 # Load Word and Zero with Update
 
 D-Form
@@ -156,6 +198,9 @@ D-Form
     RT <- [0]*32 || MEM(EA, 4)
     RA <- EA
 
+Special Registers Altered:
+    None
+
 # Load Word and Zero with Update Indexed
 
 X-form
@@ -165,6 +210,9 @@ X-form
     EA <- (RA) + (RB)
     RT <- [0] * 32 || MEM(EA, 4)
     RA <- EA
+
+Special Registers Altered:
+    None
 
 # Load Word Algebraic
 
@@ -177,6 +225,9 @@ D-Form
     EA <- b + EXTS(DS || 0b00)
     RT <- EXTS(MEM(EA, 4))
 
+Special Registers Altered:
+    None
+
 # Load Word Algebraic Indexed
 
 X-form
@@ -188,6 +239,9 @@ X-form
     EA <- b + (RB)
     RT <- EXTS(MEM(EA, 4))
 
+Special Registers Altered:
+    None
+
 # Load Word Algebraic with Update Indexed
 
 X-form
@@ -197,6 +251,9 @@ X-form
     EA <- (RA) + (RB)
     RT <- EXTS(MEM(EA, 4))
     RA <- EA
+
+Special Registers Altered:
+    None
 
 # Load Doubleword
 
@@ -209,6 +266,9 @@ DS-Form
     EA <- b + EXTS(DS || 0b00)
     RT <- MEM(EA, 8)
 
+Special Registers Altered:
+    None
+
 # Load Doubleword Indexed
 
 X-form
@@ -220,6 +280,9 @@ X-form
     EA <- b + (RB)
     RT <- MEM(EA, 8)
 
+Special Registers Altered:
+    None
+
 # Load Doubleword with Update Indexed
 
 DS-Form
@@ -229,6 +292,9 @@ DS-Form
     EA <- (RA) + EXTS(DS || 0b00)
     RT <- MEM(EA, 8)
     RA <- EA
+
+Special Registers Altered:
+    None
 
 # Load Doubleword with Update Indexed
 
@@ -240,6 +306,9 @@ X-form
     RT <- MEM(EA, 8)
     RA <- EA
 
+Special Registers Altered:
+    None
+
 # Load Quadword
 
 DQ-Form
@@ -250,6 +319,9 @@ DQ-Form
     else           b <-  (RA)
     EA <- b + EXTS(DQ || 0b0000)
     RTp <- MEM(EA, 16)
+
+Special Registers Altered:
+    None
 
 # Load Halfword Byte-Reverse Indexed
 
@@ -263,6 +335,9 @@ X-form
     load_data <- MEM(EA, 2)
     RT <- [0]*48 || load_data[8:15] || load_data[0:7]
 
+Special Registers Altered:
+    None
+
 # Load Word Byte-Reverse Indexed
 
 X-form
@@ -275,6 +350,9 @@ X-form
     load_data <- MEM(EA, 4)
     RT <- [0] * 32 || load_data[24:31] || load_data[16:23]
              || load_data[8:15] || load_data[0:7]
+
+Special Registers Altered:
+    None
 
 # Load Doubleword Byte-Reverse Indexed
 
@@ -290,6 +368,9 @@ X-form
     || load_data[40:47 || load_data[32:39]
     || load_data[24:31 || load_data[16:23]
     || load_data[8:15  || load_data[0:7]
+
+Special Registers Altered:
+    None
 
 # Load Multiple Word
 
