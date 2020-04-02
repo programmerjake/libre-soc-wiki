@@ -103,13 +103,13 @@ X-Form
 
     src1 <- GPR[RA].bit[56:63]
     match <- (src1 = (RB)[00:07]) |
-    match <- (src1 = (RB)[08:15]) |
-    match <- (src1 = (RB)[16:23]) |
-    match <- (src1 = (RB)[24:31]) |
-    match <- (src1 = (RB)[32:39]) |
-    match <- (src1 = (RB)[40:47]) |
-    match <- (src1 = (RB)[48:55]) |
-    match <- (src1 = (RB)[56:63])
+             (src1 = (RB)[08:15]) |
+             (src1 = (RB)[16:23]) |
+             (src1 = (RB)[24:31]) |
+             (src1 = (RB)[32:39]) |
+             (src1 = (RB)[40:47]) |
+             (src1 = (RB)[48:55]) |
+             (src1 = (RB)[56:63])
     CR[4×BF+32] <- 0b0
     CR[4×BF+33] <- match
     CR[4×BF+34] <- 0b0
