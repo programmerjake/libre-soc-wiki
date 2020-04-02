@@ -1,5 +1,7 @@
 # Compare Immediate
 
+D-Form
+
 cmpi BF,L,RA,SI
 
     if L = 0 then a <-  EXTS((RA)[32:63])
@@ -9,7 +11,12 @@ cmpi BF,L,RA,SI
     else                      c <- 0b001
     CR[4*BF+32:4*BF+35] <- c || XER[SO]
 
+Special Registers Altered:
+    CR field BF
+
 # Compare
+
+X-Form
 
 cmp BF,L,RA,RB
 
@@ -22,7 +29,12 @@ cmp BF,L,RA,RB
     else               c <-  0b001
     CR[4*BF+32:4*BF+35] <-  c || XER[SO]
 
+Special Registers Altered:
+    CR field BF
+
 # Compare Logical Immediate
+
+D-Form
 
 cmpli BF,L,RA,UI
 
@@ -35,6 +47,8 @@ cmpli BF,L,RA,UI
 
 # Compare Logical
 
+X-Form
+
 cmpl BF,L,RA,RB
 
     if L = 0 then a <- [0]*32 || (RA)[32:63]
@@ -46,7 +60,12 @@ cmpl BF,L,RA,RB
     else                c <-  0b001
     CR[4*BF+32:4*BF+35] <- c || XER[SO]
 
-# Compare Ranged Byte X-form
+Special Registers Altered:
+    CR field BF
+
+# Compare Ranged Byte
+
+X-form
 
 cmprb BF,L,RA,RB
 
@@ -68,7 +87,12 @@ cmprb BF,L,RA,RB
     CR[4×BF+34] <- 0b0
     CR[4×BF+35] <- 0b0
 
-# Compare Equal Byte X-form
+Special Registers Altered:
+    CR field BF
+
+# Compare Equal Byte
+
+X-form
 
 cmpeqb BF,RA,RB
 
@@ -87,4 +111,7 @@ cmpeqb BF,RA,RB
     CR[4×BF+33] <- match
     CR[4×BF+34] <- 0b0
     CR[4×BF+35] <- 0b0
+
+Special Registers Altered:
+    CR field BF
 
