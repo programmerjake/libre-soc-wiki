@@ -15,6 +15,7 @@ XFX-Form
           SPR(n) <- (RS) [32:63]
 
 Special Registers Altered:
+
     See spec 3.3.17
 
 # Move From Special Purpose Register 
@@ -34,6 +35,7 @@ XFX-Form
           RT <- [0]*32 || SPR(n)
 
 Special Registers Altered:
+
     None
 
 # Move to CR from XER Extended
@@ -45,6 +47,7 @@ X-Form
     CR[4×BF+32:4×BF+35] <-  XER[OV] || XER[OV32] || XER[CA] || XER[CA32]
 
 Special Registers Altered:
+
     CR field BF
 
 # Move To One Condition Register Field
@@ -63,6 +66,7 @@ XFX-Form
     else CR <- undefined
 
 Special Registers Altered:
+
     CR field selected by FXM
 
 # Move To Condition Register Fields
@@ -75,6 +79,7 @@ XFX-Form
     CR <- ((RS)[32:63] & mask) | (CR & ¬mask)
 
 Special Registers Altered:
+
     CR fields selected by mask
 
 # Move From One Condition Register Field 
@@ -94,6 +99,7 @@ XFX-Form
     RT[4 *n+32:4*n+35] <- CR[4*n+32:4* n+35]
 
 Special Registers Altered:
+
     None
 
 # Move From Condition Register  
@@ -105,6 +111,7 @@ XFX-Form
     RT <- [0]*32 || CR
 
 Special Registers Altered:
+
     None
 
 # Set Boolean 
@@ -121,5 +128,6 @@ X-Form
        RT <-  0x0000_0000_0000_0000
 
 Special Registers Altered:
+
     None
 
