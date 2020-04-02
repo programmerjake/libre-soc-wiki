@@ -56,6 +56,11 @@ XL-Form
     if ctr_ok & cond_ok then NIA <- iea LR[0:61] || 0b00
     if LK then LR <-iea CIA + 4
 
+Special Registers Altered:
+
+    CTR                    (if BO2=0)
+    LR                       (if LK=1)
+
 # Branch Conditional to Count Register
 
 XL-Form
