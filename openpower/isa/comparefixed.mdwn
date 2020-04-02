@@ -5,7 +5,7 @@ D-Form
 * cmpi BF,L,RA,SI
 
     if L = 0 then a <-  EXTS((RA)[32:63])
-             else a <-  (RA)
+    else a <-  (RA)
     if      a < EXTS(SI) then c <- 0b100
     else if a > EXTS(SI) then c <- 0b010
     else                      c <- 0b001
@@ -21,10 +21,12 @@ X-Form
 
 * cmp BF,L,RA,RB
 
-    if L = 0 then a <-  EXTS((RA)[32:63] )
-                    b <- EXTS((RB)[32:63])
-               else a <- (RA)
-                    b <- (RB)
+    if L = 0 then
+        a <-  EXTS((RA)[32:63] )
+        b <- EXTS((RB)[32:63])
+    else
+        a <- (RA)
+        b <- (RB)
     if      a < b then c <-  0b100
     else if a > b then c <-  0b010
     else               c <-  0b001
@@ -41,7 +43,7 @@ D-Form
 * cmpli BF,L,RA,UI
 
     if L = 0 then a <- [0]*32 || (RA)[32:63]
-             else a <- (RA)
+    else a <- (RA)
     if      a <u ( [0]*48 || UI) then c <- 0b100
     else if a >u ( [0]*48 || UI) then c <- 0b010
     else                         c <- 0b001
@@ -57,10 +59,12 @@ X-Form
 
 * cmpl BF,L,RA,RB
 
-    if L = 0 then a <- [0]*32 || (RA)[32:63]
-                  b <- [0]*32 || (RB)[32:63]
-             else a <-  (RA)
-                  b <-  (RB)
+    if L = 0 then
+        a <- [0]*32 || (RA)[32:63]
+        b <- [0]*32 || (RB)[32:63]
+    else
+        a <-  (RA)
+        b <-  (RB)
     if      a <u b then c <- 0b100
     else if a >u b then c <- 0b010
     else                c <-  0b001
