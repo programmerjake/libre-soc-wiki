@@ -1,54 +1,96 @@
 # Condition Register AND
 
+XL-Form
+
 crand BT,BA,BB
 
     CR[BT+32] <-  CR[BA+32] & CR[BB+32]
 
+Special Registers Altered:
+    CR[BT+32]
+
 # Condition Register NAND
 
-crnand BT,BA,BB
+XL-Form
+
+* crnand BT,BA,BB
 
     CR[BT+32] <- ¬(CR[BA+32] & CR[BB+32])
 
+Special Registers Altered:
+    CR[BT+32]
+
 # Condition Register OR
 
-cror BT,BA,BB
+XL-Form
+
+* cror BT,BA,BB
 
     CR[BT+32] <-  CR[BA+32] | CR[BB+32]
 
+Special Registers Altered:
+    CR[BT+32]
+
 # Condition Register XOR
 
-crxor     BT,BA,BB
+XL-Form
+
+* crxor     BT,BA,BB
 
     CR[BT+32] <- CR[BA+32] ^ CR[BB+32]
 
+Special Registers Altered:
+    CR[BT+32]
+
 # Condition Register NOR
 
-crnor BT,BA,BB
+XL-Form
+
+* crnor BT,BA,BB
 
     CR[BT+32] <- ¬(CR[BA+32] | CR[BB+32])
 
+Special Registers Altered:
+    CR[BT+32]
+
 # Condition Register Equivalent
 
-creqv BT,BA,BB
+XL-Form
+
+* creqv BT,BA,BB
 
     CR[BT+32] <- CR[BA+32] => CR[BB+32]
 
+Special Registers Altered:
+    CR[BT+32]
+
 # Condition Register AND with Complement 
 
-crandc BT,BA,BB
+XL-Form
+
+* crandc BT,BA,BB
 
     CR[BT+32] <- CR[BA+32] &  ¬CR[BB+32]
 
+Special Registers Altered:
+    CR[BT+32]
+
 # Condition Register OR with Complement
 
-crorc BT,BA,BB
+XL-Form
+
+* crorc BT,BA,BB
 
     CR[BT+32] <- CR[BA+32] |  ¬CR[BB+32]
 
 # Move Condition Register Field
 
-mcrf BF,BFA
+XL-Form
+
+* mcrf BF,BFA
 
     CR[4*BF+32:4*BF+35] <- CR[4*BFA+32:4*BFA+35]
+
+Special Registers Altered:
+    CR field BF
 
