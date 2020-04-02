@@ -1,17 +1,24 @@
 # Trap Word Immediate
 
-twi TO,RA,SI
+D-Form
+
+* twi TO,RA,SI
 
     a <- EXTS((RA)[32:63])
     if (a < EXTS(SI)) & TO[0]  then TRAP
     if (a > EXTS(SI)) & TO[1]  then TRAP
     if (a = EXTS(SI)) & TO[2]  then TRAP
-    if (a <u EXTS(SI)) & TO 3 then TRAP
-    if (a >u EXTS(SI)) & TO 4 then TRAP
+    if (a <u EXTS(SI)) & TO[3] then TRAP
+    if (a >u EXTS(SI)) & TO[4] then TRAP
+
+Special Registers Altered:
+    None
 
 # Trap Word 
 
-tw TO,RA,RB
+X-Form
+
+* tw TO,RA,RB
 
     a <- EXTS((RA)[32:63])
     b <- EXTS((RB)[32:63])
@@ -21,9 +28,14 @@ tw TO,RA,RB
     if (a <u b) & TO[3] then TRAP
     if (a >u b) & TO[4] then TRAP
 
+Special Registers Altered:
+    None
+
+D-Form
+
 # Trap Doubleword Immediate 
 
-tdi TO,RA,SI
+* tdi TO,RA,SI
 
     a <- (RA)
     b <- EXTS(SI)
@@ -33,9 +45,14 @@ tdi TO,RA,SI
     if (a <u  b) & TO[3] then TRAP
     if (a >u  b) & TO[4]  then TRAP
 
+Special Registers Altered:
+    None
+
 # Trap Doubleword 
 
-td TO,RA,RB
+X-Form
+
+* td TO,RA,RB
 
     a <- (RA)
     b <- (RB)
@@ -45,11 +62,19 @@ td TO,RA,RB
     if (a <u b) & TO[3] then TRAP
     if (a >u b) & TO[4]  then TRAP
 
+Special Registers Altered:
+    None
+
 # Integer Select
 
-isel RT,RA,RB,BC
+A-Form
+
+* isel RT,RA,RB,BC
 
     if RA=0 then a <-0 else a <-  (RA)
     if CR[BC+32]=1 then RT <- a
     else           RT <- (RB)
+
+Special Registers Altered:
+    None
 
