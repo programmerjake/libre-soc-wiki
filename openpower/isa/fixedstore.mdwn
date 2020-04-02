@@ -9,6 +9,9 @@ D-Form
     EA <- b + EXTS(D)
     MEM(EA, 1) <- (RS)[56:63]
 
+Special Registers Altered:
+    None
+
 # Store Byte Indexed
 
 X-Form
@@ -20,6 +23,9 @@ X-Form
     EA <- b + (RB)
     MEM(EA, 1) <- (RS)[56:63]
 
+Special Registers Altered:
+    None
+
 # Store Byte with Update
 
 D-Form
@@ -30,6 +36,9 @@ D-Form
     MEM(EA, 1) <- (RS)[56:63]
     RA <- EA
 
+Special Registers Altered:
+    None
+
 # Store Byte with Update Indexed
 
 X-Form
@@ -39,6 +48,10 @@ X-Form
     EA <- (RA) + (RB)
     MEM(EA, 1) <- (RS)[56:63]
     RA <- EA
+
+Special Registers Altered:
+    None
+
 # Store Halfword
 
 D-Form
@@ -49,6 +62,9 @@ D-Form
     else           b <-  (RA)
     EA <- b + EXTS(D)
     MEM(EA, 2) <- (RS)[48:63]
+
+Special Registers Altered:
+    None
 
 # Store Halfword Indexed
 
@@ -61,6 +77,9 @@ X-Form
     EA <- b + (RB)
     MEM(EA, 2) <- (RS)[48:63]
 
+Special Registers Altered:
+    None
+
 # Store Halfword with Update
 
 D-Form
@@ -71,6 +90,9 @@ D-Form
     MEM(EA, 2) <- (RS)[48:63]
     RA <- EA
 
+Special Registers Altered:
+    None
+
 # Store Halfword with Update Indexed
 
 X-Form
@@ -80,6 +102,9 @@ X-Form
     EA <- (RA) + (RB)
     MEM(EA, 2) <- (RS)[48:63]
     RA <- EA
+
+Special Registers Altered:
+    None
 
 # Store Word
 
@@ -92,6 +117,9 @@ D-Form
     EA <- b + EXTS(D)
     MEM(EA, 4) <- (RS)[32:63]
 
+Special Registers Altered:
+    None
+
 # Store Word Indexed
 
 X-Form
@@ -103,6 +131,9 @@ X-Form
     EA <- b + (RB)
     MEM(EA, 4) <- (RS)[32:63]
 
+Special Registers Altered:
+    None
+
 # Store Word with Update
 
 D-Form
@@ -113,6 +144,9 @@ D-Form
     MEM(EA, 4) <- (RS) 32:63
     RA <- EA
 
+Special Registers Altered:
+    None
+
 # Store Word with Update Indexed
 
 X-Form
@@ -122,6 +156,9 @@ X-Form
     EA <- (RA) + (RB)
     MEM(EA, 4) <- (RS) 32:63
     RA <- EA
+
+Special Registers Altered:
+    None
 
 # Store Doubleword
 
@@ -134,6 +171,9 @@ DS-Form
     EA <- b + EXTS(DS || 0b00)
     MEM(EA, 8) <- (RS)
 
+Special Registers Altered:
+    None
+
 # Store Doubleword Indexed
 
 X-Form
@@ -145,6 +185,9 @@ X-Form
     EA <- b + (RB)
     MEM(EA, 8) <- (RS)
 
+Special Registers Altered:
+    None
+
 # Store Doubleword with Update
 
 DS-Form
@@ -155,6 +198,9 @@ EA <- (RA) + EXTS(DS || 0b00)
 MEM(EA, 8) <- (RS)
 RA <- EA
 
+Special Registers Altered:
+    None
+
 # Store Doubleword with Update Indexed
 
 X-Form
@@ -164,6 +210,9 @@ X-Form
     EA <- (RA) + (RB)
     MEM(EA, 8) <- (RS)
     RA <- EA
+
+Special Registers Altered:
+    None
 
 # Store Quadword
 
@@ -176,6 +225,9 @@ DS-Form
     EA <- b + EXTS(DS || 0b00)
     MEM(EA, 16) <- RSp
 
+Special Registers Altered:
+    None
+
 # Store Halfword Byte-Reverse Indexed
 
 X-Form
@@ -186,6 +238,9 @@ X-Form
     else           b <- (RA)
     EA <- b + (RB)
     MEM(EA, 2) <- (RS) [56:63] || (RS)[48:55]
+
+Special Registers Altered:
+    None
 
 # Store Word Byte-Reverse Indexed
 
@@ -198,6 +253,9 @@ X-Form
     EA <- b + (RB)
     MEM(EA, 4) <- (RS)[56:63] || (RS)[48:55] || (RS)[40:47]
                    ||(RS)[32:39]
+
+Special Registers Altered:
+    None
 
 # Store Doubleword Byte-Reverse Indexed
 
@@ -212,6 +270,9 @@ X-Form
     || (RS)[40:47] || (RS)[32:39]
     || (RS)[24:31] || (RS)[16:23]
     || (RS)[8:15]  || (RS)[0:7]
+
+Special Registers Altered:
+    None
 
 # Store Multiple Word
 
@@ -228,4 +289,6 @@ D-Form
         r <-  r + 1
         EA <-  EA + 4
 
+Special Registers Altered:
+    None
 
