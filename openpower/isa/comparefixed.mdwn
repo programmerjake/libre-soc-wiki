@@ -89,7 +89,7 @@ X-Form
        in_range <-  (src22lo  <= src1) & (src1 <=  src22hi)
     else
        in_range <- ((src21lo  <= src1) & (src1 <=  src21hi)) |
-       in_range <- ((src22lo  <= src1) & (src1 <=  src22hi))
+                   ((src22lo  <= src1) & (src1 <=  src22hi))
     CR[4×BF+32] <- 0b0
     CR[4×BF+33] <- in_range
     CR[4×BF+34] <- 0b0
