@@ -68,7 +68,7 @@ XL-Form
 * bcctr BO,BI,BH (LK=0)
 * bcctrl BO,BI,BH (LK=1)
 
-    cond_ok <- BO[0] | (CR[BI+32] => BO[1])
+    cond_ok <- BO[0] | ¬(CR[BI+32] ^ BO[1])
     if cond_ok then NIA <-iea CTR[0:61] || 0b00
     if LK then LR <-iea CIA + 4
 
