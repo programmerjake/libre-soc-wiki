@@ -24,9 +24,8 @@ B-Form
 * bcl BO,BI,target_addr (AA=0 LK=1)
 * bcla BO,BI,target_addr (AA=1 LK=1)
 
-    if (mode_is_64bit)
-      then M <- 0
-      else M <- 32
+    if (mode_is_64bit) then M <- 0
+    else M <- 32
     if ¬BO[2] then CTR <- CTR - 1
     ctr_ok <- BO[2] | ((CTR[M:63] != 0) ^ BO[3])
     cond_ok <- BO[0] | ¬(CRBI+32 ^ BO[1])
@@ -47,9 +46,8 @@ XL-Form
 * bclr BO,BI,BH (LK=0)
 * bclrl BO,BI,BH (LK=1)
 
-    if (mode_is_64bit)
-      then M <- 0
-      else M <- 32
+    if (mode_is_64bit) then M <- 0
+    else M <- 32
     if ¬BO[2]  then CTR <- CTR - 1
     ctr_ok <- BO[2] | ((CTR[M:63] != 0) ^ BO[3]
     cond_ok <- BO[0] | ¬(CR[BI+32] ^  BO[1])
@@ -83,9 +81,8 @@ XL-Form
 * bctar BO,BI,BH (LK=0)
 * bctarl BO,BI,BH (LK=1)
 
-    if (mode_is_64bit)
-      then M <- 0
-      else M <- 32
+    if (mode_is_64bit) then M <- 0
+    else M <- 32
     if ¬BO[2] then CTR <- CTR - 1
     ctr_ok <- BO[2]  | ((CTR[M:63] != 0) ^ BO[3]
     cond_ok <- BO[0] | ¬(CR[BI+32] ^ BO[1])
