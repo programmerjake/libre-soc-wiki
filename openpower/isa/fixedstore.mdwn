@@ -145,7 +145,7 @@ D-Form
 * stwu RS,D(RA)
 
     EA <- (RA) + EXTS(D)
-    MEM(EA, 4) <- (RS) 32:63
+    MEM(EA, 4) <- (RS)[32:63]
     RA <- EA
 
 Special Registers Altered:
@@ -159,7 +159,7 @@ X-Form
 * stwux RS,RA,RB
 
     EA <- (RA) + (RB)
-    MEM(EA, 4) <- (RS) 32:63
+    MEM(EA, 4) <- (RS)[32:63]
     RA <- EA
 
 Special Registers Altered:
