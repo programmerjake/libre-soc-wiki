@@ -4,8 +4,7 @@ D-Form
 
 * stb RS,D(RA)
 
-    if RA = 0 then b <-  0
-    else           b <-  (RA)
+    b <- (RA|0)
     EA <- b + EXTS(D)
     MEM(EA, 1) <- (RS)[56:63]
 
@@ -19,8 +18,7 @@ X-Form
 
 * stbx RS,RA,RB
 
-    if RA = 0 then b <- 0
-    else           b <- (RA)
+    b <- (RA|0)
     EA <- b + (RB)
     MEM(EA, 1) <- (RS)[56:63]
 
@@ -62,8 +60,7 @@ D-Form
 
 * sth RS,D(RA)
 
-    if RA = 0 then b <-  0
-    else           b <-  (RA)
+    b <- (RA|0)
     EA <- b + EXTS(D)
     MEM(EA, 2) <- (RS)[48:63]
 
@@ -77,8 +74,7 @@ X-Form
 
 * sthx RS,RA,RB
 
-    if RA = 0 then b <- 0
-    else           b <- (RA)
+    b <- (RA|0)
     EA <- b + (RB)
     MEM(EA, 2) <- (RS)[48:63]
 
@@ -120,8 +116,7 @@ D-Form
 
 * stw RS,D(RA)
 
-    if RA = 0 then b <-  0
-    else           b <-  (RA)
+    b <- (RA|0)
     EA <- b + EXTS(D)
     MEM(EA, 4) <- (RS)[32:63]
 
@@ -135,8 +130,7 @@ X-Form
 
 * stwx RS,RA,RB
 
-    if RA = 0 then b <- 0
-    else           b <- (RA)
+    b <- (RA|0)
     EA <- b + (RB)
     MEM(EA, 4) <- (RS)[32:63]
 
@@ -178,8 +172,7 @@ DS-Form
 
 * std RS,DS(RA)
 
-    if RA = 0 then b <-  0
-    else           b <-  (RA)
+    b <- (RA|0)
     EA <- b + EXTS(DS || 0b00)
     MEM(EA, 8) <- (RS)
 
@@ -193,8 +186,7 @@ X-Form
 
 * stdx RS,RA,RB
 
-    if RA = 0 then b <- 0
-    else           b <- (RA)
+    b <- (RA|0)
     EA <- b + (RB)
     MEM(EA, 8) <- (RS)
 
@@ -236,8 +228,7 @@ DS-Form
 
 * stq RSp,DS(RA)
 
-    if RA = 0 then b <-  0
-    else           b <-  (RA)
+    b <- (RA|0)
     EA <- b + EXTS(DS || 0b00)
     MEM(EA, 16) <- RSp
 
@@ -251,8 +242,7 @@ X-Form
 
 * sthbrx RS,RA,RB
 
-    if RA = 0 then b <- 0
-    else           b <- (RA)
+    b <- (RA|0)
     EA <- b + (RB)
     MEM(EA, 2) <- (RS) [56:63] || (RS)[48:55]
 
@@ -266,8 +256,7 @@ X-Form
 
 * stwbrx RS,RA,RB
 
-    if RA = 0 then b <- 0
-    else           b <- (RA)
+    b <- (RA|0)
     EA <- b + (RB)
     MEM(EA, 4) <- (RS)[56:63] || (RS)[48:55] || (RS)[40:47]
                    ||(RS)[32:39]
@@ -282,8 +271,7 @@ X-Form
 
 * stdbrx RS,RA,RB
 
-    if RA = 0 then b <- 0
-    else           b <- (RA)
+    b <- (RA|0)
     EA <- b + (RB)
     MEM(EA, 8) <- (RS) [56:63] || (RS)48:55]
     || (RS)[40:47] || (RS)[32:39]
@@ -300,8 +288,7 @@ D-Form
 
 * stmw RS,D(RA)
 
-    if RA = 0 then b <- 0
-    else           b <- (RA)
+    b <- (RA|0)
     EA <- b + EXTS(D)
     r <- RS
     do while r <= 31
