@@ -158,7 +158,7 @@ X-Form
 
     n <- (RB)[59:63]
     r <- ROTL32((RS)[32:63], n)
-    if (RB)58 = 0 then
+    if (RB)[58] = 0 then
          m <- MASK(32, 63-n)
     else m <- [0]*64
     RA <- r & m
@@ -176,7 +176,7 @@ X-Form
 
     n <- (RB)[59:63]
     r <- ROTL32((RS)[32:63], 64-n)
-    if (RB)58 = 0 then
+    if (RB)[58] = 0 then
         m <-  MASK(n+32, 63)
     else m <- [0]*64
     RA <- r & m
@@ -219,8 +219,8 @@ X-Form
         m <-  MASK(n+32, 63)
     else m <- [0]*64
     s <- (RS)[32]
-    RA <- r&m | ([s]*64)& m¬
-    carry <-  s & ((r&¬m)[32:63] !=0)
+    RA <- r&m | ([s]*64)& ¬m
+    carry <-  s & ((r&¬m)[32:63] != 0)
     CA    <-  carry
     CA32  <-  carry
 
@@ -295,12 +295,12 @@ X-Form
 
     n <- (RB)[58:63]
     r <- ROTL64((RS), 64-n)
-    if (RB)57 = 0 then
+    if (RB)[57] = 0 then
         m <-  MASK(n, 63)
     else m <- [0]*64
     s <- (RS)0
     RA <- r&m | ([s]*64)& ¬m
-    carry <-  s & ((r&¬m)!= 0)
+    carry <-  s & ((r&¬m) != 0)
     CA    <-  carry
     CA32  <-  carry
 
