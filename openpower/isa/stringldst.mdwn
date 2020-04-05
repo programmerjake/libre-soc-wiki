@@ -4,7 +4,7 @@ X-Form
 
 * lswi RT,RA,NB
 
-    b <- (RA|0)
+    EA <- (RA|0)
     if NB = 0 then n <-  32
     else           n <-  NB
     r <- RT - 1
@@ -55,7 +55,7 @@ X-Form
 
 * stswi RS,RA,NB
 
-    b <- (RA|0)
+    EA <- (RA|0)
     if NB = 0 then n <-  32
     else           n <-  NB
     r <- RS - 1
