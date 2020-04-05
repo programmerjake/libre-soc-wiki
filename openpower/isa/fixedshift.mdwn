@@ -298,7 +298,7 @@ X-Form
     if (RB)[57] = 0 then
         m <-  MASK(n, 63)
     else m <- [0]*64
-    s <- (RS)0
+    s <- (RS)[0]
     RA <- r&m | ([s]*64)& ¬m
     carry <-  s & ((r&¬m) != 0)
     CA    <-  carry
