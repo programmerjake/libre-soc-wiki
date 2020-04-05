@@ -4,8 +4,7 @@ X-Form
 
 * lswi RT,RA,NB
 
-    if RA = 0 then EA <- 0
-    else           EA <- (RA)
+    b <- (RA|0)
     if NB = 0 then n <-  32
     else           n <-  NB
     r <- RT - 1
@@ -30,8 +29,7 @@ X-Form
 
 * lswx RT,RA,RB
 
-    if RA = 0 then b <- 0
-    else           b <- (RA)
+    b <- (RA|0)
     EA <- b + (RB)
     n <- XER 57:63
     r <- RT - 1
@@ -39,7 +37,7 @@ X-Form
     RT <- undefined
     do while n > 0
         if i = 32 then
-            r <-  r + 1 (mod 32)
+            r <-  (r + 1) % 32
             GPR(r) <- 0
         GPR(r)[i:i+7] <- MEM(EA, 1)
         i <-  i + 8
@@ -57,8 +55,7 @@ X-Form
 
 * stswi RS,RA,NB
 
-    if RA = 0 then EA <- 0
-    else           EA <- (RA)
+    b <- (RA|0)
     if NB = 0 then n <-  32
     else           n <-  NB
     r <- RS - 1
@@ -81,8 +78,7 @@ X-Form
 
 * stswx RS,RA,RB
 
-    if RA = 0 then b <- 0
-    else           b <- (RA)
+    b <- (RA|0)
     EA <- b + (RB)
     n <- XER57:63
     r <- RS - 1
