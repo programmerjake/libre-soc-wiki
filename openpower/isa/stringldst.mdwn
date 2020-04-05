@@ -63,7 +63,7 @@ X-Form
     do while n > 0
       if i = 32 then r <-  (r + 1) % 32
       MEM(EA, 1) <-  GPR(r)[i:i+7]
-       i <-  i + 8
+      i <-  i + 8
       if i = 64 then i <-  32
       EA <-  EA + 1
       n <- n - 1
@@ -86,7 +86,7 @@ X-Form
     do while n > 0
       if i = 32 then r <- (r + 1) % 32
       MEM(EA, 1) <- GPR(r)[i:i+7]
-        i <-  i + 8
+      i <-  i + 8
       if i = 64 then i <- 32
       EA <-  EA + 1
       n <- n - 1
