@@ -67,7 +67,7 @@ XL-Form
 * rfid LEV
 
     MSR[51] <- (MSR[3] & SRR1[51]) | ((¬MSR[3] & MSR[51]))
-    MSR[3] <- MSR[3] & SRR1[3])
+    MSR[3] <- (MSR[3] & SRR1[3])
     if (MSR[29:31] != 0b010) | (SRR1[29:31] != 0b000) then
         MSR[29:31] <- SRR1[29:31]
     MSR[48] <- SRR1[48] | SRR1[49]
