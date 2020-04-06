@@ -6,10 +6,20 @@ up-to-date. Feel free to add more links here.
 
 [[!toc  ]]
 
+# Getting Started
+
+This section is primarily a series of useful links found online
+
+* [FSiC2019](https://wiki.f-si.org/index.php/FSiC2019)
+* Fundamentals to learn to get started [[3d_gpu/tutorial]]
+
+## Is Open Source Hardware Profitable?
+[RaptorCS on FOSS Hardware Interview](https://www.youtube.com/watch?v=o5Ihqg72T3c&feature=youtu.be)
+
 # OpenPOWER ISA
 
-* <https://openpowerfoundation.org/?resource_lib=power-isa-version-3-0>
-* <https://openpowerfoundation.org/?resource_lib=ibm-power-isa-version-2-07-b>
+* [3.0 PDF](https://openpowerfoundation.org/?resource_lib=power-isa-version-3-0)
+* [2.07 PDF](https://openpowerfoundation.org/?resource_lib=ibm-power-isa-version-2-07-b)
 
 # RISC-V Instruction Set Architecture
 
@@ -26,19 +36,25 @@ To fully take advantage of the RISC-V ecosystem, it is important to be
 compliant with the RISC-V standards. Doing so will allow us to to reuse
 most software as-is and avoid major forks.
 
-* Official compiled PDFs of RISC-V ISA Manual:
-  <https://github.com/riscv/riscv-isa-manual/releases/latest>
-* Working draft of the proposed RISC-V Bitmanipulation extension:
-  <https://github.com/riscv/riscv-bitmanip/blob/master/bitmanip-draft.pdf>
-* RISC-V "V" Vector Extension:
-  <https://riscv.github.io/documents/riscv-v-spec/>
+* [Official compiled PDFs of RISC-V ISA Manual]
+ (https://github.com/riscv/riscv-isa-manual/releases/latest)
+* [Working draft of the proposed RISC-V Bitmanipulation extension](https://github.com/riscv/riscv-bitmanip/blob/master/bitmanip-draft.pdf)
+* [RISC-V "V" Vector Extension](https://riscv.github.io/documents/riscv-v-spec/)
+* [RISC-V Supervisor Binary Interface Specification](https://github.com/riscv/riscv-sbi-doc/blob/master/riscv-sbi.md)
 
 Note: As far as I know, we aren't using the RISC-V V Extension directly
 at the moment. However, there are many wiki pages that make a reference
 to the V extension so it would be good to include it here as a reference
 for comparative/informative purposes with regard to Simple-V.
 
-# IEEE Standard for Floating-Point Arithmetic (IEEE 754)
+
+# RTL Arithmetic SQRT, FPU etc.
+
+## Sqrt
+* [Fast Floating Point Square Root](https://pdfs.semanticscholar.org/5060/4e9aff0e37089c4ab9a376c3f35761ffe28b.pdf)
+* [Reciprocal Square Root Algorithm](http://www.acsel-lab.com/arithmetic/arith15/papers/ARITH15_Takagi.pdf)
+
+## IEEE Standard for Floating-Point Arithmetic (IEEE 754)
 
 Almost all modern computers follow the IEEE Floating-Point Standard. Of
 course, we will follow it as well for interoperability.
@@ -62,28 +78,21 @@ Kazan driver.
 Thus the [[zfpacc_proposal]] has been created which permits runtime dynamic
 switching between different accuracy levels, in userspace applications.
 
-**SPIR-V Main Page <https://www.khronos.org/registry/spir-v/>**
+[**SPIR-V Main Page Link**](https://www.khronos.org/registry/spir-v/)
 
-* SPIR-V 1.5 Specification Revision 1:
-  <https://www.khronos.org/registry/spir-v/specs/unified1/SPIRV.html>
-* SPIR-V OpenCL Extended Instruction Set:
-  <https://www.khronos.org/registry/spir-v/specs/unified1/OpenCL.ExtendedInstructionSet.100.html>
-* SPIR-V GLSL Extended Instruction Set:
-  <https://www.khronos.org/registry/spir-v/specs/unified1/GLSL.std.450.html>
+* [SPIR-V 1.5 Specification Revision 1](https://www.khronos.org/registry/spir-v/specs/unified1/SPIRV.html)
+* [SPIR-V OpenCL Extended Instruction Set](https://www.khronos.org/registry/spir-v/specs/unified1/OpenCL.ExtendedInstructionSet.100.html)
+* [SPIR-V GLSL Extended Instruction Set](https://www.khronos.org/registry/spir-v/specs/unified1/GLSL.std.450.html)
 
-**Vulkan Main Page <https://www.khronos.org/registry/vulkan/>**
+[**Vulkan Main Page Link**](https://www.khronos.org/registry/vulkan/)
 
-* Vulkan 1.1.122:
-  <https://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/index.html>
+* [Vulkan 1.1.122](https://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/index.html)
 
-**OpenCL Main Page <https://www.khronos.org/registry/OpenCL/>**
+[**OpenCL Main Page**](https://www.khronos.org/registry/OpenCL/)
 
-* OpenCL 2.2 API Specification:
-  <https://www.khronos.org/registry/OpenCL/specs/2.2/html/OpenCL_API.html>
-* OpenCL 2.2 Extension Specification:
-  <https://www.khronos.org/registry/OpenCL/specs/2.2/html/OpenCL_Ext.html>
-* OpenCL 2.2 SPIR-V Environment Specification:
-  <https://www.khronos.org/registry/OpenCL/specs/2.2/html/OpenCL_Env.html>
+* [OpenCL 2.2 API Specification](https://www.khronos.org/registry/OpenCL/specs/2.2/html/OpenCL_API.html)
+* [OpenCL 2.2 Extension Specification](https://www.khronos.org/registry/OpenCL/specs/2.2/html/OpenCL_Ext.html)
+* [OpenCL 2.2 SPIR-V Environment Specification](https://www.khronos.org/registry/OpenCL/specs/2.2/html/OpenCL_Env.html)
 
 Note: We are implementing hardware accelerated Vulkan and
 OpenCL while relying on other software projects to translate APIs to
@@ -113,7 +122,9 @@ although performance is not evaluated.
    Truly open bi-weekly teleconference lines for anybody interested in helping
    advance or adopting the POWER architecture.
 
-# Free Silicon Conference
+# Conferences
+
+## Free Silicon Conference
 
 The conference brought together experts and enthusiasts who want to build
 a complete Free and Open Source CAD ecosystem for designing analog and
@@ -223,40 +234,52 @@ ZipCPU provides a comprehensive tutorial for beginners and many exercises/quizze
 * <https://danluu.com/branch-prediction/>
 
 
-# Information Resources and Tutorials
+# Python RTL Tools
+* [Migen - a Python RTL](https://jeffrey.co.in/blog/2014/01/d-flip-flop-using-migen/)
+* [LiTeX](https://github.com/timvideos/litex-buildenv/wiki/LiteX-for-Hardware-Engineers)
+  An SOC builder written in Python Migen DSL. Allows you to generate functional
+  RTL for a SOC configured with cache, a RISCV core, ethernet, DRAM support,
+  and parameterizeable CSRs.
+* [Migen Tutorial](http://blog.lambdaconcept.com/doku.php?id=migen:tutorial>)
+* [Minerva](https://github.com/lambdaconcept/minerva)
+  An SOC written in Python nMigen DSL
 
-This section is primarily a series of useful links found online
-
-* FSiC2019 <https://wiki.f-si.org/index.php/FSiC2019>
-* Fundamentals to learn to get started [[3d_gpu/tutorial]]
-* <https://github.com/timvideos/litex-buildenv/wiki/LiteX-for-Hardware-Engineers>
-* <https://jeffrey.co.in/blog/2014/01/d-flip-flop-using-migen/>
-* <http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2019-March/000705.html>
+* [Using our Python Unit Tests(old)](http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2019-March/000705.html)
 * <https://chisel.eecs.berkeley.edu/api/latest/chisel3/util/DecoupledIO.html>
 * <http://www.clifford.at/papers/2016/yosys-synth-formal/slides.pdf>
-* <http://blog.lambdaconcept.com/doku.php?id=migen:tutorial>
-* Samuel's KC5 code <http://chiselapp.com/user/kc5tja/repository/kestrel-3/dir?ci=6c559135a301f321&name=cores/cpu>
+
+
+## Other
+* <https://wiki.f-si.org/index.php/FSiC2019>
+
+# Real/Physical Projects
+* [Samuel's KC5 code](http://chiselapp.com/user/kc5tja/repository/kestrel-3/dir?ci=6c559135a301f321&name=cores/cpu)
 * <https://chips4makers.io/blog/>
 * <https://hackaday.io/project/7817-zynqberry>
-* <https://wiki.f-si.org/index.php/FSiC2019>
-* <https://github.com/efabless/raven-picorv32> - <https://efabless.com>
+* <https://github.com/efabless/raven-picorv32> 
+* <https://efabless.com>
 * <https://efabless.com/design_catalog/default>
-* <https://toyota-ai.ventures/>
-* <https://github.com/lambdaconcept/minerva>
-* <https://en.wikipedia.org/wiki/Liskov_substitution_principle>
-* <https://en.wikipedia.org/wiki/Principle_of_least_astonishment>
-* <https://peertube.f-si.org/videos/watch/379ef007-40b7-4a51-ba1a-0db4f48e8b16>
-* <https://github.com/riscv/riscv-sbi-doc/blob/master/riscv-sbi.md>
-* <https://mshahrad.github.io/openpiton-asplos16.html>
 * <https://wiki.f-si.org/index.php/The_Raven_chip:_First-time_silicon_success_with_qflow_and_efabless>
-* <http://smallcultfollowing.com/babysteps/blog/2019/04/19/aic-adventures-in-consensus/>
-* <http://www.crnhq.org/12-Skills-Summary.aspx?rw=c>
-* <http://bugs.libre-riscv.org/buglist.cgi?columnlist=assigned_to%2Cbug_status%2Cresolution%2Cshort_desc%2Ccf_budget&f1=cf_nlnet_milestone&o1=equals&query_format=advanced&resolution=---&v1=NLnet.2019.02>
-* <https://pdfs.semanticscholar.org/5060/4e9aff0e37089c4ab9a376c3f35761ffe28b.pdf>
-* <http://www.acsel-lab.com/arithmetic/arith15/papers/ARITH15_Takagi.pdf>
+* <https://mshahrad.github.io/openpiton-asplos16.html>
+
+# Funding
+* <https://toyota-ai.ventures/>
+* [NLNet Applications](http://bugs.libre-riscv.org/buglist.cgi?columnlist=assigned_to%2Cbug_status%2Cresolution%2Cshort_desc%2Ccf_budget&f1=cf_nlnet_milestone&o1=equals&query_format=advanced&resolution=---&v1=NLnet.2019.02)
+
+# Good Programming/Design Practices
+* [Liskov Substitution Principle](https://en.wikipedia.org/wiki/Liskov_substitution_principle)
+* [Principle of Least Astonishment](https://en.wikipedia.org/wiki/Principle_of_least_astonishment)
+* <https://peertube.f-si.org/videos/watch/379ef007-40b7-4a51-ba1a-0db4f48e8b16>
+* [Rust-Lang Philosophy and Consensus](http://smallcultfollowing.com/babysteps/blog/2019/04/19/aic-adventures-in-consensus/)
+
+
+
 * <https://youtu.be/o5Ihqg72T3c>
 * <http://flopoco.gforge.inria.fr/>
 * Fundamentals of Modern VLSI Devices <https://groups.google.com/a/groups.riscv.org/d/msg/hw-dev/b4pPvlzBzu0/7hDfxArEAgAJ>
+
+# Broken Links
+* <http://www.crnhq.org/12-Skills-Summary.aspx?rw=c>
 
 # Analog Simulation
 
