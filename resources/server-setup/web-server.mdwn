@@ -1,0 +1,15 @@
+# Web server setup
+## Overview
+Nginx is the server - standard Debian nginx/1.13.9
+Installed in /usr/local/nginx/sbin/
+
+Luke did have a version compiled from source that addw trashed when he did an upgrade.
+
+Config files under /etc/nginx
+
+Certbot has been replaced with addw's scripts, see /var/www/acme/
+
+All web sites are SSL enabled, the non SSL ones redirect to the SSL one.
+The only exception is the location /.well-known/acme-challenge/ which is needed so that Let'sEncrypt can validate and issue certificates.
+
+Nginx listens on IpV4 & IpV6.
