@@ -1,0 +1,55 @@
+# discussion with Roberto from PowerPC Notebook
+
+basically, you remember EOMA68, i decided to go further down the rabbit
+hole after 10 years waiting for fabless semi manufacturers worldwide to
+FAIL to produce a modern SoC that has libre GPU *and* VPU drivers.
+
+i therefore began designing a hybrid CPU GPU VPU which unlike a "normal"
+GPU which is totally separate and usually  on a PCIe bus, you actually
+add GPU and VPU instructions to the *main core's* instruction set.
+
+examples of this include ICubeCorp's IC3128 and the Broadcom Videocore
+IV which is actually an ARC Core (ARC was a competitor to ARM that didn't
+take off in the same way).
+
+so we started with RISCV on the reasonable assumption that "Open"
+actually means "Open", only to find that they are "Fake Open Source".
+
+we therefore had to scramble to find an alternative, which just happened
+to be right around when the OpenPOWER Foundation started kicking into
+gear.
+
+we're therefore beginning to gear up to POWER9 V3.0B and tentatively
+negotiating and opening communications channels with the right (extremely
+busy) people, with the kind assistance of Hugh Blemings, Director of
+the OpenPOWER Foundation.
+
+this does have to be done carefully because unlike a traditional GPU
+(which we do not want to do because the inter-processor communication is
+nuts and massively complicates drivers on both sides, CPU *and* GPU) we
+are using the same pipelines, the same L1 caches, everything, for *all*
+workloads and thus have to be very careful about resource utilisation.
+
+ however more than that, because we seek to *extend* (augment) the
+ instruction set (add ATAN2 to POWER9 for example) this has to be managed
+ extremely carefully.
+
+normally in a proprietary product there would be absolutely no public
+evidence, documentation or publishing of the toolchain for such extensive
+custom modifications.  they would definitely not be permitted to be
+upstreamed.
+
+however here, with the business justification behind libre (see Intel
+Valve Steam collaboration) we have to extend the instruction set *and*
+document those augmentations *and* publish the toolchain *and* have it
+upstreamed *and* make sure that the entire OpenPOWER Community is ok with
+that, and all the implications and ramifications properly thought through.
+
+so that's a potted version of why and what :)
+
+it means that in say 12 to 18 months we will have a quad core SBC-style
+processor that you could use for a powerpc netbook.  at last! :)
+
+best,
+
+l.
