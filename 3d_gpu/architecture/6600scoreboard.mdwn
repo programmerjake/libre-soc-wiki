@@ -269,10 +269,135 @@ Source:
 
 [[!img ld_st_splitter.png size="600x"]]
 
-# Multi-input/output Computation Unit
+# Multi-input/output Dependency Cell and Computation Unit
+
+apologies that this is best done using images rather than text.
+i'm doing a redesign of the (augmented) 6600 engine because there
+are a couple of design criteria/assumptions that do not fit our
+requirements:
+
+1. operations are only 2-in, 1-out
+2. simultaneous register port read (and write) availability is guaranteed.
+
+we require:
+
+1. operations with up to *four* in and up to *three* out
+2. sporadic availability of far less than 4 Reg-Read ports and 3 Reg-Write
+
+here are the two associated diagrams which describe the *original*
+6600 computational unit and FU-to-Regs Dependency Cell:
+
+1. comp unit https://libre-soc.org/3d_gpu/comp_unit_req_rel.jpg
+2. dep cell https://libre-soc.org/3d_gpu/dependence_cell_pending.jpg
+
+as described here https://libre-soc.org/3d_gpu/architecture/6600scoreboard/
+we found a signal missing from Mitch's book chapters, and tracked it down
+from the original Thornton "Design of a Computer": Read_Release.  this
+is a synchronisation / acknowledgement signal for Go_Read which is directly
+analogous to Req_Rel for Go_Write.
+
+also in the dependency cell, we found that it is necessary to OR the
+two "Read" Oper1 and Oper2 signals together and to AND that with the
+Write_Pending Latch (top latch in diagram 2.) as shown in the wonderfully
+hand-drawn orange OR gate.
+
+thus, Read-After-Write hazard occurs if there is a Write_Pending *AND*
+any Read (oper1 *OR* oper2) is requested.
+
+
+now onto the additional modifications.
+
+3. comp unit https://libre-soc.org/3d_gpu/compunit_multi_rw.jpg
+4. dep cell https://libre-soc.org/3d_gpu/dependence_cell_multi_pending.jpg
+
+firstly, the computation unit modifications:
+
+* multiple Go_Read signals are present, GoRD1-3
+* multiple incoming operands are present, Op1-3
+* multiple Go_Write signals are present, GoWR1-3
+* multiple outgoing results are present, Out1-2
+
+note that these are *NOT* necessarily 64-bit registers: they are in fact
+Carry Flags because we are implementing POWER9.  however (as mentioned
+yesterday in the huge 250+ discussion, as far as the Dep Matrices are
+concerned you still have to treat Carry-In and Carry-out as Read/Write
+Hazard-protected *actual* Registers)
+
+in the original 6600 comp unit diagram (1), because the "Go_Read" assumes
+that *both* registers will be read (and supplied) simultaneously from
+the Register File, the sequence - the Finite State Machine - is real
+simple:
+
+* ISSUE  -> BUSY (latched)
+* RD-REQ -> GO_RD
+* WR-REQ -> GO_WR
+* repeat
+
+[aside: there is a protective "revolving door" loop where the SR latch for
+ each state in the FSM is guaranteed stable (never reaches "unknown") ]
+
+in *this* diagram (3), we instead need:
+
+* ISSUE   -> BUSY (latched)
+* RD-REQ1 -> GO_RD1     (may occur independent of RD2/3)
+* RD-REQ2 -> GO_RD2     (may occur independent of RD1/3)
+* RD-REQ3 -> GO_RD3     (may occur independent of RD1/2)
+* when all 3 of GO_RD1-3 have been asserted,
+  ONLY THEN raise WR-REQ1-2
+* WR-REQ1 -> GO_WR1     (may occur independent of WR2)
+* WR-REQ2 -> GO_WR2     (may occur independent of WR1)
+* when all (2) of GO_WR1-2 have been asserted,
+  ONLY THEN reset back to the beginning.
+
+note the crucial difference is that read request and acknowledge (GO_RD)
+are *all independent* and may occur:
+
+* in any order
+* in any combination
+* all at the same time
+
+likewise for write-request/go-write.
+
+thus, if there is only one spare READ Register File port available
+(because this particular Computation Unit is a low priority, but
+the other operations need only two Regfile Ports and the Regfile
+happens to be 3R1W), at least one of OP1-3 may get its operation.
+
+thus, if we have three 2-operand operations and a 3R1W regfile:
+
+* clock cycle 1: the first may grab 2 ports and the second grabs 1 (Oper1)
+* clock cycle 2: the second grabs one more (Oper2) and the third grabs 2
+
+compare this to the *original* 6600: if there are three 2-operand
+operations outstanding, they MUST go:
+
+* clock cycle 1: the first may grab 2 ports, NEITHER the 2nd nor 3rd proceed
+* clock cycle 2: the second may grab 2 ports, 3rd may NOT proceed
+* clock cycle 3: the 3rd grabs 2 ports
+
+this because the Comp Unit - and associated Dependency Matrices - *FORCE*
+the Comp Unit to only proceed when *ALL* necessary Register Read Ports
+are available (because there is only the one Go_Read signal).
+
+
+so my questions are:
+
+* does the above look reasonable?  both in terms of the DM changes
+  and CompUnit changes.
+
+* the use of the three SR latches looks a little weird to me
+  (bottom right corner of (3) which is a rewrite of the middle
+  of the page.
+
+  it looks a little weird to have an SR Latch looped back
+  "onto itself".  namely that when the inversion of both
+  WR_REQ1 and WR_REQ2 going low triggers that AND gate
+  (the one with the input from Q of an SR Latch), it *resets*
+  that very same SR-Latch, which will cause a mini "blip"
+  on Reset, doesn't it?
+
+  argh.  that doesn't feel right.  what should it be replaced with?
 
 [[!img compunit_multi_rw.jpg size="600x"]]
-
-# Multi-input/output Dependency Cell
 
 [[!img dependence_cell_multi_pending.jpg size="600x"]]
