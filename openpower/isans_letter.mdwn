@@ -20,157 +20,58 @@ there is therefore essentially conceptually nothing new about what we
 propose: we simply seek that the process by which such "switching" is
 added is formalised and standardised, such that we (and others) have
 a clear, standards-non-disruptive, atomic and non-intrusive path to
-extend the POWER ISA.
+extend the POWER ISA for use in markets that it presently cannot enter.
 
-# Summary of Libre-SOC Project
+We advocate that some of "mode-setting" (escape-sequencing) bits be binary
+encoded, some unary encoded, some "offical", some "experimental" and some
+"reserved".  The available space in a suitably-chosen SPR to be formalised,
+and the OpenPOWER Foundation to be given an IANA-like role in atomically
+allocating mode bits.
 
-TODO brief summary of Libre-SOC project (hybrid CPU-GPU-VPU), thereby
-helping explain exactly why we need extensive augmentation of POWER ISA.
+# Summary of Libre-SOC Commercial Project
 
-Basically it's because it is not a separate GPU-VPU, it's an *actual*
-CPU-GPU-VPU.  No separate GPU, because the CPU *is* the GPU.  No separate
-VPU, because the CPU *is* the GPU.  There is not even a separate "pipeline":
-the CPU pipelines *are* the GPU and VPU pipelines.
+The Libre-SOC Commercial Product is a hybrid GPU-GPU-VPU intended for
+mass-volume production.  There is no separate GPU, because the CPU
+*is* the GPU.  There is no separate VPU, because the CPU *is* the GPU.
+There is not even a separate pipeline: the CPU pipelines *are* the
+GPU and VPU pipelines.
 
 Closest equivalents include the ARC core (which has VPU extensions and
 3D extensions in the form of Broadcom's VideoCore IV) and the ICubeCorp
 IC3128.  Both are considered "hybrid" CPU-GPU-VPU processors.
 
+"Normal" Commercial GPUs are entirely separate processors.  The development
+cost and complexity purely in terms of Software Drivers alone is immense.
+We reject that approach (and as a small team we do not have the resources
+anyway).
+
 With the project being Libre - not proprietary and secretive and never
 to be published, ever - it is no good having the extensions as "custom"
 because "custom" is specifically for the cases where the augmented
 toolchain is never, under any circumstances, published and made public by
-the proprietary company.  For business commercial reasons, Libre-SOC is
-the total opposite of this proprietary, secretive approach.
+the proprietary company (and would never be accepted upstream anyway).
+For business commercial reasons, Libre-SOC is the total opposite of this
+proprietary, secretive approach.
 
-## Overview
+Therefore, to meet our business objectives:
 
-The PowerPC Instruction Set Architecture (ISA) is an abstract model of a
-computer. This is what programmers use when they write programs for the machine,
-even if indirectly via a compiler for a high level language. We must be
-conservative in how we add to the ISA to:
+* A "traditional" general-purpose Vector System (such as that in POWER9)
+  is *NOT* an adequate basis for a GPU.  Nyuzi's conclusion is that using
+  such general-purpose Vector ISAs results in reaching only 25% performance
+   (or requiring 4-fold increase in power consumption) to achieve par with
+   current commercial-grade GPUs.
+* We are not going the "traditional" (separate custom GPU) route because
+  it is not practical for a new team to design hardware and spend 8+
+  man-years on massively complex inter-processor driver development as well
+* We cannot meet our objectives with a "custom extension" because the
+  financial burden on our team to maintain a total hard fork of not just
+  toolchains, but also entire GNU/Linux Distros, is highly undesirable,
+  and completely impractical (and Redhat would strongly object anyway)
+* We cannot "go ahead anyway" because to do so would be highly irresponsible
+  and cause massive disruption to the POWER community.
 
-* not break existing programs	
-* be mindful as to how others may wish to add to the ISA in the future
-
-This document describes our strategy.
-
-
-## ISA modes and escape sequences
-
-New chips usually need to be able to run older (legacy) software that is
-incompatible with the latest and greatest ISA. Eg: 64 bit chip must be able to
-run older 16 bit and 32 bit software.
-
-To enable backwards compatability the CPU will be set into 'legacy' mode. This
-is done with an ISA Mode switch, also known as ISA Muxing or ISA Namespaces.
-
-The operating system is able to quickly change between 'modern' ISA mode and
-various legacy modes.
-
-Another technique is an ISA escape-sequence. This is a type of mode that is
-only operational for a short time, unlike 32 or 64 bit which would be for the
-entire run of a program.
-
-
-## What are we adding to the ISA
-
-When high quality graphical display were developed the CPUs at the time were
-shown to not be able to run the display fast enough. The solution was the use of
-Graphics cards, these are specialised computers that are good at rendering
-pixels; often by doing the same thing in different parts of the screen at the
-same time (in parallel). These specialised computers are called Graphical
-Processing Units (GPUs).
-
-The parallelism of some GPUs is thousands. This has led to GPUs being used to
-solve non graphical problems where high parallelism is useful.
-
-**break**
-
-# Letter regarding ISAMUX / NS
-
-Hardware-level dynamic ISA Muxing (also known as ISA Namespaces and ISA
-escape-sequencing) is commonly used in instruction sets, in an arbitrary
-and ad-hoc fashion, added often on an on-demand basis.  Examples include:
-
-* Setting a SPR to switch the meaning of certain opcodes for Little-Endian /
-  Big-Endian behaviour (present in POWER and SPARC)
-* Setting a SPR to provide "backwards-compatibility" for features from
-  older versions of an ISA (such as changing to new ratified versions of
-  the IEEE754 standard)
-
-(These we term "ISA Muxing" because, ultimately, they are extra bits
-(or change existing bits) in the actual instruction decoder phase,
-which involves "MUXes" to switch them on and off).
-
-The Libre-SOC team, developing a hybrid CPU-VPU-GPU, needs to add
-significantly and strategically to the POWER ISA to support, for example,
-Khronos Vulkan IEEE754 Conformance, whilst *at the same time being able
-to run full POWER9 compliant instructions*.
-
-There is absolutely no way that we are going to duplicate the
-entire FP opcode set as a custom extension to POWER, just to add a
-literally-identical suite of FP opcodes that are compliant with the
-Khronos Conformance Suites: this would be a significant and irresponsible
-use of opcode space.
-
-In addition, as this processor is likely to be used for parallel
-compute purposes in high-efficiency environments, we also need to add
-FP16 support.  Again: there is no way that we are going to add *triple*
-duplicated opcodes to POWER, given that the opcodes needed are absolutely
-identical to those that already exist, apart from the FP bitwidth (32
-/ 64).
-
-There are several other strategically critical uses to which we would
-like to put such a scheme (related to power consumption and reducing
-throughput bottlenecks needed for heavy-computation workloads in GPU
-and VPU scenarios).
-
-In addition, the scheme has several other key advantages over other ISA
-"extending" ideas (such as extending the general ISA POWER space to
-64 bit) in that, unlike 64 bit opcodes, its judicious and careful use
-does not require large increases in I-Cache size because all opcodes,
-ultimately, remain 32-bit.  The scheme also allows future *official*
-POWER extensions to the ISA - managed by the OpenPOWER Foundation -
-to be strategically managed in a controlled, long-term, non-damaging
-way to the reputation and stability of OpenPOWER.
-
-Therefore we advocate being able to set "ISAMUX/NS" mode-switching bits
-that, like the *existing* LE/BE mode-switching bits, change the behaviour
-of *existing* opcodes to an alternative "meaning" (followed by another
-mode-switch that returns them to their original meaning. Note: to reduce
-binary code-size, alternative schemes include setting a countdown which,
-when it expires, automatically disables the requested mode-switch)
-
-Note also that to ensure that kernels and hypervisors are not impacted
-by userspace ISAMUX/NS mode-switching, it is critical that Supervisor
-and Hypervisor modes have their own completely separate ISAMUX/NS SPRs
-(imagine a userspace application setting the LE/BE bit on a global basis,
-or setting a global IEEE754 FP Standards compatibility flag).
-
-Further, that Supervisor / Hypervisor modes have access to and control
-over userspace ISAMUX/NS SPRs (without themselves being affected by
-setting *of* userspace ISAMUX/NS SPRs), in order to be able to correctly
-context-switch userspace applications to their correct (former) running
-state.
-
-Given the number of mode-switch bits that we anticipate using, we advocate
-that such a scheme be formalised, and that the OpenPOWER Foundation be
-the "atomic arbiter" similar to IANA and JEDEC in the formal allocation
-of mode-switch bits to OpenPOWER implementors.
-
-We envisage that some of these bits will be unary, some will be binary,
-some will be allocated for exclusive use by the OpenPOWER Foundation,
-some allocated to OpenPOWER Members (by the OpenPOWER Foundation),
-and some reserved for "custom and experimentation usage".
-
-(This latter - custom experimentation - to be explicitly documented
-that upstream compiler and toolchain support will never, under any
-circumstances be accepted by the OpenPOWER Foundation, and that this be
-enforced through the EULA and through Trademark law).
-
-
-However as we are quite new to POWER 3.0B (1300+ page PDF), we do
-appreciate that such a formal scheme may already be present in POWER9
-3.0B, that we have simply overlooked.
+With all impractical options eliminated the only remaining responsible
+option is to extend the POWER ISA in an atomically-managed (IANA-style)
+formal fashion, whilst (critically and absolutely essentially) always
+providing a PCR compatibility mode that is fully POWER compliant.
 
