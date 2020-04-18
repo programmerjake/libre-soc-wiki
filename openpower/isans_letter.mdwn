@@ -47,29 +47,31 @@ already found in the POWER instruction set, are added:
 * MSR's "SF" bit, setting either 32-bit or 64-bit mode
 * PCR's "compatibility" bits 60-62, V2.05 V2.06 V2.07 mode
 
-It is well-noted that unless each "mode switch" bit is set, the
-alternative instructions (and functionality) are completely inaccessible,
-and will result in "illegal instruction" traps being thrown.  This is
-recognised as being critically important.
+[It is well-noted that unless each "mode switch" bit is set, any
+alternative (additional) instructions (and functionality) are completely
+inaccessible, and will result in "illegal instruction" traps being thrown.
+This is recognised as being critically important.]
 
 These bits effectively create multiple, incompatible run-time switchable ISAs
 within one CPU.  They are selectable for the needs of the individual
-program being run.
+program (or OS) being run.
 
-All of these are set by one instruction, that, once set, radically
+All of these bits are set by an instruction, that, once set, radically
 changes the entire behaviour and characteristics of subsequent instructions.
 
 With these (and other) long-established precedents already in POWER,
 there is therefore essentially conceptually nothing new about what we
 propose: we simply seek that the process by which such "switching" is
-added is formalised and standardised, such that we (and others) have
-a clear, standards-non-disruptive, atomic and non-intrusive path to
-extend the POWER ISA for use in markets that it presently cannot enter.
+added is formalised and standardised, such that we (and others, including
+IBM itself) have a clear, well-defined standards-non-disruptive, atomic
+and non-intrusive path to extend the POWER ISA for use in markets that
+it presently cannot enter.
 
-We advocate that some of "mode-setting" (escape-sequencing) bits be binary
-encoded, some unary encoded, some "offical", some "experimental" and some
-"reserved".  The available space in a suitably-chosen SPR to be formalised,
-and recommend the OpenPOWER Foundation be given the IANA-like role in
+We advocate that some of "mode-setting" (escape-sequencing) bits be
+binary encoded, some unary encoded, and that some space marked for
+"offical" use, some "experimental", some "custom" and some "reserved".
+The available space in a suitably-chosen SPR to be formalised, and
+recommend the OpenPOWER Foundation be given the IANA-like role in
 atomically allocating mode bits.
 
 Instructions that we need to add, which are a normal part of GPUs,
@@ -79,10 +81,10 @@ these may turn out to be useful in a wider context: they however need
 to be fully isolated behind "mode-setting".
 
 Some mode-setting instructions are privileged, ie can only be set by
-the kernel (eg 32 or 64 bit mode). The escape sequences that we propose
-will be (have to be) usable without the need for an expensive system
-call overhead (because some of the instructions needed will be in
-extremely tight inner loops).
+the kernel (eg 32 or 64 bit mode). Most of the escape sequences that we
+propose will be (have to be) usable without the need for an expensive
+system call overhead (because some of the instructions needed will be
+in extremely tight inner loops).
 
 # About Libre-SOC Commercial Project
 
