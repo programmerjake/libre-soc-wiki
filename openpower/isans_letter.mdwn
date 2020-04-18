@@ -2,6 +2,21 @@
 
 # Letter regarding ISAMUX / NS
 
+## Why has Libre-SOC chosen PowerPC ?
+
+For a hybrid CPU-VPU-GPU, intended for mass-volume adoption in tablets,
+netbooks, chromebooks and industrial embedded (SBC) systems, our choice
+was between Nyuzi, MIAOW, RISC-V, PowerPC, MIPS and OpenRISC.
+
+Of all the options, the PowerPC architecture is more complete and far more
+mature.  It also has a deeper adoption by Linux distributions.
+
+Following IBM's release of the Power Architecture instruction set to the
+Linux Foundation in August 2019 the barrier to using it is no more than
+that of using RISC-V.  We are encouraged that the OpenPOWER Foundation is
+supportive of what we are doing and helping, e.g by putting us in touch
+with people who can help us.
+
 ## Summary
 
 * We propose the standardisation of the way that the PowerPC Instruction
@@ -19,21 +34,6 @@
 * Libre-SOC's extensions will be easily adopted, as the standard GNU/Linux
   distributions will very deliberately run unmodified on our ISA,
   including full compatibility with illegal instruction requirements.
-
-## Why has Libre-SOC chosen PowerPC ?
-
-For a hybrid CPU-VPU-GPU, intended for mass-volume adoption in tablets,
-netbooks, chromebooks and industrial embedded (SBC) systems, our choice
-was between Nyuzi, MIAOW, RISC-V, PowerPC, MIPS and OpenRISC.
-
-Of all the options, the PowerPC architecture is more complete and far more
-mature.  It also has a deeper adoption by Linux distributions.
-
-Following IBM's release of the Power Architecture instruction set to the
-Linux Foundation in August 2019 the barrier to using it is no more than
-that of using RISC-V.  We are encouraged that the OpenPOWER Foundation is
-supportive of what we are doing and helping, e.g by putting us in touch
-with people who can help us.
 
 ## One CPU multiple ISAs
 
@@ -84,7 +84,7 @@ will be (have to be) usable without the need for an expensive system
 call overhead (because some of the instructions needed will be in
 extremely tight inner loops).
 
-# Summary of Libre-SOC Commercial Project
+# About Libre-SOC Commercial Project
 
 The Libre-SOC Commercial Product is a hybrid GPU-GPU-VPU intended for
 mass-volume production.  There is no separate GPU, because the CPU
@@ -131,5 +131,6 @@ Therefore, to meet our business objectives:
 With all impractical options eliminated the only remaining responsible
 option is to extend the POWER ISA in an atomically-managed (IANA-style)
 formal fashion, whilst (critically and absolutely essentially) always
-providing a PCR compatibility mode that is fully POWER compliant.
+providing a PCR compatibility mode that is fully POWER compliant, including
+all illegal instruction traps.
 
