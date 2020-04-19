@@ -299,8 +299,40 @@ This is the primary task of the L0 Cache/Buffer: to resolve multiple
 (potentially misaligned) 1/2/4/8 LD/ST operations (per cycle) into one
 **single** L1 16-byte LD/ST operation.
 
-The amount of wiring involved however is so enormous (3,000+ wires) that
-considerable care has to be taken.
+The amount of wiring involved however is so enormous (3,000+ wires if
+"only" 4-in 4-out multiplexing is done from the LD/ST Function Units) that
+considerable care has to be taken to not massively overload the ASIC
+layout.
+
+To help with this, a recommendation from
+[comp.arch](https://groups.google.com/forum/#!topic/comp.arch/cbGAlcCjiZE)
+came to do a split odd-even double-L1-cache system: have *two* L1 caches,
+one dealing with even-numbered 16-byte cache lines (addressed by bit 4 == 0)
+and one dealing with odd-numbered 16-byte cache lines (addr[4] == 1).
+This trick doubles the sequential throughput whilst halving the bandwidth
+of a drastically-overloaded multiplexer bus.
+Thus, we can also have two L0 LD/ST Cache/Buffers (one each looking after
+its corresponding L1 cache).
+
+The next phase - task - of the L0 Cache/Buffer - is to identify and merge
+any requests with the same top 5 bits.  This becomes a trivial task (under
+certain conditions, already satisfied by other components), by simply
+picking the first request, and using that row's address as a search
+pattern to match against all upper bits (5 onwards).  When such a match
+is located, then due to the job(s) carried out by prior components, the
+byte-mask for all requests with the same upper address bits may simply be
+ORed together.
+
+This requires a little back-tracking to explain.  The prerequisite
+conditions are as follows:
+
+* Mask, in each row of the L0 Cache/Buffer, encodes the bottom 4 LSBs
+  of the address **and** the length of the LD/ST operation (1/2/4/8 bytes),
+  in a "bitmap" form.
+* These "Masks" have already been analysed for overlaps by the Address
+  Match Matrix: we **know** therefore that there are none (hence why
+  addresses with the same MSBs 5 and above may have their masks ORed
+  together)
 
 [[!img mem_l0_to_l1_bridge.png size="600x"]]
 
