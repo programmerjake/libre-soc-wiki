@@ -269,6 +269,41 @@ Source:
 
 [[!img ld_st_splitter.png size="600x"]]
 
+# L0 Cache/Buffer
+
+See bugreports:
+
+* <https://bugs.libre-soc.org/show_bug.cgi?id=216>
+* <https://bugs.libre-soc.org/show_bug.cgi?id=257>
+
+The L0 cache/buffer needs to be kept extremely small due to it having
+significant extra CAM functionality than a normal L1 cache.  However,
+crucially, the Memory Dependency Matrices and address-matching
+[take care of certain things](https://bugs.libre-soc.org/show_bug.cgi?id=216#c20)
+that greatly simplify its role.
+
+The problem is that a standard "queue" in a multi-issue environment would
+need to be massively-ported: 8-way read and 8-way write.  However that's not
+the only problem: the major problem is caused by the fact that we are
+overloading "vectorisation" on top of multi-issue execution, where a
+"normal" vector system would have a Vector LD/ST operation where sequences
+of consecutive LDs/STs are part of the same operation, and thus a "full
+cache line" worth of reads/writes is near-trivial to perform and detect.
+
+Thus with the "element" LD/STs being farmed out to *individual* LD/ST
+Computation Units, a batch of consecutive LD/ST operations arrive at the
+LD/ST Buffer which could - hypothetically - be merged into a single
+cache line, prior to passing them on to the L1 cache.
+
+This is the primary task of the L0 Cache/Buffer: to resolve multiple
+(potentially misaligned) 1/2/4/8 LD/ST operations (per cycle) into one
+**single** L1 16-byte LD/ST operation.
+
+The amount of wiring involved however is so enormous (3,000+ wires) that
+considerable care has to be taken.
+
+[[!img mem_l0_to_l1_bridge.png size="600x"]]
+
 # Multi-input/output Dependency Cell and Computation Unit
 
 * <https://www.youtube.com/watch?v=ohHbWRLDCfs>
