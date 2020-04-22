@@ -4,6 +4,7 @@
 * Revision 0.1 addw review: 16 Apr 2020
 * Revision 0.9 pre-final: 18 Apr 2020
 * Revision 0.91 mention dual ISA: 22 Apr 2020
+* Revision 0.92 mention countdown idea: 22 Apr 2020
 
 ## Why has Libre-SOC chosen PowerPC ?
 
@@ -77,14 +78,16 @@ The available space in a suitably-chosen SPR to be formalised, and
 recommend the OpenPOWER Foundation be given the IANA-like role in
 atomically allocating mode bits.
 
+We also advocate to consider reserving some bits as a "countdown" where the new mode will be enabled only for a certain *number* of instructions. This avoids an explicit need to "flip back", reducing binary code size. Note that it is not a good idea to let the counter cross a branch or other change in PC (illegal instruction trap). However traps and exceptions will need to save (and restore) the counter just as the rest of the PCR and other modeswitching bits need to be saved.
+
 Instructions that we need to add, which are a normal part of GPUs,
 include ATAN2, LOG, NORMALISE, YUV2RGB, Khronos Compliance FP mode
 (different from both IEEE754 and "NI" mode), and many more.  Many of
 these may turn out to be useful in a wider context: they however need
 to be fully isolated behind "mode-setting".
 
-Some mode-setting instructions are privileged, ie can only be set by
-the kernel (eg 32 or 64 bit mode). Most of the escape sequences that we
+Some mode-setting instructions are privileged, i.e can only be set by
+the kernel (e.g 32 or 64 bit mode). Most of the escape sequences that we
 propose will be (have to be) usable without the need for an expensive
 system call overhead (because some of the instructions needed will be
 in extremely tight inner loops).
