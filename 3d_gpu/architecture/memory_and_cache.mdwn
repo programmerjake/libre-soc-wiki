@@ -1,7 +1,54 @@
-# Memory
+# 180nm Test ASIC
+
+This is a single-core, non-SMP, no analog PLLs, no clock-gating, test ASIC,
+expected to run at one-to-one from an external 24 mhz to 100 mhz clock.
+
+The requirements are therefore **radically different** from the next
+roadmap ASIC.
+
+Basic diagram:
+
+[[!img 180nm_single_core_testasic_memlayout.jpg size="500x"]]
+
+* Eight LD/ST Function Units with 2 ports each (one for aligned,
+  one for misaligned), each connecting to one of a pair of L0
+  Cache/Buffers.  Addr[4] determines which L0 Cache/Buffer to
+  connect to.
+
+* Twin L0 Cache/Buffers with only 16 128-bit-wide entries and
+  a single-clock, single-path outgoing read **or** write protocol,
+  with 16 (individual, non-multiplexed) incoming 128-bit entries.
+
+* Each L0 Cache/Buffer connects by a single 128-bit data path
+  to a standard non-SMP-aware L1 cache.  The data in and out
+  is again read **or** write, 128-bit-wide.
+
+* A pair of Wishbone "funnels" take the 128-bit requests, which include
+  byte-level access lines, and *if needed* create a pair of 64-bit
+  Wishbone-compliant requests.  "If needed", because if the lower
+  half (or upper half) byte-level access lines are not set, then
+  that indicates a 64-bit request, and thus only one request is needed.
+  Only when byte-access lines in both upper and lower halves are set
+  will two requests be needed
+
+* Standard Wishbone 64-bit Bus.  This is where
+  [Enjoy-Digital Litex](https://github.com/enjoy-digital/litex)
+  code takes over, and connect to peripherals and testing infrastructure.
+
+* Memory is the silicon-proven OpenCores [SDRAM|sdram] interface,
+  and it is Wishbone compliant.
+
+# 28-45nm Quad-Core SoC
+
+This is full SMP, requires analog PLLs, clock gating, full SMP
+L1 and L2 cache coherency and atomic coherency.
+
+## Memory
 
 TODO
 
-# Cache
+## Cache
 
 TODO
+
+
