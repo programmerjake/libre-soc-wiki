@@ -359,6 +359,9 @@ Notes:
 * It does however mean that the reservation on the row has to wait for
   *both* ports (left and right) to clear out their LD/ST operation(s).
 * Addr[4] still selects whether the request is to go into left or right bank
+* When the misaligned address bits 4-11 are all 0b11111111, this is not
+  a case that can be handled, because it implies that Addr[12:48] will
+  be **different** in the row.  This case throws a misaligned exception.
 
 Other than that, the design remains the same, as does the algorithm to
 merge the bytemasks.  This remains as follows:
