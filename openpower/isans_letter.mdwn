@@ -1,9 +1,9 @@
-
 # Letter regarding ISAMUX / NS
 
 * Revision 0.0 draft: 03 Mar 2020
 * Revision 0.1 addw review: 16 Apr 2020
 * Revision 0.9 pre-final: 18 Apr 2020
+* Revision 0.91 mention dual ISA: 22 Apr 2020
 
 ## Why has Libre-SOC chosen PowerPC ?
 
@@ -131,6 +131,8 @@ Therefore, to meet our business objectives:
   toolchains, but also entire GNU/Linux Distros, is highly undesirable,
   and completely impractical (we know for certain that Redhat would
   strongly object to any efforts to hard-fork Fedora)
+* We could invent our own custom GPU instruction set (or use and extend an existing one, to save a man-decade on toolchain development) however even to switch over to that "Dual ISA" GPU instruction set in the next clock cycle *still requires a PCR modeswitch bit* in order to avoid needing a full Inter-Processor Bus Architecture like on "traditional" GPUs.
+* If extending any instruction set, rather than have a Dual ISA (which needs the PCR modeswitch bit to access it) we would rather extend POWER.
 * We cannot "go ahead anyway" because to do so would be highly irresponsible
   and cause massive disruption to the POWER community.
 
