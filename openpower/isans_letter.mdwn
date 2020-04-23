@@ -79,7 +79,7 @@ The available space in a suitably-chosen SPR to be formalised, and
 recommend the OpenPOWER Foundation be given the IANA-like role in
 atomically allocating mode bits.
 
-We also advocate to consider reserving some bits as a "countdown" where the new mode will be enabled only for a certain *number* of instructions. This avoids an explicit need to "flip back", reducing binary code size. Note that it is not a good idea to let the counter cross a branch or other change in PC (illegal instruction trap). However traps and exceptions will need to save (and restore) the counter just as the rest of the PCR and other modeswitching bits need to be saved.
+We also advocate to consider reserving some bits as a "countdown" where the new mode will be enabled only for a certain *number* of instructions. This avoids an explicit need to "flip back", reducing binary code size. Note that it is not a good idea to let the counter cross a branch or other change in PC (thtow illegal instruction trap if attempted). However traps and exceptions themselves will need to save (and restore) the countdown, just as the rest of the PCR and other modeswitching bits need to be saved.
 
 Instructions that we need to add, which are a normal part of GPUs,
 include ATAN2, LOG, NORMALISE, YUV2RGB, Khronos Compliance FP mode
