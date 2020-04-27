@@ -38,6 +38,34 @@ Basic diagram:
 * Memory is the silicon-proven OpenCores [SDRAM|sdram] interface,
   and it is Wishbone compliant.
 
+## Memory Interface Required by LDSTComputationalUnit
+
+See <https://bugs.libre-soc.org/show_bug.cgi?id=216#c26>.  Other signals
+(type of LD/ST: atomic or I/O, type of exception) left out for brevity
+
+Common to LD/ST:
+
+* out: busy
+* in: is_ld
+* in: address
+* in: len (1/2/4/8)
+* in: go_addr
+* in: go_die
+* out: addr_ok (no exception will occur)
+* out: addr_exc (exception type)
+
+LD:
+
+* in: is_ld
+* out: ld_data
+* out: ld_data_ok (to be raised for 1 cycle)
+
+ST:
+
+* in: is_st
+* in: st_data
+* in: go_st (raised for 1 cycle, must complete)
+
 ## Alternative Design Idea
 
 [[alternative-design-idea]]
