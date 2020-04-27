@@ -15,13 +15,15 @@ Basic diagram:
   Cache/Buffers.  Addr[4] determines which L0 Cache/Buffer to
   connect to.
 
-* Twin L0 Cache/Buffers with only 16 128-bit-wide entries and
+* A L0 Cache/Buffer with dual 8x 128-bit-wide entries and
   a single-clock, single-path outgoing read **or** write protocol,
-  with 16 (individual, non-multiplexed) incoming 128-bit entries.
+  with 8 pairs of (individual, non-multiplexed) incoming 128-bit entries
+  where each pair is hard-required to have the same top bits (12-48).
+  The left port has address bit 4 set to zero, the right port to 1.
 
-* Each L0 Cache/Buffer connects by a single 128-bit data path
+* The L0 Cache/Buffer connects to a pair of 128-bit data paths
   to a standard non-SMP-aware L1 cache.  The data in and out
-  is again read **or** write, 128-bit-wide.
+  on each port is again read **or** write, 128-bit-wide.
 
 * A pair of Wishbone "funnels" take the 128-bit requests, which include
   byte-level access lines, and *if needed* create a pair of 64-bit
