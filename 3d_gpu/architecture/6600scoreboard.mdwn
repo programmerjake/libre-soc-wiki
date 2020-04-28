@@ -135,36 +135,23 @@ a DFF (register).
 # LD/ST Computation Unit
 
 The Load/Store Computation Unit is a little more complex, involving
-three functions: LOAD, STORE, and INT Addition.  The SR Latches create
-a cyclic chain (just as with the ALU Computation Unit) however here
-there are three possible chains.
+three functions: LOAD, STORE, and LOAD-UPDATE.  The SR Latches create
+a forward-progressing Finite State Machine, with three possible paths:
 
-* INT Addition mode will activate Issue, GoRead, GoWrite
-* LD Mode will activate Issue, GoRead, GoAddr then finally GoWrite
-* ST Mode will activate Issue, GoRead, GoAddr then GoStore.
+* LD Mode will activate Issue, GoRead1, GoAddr then finally GoWrite1
+* UPDATE Mode will activate Issue, GoRead1, GoAddr then GoWrite1 *and* 2.
+* ST Mode will activate Issue, GoRead1, GoRead2, GoAddr then GoStore.
 
 These signals will be allowed to activate when the correct "Req" lines
-are active.  Cyclically respecting these request-response signals results in
-the SR Latches never going into "unstable / unknown" states.
-
-* Issue will close the opcode latch and OPEN the operand latch AND
-trigger "Request-Read" (and set "Busy")
-* Go-Read will close the operand latch and OPEN the address latch AND
-trigger "Request Address".
-* Go-Address will close the address latch and OPEN the result latch
-AND trigger "Request Write"
-* Go-Write will close the result latch and OPEN the opcode latch, and
-reset BUSY back to OFF, ready for a new cycle.
-
-Note: there is an error in the diagram, compared to the source code.
-It was necessary to capture src2 (op2) separate from src1 (op1), so that
-for the ST, op2 goes into the STORE as the data, not op1.
+are active.  Minor complications are involved (extra latches) that respond
+to an external API interface that has a more "traditional" valid/ready
+signalling interface, with single-clock responses.
 
 Source:
 
-* [LD/ST Comp Units](https://git.libre-riscv.org/?p=soc.git;a=blob;f=src/soc/experiment/compldst.py;h=206f44876b00b6c1d94716e624a03e81208120d4;hb=a0e1af6c5dab5c324a8bf3a7ce6eb665d26a65c1)
+* [LD/ST Comp Units](https://git.libre-riscv.org/?p=soc.git;a=blob;f=src/soc/experiment/compldst.py)
 
-[[!img ld_st_comp_unit.png]]
+[[!img ld_st_comp_unit.jpg]]
 
 # Memory-Memory Dependency Matrix
 
