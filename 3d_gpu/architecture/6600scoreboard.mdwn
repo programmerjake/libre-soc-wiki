@@ -21,6 +21,8 @@ signals combined are dropped, the ReadRelease is dropped.
 Note that this is a loop: GoRead (ANDed with Busy) goes through
 to the priority picker, which generates GoRead, so it is critical
 (in a modern design) to use a clock-sync'd latch in this path.
+The original 6600 used rising-edge and falling-edge of the clock
+to avoid this issue.
 
 [[!img comp_unit_req_rel.jpg]]
 [[!img group_pick_rd_rel.jpg]]
