@@ -139,13 +139,19 @@ Discussions:
 * <http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2020-April/006167.html>
 * <https://groups.google.com/forum/#!topic/comp.arch/qeMsE7UxvlI>
 
+Walk-through Videos:
+
+* <https://www.youtube.com/watch?v=idDn1norNl0>
+* <https://www.youtube.com/watch?v=ipOe0cLOJWc>
+
 The Load/Store Computation Unit is a little more complex, involving
 three functions: LOAD, STORE, and LOAD-UPDATE.  The SR Latches create
 a forward-progressing Finite State Machine, with three possible paths:
 
 * LD Mode will activate Issue, GoRead1, GoAddr then finally GoWrite1
-* UPDATE Mode will activate Issue, GoRead1, GoAddr then GoWrite1 *and* 2.
+* LD-UPDATE Mode will *additionally* activate GoWrite2.
 * ST Mode will activate Issue, GoRead1, GoRead2, GoAddr then GoStore.
+  ST-UPDATE Mode will *additionally* activate GoWrite2.
 
 These signals will be allowed to activate when the correct "Req" lines
 are active.  Minor complications are involved (extra latches) that respond
