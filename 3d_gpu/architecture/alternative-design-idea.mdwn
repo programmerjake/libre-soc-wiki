@@ -1,1 +1,13 @@
 # TODO(programmerjake)
+
+Some ideas:
+
+## Abstract Prefix-sum Class
+
+We should build a generic class for implementing algorithms that are based on a [parallel Prefix-sum](https://en.wikipedia.org/wiki/Prefix_sum#Algorithm_2:_Work-efficient) except that, instead of numeric addition, any associative binary operator can be used (the operator and the set of possible values makes a mathematical [Semigroup](https://en.wikipedia.org/wiki/Semigroup)).
+
+Notably, there are algorithms that implement a parallel prefix-sum as a circuit that has a gate depth of O(log N) and has O(N) or O(N*log N) gates.
+
+Nearly all carry look-ahead circuits are based on that structure, by having the abstract binary operator be a single-bit carry propagation calculation.
+
+This will allow us to easily implement things like find-first-set-bit, population count, find-second-set-bit, etc., all of which are useful in implementing a load-store unit (as well as arithmetic/logical operations and other scheduling tasks).
