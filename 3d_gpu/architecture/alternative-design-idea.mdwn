@@ -1,4 +1,7 @@
-# TODO(programmerjake)
+# Load-Store unit alternative design
+(designed for full SMP, cache coherent, evenything else)
+
+TODO(programmerjake): fill in
 
 Some ideas:
 
@@ -10,4 +13,29 @@ Notably, there are algorithms that implement a parallel prefix-sum as a circuit 
 
 Nearly all carry look-ahead circuits are based on that structure, by having the abstract binary operator be a single-bit carry propagation calculation.
 
-This will allow us to easily implement things like find-first-set-bit, population count, find-second-set-bit, etc., all of which are useful in implementing a load-store unit (as well as arithmetic/logical operations and other scheduling tasks).
+This will allow us to easily implement things like find-first-set-bit (with binary or unary output), population count, find-second-set-bit, etc., all of which are useful in implementing a load-store unit (as well as arithmetic/logical operations and other scheduling tasks).
+
+## Load-Store Unit Queue
+
+have a queue based on a 2D array:
+
+| _ | _ | _ | _ |
+|---|---|---|---|
+| 0 | 1 | 2 | 3 |
+| 4 | 5 | 6 | 7 |
+| 8 | 9 | 10| 11|
+|...|...|...|...|
+
+
+* it logically behaves like a queue where each cell is the Nth cell from the head of the queue, where N is the number in the diagram above.
+* handles load/store/atomic/etc. operations
+* handles all operations after calculation of effective address, except for register write back and deciding when to cancel (which is still handled by the 6600 scheduling matrix).
+* each cell is a queue entry
+* when the first row of cells would all be empty (canceled/completed) in the next clock cycle, all cells are shifted up by one row, this is the only method by which an entry can move from HW cell to HW cell, reducing wiring costs. If new operations are waiting for space in the queue, they can be shifted into the bottom row. The shift operation is done right at the end of each clock cycle, so all other operations for a particular cell are completed and the results are stored in the registers for the cell (if not shifting) or in the cell immediately above (if shifting).
+* when there are new operations to add to the queue, they are scheduled to each column in round-robin form (or the 6600 scheduling matrix can be extended to manage it) the idea being that, each clock cycle, a whole new row of operations can be added to the queue. When adding an operation to a column, it is added to the first empty cell in that column where there aren't any full cells in any columns logically after that cell. This maintains order of operations.
+* When selecting which queue entries to execute, the first non-empty cell in the first row is selected, and the L1 cache line address it would use is broadcast to all cells.
+* If all empty cells in the first row are empty, then no operation is executed (except for shifting cells up).
+* Each cell checks if its effective address would put it in the same L1 cache line address as the broadcast address, and if it can be combined with previously selected operations (requires there not be any intervening operations that behave like a fence, or are not the same type of operation; also requires that there not be any overlapping memory writes, however overlapping reads are fine). Detecting if each cell can be combined can be calculated using the [Abstract Prefix-sum Class].  The first few (4) cells that pass the check (the cell that provided the broadcast address is always selected) then are executed together.
+* LL/SC operations are tracked at the L1 cache, LL operations require switching the cache line to the Exclusive or modified state, if the line is written to locally or switched out of the exclusive or modified states, then the LL link bit is released. To support the required RISC-V forward progress guarantees (as well as the more implicit Power progress guarantees), once a cache line is set to exclusive/modified, operations to switch it out of the exclusive/modified state are stalled until at least 16 cycles (or some other suitable number) after the LL instruction was executed or until the matching SC is executed, after which, they don't need to be stalled.
+* All load/store operations are converted to cache-line-sized accesses of either the L1 cache or the L2 or farther along in the memory hierarchy. The L1 cache and load/store unit are connected to all other memory devices (caches, dram, etc.) using the cache coherence protocol.
+* Multiple non-overlapping non-LL/SC atomic operations can be executed simultaneously (important if atomics are used for framebuffer updates, however that will probably not be the case, since the current plan in Kazan is to process each region of the screen in a single-threaded fashion, distinct regions can be processed in parallel).
