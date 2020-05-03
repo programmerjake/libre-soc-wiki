@@ -11,4 +11,54 @@ The FP and Integer registers need to be a massive 128 x 64-bit.
 
 # Connectivity between regfiles and Function Units
 
-[[!img regfile_hilo_32_odd_even.png size="600px"]]
+The target for the first ASICs is a minimum of 4 32-bit FMACs per clock cycle.
+If it is acceptable that this be achieved on sequentially-adjacent-numbered
+registers, a significant reduction in the amount of regfile porting may be
+achieved (down from 12R4W)
+
+It does however require that the register file be broken into four
+completely separate and independent quadrants, each with their own
+separate and independent 3R1W (or 4R1W ports).
+
+This then requires some Bus Architecture to connect and keep the pipelines
+busy.  Below is the connectivity diagram:
+
+* A single Dynamic PartitionedSignal capable 64-bit-wide pipeline is at the
+  top (a second Dynamic pipeline is off-page, with its own FUs)
+* A **pair** of 32-bit Function Units connect to the (shared) pipeline.
+* The number of **pairs** of Function Units **must** match (or preferably
+  exceed) the number of pipeline stages.
+* Connected to each of the Operand and Result Ports on each Function Unit
+  is a cyclic buffer.
+* Read-operands may "cycle" to reach their destination
+* Write-operands may be "cycled" so as to pick an appropriate destination.
+* **Independent** Common Data Buses, one for each Quadrant of the Regfile,
+  connect between the Function Unit's cyclic buffers and the **global**
+  cyclic buffers dedicated to that Quadrant.
+* Within each Quadrant's global cyclic buffers, inter-buffer transfer ports
+  allow for copies of regfile data to be transferred from write-side to
+  read-side.  This constitutes the entirety of what is known as an
+  **Operand Forwarding Bus**.
+* **Between** each Quadrant's global cyclic buffers, there exists a 4x4
+  Crossbar that allows data to move (slowly, and if necessary) across
+  Quadrants.
+
+Notes:
+
+* The **only** way for register results and operands to cross over between
+  quadrants of the regfile is that 4x4 crossbar.  Data transfer bandwidth
+  being limited, the placement of an operation adversely affects its
+  completion time.  Thus, given that read operands exceed the number
+  of write operands, allocation of operations to Function Units should
+  prioritise placing the operation where the "reads" may go straight
+  through.
+* Outlined in this comment <https://bugs.libre-soc.org/show_bug.cgi?id=296#10>
+  the infrastructure above can, by way of the cyclic buffers, cope with
+  and automatically adapt between a *serial* delivery of operands, and
+  a *parallel* delivery of operands.  And, that, actually, performance is
+  not adversely affected by the serial delivery, although the latency
+  of an FMAC is extended by 3 cycles: this being the fact that only one
+  CDB is available to deliver operands.
+
+
+[[!img regfile_hilo_32_odd_even.png size="500px"]]
