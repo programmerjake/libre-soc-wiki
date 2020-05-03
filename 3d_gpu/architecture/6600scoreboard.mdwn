@@ -29,32 +29,32 @@ the reason i feel that the weirdness exists is for a few reasons:
   hazards that allow reads to proceed.
 * fifth: the ComputationUnits still need to "manage" the input and output
   of those resources to actual pipelines (or FSMs).
- - (a) the CUs are *not* permitted to blithely say, if there is an
-  expected output that also needs managing "ok i got the inputs, now throw
-  them at the pipeline, i'm done".  they *must* wait for that result.  of
-  course if there is no result to wait for, they're permitted to indicate
+ - (a) the CUs are *not* permitted to blithely say, if there is an
+    expected output that also needs managing "ok i got the inputs, now throw
+    them at the pipeline, i'm done".  they *must* wait for that result.  of
+    course if there is no result to wait for, they're permitted to indicate
 "done" without waiting (this actually happens in the case of STORE).
- - (b) there's an apparent disconnect between "fetching of registers"
-  and "Computational Unit progress".  surely, one feels, there should
-  be something that, again, "orders the CU to proceed in a set, orderly
-  progressive fashion?".  instead, because the progress is from the
-*absence* of hazards, the CU's FSMs likewise make forward progress from
-the "acknowledgement" of each blockage being dropped.
+ - (b) there's an apparent disconnect between "fetching of registers"
+    and "Computational Unit progress".  surely, one feels, there should
+    be something that, again, "orders the CU to proceed in a set, orderly
+    progressive fashion?".  instead, because the progress is from the
+    *absence* of hazards, the CU's FSMs likewise make forward progress from
+  the "acknowledgement" of each blockage being dropped.
 * sixth: one of the incredible but puzzling things is that register
   renaming is *automatically* built-in to the design.  the Function Unit's
   input and output latches are effectively "nameless" registers.
  - (a) the more Function Units you have, the more nameless registers
-   exist.  the more nameless registers exist, the further ahead that
+    exist.  the more nameless registers exist, the further ahead that
  in-flight execution can progress, speculatively.
  - (b) whilst the Function Units are devoid of register "name"
-   information, the FU-Regs Dependency Matrix is *not* devoid of that
-   information, having latched the read/write register numbers in an unary
-   form, as a "row", one bit in each row representing which register(s)
-   the instruction originally contained.
+    information, the FU-Regs Dependency Matrix is *not* devoid of that
+    information, having latched the read/write register numbers in an unary
+    form, as a "row", one bit in each row representing which register(s)
+    the instruction originally contained.
  - (c) by virtue of the direct Operand Port connectivity between the FU
-   and its corresponding FU-Regs DM "row", the Function Unit requesting for
-   example Operand1 results in the FU-Regs DM *row* triggering a register
- file read-enable line, *NOT* the Function Unit itself.
+    and its corresponding FU-Regs DM "row", the Function Unit requesting for
+    example Operand1 results in the FU-Regs DM *row* triggering a register
+    file read-enable line, *NOT* the Function Unit itself.
 * seventh: the PriorityPickers manage resource contention between the FUs
   and the row-information from the FU-Regs Matrix.  the port bandwidth
   by nature has to be limited (we cannot have 200 read/write ports on
@@ -64,10 +64,23 @@ the "acknowledgement" of each blockage being dropped.
 
 ultimately then, there is:
 
-* an FU-Regs Matrix that, on a per-row basis, captures the instruction's register numbering (in unary, one SR-Latch raised per register per row) on a per-operand basis
-* an FU-FU Matrix that preserves, as a Directed Acyclic Graph (DAG), the instruction order.  again, this is a bit-based system (SR Latches) that record which *read port* of the Function Unit needs a write result (when available).
-* a suite of Function Units with input *and* output latches where the register information is *removed* (that being back in the FU-Regs row associated with a given FU)
-* a PriorityPicker system that acknowledges the desire for access to the register file, and, due to the regfile ports being a contended resource, *only* permits one and only one FunctionUnit at a time to gain access to that regfile port.  where the FunctionUnit knows the Operand number it requires the input (or output) to come from (or to), it is the FU-Regs *row* that knows, on a per-operand-number basis, what the actual register file number is.
+* an FU-Regs Matrix that, on a per-row basis, captures the instruction's
+  register numbering (in unary, one SR-Latch raised per register per row)
+  on a per-operand basis
+* an FU-FU Matrix that preserves, as a Directed Acyclic Graph (DAG),
+  the instruction order.  again, this is a bit-based system (SR Latches)
+  that record which *read port* of the Function Unit needs a write result
+  (when available).
+* a suite of Function Units with input *and* output latches where the
+  register information is *removed* (that being back in the FU-Regs row
+  associated with a given FU)
+* a PriorityPicker system that acknowledges the desire for access to the
+  register file, and, due to the regfile ports being a contended resource,
+  *only* permits one and only one FunctionUnit at a time to gain access to
+  that regfile port.  where the FunctionUnit knows the Operand number it
+  requires the input (or output) to come from (or to), it is the FU-Regs
+  *row* that knows, on a per-operand-number basis, what the actual register
+  file number is.
 
 # Modifications needed to Computation Unit and Group Picker
 
