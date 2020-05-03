@@ -594,7 +594,7 @@ so my questions are:
 
 [[!img dependence_cell_multi_pending.jpg size="600x"]]
 
-# Corresponding Function-Unit Dependency Cell Modifications
+# Corresponding FU-FU (Function-to-Function) Dependency Cell Modifications
 
 * Video <https://youtu.be/_5fmPpInJ7U>
 
@@ -605,4 +605,43 @@ Original 6600 FU-FU Cell diagram:
 Augmented multi-GORD/GOWR 6600 FU-FU Cell diagram:
 
 [[!img fu_dep_cell_multi_6600.jpg size="600x"]]
+
+# FU-Regs Vectors
+
+There are two FU-Regs Vectors.  The first is an accumulation of
+all row information.  This indicates that (on a per-Operand basis
+in the Libre-SOC design) there is *a* write pending for that Operand
+(note that this is not per **register**, it is per **operand**).
+Likewise, the OR-accumulation of every unary-encoded register SR-Latch
+bit in the row, for reading for each FU's Operand, indicates a
+desire of that Function Unit's need to *read* from a given port.
+
+These accumulated signals, coming out on a per-row basis for each
+Operand port, are sent straight to every cell in the corresponding
+FU-FU Matrix row.
+
+[[!img fu_regs_row_pending.png size="600x"]]
+
+The second vector set accumulates the **column** information.  With the
+FU-Regs Cells capturing the instruction operand read/write register
+numbers (in unary form), the ORing per column of those bits creates
+a "global picture", per register, of the fact that *any* Function Unit
+needs to read (or write) a particular Operand latch port.
+
+[[!img fu_regs_global_pending_vec.png size="500x"]]
+
+# FU-FU Vectors
+
+Two vectors exist that accumulate row and column information.  With the
+FU-FU Cell recording whether the Function Unit *wants* to read (or write)
+the per-cell information is not so crucial as the *accumulation* of that
+information.  When all other Function Units in that column no longer
+indicate that they were waiting for a read, that FU is clear to **write**.
+Correspondingly, when all FUs in the column no longer indicate waiting
+for a write, that FU is clear to **read**.  With a full NxN matrix of
+cells, this inversion preserves Read-after-Write and Write-after-Read
+hazard information relationships between **all** Function Units and all
+other Function Units.
+
+[[!img fu_fu_readable_writeable.png size="500x"]]
 
