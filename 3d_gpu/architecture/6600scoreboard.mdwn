@@ -114,6 +114,49 @@ Source:
 * [Priority Pickers](https://git.libre-riscv.org/?p=nmutil.git;a=blob;f=src/nmutil/picker.py;hb=HEAD)
 * [ALU Comp Units](https://git.libre-riscv.org/?p=soc.git;a=blob;f=src/soc/experiment/compalu.py;h=f7b5e411a739e770777ceb71d7bd09fe4e70e8c0;hb=b08dee1c3e8cf0d635820693fe50cd0518caeed2)
 
+# Concurrent Computational Unit
+
+With the original 6600 having only a 2-stage pipelined FPU (which took
+many years to notice from examining the now-archaic notation from James
+Thornton's book, "Design of a Computer"), there is no actual use of this
+pipeline capability at the front-end Function Unit.  Instead it is
+treated effectively as a Finite State Machine, only one result to be
+computed at a time.
+
+Mitch Alsup recommends, when using pipelines, to allow multiple
+Function Unit "front-ends", each one having inputs that were pushed
+into a particular stage of the pipeline, and, therefore, those multiple
+Function Units also track and store the result as it comes out.
+
+The trick then is to have a method that ensures that FU front-end #1
+can get result #1 when it pops out the end of the (serial) pipeline.
+Mitch recommends using timing chains, here.
+
+Note in this diagram that there are *multiple* ISSUE, GO\_READ and GO\_WRITE
+signals.  These link up to the Function Unit's ISSUE, GO\_RD and GO\_WR,
+where the latches are, that will (on an available slot) feed the pipeline
+with incoming data.
+
+[[!img concurrent_comp_unit.png size="600x"]]
+
+The actual design being used is slightly different, in the following
+ways:
+
+* Due to micro-coding and thus external contention, the pipelines
+  have a ready/valid signalling arrangement that can result in
+  a stall cascading back down the pipeline.  Thus a timing chain
+  is not appropriate.
+* A decision was therefore made to pass a "context" alongside the
+  operands, which is the "Function Unit Index".  It is *this* information
+  that is used to "reassociate" the result with the correct FU, when
+  the result is produced.
+* With "Shadow cancellation" being in effect, *additional* global
+  context is passed (combinatorially) to every single stage of the
+  pipeline, as an unary bitmask.  If any Function Unit's "GO_DIE"
+  signal is asserted, the corresponding bit in the unary mask is
+  asserted, terminating effective immediate the intermediary data
+  anywhere in the pipeline from progressing further, thus saving power.
+
 # Multi-in cascading Priority Picker
 
 Using the Group Picker as a fundamental unit, a cascading chain is created,
