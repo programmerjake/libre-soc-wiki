@@ -45,6 +45,10 @@ busy.  Below is the connectivity diagram:
 
 Notes:
 
+* There is only **one** 4x4 crossbar (or, one for reads, one for writes?)
+  and thus only **one** inter-Quadrant 32-bit-wide data path (total
+  bandwidth 4x32 bits).  These to be shared by **five** groups of
+  operand ports at each of the Quadrant Global Cyclic Buffers.
 * The **only** way for register results and operands to cross over between
   quadrants of the regfile is that 4x4 crossbar.  Data transfer bandwidth
   being limited, the placement of an operation adversely affects its
