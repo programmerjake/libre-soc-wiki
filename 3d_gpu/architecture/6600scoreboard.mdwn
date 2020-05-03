@@ -8,18 +8,59 @@ btw one thing that's not obvious - at all - about scoreboards is: there's nothin
 
 the reason i feel that the weirdness exists is for a few reasons:
 
-* firstly, the Matrices create a Directed Acyclic Graph, using single-bit SR-Latches.  for a software engineer, being able to express a DAG using a matrix is itself.. .weird :)
-* secondly: those Matrices preserve time *order* (instruction dependent order actually), they are not themselves dependent *on* time itself.  this is especially weird if one is used to an in-order system, which is very much critically dependent on "time" and on strict observance of how long results are going to take to get through a pipeline.  we could do the entire design based around low-gate-count FSMs and it would still be absolutely fine.
-* thirdly, it's the *absence* of blocks that allows a unit to proceed.  unlike an in-order system, there's nothing saying "you go now, you go now": it's the opposite.  the unit is told instead, "here's the resources you need to WAIT for: go when those resources are available".
-* fourth (clarifying 3): it's reads that block writes, and writes that block reads.  although obvious when thought through from first principles, it can get particularly confusing that it is the *absence* of read hazards that allow writes to proceed, and the *absence* of write hazards that allow reads to proceed.
-* fifth: the ComputationUnits still need to "manage" the input and output of those resources to actual pipelines (or FSMs).
- - (a) the CUs are *not* permitted to blithely say, if there is an expected output that also needs managing "ok i got the inputs, now throw them at the pipeline, i'm done".  they *must* wait for that result.  of course if there is no result to wait for, they're permitted to indicate "done" without waiting (this actually happens in the case of STORE).
- - (b) there's an apparent disconnect between "fetching of registers" and "Computational Unit progress".  surely, one feels, there should be something that, again, "orders the CU to proceed in a set, orderly progressive fashion?".  instead, because the progress is from the *absence* of hazards, the CU's FSMs likewise make forward progress from the "acknowledgement" of each blockage being dropped.
-* sixth: one of the incredible but puzzling things is that register renaming is *automatically* built-in to the design.  the Function Unit's input and output latches are effectively "nameless" registers.
- - (a) the more Function Units you have, the more nameless registers exist.  the more nameless registers exist, the further ahead that in-flight execution can progress, speculatively.
- - (b) whilst the Function Units are devoid of register "name" information, the FU-Regs Dependency Matrix is *not* devoid of that information, having latched the read/write register numbers in an unary form, as a "row", one bit in each row representing which register(s) the instruction originally contained.
- - (c) by virtue of the direct Operand Port connectivity between the FU and its corresponding FU-Regs DM "row", the Function Unit requesting for example Operand1 results in the FU-Regs DM *row* triggering a register file read-enable line, *NOT* the Function Unit itself.
-* seventh: the PriorityPickers manage resource contention between the FUs and the row-information from the FU-Regs Matrix.  the port bandwidth by nature has to be limited (we cannot have 200 read/write ports on the regfile).  therefore the connection between the FU and the FU-Regs "row" in which the actual reg numbers is stored (in unary) is even *less* direct than it is in an in-order system.
+* firstly, the Matrices create a Directed Acyclic Graph, using single-bit
+  SR-Latches.  for a software engineer, being able to express a DAG using
+  a matrix is itself.. .weird :)
+* secondly: those Matrices preserve time *order* (instruction
+  dependent order actually), they are not themselves dependent *on* time
+  itself.  this is especially weird if one is used to an in-order system,
+  which is very much critically dependent on "time" and on strict observance
+  of how long results are going to take to get through a pipeline.  we
+  could do the entire design based around low-gate-count FSMs and it would
+  still be absolutely fine.
+* thirdly, it's the *absence* of blocks that allows a unit to
+  proceed.  unlike an in-order system, there's nothing saying "you go now,
+  you go now": it's the opposite.  the unit is told instead, "here's the
+  resources you need to WAIT for: go when those resources are available".
+* fourth (clarifying 3): it's reads that block writes, and writes
+  that block reads.  although obvious when thought through from first
+  principles, it can get particularly confusing that it is the *absence*
+  of read hazards that allow writes to proceed, and the *absence* of write
+  hazards that allow reads to proceed.
+* fifth: the ComputationUnits still need to "manage" the input and output
+  of those resources to actual pipelines (or FSMs).
+ - (a) the CUs are *not* permitted to blithely say, if there is an
+  expected output that also needs managing "ok i got the inputs, now throw
+  them at the pipeline, i'm done".  they *must* wait for that result.  of
+  course if there is no result to wait for, they're permitted to indicate
+"done" without waiting (this actually happens in the case of STORE).
+ - (b) there's an apparent disconnect between "fetching of registers"
+  and "Computational Unit progress".  surely, one feels, there should
+  be something that, again, "orders the CU to proceed in a set, orderly
+  progressive fashion?".  instead, because the progress is from the
+*absence* of hazards, the CU's FSMs likewise make forward progress from
+the "acknowledgement" of each blockage being dropped.
+* sixth: one of the incredible but puzzling things is that register
+  renaming is *automatically* built-in to the design.  the Function Unit's
+  input and output latches are effectively "nameless" registers.
+ - (a) the more Function Units you have, the more nameless registers
+   exist.  the more nameless registers exist, the further ahead that
+ in-flight execution can progress, speculatively.
+ - (b) whilst the Function Units are devoid of register "name"
+   information, the FU-Regs Dependency Matrix is *not* devoid of that
+   information, having latched the read/write register numbers in an unary
+   form, as a "row", one bit in each row representing which register(s)
+   the instruction originally contained.
+ - (c) by virtue of the direct Operand Port connectivity between the FU
+   and its corresponding FU-Regs DM "row", the Function Unit requesting for
+   example Operand1 results in the FU-Regs DM *row* triggering a register
+ file read-enable line, *NOT* the Function Unit itself.
+* seventh: the PriorityPickers manage resource contention between the FUs
+  and the row-information from the FU-Regs Matrix.  the port bandwidth
+  by nature has to be limited (we cannot have 200 read/write ports on
+  the regfile).  therefore the connection between the FU and the FU-Regs
+  "row" in which the actual reg numbers is stored (in unary) is even *less*
+  direct than it is in an in-order system.
 
 ultimately then, there is:
 
