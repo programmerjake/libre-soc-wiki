@@ -100,27 +100,24 @@ Also note that you can edit this wiki.  You can experiment in the [[Sandbox]].
 
 Here is an example process of how to play with the soc code:
 
-<div class="jumbotron">
-pip3 install virtualenv requests <br />
-mkdir ~/.virtualenvs && cd ~/.virtualenvs <br />
-python3 -m venv libresoc <br />
-source ~/.virtualenvs/bin/activate <br />
-<br />
-cd ~; mkdir libresoc; cd libresoc <br />
-git clone https://git.libre-riscv.org/git/nmutil.git <br />
-git clone https://git.libre-riscv.org/git/ieee754fpu.git <br />
-git clone --recursive https://git.libre-riscv.org/git/soc.git <br />
-<br />
-cd nmutil; pip3 install -e .; cd .. <br />
-cd ieee754fpu; pip3 install -e .; cd .. <br />
-cd soc; pip3 install -e .; cd .. <br />
-<br />
-# play with the decoder <br />
-python3 soc/src/soc/decoder/power_decoder.py <br />
-<br />
-# after installing yosys <br />
-yosys -p "read_ilang decoder.il; show dec31" <br />
-</div>
+    pip3 install virtualenv requests
+    mkdir ~/.virtualenvs && cd ~/.virtualenvs
+    python3 -m venv libresoc
+    source ~/.virtualenvs/bin/activate
+    
+    cd ~; mkdir libresoc; cd libresoc
+    git clone https://git.libre-riscv.org/git/nmutil.git
+    git clone https://git.libre-riscv.org/git/ieee754fpu.git
+    git clone https://git.libre-riscv.org/git/soc.git
+    
+    cd nmutil; pip3 install -e .; cd ..
+    cd ieee754fpu; pip3 install -e .; cd ..
+    cd soc; pip3 install -e .; cd ..
+    
+    python3 soc/src/soc/decoder/power_decoder.py
+    yosys -p "read_ilang decoder.il; show dec31" 
+
+
 
 ## How can I learn?
 
