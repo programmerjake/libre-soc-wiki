@@ -1,8 +1,13 @@
 # Top Level page for core architecture
 
-The primary design is based around the CDC 6600, specifically its Dependency Matrices which provide superscalar out-of-order execution and full register renaming with very little in the way of gates or power consumption.  Modifying the 6600 concept to be multi-issue, thanks to help from Mitch Alsup, is near-trivial and an O(N) linear complexity.
+The primary design is based around the CDC 6600, specifically its Dependency Matrices which provide superscalar out-of-order execution and full register renaming with very little in the way of gates or power consumption.  Modifying the 6600 concept to be multi-issue, thanks to help from Mitch Alsup, is near-trivial and an O(N) linear complexity.  Additionally,
+Mitch helped us to add "Precise exceptions", which is the same pathway
+used for branch speculation and predication.
 
-This allows a mixture of variable-length completion time ALUs, including dynamic pipelines and blocking FSMs, to be mixed together and the Dependency Matrices simply take care of it.
+The use of Dependency Matrices allows a mixture of variable-length
+completion time ALUs, including dynamic pipelines and blocking FSMs,
+to be mixed together and the Dependency Matrices, maintaining a Directed
+Acyclic Graph of all Read-Write hazards, simply take care of it.
 
 The selection of the 6600 as the core engine has far-reaching implications.  Note: the standard academic literature on the 6600 - all of it - completely and systematically fails to comprehend or explain why it is so elegant.  In fact, several modern microarchitectures have *reinvented* aspects of the 6600, not realising that the 6600 was the first ever microarchitecture to provide full register renaming combined with out-of-order execution in such a superbly gate-efficient fashion.
 
