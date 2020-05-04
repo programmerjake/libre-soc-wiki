@@ -8,7 +8,7 @@ Source code: <https://git.libre-riscv.org/?p=soc.git;a=tree;f=src/soc/decoder;hb
 
 # POWER
 
-The decoder has been written in python, to parse straight CSV files and other information taken directly from the Power ISA Standards PDF files. This significantly reduces the possibility of manual transcription errors and greatly reduces code size.  Based on Anton Blanchard's excellent microwatt design, these tables are in [[openpower/isatables]] which includes links to doenload the csv files.
+The decoder has been written in python, to parse straight CSV files and other information taken directly from the Power ISA Standards PDF files. This significantly reduces the possibility of manual transcription errors and greatly reduces code size.  Based on Anton Blanchard's excellent microwatt design, these tables are in [[openpower/isatables]] which includes links to download the csv files.
 
 The top level decoder object recursively drops through progressive levels of case statement groups, covering additional portions of the incoming instruction bits.  More on this technique - for which python and nmigen were *specifically* and strategically chosen - is outlined here <http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2020-March/004882.html>
 
