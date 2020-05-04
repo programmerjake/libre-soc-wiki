@@ -2,6 +2,44 @@ This is the SandBox, a page anyone can edit to learn how to use the wiki.
 
 ----
 
+Some codebox:
+
+```python
+from enum import Enum, unique
+from nmigen import *
+
+@unique
+class selects(Enum):
+    sel_A = 0
+    sel_B = 1
+    sel_C = 2
+    sel_D = 3
+    sel_E = 4
+    sel_F = 20
+
+class Top(Elaboratable):
+    def __init__(self):
+        self.in_ = Signal(selects)
+        self.out = Signal()
+    
+    def elaborate(self, platform):
+        m = Module()
+        m.d.comb += self.out.eq(self.in_)
+
+        with m.If(self.in_ == selects.sel_F):
+            m.d.comb += self.out.eq(1)
+        with m.Else():
+            m.d.comb += self.out.eq(0)
+
+        return m
+
+from nmigen.back import verilog
+f = open("top.v", "w")
+top = Top()
+ports = [top.in_, top.out]
+f.write(verilog.convert(top, name='top',strip_internal_attrs=True,ports=ports))
+```
+
 Here's a paragraph.
 
 Here's another one with *emphasised* text.
