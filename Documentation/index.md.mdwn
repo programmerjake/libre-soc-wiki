@@ -1,3 +1,6 @@
+# Documentation
+## Codebase Structure
+
 The SOC is partitioned into three repositories at the moments.
 
 | Git Repo | Documentation |
@@ -5,3 +8,22 @@ The SOC is partitioned into three repositories at the moments.
 | [SOC](https://git.libre-soc.org/?p=soc.git;a=tree) | [SOC Docs](../SOC/index.md) |
 | [FPU](https://git.libre-soc.org/?p=ieee754fpu.git;a=tree) | -- |
 | [nmutil](https://git.libre-soc.org/?p=nmutil.git;a=tree) | -- |
+
+## Installing the Codebase
+
+    pip3 install virtualenv requests
+    mkdir ~/.virtualenvs && cd ~/.virtualenvs
+    python3 -m venv libresoc
+    source ~/.virtualenvs/bin/activate
+    
+    cd ~; mkdir libresoc; cd libresoc
+    git clone https://git.libre-riscv.org/git/nmutil.git
+    git clone https://git.libre-riscv.org/git/ieee754fpu.git
+    git clone https://git.libre-riscv.org/git/soc.git
+    
+    cd nmutil; pip3 install -e .; cd ..
+    cd ieee754fpu; pip3 install -e .; cd ..
+    cd soc; pip3 install -e .; cd ..
+    
+    python3 soc/src/soc/decoder/power_decoder.py
+    yosys -p "read_ilang decoder.il; show dec31" 
