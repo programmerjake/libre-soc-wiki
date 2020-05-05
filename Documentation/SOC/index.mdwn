@@ -2,7 +2,7 @@ The SOC is designed to be compliant with POWER 3.0B with somewhere near 300 inst
 
 # Decoder
 
-The Decoder currently uses a class called PowerOp which get instantiated for every instruction. PowerOp class instantiation has member objects who's values get set respectively for each instruction.
+The Decoder currently uses a class called PowerOp which get instantiated for every instruction. PowerOp class instantiation has member signals who's values get set respectively for each instruction.
 
 We use Pythons Enums to help with common decoder values.
 Below is the POWER add insruction.
@@ -11,7 +11,7 @@ Below is the POWER add insruction.
 |--------------|------|-------------|-----|-----|------|-----|-------|--------|-------|---------|--------|---------|----------|----|---------|-----|------|-----|-----|----|----|----------|---------|------|
 | 0b0100001010 | ALU  | OP_ADD      | RA  | RB  | NONE | RT  | 0     | 0      | 0     | 0       | ZERO   | 0       | NONE     | 0  | 0       | 0   | 0    | 0   | 0   | RC | 0  | 0        | add     | XO   |
 
-Here is an example of a toy multiplexer that sets various fields in the PowerOP signal class when 1 is set.
+Here is an example of a toy multiplexer that sets various fields in the PowerOP signal class to the correct values for the add instruction when select==1 is set.
 
     from nmigen import Module, Elaboratable, Signal, Cat, Mux
     from soc.decoder.power_enums import (Function, Form, InternalOp,
