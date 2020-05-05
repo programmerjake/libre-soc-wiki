@@ -12,6 +12,7 @@ Below is the POWER add insruction.
 | 0b0100001010 | ALU  | OP_ADD      | RA  | RB  | NONE | RT  | 0     | 0      | 0     | 0       | ZERO   | 0       | NONE     | 0  | 0       | 0   | 0    | 0   | 0   | RC | 0  | 0        | add     | XO   |
 
 Here is an example of a toy multiplexer that sets various fields in the PowerOP signal class to the correct values for the add instruction when select==1 is set.
+This should give you a feel for how we work with enums and PowerOP.
 
     from nmigen import Module, Elaboratable, Signal, Cat, Mux
     from soc.decoder.power_enums import (Function, Form, InternalOp,
