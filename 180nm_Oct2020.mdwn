@@ -1,0 +1,56 @@
+# 180 nm ASIC plan for Oct 2020
+
+This page is for discussion of what we can aim for and reasonably achieve.
+To be expanded with links to bugreports
+
+## Minimum viability
+
+* a Wishbone interface.  this allows us to drop *directly* into
+  already-written Litex "SOC" infrastructure (leaving all of us free to
+  focus on the essentials)
+* the dependency matrices are essential.
+* a Branch Function Unit is essential (minimum of 1)
+* Load/Store Function Units are essential
+* so are multiple register file files (SPRs, Condition Regs, 32x INT Regs)
+* the integer pipelines (integer and logic instructions) are essential
+  (the FP ones not so much)
+* a very very basic Branch Prediction system (fixed, but observing POWER
+  branch "hints")
+* a very very basic Common Data Bus infrastructure.
+* a TLB and MMU are not strictly essential (not for a proof-of-concept ASIC)
+* neither in some ways is a L1 cache
+* interfaces we need as a bare minimum include GPIO, EINT, SPI and QSPI,
+  I2C, UART16550, LPC (from Raptor Engineering) and that actually might
+  even be it.
+
+## Secondary priorities
+
+* a PLL (this is quite a lot however it turns the ASIC from a 24mhz
+  design into a 300mhz design)
+* a TLB and MMU (in combination with a PLL if it is GNU/Linux OS capable
+  we have an actual viable *saleable product*, immediately)
+* dual L1 Caches with the 2x 128-bit-wide L0CacheBuffer to merge 8x LD/STs
+* multiple Common Data Buses to / from the RegFile along with a 4x
+  "Striped" HI/LO-32-ODD/EVEN access pattern.
+* multi-issue
+* PartitionedSignal-based integer pipelines
+* an FP regfile and associated FP pipelines
+* SV compliance
+* 128x INT/FP registers
+* GPU-style opcodes - Jacob mentioned Texturisation opcodes as being
+  more important than e.g. SIN/COS.
+* additional interfaces such as RGB/TTL, SDRAM, HyperRAM, RGMII, SD/MMC,
+  USB-ULPI
+* a pinmux
+
+# Available people
+
+* Rudi from <http://asics.ws> to cover the interface set
+* [[lkcl]] for the scoreboard systems
+* [[programmerjake]] TODO
+* [[Yehowshua_Immanuel]] TODO
+* [[mtnolan]] TODO
+* [[tplaten]] TODO
+* [[jock_tanner]] TODO
+* MarketNext TODO
+
