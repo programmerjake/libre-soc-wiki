@@ -1,5 +1,7 @@
 # Interfaces for the 180nm Oct2020 ASIC
 
+http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2020-May/006355.html
+
 Bugreport and discussion at <https://bugs.libre-soc.org/show_bug.cgi?id=304>
 
 These are bare minimum viability:
@@ -18,5 +20,23 @@ Under consideration:
 * [[shakti/m_class/sdram]] see <http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2020-May/006374.html>
 
 # Secondary priorities
+
+* a PLL (this is quite a lot however it turns the ASIC from a 24mhz
+design into a 300mhz design)
+* a TLB and MMU (in combination with a PLL if it is GNU/Linux OS
+capable we have an actual viable *saleable product*, immediately)
+* dual L1 Caches with the 2x 128-bit-wide L0CacheBuffer to merge 8x LD/STs
+* multiple Common Data Buses to / from the RegFile along with a 4x
+"Striped" HI/LO-32-ODD/EVEN access pattern.
+* multi-issue
+* PartitionedSignal-based integer pipelines
+* an FP regfile and associated FP pipelines
+* SV compliance
+* 128x INT/FP registers
+* GPU-style opcodes - Jacob you mentioned Texturisation opcodes as
+being more important than e.g. SIN/COS.
+* additional interfaces such as RGB/TTL, SDRAM, HyperRAM, RGMII,
+SD/MMC, USB-ULPI
+* a pinmux
 
 TODO
