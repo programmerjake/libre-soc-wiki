@@ -98,16 +98,24 @@ global resources by way of any form of "unmanaged" path.  Each Function
 Unit may **only** receive incoming data and may **only** pass that data
 out via the set determined path, as controlled by the Dependency Matrices.
 
-An augmentation of this arrangement, for a modern processor using pipelines,
-is to "double up" (or triple, or quadruple etc.) the number of Function
-Units, but to *share the same pipeline*.  See "Concurrent Computation Unit"
-section below for details.
+Thus, the inputs for a given FU absolutely have to cover all resources
+that the ALU will need.  In the case of POWER9, for the Integer Function
+Units this is not just the Integer operands, it's the *Condition* operands
+(CR0, XER carry bits etc.) that need to be inputs (and outputs) as well.
+In the case of the Branch Function Unit, the input operands (and outputs)
+will likewise be not just the Integer operands, but CTR, LR etc. as well.
 
 In the arrangement below (from the CDC 6600), it can be observed that
 there are actually separate Register Files (A, B and X).  Also observe
 that whilst X goes to *all* Function Units as input, B only goes to
 Branch, Increment and LongAdd, where A goes to Branch and the two Increment
 Function Units.  Thus, A was 3R3W, B was 4R3W, and X was 5R4W.
+
+An augmentation of this arrangement, for a modern processor using pipelines,
+is, rather than have separate FSMs and doubled-up (or greater) Function Units
+is to "double up" (or triple, or quadruple etc.) the number of Function
+Units, but to *share the same pipeline*.  See "Concurrent Computation Unit"
+section below for details.
 
 [[!img multiple_function_units.png size="600x"]]
 
