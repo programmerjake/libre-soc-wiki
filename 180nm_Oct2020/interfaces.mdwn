@@ -23,9 +23,23 @@ Under consideration:
 # Secondary priorities
 
 * a pinmux
-* USB - again doable with LiteX. I'm talking to Enjoy Digital about what USB PHYs LiteX supports. - Yehowshua
-* SERDES for Ethernet - using LiteX and [Marvell PHY](https://www.mouser.com/ProductDetail/Marvell/88E1512-A0-NNP2I000?qs=vdi0iO8H4N0XzuXqBRxTqg%3D%3D)
-* Noting that a SERDES to RGMII PHY is $20(kinda expensive for total cost of an SBC), we can instead do Eth over USB like the original RPI. This moves the complexity to software - could make doing eth things during boot loader a little more complex.
+* USB - again doable with LiteX. I'm talking to Enjoy Digital about what
+  USB PHYs LiteX supports. - Yehowshua
+* SERDES for Ethernet - using LiteX and
+  [Marvell PHY](https://www.mouser.com/ProductDetail/Marvell/88E1512-A0-NNP2I000?qs=vdi0iO8H4N0XzuXqBRxTqg%3D%3D)
+* Noting that a SERDES to RGMII PHY is $20 (kinda expensive for total cost
+  of an SBC), we can instead do Eth over USB like the original RPI. This
+  moves the complexity to software - could make doing eth things during
+  boot loader a little more complex.
+
+Jacob notes:
+
+I haven't checked but I'm 99% sure that we will need to implement standard
+Power atomics, fences, ll/sc (including 128-bit version), cache flushes,
+and non-cacheable load/store operations if we want to support Linux on our
+october test chip.
+
+<http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2020-May/006407.html>
 
 ## Alternate USB Interface Options
  - https://github.com/im-tomu/valentyusb
