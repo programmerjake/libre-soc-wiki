@@ -116,6 +116,28 @@ entire row, 2 bits instead of 3.  greatly simplifies decoder.
 * OP 000-100 and 000-201 for 64 bit. 11 bits for SVP P64
 * OP 000-110 and 000-111 for VBLOCK. 11 bits available.
 
+Note that this requires BE instruction encoding (separate from
+data BE/LE encoding).  BE encoding always places the major opcode in
+the first 2 bytes of the raw (uninterpreted) sequential instruction
+byte stream.
+
+Thus in BE-instruction-mode, the first 2 bytes may be analysed to
+detect whether the instruction is 16-bit Compressed, 48-bit SVP-P48,
+64-bit SVP-64, variable-length VBLOCK, or plain 32-bit.
+
+It is not possible to distinguish LE-encoded 32-bit instructions
+from LE-encoded 16-bit instructions because in LE-encoded 32-bit
+instructions, the opcode falls into:
+
+* bytes 2 and 3 of any given raw (uninterpreted) sequential instruction
+  byte stream for a 32-bit instruction
+* bytes 0 and 1 for a 16-bit Compressed instruction
+* bytes 4 and 5 for a 48-bit SVP P48
+* bytes 6 and 7 for a 64-bit SVP P64
+
+Clearly this is an impossible situation, therefore BE is the only
+option.  Note: *this is completely separate from BE/LE for data*
+
 # Compressed 16
 
 Further "escape-sequencing".
