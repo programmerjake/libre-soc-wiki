@@ -298,7 +298,7 @@ X-Form
 
     s <- 0
     do i = 0 to 7
-        s <- s ^ (RS)[i%8+7]
+        s <- s ^ (RS)[i*8+7]
     RA <- [0] * 63 || s
 
 Special Registers Altered:
@@ -314,9 +314,9 @@ X-Form
     s <- 0
     t <- 0
     do i = 0 to 3
-        s <-  s ^ (RS)[i%8+7]
+        s <-  s ^ (RS)[i*8+7]
     do i = 4 to 7
-        t <-  t ^ (RS)[i%8+7]
+        t <-  t ^ (RS)[i*8+7]
     RA[0:31] <- [0]*31 || s
     RA[32:63] <- [0]*31 || t
 
