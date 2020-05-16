@@ -1,0 +1,119 @@
+'''
+On Saturday, May 16, 2020, Yehowshua <yimmanuel3@gatech.edu> wrote:
+> This is a very intricate and complicated subject matter for sure.
+
+yes, except it doesn't have to be.  the actual  https://en.wikipedia.org/wiki/Levenshtein_distance between Tomasulo and 6600 really is not that great.
+
+i thought it would be fun to use a new unpronounceable word i learned yesterday :)
+
+At some point, it be great to really break things down and make them more accessible.
+
+yes. it comes down to time.
+
+start with this.
+
+1. Begin from Tomasulo.  neither TS nor original 6600 have precise
+   exceptions so we leave that out for now.
+
+2. Start by only allowing one row per Reservation Station.
+
+3. Expand the number of RSes so that if you were to count the total
+   number of places operands are stored, they are the same.
+
+(another way to put this is, "flatten all 2D RSes into 1D")
+
+4. where pipelines were formerly connected exclusively to one RS,
+   *preserve* those connections even though the rows are now 1D flattened.
+
+(another way to put this is: we have a global 1D naming scheme to
+reference the *operand latches* rather than a 2D scheme involving RS
+number in 1 dimension and the row number in the 2nd)
+
+5. give this 1D flattening an UNARY numbering scheme.
+
+6. make the size of the Reorder Buffer EXACTLY equal to the number of
+   1D flattened RSes.
+
+7. rename RSes to "Function Units" (actually in Thornton's book the phrase
+   "Computation Units" is used)
+
+thus, at this point in the transformation, the ROB row number *IS*
+the Function Unit Number, the need to actually store the ROB # in the
+Reservation Station Row is REMOVED, and consequently the Reservation
+Stations are NO LONGER A CAM.
+
+8. give all register file numbers (INT FP) an UNARY numbering.
+
+this means that in the ROB, updating of register numbers in a multi-issue
+scenario is a matter of raising one of any number of single bits.
+contrast this in the Tomasulo to having to multi-port the SRAM in the
+ROB, setting multiple bits *even for single-issue* (5-bits for 32-bit reg
+numbering).
+
+with the ROB now having rows of bitvectors, it is now termed a "Matrix".
+
+the left side of the ROB, which used to contain the RS Number in unary,
+now contains a *bitvector* Directed Acyclic Graph of the FU to FU
+dependencies, and is split out into its own Matrix.
+
+this we call the FU-FU Dependency Matrix.
+
+the remainder of the "ROB" contains the register numbers in unary Matrix
+form, and with each row being directly associated with a Function Unit,
+we now have an association between FU and Regs which preserves the
+knowledge of what instruction required which registers, *and* who will
+produce the result.
+
+this we call the FU-Regs Dependency Matrix.
+
+that *really is it*.
+
+take some time to absorb the transformation which not only preserves
+absolutely every functional aspect of the Tomasulo Algorithm, it
+drastically simplifies the implementation, reduces gate count, reduces
+power consumption *and* provides a strong foundation for doing arbitrary
+multi-issue execution with only an O(N) linear increase in gate count
+to do so.
+
+further hilariously simple additional transformations occur to replace
+former massive resource constrained bottlenecks, due to the binary
+numbering on both ROB numbers and Reg numbers, with simple large unary
+NOR gates:
+
+* the determination of when hazards are clear, on a per register basis,
+  is a laughably trivial NOR gate across all columns of the FU-REGs matrix,
+  producing a row bitvector for each read register and each write register.
+
+* the determination of when a Function Unit may proceed is a laughably
+  trivial NOR gate across all *rows* of the *FU-FU* Matrix, producing a
+  row-based vector, determining that it is "readable" if there exists no
+  write hazard and "writable" if there exists no read hazard.
+
+* the Tomasulo Common Data Bus, formerly being a single chokepoint
+  binary-addressing global Bus, may now be upgraded to *MULTIPLE* Common
+  Data Buses that, because the addressing information about registers is now
+  in unary, is likewise laughably trivial to use cascading Priority Pickers
+  (a nmigen PriorityEncoder and Decoder, back-to-back) to determine which
+  Function Unit shall be granted access to which CDB in order to receive
+  (or send) its operand (or result).
+
+* multi-issue as i mentioned a few times is an equally laughably trivial
+  matter of transitively cascading the Register Dependency Hazards (both
+  read and write) across future instructions in the same multi issue
+  execution window. instr2 has instr1 AND instr2's hazards.  instr3 has
+  instr1 AND instr2 AND instr3's hazards and so on.  this just leaves
+  the necessity of increasing register port numbers, number of CDBs,
+  and LD/ST memory bandwidth to compensate and cope with the additional
+  resource demands that will now occur.
+
+the latter is particularly why we have a design that, ultimately, we
+could take on ARM, Intel, and AMD.
+
+there is no reason technically why we could not do a 4, 6 or 8 multi
+issue system, and with enough Function Units and the cyclic buffer system
+(so as not to require a full crossbar at the Common Data Buses), and
+proper stratification and design of the register files, massive Vector
+parallelism at the pipelines would be kept fully occupied without an
+overwhelming increase in gates or power consumption that would normally
+be expected, and scalar performance would be similarly high as well.
+'''
