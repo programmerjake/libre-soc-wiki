@@ -34,14 +34,14 @@ start with this.
 4. Expand the number of RSes so that if you were to count the total
    number of places operands are stored, they are the same.
 
-(another way to put this is, "flatten all 2D RSes into 1D")
+   (another way to put this is, "flatten all 2D RSes into 1D")
 
 5. where pipelines were formerly connected exclusively to one RS,
    *preserve* those connections even though the rows are now 1D flattened.
 
-(another way to put this is: we have a global 1D naming scheme to
-reference the *operand latches* rather than a 2D scheme involving RS
-number in 1 dimension and the row number in the 2nd)
+   (another way to put this is: we have a global 1D naming scheme to
+   reference the *operand latches* rather than a 2D scheme involving RS
+   number in 1 dimension and the row number in the 2nd)
 
 6. give this 1D flattening an UNARY numbering scheme.
 
@@ -51,18 +51,18 @@ number in 1 dimension and the row number in the 2nd)
 8. rename RSes to "Function Units" (actually in Thornton's book the phrase
    "Computation Units" is used)
 
-thus, at this point in the transformation, the ROB row number *IS*
-the Function Unit Number, the need to actually store the ROB # in the
-Reservation Station Row is REMOVED, and consequently the Reservation
-Stations are NO LONGER A CAM.
+   thus, at this point in the transformation, the ROB row number *IS*
+   the Function Unit Number, the need to actually store the ROB # in the
+   Reservation Station Row is REMOVED, and consequently the Reservation
+   Stations are NO LONGER A CAM.
 
 9. give all register file numbers (INT FP) an UNARY numbering.
 
-this means that in the ROB, updating of register numbers in a multi-issue
-scenario is a matter of raising one of any number of single bits.
-contrast this in the Tomasulo to having to multi-port the SRAM in the
-ROB, setting multiple bits *even for single-issue* (5-bits for 32-bit reg
-numbering).
+   this means that in the ROB, updating of register numbers in a multi-issue
+   scenario is a matter of raising one of any number of single bits.
+   contrast this in the Tomasulo to having to multi-port the SRAM in the
+   ROB, setting multiple bits *even for single-issue* (5-bits for 32-bit reg
+   numbering).
 
 with the ROB now having rows of bitvectors, it is now termed a "Matrix".
 
