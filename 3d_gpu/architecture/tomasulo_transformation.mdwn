@@ -1,6 +1,21 @@
 # Conversion from Tomasulo to Scoreboards
 
-See [discussion](http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2020-May/006747.html)
+See [discussion](http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2020-May/006747.html).
+This page aids and assists in understanding the full functional equivalence
+of a Scoreboard-based design when compared to a Tomasulo algorithm.  However
+it is extremely important to note that the Academic literature, by focussing
+exclusively on the published patent covering Q-Tables, is hopelessly inaccurate,
+factually incorrect and completely misleading.
+
+By only comparing Q-Tables against the entirety of the Tomasulo algorithm,
+this is equivalent to narrowly focussing on the Reorder Buffer of
+Tomasulo, excluding all else, and concluding that a design that uses a
+ROB is incapable of out-of-order execution.
+
+This article helps readers to understand that Q-Tables != Scoreboards,
+by describing a series of functionally-equivalent transformations that,
+when followed, *turn* the Tomasulo algorithm *into* a Scoreboard-based
+design.
 
 On Saturday, May 16, 2020, Yehowshua <yimmanuel3@gatech.edu> wrote:
 > This is a very intricate and complicated subject matter for sure.
