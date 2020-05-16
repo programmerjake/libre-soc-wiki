@@ -1,12 +1,20 @@
+# Conversion from Tomasulo to Scoreboards
+
+See [discussion](http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2020-May/006747.html)
+
 '''
 On Saturday, May 16, 2020, Yehowshua <yimmanuel3@gatech.edu> wrote:
 > This is a very intricate and complicated subject matter for sure.
 
-yes, except it doesn't have to be.  the actual  https://en.wikipedia.org/wiki/Levenshtein_distance between Tomasulo and 6600 really is not that great.
+yes, except it doesn't have to be.  the actual
+<https://en.wikipedia.org/wiki/Levenshtein_distance> between Tomasulo and
+6600 really is not that great.
 
-i thought it would be fun to use a new unpronounceable word i learned yesterday :)
+i thought it would be fun to use a new unpronounceable word i learned
+yesterday :)
 
-At some point, it be great to really break things down and make them more accessible.
+> At some point, it be great to really break things down and make them
+> more accessible.
 
 yes. it comes down to time.
 
@@ -15,26 +23,32 @@ start with this.
 1. Begin from Tomasulo.  neither TS nor original 6600 have precise
    exceptions so we leave that out for now.
 
-2. Start by only allowing one row per Reservation Station.
+2. Make sure to add an Operand Forwarding Bus.  this is critical to
+   providing the functionality provided by the Tomasulo Common Data Bus.
 
-3. Expand the number of RSes so that if you were to count the total
+   note (later) that multiple Op Fwd Buses may be conveniently added
+   as parallel data paths without severe design penalties.
+
+3. Start by only allowing one row per Reservation Station.
+
+4. Expand the number of RSes so that if you were to count the total
    number of places operands are stored, they are the same.
 
 (another way to put this is, "flatten all 2D RSes into 1D")
 
-4. where pipelines were formerly connected exclusively to one RS,
+5. where pipelines were formerly connected exclusively to one RS,
    *preserve* those connections even though the rows are now 1D flattened.
 
 (another way to put this is: we have a global 1D naming scheme to
 reference the *operand latches* rather than a 2D scheme involving RS
 number in 1 dimension and the row number in the 2nd)
 
-5. give this 1D flattening an UNARY numbering scheme.
+6. give this 1D flattening an UNARY numbering scheme.
 
-6. make the size of the Reorder Buffer EXACTLY equal to the number of
+7. make the size of the Reorder Buffer EXACTLY equal to the number of
    1D flattened RSes.
 
-7. rename RSes to "Function Units" (actually in Thornton's book the phrase
+8. rename RSes to "Function Units" (actually in Thornton's book the phrase
    "Computation Units" is used)
 
 thus, at this point in the transformation, the ROB row number *IS*
@@ -42,7 +56,7 @@ the Function Unit Number, the need to actually store the ROB # in the
 Reservation Station Row is REMOVED, and consequently the Reservation
 Stations are NO LONGER A CAM.
 
-8. give all register file numbers (INT FP) an UNARY numbering.
+9. give all register file numbers (INT FP) an UNARY numbering.
 
 this means that in the ROB, updating of register numbers in a multi-issue
 scenario is a matter of raising one of any number of single bits.
