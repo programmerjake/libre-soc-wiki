@@ -100,3 +100,19 @@ Output:
     RC/RT         CR0          so      cr_o / cr32_o     ov_o / ov32_o
 '''
 
+# Shift Register Pipeline
+
+Input:
+'''
+    64 - Port 1   64 - Port 2  64 - Port 3  1 - SO  1 - Carry
+    -----------   -----------  -----------  ------  ---------
+    RA            RB/immed     RS           so      carry_in
+'''
+
+Output:
+'''
+    64 - Port 1   4 - Port 2   1 - SO  2 - Carry/Carry32 2 - OV/OV32
+    -----------   -----------  ------  ----------------- -----------
+    RC/RT         CR0          so      cr_o / cr32_o     ov_o / ov32_o
+'''
+
