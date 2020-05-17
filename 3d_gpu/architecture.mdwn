@@ -1,6 +1,11 @@
 # Top Level page for core architecture
 
-The primary design is based around the CDC 6600, specifically its Dependency Matrices which provide superscalar out-of-order execution and full register renaming with very little in the way of gates or power consumption.  Modifying the 6600 concept to be multi-issue, thanks to help from Mitch Alsup, is near-trivial and an O(N) linear complexity.  Additionally,
+The primary design is based around the CDC 6600 (not a historical
+exact replica of its design), specifically its Dependency Matrices
+which provide superscalar out-of-order execution and full register
+renaming with very little in the way of gates or power consumption.
+Modifying the 6600 concept to be multi-issue, thanks to help from Mitch
+Alsup, is near-trivial and an O(N) linear complexity.  Additionally,
 Mitch helped us to add "Precise exceptions", which is the same pathway
 used for branch speculation and predication.
 
@@ -9,7 +14,23 @@ completion time ALUs, including dynamic pipelines and blocking FSMs,
 to be mixed together and the Dependency Matrices, maintaining a Directed
 Acyclic Graph of all Read-Write hazards, simply take care of it.
 
-The selection of the 6600 as the core engine has far-reaching implications.  Note: the standard academic literature on the 6600 - all of it - completely and systematically fails to comprehend or explain why it is so elegant.  In fact, several modern microarchitectures have *reinvented* aspects of the 6600, not realising that the 6600 was the first ever microarchitecture to provide full register renaming combined with out-of-order execution in such a superbly gate-efficient fashion.
+The selection of the 6600 as the core engine has far-reaching
+implications.  Note: the standard academic literature on the 6600 -
+all of it - completely and systematically fails to comprehend or explain
+why it is so elegant.  In fact, several modern microarchitectures have
+*reinvented* aspects of the 6600, not realising that the 6600 was the
+first ever microarchitecture to provide full register renaming combined
+with out-of-order execution in such a superbly gate-efficient fashion.
+
+Anyone wishing to understand that there is a direct one-for-one equivalence
+between properly and fully implemented Scoreboards (not: "implementing the
+Q-Table patent and then thinking that's all there is to it") and the Tomasulo
+algorithm, there is a page available describing how to convert from Tomasulo
+to Scoreboards: [[tomasulo_transformation]].  The dis-service that the standard
+academic literature has done to Scoreboards by focussing exclusively on
+the Q-Tables is equivalent to implementing a Tomasulo Reorder Buffer (only)
+then claiming (accurately) that this one component is not an Out-of-Order
+system.
 
 # Basic principle
 
@@ -29,13 +50,25 @@ See [[architecture/dynamic_simd]] for details.
 
 # Dynamic Pipeline length adjustment
 
-There are pipeline register bypasses on every other pipeline stage in the ALU, simply implemented as a combinatorial mux. This allows pairs of pipeline stages to *either* become a single higher-latency combinatorial block *or* a straight standard chain of clock-synced pipeline stages just like all other pipeline stages.
+There are pipeline register bypasses on every other pipeline stage in
+the ALU, simply implemented as a combinatorial mux. This allows pairs of
+pipeline stages to *either* become a single higher-latency combinatorial
+block *or* a straight standard chain of clock-synced pipeline stages
+just like all other pipeline stages.
 
 Dynamically.
 
-This means that in low clock rate modes the length of the whole pipeline may be reduced in latency (the number of effective stages is halved).  Whilst in higher clock rate modes where the long stage latency would otherwise be a serious limiting factor, the intermediary latches are enabled, thus doubling the pipeline length into much shorter stages with lower latency, and the problem is solved.
+This means that in low clock rate modes the length of the whole pipeline
+may be reduced in latency (the number of effective stages is halved).
+Whilst in higher clock rate modes where the long stage latency would
+otherwise be a serious limiting factor, the intermediary latches are
+enabled, thus doubling the pipeline length into much shorter stages with
+lower latency, and the problem is solved.
 
-The only reason why this ingenious and elegant trick (deployed first by IBM in the 1990s) can be considered is down to the fact that the 6600 Style Dependency Matrices do not care about actual completion time, they only care about availability of the result.
+The only reason why this ingenious and elegant trick (deployed first by
+IBM in the 1990s) can be considered is down to the fact that the 6600
+Style Dependency Matrices do not care about actual completion time,
+they only care about availability of the result.
 
 Links:
 
