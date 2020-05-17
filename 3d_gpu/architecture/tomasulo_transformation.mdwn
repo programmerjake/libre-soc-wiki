@@ -86,6 +86,12 @@ dependencies, and is split out into its own Matrix.
 
 this we call the FU-FU Dependency Matrix.
 
+therefore, where previously, it was the ROB Row binary number that preserved
+instruction order (as an inherent DAG through sequential cyclically-incremented
+numbering), the 2-D bit-level FU-FU matrix preserves the same DAG by way of
+single-bit cells that express FU-to-FU dependencies, creating a hardware-form
+of a software "linked list".
+
 the remainder of the "ROB" contains the register numbers in unary Matrix
 form, and with each row being directly associated with a Function Unit,
 we now have an association between FU and Regs which preserves the
