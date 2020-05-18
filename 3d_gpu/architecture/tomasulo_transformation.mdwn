@@ -15,7 +15,10 @@ ROB is incapable of useful high-performance out-of-order execution.
 This article helps readers to understand that Q-Tables != Scoreboards,
 by describing a series of functionally-equivalent transformations that,
 when followed, *turn* the Tomasulo algorithm *into* a Scoreboard-based
-design.
+design.  It also highlights that, following that transformation, multi-issue
+execution is near-trivial to add by comparison. Precise exception
+handling is also trivial to add (holding of write commits) and is
+described in the [[6600scoreboard]] page under "Shadowing"
 
 On Saturday, May 16, 2020, Yehowshua <yimmanuel3@gatech.edu> wrote:
 > This is a very intricate and complicated subject matter for sure.
