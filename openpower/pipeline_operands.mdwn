@@ -1,23 +1,56 @@
+# XER setting rules
+
+this tells us the conditions under which these bits need to be set.
+it therefore defines which registers - where each bit of XER *is*
+a separate register - is to be covered by Dependency Matrices.
+
+notation: "COUT" means "carry out bit from result".  therefore COUT[M]
+means "the carry out bit in position 32 or 64 of the result".  therefore
+in add/subtract this means "the result bit in position 33 or 65".
+
+* bit 32: SO
+  - addex does not alter SO except when CY=0
+  - Compare does not alter SO
+  - any other non-overflowing operation (TBD)
+  - mtspr will set XER
+* bit 33: OV
+  - XO-form ADD/SUBF/NEG (when OE=1) set OV to test "COUT[M]!=COUT[M+1]"
+  - addex (when CY=0) set OV to COUT[M]
+  - XO-form MUL/DIV (when OE=1) set OV="can result fit in target 32/64"
+  - not altered by Compare
+  - mtspr will set XER
+* bit 34: CA
+  - add carrying, sub-from carrying, addex, subex - set CA to COUT[M]
+  - sra - set CA to "any 1-bits shifted out of a negative operand"
+  - not altered by Compare
+  - not altered by anything that cannot carry
+  - mtspr will set XER
+* bit 44: OV32
+  - set whenever OV is set, computed explicitly from 32-bit rather than M-bit
+* bit 45: CA32
+  - set whenever OV is set, computed explicitly from 32-bit rather than M-bit
+
+
 # Condition Register Pipeline
 
 Input:
-'''
+
     64 - Port 1   32 - Port 2
     -----------   -----------
     RA            CR
-'''
+
 
 Output:
-'''
+
     64 - Port 1   32 - Port 2
     -----------   -----------
     RA            CR
-'''
+
 
 # Branch Register Pipeline
 
 Input:
-'''
+
     insn       PC   32-CR  64-SPR1  64-SPR2    64-SPR3
     ----       --   --     ----     ----       ----
     op_b       CIA  xx     xx       xx         xx
@@ -40,10 +73,10 @@ Input:
     op_rfscv   CIA  xx     LR       CTR        MSR
     op_rfid    CIA  xx     SRR0     SRR1       MSR
     op_hrfid   CIA  xx     HSRR0    HSRR1      MSR
-'''
+
 
 Output:
-'''
+
     insn       PC   LR   64-SPR2
     ----       --   --   ----
     op_b       NIA  xx   xx
@@ -66,53 +99,53 @@ Output:
     op_rfscv   NIA  LR   CTR
     op_rfid    NIA  xx   xx
     op_hrfid   NIA  xx   xx
-'''
+
 
 # Logical Register Pipeline
 
 Input:
-'''
+
     64 - Port 1   64 - Port 2  1 - SO  1 - Carry
     -----------   -----------  ------  ---------
     RA/RS         RB           so      carry_in
-'''
+
 
 Output:
-'''
+
     64 - Port 1   4 - Port 2   1 - SO  2 - Carry/Carry32 2 - OV/OV32
     -----------   -----------  ------  ----------------- -----------
     RC/RT         CR0          so      cr_o / cr32_o     ov_o / ov32_o
-'''
+
 
 # Arithmetic Register Pipeline
 
 Input:
-'''
+
     64 - Port 1   64 - Port 2  1 - SO  1 - Carry
     -----------   -----------  ------  ---------
     RA            RB/immed     so      carry_in
-'''
+
 
 Output:
-'''
+
     64 - Port 1   4 - Port 2   1 - SO  2 - Carry/Carry32 2 - OV/OV32
     -----------   -----------  ------  ----------------- -----------
     RC/RT         CR0          so      cr_o / cr32_o     ov_o / ov32_o
-'''
+
 
 # Shift Register Pipeline
 
 Input:
-'''
+
     64 - Port 1   64 - Port 2  64 - Port 3  1 - SO  1 - Carry
     -----------   -----------  -----------  ------  ---------
     RA            RB/immed     RS           so      carry_in
-'''
+
 
 Output:
-'''
+
     64 - Port 1   4 - Port 2   1 - SO  2 - Carry/Carry32 2 - OV/OV32
     -----------   -----------  ------  ----------------- -----------
     RC/RT         CR0          so      cr_o / cr32_o     ov_o / ov32_o
-'''
+
 
