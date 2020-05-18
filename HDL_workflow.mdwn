@@ -657,9 +657,20 @@ than it should be, the reversion process becomes extremely painful.
   causes unnecessary resource utilisation, makes code readability and
   tracking extremely difficult, and results in unintended side-effects.
 
-example: often you want to find the code from which a class was imported.  nirmally you go to the top of the file, check the imports, and you know exactly which file has the class because of the import path.  by using wildcards, you have absolutely *no clue* which wildcard imported which class or classes.
+example: often you want to find the code from which a class was imported.
+nirmally you go to the top of the file, check the imports, and you know
+exactly which file has the class because of the import path.  by using
+wildcards, you have absolutely *no clue* which wildcard imported which
+class or classes.
 
-example: sometimes you may accidentally have duplicate code maintained in two or more places.  editing one of them you find, puzzlingly, that the code behaves in some files with the old behaviour, but in others it works.  after a nassive amount of investigation, you find that the working files happen to have a wildcard import of the newer accidental duplicate class **after** the wildcard import of the older class with exactly the same name.  if you had used explicit imports, you would have spotted the double import of the class from two separate locations, immediately.
+example: sometimes you may accidentally have duplicate code maintained
+in two or more places.  editing one of them you find, puzzlingly, that
+the code behaves in some files with the old behaviour, but in others it
+works.  after a nassive amount of investigation, you find that the working
+files happen to have a wildcard import of the newer accidental duplicate
+class **after** the wildcard import of the older class with exactly the
+same name.  if you had used explicit imports, you would have spotted
+the double import of the class from two separate locations, immediately.
 
 really.  don't.  use.  wildcards.
 
@@ -671,11 +682,21 @@ really.  don't.  use.  wildcards.
   m.d.comb" followed by multiple "comb += nmigen_stmt" lines is a good trick
   that can reduce code indentation by 6 characters without reducing clarity.
 
-Additionally, use comments just above an obtuse variable in order to help explain what it is for.  In combination with keeping the the module itself short, other readers will not need to scroll back several pages in order to understand the code.
+Additionally, use comments just above an obtuse variable in order to
+help explain what it is for.  In combination with keeping the the module
+itself short, other readers will not need to scroll back several pages
+in order to understand the code.
 
-Yes it is tempting to actually use the variables as self-explanatory-comments and generally this can be extremely good practice.  the problem comes when the variable is so long that a function with several parameters csn no longer fit on a single line, and takes up five to ten lines rather than one or two. at that point, the length of the code is adversely affected and thus so is readability by forcing readers to scroll through reams of pages.
+Yes it is tempting to actually use the variables as
+self-explanatory-comments and generally this can be extremely good
+practice.  the problem comes when the variable is so long that a function
+with several parameters csn no longer fit on a single line, and takes
+up five to ten lines rather than one or two. at that point, the length
+of the code is adversely affected and thus so is readability by forcing
+readers to scroll through reams of pages.
 
-it is a tricky balance: basically use your common sense, or just ask someone else, "can you understand this code?"
+it is a tricky balance: basically use your common sense, or just ask
+someone else, "can you understand this code?"
 
 ### Reasons for code structure
 
@@ -800,6 +821,8 @@ with further details as to why the unit test should not be run.
 
 Find appropriate tutorials for nmigen and yosys, as well as symbiyosys.
 
+* Robert Baruch's nmigen tutorials look really good:
+  <https://github.com/RobertBaruch/nmigen-tutorial>
 * Although a verilog example this is very useful to do
   <https://symbiyosys.readthedocs.io/en/latest/quickstart.html#first-step-a-simple-bmc-example>
 * This tutorial looks pretty good and will get you started
@@ -809,5 +832,4 @@ Find appropriate tutorials for nmigen and yosys, as well as symbiyosys.
 * There exist several nmigen examples which are also executable
   <https://github.com/m-labs/nmigen/tree/master/examples/> exactly as
   described in the above tutorial (python3 filename.py -h)
-* Robert Baruch's nmigen tutorials look really good:
-  <https://github.com/RobertBaruch/nmigen-tutorial>
+
