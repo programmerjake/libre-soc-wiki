@@ -89,6 +89,12 @@ start with this.
    Function Unit, permitting it to EXECUTE but prohibiting it from WRITING
    the result of that execution until explicitly permitted to do so.
 
+11. Upgrade the CDB from a multi-fan-in, multi-fan-out, single resource
+    global choke-point to **separate** (multiple, if desired) read-fanout
+    broadcast and write-fan-in register data broadcast buses.
+
+# Post-transformation Analysis
+
 with the ROB now having rows of bitvectors, it is now termed a "Matrix".
 
 the left side of the ROB, which used to contain the RS Number in unary,
