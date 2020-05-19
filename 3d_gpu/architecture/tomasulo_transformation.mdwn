@@ -175,8 +175,9 @@ in the capabilities of Tomasulo and Scoreboards.
 
 | Tomasulo name            | Scoreboard name                              |
 | -----                    | ----                                         |
+| ROB index cycling order  | FU-FU DAG that preserves instruction order   |
 | Reorder Buffer           | hybrid of Shadow, FU-FU and FU-Regs Matrices |
-| Reservation Station CAMs | each RS Row is "Computation Unit latches"    |
+| Reservation Station CAMs | RS Row = "Computation Unit latches" (no CAM) |
 | "register renaming"      | "nameless" registers (Comp Unit latches)     |
 | part-ROB, part-RS        | Q-Tables                                     |
 | blocking Common Data Bus | fan-out Read Reg, fan-in Write, OpFwd Bus(es)|
