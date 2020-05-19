@@ -1,6 +1,8 @@
 # Conversion from Tomasulo to Scoreboards
 
-See [discussion](http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2020-May/006747.html).
+See [discussion (1)](http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2020-May/006747.html) and
+[discussion (2)](http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2020-May/006904.html)
+
 This page aids and assists in understanding the full functional equivalence
 of a Scoreboard-based design when compared to a Tomasulo algorithm.  However
 it is extremely important to note that the Academic literature, by focussing
@@ -37,8 +39,7 @@ yes. it comes down to time.
 
 start with this.
 
-1. Begin from Tomasulo.  neither TS nor original 6600 have precise
-   exceptions so we leave that out for now.
+1. Begin from Tomasulo.
 
 2. Make sure to add an Operand Forwarding Bus.  this is critical to
    providing the functionality provided by the Tomasulo Common Data Bus.
@@ -80,6 +81,13 @@ start with this.
    contrast this in the Tomasulo to having to multi-port the SRAM in the
    ROB, setting multiple bits *even for single-issue* (5-bits for 32-bit reg
    numbering).
+
+10. add "Shadowing" capability to each Function Unit
+    and create a Shadow Matrix (appx 20 gates per Function Unit)
+
+   the "Shadow" capability hooks into the WRITE-COMMIT phase of every
+   Function Unit, permitting it to EXECUTE but prohibiting it from WRITING
+   the result of that execution until explicitly permitted to do so.
 
 with the ROB now having rows of bitvectors, it is now termed a "Matrix".
 
