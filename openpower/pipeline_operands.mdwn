@@ -51,29 +51,22 @@ Output:
 
 Input:
 
-    insn       PC   32-CR  64-SPR1  64-SPR2    64-SPR3
-    ----       --   --     ----     ----       ----
-    op_b       CIA  xx     xx       xx         xx
-    op_ba      CIA  xx     xx       xx         xx
-    op_bl      CIA  xx     xx       xx         xx
-    op_bla     CIA  xx     xx       xx         xx
-    op_bc      CIA  CR     xx       CTR        xx
-    op_bca     CIA  CR     xx       CTR        xx
-    op_bcl     CIA  CR     xx       CTR        xx
-    op_bcla    CIA  CR     xx       CTR        xx
-    op_bclr    CIA  CR     LR       CTR        xx
-    op_bclrl   CIA  CR     LR       CTR        xx
-    op_bcctr   CIA  CR     xx       CTR        xx
-    op_bcctrl  CIA  CR     xx       CTR        xx
-    op_bctar   CIA  CR     TAR      CTR        xx
-    op_bctarl  CIA  CR     TAR      CTR        xx
-
-    op_sc      CIA  xx     xx       xx         MSR
-    op_scv     CIA  xx     LR       SRR1       MSR
-    op_rfscv   CIA  xx     LR       CTR        MSR
-    op_rfid    CIA  xx     SRR0     SRR1       MSR
-    op_hrfid   CIA  xx     HSRR0    HSRR1      MSR
-
+    insn       PC   32-CR  64-SPR1  64-SPR2
+    ----       --   --     ----     ----
+    op_b       CIA  xx     xx       xx
+    op_ba      CIA  xx     xx       xx
+    op_bl      CIA  xx     xx       xx
+    op_bla     CIA  xx     xx       xx
+    op_bc      CIA  CR     xx       CTR
+    op_bca     CIA  CR     xx       CTR
+    op_bcl     CIA  CR     xx       CTR
+    op_bcla    CIA  CR     xx       CTR
+    op_bclr    CIA  CR     LR       CTR
+    op_bclrl   CIA  CR     LR       CTR
+    op_bcctr   CIA  CR     xx       CTR
+    op_bcctrl  CIA  CR     xx       CTR
+    op_bctar   CIA  CR     TAR      CTR
+    op_bctarl  CIA  CR     TAR      CTR
 
 Output:
 
@@ -94,11 +87,30 @@ Output:
     op_bctar   NIA  xx   CTR
     op_bctarl  NIA  xx   CTR
 
-    op_sc      NIA  xx   xx
-    op_scv     NIA  LR   xx
-    op_rfscv   NIA  LR   CTR
-    op_rfid    NIA  xx   xx
-    op_hrfid   NIA  xx   xx
+# System Call Pipeline
+
+Input:
+
+    insn       PC   32-CR  64-SPR1  64-SPR2    MSR
+    ----       --   --     ----     ----       --
+
+    op_sc      CIA  xx     xx       xx         MSR
+    op_scv     CIA  xx     LR       SRR1       MSR
+    op_rfscv   CIA  xx     LR       CTR        MSR
+    op_rfid    CIA  xx     SRR0     SRR1       MSR
+    op_hrfid   CIA  xx     HSRR0    HSRR1      MSR
+
+
+Output:
+
+    insn       PC   LR   64-SPR2  MSR
+    ----       --   --   ----     ---
+
+    op_sc      NIA  xx   xx       MSR
+    op_scv     NIA  LR   xx       MSR
+    op_rfscv   NIA  LR   CTR      MSR
+    op_rfid    NIA  xx   xx       MSR
+    op_hrfid   NIA  xx   xx       MSR
 
 
 # Logical Register Pipeline
