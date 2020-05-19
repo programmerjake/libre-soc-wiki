@@ -167,3 +167,17 @@ proper stratification and design of the register files, massive Vector
 parallelism at the pipelines would be kept fully occupied without an
 overwhelming increase in gates or power consumption that would normally
 be expected, and scalar performance would be similarly high as well.
+
+# Terminology notes
+
+These terms help understand that conceptually there is no difference
+in the capabilities of Tomasulo and Scoreboards.
+
+| Tomasulo name            | Scoreboard name                              |
+| -----                    | ----                                         |
+| Reorder Buffer           | hybrid of Shadow, FU-FU and FU-Regs Matrices |
+| Reservation Station CAMs | each RS Row is "Computation Unit latches"    |
+| "register renaming"      | "nameless" registers (Comp Unit latches)     |
+| part-ROB, part-RS        | Q-Tables                                     |
+| blocking Common Data Bus | fan-out Read Reg, fan-in Write, OpFwd Bus(es)|
+| Centralised regfile(s)   | Centralised regfile(s)                       |
