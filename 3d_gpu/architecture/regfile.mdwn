@@ -77,9 +77,9 @@ to.
 
 Regspecs are defined, in python, as follows:
 
-¦ Regfile name ¦ CompUnit Record name ¦ bit range register mapping ¦
-¦ ----         ¦ ----------           ¦ ------------               ¦
-¦ INT          ¦ ra                   ¦ 0:3,5                      ¦
+| Regfile name | CompUnit Record name | bit range register mapping |
+| ----         | ----------           | ------------               |
+| INT          | ra                   | 0:3,5                      |
 
 * Regfile name: INT corresponds to the INTEGER file, CR to Condition Register etc.
 * CompUnit Record name: in the Input or Output Record there will be a signal by
@@ -91,6 +91,39 @@ Regspecs are defined, in python, as follows:
 
 Here is how they are used:
 ```
-    Test
-    test
+class CRInputData(IntegerData):
+    regspec = [('INT', 'a', '0:63'),      # 64 bit range
+               ('INT', 'b', '0:63'),      # 6B bit range
+               ('CR', 'full_cr', '0:31'), # 32 bit range
+               ('CR', 'cr_a', '0:3'),     # 4 bit range
+               ('CR', 'cr_b', '0:3'),     # 4 bit range
+               ('CR', 'cr_c', '0:3')]     # 4 bit range
 ```
+
+This tells us, when used by MultiCompUnit, that:
+
+* CompUnit src reg 0 is from the INT regfile, is linked to CRInputData.a, 64-bit
+* CompUnit src reg 1 is from the INT regfile, is linked to CRInputData.b, 64-bit
+* CompUnit src reg 2 is from the CR regfile, is CRInputData.full\_cr, and 32-bit
+* CompUnit src reg 3 is from the CR regfile, is CRInputData.cr\_a, and 4-bit
+* CompUnit src reg 4 is from the CR regfile, is CRInputData.cr\_b, and 4-bit
+* CompUnit src reg 5 is from the CR regfile, is CRInputData.cr\_c, and 4-bit
+
+Likewise there is a corresponding regspec for CROutputData.  The two are combined
+and associated with the Pipeline:
+
+```
+class CRPipeSpec(CommonPipeSpec):
+    regspec = (CRInputData.regspec, CROutputData.regspec)
+    opsubsetkls = CompCROpSubset
+```
+
+In this way the pipeline can be connected up to a generic, general-purpose class
+(MultiCompUnit), which would otherwise know nothing about the details of the ALU
+(Pipeline) that it is being connected to.
+
+In addition, on the other side of the MultiCompUnit, the regspecs contain enough
+information to be able to wire up batches of MultiCompUnits (now known, because
+of their association with an ALU, as FunctionUnits), associating the MultiCompUnits
+correctly with their corresponding Register File.
+
