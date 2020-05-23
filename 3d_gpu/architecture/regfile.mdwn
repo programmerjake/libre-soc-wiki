@@ -131,3 +131,22 @@ information to be able to wire up batches of MultiCompUnits (now known, because
 of their association with an ALU, as FunctionUnits), associating the MultiCompUnits
 correctly with their corresponding Register File.
 
+Note: there are two exceptions to the "generic-ness and abstraction"
+where MultiCompUnit "knows nothing":
+
+1. When the Operand Subset has a member "zero_a".  this tells MultiCompUnit
+   to create a multiplexer that, if operand.zero_a is set, will put **ZERO**
+   into its first src operand (src_i[0]) and it will **NOT** put out a
+   read request (**NOT** raise rd.req[0]) for that first register.
+2. When the Operand Subset has a member "imm_data".  this tells
+   MultiCompUnit to create a multiplexer that, if operand.imm_data.ok is
+   set, will copy operand.imm_data into its *second* src operand (src_i[1]).
+   Further: that it will **NOT** put out a read request (**NOT** raise
+   rd.req[1]) for that second register.
+
+These should only be activated for INTEGER and Logical pipelines, and
+the regspecs for them must note and respect the requirements: input
+regspec[0] may *only* be associated with operand.zero_a, and input
+regspec[1] may *only* be associated with operand.imm_data.  the POWER9
+Decoder and the actual INTEGER and Logical pipelines have these
+expectations **specifically** hard-coded into them.
