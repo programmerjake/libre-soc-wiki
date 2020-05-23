@@ -6,5 +6,29 @@ Contributor
 
 ## Currently working on
 
-* <https://bugs.libre-soc.org/show_bug.cgi?id=318>
-	* fix LDSTCompUnit
+1. ALU CompUnit needs to recognise that RA (src1) can be zero  
+	<https://bugs.libre-soc.org/show_bug.cgi?id=336>  
+	Status: not started
+
+2. Something about the above (5), being optional.  
+	<https://bugs.libre-soc.org/show_bug.cgi?id=336#c5>  
+	Status: not started
+
+3. Code-morph LDSTCompUnit to use RecordObject structure, like CompUnitALU  
+	<https://bugs.libre-soc.org/show_bug.cgi?id=318#c18>  
+	Status: Need a review of Luke's implementation, compared to mine.
+
+4. Test dual ports (two L0CacheBuffer with two ports, 4-4 as well) which
+write to the same memory  
+	<https://bugs.libre-soc.org/show_bug.cgi?id=318#c11>  
+	Status: not started
+
+5. Luke tried two LDs in the score6600 code - they failed.  
+	<https://bugs.libre-soc.org/show_bug.cgi?id=318#c17>  
+	Status: not started, need to check the [prototype] L0CacheBuffer
+
+6. Fix a bug in the LDSTCompUnit  
+	<https://bugs.libre-soc.org/show_bug.cgi?id=318>  
+	Status: Luke thinks he fixed it, but needs a review and improving the
+unit tests. See: <https://bugs.libre-soc.org/show_bug.cgi?id=318#c7>
+
