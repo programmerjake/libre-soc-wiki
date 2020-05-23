@@ -68,3 +68,29 @@ Notes:
 Click on the image to expand it full-screen:
 
 [[!img regfile_hilo_32_odd_even.png size="500px"]]
+
+# Regspecs
+
+"Regspecs" is a term used for describing the relationship between register files,
+register file ports, register widths, and the Computation Units that they connect
+to.
+
+Regspecs are defined, in python, as follows:
+
+¦ Regfile name ¦ CompUnit Record name ¦ bit range register mapping ¦
+¦ ----         ¦ ----------           ¦ ------------               ¦
+¦ INT          ¦ ra                   ¦ 0:3,5                      ¦
+
+* Regfile name: INT corresponds to the INTEGER file, CR to Condition Register etc.
+* CompUnit Record name: in the Input or Output Record there will be a signal by
+  name.  This field refers to that record signal, thus providing a sequential
+  ordering for the fields.
+* Bit range: this is specified as an *inclusive* range of the form "start:end"
+  or just a single bit, "N".  Multiple ranges may be specified, and are
+  comma-separated.
+
+Here is how they are used:
+```
+    Test
+    test
+```
