@@ -1,9 +1,11 @@
 # Computation Unit (aka "ALU Manager").
 
-This module runs a "revolving door" set of three latches, based on
+The Computation Unit module runs a "revolving door" set of three latches, based on
+
 * Issue
 * Go_Read
 * Go_Write
+
 where one of them cannot be set on any given cycle.
 
 * When issue is first raised, a busy signal is sent out.
