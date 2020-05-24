@@ -6,7 +6,27 @@ The Computation Unit module runs a "revolving door" set of three latches, based 
 * Go_Read
 * Go_Write
 
-where one of them cannot be set on any given cycle.
+where one of them cannot be set on any given cycle.  The Comp Unit
+monitors (and therefore blocks) until full completion of the
+operation.  Stages are therefore as follows:
+
+* Issue to monitor receipt of the operation. "Block" begins here.
+* Operand Read waiting for opportunitie(s) for the regfile
+  to become available and provide operands
+* Actual execution (which does not take place until all operands
+  are provided)
+* Completion of result and capture of result(s)
+* Notification to regfile(s) of availability of results
+* Provision of result(s) on outgoing bus on request
+* Final release of "busy" when all result(s) have been sent out.
+
+At no time is execution either allowed to proceed early, or is it
+"unmanaged".  The Comp Unit absolutely must monitor start and
+end time without fail and communicate and coordinate with the
+Dependency Matrices in order to preserve the Directed Acyclic
+Graph of Register hazards.
+
+Signals activate as follows:
 
 * When issue is first raised, a busy signal is sent out.
   The src1 and src2 registers and the operand can be latched in
