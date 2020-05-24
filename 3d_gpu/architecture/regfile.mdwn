@@ -7,7 +7,26 @@ A minimum of 3 register files are required for POWER:
 * Control and Condition Code Registers (CR0-7, CTR, LR)
 * SPRs (Special Purpose Registers)
 
-The FP and Integer registers need to be a massive 128 x 64-bit.
+For a GPU, the FP and Integer registers need to be a massive 128 x 64-bit.
+
+# Regfile groups, Port Allocations and bit-widths
+
+* INT regfile: 32x 64-bit with 4R1W
+* SPR regfile: 1024x 64-bit (!) needs a "map" on that  1R1W
+* CR regfile:  8x 4-bit with full 8R8W (for full 32-bit read/write)
+  - CR0-7: 4-bit
+* XER regfile: 2x 2-bit, 1x 1-bit with full 3R3W
+  - CA(32) - 2-bit
+  - OV(32) - 2-bit
+  - SO     - 1 bit
+* FAST regfile: 7x 64-bit, full 3R2W (possibly greater)
+  - MSR: 64-bit
+  - PC: 64-bit
+  - LR: 64-bit
+  - CTR: 64-bit
+  - TAR: 64-bit
+  - SRR1: 64-bit
+  - SRR2: 64-bit
 
 # Connectivity between regfiles and Function Units
 
