@@ -34,8 +34,10 @@ Graph of Register hazards.
 Signals activate as follows:
 
 * When issue is first raised, a busy signal is sent out.
-  The src1 and src2 registers and the operand can be latched in
-  at this point
+  The operand can be latched in at this point.
+
+* Issue will only be raised for one cycle.  Read requests may
+  go out immediately after issue goes low.
 
 * Read request is set, which is acknowledged through the Scoreboard
   to the priority picker, which generates (one and only one) Go_Read
