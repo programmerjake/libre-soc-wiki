@@ -1,5 +1,10 @@
 # Computation Unit (aka "ALU Manager").
 
+CompUnits serve the purpose of monitoring operations, and act as the
+arbiter between register file ports (both read and write) and ALUs.
+A critical aspect of its role is that *at no time* does result production
+go "unmonitored".
+
 The Computation Unit module runs a "revolving door" set of three latches, based on
 
 * Issue
