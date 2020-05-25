@@ -65,6 +65,8 @@ Note that the read and write latches are held synchronously for one cycle,
 i.e. that when Go_Read comes in, one cycle is given in which the incoming
 register (broadcast over a Regfile Read Port) may have time to be latched.
 
+It is REQUIRED that Issue be held valid only for one cycle.
+
 It is REQUIRED that Go_Read be held valid only for one cycle, and it is
 REQUIRED that the corresponding Read_Req be dropped exactly one cycle after
 Go_Read is asserted HI.
