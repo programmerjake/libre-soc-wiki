@@ -77,7 +77,7 @@ XFX-Form
 
     mask <- ([FXM[0]]*4 || [FXM[1]]*4 || [FXM[2]]*4 || [FXM[3]]*4 ||
              [FXM[4]]*4 || [FXM[5]]*4 || [FXM[6]]*4 || [FXM[7]]*4)
-    CR <- ((RS)[32:63] & mask) | (CR & mask)
+    CR <- ((RS)[32:63] & mask) | (CR & ¬mask)
 
 Special Registers Altered:
 
