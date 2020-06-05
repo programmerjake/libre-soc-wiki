@@ -18,7 +18,7 @@ Special Registers Altered:
 
     See spec 3.3.17
 
-# Move From Special Purpose Register 
+# Move From Special Purpose Register
 
 XFX-Form
 
@@ -54,7 +54,7 @@ Special Registers Altered:
 
 XFX-Form
 
-* mtocrf FXM,RS 
+* mtocrf FXM,RS
 
     count <- 0
     do i = 0 to 7
@@ -77,13 +77,13 @@ XFX-Form
 
     mask <- ([FXM[0]]*4 || [FXM[1]]*4 || [FXM[2]]*4 || [FXM[3]]*4 ||
              [FXM[4]]*4 || [FXM[5]]*4 || [FXM[6]]*4 || [FXM[7]]*4)
-    CR <- ((RS)[32:63] & mask) | (CR & ¬mask)
+    CR <- ((RS)[32:63] & mask) | (CR & mask)
 
 Special Registers Altered:
 
     CR fields selected by mask
 
-# Move From One Condition Register Field 
+# Move From One Condition Register Field
 
 XFX-Form
 
@@ -103,7 +103,7 @@ Special Registers Altered:
 
     None
 
-# Move From Condition Register  
+# Move From Condition Register
 
 XFX-Form
 
@@ -115,7 +115,7 @@ Special Registers Altered:
 
     None
 
-# Set Boolean 
+# Set Boolean
 
 X-Form
 
@@ -127,6 +127,41 @@ X-Form
        RT <- 0x0000_0000_0000_0001
     else
        RT <- 0x0000_0000_0000_0000
+
+Special Registers Altered:
+
+    None
+
+# Move To Machine State Register
+
+X-Form
+
+* mtmsr RS,L
+
+    if L = 0 then
+        MSR[48] <- (RS)[48] | (RS)[49]
+        MSR[58] <- ((RS)[58] | (RS)[49]) & (MSR[41] & MSR[3] & ((RS)[49]))
+        MSR[59] <- ((RS)[59] | (RS)[49]) & (MSR[41] & MSR[3] & ((RS)[49]))
+        MSR[32:40] <- (RS)[32:40]
+        MSR[42:47] <- (RS)[42:47]
+        MSR[49:50] <- (RS)[49:50]
+        MSR[52:57] <- (RS)[52:57]
+        MSR[60:62] <- (RS)[60:62]
+    else
+        MSR[48] <- (RS)[48]
+        MSR[62] <- (RS)[62]
+
+Special Registers Altered:
+
+    MSR
+
+# Move From Machine State Register
+
+X-Form
+
+* mfmsr RT
+
+    RT <- MSR
 
 Special Registers Altered:
 
