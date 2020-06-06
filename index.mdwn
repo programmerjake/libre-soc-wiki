@@ -120,9 +120,9 @@ Here is an example process of how to play with the soc code:
     git clone https://git.libre-riscv.org/git/ieee754fpu.git
     git clone https://git.libre-riscv.org/git/soc.git
     
-    cd nmutil; pip3 install -e .; cd ..
-    cd ieee754fpu; pip3 install -e .; cd ..
-    cd soc; git submodule init; git submodule update; pip3 install -e .; cd ..
+    cd nmutil; ;ake install; cd ..
+    cd ieee754fpu; make install; cd ..
+    cd soc; make gitupdate; make install; cd ..
     
     python3 soc/src/soc/decoder/power_decoder.py
     yosys -p "read_ilang decoder.il; show dec31" 
