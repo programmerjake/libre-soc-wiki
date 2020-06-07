@@ -23,7 +23,11 @@ Delivering robust low power, high-performance hardware for IOT and Edge Compute
 
   d. Capability: In RTOS devices, can't use GPU because must go through Linux which is unacceptably high latency. Furthermore, current RTOS microcontrollers have much lower mathematical numerically intensive computational performance at the same power and silicon area compared to our chip.
 
-2. Time/Ease of Use/Development: Proprietary development tools and documentation result in an often difficult and long development cycle, especially when rebuilding and optimizing arithmetically intensive algorithms for embedded systems. Amazon's Sagemaker and Intel's ngraph are steps in the right direction, but ultimately will never be able to provide comparable ease-of-use and insight into every level of the product. Systèmes Libres’ completely libre hardware-software stack enables an unprecedented level of insight into the entire system. Developers can begin their investigations at the top analyzing high-level software, then down into firmware, and at the lowest level, examine detailed schematic diagrams. The developer can easily see the function of individual components as well as all of the relationships in the system.
+2. Time/Ease of Use/Development: Proprietary development tools and documentation result in an often difficult and long development cycle, especially when rebuilding and optimizing arithmetically intensive algorithms for embedded systems.
+
+3. Amazon's Sagemaker and Intel's ngraph are steps in the right direction, but ultimately will never be able to provide comparable ease-of-use and insight into every level of the product.
+
+4. Proprietary GPU inner workings are not available for inspection, neither during active development nor during a critical evaluation phase for their suitability.
 
 
 # Part 2 – How is Libre-SOC different? Or What Makes Libre-SOC better?
@@ -36,6 +40,10 @@ Delivering robust low power, high-performance hardware for IOT and Edge Compute
 
 * Systèmes Libres is developing graphics and compute drivers in conformance with the open standards Vulkan and OpenCL (**should we remove opencl until we have had a proper discussion of ROCM on bugzilla?**).  Using open standards makes rebuilding or using existing algorithms a simple and easy process.
 
+4. Systèmes Libres’ completely libre hardware-software stack enables an unprecedented level of insight into the entire system.
+ a. Developers can begin their investigations at the top analyzing high-level software, then down into firmware.
+ b. at the lowest level, they can examine detailed schematic diagrams.
+ c. The developer can easily see the function of individual components as well as all of the relationships in the system.
 
 # Part 3 - Security and Privacy in RTOS and Industrial IOT
 
