@@ -1,0 +1,66 @@
+This is Cole's first draft of the script for Systemes Libres' Wednesday, 10 June 2020 pitch meeting with Amazon Alexa's IOT division, which will be presented by Yehowshua. Please edit, rearrange, and add relevant points as you see fit. I will be taking this script and turning it into a pretty 'business-deck' on Monday, 8 June 2020, so please help today (Sunday 7 June 2020) if you can.
+
+# Title Page
+
+Systèmes Libres 
+
+Delivering robust low power, high-performance hardware for IOT and Edge Compute
+
+
+# Part 1 - Current GPU IOT Device Shortcomings
+
+1. GPU is in ADDITION to CPU (2 components instead of one)
+  a. Security/Privacy: In the industrial IOT and RTOS market, significant harm can be done by malevolent actors and competitors by hacking hardware and causing it to do damage, or hacking the hardware to steal proprietary company secrets
+
+  b. Power: This leads to much higher power consumption
+  
+  c.    Cost: BOM and manufacturing/assembly costs
+
+  d. Capability: In RTOS devices, can't use GPU because must go through Linux which is unacceptably high latency. Furthermore, current RTOS microcontrollers have much lower mathematical numerically intensive computational performance at the same power and silicon area compared to our chip.
+
+2. Time/Ease of Use/Development: Proprietary development tools and documentation result in an often difficult and long development cycle, especially when rebuilding and optimizing arithmetically intensive algorithms for embedded systems. Amazon's Sagemaker and Intel's ngraph are steps in the right direction, but ultimately will never be able to provide comparable ease-of-use and insight into every level of the product. Systèmes Libres’ completely libre hardware-software stack enables an unprecedented level of insight into the entire system. Developers can begin their investigations at the top analyzing high-level software, then down into firmware, and at the lowest level, examine detailed schematic diagrams. The developer can easily see the function of individual components as well as all of the relationships in the system.
+
+
+# Part 2 – How is Libre-SOC different? Or What Makes Libre-SOC better?
+
+* (*Addresses #1*) Systèmes Libres is developing an SOC with a fused CPU-GPU architecture
+
+* This hybrid CPU-GPU will have a lower power budget (**what and how?**) (*addresses a.*), and higher computational performance than to competing SOCs (*addresses c.*) like the Broadcom BCM2836 (**what are their power, and performance specs? Why are using specifically BCM2836 as a comparison?**)
+
+* Systèmes Libres is developing RTOS drivers using Systèmes Libres' Simple-V dynamically partitionable vector algorithm (**what is it? what makes it different? what are its relative benefits and short comings?**) that automatically handles algorithmic optimization and reconfiguration.
+
+* Systèmes Libres is developing graphics and compute drivers in conformance with the open standards Vulkan and OpenCL (**should we remove opencl until we have had a proper discussion of ROCM on bugzilla?**).  Using open standards makes rebuilding or using existing algorithms a simple and easy process.
+
+
+# Part 3 - Security and Privacy in RTOS and Industrial IOT
+
+* Companies try to security-harden their software by writing it in special languages like Ada, or using c++ with static code analyzers and special 'Safety-critical' c++ coding guidelines. However, all of this time and money is wasted if the hardware running underneath this software is hopelessly insecure (**picture intel meltdown, spectre ahhhh!!**)
+
+* For example, in the self-driving car domain, the concern about GPU-capable RTOS devices being insecure at the hardware level causes significant barriers to self-driving car adoption because the public is scared that someone will 'hack' their car and crash it
+
+* Almost every credit card and banking transaction is dependent on transaction processing servers, if these are hacked $M to $B of economic damage can be done
+
+
+# Part 4 - Low Power Requirements of RTOS and Industrial IOT Devices
+
+* At the level of individual sensors, power draw must be minimized as these are often running off very small batteries
+
+* At the level of millions of sensors, power draw must be minimized to lower the overall power bill
+
+* Our chip uses less energy that existing cpu-only microcontrollers, it uses an order of magnitude less power than existing cpu with a tacked on gpu microcontrollers (**numbers??**)
+
+
+# Part 5 – Cost
+
+* Hybrid CPU-GPU:
+  1. Reduces BOM (1<2)
+  2. Reduces assembly cost
+
+
+# Part 6 – Conclusion
+
+1. Better security
+2. Lower cost
+3. Lower power
+4. Higher computation at same power
+5. Ease of use and development
