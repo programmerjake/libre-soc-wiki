@@ -1,0 +1,60 @@
+the simple core is taking shape as a combination of all the pipelines,
+connected to the (5) types of register files.  all unit tests that
+have been developed to test *individual* pipelines have been borrowed
+through inheritance, to run against the register files, this time. 
+you can try it out as:
+
+    python3 soc/simple/test/test_core.py
+
+core.py is *very* simple.  its execution model is as follows:
+
+* receive instruction
+* decode instruction
+* identify through bitmasking which pipeline can handle it
+* enable *only* the MultiCompUnit managing that pipeline
+* wait for it to indicate that it is not busy (this includes regfile writing)
+* move on to the next instruction.
+
+each MultiCompUnit, of which there are currently five connected up (ALU,
+Logical, ShiftRot, CR, Branch), has a number of "operand in" and "result
+out" ports.  the register files have been *deliberately* spec'd to
+match one-for-one the maximum number of ports of each regfile type needed.
+
+therefore, for example: whilst no other MCU needs INT 2W (2 write ports),
+LDSTCompUnit *does* need 2 write ports and consequently the INT regfile
+has been allocated 2W.  another example: CR requires *three* read ports
+*and* the "full" (32-bit) CR, and consequently the CR regfile is 4R
+(1 full, 3 4-bit).
+
+this dramatically simplifies the code needed to connect up the MCUs to
+the Regfiles, because the port allocations (resource contention aside)
+is one-to-one.  the majority of the code in core.py (at present) involves
+reorganising [regspecs]([3d_gpu/architecture/regspecs) into a
+dictionary-of-dictionaries-of-lists.  the structure is:
+
+* first dictionary key is the register file TYPE (INT, CR, SPRs)
+* second dictionary key is the register port NAME (cr0, ra, rb, XER_so)
+* list contains the *Function Unit* and operand/result read/write port
+
+that list (on a per-file, per-regname basis) therefore contains *all*
+Function Units that wish to contend for that register file port, and,
+consequently, it is a simple matter of:
+
+* A. creating a PriorityPicker to select one and *ONLY* one Function
+  Unit that is permitted to access that port at any one time
+* B. creating a Broadcast Bus (fan-in in the case of write, fan-out in
+  the case of read) connecting regfile port to Function Unit port.
+
+
+# Next phases of development
+
+the next phases will involve:
+
+* adding in LDSTCompUnit
+* adding in minerva wishbone L1 I-Cache code (including bypass mode)
+* including the pre-written scoreboard "Instruction Queue" code
+* linking up NIA to the IQ, to fetch instructions and pass them to the decoder.
+
+at that point we will have an actual core that is capable of executing
+instructions on its own.  further code-morphs can then take place including
+adding in the [[6600scoreboard]].
