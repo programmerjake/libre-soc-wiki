@@ -14,16 +14,16 @@ The SOC is partitioned into three repositories at the moments.
     pip3 install virtualenv requests
     mkdir ~/.virtualenvs && cd ~/.virtualenvs
     python3 -m venv libresoc
-    source ~/.virtualenvs/bin/activate
+    source ~/.virtualenvs/libresoc/bin/activate
     
     cd ~; mkdir libresoc; cd libresoc
     git clone https://git.libre-riscv.org/git/nmutil.git
     git clone https://git.libre-riscv.org/git/ieee754fpu.git
     git clone https://git.libre-riscv.org/git/soc.git
     
-    cd nmutil; pip3 install -e .; cd ..
-    cd ieee754fpu; pip3 install -e .; cd ..
-    cd soc; pip3 install -e .; cd ..
+    cd nmutil; make install; cd ..
+    cd ieee754fpu; make install; cd ..
+    cd soc; make gitupdate; make install; cd ..
     
     python3 soc/src/soc/decoder/power_decoder.py
     yosys -p "read_ilang decoder.il; show dec31" 
