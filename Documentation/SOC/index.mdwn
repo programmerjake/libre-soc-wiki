@@ -44,18 +44,6 @@ This should give you a feel for how we work with enums and PowerOP.
                 m.d.comb += op_add.ldst_len.eq(LdstLen['NONE'])
                 m.d.comb += op_add.cry_in.eq(CryIn['ZERO'])
             
-            with m.Else():
-                m.d.comb += op_add.function_unit.eq(0)
-                m.d.comb += op_add.form.eq(0)
-                m.d.comb += op_add.internal_op.eq(0)
-                m.d.comb += op_add.in1_sel.eq(0)
-                m.d.comb += op_add.in2_sel.eq(0)
-                m.d.comb += op_add.in3_sel.eq(0)
-                m.d.comb += op_add.out_sel.eq(0)
-                m.d.comb += op_add.rc_sel.eq(0)
-                m.d.comb += op_add.ldst_len.eq(0)
-                m.d.comb += op_add.cry_in.eq(0)
-            
             return m
     
     from nmigen.back import verilog
