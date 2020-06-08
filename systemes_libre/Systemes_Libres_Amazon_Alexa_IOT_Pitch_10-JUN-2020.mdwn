@@ -17,11 +17,17 @@ Delivering robust low power, high-performance hardware for IOT and Edge Compute
   
   a. Security/Privacy: In the industrial IOT and RTOS market, significant harm can be done by malevolent actors and competitors by hacking hardware and causing it to do damage, or hacking the hardware to steal proprietary company secrets
 
-  b. Power: This leads to much higher power consumption
+  b. Power: 2 separate cores (CPU, GPU) leads to much higher
+     power consumption
   
-  c.    Cost: BOM and manufacturing/assembly costs
+  c.  Cost: BOM and manufacturing/assembly costs (No: because usually
+     they're "embedded" (shared memory bus architecture, same die)
 
-  d. Capability: In RTOS devices, can't use GPU because must go through Linux which is unacceptably high latency. Furthermore, current RTOS microcontrollers have much lower mathematical numerically intensive computational performance at the same power and silicon area compared to our chip.
+  d. Capability: In RTOS devices, can't make effective use of the GPU
+  
+  e. the drivers involve an inter-core RPC mechanism: which is unacceptably high latency and complexity
+
+  f. Furthermore, current RTOS microcontrollers have much lower mathematical numerically intensive computational performance at the same power and silicon area compared to our chip.
 
 2. Time/Ease of Use/Development: Proprietary development tools and documentation result in an often difficult and long development cycle, especially when rebuilding and optimizing arithmetically intensive algorithms for embedded systems.
 
