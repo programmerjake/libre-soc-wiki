@@ -6,13 +6,13 @@ The key documentation page for the processor is the [[3d_gpu/architecture]] page
 
 ## Codebase Structure
 
-The SOC is partitioned into three repositories at the moments.
+The SOC is partitioned into three repositories. The subrepositories are intended as standalone projects useful outside of LibreSOC. For example, the IEE754 FPU repository is a general purpose IEEE754 toolkit for the construction of FSMs and arbitrary length pipelines.
 
-| Git Repo | Documentation |
-|----------|---------------|
-| [SOC](https://git.libre-soc.org/?p=soc.git;a=tree) | [SOC Docs](../SOC/index) |
-| [FPU](https://git.libre-soc.org/?p=ieee754fpu.git;a=tree) | -- |
-| [nmutil](https://git.libre-soc.org/?p=nmutil.git;a=tree) | -- |
+| Git Repo | Documentation | Description
+|----------|---------------|---------------|
+| [SOC](https://git.libre-soc.org/?p=soc.git;a=tree) | [SOC Docs](../SOC/index) |  | Main POWER9 GPU |
+| [FPU](https://git.libre-soc.org/?p=ieee754fpu.git;a=tree) | -- | Equivalent to hardfloat-3 |
+| [nmutil](https://git.libre-soc.org/?p=nmutil.git;a=tree) | -- | Equivalent to Chisrl3.util |
 
 ## Installing the Codebase
 
