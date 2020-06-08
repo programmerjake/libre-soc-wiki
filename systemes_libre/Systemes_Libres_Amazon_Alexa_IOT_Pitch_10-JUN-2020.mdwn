@@ -58,6 +58,9 @@ Delivering robust low power, high-performance hardware for IOT and Edge Compute
 
 * Companies try to security-harden their software by writing it in special languages like Ada, or using c++ with static code analyzers and special 'Safety-critical' c++ coding guidelines. However, all of this time and money is wasted if the hardware running underneath this software is hopelessly insecure (**picture intel meltdown, spectre ahhhh!!**)
 
+(jacob: note that our processor is most likely still vulnerable to some variants of spectre unless we make a special effort in the instruction scheduling HW, load/store unit, caches, branch predictor, etc. see <https://bugs.libre-soc.org/show_bug.cgi?id=209>
+additional good example bugs would include intel's ME vulnerabilities)
+
 * For example, in the self-driving car domain, the concern about GPU-capable RTOS devices being insecure at the hardware level causes significant barriers to self-driving car adoption because the public is scared that someone will 'hack' their car and crash it
 
 * Almost every credit card and banking transaction is dependent on transaction processing servers, if these are hacked $M to $B of economic damage can be done
@@ -77,6 +80,8 @@ Delivering robust low power, high-performance hardware for IOT and Edge Compute
 * Hybrid CPU-GPU:
   1. Reduces BOM (1<2)
   2. Reduces assembly cost
+
+jacob: unless working on desktop/server-class hardware, the CPU and GPU have traditionally usually been on the same chip (integrated GPU), so these points aren't really relevant. cost could be relevant for decreasing die area, but that's a different point.
 
 
 # Part 6 – Conclusion
