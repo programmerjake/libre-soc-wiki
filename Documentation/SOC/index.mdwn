@@ -81,6 +81,6 @@ where the original hardcoded cascade can be seen.
 
 The docstring for power_decoder.py gives mire details: each levrl in the hierarchy, just as in the original decode1.vhdl, will take slices of the instruction bitpattern, match against it, and if successful will continue with further subdecoders until a line is met that contains the Operand Information (a PowerOp) exactly as shown at the top of this page.
 
-In this way, different sections of the instruction are successively devoded until the required instruction is fully recognised, and the hierarchical cascade of switch patterns results in a flat interpretation being produced tgat is useful internally. 
+In this way, different sections of the instruction are successively decoded (major opcode, then minor opcode, then sub-patterns under those) until the required instruction is fully recognised, and the hierarchical cascade of switch patterns results in a flat interpretation being produced tgat is useful internally. 
 
 
