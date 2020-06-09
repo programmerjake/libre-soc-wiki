@@ -73,3 +73,14 @@ This also demonstrates one of the design aspects taken in this project: to
 advanced dynamically generated HDL, rather than (as done with MyHDL)
 limit python code to a subset of its full capabilities.
 
+The CSV Files are loaded by
+[power_decoder.py](https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/decoder/power_decoder.py;hb=HEAD)
+and are usedto construct a hierarchical cascade of switch statements.  The original code came from
+[microwatt](https://github.com/antonblanchard/microwatt/blob/master/decode1.vhdl)
+where the original hardcoded cascade can be seen.
+
+The docstring for power_decoder.py gives mire details: each levrl in the hierarchy, just as in the original decode1.vhdl, will take slices of the instruction bitpattern, match against it, and if successful will continue with further subdecoders until a line is met that contains the Operand Information (a PowerOp) exactly as shown at the top of this page.
+
+In this way, different sections of the instruction are successively devoded until the required instruction is fully recognised, and the hierarchical cascade of switch patterns results in a flat interpretation being produced tgat is useful internally. 
+
+
