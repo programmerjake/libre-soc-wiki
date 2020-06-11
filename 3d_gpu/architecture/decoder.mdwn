@@ -12,6 +12,17 @@ The decoder has been written in python, to parse straight CSV files and other in
 
 The top level decoder object recursively drops through progressive levels of case statement groups, covering additional portions of the incoming instruction bits.  More on this technique - for which python and nmigen were *specifically* and strategically chosen - is outlined here <http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2020-March/004882.html>
 
+The PowerDecoder2, on encountering for example an ADD
+operation, needs to know whether Rc=0/1, whether OE=0/1, whether
+RB is to be read, whether an immediate is to be read and so on.
+With all of this information being specified in the CSV files, on
+a per-instruction basis, it is simply a matter of expanding that
+information out into a data structure called Decode2ToExecute1Type.
+From there it becomes easily possible for other parts of the processor
+to take appropriate action.
+
+* [Decode2ToExecute1Type](https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/decoder/decode2execute1.py;hb=HEAD)
+
 ## Link to Function Units
 
 The Decoder (PowerDecode2) knows which registers are needed, however what
@@ -36,9 +47,55 @@ determine, from current instruction, whether the Function Unit actually
 That dynamically-determined information will then actively disable
 (or allow) Register file Read requests (rd.req) on a per-port basis.
 
+Example:
+
+    class ALUInputData(IntegerData):
+        regspec = [('INT', 'ra', '0:63'), # RA
+                   ('INT', 'rb', '0:63'), # RB/immediate
+                   ('XER', 'xer_so', '32'), # XER bit 32: SO
+                   ('XER', 'xer_ca', '34,45')] # XER bit 34/45: CA/CA32
+
+This shows us that, for the ALU pipeline, it expects two INTEGER
+operands (RA and RB) both 64-bit, and it expects XER SO, CA and CA32
+bits.  However this information - as to which operands are required -
+is *dynamic*.
+
+Continuing from the OP_ADD example, where inspection of the CSV files
+(or the ISA tables) shows that we optionally need xer_so (OE=1),
+optionally need xer_ca (Rc=1), and even optionally need RB (add with
+immediate), we begin to understand that a dynamic system linking the
+PowerDecoder2 information to the Function Units is needed.  This is
+where power\_regspec\_map.py comes into play.
+
+    def regspec_decode_read(e, regfile, name):
+        if regfile == 'INT':
+            # Int register numbering is *unary* encoded
+            if name == 'ra': # RA
+                return e.read_reg1.ok, 1<<e.read_reg1.data
+            if name == 'rb': # RB
+                return e.read_reg2.ok, 1<<e.read_reg2.data
+
+Here we can see that, for INTEGER registers, if the Function Unit
+has a connection (an incoming operand) named "RA", the tuple returned
+contains two crucial pieces of information:
+
+1. The field from PowerDecoder2 which tells us if RA is even actually
+  required by this (decoded) instruction
+2. The INTEGER Register file read port activation signal (its read-enable
+  line-activation) which, if sent to the INTEGER Register file, will
+  request the actual register required by this current (decoded) 
+  instruction.
+
+Thus we have the *dynamic* information - not hardcoded in RTL but
+specified in *python* - encoding both if (first item of tuple) and
+what (second item of tuple) each Function Unit receives, and this
+for each and every operand.  A corresponding process exists for write,
+as well.
+
 * [[architecture/regfile]]
 * [CompUnits](https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/fu/compunits/compunits.py;hb=HEAD)
-* [ALU pipe_data.py specification](https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/fu/alu/pipe_data.py;hb=HEAD)
+* Example [ALU pipe_data.py specification](https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/fu/alu/pipe_data.py;hb=HEAD)
+* [power_regspec_map.py](https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/decoder/power_regspec_map.py;hb=HEAD)
 
 ## Fixed point instructions
 
