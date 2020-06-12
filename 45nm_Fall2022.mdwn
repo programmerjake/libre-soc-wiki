@@ -12,11 +12,11 @@ board computers.
 
 ## Devices
  - 4 Core POWER CPU
- - SimpleV GPU
+ - SimpleV Capability and GPU Instructions
  - IOMMU
  - Coherent Accelerator Processor Proxy (CAPP) functional unit
- - PCIE host Controller
- - PCIE Slave controller(RaptorCS wants to use LibreSOC as a GPU on their POWER mobos)
+ - PCIe host Controller
+ - PCIe Slave controller(RaptorCS wants to use LibreSOC as a GPU on their POWER mobos)
  - BMC - enables LibreSOC to become a discrete GPU with video output and ethernet.
 
 ## Interfaces
@@ -26,7 +26,7 @@ board computers.
  - SERDES - 10rx, 14tx
    - 4tx, 4rx for [OMI(DDR4](https://openpowerfoundation.org/wp-content/uploads/2018/10/Jeff-Steuchli.OpenCAPI-OPS-OMI.pdf) on top of SERDES with OpenCAPI protocol) @5GHz
    - 2tx, 2rx for ethernet
-   - 4tx, 4rx for PCIE and other CAPI devices
+   - 4tx, 4rx for PCIe and other CAPI devices
    - 3tx for HDMI
  - [OpenFSI](https://openpowerfoundation.org/?resource_lib=field-replaceable-unit-fru-service-interface-fsi-openfsi-specification) instead of JTAG
    - [Raptor HDL](https://gitlab.raptorengineering.com/raptor-engineering-public/lpc-spi-bridge-fpga)
