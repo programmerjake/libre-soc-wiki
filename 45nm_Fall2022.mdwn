@@ -12,10 +12,11 @@ Starting page
 
 ### Advanced
 
- - SERDES - 20 bi-directional lanes
-   - eight for OMI(DDR4 on top of SERDES with OpenCAPI protocol)
-   - one for ethernet
-   - 8 for PCIE
+ - SERDES - 10rx, 13tx
+   - 4rx, 4tx for OMI(DDR4 on top of SERDES with OpenCAPI protocol)
+   - 1rx, 1tx for ethernet
+   - 4rx, 4tx for PCIE and other CAPI devices
+   - 3tx for HDMI
  - [OpenFSI](https://openpowerfoundation.org/?resource_lib=field-replaceable-unit-fru-service-interface-fsi-openfsi-specification) instead of JTAG
    - [Raptor HDL](https://gitlab.raptorengineering.com/raptor-engineering-public/lpc-spi-bridge-fpga)
    - [Raptor Libsigrok](https://gitlab.raptorengineering.com/raptor-engineering-public/dsview/-/tree/master/libsigrokdecode4DSL/decoders/fsi)
