@@ -2,3 +2,137 @@
 
 TODO: add links to images, here
 
+# Shadow Matrices and Contracts of Sale
+
+we are having some difficulty in effectively communicating the
+"contract" - the API - that is required for an out-of-order processor
+to become an effective parallel engine that happens to respect
+sequential instruction order in what is termed a "precise exception"
+fashion.
+
+i began the technical discussion here:
+https://bugs.libre-soc.org/show_bug.cgi?id=397
+
+i wanted in particular to raise the observation of an analogy when
+buying goods and services - or, better - a house.
+
+the current Wishbone interface uses the following contract language:
+
+    "hello {insert person here}, i love your house.
+    i will offer you $$$$$ for it, RIGHT now.
+    this is a take-it or leave-it offer.
+    i require your answer immediately.
+    i will transfer the money immediately to your bank"
+
+most people, unless the value offered was extremely high, would shut
+the door in a hurry, and probably call the police.  even then, they'd
+probably be backing away.
+
+yet this protocol - this type of contract - is a fundamental part of
+computer science!  it's used in many many places.
+
+
+what we *actually* need is *this* protocol:
+
+    "hello {insert person here}, i love your house.
+    if i was to give you an offer of $$$ for it, what would you say?
+    i can go away and give you time to think about it.
+    i will come back later for your answer
+    if you agree, we can then exchange and sign contracts.
+    or, at any time (including right now), up until we exchange
+    contracts, you can say no"
+
+*THIS* is the protocol that we need for our processor, in *ALL*
+aspects and at *ALL* levels.
+
+the contract is:
+
+* speculative (an offer)
+* it is possible to offer MULTIPLE contracts to MULTIPLE people (view
+several houses)
+* it is possible to even move forward right the way to exchange of
+contracts - in parallel
+* it is possible to even *buy* multiple houses in parallel and to have
+multiple outstanding contracts.
+* it is possible for anyone to pull out - at any time - on any of
+those contracts.
+
+this basically illustrates very clearly that the augmented-6600 system
+that we are deploying is in fact a very simple and well-known contract
+negotiation technique!
+
+where the "precise" part comes into play (where the Shadow Dependency
+Matrix is activated) is where the analogy breaks down.
+
+the Shadow Matrix preserve the instruction order where, if one of the
+above "contracts" is cancelled, any contracts that were *INITIATED*
+after the time that the *cancelled* contract was cancelled, those
+other contracts are *ALSO CANCELLED*.
+
+*this* is how we achieve "precise exceptions".
+
+let's go back to that contract terminology, illustrating the shadow diagram here
+https://libre-soc.org/3d_gpu/shadow.jpg
+
+      "hello {insert person here}, i love your house.
+             ISSUE and SHADOW is raised
+       if i was to give you an offer of $$$ for it, what would you say?
+            REQ_READ is asserted
+       i can go away and give you time to think about it.
+            GO_READ asserted to indicate "i'm thinking about it"
+       i will come back later for your answer
+           REQ_WRITE internal condition is asserted
+           but because SHADOW is held, REQ_WRITE does
+          NOT go out [the contract is NOT signed]
+      if you agree, we can exchange and sign contracts.
+         "SHADOW_SUCCESS" flag is raised, SHADOW is dropped.
+      or, at any time (including right now), up until we exchange
+      contracts, you can say no"
+        "SHADOW_FAIL" flag is raised, GO_DIE is asserted for one cycle.
+
+something like that.  it's not quite like that, but it's close.  for
+example: GO_READ could indicate that the potential seller is happy to
+review the contract.  GO_WRITE could indicate "the contract has been
+signed".
+
+or, if we apply this to the LD/ST protocol (which may be more accurate
+an analogy), "GO_ADDR" may be considered "i'm thinking about it",
+"GO_WRITE" could be "the solicitor is drafting the contract" and
+"GO_STORE" could be "the contract is signed".
+
+however the important part is to understand and appreciate - *at all*
+- that the 6600 precise-augmented protocol is a *standard contract
+negotiation* procedure that is *required* to have *two separate
+phases*:
+
+* an "offer" phase and
+* a "completion" phase.
+
+this is absolutely fundamental to understand when it comes to our
+architecture.  proposals to use technology and APIs that are of the
+"standard" (simple) protocol - as implemented for example by Wishbone
+- *will not work* for us.
+
+the problem that we have is that whilst the ALU "result-generation"
+pipelines do not interact with the "Shadow" system in any way (they
+are simply subjected *to* cancellation), the following *do* interact
+with it:
+
+* Branch
+* Trap
+* LOAD/STORE
+* Predication (when we get to it)
+
+LOAD/STORE in particular is complex in that there are successive
+cascades of ever-faster caches (L0, L1, L2, L3) that have protocols
+that must be respected, *all whilst preserving this contract*.
+
+it is particularly unfortunate, then, to find that after careful
+consideration, Wishbone's simple protocols are *fundamentally*
+incompatible with what we need.
+
+we will therefore need to design a Bus Protocol that does actually
+work for this processor, based on the standard Contract of Sale to
+help guide us in that design.
+
+l.
