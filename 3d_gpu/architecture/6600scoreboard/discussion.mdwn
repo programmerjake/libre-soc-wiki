@@ -105,8 +105,11 @@ however the important part is to understand and appreciate - *at all*
 negotiation* procedure that is *required* to have *two separate
 phases*:
 
-* an "offer" phase and
-* a "completion" phase.
+* an "offer" phase, being the start of the transaction.
+* an "exchange" phase, during which the "offer" may not change.
+* a recognition of "completion" being the end of the transaction.
+
+thus we have actually 2 distinct phases (offer, exchange) delineated by terminology that marks the time at which the FSM transitions (offer, exchange, complete).
 
 this is absolutely fundamental to understand when it comes to our
 architecture.  proposals to use technology and APIs that are of the
@@ -134,8 +137,6 @@ incompatible with what we need.
 we will therefore need to design a Bus Protocol that does actually
 work for this processor, based on the standard Contract of Sale to
 help guide us in that design.
-
-l.
 
 # Scoreboard and LDST Questions
 
