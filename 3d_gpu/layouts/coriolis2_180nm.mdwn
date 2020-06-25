@@ -8,3 +8,45 @@ TODO
 
 [[!img simple_floorplan.png]]
 
+## Register files
+
+There are 5 register files: SPR, INT, CR, XER and FAST.
+
+Access to each of the ports is managed via a "Priority Picker" - an
+unary-in but one-hot unary-out picker - which allows one and only one
+"user" of a given regfile port at any one time.
+
+## Computation Units
+
+There are 8 Function Units: ALU, Logical, Condition, Branch, ShiftRot, LDST,
+Trap, and SPRs.
+
+Each Function Unit has operand inputs and operand outputs.  Across *all*
+pipelines there are multiple Function Units that require "RA" (Register A
+Integer Register File).  All of such "RA" read requests are (surprise)
+connected to the same "Priority Picker" mentioned above: likewise
+all Function Units requiring write to the "RT" register are connected
+to the exact same "RT-managing" Write Priority Picker.
+
+### Load Store Computation Unit(s)
+
+Load/Store is a special type of Computation Unit that additionally has
+access to external memory.  In the case where multiple LDSTCompUnits
+are added, L0CacheBuffer is responsible for "merging" these into single
+requests.
+
+There are however *two* L0 Caches (both 128-bit wide), with a split
+on address bit 4 for selecting either the odd L0 Cache or the even L0 Cache.
+
+Each of the two L0 caches has dual 64-bit Wishbone interfaces giving
+a total of *four* 64-bit Memory Bus requests that will be merged through
+an Arbiter down onto the same Memory Bus that the I-Cache is also connected
+to.
+
+## Instructions
+
+Instructions are decoded by PowerDecoder2, after being read by the
+simple core FSM from the Instruction Cache.  Currently this is an
+extremely simple memory block, to be replaced by a proper I-Cache
+with a proper connection to the Memory Bus (wishbone).
+
