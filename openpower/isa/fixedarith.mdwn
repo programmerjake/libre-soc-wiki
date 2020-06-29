@@ -339,8 +339,15 @@ XO-Form
 
     dividend[0:31] <-  (RA)[32:63]
     divisor[0:31] <- (RB) [32:63]
-    RT[32:63] <- dividend / divisor
-    RT[0:31] <- undefined[0:31]
+    if (((dividend = 0x8000_0000) &
+         (divisor = 0xffff_ffff)) |
+         (divisor = 0x0000_0000)) then
+        RT[0:63] <- undefined[0:63]
+        overflow <- 1
+    else
+        RT[32:63] <- dividend / divisor
+        RT[0:31] <- undefined[0:31]
+        overflow <- 0
 
 Special Registers Altered:
 
@@ -358,8 +365,13 @@ XO-Form
 
     dividend[0:31] <- (RA)[32:63]
     divisor[0:31] <- (RB)[32:63]
-    RT[32:63] <-  dividend / divisor
-    RT[0:31] <- undefined[0:31]
+    if divisor != 0 then
+        RT[32:63] <-  dividend / divisor
+        RT[0:31] <- undefined[0:31]
+        overflow <- 0
+    else
+        RT[0:63] <- undefined[0:63]
+        overflow <- 1
 
 Special Registers Altered:
 
@@ -376,9 +388,19 @@ XO-Form
 * divweo.  RT,RA,RB (OE=1 Rc=1)
 
     dividend[0:63] <- (RA)[32:63] || [0]*32
-    divisor[0:31] <- (RB)[32:63]
-    RT[32:63] <- dividend /  divisor
-    RT[0:31] <- undefined[0:31]
+    divisor[0:63] <- (RB)[32:63] || [0]*32
+    if (divisor = 0x0000_0000_0000_0000) then
+        overflow <- 1
+    else
+        result <- dividend /  divisor
+        if (result[32:63] = 0) then
+            RT[32:63] <- result[0:31]
+            RT[0:31] <- undefined[0:31]
+            overflow <- 0
+        else
+            overflow <- 1
+    if overflow = 1 then
+        RT[0:63] <- undefined[0:63]
 
 Special Registers Altered:
 
@@ -395,9 +417,19 @@ XO-Form
 * divweuo.  RT,RA,RB (OE=1 Rc=1)
 
     dividend[0:63] <- (RA)[32:63] || [0]*32
-    divisor[0:31] <- (RB)[32:63]
-    RT[32:63] <- dividend / divisor
-    RT[0:31] <- undefined[0:31]
+    divisor[0:63] <- (RB)[32:63] || [0]*32
+    if (divisor = 0x0000_0000_0000_0000) then
+        overflow <- 1
+    else
+        result <- dividend /  divisor
+        if (RA) < (RB) then
+            RT[32:63] <- result[0:31]
+            RT[0:31] <- undefined[0:31]
+            overflow <- 0
+        else
+            overflow <- 1
+    if overflow = 1 then
+        RT[0:63] <- undefined[0:63]
 
 Special Registers Altered:
 
@@ -411,9 +443,16 @@ X-Form
 * modsw RT,RA,RB
 
     dividend[0:31] <- (RA)[32:63]
-    divisor [0:31] <- (RB)[32:63]-
-    RT[32:63] <- dividend % divisor
-    RT[0:31 ] <- undefined[0:31]
+    divisor [0:31] <- (RB)[32:63]
+    if (((dividend = 0x8000_0000) &
+         (divisor = 0xffff_ffff)) |
+         (divisor = 0x0000_0000)) then
+        RT[0:63] <- undefined[0:63]
+        overflow <- 1
+    else
+        RT[32:63] <- dividend % divisor
+        RT[0:31] <- undefined[0:31]
+        overflow <- 0
 
 Special Registers Altered:
 
@@ -427,8 +466,13 @@ X-Form
 
     dividend[0:31] <- (RA) [32:63]
     divisor [0:31] <- (RB) [32:63]
-    RT[32:63] <- dividend % divisor
-    RT[0:31 ] <- undefined[0:31]
+    if divisor = 0x0000_0000 then
+        RT[0:63] <- undefined[0:63]
+        overflow <- 1
+    else
+        RT[32:63] <- dividend % divisor
+        RT[0:31] <- undefined[0:31]
+        overflow <- 0
 
 Special Registers Altered:
 
@@ -544,7 +588,14 @@ XO-Form
 
     dividend[0:63] <- (RA)
     divisor[0:63] <- (RB)
-    RT <- dividend / divisor
+    if (((dividend = 0x8000_0000_0000_0000) &
+         (divisor = 0xffff_ffff_ffff_ffff)) |
+         (divisor = 0x0000_0000_0000_0000)) then
+        RT[0:63] <- undefined[0:63]
+        overflow <- 1
+    else
+        RT <- dividend / divisor
+        overflow <- 0
 
 Special Registers Altered:
 
@@ -562,7 +613,12 @@ XO-Form
 
     dividend[0:63] <- (RA)
     divisor[0:63] <- (RB)
-    RT <- dividend / divisor
+    if (divisor = 0x0000_0000_0000_0000) then
+        RT[0:63] <- undefined[0:63]
+        overflow <- 1
+    else
+        RT <- dividend / divisor
+        overflow <- 0
 
 Special Registers Altered:
 
@@ -579,8 +635,18 @@ XO-Form
 * divdeo.  RT,RA,RB (OE=1 Rc=1)
 
     dividend[0:127] <-  (RA) || [0]*64
-    divisor[0:63] <- (RB)
-    RT <- dividend / divisor
+    divisor[0:127] <- (RB) || [0*64]
+    if divisor = [0]*128 then
+        overflow <- 1
+    else
+        result <- dividend /  divisor
+        if result[64:127] = 0x0000_0000_0000_0000 then
+            RT <- result[63:127]
+            overflow <- 0
+        else
+            overflow <- 1
+    if overflow = 1 then
+        RT[0:63] <- undefined[0:63]
 
 Special Registers Altered:
 
@@ -597,8 +663,18 @@ XO-Form
 * divdeuo.  RT,RA,RB (OE=1 Rc=1)
 
     dividend[0:127] <-  (RA) || [0]*64
-    divisor[0:63] <- (RB)
-    RT <- dividend / divisor
+    divisor[0:127] <- (RB) || [0*64]
+    if divisor = [0]*128 then
+        overflow <- 1
+    else
+        result <- dividend /  divisor
+        if (RA) < (RB) then
+            RT <- result[63:127]
+            overflow <- 0
+        else
+            overflow <- 1
+    if overflow = 1 then
+        RT[0:63] <- undefined[0:63]
 
 Special Registers Altered:
 
@@ -613,7 +689,14 @@ X-Form
 
     dividend <- (RA)
     divisor  <- (RB)
-    RT       <- dividend % divisor
+    if (((dividend = 0x8000_0000_0000_0000) &
+         (divisor = 0xffff_ffff_ffff_ffff)) |
+         (divisor = 0x0000_0000_0000_0000)) then
+        RT[0:63] <- undefined[0:63]
+        overflow <- 1
+    else
+        RT       <- dividend % divisor
+        overflow <- 0
 
 Special Registers Altered:
 
@@ -627,7 +710,12 @@ X-Form
 
     dividend <- (RA)
     divisor  <- (RB)
-    RT       <- dividend % divisor
+    if (divisor = 0x0000_0000_0000_0000) then
+        RT[0:63] <- undefined[0:63]
+        overflow <- 1
+    else
+        RT       <- dividend % divisor
+        overflow <- 0
 
 Special Registers Altered:
 
