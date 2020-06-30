@@ -4,6 +4,8 @@ D-Form
 
 * stb RS,D(RA)
 
+Pseudo-code:
+
     b <- (RA|0)
     EA <- b + EXTS(D)
     MEM(EA, 1) <- (RS)[56:63]
@@ -13,10 +15,13 @@ Special Registers Altered:
     None
 
 # Store Byte Indexed
+# Store Byte Indexed
 
 X-Form
 
 * stbx RS,RA,RB
+
+Pseudo-code:
 
     b <- (RA|0)
     EA <- b + (RB)
@@ -27,10 +32,13 @@ Special Registers Altered:
     None
 
 # Store Byte with Update
+# Store Byte with Update
 
 D-Form
 
 * stbu RS,D(RA)
+
+Pseudo-code:
 
     EA <- (RA) + EXTS(D)
     MEM(EA, 1) <- (RS)[56:63]
@@ -41,10 +49,13 @@ Special Registers Altered:
     None
 
 # Store Byte with Update Indexed
+# Store Byte with Update Indexed
 
 X-Form
 
 * stbux RS,RA,RB
+
+Pseudo-code:
 
     EA <- (RA) + (RB)
     MEM(EA, 1) <- (RS)[56:63]
@@ -55,10 +66,13 @@ Special Registers Altered:
     None
 
 # Store Halfword
+# Store Halfword
 
 D-Form
 
 * sth RS,D(RA)
+
+Pseudo-code:
 
     b <- (RA|0)
     EA <- b + EXTS(D)
@@ -69,10 +83,13 @@ Special Registers Altered:
     None
 
 # Store Halfword Indexed
+# Store Halfword Indexed
 
 X-Form
 
 * sthx RS,RA,RB
+
+Pseudo-code:
 
     b <- (RA|0)
     EA <- b + (RB)
@@ -83,10 +100,13 @@ Special Registers Altered:
     None
 
 # Store Halfword with Update
+# Store Halfword with Update
 
 D-Form
 
 * sthu RS,D(RA)
+
+Pseudo-code:
 
     EA <- (RA) + EXTS(D)
     MEM(EA, 2) <- (RS)[48:63]
@@ -97,10 +117,13 @@ Special Registers Altered:
     None
 
 # Store Halfword with Update Indexed
+# Store Halfword with Update Indexed
 
 X-Form
 
 * sthux RS,RA,RB
+
+Pseudo-code:
 
     EA <- (RA) + (RB)
     MEM(EA, 2) <- (RS)[48:63]
@@ -111,10 +134,13 @@ Special Registers Altered:
     None
 
 # Store Word
+# Store Word
 
 D-Form
 
 * stw RS,D(RA)
+
+Pseudo-code:
 
     b <- (RA|0)
     EA <- b + EXTS(D)
@@ -125,10 +151,13 @@ Special Registers Altered:
     None
 
 # Store Word Indexed
+# Store Word Indexed
 
 X-Form
 
 * stwx RS,RA,RB
+
+Pseudo-code:
 
     b <- (RA|0)
     EA <- b + (RB)
@@ -139,10 +168,13 @@ Special Registers Altered:
     None
 
 # Store Word with Update
+# Store Word with Update
 
 D-Form
 
 * stwu RS,D(RA)
+
+Pseudo-code:
 
     EA <- (RA) + EXTS(D)
     MEM(EA, 4) <- (RS)[32:63]
@@ -153,10 +185,13 @@ Special Registers Altered:
     None
 
 # Store Word with Update Indexed
+# Store Word with Update Indexed
 
 X-Form
 
 * stwux RS,RA,RB
+
+Pseudo-code:
 
     EA <- (RA) + (RB)
     MEM(EA, 4) <- (RS)[32:63]
@@ -167,10 +202,13 @@ Special Registers Altered:
     None
 
 # Store Doubleword
+# Store Doubleword
 
 DS-Form
 
 * std RS,DS(RA)
+
+Pseudo-code:
 
     b <- (RA|0)
     EA <- b + EXTS(DS || 0b00)
@@ -181,10 +219,13 @@ Special Registers Altered:
     None
 
 # Store Doubleword Indexed
+# Store Doubleword Indexed
 
 X-Form
 
 * stdx RS,RA,RB
+
+Pseudo-code:
 
     b <- (RA|0)
     EA <- b + (RB)
@@ -195,10 +236,13 @@ Special Registers Altered:
     None
 
 # Store Doubleword with Update
+# Store Doubleword with Update
 
 DS-Form
 
 * stdu RS,DS(RA)
+
+Pseudo-code:
 
     EA <- (RA) + EXTS(DS || 0b00)
     MEM(EA, 8) <- (RS)
@@ -209,10 +253,13 @@ Special Registers Altered:
     None
 
 # Store Doubleword with Update Indexed
+# Store Doubleword with Update Indexed
 
 X-Form
 
 * stdux RS,RA,RB
+
+Pseudo-code:
 
     EA <- (RA) + (RB)
     MEM(EA, 8) <- (RS)
@@ -223,10 +270,13 @@ Special Registers Altered:
     None
 
 # Store Quadword
+# Store Quadword
 
 DS-Form
 
 * stq RSp,DS(RA)
+
+Pseudo-code:
 
     b <- (RA|0)
     EA <- b + EXTS(DS || 0b00)
@@ -237,10 +287,13 @@ Special Registers Altered:
     None
 
 # Store Halfword Byte-Reverse Indexed
+# Store Halfword Byte-Reverse Indexed
 
 X-Form
 
 * sthbrx RS,RA,RB
+
+Pseudo-code:
 
     b <- (RA|0)
     EA <- b + (RB)
@@ -251,10 +304,13 @@ Special Registers Altered:
     None
 
 # Store Word Byte-Reverse Indexed
+# Store Word Byte-Reverse Indexed
 
 X-Form
 
 * stwbrx RS,RA,RB
+
+Pseudo-code:
 
     b <- (RA|0)
     EA <- b + (RB)
@@ -266,10 +322,13 @@ Special Registers Altered:
     None
 
 # Store Doubleword Byte-Reverse Indexed
+# Store Doubleword Byte-Reverse Indexed
 
 X-Form
 
 * stdbrx RS,RA,RB
+
+Pseudo-code:
 
     b <- (RA|0)
     EA <- b + (RB)
@@ -283,10 +342,13 @@ Special Registers Altered:
     None
 
 # Store Multiple Word
+# Store Multiple Word
 
 D-Form
 
 * stmw RS,D(RA)
+
+Pseudo-code:
 
     b <- (RA|0)
     EA <- b + EXTS(D)

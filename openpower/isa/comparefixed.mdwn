@@ -4,6 +4,8 @@ D-Form
 
 * cmpi BF,L,RA,SI
 
+Pseudo-code:
+
     if L = 0 then a <-  EXTS((RA)[32:63])
     else a <-  (RA)
     if      a < EXTS(SI) then c <- 0b100
@@ -16,10 +18,13 @@ Special Registers Altered:
     CR field BF
 
 # Compare
+# Compare
 
 X-Form
 
 * cmp BF,L,RA,RB
+
+Pseudo-code:
 
     if L = 0 then
         a <-  EXTS((RA)[32:63] )
@@ -37,10 +42,13 @@ Special Registers Altered:
     CR field BF
 
 # Compare Logical Immediate
+# Compare Logical Immediate
 
 D-Form
 
 * cmpli BF,L,RA,UI
+
+Pseudo-code:
 
     if L = 0 then a <- [0]*32 || (RA)[32:63]
     else a <- (RA)
@@ -54,10 +62,13 @@ Special Registers Altered:
     CR field BF
 
 # Compare Logical
+# Compare Logical
 
 X-Form
 
 * cmpl BF,L,RA,RB
+
+Pseudo-code:
 
     if L = 0 then
         a <- [0]*32 || (RA)[32:63]
@@ -75,10 +86,13 @@ Special Registers Altered:
     CR field BF
 
 # Compare Ranged Byte
+# Compare Ranged Byte
 
 X-Form
 
 * cmprb BF,L,RA,RB
+
+Pseudo-code:
 
     src1    <- EXTZ((RA)[56:63])
     src21hi <- EXTZ((RB)[32:39])
@@ -100,10 +114,13 @@ Special Registers Altered:
     CR field BF
 
 # Compare Equal Byte
+# Compare Equal Byte
 
 X-Form
 
 * cmpeqb BF,RA,RB
+
+Pseudo-code:
 
     src1 <- GPR[RA]
     src1 <- src1[56:63]

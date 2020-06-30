@@ -1,4 +1,4 @@
-# Branch 
+# Branch
 
 I-Form
 
@@ -6,6 +6,8 @@ I-Form
 * ba target_addr (AA=1 LK=0)
 * bl target_addr (AA=0 LK=1)
 * bla target_addr (AA=1 LK=1)
+
+Pseudo-code:
 
     if AA then NIA  <-iea EXTS(LI || 0b00)
     else       NIA  <-iea CIA + EXTS(LI || 0b00)
@@ -16,6 +18,7 @@ Special Registers Altered:
     LR                       (if LK=1)
 
 # Branch Conditional
+# Branch Conditional
 
 B-Form
 
@@ -23,6 +26,8 @@ B-Form
 * bca BO,BI,target_addr (AA=1 LK=0)
 * bcl BO,BI,target_addr (AA=0 LK=1)
 * bcla BO,BI,target_addr (AA=1 LK=1)
+
+Pseudo-code:
 
     if (mode_is_64bit) then M <- 0
     else M <- 32
@@ -40,11 +45,14 @@ Special Registers Altered:
     LR                       (if LK=1)
 
 # Branch Conditional to Link Register
+# Branch Conditional to Link Register
 
 XL-Form
 
 * bclr BO,BI,BH (LK=0)
 * bclrl BO,BI,BH (LK=1)
+
+Pseudo-code:
 
     if (mode_is_64bit) then M <- 0
     else M <- 32
@@ -60,11 +68,14 @@ Special Registers Altered:
     LR                       (if LK=1)
 
 # Branch Conditional to Count Register
+# Branch Conditional to Count Register
 
 XL-Form
 
 * bcctr BO,BI,BH (LK=0)
 * bcctrl BO,BI,BH (LK=1)
+
+Pseudo-code:
 
     cond_ok <- BO[0] | ¬(CR[BI+32] ^ BO[1])
     if cond_ok then NIA <-iea CTR[0:61] || 0b00
@@ -75,11 +86,14 @@ Special Registers Altered:
     LR                     (if LK=1)
 
 # Branch Conditional to Branch Target Address Register
+# Branch Conditional to Branch Target Address Register
 
 XL-Form
 
 * bctar BO,BI,BH (LK=0)
 * bctarl BO,BI,BH (LK=1)
+
+Pseudo-code:
 
     if (mode_is_64bit) then M <- 0
     else M <- 32

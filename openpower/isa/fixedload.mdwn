@@ -4,6 +4,8 @@ D-Form
 
 * lbz RT,D(RA)
 
+Pseudo-code:
+
     b <- (RA|0)
     EA <- b + EXTS(D)
     RT <- [0]*56 || MEM(EA, 1)
@@ -13,10 +15,13 @@ Special Registers Altered:
     None
 
 # Load Byte and Zero Indexed
+# Load Byte and Zero Indexed
 
 X-Form
 
 * lbzx RT,RA,RB
+
+Pseudo-code:
 
     b <- (RA|0)
     EA <- b + (RB)
@@ -27,10 +32,13 @@ Special Registers Altered:
     None
 
 # Load Byte and Zero with Update
+# Load Byte and Zero with Update
 
 D-Form
 
 * lbzu RT,D(RA)
+
+Pseudo-code:
 
     EA <- (RA) + EXTS(D)
     RT <- [0] * 56 || MEM(EA, 1)
@@ -41,10 +49,13 @@ Special Registers Altered:
     None
 
 # Load Byte and Zero with Update Indexed
+# Load Byte and Zero with Update Indexed
 
 X-Form
 
 * lbzux RT,RA,RB
+
+Pseudo-code:
 
     EA <- (RA) + (RB)
     RT <- [0] * 56 || MEM(EA, 1)
@@ -55,10 +66,13 @@ Special Registers Altered:
     None
 
 # Load Halfword and Zero
+# Load Halfword and Zero
 
 D-Form
 
 * lhz RT,D(RA)
+
+Pseudo-code:
 
     b <- (RA|0)
     EA <- b + EXTS(D)
@@ -69,10 +83,13 @@ Special Registers Altered:
     None
 
 # Load Halfword and Zero Indexed
+# Load Halfword and Zero Indexed
 
 X-Form
 
 * lhzx RT,RA,RB
+
+Pseudo-code:
 
     b <- (RA|0)
     EA <- b + (RB)
@@ -83,10 +100,13 @@ Special Registers Altered:
     None
 
 # Load Halfword and Zero with Update
+# Load Halfword and Zero with Update
 
 D-Form
 
 * lhzu RT,D(RA)
+
+Pseudo-code:
 
     EA <- (RA) + EXTS(D)
     RT <- [0] * 48 || MEM(EA, 2)
@@ -97,10 +117,13 @@ Special Registers Altered:
     None
 
 # Load Halfword and Zero with Update Indexed
+# Load Halfword and Zero with Update Indexed
 
 X-Form
 
 * lhzux RT,RA,RB
+
+Pseudo-code:
 
     EA <- (RA) + (RB)
     RT <- [0] * 48 || MEM(EA, 2)
@@ -111,10 +134,13 @@ Special Registers Altered:
     None
 
 # Load Halfword Algebraic
+# Load Halfword Algebraic
 
 D-Form
 
 * lha RT,D(RA)
+
+Pseudo-code:
 
     b <- (RA|0)
     EA <- b + EXTS(D)
@@ -125,10 +151,13 @@ Special Registers Altered:
     None
 
 # Load Halfword Algebraic Indexed
+# Load Halfword Algebraic Indexed
 
 X-Form
 
 * lhax RT,RA,RB
+
+Pseudo-code:
 
     b <- (RA|0)
     EA <- b + (RB)
@@ -139,10 +168,13 @@ Special Registers Altered:
     None
 
 # Load Halfword Algebraic with Update
+# Load Halfword Algebraic with Update
 
 D-Form
 
 * lhau RT,D(RA)
+
+Pseudo-code:
 
     EA <- (RA) + EXTS(D)
     RT <- EXTS(MEM(EA, 2))
@@ -153,10 +185,13 @@ Special Registers Altered:
     None
 
 # Load Halfword Algebraic with Update Indexed
+# Load Halfword Algebraic with Update Indexed
 
 X-Form
 
 * lhaux RT,RA,RB
+
+Pseudo-code:
 
     EA <- (RA) + (RB)
     RT <- EXTS(MEM(EA, 2))
@@ -167,10 +202,13 @@ Special Registers Altered:
     None
 
 # Load Word and Zero
+# Load Word and Zero
 
 D-Form
 
 * lwz RT,D(RA)
+
+Pseudo-code:
 
     b <- (RA|0)
     EA <- b + EXTS(D)
@@ -181,10 +219,13 @@ Special Registers Altered:
     None
 
 # Load Word and Zero Indexed
+# Load Word and Zero Indexed
 
 X-Form
 
 * lwzx RT,RA,RB
+
+Pseudo-code:
 
     b <- (RA|0)
     EA <- b + (RB)
@@ -195,10 +236,13 @@ Special Registers Altered:
     None
 
 # Load Word and Zero with Update
+# Load Word and Zero with Update
 
 D-Form
 
 * lwzu RT,D(RA)
+
+Pseudo-code:
 
     EA <- (RA) + EXTS(D)
     RT <- [0]*32 || MEM(EA, 4)
@@ -209,10 +253,13 @@ Special Registers Altered:
     None
 
 # Load Word and Zero with Update Indexed
+# Load Word and Zero with Update Indexed
 
 X-Form
 
 * lwzux RT,RA,RB
+
+Pseudo-code:
 
     EA <- (RA) + (RB)
     RT <- [0] * 32 || MEM(EA, 4)
@@ -223,10 +270,13 @@ Special Registers Altered:
     None
 
 # Load Word Algebraic
+# Load Word Algebraic
 
 D-Form
 
 * lwa RT,DS(RA)
+
+Pseudo-code:
 
     b <- (RA|0)
     EA <- b + EXTS(DS || 0b00)
@@ -237,10 +287,13 @@ Special Registers Altered:
     None
 
 # Load Word Algebraic Indexed
+# Load Word Algebraic Indexed
 
 X-Form
 
 * lwax RT,RA,RB
+
+Pseudo-code:
 
     b <- (RA|0)
     EA <- b + (RB)
@@ -251,10 +304,13 @@ Special Registers Altered:
     None
 
 # Load Word Algebraic with Update Indexed
+# Load Word Algebraic with Update Indexed
 
 X-Form
 
 * lwaux RT,RA,RB
+
+Pseudo-code:
 
     EA <- (RA) + (RB)
     RT <- EXTS(MEM(EA, 4))
@@ -265,10 +321,13 @@ Special Registers Altered:
     None
 
 # Load Doubleword
+# Load Doubleword
 
 DS-Form
 
 * ld RT,DS(RA)
+
+Pseudo-code:
 
     b <- (RA|0)
     EA <- b + EXTS(DS || 0b00)
@@ -279,10 +338,13 @@ Special Registers Altered:
     None
 
 # Load Doubleword Indexed
+# Load Doubleword Indexed
 
 X-Form
 
 * ldx RT,RA,RB
+
+Pseudo-code:
 
     b <- (RA|0)
     EA <- b + (RB)
@@ -293,10 +355,13 @@ Special Registers Altered:
     None
 
 # Load Doubleword with Update Indexed
+# Load Doubleword with Update Indexed
 
 DS-Form
 
 * ldu RT,DS(RA)
+
+Pseudo-code:
 
     EA <- (RA) + EXTS(DS || 0b00)
     RT <- MEM(EA, 8)
@@ -307,10 +372,13 @@ Special Registers Altered:
     None
 
 # Load Doubleword with Update Indexed
+# Load Doubleword with Update Indexed
 
 X-Form
 
 * ldux RT,RA,RB
+
+Pseudo-code:
 
     EA <- (RA) + (RB)
     RT <- MEM(EA, 8)
@@ -321,10 +389,13 @@ Special Registers Altered:
     None
 
 # Load Quadword
+# Load Quadword
 
 DQ-Form
 
 * lq RTp,DQ(RA)
+
+Pseudo-code:
 
     b <- (RA|0)
     EA <- b + EXTS(DQ || 0b0000)
@@ -335,10 +406,13 @@ Special Registers Altered:
     None
 
 # Load Halfword Byte-Reverse Indexed
+# Load Halfword Byte-Reverse Indexed
 
 X-Form
 
 * lhbrx RT,RA,RB
+
+Pseudo-code:
 
     b <- (RA|0)
     EA <- b + (RB)
@@ -350,10 +424,13 @@ Special Registers Altered:
     None
 
 # Load Word Byte-Reverse Indexed
+# Load Word Byte-Reverse Indexed
 
 X-Form
 
 * lwbrx RT,RA,RB
+
+Pseudo-code:
 
     b <- (RA|0)
     EA <- b + (RB)
@@ -366,10 +443,13 @@ Special Registers Altered:
     None
 
 # Load Doubleword Byte-Reverse Indexed
+# Load Doubleword Byte-Reverse Indexed
 
 X-Form
 
 * ldbrx RT,RA,RB
+
+Pseudo-code:
 
     b <- (RA|0)
     EA <- b + (RB)
@@ -384,10 +464,13 @@ Special Registers Altered:
     None
 
 # Load Multiple Word
+# Load Multiple Word
 
 DQ-Form
 
 * lmw RT,D(RA)
+
+Pseudo-code:
 
     b <- (RA|0)
     EA <- b + EXTS(D)

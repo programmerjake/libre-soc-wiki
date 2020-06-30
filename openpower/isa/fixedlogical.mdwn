@@ -4,6 +4,8 @@ D-Form
 
 * andi.  RA,RS,UI
 
+Pseudo-code:
+
     RA <- (RS) & ([0]*48 || UI)
 
 Special Registers Altered:
@@ -11,10 +13,13 @@ Special Registers Altered:
     CR0
 
 # OR Immediate
+# OR Immediate
 
 D-Form
 
 * ori RA,RS,UI
+
+Pseudo-code:
 
     RA <- (RS) | ([0]*48 || UI)
 
@@ -23,10 +28,13 @@ Special Registers Altered:
     None
 
 # AND Immediate Shifted
+# AND Immediate Shifted
 
 D-Form
 
 * andis.  RA,RS,UI
+
+Pseudo-code:
 
     RA <- (RS) & ([0]*32 || UI || [0]*16)
 
@@ -35,10 +43,13 @@ Special Registers Altered:
     CR0
 
 # OR Immediate Shifted
+# OR Immediate Shifted
 
 D-Form
 
 * oris      RA,RS,UI
+
+Pseudo-code:
 
     RA <- (RS) | ([0]*32 || UI || [0]*16)
 
@@ -47,10 +58,13 @@ Special Registers Altered:
     None
 
 # XOR Immediate Shifted
+# XOR Immediate Shifted
 
 D-Form
 
 * xoris RA,RS,UI
+
+Pseudo-code:
 
     RA <- (RS) ^ ([0]*32 || UI || [0]*16)
 
@@ -59,10 +73,13 @@ Special Registers Altered:
     None
 
 # XOR Immediate
+# XOR Immediate
 
 D-Form
 
 * xori RA,RS,UI
+
+Pseudo-code:
 
     RA <- (RS) ^ ([0]*48 || UI)
 
@@ -71,11 +88,14 @@ Special Registers Altered:
     None
 
 # AND
+# AND
 
 X-Form
 
 * and RA,RS,RB (Rc=0)
 * and.  RA,RS,RB (Rc=1)
+
+Pseudo-code:
 
     RA <- (RS) & (RB)
 
@@ -84,11 +104,14 @@ Special Registers Altered:
     CR0                    (if Rc=1)
 
 # OR
+# OR
 
 X-Form
 
 * or RA,RS,RB (Rc=0)
 * or.  RA,RS,RB (Rc=1)
+
+Pseudo-code:
 
     RA <- (RS) | (RB)
 
@@ -97,11 +120,14 @@ Special Registers Altered:
     CR0                    (if Rc=1)
 
 # XOR
+# XOR
 
 X-Form
 
 * xor RA,RS,RB (Rc=0)
 * xor.  RA,RS,RB (Rc=1)
+
+Pseudo-code:
 
     RA <- (RS) ^ (RB)
 
@@ -110,11 +136,14 @@ Special Registers Altered:
     CR0                    (if Rc=1)
 
 # NAND
+# NAND
 
 X-Form
 
 * nand RA,RS,RB (Rc=0)
 * nand.  RA,RS,RB (Rc=1)
+
+Pseudo-code:
 
     RA <- ¬((RS) & (RB))
 
@@ -123,11 +152,14 @@ Special Registers Altered:
     CR0                    (if Rc=1)
 
 # NOR
+# NOR
 
 X-Form
 
 * nor RA,RS,RB (Rc=0)
 * nor.  RA,RS,RB (Rc=1)
+
+Pseudo-code:
 
     RA <- ¬((RS) | (RB))
 
@@ -136,11 +168,14 @@ Special Registers Altered:
     CR0                    (if Rc=1)
 
 # Equivalent
+# Equivalent
 
 X-Form
 
 * eqv RA,RS,RB (Rc=0)
 * eqv.  RA,RS,RB (Rc=1)
+
+Pseudo-code:
 
     RA <- ¬((RS) ^ (RB))
 
@@ -149,11 +184,14 @@ Special Registers Altered:
     CR0                    (if Rc=1)
 
 # AND with Complement
+# AND with Complement
 
 X-Form
 
 * andc RA,RS,RB (Rc=0)
 * andc.  RA,RS,RB (Rc=1)
+
+Pseudo-code:
 
     RA <- (RS) &  ¬(RB)
 
@@ -162,11 +200,14 @@ Special Registers Altered:
     CR0                    (if Rc=1)
 
 # OR with Complement
+# OR with Complement
 
 X-Form
 
 * orc RA,RS,RB (Rc=0)
 * orc.  RA,RS,RB (Rc=1)
+
+Pseudo-code:
 
     RA <- (RS) |  ¬(RB)
 
@@ -175,11 +216,14 @@ Special Registers Altered:
     CR0                    (if Rc=1)
 
 # Extend Sign Byte
+# Extend Sign Byte
 
 X-Form
 
 * extsb RA,RS (Rc=0)
 * extsb.  RA,RS (Rc=1)
+
+Pseudo-code:
 
     s <- (RS)[56]
     RA[56:63] <- (RS)[56:63]
@@ -190,11 +234,14 @@ Special Registers Altered:
     CR0                    (if Rc=1)
 
 # Extend Sign Halfword
+# Extend Sign Halfword
 
 X-Form
 
 * extsh RA,RS (Rc=0)
 * extsh.  RA,RS (Rc=1)
+
+Pseudo-code:
 
     s <- (RS)[48]
     RA[48:63] <-  (RS)[48:63]
@@ -205,11 +252,14 @@ Special Registers Altered:
     CR0                    (if Rc=1)
 
 # Count Leading Zeros Word
+# Count Leading Zeros Word
 
 X-Form
 
 * cntlzw RA,RS (Rc=0)
 * cntlzw.  RA,RS (Rc=1)
+
+Pseudo-code:
 
     n <- 32
     do while n < 64
@@ -223,11 +273,14 @@ Special Registers Altered:
     CR0                    (if Rc=1)
 
 # Count Trailing Zeros Word
+# Count Trailing Zeros Word
 
 X-Form
 
 * cnttzw RA,RS (Rc=0)
 * cnttzw.  RA,RS (Rc=1)
+
+Pseudo-code:
 
     n <- 0
     do while n < 32
@@ -241,10 +294,13 @@ Special Registers Altered:
     CR0                    (if Rc=1)
 
 # Compare Bytes
+# Compare Bytes
 
 X-Form
 
 * cmpb RA,RS,RB
+
+Pseudo-code:
 
     do n = 0 to 7
         if RS[8*n:8* n+7] = (RB)[8*n:8*n+7] then
@@ -257,10 +313,13 @@ Special Registers Altered:
     None
 
 # Population Count Bytes
+# Population Count Bytes
 
 X-Form
 
 * popcntb RA, RS
+
+Pseudo-code:
 
     do i = 0 to 7
        n <-  0
@@ -274,10 +333,13 @@ Special Registers Altered:
     None
 
 # Population Count Words
+# Population Count Words
 
 X-Form
 
 * popcntw RA, RS
+
+Pseudo-code:
 
     do i = 0 to 1
        n <-  0
@@ -291,10 +353,13 @@ Special Registers Altered:
     None
 
 # Parity Doubleword
+# Parity Doubleword
 
 X-Form
 
 * prtyd RA,RS
+
+Pseudo-code:
 
     s <- 0
     do i = 0 to 7
@@ -306,10 +371,13 @@ Special Registers Altered:
     None
 
 # Parity Word
+# Parity Word
 
 X-Form
 
 * prtyw RA,RS
+
+Pseudo-code:
 
     s <- 0
     t <- 0
@@ -325,11 +393,14 @@ Special Registers Altered:
     None
 
 # Extend Sign Word
+# Extend Sign Word
 
 X-Form
 
 * extsw RA,RS (Rc=0)
 * extsw.  RA,RS (Rc=1)
+
+Pseudo-code:
 
     s <- (RS)[32]
     RA[32:63] <- (RS)[32:63]
@@ -340,10 +411,13 @@ Special Registers Altered:
     CR0                    (if Rc=1)
 
 # Population Count Doubleword
+# Population Count Doubleword
 
 X-Form
 
 * popcntd RA, RS
+
+Pseudo-code:
 
     n <- 0
     do i = 0 to 63
@@ -356,11 +430,14 @@ Special Registers Altered:
     None
 
 # Count Leading Zeros Doubleword
+# Count Leading Zeros Doubleword
 
 X-Form
 
 * cntlzd RA,RS (Rc=0)
 * cntlzd.  RA,RS (Rc=1)
+
+Pseudo-code:
 
     n <- 0
     do while n < 64
@@ -374,11 +451,14 @@ Special Registers Altered:
     CR0                    (if Rc=1)
 
 # Count Trailing Zeros Doubleword
+# Count Trailing Zeros Doubleword
 
 X-Form
 
 * cnttzd RA,RS (Rc=0)
 * cnttzd.  RA,RS (Rc=1)
+
+Pseudo-code:
 
     n  <- 0
     do while n < 64
@@ -392,10 +472,13 @@ Special Registers Altered:
     CR0                    (if Rc=1)
 
 # Bit Permute Doubleword
+# Bit Permute Doubleword
 
 X-Form
 
 * bpermd RA,RS,RB]
+
+Pseudo-code:
 
     perm <- [0] * 8
     for i = 0 to 7

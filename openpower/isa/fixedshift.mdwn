@@ -5,6 +5,8 @@ M-Form
 * rlwinm RA,RS,SH,MB,ME (Rc=0)
 * rlwinm.  RA,RS,SH,MB,ME (Rc=1)
 
+Pseudo-code:
+
     n <- SH
     r <- ROTL32((RS)[32:63], n)
     m <- MASK(MB+32, ME+32)
@@ -15,11 +17,14 @@ Special Registers Altered:
     CR0                    (if Rc=1)
 
 # Rotate Left Word then AND with Mask
+# Rotate Left Word then AND with Mask
 
 M-Form
 
 * rlwnm RA,RS,RB,MB,ME (Rc=0)
 * rlwnm.  RA,RS,RB,MB,ME (Rc=1)
+
+Pseudo-code:
 
     n <- (RB)[59:63]
     r <- ROTL32((RS)[32:63], n)
@@ -31,11 +36,14 @@ Special Registers Altered:
     CR0                    (if Rc=1)
 
 # Rotate Left Word Immediate then Mask Insert
+# Rotate Left Word Immediate then Mask Insert
 
 M-Form
 
 * rlwimi RA,RS,SH,MB,ME (Rc=0)
 * rlwimi.  RA,RS,SH,MB,ME (Rc=1)
+
+Pseudo-code:
 
     n <- SH
     r <- ROTL32((RS)[32:63], n)
@@ -47,11 +55,14 @@ Special Registers Altered:
     CR0                    (if Rc=1)
 
 # Rotate Left Doubleword Immediate then Clear Left
+# Rotate Left Doubleword Immediate then Clear Left
 
 MD-Form
 
 * rldicl RA,RS,SH,MB (Rc=0)
 * rldicl.  RA,RS,SH,MB (Rc=1)
+
+Pseudo-code:
 
     n <- sh[5] || sh[0:4]
     r <- ROTL64((RS), n)
@@ -64,11 +75,14 @@ Special Registers Altered:
     CR0                    (if Rc=1)
 
 # Rotate Left Doubleword Immediate then Clear Right
+# Rotate Left Doubleword Immediate then Clear Right
 
 MD-Form
 
 * rldicr RA,RS,SH,ME (Rc=0)
 * rldicr.  RA,RS,SH,ME (Rc=1)
+
+Pseudo-code:
 
     n <- sh[5] || sh[0:4]
     r <- ROTL64((RS), n)
@@ -81,11 +95,14 @@ Special Registers Altered:
     CR0                    (if Rc=1)
 
 # Rotate Left Doubleword Immediate then Clear
+# Rotate Left Doubleword Immediate then Clear
 
 MD-Form
 
 * rldic RA,RS,SH,MB (Rc=0)
 * rldic.  RA,RS,SH,MB (Rc=1)
+
+Pseudo-code:
 
     n <- sh[5] || sh[0:4]
     r <- ROTL64((RS), n)
@@ -98,11 +115,14 @@ Special Registers Altered:
     CR0                    (if Rc=1)
 
 # Rotate Left Doubleword then Clear Left
+# Rotate Left Doubleword then Clear Left
 
 MDS-Form
 
 * rldcl RA,RS,RB,MB (Rc=0)
 * rldcl.  RA,RS,RB,MB (Rc=1)
+
+Pseudo-code:
 
     n <- (RB)[58:63]
     r <- ROTL64((RS), n)
@@ -115,11 +135,14 @@ Special Registers Altered:
     CR0                    (if Rc=1)
 
 # Rotate Left Doubleword then Clear Right
+# Rotate Left Doubleword then Clear Right
 
 MDS-Form
 
 * rldcr RA,RS,RB,ME (Rc=0)
 * rldcr.  RA,RS,RB,ME (Rc=1)
+
+Pseudo-code:
 
     n <- (RB)[58:63]
     r <- ROTL64((RS), n)
@@ -132,11 +155,14 @@ Special Registers Altered:
     CR0                    (if Rc=1)
 
 # Rotate Left Doubleword Immediate then Mask Insert
+# Rotate Left Doubleword Immediate then Mask Insert
 
 MD-Form
 
 * rldimi RA,RS,SH,MB (Rc=0)
 * rldimi.  RA,RS,SH,MB (Rc=1)
+
+Pseudo-code:
 
     n <- sh[5] || sh[0:4]
     r <- ROTL64((RS), n)
@@ -150,11 +176,14 @@ Special Registers Altered:
 
 
 # Shift Left Word
+# Shift Left Word
 
 X-Form
 
 * slw RA,RS,RB (Rc=0)
 * slw.  RA,RS,RB (Rc=1)
+
+Pseudo-code:
 
     n <- (RB)[59:63]
     r <- ROTL32((RS)[32:63], n)
@@ -168,11 +197,14 @@ Special Registers Altered:
     CR0                    (if Rc=1)
 
 # Shift Right Word
+# Shift Right Word
 
 X-Form
 
 * srw RA,RS,RB (Rc=0)
 * srw.  RA,RS,RB (Rc=1)
+
+Pseudo-code:
 
     n <- (RB)[59:63]
     r <- ROTL32((RS)[32:63], 64-n)
@@ -186,11 +218,14 @@ Special Registers Altered:
     CR0                    (if Rc=1)
 
 # Shift Right Algebraic Word Immediate
+# Shift Right Algebraic Word Immediate
 
 X-Form
 
 * srawi RA,RS,SH (Rc=0)
 * srawi.  RA,RS,SH (Rc=1)
+
+Pseudo-code:
 
     n <- SH
     r <- ROTL32((RS)[32:63], 64-n)
@@ -207,11 +242,14 @@ Special Registers Altered:
     CR0                    (if Rc=1)
 
 # Shift Right Algebraic Word
+# Shift Right Algebraic Word
 
 X-Form
 
 * sraw RA,RS,RB (Rc=0)
 * sraw.  RA,RS,RB (Rc=1)
+
+Pseudo-code:
 
     n <- (RB)[59:63]
     r <- ROTL32((RS)[32:63], 64-n)
@@ -230,11 +268,14 @@ Special Registers Altered:
     CR0                    (if Rc=1)
 
 # Shift Left Doubleword
+# Shift Left Doubleword
 
 X-Form
 
 * sld RA,RS,RB (Rc=0)
 * sld.  RA,RS,RB (Rc=1)
+
+Pseudo-code:
 
     n <- (RB)[58:63]
     r <- ROTL64((RS), n)
@@ -248,11 +289,14 @@ Special Registers Altered:
     CR0                    (if Rc=1)
 
 # Shift Right Doubleword
+# Shift Right Doubleword
 
 X-Form
 
 * srd RA,RS,RB (Rc=0)
 * srd.  RA,RS,RB (Rc=1)
+
+Pseudo-code:
 
     n <- (RB)[58:63]
     r <- ROTL64((RS), 64-n)
@@ -266,11 +310,14 @@ Special Registers Altered:
     CR0                    (if Rc=1)
 
 # Shift Right Algebraic Doubleword Immediate
+# Shift Right Algebraic Doubleword Immediate
 
 XS-Form
 
 * sradi RA,RS,SH (Rc=0)
 * sradi.  RA,RS,SH (Rc=1)
+
+Pseudo-code:
 
     n <- sh[5] || sh[0:4]
     r <- ROTL64((RS), 64-n)
@@ -287,11 +334,14 @@ Special Registers Altered:
     CR0                    (if Rc=1)
 
 # Shift Right Algebraic Doubleword
+# Shift Right Algebraic Doubleword
 
 X-Form
 
 * srad RA,RS,RB (Rc=0)
 * srad.  RA,RS,RB (Rc=1)
+
+Pseudo-code:
 
     n <- (RB)[58:63]
     r <- ROTL64((RS), 64-n)
@@ -310,11 +360,14 @@ Special Registers Altered:
     CR0                    (if Rc=1)
 
 # Extend-Sign Word and Shift Left Immediate
+# Extend-Sign Word and Shift Left Immediate
 
 XS-Form
 
 * extswsli RA,RS,SH (Rc=0)
 * extswsli.  RA,RS,SH (Rc=1)
+
+Pseudo-code:
 
     n  <- sh[5] || sh[0:4]
     r  <- ROTL64(EXTS64(RS[32:63]), n)

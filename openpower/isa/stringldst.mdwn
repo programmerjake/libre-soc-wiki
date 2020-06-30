@@ -4,6 +4,8 @@ X-Form
 
 * lswi RT,RA,NB
 
+Pseudo-code:
+
     EA <- (RA|0)
     if NB = 0 then n <-  32
     else           n <-  NB
@@ -24,10 +26,13 @@ Special Registers Altered:
     None
 
 # Load String Word Indexed
+# Load String Word Indexed
 
 X-Form
 
 * lswx RT,RA,RB
+
+Pseudo-code:
 
     b <- (RA|0)
     EA <- b + (RB)
@@ -50,10 +55,13 @@ Special Registers Altered:
     None
 
 # Store String Word Immediate
+# Store String Word Immediate
 
 X-Form
 
 * stswi RS,RA,NB
+
+Pseudo-code:
 
     EA <- (RA|0)
     if NB = 0 then n <-  32
@@ -73,10 +81,13 @@ Special Registers Altered:
     None
 
 # Store String Word Indexed
+# Store String Word Indexed
 
 X-Form
 
 * stswx RS,RA,RB
+
+Pseudo-code:
 
     b <- (RA|0)
     EA <- b + (RB)

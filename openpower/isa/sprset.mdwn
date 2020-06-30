@@ -4,6 +4,8 @@ XFX-Form
 
 * mtspr SPR,RS
 
+Pseudo-code:
+
     n <- spr[5:9] || spr[0:4]
     switch (n)
       case(13): see(Book_III_p974)
@@ -19,10 +21,13 @@ Special Registers Altered:
     See spec 3.3.17
 
 # Move From Special Purpose Register
+# Move From Special Purpose Register
 
 XFX-Form
 
 * mfspr RT,SPR
+
+Pseudo-code:
 
     n <- spr[5:9] || spr[0:4]
     switch (n)
@@ -39,10 +44,13 @@ Special Registers Altered:
     None
 
 # Move to CR from XER Extended
+# Move to CR from XER Extended
 
 X-Form
 
 * mcrxrx BF
+
+Pseudo-code:
 
     CR[4*BF+32:4*BF+35] <-  XER[OV] || XER[OV32] || XER[CA] || XER[CA32]
 
@@ -51,10 +59,13 @@ Special Registers Altered:
     CR field BF
 
 # Move To One Condition Register Field
+# Move To One Condition Register Field
 
 XFX-Form
 
 * mtocrf FXM,RS
+
+Pseudo-code:
 
     count <- 0
     do i = 0 to 7
@@ -70,10 +81,13 @@ Special Registers Altered:
     CR field selected by FXM
 
 # Move To Condition Register Fields
+# Move To Condition Register Fields
 
 XFX-Form
 
 * mtcrf FXM,RS
+
+Pseudo-code:
 
     mask <- ([FXM[0]]*4 || [FXM[1]]*4 || [FXM[2]]*4 || [FXM[3]]*4 ||
              [FXM[4]]*4 || [FXM[5]]*4 || [FXM[6]]*4 || [FXM[7]]*4)
@@ -84,10 +98,13 @@ Special Registers Altered:
     CR fields selected by mask
 
 # Move From One Condition Register Field
+# Move From One Condition Register Field
 
 XFX-Form
 
 * mfocrf RT,FXM
+
+Pseudo-code:
 
     RT <- undefined
     count <- 0
@@ -104,10 +121,13 @@ Special Registers Altered:
     None
 
 # Move From Condition Register
+# Move From Condition Register
 
 XFX-Form
 
 * mfcr RT
+
+Pseudo-code:
 
     RT <- [0]*32 || CR
 
@@ -116,10 +136,13 @@ Special Registers Altered:
     None
 
 # Set Boolean
+# Set Boolean
 
 X-Form
 
 * setb RT,BFA
+
+Pseudo-code:
 
     if CR[4*BFA+32] = 1 then
        RT <- 0xFFFF_FFFF_FFFF_FFFF
@@ -133,10 +156,13 @@ Special Registers Altered:
     None
 
 # Move To Machine State Register
+# Move To Machine State Register
 
 X-Form
 
 * mtmsr RS,L
+
+Pseudo-code:
 
     if L = 0 then
         MSR[48] <- (RS)[48] | (RS)[49]
@@ -156,10 +182,13 @@ Special Registers Altered:
     MSR
 
 # Move From Machine State Register
+# Move From Machine State Register
 
 X-Form
 
 * mfmsr RT
+
+Pseudo-code:
 
     RT <- MSR
 

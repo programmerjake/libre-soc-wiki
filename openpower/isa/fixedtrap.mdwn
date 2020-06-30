@@ -4,6 +4,8 @@ D-Form
 
 * twi TO,RA,SI
 
+Pseudo-code:
+
     a <- EXTS((RA)[32:63])
     if (a < EXTS(SI)) & TO[0]  then TRAP
     if (a > EXTS(SI)) & TO[1]  then TRAP
@@ -15,11 +17,14 @@ Special Registers Altered:
 
     None
 
-# Trap Word 
+# Trap Word
+# Trap Word
 
 X-Form
 
 * tw TO,RA,RB
+
+Pseudo-code:
 
     a <- EXTS((RA)[32:63])
     b <- EXTS((RB)[32:63])
@@ -33,11 +38,14 @@ Special Registers Altered:
 
     None
 
-# Trap Doubleword Immediate 
+# Trap Doubleword Immediate
+# Trap Doubleword Immediate
 
 D-Form
 
 * tdi TO,RA,SI
+
+Pseudo-code:
 
     a <- (RA)
     b <- EXTS(SI)
@@ -51,11 +59,14 @@ Special Registers Altered:
 
     None
 
-# Trap Doubleword 
+# Trap Doubleword
+# Trap Doubleword
 
 X-Form
 
 * td TO,RA,RB
+
+Pseudo-code:
 
     a <- (RA)
     b <- (RB)
@@ -70,10 +81,13 @@ Special Registers Altered:
     None
 
 # Integer Select
+# Integer Select
 
 A-Form
 
 * isel RT,RA,RB,BC
+
+Pseudo-code:
 
     if RA=0 then a <-0
     else a <-  (RA)

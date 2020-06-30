@@ -4,6 +4,8 @@ XL-Form
 
 * crand BT,BA,BB
 
+Pseudo-code:
+
     CR[BT+32] <-  CR[BA+32] & CR[BB+32]
 
 Special Registers Altered:
@@ -11,10 +13,13 @@ Special Registers Altered:
     CR[BT+32]
 
 # Condition Register NAND
+# Condition Register NAND
 
 XL-Form
 
 * crnand BT,BA,BB
+
+Pseudo-code:
 
     CR[BT+32] <- ¬(CR[BA+32] & CR[BB+32])
 
@@ -23,10 +28,13 @@ Special Registers Altered:
     CR[BT+32]
 
 # Condition Register OR
+# Condition Register OR
 
 XL-Form
 
 * cror BT,BA,BB
+
+Pseudo-code:
 
     CR[BT+32] <-  CR[BA+32] | CR[BB+32]
 
@@ -35,10 +43,13 @@ Special Registers Altered:
     CR[BT+32]
 
 # Condition Register XOR
+# Condition Register XOR
 
 XL-Form
 
 * crxor     BT,BA,BB
+
+Pseudo-code:
 
     CR[BT+32] <- CR[BA+32] ^ CR[BB+32]
 
@@ -47,10 +58,13 @@ Special Registers Altered:
     CR[BT+32]
 
 # Condition Register NOR
+# Condition Register NOR
 
 XL-Form
 
 * crnor BT,BA,BB
+
+Pseudo-code:
 
     CR[BT+32] <- ¬(CR[BA+32] | CR[BB+32])
 
@@ -59,10 +73,13 @@ Special Registers Altered:
     CR[BT+32]
 
 # Condition Register Equivalent
+# Condition Register Equivalent
 
 XL-Form
 
 * creqv BT,BA,BB
+
+Pseudo-code:
 
     CR[BT+32] <- ¬(CR[BA+32] ^ CR[BB+32])
 
@@ -70,11 +87,14 @@ Special Registers Altered:
 
     CR[BT+32]
 
-# Condition Register AND with Complement 
+# Condition Register AND with Complement
+# Condition Register AND with Complement
 
 XL-Form
 
 * crandc BT,BA,BB
+
+Pseudo-code:
 
     CR[BT+32] <- CR[BA+32] &  ¬CR[BB+32]
 
@@ -83,10 +103,13 @@ Special Registers Altered:
     CR[BT+32]
 
 # Condition Register OR with Complement
+# Condition Register OR with Complement
 
 XL-Form
 
 * crorc BT,BA,BB
+
+Pseudo-code:
 
     CR[BT+32] <- CR[BA+32] |  ¬CR[BB+32]
 
@@ -95,10 +118,13 @@ Special Registers Altered:
     CR[BT+32]
 
 # Move Condition Register Field
+# Move Condition Register Field
 
 XL-Form
 
 * mcrf BF,BFA
+
+Pseudo-code:
 
     CR[4*BF+32:4*BF+35] <- CR[4*BFA+32:4*BFA+35]
 

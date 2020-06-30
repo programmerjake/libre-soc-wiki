@@ -4,6 +4,8 @@ X-Form
 
 * cdtbcd RA, RS
 
+Pseudo-code:
+
     do i = 0 to 1
       n <- i * 32
       RA[n+0:n+7] <- 0
@@ -15,10 +17,13 @@ Special Registers Altered:
     None
 
 # Add and Generate Sixes
+# Add and Generate Sixes
 
 XO-Form
 
 * addg6s RT,RA,RB
+
+Pseudo-code:
 
     do i = 0 to 15
         dci <- carry_out(RA[4*i:63] + RB[4*i:63])
@@ -33,10 +38,13 @@ Special Registers Altered:
     None
 
 # Convert Binary Coded Decimal To Declets
+# Convert Binary Coded Decimal To Declets
 
 X-Form
 
 * cbcdtd RA, RS
+
+Pseudo-code:
 
     do i = 0 to 1
       n <- i * 32
