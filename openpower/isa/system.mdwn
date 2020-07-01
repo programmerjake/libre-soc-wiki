@@ -79,7 +79,7 @@ Pseudo-code:
     if (MSR[29:31] != 0b010) | (SRR1[29:31] != 0b000) then
         MSR[29:31] <- SRR1[29:31]
     MSR[48] <- SRR1[48] | SRR1[49]
-    MSR[58] <- SRR1[88] | SRR1[49]
+    MSR[58] <- SRR1[58] | SRR1[49]
     MSR[59] <- SRR1[59] | SRR1[49]
     MSR[0:2] <- SRR1[0:2]
     MSR[4:28] <- SRR1[4:28]
@@ -105,7 +105,7 @@ Pseudo-code:
     if (MSR[29:31] != 0b010) | (HSRR1[29:31] != 0b000) then
         MSR[29:31] <- HSRR1[29:31]
     MSR[48] <- HSRR1[48] | HSRR1[49]
-    MSR[58] <- HSRR1[88] | HSRR1[49]
+    MSR[58] <- HSRR1[58] | HSRR1[49]
     MSR[59] <- HSRR1[59] | HSRR1[49]
     MSR[0:28] <- HSRR1[0:28]
     MSR[32] <- HSRR1[32]
