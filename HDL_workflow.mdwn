@@ -27,7 +27,7 @@ The main message here: **use the right tool for the right job**.
 * bugtracker: task-orientated, goal-orientated *focussed* discussion.
 * ikiwiki: document store, information store, and (editable) main website
 * git repositories: code stores (**not binary or auto-generated output store**)
-* ftp server (<http://ftp.libre-riscv.org>): large file store.
+* ftp server (<https://ftp.libre-soc.org/>): large file store.
 
 we will add an IRC channel at some point when there are enough people
 to warrant having one (and it will be publicly archived)
@@ -42,7 +42,7 @@ To respect the transparency requirements, conversations need to be
 public and archived (i.e not skype, not telegram, not discord,
 and anyone seriously suggesting slack will be thrown to the
 lions).  Therefore we have a mailing list. Everything goes through
-there. <http://lists.libre-riscv.org/mailman/listinfo/libre-riscv-dev>
+there. <https://lists.libre-soc.org/mailman/listinfo/libre-riscv-dev>
 therefore please do google "mailing list etiquette" and at the very
 minimum look up and understand the following:
 
@@ -76,12 +76,12 @@ minimum look up and understand the following:
 
 If discussions result in any actionable items, it is important not to
 lose track of them. Create a bugreport, find the discussion in the
-archives <http://lists.libre-riscv.org/pipermail/libre-riscv-dev/>,
+archives <https://lists.libre-soc.org/pipermail/libre-riscv-dev/>,
 and put the link actually in the bugtracker as one of the comments.
 
 At some point in any discussion, the sudden realisation may dawn on one
 or more people that this is an "actionable" discussion.  at that point
-it may become better to use  <http://bugs.libre-riscv.org>
+it may become better to use  <https://bugs.libre-soc.org/>
 itself to continue the discussion rather than to keep on dropping copies
 of links into the bugtracker.  The bugtracker sends copies of comments
 *to* the list however this is 'one-way' (note from lkcl: because this
@@ -98,7 +98,7 @@ at the list) and include the link to the page.
 Or, if it is more appropriate, commit a document (or source code)
 into the relevant git repository then look up the link in the gitweb
 source tree browser and post that (in the bugtracker or mailing list)
-See <http://git.libre-riscv.org>
+See <https://git.libre-soc.org/>
 
 ### gmail "spam"ifying the list
 
@@ -118,7 +118,7 @@ lions are getting wind and gout from overfeeding on that one.
 
 ## ikiwiki
 
-Runs the main libre-riscv.org site (including this page). effective,
+Runs the main libre-soc.org site (including this page). effective,
 stunningly light on resources, and uses a git repository not a database.
 That means it can be edited offline.
 
@@ -145,11 +145,11 @@ we use git. more on this below.  we also use gitolite3 running on a
 dedicated server.  again, it is extremely effective and low resource
 utilisation.  reminder: lions are involved if github is mentioned.
 
-gitweb is provided which does a decent job. <http://git.libre-riscv.org>
+gitweb is provided which does a decent job. <https://git.libre-soc.org/>
 
 ## ftp server
 
-<http://ftp.libre-riscv.org> is available for storing large files
+<https://ftp.libre-soc.org/ is available for storing large files
 that do not belong in a git repository, if we have (or ever need)
 any.  images (etc.) if small and appropriate should go into the
 wiki, however .tgz archives (etc.) and, at some point, binaries,
@@ -357,9 +357,9 @@ library.  In the meantime, sfpy can be built as follows:
     pip3 install --upgrade -r requirements.txt
 
     # build
-    make lib -j8
+    make lib -j$(nproc)
     make cython
-    make inplace -j8
+    make inplace -j$(nproc)
     make wheel
 
     # install
@@ -393,7 +393,7 @@ Install gdb from source.  Obtain the latest tarball, unpack it, then:
     mkdir build
     cd build
      ../configure --srcdir=.. --host=x86_64-linux --target=powerpc64-linux-gnu
-    make -j16
+    make -j$(nproc)
     make install
 
 ## Coriolis2
@@ -413,18 +413,18 @@ account of being public, is perfectly fine to make... err... public.
 
 Create a file ~/.ssh/config with the following lines:
 
-    Host git.libre-riscv.org
+    Host git.libre-soc.org
     Port 922
 
 Wait for the Project Admin to confirm that the ssh key has been added
 to the required repositories.  Once confirmed, you can clone any of the
-repos at http://git.libre-riscv.org:
+repos at https://git.libre-soc.org/:
 
-    git clone gitolite3@git.libre-riscv.org:REPONAME.git
+    git clone gitolite3@git.libre-soc.org:REPONAME.git
 
 Alternatively, the .ssh/config can be skipped and this used:
 
-     git clone ssh://gitolite3@git.libre-riscv.org:922/REPONAME.git
+     git clone ssh://gitolite3@git.libre-soc.org:922/REPONAME.git
 
 # git configuration
 
@@ -451,9 +451,9 @@ if you want it, always ensure that a new git checkout is set up with rebase.
 
 * mkdir ~/src
 * cd !$
-* git clone gitolite3@git.libre-riscv.org:nmutil.git
-* git clone gitolite3@git.libre-riscv.org:ieee754fpu.git
-* git clone gitolite3@git.libre-riscv.org:soc.git
+* git clone gitolite3@git.libre-soc.org:nmutil.git
+* git clone gitolite3@git.libre-soc.org:ieee754fpu.git
+* git clone gitolite3@git.libre-soc.org:soc.git
 
 In each of these directories, in the order listed, track down the
 setup.py file, then, as root (sudo bash), run the following:
@@ -823,7 +823,7 @@ Therefore, *do not* comment out unit tests just because they "don't work".
 If you absolutely must stop a unit test from running, **do not delete it**.
 Simply mark it with an appropriate
 ["skip" decorator](https://docs.python.org/3/library/unittest.html#skipping-tests-and-expected-failures),
-preferably with a link to a URL in the [bugtracker](http://bugs.libre-riscv.org)
+preferably with a link to a URL in the [bugtracker](https://bugs.libre-soc.org/)
 with further details as to why the unit test should not be run.
 
 # TODO Tutorials
