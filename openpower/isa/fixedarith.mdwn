@@ -313,7 +313,7 @@ D-Form
 
 Pseudo-code:
 
-    prod[0:127] <- (RA) * EXTS(SI)
+    prod[0:127] <- MULS((RA), EXTS(SI))
     RT <- prod[64:127]
 
 Special Registers Altered:
@@ -329,7 +329,7 @@ XO-Form
 
 Pseudo-code:
 
-    prod[0:63] <- (RA)[32:63] *  (RB)[32:63]
+    prod[0:63] <- MULS((RA)[32:63], (RB)[32:63])
     RT[32:63] <- prod[0:31]
     RT[0:31] <- undefined[0:31]
 
@@ -348,7 +348,7 @@ XO-Form
 
 Pseudo-code:
 
-    prod[0:63] <- (RA)[32:63] * (RB)[32:63]
+    prod[0:63] <- MULS((RA)[32:63], (RB)[32:63])
     RT <- prod
 
 Special Registers Altered:
@@ -392,7 +392,7 @@ Pseudo-code:
         RT[0:63] <- undefined[0:63]
         overflow <- 1
     else
-        RT[32:63] <- dividend / divisor
+        RT[32:63] <- DIVS(dividend, divisor)
         RT[0:31] <- undefined[0:31]
         overflow <- 0
 
@@ -443,7 +443,7 @@ Pseudo-code:
     if (divisor = 0x0000_0000_0000_0000) then
         overflow <- 1
     else
-        result <- dividend /  divisor
+        result <- DIVS(dividend, divisor)
         if (result[32:63] = 0) then
             RT[32:63] <- result[0:31]
             RT[0:31] <- undefined[0:31]
@@ -505,7 +505,7 @@ Pseudo-code:
         RT[0:63] <- undefined[0:63]
         overflow <- 1
     else
-        RT[32:63] <- dividend % divisor
+        RT[32:63] <- MODS(dividend, divisor)
         RT[0:31] <- undefined[0:31]
         overflow <- 0
 
@@ -527,7 +527,7 @@ Pseudo-code:
         RT[0:63] <- undefined[0:63]
         overflow <- 1
     else
-        RT[32:63] <- dividend % divisor
+        RT[32:63] <- MODS(dividend, divisor)
         RT[0:31] <- undefined[0:31]
         overflow <- 0
 
@@ -560,7 +560,7 @@ XO-Form
 
 Pseudo-code:
 
-    prod[0:127] <- (RA) * (RB)
+    prod[0:127] <- MULS((RA), (RB))
     RT <- prod[64:127]
 
 Special Registers Altered:
@@ -577,7 +577,7 @@ XO-Form
 
 Pseudo-code:
 
-    prod[0:127] <- (RA) *  (RB)
+    prod[0:127] <- MULS((RA), (RB))
     RT <- prod[0:63]
 
 Special Registers Altered:
@@ -608,7 +608,7 @@ VA-Form
 
 Pseudo-code:
 
-    prod[0:127] <- (RA) * (RB)
+    prod[0:127] <- MULS((RA), (RB))
     sum[0:127] <- prod + EXTS(RC)
     RT <- sum[0:63]
 
@@ -640,7 +640,7 @@ VA-Form
 
 Pseudo-code:
 
-    prod[0:127] <- (RA) * (RB)
+    prod[0:127] <- MULS((RA), (RB))
     sum[0:127] <- prod + EXTS(RC)
     RT <- sum[64:127]
 
@@ -667,7 +667,7 @@ Pseudo-code:
         RT[0:63] <- undefined[0:63]
         overflow <- 1
     else
-        RT <- dividend / divisor
+        RT <- DIVS(dividend, divisor)
         overflow <- 0
 
 Special Registers Altered:
@@ -716,7 +716,7 @@ Pseudo-code:
     if divisor = [0]*128 then
         overflow <- 1
     else
-        result <- dividend /  divisor
+        result <- DIVS(dividend, divisor)
         if result[64:127] = 0x0000_0000_0000_0000 then
             RT <- result[63:127]
             overflow <- 0
@@ -776,7 +776,7 @@ Pseudo-code:
         RT[0:63] <- undefined[0:63]
         overflow <- 1
     else
-        RT       <- dividend % divisor
+        RT       <- MODS(dividend, divisor)
         overflow <- 0
 
 Special Registers Altered:
