@@ -350,8 +350,11 @@ Pseudo-code:
 
     prod[0:63] <- MULS((RA)[32:63], (RB)[32:63])
     RT <- prod
-    overflow <- ((prod[32:64] != 0x0000_0000) &
-                 (prod[32:64] != 0xffff_ffff))
+    if ((prod[32:64] != 0x0000_0000) &
+        (prod[32:64] != 0xffff_ffff)) then
+        overflow <- 1
+    else
+        overflow <- 0
 
 Special Registers Altered:
 
