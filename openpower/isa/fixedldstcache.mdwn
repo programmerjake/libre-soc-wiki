@@ -1,0 +1,128 @@
+# Load Byte and Zero Caching Inhibited Indexed
+
+X-Form
+
+* lbzcix RT,RA,RB
+
+Pseudo-code:
+
+    b <- (RA|0)
+    EA <- b + (RB)
+    RT <- [0] * 56 || MEM(EA, 1)
+
+Special Registers Altered:
+
+    None
+
+# Load Halfword and Zero Caching Inhibited Indexed
+
+X-Form
+
+* lhzcix RT,RA,RB
+
+Pseudo-code:
+
+    b <- (RA|0)
+    EA <- b + (RB)
+    RT <- [0] * 48 || MEM(EA, 2)
+
+Special Registers Altered:
+
+    None
+
+# Load Word and Zero Caching Inhibited Indexed
+
+X-Form
+
+* lwzcix RT,RA,RB
+
+Pseudo-code:
+
+    b <- (RA|0)
+    EA <- b + (RB)
+    RT <- [0] * 32 || MEM(EA, 4)
+
+Special Registers Altered:
+
+    None
+
+# Load Doubleword Caching Inhibited Indexed
+
+X-Form
+
+* ldcix RT,RA,RB
+
+Pseudo-code:
+
+    b <- (RA|0)
+    EA <- b + (RB)
+    RT <- MEM(EA, 8)
+
+Special Registers Altered:
+
+    None
+
+# Store Byte Caching Inhibited Indexed
+
+X-Form
+
+* stbcix RS,RA,RB
+
+Pseudo-code:
+
+    b <- (RA|0)
+    EA <- b + (RB)
+    MEM(EA, 1) <- (RS)[56:63]
+
+Special Registers Altered:
+
+    None
+
+# Store Halfword Caching Inhibited Indexed
+
+X-Form
+
+* sthcix RS,RA,RB
+
+Pseudo-code:
+
+    b <- (RA|0)
+    EA <- b + (RB)
+    MEM(EA, 2) <- (RS)[48:63]
+
+Special Registers Altered:
+
+    None
+
+# Store Word Caching Inhibited Indexed
+
+X-Form
+
+* stwcix RS,RA,RB
+
+Pseudo-code:
+
+    b <- (RA|0)
+    EA <- b + (RB)
+    MEM(EA, 4) <- (RS)[32:63]
+
+Special Registers Altered:
+
+    None
+
+# Store Doubleword Caching Inhibited Indexed
+
+X-Form
+
+* stdcix RS,RA,RB
+
+Pseudo-code:
+
+    b <- (RA|0)
+    EA <- b + (RB)
+    MEM(EA, 8) <- (RS)
+
+Special Registers Altered:
+
+    None
+
