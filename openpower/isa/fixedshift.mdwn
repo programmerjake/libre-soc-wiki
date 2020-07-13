@@ -61,7 +61,7 @@ MD-Form
 
 Pseudo-code:
 
-    n <- sh[5] || sh[0:4]
+    n <- sh
     r <- ROTL64((RS), n)
     b <- mb[5] || mb[0:4]
     m <- MASK(b, 63)
@@ -80,7 +80,7 @@ MD-Form
 
 Pseudo-code:
 
-    n <- sh[5] || sh[0:4]
+    n <- sh
     r <- ROTL64((RS), n)
     e <- me[5] || me[0:4]
     m <- MASK(0, e)
@@ -99,7 +99,7 @@ MD-Form
 
 Pseudo-code:
 
-    n <- sh[5] || sh[0:4]
+    n <- sh
     r <- ROTL64((RS), n)
     b <- mb[5] || mb[0:4]
     m <- MASK(b,  ¬n)
@@ -156,7 +156,7 @@ MD-Form
 
 Pseudo-code:
 
-    n <- sh[5] || sh[0:4]
+    n <- sh
     r <- ROTL64((RS), n)
     b <- mb[5] || mb[0:4]
     m <- MASK(b,  ¬n)
@@ -304,7 +304,7 @@ XS-Form
 
 Pseudo-code:
 
-    n <- sh[5] || sh[0:4]
+    n <- sh
     r <- ROTL64((RS), 64-n)
     m <- MASK(n, 63)
     s <- (RS)[0]
@@ -352,7 +352,7 @@ XS-Form
 
 Pseudo-code:
 
-    n  <- sh[5] || sh[0:4]
+    n  <- sh
     r  <- ROTL64(EXTS64(RS[32:63]), n)
     m  <- MASK(0, 63-n)
     RA <- r & m
