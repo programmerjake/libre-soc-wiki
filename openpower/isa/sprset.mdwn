@@ -173,6 +173,33 @@ Special Registers Altered:
 
     MSR
 
+# Move To Machine State Register
+
+X-Form
+
+* mtmsrd RS,L
+
+Pseudo-code:
+
+    if L = 0 then
+        MSR[48] <- (RS)[48] | (RS)[49]
+        MSR[58] <- ((RS)[58] | (RS)[49]) & ¬(MSR[41] & MSR[3] & (¬(RS)[49]))
+        MSR[59] <- ((RS)[59] | (RS)[49]) & ¬(MSR[41] & MSR[3] & (¬(RS)[49]))
+        MSR[0:2] <- (RS)[0:2]
+        MSR[3:28] <- (RS)[3:28]
+        MSR[32:40] <- (RS)[32:40]
+        MSR[42:47] <- (RS)[42:47]
+        MSR[49:50] <- (RS)[49:50]
+        MSR[52:57] <- (RS)[52:57]
+        MSR[60:62] <- (RS)[60:62]
+    else
+        MSR[48] <- (RS)[48]
+        MSR[62] <- (RS)[62]
+
+Special Registers Altered:
+
+    MSR
+
 # Move From Machine State Register
 
 X-Form
