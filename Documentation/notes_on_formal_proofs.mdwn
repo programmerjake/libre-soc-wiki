@@ -13,10 +13,12 @@ In the discussion below, I'll be referring to the following URLs:
 ## Pipeline Stage Architecture
 
 A pipeline stage appears to have the following overall architecture
-(there will almost certainly be exceptions to this that I'm not familiar with):
+(there will almost certainly be exceptions to this that I'm not familiar with
+lkcl: no, there are absolutely none.  no exceptions.  at all.  this is
+because there is a defined API):
 
                (from previous stage)
-           OpSubset        Register Inputs
+           OpSubset        Operand Inputs (originally from Register File)
               |                   |
               V                   V
            +-------------------------+
@@ -24,12 +26,15 @@ A pipeline stage appears to have the following overall architecture
            +-------------------------+
               |                   |
               V                   V
-           OpSubset        Register Outputs
+           OpSubset        Result Outputs
         (to next stage / register file logic)
 
 Note that the **Pipeline Stage** is *purely combinatorial logic.*
+(lkcl: yes.  this is noted in the pipeline API, see
+<https://git.libre-soc.org/?p=nmutil.git;a=blob;f=src/nmutil/stageapi.py;hb=HEAD>)
 Any state between pipeline stages is instantiated through mechanisms not disclosed here.
 (IIRC, that logic is located in the `nmutil` package, but my memory is hazy here.)
+(lkcl: in the pipeline API.  see stageapi.py).
 
 ## class Driver
 
@@ -43,39 +48,52 @@ must satisfy to be considered "correct."
 
 The `__init__` method is the constructor for the class.
 It prevents `Elaboratable`'s constructor from running.
+(lkcl: not quite)
 It's not yet clear to me why this is done.
+(lkcl: because whitequark found that people were forgetting to add an
+elaborate function, and wondering why their code failed to work).
 
 ### `elaborate` method
 
-Bluntly, this method is (depending on what you're familiar with) a macro or a monad.
-Its job is to build a *description* of the final output module by appending various objects to `comb`.
-In this case, the module's job is to specify the correct behavior of a production submodule, `ALUMainStage`.
-This is fairly basic `nmigen` material, so I won't spend any more time on this.
+Bluntly, this method is (depending on what you're familiar with) a
+macro or a monad.  Its job is to build a *description* of the final
+output module by appending various objects to `comb`.  In this case,
+the module's job is to specify the correct behavior of a production
+submodule, `ALUMainStage`.  This is fairly basic `nmigen` material,
+so I won't spend any more time on this.
 
-#### `CompALUOpSubset`
+#### CompALUOpSubset
 
 `CompALUOpSubset` is, ultimately, an `nmigen`
 [record](https://github.com/nmigen/nmigen/blob/master/nmigen/hdl/rec.py#L89)
-which contains a number of fields related to telling the pipeline stage *what to do*.
-(Hence the *Op* in the class name.)
-I won't disclose the fields here, because they're liable to change at any time.
-What is important to know here is that this record exists for one purpose:
-to ensure that when the interface to the ALU pipeline stage changes for any reason,
-*all* consumers of that interface are updated consistently.
+which contains a number of fields related to telling the pipeline stage
+*what to do*.  (Hence the *Op* in the class name.)  I won't disclose
+the fields here, because they're liable to change at any time.  What is
+important to know here is that this record exists for one purpose: to
+ensure that when the interface to the ALU pipeline stage changes for
+any reason, *all* consumers of that interface are updated consistently.
 
 Because this is a record, its fields may be introspected.
 This happens frequently; it is usually the case that an Op-type record is passed unchanged from stage to stage.
 However, `nmigen` does not seem to support testing records for equality in formal assertions.
+(lkcl: it does)
 To express this constraint without needing to update a pile of use-sites every time the interface changes,
 you'll find logic
 [like this](https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/fu/alu/formal/proof_main_stage.py;h=5e70d1e885b41ca50d69f57e9ee94b568d001c2e;hb=HEAD#l64).
 
-**NOTE:** Instantiating one of these records *does not* provide these inputs to the module under test.
+(lkcl: which has been established why:
+<https://bugs.libre-soc.org/show_bug.cgi?id=429#c3> and it is down
+to FPPipeContext not being a Record, but its member variable - op -
+*is* a Record).
+
+**NOTE:** Instantiating one of these records
+(lkcl: FPPipeContext is not a Record, see above)) *does not* provide
+these inputs to the module under test.
 It merely makes the fields of this record available to the formal verification solver so it can fiddle the bits as it explores the design space.
 The record must be connected directly to the module via a signal assignment;
 [see line 62 of the source listing.](https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/fu/alu/formal/proof_main_stage.py;h=5e70d1e885b41ca50d69f57e9ee94b568d001c2e;hb=HEAD#l62)
 
-#### `ALUPipeSpec`
+#### ALUPipeSpec
 
 `ALUPipeSpec` is a similar construct, but it serves a different role than the above class.
 Looking at its
@@ -100,6 +118,9 @@ Although this somewhat obscures the intent of the code,
 it will save typing which reduces opportunity for error.
 
 Lines 56 through 62 connect all the input signals of the submodule to the formal verifier.
+
+(lkcl: note, it's been established that these lines can be replaced
+with an Assert on the op and the muxid, see bug #429 comment 3 above).
 
 #### Properties
 
