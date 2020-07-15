@@ -73,12 +73,12 @@ important to know here is that this record exists for one purpose: to
 ensure that when the interface to the ALU pipeline stage changes for
 any reason, *all* consumers of that interface are updated consistently.
 
-Because this is a record, its fields may be introspected.
-This happens frequently; it is usually the case that an Op-type record is passed unchanged from stage to stage.
-However, `nmigen` does not seem to support testing records for equality in formal assertions.
-(lkcl: it does)
-To express this constraint without needing to update a pile of use-sites every time the interface changes,
-you'll find logic
+Because this is a record, its fields may be introspected.  This happens
+frequently; it is usually the case that an Op-type record is passed
+unchanged from stage to stage.  However, `nmigen` does not seem to support
+testing records for equality in formal assertions.  (lkcl: it does) To
+express this constraint without needing to update a pile of use-sites
+every time the interface changes, you'll find logic
 [like this](https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/fu/alu/formal/proof_main_stage.py;h=5e70d1e885b41ca50d69f57e9ee94b568d001c2e;hb=HEAD#l64).
 
 (lkcl: which has been established why:
@@ -88,10 +88,13 @@ to FPPipeContext not being a Record, but its member variable - op -
 
 **NOTE:** Instantiating one of these records
 (lkcl: FPPipeContext is not a Record, see above)) *does not* provide
-these inputs to the module under test.
-It merely makes the fields of this record available to the formal verification solver so it can fiddle the bits as it explores the design space.
-The record must be connected directly to the module via a signal assignment;
+these inputs to the module under test.  It merely makes the fields of
+this record available to the formal verification solver so it can fiddle
+the bits as it explores the design space.  The record must be connected
+directly to the module via a signal assignment:
 [see line 62 of the source listing.](https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/fu/alu/formal/proof_main_stage.py;h=5e70d1e885b41ca50d69f57e9ee94b568d001c2e;hb=HEAD#l62)
+
+          comb += dut.i.ctx.op.eq(rec)
 
 #### `ALUPipeSpec`
 
@@ -101,26 +104,113 @@ Looking at its
 , it appears to define bits in one or more *register files*,
 for both input input the stage and output from the stage.
 
+     class ALUPipeSpec(CommonPipeSpec):
+         regspec = (ALUInputData.regspec, ALUOutputData.regspec)
+         opsubsetkls = CompALUOpSubset
+
 This structure is passed to the constructor of the module-under-test.
-That constructor, ultimately, has the effect of creating a set of inputs (`dut.i`) and outputs (`dut.o`) that matches the register field names.
-**NOTE:** this process coalesces disparate field bits together!
-For example, the POWER XER register defines two carry bits at positions 34 and 45 in a 64-bit word.
-However, when referencing these bits via `dut.i.xer_ca`, they occupy bits 0 and 1.
-The process reverses for outputs; bits 0 and 1 of the `dut.o.xer_ca` field will be re-distributed to XER register bits 34 and 45 again.
+That constructor, ultimately, has the effect of creating a set of
+inputs (`dut.i`) and outputs (`dut.o`) that matches the register field
+names.
+
 See [lines 9 (input) and 19 (output) of the source listing](https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/fu/alu/pipe_data.py;h=71363049ba5a437a708e53dfbc3370f17aa394d1;hb=HEAD).
+
+     class ALUInputData(IntegerData):
+         regspec = [('INT', 'ra', '0:63'), # RA
+                    ('INT', 'rb', '0:63'), # RB/immediate
+                    ('XER', 'xer_so', '32'), # XER bit 32: SO
+                    ('XER', 'xer_ca', '34,45')] # XER bit 34/45: CA/CA32
+         def __init__(self, pspec):
+             super().__init__(pspec, False)
+             # convenience
+             self.a, self.b = self.ra, self.rb
+
+     class ALUOutputData(IntegerData):
+         regspec = [('INT', 'o', '0:63'),
+                    ('CR', 'cr_a', '0:3'),
+                    ('XER', 'xer_ca', '34,45'), # bit0: ca, bit1: ca32
+                    ('XER', 'xer_ov', '33,44'), # bit0: ov, bit1: ov32
+                    ('XER', 'xer_so', '32')]
+         def __init__(self, pspec):
+             super().__init__(pspec, True)
+             # convenience
+             self.cr0 = self.cr_a
+
+**NOTE:** these are actually separate and distinct registers!
+For example, the POWER XER register defines two carry bits at positions
+34 and 45 in a 64-bit word.  However, when referencing these bits via
+`dut.i.xer_ca`, they occupy bits 0 and 1.  The process reverses for
+outputs; bits 0 and 1 of the `dut.o.xer_ca` field have to be re-distributed
+to XER register bits 34 and 45 again.
+
+It is the responsibility of any pipelines to **understand and respect
+this subdivision**.  For example, in the
+[SPR main_statge.py at lines 78 to 86](https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/fu/spr/main_stage.py;h=f4261b62a2b2d104c9edfa88262f27a97d9498a3;hb=HEAD#l76)
+the implementation of PowerISA `mfspr` *manually* copies the XER `so`,
+`ov/32` and `ca/32` bits into the output, based on hard-coded explicit
+knowledge inside this code, of their positions.
+
+            # XER is constructed
+            with m.Case(SPR.XER):
+                # sticky
+                comb += o[63-XER_bits['SO']].eq(so_i)
+                # overflow
+                comb += o[63-XER_bits['OV']].eq(ov_i[0])
+                comb += o[63-XER_bits['OV32']].eq(ov_i[1])
+                # carry
+                comb += o[63-XER_bits['CA']].eq(ca_i[0])
+                comb += o[63-XER_bits['CA32']].eq(ca_i[1])
+
+Note that
+[Microwatt](https://github.com/antonblanchard/microwatt/blob/master/execute1.vhdl#L831)
+does exactly the same thing:
+
+            if decode_spr_num(e_in.insn) = SPR_XER then
+                -- bits 0:31 and 35:43 are treated as reserved
+                -- and return 0s when read using mfxer
+                result(63 downto 32) := (others => '0');
+                result(63-32) := v.e.xerc.so;
+                result(63-33) := v.e.xerc.ov;
+                result(63-34) := v.e.xerc.ca;
+                result(63-35 downto 63-43) := "000000000";
+                result(63-44) := v.e.xerc.ov32;
+                result(63-45) := v.e.xerc.ca32;
+            end if;
 
 #### Instantiating the Module Under Test
 
 Looking at [line 41 through 54](https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/fu/alu/formal/proof_main_stage.py;h=5e70d1e885b41ca50d69f57e9ee94b568d001c2e;hb=HEAD#l41),
 we see the module we want to test actually instantiated.
-Since register inputs and outputs are frequently accessed, it's worthwhile defining a set of aliases for those signals.
+
+          m.submodules.dut = dut = ALUMainStage(pspec)
+
+Since register inputs and outputs are frequently accessed, it's worthwhile
+defining a set of aliases for those signals.
+
+          # convenience variables
+          a = dut.i.a
+          b = dut.i.b
+          ca_in = dut.i.xer_ca[0]   # CA carry in
+          ca32_in = dut.i.xer_ca[1] # CA32 carry in 32
+          so_in = dut.i.xer_so      # SO sticky overflow
+
+          ca_o = dut.o.xer_ca.data[0]   # CA carry out
+          ca32_o = dut.o.xer_ca.data[1] # CA32 carry out32
+          ov_o = dut.o.xer_ov.data[0]   # OV overflow
+          ov32_o = dut.o.xer_ov.data[1] # OV32 overflow32
+          o = dut.o.o.data
+
 Although this somewhat obscures the intent of the code,
 it will save typing which reduces opportunity for error.
 
-Lines 56 through 62 connect all the input signals of the submodule to the formal verifier.
+Lines 56 through 62 connect all the input signals of the submodule to
+the formal verifier.
 
-(lkcl: note, it's been established that these lines can be replaced
-with an Assert on the op and the muxid, see bug #429 comment 3 above).
+          # setup random inputs
+          comb += [a.eq(AnyConst(64)),
+                   b.eq(AnyConst(64)),
+                   ca_in.eq(AnyConst(0b11)),
+                   so_in.eq(AnyConst(1))]
 
 #### Properties
 
