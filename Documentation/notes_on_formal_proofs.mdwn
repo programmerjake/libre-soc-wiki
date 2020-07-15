@@ -62,7 +62,7 @@ the module's job is to specify the correct behavior of a production
 submodule, `ALUMainStage`.  This is fairly basic `nmigen` material,
 so I won't spend any more time on this.
 
-#### CompALUOpSubset
+#### `CompALUOpSubset`
 
 `CompALUOpSubset` is, ultimately, an `nmigen`
 [record](https://github.com/nmigen/nmigen/blob/master/nmigen/hdl/rec.py#L89)
@@ -93,7 +93,7 @@ It merely makes the fields of this record available to the formal verification s
 The record must be connected directly to the module via a signal assignment;
 [see line 62 of the source listing.](https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/fu/alu/formal/proof_main_stage.py;h=5e70d1e885b41ca50d69f57e9ee94b568d001c2e;hb=HEAD#l62)
 
-#### ALUPipeSpec
+#### `ALUPipeSpec`
 
 `ALUPipeSpec` is a similar construct, but it serves a different role than the above class.
 Looking at its
