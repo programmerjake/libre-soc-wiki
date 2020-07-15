@@ -1,0 +1,108 @@
+# Notes on Formal Proofs
+
+If you study the ALU and SPR function unit directories, you'll find a set of formal proofs which I (Samuel A. Falvo II) found very confusing.
+After some study of the ALU proofs, however, I've come to see some basic patterns.
+Whether these patterns apply to other proofs throughout the rest of the code-base is unknown; I haven't gotten that far yet.
+But, for now, this "cheat sheet" of sorts should help newcomers to the project better understand why these Python modules are structured the way they are.
+
+In the discussion below, I'll be referring to the following URLs:
+
+- [alu/formal/proof_main_stage.py](https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/fu/alu/formal/proof_main_stage.py;hb=HEAD)
+- [alu/main_stage.py](https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/fu/alu/main_stage.py;h=719a9a731e4c9c5f637f574fbf01203fea36df28;hb=HEAD)
+
+## Pipeline Stage Architecture
+
+A pipeline stage appears to have the following overall architecture
+(there will almost certainly be exceptions to this that I'm not familiar with):
+
+               (from previous stage)
+           OpSubset        Register Inputs
+              |                   |
+              V                   V
+           +-------------------------+
+           | Pipeline Stage          |
+           +-------------------------+
+              |                   |
+              V                   V
+           OpSubset        Register Outputs
+        (to next stage / register file logic)
+
+Note that the **Pipeline Stage** is *purely combinatorial logic.*
+Any state between pipeline stages is instantiated through mechanisms not disclosed here.
+(IIRC, that logic is located in the `nmutil` package, but my memory is hazy here.)
+
+## class Driver
+
+The `Driver` class is an `Elaboratable` class (an `nmigen` module)
+which specifies all the properties that the module under test
+(in this case, `ALUMainStage`)
+must satisfy to be considered "correct."
+
+
+### `__init__`
+
+The `__init__` method is the constructor for the class.
+It prevents `Elaboratable`'s constructor from running.
+It's not yet clear to me why this is done.
+
+### `elaborate` method
+
+Bluntly, this method is (depending on what you're familiar with) a macro or a monad.
+Its job is to build a *description* of the final output module by appending various objects to `comb`.
+In this case, the module's job is to specify the correct behavior of a production submodule, `ALUMainStage`.
+This is fairly basic `nmigen` material, so I won't spend any more time on this.
+
+#### `CompALUOpSubset`
+
+`CompALUOpSubset` is, ultimately, an `nmigen`
+[record](https://github.com/nmigen/nmigen/blob/master/nmigen/hdl/rec.py#L89)
+which contains a number of fields related to telling the pipeline stage *what to do*.
+(Hence the *Op* in the class name.)
+I won't disclose the fields here, because they're liable to change at any time.
+What is important to know here is that this record exists for one purpose:
+to ensure that when the interface to the ALU pipeline stage changes for any reason,
+*all* consumers of that interface are updated consistently.
+
+Because this is a record, its fields may be introspected.
+This happens frequently; it is usually the case that an Op-type record is passed unchanged from stage to stage.
+However, `nmigen` does not seem to support testing records for equality in formal assertions.
+To express this constraint without needing to update a pile of use-sites every time the interface changes,
+you'll find logic
+[like this](https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/fu/alu/formal/proof_main_stage.py;h=5e70d1e885b41ca50d69f57e9ee94b568d001c2e;hb=HEAD#l64).
+
+**NOTE:** Instantiating one of these records *does not* provide these inputs to the module under test.
+It merely makes the fields of this record available to the formal verification solver so it can fiddle the bits as it explores the design space.
+The record must be connected directly to the module via a signal assignment;
+[see line 62 of the source listing.](https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/fu/alu/formal/proof_main_stage.py;h=5e70d1e885b41ca50d69f57e9ee94b568d001c2e;hb=HEAD#l62)
+
+#### `ALUPipeSpec`
+
+`ALUPipeSpec` is a similar construct, but it serves a different role than the above class.
+Looking at its
+[source code](https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/fu/alu/pipe_data.py;h=71363049ba5a437a708e53dfbc3370f17aa394d1;hb=HEAD)
+, it appears to define bits in one or more *register files*,
+for both input input the stage and output from the stage.
+
+This structure is passed to the constructor of the module-under-test.
+That constructor, ultimately, has the effect of creating a set of inputs (`dut.i`) and outputs (`dut.o`) that matches the register field names.
+**NOTE:** this process coalesces disparate field bits together!
+For example, the POWER XER register defines two carry bits at positions 34 and 45 in a 64-bit word.
+However, when referencing these bits via `dut.i.xer_ca`, they occupy bits 0 and 1.
+The process reverses for outputs; bits 0 and 1 of the `dut.o.xer_ca` field will be re-distributed to XER register bits 34 and 45 again.
+See [lines 9 (input) and 19 (output) of the source listing](https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/fu/alu/pipe_data.py;h=71363049ba5a437a708e53dfbc3370f17aa394d1;hb=HEAD).
+
+#### Instantiating the Module Under Test
+
+Looking at [line 41 through 54](https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/fu/alu/formal/proof_main_stage.py;h=5e70d1e885b41ca50d69f57e9ee94b568d001c2e;hb=HEAD#l41),
+we see the module we want to test actually instantiated.
+Since register inputs and outputs are frequently accessed, it's worthwhile defining a set of aliases for those signals.
+Although this somewhat obscures the intent of the code,
+it will save typing which reduces opportunity for error.
+
+Lines 56 through 62 connect all the input signals of the submodule to the formal verifier.
+
+#### Properties
+
+Starting at [line 64](https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/fu/alu/formal/proof_main_stage.py;h=5e70d1e885b41ca50d69f57e9ee94b568d001c2e;hb=HEAD#l64)
+we find the start of properties which must apply to the submodule.
+
