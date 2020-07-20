@@ -1,0 +1,30 @@
+# Abstract 1, submission 25
+
+The Libre-SOC Project aims to bring a DRM-free 3D GPU/CPU/VPU processor to fruition, providing the backbone of guaranteed "right to repair" and beyond.  Anyone technically familiar with Apple's new processor knows the true implications: if Apple controls the entire stack right from boot, then with their market share, vendor lock-in on an unprecedented scale becomes the new reality.  With Intel losing the plot (Spectre, Meltdown, QA failures) other vendors will likely follow their example.
+
+If we do not wish to see that happen it is our duty and responsibility to provide alternative processor designs that are targetted at mass-volume products: tablets, smartphones, chromebooks and more.
+
+This then defines the technical requirements:
+
+* The processor must be power-efficient
+* It must be capable of good 3D graphics
+* It must have audio and video acceleration
+* There must be good driver support (BSP)
+* The entire stack must be Libre
+* The processor must be "unbrickable"
+
+With help from NLNet, under their Privacy and Enhanced Trust Programme,  we have received seven separate EUR 50,000 Grants targetted at specific areas to make this a reality, covering:
+
+* The core processor design which is to be an augmented POWER9 compliant design, guided by the OpenPOWER Foundation
+* Paying for a 180nm test ASIC to be laid out using entirely libre ASIC tools by Sorbonne University (coriolis2)
+* Two separately funded 3D Vulkan Drivers: Kazan and MESA
+* Audio/Video assembly-level acceleration for inclusion in ffmpeg and gstreamer low-level libraries
+* Support for Development of 3D and Vector Processing Standards and submission to the OpenPOWER Foundation for inclusion in PowerISA
+* Documentation and openness to suit educational and business needs alike.
+* Formal Correctness Proofs for both the low and high level design (including the IEEE754 units)
+
+This latter is critically important for transparency: the processor has to be independently verifiable, and Mathematical Correctness proofs are a good way to achieve that.
+
+This is a massively ambitious and unprecedented project.  It is also based on a technically underappreciated historic design:  the CDC 6600.  With help from Mitch Alsup, the designer of the Motorola 68000, it has been possible to upgrade the 6600 core to multi-issue and precise exceptions with no architectural compromises.
+
+With so much ground to cover, this talk therefore provides an overview and introduction to the project.
