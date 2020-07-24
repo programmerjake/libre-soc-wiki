@@ -395,6 +395,35 @@ Install gdb from source.  Obtain the latest tarball, unpack it, then:
      ../configure --srcdir=.. --host=x86_64-linux --target=powerpc64-linux-gnu
     make -j$(nproc)
     make install
+    
+## power_instruction_analyzer (pia)
+
+We have a custom tool built in rust by programmerjake to help analyze
+the power instructions execution on *actual* hardware.
+
+Install rust:
+
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+Make sure we have the correct and up-to-date rust compiler (rustc):
+
+    rustup default stable
+    rustup update
+
+Use rust's package manager *cargo* to install the rust-python build tool maturin:
+
+    cargo install maturin
+
+Install from git source by doing the following:
+
+    git clone https://salsa.debian.org/Kazan-team/power-instruction-analyzer.git pia
+    cd pia
+    maturin build --cargo-extra-args=--features=python-extension
+
+Get a root prompt by doing sudo bash then:
+
+    cd /home/USERNAME/src/pia
+    python3 -m pip install target/wheels/*.whl
 
 ## Coriolis2
 
