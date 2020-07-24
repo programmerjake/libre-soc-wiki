@@ -52,9 +52,8 @@ of your main system, as well as /etc/passwd.
 
 You may wish to follow some of the other things such as configuring apt,
 locales and keyboard, from the above-linked debian-admin HOWTO.
-bootloader, kernel, ssh access, all these are
-unnecessary.  do run "apt clean" to clear out /var/cache/apt/archives
-in the chroot.
+
+bootloader, kernel, ssh access, are unnecessary. Do run "apt clean" to clear out /var/cache/apt/archives in the chroot.
 
 ## schroot
 
@@ -85,45 +84,6 @@ and you will see this as a result:
 
     (coriolis2)lkcl@fizzy:~#
 
-## check out alliance and alliance-check-toolkit
-
-Adapted from <https://www-soc.lip6.fr/en/team-cian/softwares/alliance/>
-
-in the schroot:
-
-    git clone https://gitlab.lip6.fr/vlsi-eda/alliance-check-toolkit.git
-
-TODO: document how to build alliance, basically this:
-
-In the chroot, as root:
-
-    apt-get update
-    apt-get install ccache git build-essential libtool automake \
-             flex bison xfig imagemagick \
-             texlive texlive-pictures texlive-latex-extra \
-             libx11-dev libxt-dev libxaw7-dev libxpm-dev libmotif-dev
-
-In the chroot, as the ordinary schroot user, in ~/.bash\_profile add
-the following so that builds (rebuilds) if you need them will be quicker:
-
-    export PATH=/usr/lib/ccache:"$PATH"
-
-In the chroot, as the ordinary schroot user:
-
-    mkdir -p alliance/build alliance/install
-    cd ~/alliance
-    git clone https://gitlab.lip6.fr/vlsi-eda/alliance.git
-    cd alliance/src
-    ./autostuff
-    cd ~/alliance/build
-    export ALLIANCE_TOP=$HOME/alliance/install
-    export LD_LIBRARY_PATH=${ALLIANCE_TOP}/lib:${LD_LIBRARY_PATH}
-    export LD_LIBRARY_PATH=${ALLIANCE_TOP}/lib64:${LD_LIBRARY_PATH}
-    ../alliance/src/configure --prefix=$ALLIANCE_TOP --enable-alc-shared
-    make -j1 install
-
-the two exports are best added to ~/.bash_profile for later convenience
-
 ## coriolis2
 
 These are nominally taken from
@@ -137,42 +97,30 @@ them will be quicker, and you can run the GUI from the chroot:
     export PATH=/usr/lib/ccache:"$PATH"
     export DISPLAY=:0.0
 
-Second (or at a new terminal / xterm), log in as root on the host (not
-the chroot) then do schroot -c coriolis to get to be root in the chroot
-(or, you can install sudo in the chroot and then do "sudo bash" in the
-chroot).
+Second (or at a new terminal / xterm), log in as root on the host (not the chroot) then do schroot -c coriolis to get to be root in the chroot (or, you can install sudo in the chroot and then do "sudo bash" in the chroot).
 
 Then run the following commands, as root, *in* the chroot:
 
     apt-get update
-    apt-get install -y ccache build-essential binutils-dev          \
-                  git cmake bison flex gcc python-dev               \
-                  libboost-all-dev libboost-python-dev               \
-                  zlib1g-dev                                         \
-                  libbz2-dev libxml2-dev rapidjson-dev libbz2-dev     \
-                  doxygen dvipng graphviz python-sphinx               \
-                  texlive-fonts-extra texlive-lang-french            \
-                  libqwt-dev qt4-dev-tools python-qt4               \
-                   libxt-dev libxpm-dev libmotif-dev                \
-                   yosys
+    apt-get install -y automake binutils-dev bison build-essential \
+    ccache clang cmake doxygen dvipng flex gcc git graphviz \
+    imagemagick libboost-all-dev libboost-python-dev libbz2-dev \
+    libmpfr-dev libgmp-dev libmotif-dev libreadline-dev \
+    libqwt-dev libtool libx11-dev libxaw7-dev libxml2-dev \
+    libxpm-dev libxt-dev python3.7 python3-jinja2 python3-pip \
+    python3-setuptools python-dev python-qt4 python-sphinx \
+    qt4-dev-tools rapidjson-dev tcl tcl-dev tcl-tclreadline \
+    texlive texlive-fonts-extra texlive-lang-french \
+    texlive-latex-extra texlive-pictures xfig yosys zlib1g-dev
 
 Then, as the ordinary (non-root) user in the schroot:
 
     mkdir -p ~/coriolis-2.x/src
     cd ~/coriolis-2.x/src
     git clone https://gitlab.lip6.fr/vlsi-eda/coriolis.git
-
     cd coriolis
     git checkout devel
-    ./bootstrap/ccb.py --project=coriolis --make="-j4 install"
-
-In debian/buster at the moment, this will fail half-way through, due to
-libraries not being found.  When that happens run this:
-
-    ln -s ~/coriolis-2.x/Linux.x86_64/Release.Shared/install/lib64 \
-          ~/coriolis-2.x/Linux.x86_64/Release.Shared/install/lib
-
-Then carry on with the build.
+    ./bootstrap/ccb.py --project=coriolis --make="-j$(nproc) install"
 
 To set up the coriolis2 environment, run this:
 
@@ -189,7 +137,7 @@ having to look this page up every time
 
 To run the graphical editor go to the bin directory
 
-     cd ~/coriolis-2.x/Linux.MyARCH/Release.Shared/install/bin
+    cd ~/coriolis-2.x/Linux.MyARCH/Release.Shared/install/bin
     ./cgt
 
 Then run the following commands from the menubar
@@ -206,31 +154,130 @@ If you have the following, congratulations:
 
 [[!img demo_cell.png ]]
 
+# Upgrading to latest yosys in the chroot
+
+yosys in debian may not be enough to work with nmigen,
+therefore it's probably a good idea to upgrade.
+
+As root, in the chroot, run the following:
+
+    apt-get update
+    apt-get build-dep yosys
+    apt-get install clang
+    apt-get remove yosys
+
+This will remove debian/buster yosys however getting the build dependencies is quick and easy enough.
+
+As the ordinary user, the following instructions can be followed
+(<http://www.clifford.at/yosys/download.html>)
+
+    cd ~
+    git clone https://github.com/cliffordwolf/yosys.git
+    cd yosys
+    make config-clang
+    make -j$(nproc)
+
+As root, run:
+
+    make install
+
+## Check out alliance and alliance-check-toolkit
+
+Adapted from <https://www-soc.lip6.fr/en/team-cian/softwares/alliance/>
+
+In the chroot, as the ordinary schroot user, in ~/.bash\_profile add the following so that builds (rebuilds, if you need) them will be quicker:
+
+    export PATH=/usr/lib/ccache:"$PATH"
+
+In the chroot, as the ordinary schroot user:
+
+    mkdir -p alliance/build alliance/install
+    cd ~/alliance
+    git clone https://gitlab.lip6.fr/vlsi-eda/alliance.git
+    mv alliance/alliance/src alliance
+    rm -rf alliance/alliance
+    cd alliance/src
+    ./autostuff
+    cd ~/alliance/build
+    export ALLIANCE_TOP=$HOME/alliance/install
+    export LD_LIBRARY_PATH=${ALLIANCE_TOP}/lib:${LD_LIBRARY_PATH}
+    export LD_LIBRARY_PATH=${ALLIANCE_TOP}/lib64:${LD_LIBRARY_PATH}
+    ../alliance/src/configure --prefix=$ALLIANCE_TOP --enable-alc-shared
+    make -j1 install
+
+The three exports are best added to ~/.bash_profile for later convenience
+
 # Tutorials and checks
 
 Install alliance-check-toolkit in the chroot:
 
-* <https://gitlab.com/Chips4Makers/alliance-check-toolkit>
+* <https://gitlab.lip6.fr/vlsi-eda/alliance.git>
 * See coriolis-2.x/Linux.x86_64/Release.Shared/install/share/doc/coriolis2/en/html/main/PythonTutorial/index.html
 
 Run the following (if not done already):
 
     source ~/coriolisenv
 
-Then, picking a random example:
+Git clone alliance-check-toolkit:
 
-    cd alliance-check-toolkit/benchs/AM2901/standart_cells/cmos
+    git clone https://gitlab.lip6.fr/vlsi-eda/alliance.git
+
+You must create a configuration for your user in alliance-check-toolkit to define where the various tools are installed:
+
+    touch alliance-check-toolkit/etc/mk/users.d/user-USERNAME.mk
+    cat <<EOF >>alliance-check-toolkit/etc/mk/users.d/user-USERNAME.mk
+    export CORIOLIS_TOP=/home/USERNAME/coriolis-2.x/Linux.x86_64/Release.Shared/install
+    export ALLIANCE_TOP=/home/USERNAME/alliance/install
+    export CHECK_TOOLKIT=/home/USERNAME/alliance-check-toolkit
+    export YOSYS_TOP=/home/USERNAME/yosys
+    EOF
+
+You can try the ARM in alliance-check-toolkit:
+
+    cd alliance-check-toolkit/benchsARM/cmos/
     make lvx
-    make view
 
-A nice view of a chip should appear
+This should take about five minutes. It's symbolic, but should be a configuration compatible with 180nm. To actually see the results:
 
-## Information from Jean-Paul
+    make cgt
 
-There should be very soon a website at https://coriolis.lip6.fr (it is not yet
-online). Where I intend to put all the documentation about Alliance/Coriolis.
+Then:
 
-In the meantime did you find the doc shipped with Coriolis ?
+    Select File -> Open Cell or press CTRL + o
+
+Enter as the cell name (without the single quotation marks):
+
+    'arm_chip_cts_r'
+
+As a very rough approximation, you can say that one lambda equals 180nm.
+
+It depends on the zoom level and of the fact that you ask to see the inside of the cells.
+
+To actually see the transistors:
+
+    Tools -> Controller -> Filter Tab -> check "Process Terminal Cells"
+
+You can also tweak the layer display by selecting:
+
+    Tools -> Controller -> Layers & Go
+
+  You can quicly hide/show the Controller with:
+
+    CTRL+I
+
+The up-to-date documentation is supplied directly in the Coriolis repository:
+
+    coriolis/documentation/output/index.html
+
+The links toward the doxygen doc will be invalid a this point, but everything else works.
+
+After installation, it is put in:
+
+    coriolis-2.x/Linux.x86_64/Release.Shared/install/share/doc/coriolis2/en/html/index.html
+
+## More Information from Jean-Paul
+
+There is a WIP documentation website for Alliance/Coriolis at <http://coriolis.lip6.fr/>.
 
 There are also very cursory informations about installing Alliance here:
     https://www-soc.lip6.fr/en/team-cian/softwares/alliance/
@@ -239,120 +286,6 @@ You also have a third repository for various blocks/chip/examples here:
     https://gitlab.lip6.fr/jpc/alliance-check-toolkit
 
 (with a basic doc under "doc/"...)
-
-## More from JP
-
-You must create a configuration for alliance-check-toolkit:
-
-    alliance-check-toolkit/etc/mk/users.d/user-LOGIN.mk
-
-    where you define where the various tools are installed
-    (look in other ones to have an idea).
-
-  You can try the ARM in alliance-check-toolkit:
-
-    > cd alliance-check-toolkit/benchsARM/cmos/
-    > make lvx
-
-    Should take about five minutes. It's symbolic, but should be
-    a configuration compatible with 180nm. To actually see the
-    results:
-
-    > make cgt
-
-    Then "File -> Open", "arm_chip_cts_r"
-
-    To have a very rough approximation, you can say that one lambda
-    equal 180nm.
-
-Depends on the zoom level and of the fact that you ask to see
-the inside of the cells.
-
-To actually see the transistors:
-   Tools -> Controller -> Filter Tab -> check "Process Terminal Cells"
-
-You can also tweak the layer display:
-   Tools -> Controller -> Layers & Go
-
-  You can quicly hide/show the Controller with CTRL+I.
-
-  You may also toy with Controller -> Look, try the other ones.
-  If you want a new one, to mimic something you're better
-  familiar with, it's in configurations files all written
-  in Python so easy to do, if a little tedious.
-
-> i'd expect such a chip to be in the alliance-check-toolkit however we
-> don't even know what we're looking at in order to know which bits we
-> need, let alone know what to do or how to run them.
->
-> we're *literally* completely in the dark, here, having never done this
-> before - at all - so unless there's a specific tutorial which says, to
-> make a chip layout do this: "step 1: install these tools.  step 2: get
-> this project repo.  step 3: cd to this directory.  step 4: run make or
-> ./compile-place-and-route.sh" we're absolutely lost.
->
-> thx jean-paul, and apologies for not knowing where to begin, here.
-
-  No problem. You're welcome.
-
-  The doc is mostly for people who already have a background in ASICs,
-  I will try to patch something from my lecture in VLSI to help people
-  to orient themselves.
-
-  The up-to-date documentation is supplied directly in the Coriolis
-  repository:
-
-     coriolis/documentation/output/index.html
-
-     The links toward the doxygen doc will be invalid a this point,
-     but everython else works.
-
-   After installation, it is put in:
-
-     coriolis-2.x/Linux.x86_64/Release.Shared/install/share/doc/coriolis2/en/html/index.html
-
-# Installing python3.7 into debian/buster chroot
-
-as root, in the chroot:
-
-    apt-get install python3.7 python3-setuptools \
-               python3-jinja2 python3-pip
-
-At this point it becomes possible to follow the main
-instructions in [[HDL_workflow]] for installing nmigen,
-ieee754fpu, soc and nmutil.
-
-# Upgrading to latest yosys in the chroot
-
-yosys in debian may not be enough to work with nmigen,
-therefore it's probably a good idea to upgrade.
-To install from source, add the following to
-/etc/apt/sources.list:
-
-   deb-src http://ftp.uk.debian.org/debian buster main
-
-then as root, in the chroot, run the following:
-
-    apt-get update
-    apt-get build-dep yosys
-    apt-get install clang
-    apt-get remove yosys
-
-this will remove debian/buster yosys however getting the build
-dependencies is quick and easy enough.
-
-then, as the ordinary user, the following instructions can be followed
-(<http://www.clifford.at/yosys/download.html>)
-
-    cd ~
-    git clone https://github.com/cliffordwolf/yosys.git
-    cd yosys
-    make config-clang
-    make -j4
-
-as root, run:
-
-    make install
 
 # Check out the libresoc "soclayout" repository
 
@@ -381,4 +314,3 @@ in ~/.bash_profile if desired)
 
 Then, in the chroot, follow the cgt instructions above, or use "make view"
 in any of the soclayout experiments or alliance-check-toolkit bench tests
-
