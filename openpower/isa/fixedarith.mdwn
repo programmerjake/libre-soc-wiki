@@ -350,8 +350,8 @@ Pseudo-code:
 
     prod[0:63] <- MULS((RA)[32:63], (RB)[32:63])
     RT <- prod
-    overflow <- ((prod[0:33] != 0x0_0000_0000) &
-                 (prod[0:33] != 0x1_ffff_ffff))
+    overflow <- ((prod[0:32] != [0]*33) &
+                 (prod[0:32] != [1]*33))
 
 Special Registers Altered:
 
@@ -564,8 +564,8 @@ Pseudo-code:
 
     prod[0:127] <- MULS((RA), (RB))
     RT <- prod[64:127]
-    overflow <- ((prod[0:65] != 0x0_0000_0000_0000_0000) &
-                 (prod[0:65] != 0x1_ffff_ffff_ffff_ffff))
+    overflow <- ((prod[0:64] != [0]*65) &
+                 (prod[0:64] != [1]*65))
 
 Special Registers Altered:
 
