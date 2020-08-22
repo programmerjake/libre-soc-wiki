@@ -6,8 +6,7 @@ D-Form
 
 Pseudo-code:
 
-    if RA = 0 then RT <- EXTS(SI)
-    else           RT <- (RA) + EXTS(SI)
+    RT <- (RA|0) + EXTS(SI)
 
 Special Registers Altered:
 
@@ -21,8 +20,7 @@ D-Form
 
 Pseudo-code:
 
-    if RA = 0 then RT <- EXTS(SI || [0]*16)
-    else           RT <- (RA) + EXTS(SI || [0]*16)
+    RT <- (RA|0) + EXTS(SI || [0]*16)
 
 Special Registers Altered:
 
