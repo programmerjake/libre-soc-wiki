@@ -85,10 +85,8 @@ A-Form
 
 Pseudo-code:
 
-    if RA=0 then a <-0
-    else a <-  (RA)
-    if CR[BC+32]=1 then RT <- a
-    else           RT <- (RB)
+    if CR[BC+32]=1 then RT <- (RA|0)
+    else                RT <- (RB)
 
 Special Registers Altered:
 
