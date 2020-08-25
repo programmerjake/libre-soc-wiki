@@ -1,3 +1,31 @@
 # MESA Driver sponsored by NLNet
 
 todo http://lists.libre-soc.org/pipermail/libre-soc-dev/2020-August/000246.html
+
+# build instructions, by vivek
+
+Sure I will add details about how to build the code, I use basically meson
+and ninja commands,
+My build directory located in mesa source here is my meson command to
+configure (I know this does more work than require please add more options
+if you find useful):
+
+    meson -Dbuildtype=debug -Dprefix=/home/vivek/install -Dvulkan-drivers=libresoc ..
+
+and then
+
+    ninja
+    ninja install.
+
+I also have script to set few environment variables like
+
+    export VK_ICD_FILENAMES=/home/vivek/install/share/vulkan/icd.d/libresoc_icd.x86_64.json
+    export VK_LOADER_DEBUG=warn
+    export LIBRESOC_TRACE=1
+
+To test the code I am sing simple tests built by
+    https://github.com/GameTechDev/IntroductionToVulkan
+
+I am also using debug build for vulkan loader if any one interested in that
+please look at
+    https://github.com/KhronosGroup/Vulkan-Loader/blob/master/BUILD.md
