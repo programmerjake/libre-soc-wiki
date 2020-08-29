@@ -64,14 +64,11 @@ XFX-Form
 
 Pseudo-code:
 
-    count <- 0
-    do i = 0 to 7
+    n <- 7
+    do i = 7 to 0
       if FXM[i] = 1 then
         n <- i
-        count <- count + 1
-    if count = 1 then
-        CR[4*n+32:4*n+35] <- (RS)[4*n+32:4*n+35]
-    else CR <- undefined
+    CR[4*n+32:4*n+35] <- (RS)[4*n+32:4*n+35]
 
 Special Registers Altered:
 
@@ -85,9 +82,9 @@ XFX-Form
 
 Pseudo-code:
 
-    mask <- ([FXM[0]]*4 || [FXM[1]]*4 || [FXM[2]]*4 || [FXM[3]]*4 ||
-             [FXM[4]]*4 || [FXM[5]]*4 || [FXM[6]]*4 || [FXM[7]]*4)
-    CR <- ((RS)[32:63] & mask) | (CR & ¬mask)
+    do n = 0 to 7
+      if FXM[n] = 1 then
+        CR[4*n+32:4*n+35] <- (RS)[4*n+32:4*n+35]
 
 Special Registers Altered:
 
@@ -101,15 +98,12 @@ XFX-Form
 
 Pseudo-code:
 
-    RT <- undefined
-    count <- 0
-    do i = 0 to 7
-      if FXM[i] = 1 then
-        n <- i
-        count <- count + 1
-    if count = 1 then
-        RT <- [0]*64
-    RT[4*n+32:4*n+35] <- CR[4*n+32:4* n+35]
+    done <- 0
+    RT <- [0]*64
+    do n = 0 to 7
+      if (done = 0) & (FXM[n] = 1) then
+        RT[4*n+32:4*n+35] <- CR[4*n+32:4*n+35]
+        done <- 1
 
 Special Registers Altered:
 
