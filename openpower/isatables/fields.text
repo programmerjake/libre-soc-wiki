@@ -57,7 +57,7 @@
    | OPCD |       RS      | /|SR        |     ///     |   XO |  / |
    | OPCD |       RS      |     ///     |    RB       |   XO |  / |
    | OPCD |       RS      |     ///     |     ///     |   XO |  / |
-   | OPCD |       RS      |    ///   |L |     ///     |   XO |  / |
+   | OPCD |       RS      |    ///   |L1|     ///     |   XO |  / |
    | OPCD |       TH      |    RA       |    RB       |   XO |  / |
    | OPCD |  BF  |/  | L  |    RA       |    RB       |   XO |  / |
    | OPCD |  BF  |//      |   FRA       |   FRB       |   XO |  / |
@@ -67,10 +67,10 @@
    | OPCD |       TH      |    RA       |    RB       |   XO |  / |
    | OPCD | /| CT         |     ///     |     ///     |   XO |  / |
    | OPCD | /| CT         |    RA       |    RB       |   XO |  / |
-   | OPCD |  /// | L      |    RA       |    RB       |   XO |  / |
-   | OPCD |  /// | L      |     ///     |    RB       |   XO |  / |
-   | OPCD |  /// | L      |     ///     |     ///     |   XO |  / |
-   | OPCD |  /// | L      | /|     E    |     ///     |   XO |  / |
+   | OPCD |  /// | L2     |    RA       |    RB       |   XO |  / |
+   | OPCD |  /// | L2     |     ///     |    RB       |   XO |  / |
+   | OPCD |  /// | L2     |     ///     |     ///     |   XO |  / |
+   | OPCD |  /// | L2     | /|     E    |     ///     |   XO |  / |
    | OPCD |     TO        |    RA       |    RB       |   XO |  / |
    | OPCD |   FRT         |    RA       |    RB       |   XO |  / |
    | OPCD |   FRT         |   FRA       |   FRB       |   XO |  / |
@@ -102,6 +102,7 @@
    | OPCD |    VRT        |  RA         |  RB         |   XO |  / |
    | OPCD |   VRS         |  RA         |  RB         |   XO |  / |
    | OPCD |    MO         |  ///        |  ///        |   XO |  / |
+   | OPCD |       RT      | /// |L3     |     ///     |   XO | /  |
 
 # 1.6.8 XL-FORM
    |0     |6    |9  |11  |14   |16    |19|20|21    |31 |
@@ -488,7 +489,7 @@
          Field used to specify whether the mtfsf instruction
          updates the entire FPSCR.
          Formats: XFL
-    L (9:10)
+    L2 (9:10)
          Field used by the Data Cache Block Flush instruc-
          tion (see Section 4.3.2 of Book II) and also by the
          Synchronize instruction (see Section 4.6.3 of Book
@@ -502,14 +503,14 @@
          to indicate whether to compare against 1 or 2
          ranges of bytes.
          Formats: D, X
-    L (15)
+    L1 (15)
          Field used by the Move To Machine State Register
          instruction (see Book III).
          Field used by the SLB Move From Entry VSID and
          SLB Move From Entry ESID instructions for imple-
          mentation-specific purposes.
          Formats: X
-    L (14:15)
+    L3 (14:15)
          Field used by the Deliver A Random Number
          instruction (see Section 3.3.9, 'Fixed-Point Arith-
          metic Instructions') to choose the random number

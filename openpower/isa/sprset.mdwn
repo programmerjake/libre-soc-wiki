@@ -146,11 +146,11 @@ Special Registers Altered:
 
 X-Form
 
-* mtmsr RS,L
+* mtmsr RS,L1
 
 Pseudo-code:
 
-    if L = 0 then
+    if L1 = 0 then
         MSR[48] <- (RS)[48] | (RS)[49]
         MSR[58] <- (RS)[58] | (RS)[49]
         MSR[59] <- (RS)[59] | (RS)[49]
@@ -171,11 +171,11 @@ Special Registers Altered:
 
 X-Form
 
-* mtmsrd RS,L
+* mtmsrd RS,L1
 
 Pseudo-code:
 
-    if L = 0 then
+    if L1 = 0 then
         if (MSR[29:31] != 0b010) | ((RS)[29:31] != 0b000) then
             MSR[29:31] <- (RS)[29:31]
         MSR[48] <- (RS)[48] | (RS)[49]
