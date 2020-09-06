@@ -64,6 +64,23 @@ Remarks:
 3. ``traces`` is a list of trace names
 4. ``top.shf`` is the hierarchy path of the module
 
+Now try:
+
+    gtkwave simple.gtkw
+
+Notice:
+
+1. No need to press the "zoom to fit" button. The default zoom level is
+adequate for a 1 MHz clock.
+2. If you made a mistake, there will be no warning. The trace will
+simply not appear
+3. The reload button will only reload the VCD file, not the GTKW document. If you regenerate the document, you need to close and open a
+new tab, or exit GTKWave and run again: ``gtkwave simple.gtkw``
+4. If you feel tired of seeing the GTKWave splash window every time,
+do: ``echo splash_disable 1 >> ~/.gtkwaverc``
+5. If you modify the document manually, better to save it with another
+name
+
 # New signals at simulation time
 
 At simulation time, you can declare a new signal, and use it inside
