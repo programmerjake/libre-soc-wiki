@@ -81,6 +81,19 @@ do: ``echo splash_disable 1 >> ~/.gtkwaverc``
 5. If you modify the document manually, better to save it with another
 name
 
+## Adding color
+
+Go back to the trace list and replace the ``'op__sdir'`` string with:
+
+    ('op__sdir', {'color': 'orange'})
+
+Recreate the document (you can change the file name):
+
+    write_gtkw("color.gtkw", "test_shifter.vcd", traces, module='top.shf')
+
+If you now run ``gtkwave color.gtkw``, you will see that ``op__sdir``
+has the new color.
+
 # New signals at simulation time
 
 At simulation time, you can declare a new signal, and use it inside
