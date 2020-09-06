@@ -23,6 +23,47 @@ In this tutorial, you will learn how to:
 7. Place markers on interesting places
 8. Put the generating file name as a comment in the file
 
+## Basic trace display
+
+First, we need a VCD file. Try:
+
+    python -m nmutil.test.example_gtkwave
+
+Among other files, it will generate ``test_shifter.vcd``.
+
+Lets write a simple GTKW document. First, import the function:
+
+    from nmutil.gtkw import write_gtkw
+
+Create a list of the traces you want to see. Some hints:
+
+1. Put all trace names in quotes.
+2. Use the same names as you would see in the trace pane of GTKWave
+3. If a trace is multi-bit, use array notation 'name[max:min]' 
+
+For example:
+
+    traces = [
+        'clk',
+        # prev port
+        'op__sdir', 'p_data_i[7:0]', 'p_shift_i[7:0]', 'p_valid_i', 'p_ready_o',
+        # internal signals
+        'fsm_state', 'count[3:0]', 'shift_reg[7:0]',
+        # next port
+        'n_data_o[7:0]', 'n_valid_o', 'n_ready_i'
+    ]
+
+Now, create the document:
+
+    write_gtkw("simple.gtkw", "test_shifter.vcd", traces, module='top.shf')
+
+Remarks:
+
+1. ``simple.gtkw`` is the name of our GTKWave document
+2. ``test_shifter.vcd`` is the VCD file
+3. ``traces`` is a list of trace names
+4. ``top.shf`` is the hierarchy path of the module
+
 # New signals at simulation time
 
 At simulation time, you can declare a new signal, and use it inside
