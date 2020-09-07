@@ -94,6 +94,35 @@ Recreate the document (you can change the file name):
 If you now run ``gtkwave color.gtkw``, you will see that ``op__sdir``
 has the new color.
 
+## Writing GTKWave documents, with style
+
+Let's say we want all input traces be orange, and all output traces be
+yellow. To change them one by one, as we did with ``op__sdir``, would be
+very tedious and verbose. Also, hardcoding the color name will make it
+difficult to change it later.
+
+To solve this, lets create a style specification:
+
+    style = {
+        'in': {'color': 'orange'},
+        'out': {'color': 'yellow'}
+    }
+
+Then, change:
+
+    ('op__sdir', {'color': 'orange'})
+
+to:
+
+    ('op__sdir', 'in')
+
+then (notice how we add ``style``):
+
+    write_gtkw("style1.gtkw", "test_shifter.vcd", traces, style, module='top.shf')
+
+If you now run ``gtkwave style1.gtkw``, you will see that ``op__sdir``
+still has the new color.
+
 # New signals at simulation time
 
 At simulation time, you can declare a new signal, and use it inside
