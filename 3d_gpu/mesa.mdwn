@@ -83,13 +83,15 @@ Now change back to the base `~/opt` directory and clone the `mesa` git repo from
 
     cd ~/opt
     git clone https://gitlab.freedesktop.org/vivekvpandya/mesa.git
+    git pull origin libresoc_dev
+    git checkout -b libresoc_dev
     cd mesa
     mkdir build && cd build
 
 In order to configure `mesa` for building and installation run the following command. Again, it is *very* important to specify `prefix=/home/$USER/opt/lsoc_mesa` because as mentioned above we need these files for development purposes, but we do not want to corrupt or interfere with our *system* `mesa` libraries.
 
     meson -Dbuildtype=debug -Dprefix=/home/$USER/opt/lsoc_mesa \
-     -Dvulkan-drivers=libre-soc                
+     -Dvulkan-drivers=libre-soc ..             
 
 After configuration has completed, run ninja to build and install the `mesa` libraries.
 
