@@ -71,28 +71,30 @@ In order for meson to be able to find the up-to-date `drm` files we have just bu
 
     export PKG_CONFIG_PATH=~/opt/lsoc_mesa/lib/x86_64-linux-gnu/pkgconfig/
 
+These following `vulkan`-specific environment variables are necessary to build our branch of mesa successfully:
+
+    export VK_ICD_FILENAMES=/home/$USER/opt/lsoc_mesa/share/vulkan/icd.\
+     /libresoc_icd.x86_64.json
+    export VK_LOADER_DEBUG=warn
+    export LIBRESOC_TRACE=1
+
 Now change back to the base `~/opt` directory and clone the `mesa` git repo from the `mesa` gitlab instance. Change to the `mesa` directory. Create a build directory and cd into it.
 
     cd ~/opt
-    git clone https://gitlab.freedesktop.org/mesa/mesa.git
+    git clone https://gitlab.freedesktop.org/vivekvpandya/mesa.git
     cd mesa
     mkdir build && cd build
 
 In order to configure `mesa` for building and installation run the following command. Again, it is *very* important to specify `prefix=/home/$USER/opt/lsoc_mesa` because as mentioned above we need these files for development purposes, but we do not want to corrupt or interfere with our *system* `mesa` libraries.
 
-    meson -Dbuildtype=debug -Dprefix=/home/$USER/opt/lsoc_mesa                
+    meson -Dbuildtype=debug -Dprefix=/home/$USER/opt/lsoc_mesa \
+     -Dvulkan-drivers=libre-soc                
 
 After configuration has completed, run ninja to build and install the `mesa` libraries.
 
     ninja install
 
 # From here on is solely Vivek's instructions
-
-I also have script to set few environment variables like
-
-    export VK_ICD_FILENAMES=/home/vivek/install/share/vulkan/icd.d/libresoc_icd.x86_64.json
-    export VK_LOADER_DEBUG=warn
-    export LIBRESOC_TRACE=1
 
 To test the code I am sing simple tests built by
     https://github.com/GameTechDev/IntroductionToVulkan
