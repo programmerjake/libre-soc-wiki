@@ -74,8 +74,7 @@ In order for meson to be able to find the up-to-date `drm` files we have just bu
 
 These following `vulkan`-specific environment variables are necessary to build our branch of mesa successfully:
 
-    export VK_ICD_FILENAMES=/home/$USER/opt/lsoc_mesa/share/vulkan/icd.\
-     /libresoc_icd.x86_64.json
+    export VK_ICD_FILENAMES=/home/$USER/opt/lsoc_mesa/share/vulkan/icd./libresoc_icd.x86_64.json
     export VK_LOADER_DEBUG=warn
     export LIBRESOC_TRACE=1
 
@@ -113,7 +112,7 @@ previously it was on master so it will cause me problems working on master
 branch.
 
 Also note slight change in meson configure command
-meson -Dbuildtype=debug -Dprefix=/home/vivek/install
+meson -Dbuildtype=debug -Dprefix=/home/vivek/install \
 -Dvulkan-drivers=libre-soc ..
 
 instead of libresoc it is libre-soc for vulkan-drivers option.
