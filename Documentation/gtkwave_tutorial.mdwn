@@ -123,6 +123,32 @@ then (notice how we add ``style``):
 If you now run ``gtkwave style1.gtkw``, you will see that ``op__sdir``
 still has the new color.
 
+Let's add more color:
+
+    traces = [
+        'clk',
+        # prev port
+        ('op__sdir', 'in'),
+        ('p_data_i[7:0]', 'in'),
+        ('p_shift_i[7:0]', 'in'),
+        ('p_valid_i', 'in'),
+        ('p_ready_o', 'out'),
+        # internal signals
+        'fsm_state',
+        'count[3:0]',
+        'shift_reg[7:0]',
+        # next port
+        ('n_data_o[7:0]', 'out'),
+        ('n_valid_o', 'out'),
+        ('n_ready_i', 'in'),
+    ]
+
+Then
+
+    write_gtkw("style2.gtkw", "test_shifter.vcd", traces, style, module='top.shf')
+
+If you now run ``gtkwave style2.gtkw``, you will see that input, output and internal signals have different color.
+
 # New signals at simulation time
 
 At simulation time, you can declare a new signal, and use it inside
