@@ -21,6 +21,8 @@
     \vspace{24pt}
     \Large{[proposed for] OpenPOWER Summit 2020}\\
     \vspace{16pt}
+    \large{Sponsored by NLnet's PET Programme}\\
+    \vspace{6pt}
     \large{\today}
   \end{center}
 }
@@ -75,6 +77,23 @@
   \end{itemize}
 }
 
+\frame{\frametitle{What goes into a typical SoC?}
+\vspace{9pt}
+ \begin{itemize}
+   \item 15 to 20mm BGA package: 2.5 to 5 watt power consumption\\
+   		heat sink normally not required (simplifies overall design)
+   		\vspace{10pt}
+   \item Fully-integrated peripherals (not Northbridge/Southbridge)\\
+         USB, HDMI, RGB/TTL, SD/MMC, I2C, UART, SPI, GPIO etc. etc. 
+         \vspace{10pt}
+   \item Built-in GPU (shared memory bus, 3rd party licensed) \vspace{10pt}
+   \item Build-in VPU (likewise)\vspace{10pt}
+   \item Target price between \$2.50 and \$30 depending on market\\
+         Radically different from IBM POWER9 Core (200 Watt)
+         \vspace{10pt}
+  \end{itemize}
+}
+
 
 
 \frame{\frametitle{Simple SBC-style SoC}
@@ -85,6 +104,56 @@
 
 }
 
+
+\frame{\frametitle{Where to start? (roadmap)}
+
+ \begin{itemize}
+   \item First thing: get a basic core working on an FPGA\\
+         (use Microwatt as a reference)
+   \item Next: create a low-cost test ASIC (180nm).\\
+   		 (first OpenPOWER ASIC since IBM's POWER9, 10 years ago)
+   \item (in parallel): Develop Vector ISA with 3D and Video\\
+   		 extensions, under watchful eye of OpenPOWER Foundation
+   \item Implement Vector ISA in simulator, then HDL, then FPGA\\
+         and finally (only when ratified by OPF) into silicon
+   \item Sell chips, make \$\$\$.
+  \end{itemize}
+}
+
+\frame{\frametitle{What's different about Libre-SOC?}
+
+ \begin{itemize}
+   \item Hybrid - integrated.  The CPU \textit{is} the GPU.\\
+         The GPU \textit{is} the CPU.  The VPU \textit{is} the CPU.\\
+         \textit{There is No Separate VPU/GPU Pipeline}
+   		  \vspace{9pt}
+   \item written in nmigen (a python-based HDL).  Not VHDL\\
+   		  not Verilog (definitely not Chisel3/Scala)\\
+   		  This is an extremely important strategic decision.
+   		  \vspace{9pt}
+   \item Simple-V Vector Extension.  See "SIMD Considered harmful".\\
+   		SV effectively a "hardware for-loop" on standard scalar ISA\\
+   		(conceptually similar to Zero-Overhead Loops in DSPs)
+   		  \vspace{9pt}
+  \end{itemize}
+}
+
+\frame{\frametitle{Hybrid Architecture: Augmented 6600}
+
+ \begin{itemize}
+   \item CDC 6600 is a design from 1965.  The \textit{augmentations} are not.\\
+   		 Help from Mitch Alsup includes "precise exceptions", \\
+   		 multi-issue and more. Academic literature on 6600 utterly misleading.
+   		6600 Scoreboards completely underestimated. 
+   \item Front-end Vector ISA, back-end "Predicated (masked) SIMD"\\
+         nmigen (python OO) strategically critical to achieving this.
+   \item Out-of-order combined with Simple-V allows scalar operations\\
+         at the developer end to be turned into SIMD at the back-end\\
+         \textit{without the developer needing to do SIMD}
+   \item IEEE754 sin / cos / atan2, Texturisation opcodes, YUV2RGB\\
+   		 all automatically vectorised.
+  \end{itemize}
+}
 
 
 \frame{\frametitle{Summary}
