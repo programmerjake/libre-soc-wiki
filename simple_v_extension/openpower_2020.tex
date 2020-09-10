@@ -222,11 +222,67 @@
 
 }
 
+\frame{\frametitle{Why another Vector ISA? (or: not-exactly another)}
+
+ \begin{itemize}
+   \item Simple-V is a 'register tag' system.  \textit{There are no opcodes}\\
+   		 SV 'tags' scalar operations (scalar regfiles) as 'vectorised'
+   \item (PowerISA SIMD is around 700 opcodes, making it unlikely to be
+    	 able to fit a PowerISA decoder in only one clock cycle)
+   \item Effectively a 'hardware sub-counter for-loop': pauses the PC\\
+         then rolls incrementally through the operand register numbers\\
+         issuing \textit{multiple} scalar instructions into the pipelines\\
+         (hence the reason for a multi-issue OoO microarchitecture)
+   \item Current \textit{and future} PowerISA scalar opcodes inherently
+   	 	 \textit{and automatically} become 'vectorised' by SV without
+   	 	 needing an explicit new Vector opcode.
+   \item Predication and element width polymorphism are also 'tags'.
+         elwidth polymorphism allows for FP16 / 80 / 128 to be added to
+         the ISA \textit{without modifying the ISA}
+   
+  \end{itemize}
+}
+
+
+\begin{frame}[fragile]
+\frametitle{Simple-V ADD in a nutshell}
+
+\begin{semiverbatim}
+function op\_add(rd, rs1, rs2, predr) # add not VADD!
+  int i, id=0, irs1=0, irs2=0;
+  for (i = 0; i < VL; i++)
+    if (ireg[predr] & 1<<i) # predication uses intregs
+       ireg[rd+id] <= ireg[rs1+irs1] + ireg[rs2+irs2];
+    if (reg\_is\_vectorised[rd] )  \{ id += 1; \}
+    if (reg\_is\_vectorised[rs1])  \{ irs1 += 1; \}
+    if (reg\_is\_vectorised[rs2])  \{ irs2 += 1; \}
+\end{semiverbatim}
+
+  \begin{itemize}
+   \item Above is oversimplified: Reg. indirection left out (for clarity).
+   \item SIMD slightly more complex (case above is elwidth = default)
+   \item Scalar-scalar and scalar-vector and vector-vector now all in one
+   \item OoO may choose to push ADDs into instr. queue (v. busy!)
+  \end{itemize}
+\end{frame}
+
+
 \frame{\frametitle{Summary}
 
  \begin{itemize}
-   \item Actually about parallelism, not Vectors (or SIMD) per se\\
-         and NOT about adding new ALU/logic/functionality.
+   \item Goal is to create a mass-volume low-power embedded SoC suitable
+         for use in netbooks, chromebooks, tablets, smartphones, IoT SBCs.
+   \item No DRM. 'Trustable' (by the users, not by Media Moguls) design
+         ethos as a \textit{business} objective: requires full transparency
+         as well as Formal Correctness Proofs
+   \item Collaboration with OpenPOWER Foundation and Members absolutely
+         essential. No short-cuts.  Standards to be developed and ratified
+         so that everyone benefits.
+   \item Working on the back of huge stability of POWER ecosystem
+   \item Combination of which is that Board Support Package is 100\%
+         upstream, app and product development by customer is hugely
+         simplified and much more attractive
+         
   \end{itemize}
 }
 
