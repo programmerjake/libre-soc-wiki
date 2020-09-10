@@ -81,7 +81,7 @@ These following `vulkan`-specific environment variables are necessary to build o
 Now change back to the base `~/opt` directory and clone the `mesa` git repo from the `mesa` gitlab instance. Change to the `mesa` directory. Create a build directory and cd into it.
 
     cd ~/opt
-    git clone https://gitlab.freedesktop.org/vivekvpandya/mesa.git
+    git clone https://git.libre-soc.org/git/mesa.git
     git pull --rebase origin libresoc_dev
     git checkout -b libresoc_dev
     cd mesa
@@ -99,6 +99,7 @@ After configuration has completed, run ninja to build and install the `mesa` lib
 # From here on is solely Vivek's instructions
 
 To test the code I am sing simple tests built by
+
     https://github.com/GameTechDev/IntroductionToVulkan
 
 I am also using debug build for vulkan loader if any one interested in that
@@ -110,12 +111,6 @@ I have pushed code to the new branch
 https://gitlab.freedesktop.org/vivekvpandya/mesa/-/tree/libresoc_dev
 previously it was on master so it will cause me problems working on master
 branch.
-
-Also note slight change in meson configure command
-meson -Dbuildtype=debug -Dprefix=/home/vivek/install \
--Dvulkan-drivers=libre-soc ..
-
-instead of libresoc it is libre-soc for vulkan-drivers option.
 
 # Running vulkan intro tutorial
 
