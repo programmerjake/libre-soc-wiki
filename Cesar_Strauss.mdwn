@@ -10,13 +10,13 @@ Contributor
 
 1. ALU CompUnit needs to recognise that RA (src1) can be zero  
 	<https://bugs.libre-soc.org/show_bug.cgi?id=336>  
-	Status: DONE
+	Status: DONE  
 	Unit test Status: in progress
 
 
 2. Something about the above (5), being optional.  
 	<https://bugs.libre-soc.org/show_bug.cgi?id=336#c5>  
-	Status: DONE
+	Status: DONE  
 	Unit test Status: in progress
 
 3. CompALUMulti parallel functions unit test  
@@ -25,30 +25,41 @@ Contributor
 
 4. Code-morph LDSTCompUnit to use RecordObject structure, like CompUnitALU  
 	<https://bugs.libre-soc.org/show_bug.cgi?id=318#c18>  
-	Status: Need a review of Luke's implementation, compared to mine.
+	Status: Need a review of Luke's implementation, compared to mine.  
 	Priority: Low
 
 5. Test dual ports (two L0CacheBuffer with two ports, 4-4 as well) which
 write to the same memory  
 	<https://bugs.libre-soc.org/show_bug.cgi?id=318#c11>  
-	Status: not started
+	Status: not started  
 	Priority: High
 
 6. Luke tried two LDs in the score6600 code - they failed.  
 	<https://bugs.libre-soc.org/show_bug.cgi?id=318#c17>  
-	Status: not started, need to check the [prototype] L0CacheBuffer
+	Status: not started, need to check the [prototype] L0CacheBuffer  
 	Priority: High
 
 7. Fix a bug in the LDSTCompUnit  
 	<https://bugs.libre-soc.org/show_bug.cgi?id=318>  
 	Status: Luke thinks he fixed it, but needs a review and improving the
 unit tests.   
-	See: <https://bugs.libre-soc.org/show_bug.cgi?id=318#c7>
+	See: <https://bugs.libre-soc.org/show_bug.cgi?id=318#c7>  
 	Priority: Medium
 
 8. LDSTCompUnit parallel functions unit test  
 	<https://bugs.libre-soc.org/show_bug.cgi?id=350>  
 	Priority: Medium-ish
+
+9. FSM-based ALU example needed (compliant with ALU CompUnit)  
+	<https://bugs.libre-soc.org/show_bug.cgi?id=417>  
+	Status: DONE  
+	Investigating one last optimization opportunity.  
+	Priority: Low
+	
+10. Find root cause of cxxsim hang  
+	<https://bugs.libre-soc.org/show_bug.cgi?id=475#c2>  
+	Status: ongoing  
+	Priority: High
 
 ## Completed but not yet submitted:
 
