@@ -444,8 +444,8 @@ Pseudo-code:
         overflow <- 1
     else
         result <- DIVS(dividend, divisor)
-        if (result[32:63] = 0) then
-            RT[32:63] <- result[0:31]
+        if (result[0:31] = 0) then
+            RT[32:63] <- result[32:63]
             RT[0:31] <- undefined[0:31]
             overflow <- 0
         else
@@ -476,7 +476,7 @@ Pseudo-code:
     else
         result <- dividend /  divisor
         if (RA) < (RB) then
-            RT[32:63] <- result[0:31]
+            RT[32:63] <- result[32:63]
             RT[0:31] <- undefined[0:31]
             overflow <- 0
         else
@@ -719,8 +719,8 @@ Pseudo-code:
         overflow <- 1
     else
         result <- DIVS(dividend, divisor)
-        if result[64:127] = 0x0000_0000_0000_0000 then
-            RT <- result[63:127]
+        if result[0:64] = 0x0000_0000_0000_0000 then
+            RT <- result[0:63]
             overflow <- 0
         else
             overflow <- 1
@@ -750,7 +750,7 @@ Pseudo-code:
     else
         result <- dividend /  divisor
         if (RA) < (RB) then
-            RT <- result[63:127]
+            RT <- result[0:63]
             overflow <- 0
         else
             overflow <- 1
