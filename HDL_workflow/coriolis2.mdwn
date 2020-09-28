@@ -297,6 +297,7 @@ alliace installed above by doing the following
     $ cd ~/src
     $ git clone https://git.libre-soc.org/git/soclayout.git
     $ cd soclayout/
+    $ git submodule update --init --recursive
     $ find . -type f -exec sed -i 's/'lkcl'/'"$USER"'/g' {} \;
     $ ./mksym.sh
     $ cd experiments9
@@ -310,6 +311,7 @@ alliace installed above by doing the following
     yosys> clean
     yosys> write_blif test_issuer.blif
     yosys> exit
+    $ make pinmux
     $ make layout (will take between 20min and 2 hours depending on your hardware)
     $ make view
 
