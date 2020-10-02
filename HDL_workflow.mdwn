@@ -429,6 +429,16 @@ Note: an ongoing bug in maturin interferes with successful installation.  This c
 
 See [[HDL_workflow/coriolis2]] page, for those people doing layout work.
 
+## Chips4Makers JTAG
+
+As this is an actual ASIC, we do not rely on an FPGA's JTAG TAP interface, instead require a full complete independent implementation of JTAG. Staf Verhaegen has one, with a full test suite, and it is superb and well-written.
+
+    git clone https://gitlab.com/Chips4Makers/c4m-jtag.git
+
+Included is an IDCODE tap point, Wishbone Master (for direct memory read and write, fully independent of the core), IOPad redirection and testing, and general purpose shift register capability for any custom use.
+
+We added a DMI to JTAG bridge in LibreSOC which is directly connected to the core, to access registers and to be able to start and stop the core and change the PC.  In combination with the JTAG Wishbone interface the test ASIC can have a bootloader uploaded directly into onboard SRAM and execution begun.
+
 # Registering for git repository access
 
 After going through the onboarding process and having agreed to take
