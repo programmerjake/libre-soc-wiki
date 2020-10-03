@@ -439,12 +439,13 @@ XO-Form
 Pseudo-code:
 
     dividend[0:63] <- (RA)[32:63] || [0]*32
-    divisor[0:63] <- [0]*32 || (RB)[32:63]
+    divisor[0:63] <- EXTS64((RB)[32:63])
     if (divisor = 0x0000_0000_0000_0000) then
         overflow <- 1
     else
         result <- DIVS(dividend, divisor)
-        if (result[0:31] = 0) then
+        result32[0:63] <- EXTS64(result[32:63])
+        if (result32 = result) then
             RT[32:63] <- result[32:63]
             RT[0:31] <- undefined[0:31]
             overflow <- 0
