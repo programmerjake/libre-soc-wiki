@@ -719,7 +719,7 @@ Pseudo-code:
         overflow <- 1
     else
         result <- DIVS(dividend, divisor)
-        if result[0:64] = 0x0000_0000_0000_0000 then
+        if result[0:63] = 0x0000_0000_0000_0000 then
             RT <- result[0:63]
             overflow <- 0
         else
