@@ -499,15 +499,14 @@ X-Form
 Pseudo-code:
 
     dividend[0:31] <- (RA)[32:63]
-    divisor [0:31] <- (RB)[32:63]
+    divisor[0:31] <- (RB)[32:63]
     if (((dividend = 0x8000_0000) &
          (divisor = 0xffff_ffff)) |
          (divisor = 0x0000_0000)) then
         RT[0:63] <- undefined[0:63]
         overflow <- 1
     else
-        RT[32:63] <- MODS(dividend, divisor)
-        RT[0:31] <- undefined[0:31]
+        RT[0:63] <- EXTS64(MODS(dividend, divisor))
         overflow <- 0
 
 Special Registers Altered:
