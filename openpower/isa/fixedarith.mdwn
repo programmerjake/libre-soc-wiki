@@ -475,8 +475,8 @@ Pseudo-code:
     if (divisor = 0x0000_0000_0000_0000) then
         overflow <- 1
     else
-        result <- dividend /  divisor
-        if (RA) < (RB) then
+        result <- dividend / divisor
+        if RA[32:63] <u RB[32:63] then
             RT[32:63] <- result[32:63]
             RT[0:31] <- undefined[0:31]
             overflow <- 0
