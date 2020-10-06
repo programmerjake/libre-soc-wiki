@@ -527,7 +527,7 @@ Pseudo-code:
         RT[0:63] <- undefined[0:63]
         overflow <- 1
     else
-        RT[32:63] <- MODS(dividend, divisor)
+        RT[32:63] <- dividend % divisor
         RT[0:31] <- undefined[0:31]
         overflow <- 0
 
