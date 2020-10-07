@@ -75,7 +75,7 @@ def process_csvs():
     csvs = {}
     bykey = {}
     primarykeys = set()
-    dictkeys = {}
+    dictkeys = OrderedDict()
 
     pth = find_wiki_file("*.csv")
     for fname in glob(pth):
@@ -98,7 +98,8 @@ def process_csvs():
             primarykeys.add(key)
             if key not in bykey:
                 bykey[key] = []
-            bykey[key].append((csvname, row['opcode'], row['comment']))
+            bykey[key].append((csvname, row['opcode'], row['comment'],
+                               row['form'].upper() + '-Form'))
 
     print ("# keys")
     print ()

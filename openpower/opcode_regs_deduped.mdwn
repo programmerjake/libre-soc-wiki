@@ -2,400 +2,400 @@
 
 [[!table  data="""
 |in1 | in2 | in3 | out | CR in | CR out | ldst len | rc | lk|
-|R | R | 0 | 0 | 0 | 0 | 0 | 0 | 0|
-|R | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0|
-|R | R | 0 | R | 0 | 0 | 0 | 0 | 0|
-|R | R | 0 | 0 | 0 | 1 | 0 | 0 | 0|
-|R | R | R | 0 | 0 | 1 | 1 | R | 0|
-|R | 0 | 0 | R | 0 | 0 | 1 | 0 | 0|
-|R | 0 | R | R | 0 | 0 | 0 | R | 0|
-|R | 0 | 0 | R | 0 | 0 | 0 | 0 | 0|
-|R | 0 | 0 | R | 0 | 1 | 0 | 1 | 0|
-|0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 1|
-|0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0|
-|0 | 0 | 0 | 0 | 0 | 0 | 0 | R | 0|
-|0 | 0 | 0 | 0 | 1 | 1 | 1 | R | |
-|0 | R | R | R | 0 | 1 | 0 | R | 0|
-|0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1|
-|R | R | 0 | R | 0 | 0 | 1 | 0 | 0|
-|0 | 0 | 0 | R | 1 | 0 | 0 | 0 | 0|
-|R | 0 | 0 | R | 0 | 0 | 0 | R | 0|
-|0 | R | 0 | 0 | 0 | 0 | 0 | 0 | 0|
-|0 | 0 | 0 | R | 0 | 0 | 0 | 0 | 0|
-|R | 0 | 0 | R | 0 | 1 | 0 | 0 | 0|
+|R | R | 0 | R | 0 | 1 | 0 | R | 0|
 |0 | 0 | R | R | 0 | 1 | 0 | R | 0|
-|R | 0 | 0 | R | 0 | 1 | 1 | R | 0|
-|0 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0|
-|R | R | 0 | R | 1 | 0 | 0 | 0 | 0|
+|R | R | 0 | 0 | 0 | 1 | 0 | 0 | 0|
+|0 | 0 | 0 | 0 | 1 | 1 | 1 | R | |
+|R | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0|
+|0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0|
 |R | R | R | 0 | 0 | 0 | 1 | 0 | 0|
-|R | 0 | 0 | R | 0 | 1 | 0 | R | 0|
+|R | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0|
 |R | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0|
 |R | 0 | R | 0 | 0 | 0 | 1 | 0 | 0|
-|0 | R | R | R | 0 | 0 | 0 | R | 0|
-|R | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0|
-|R | R | 0 | R | 0 | 1 | 0 | R | 0|
+|R | R | 0 | R | 0 | 0 | 1 | 0 | 0|
+|R | 0 | 0 | R | 0 | 0 | 0 | 0 | 0|
+|R | 0 | 0 | R | 0 | 1 | 0 | 1 | 0|
 |0 | 0 | R | R | 0 | 0 | 0 | R | 0|
+|R | 0 | 0 | R | 0 | 1 | 0 | 0 | 0|
+|R | 0 | 0 | R | 0 | 0 | 0 | R | 0|
+|0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 1|
+|R | R | R | 0 | 0 | 1 | 1 | R | 0|
+|R | R | 0 | R | 1 | 0 | 0 | 0 | 0|
+|0 | R | R | R | 0 | 1 | 0 | R | 0|
+|R | 0 | R | R | 0 | 0 | 0 | R | 0|
+|0 | 0 | 0 | R | 0 | 0 | 0 | 0 | 0|
+|0 | R | R | R | 0 | 0 | 0 | R | 0|
+|0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1|
+|R | R | 0 | 0 | 0 | 0 | 0 | 0 | 0|
+|R | R | 0 | R | 0 | 0 | 0 | 0 | 0|
+|R | 0 | 0 | R | 0 | 0 | 1 | 0 | 0|
 |R | 0 | R | R | 0 | 1 | 0 | R | 0|
+|0 | 0 | 0 | 0 | 0 | 0 | 0 | R | 0|
+|0 | 0 | 0 | R | 1 | 0 | 0 | 0 | 0|
+|0 | R | 0 | 0 | 0 | 0 | 0 | 0 | 0|
+|R | 0 | 0 | R | 0 | 1 | 1 | R | 0|
+|R | 0 | 0 | R | 0 | 1 | 0 | R | 0|
+|0 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0|
 """]]
-
-##  in1: R in2: R in3: 0 out: 0 CR in: 0 CR out: 0 ldst len: 0 rc: 0 lk: 0
-
- *  ('minor_31.csv', '0b1111110110', 'dcbz')
- *  ('minor_31.csv', '0b0001000100', 'td')
- *  ('minor_31.csv', '0b0000000100', 'tw')
-
-##  in1: R in2: 0 in3: 0 out: 0 CR in: 0 CR out: 0 ldst len: 0 rc: 0 lk: 0
-
- *  ('major.csv', '2', 'tdi')
- *  ('major.csv', '3', 'twi')
- *  ('minor_31.csv', '0b0010110010', 'mtmsrd')
- *  ('minor_31.csv', '0b0010010010', 'mtmsr')
- *  ('minor_31.csv', '0b0111010011', 'mtspr')
-
-##  in1: R in2: R in3: 0 out: R CR in: 0 CR out: 0 ldst len: 0 rc: 0 lk: 0
-
- *  ('minor_31.csv', '0b0011111100', 'bpermd')
- *  ('minor_31.csv', '0b0111111100', 'cmpb')
- *  ('minor_31.csv', '0b0100001001', 'modud')
- *  ('minor_31.csv', '0b0100001011', 'moduw')
- *  ('minor_31.csv', '0b1100001001', 'modsd')
- *  ('minor_31.csv', '0b1100001011', 'modsw')
-
-##  in1: R in2: R in3: 0 out: 0 CR in: 0 CR out: 1 ldst len: 0 rc: 0 lk: 0
-
- *  ('minor_31.csv', '0b0000000000', 'cmp')
- *  ('minor_31.csv', '0b0011100000', 'cmpeqb')
- *  ('minor_31.csv', '0b0000100000', 'cmpl')
-
-##  in1: R in2: R in3: R out: 0 CR in: 0 CR out: 1 ldst len: 1 rc: R lk: 0
-
- *  ('minor_31.csv', '0b1010110110', 'stbcx')
- *  ('minor_31.csv', '0b0011110111', 'stbux')
- *  ('minor_31.csv', '0b0011010111', 'stbx')
-
-##  in1: R in2: 0 in3: 0 out: R CR in: 0 CR out: 0 ldst len: 1 rc: 0 lk: 0
-
- *  ('minor_58.csv', '0', 'ld')
- *  ('minor_58.csv', '1', 'ldu')
- *  ('minor_58.csv', '2', 'lwa')
- *  ('major.csv', '34', 'lbz')
- *  ('major.csv', '35', 'lbzu')
- *  ('major.csv', '42', 'lha')
- *  ('major.csv', '43', 'lhau')
- *  ('major.csv', '40', 'lhz')
- *  ('major.csv', '41', 'lhzu')
- *  ('major.csv', '32', 'lwz')
- *  ('major.csv', '33', 'lwzu')
- *  ('minor_31.csv', '0b0001111010', 'popcntb')
- *  ('minor_31.csv', '0b0111111010', 'popcntd')
- *  ('minor_31.csv', '0b0101111010', 'popcntw')
- *  ('minor_31.csv', '0b0010111010', 'prtyd')
- *  ('minor_31.csv', '0b0010011010', 'prtyw')
-
-##  in1: R in2: 0 in3: R out: R CR in: 0 CR out: 0 ldst len: 0 rc: R lk: 0
-
- *  ('major.csv', '20', 'rlwimi')
-
-##  in1: R in2: 0 in3: 0 out: R CR in: 0 CR out: 0 ldst len: 0 rc: 0 lk: 0
-
- *  ('major.csv', '12', 'addic')
- *  ('major.csv', '14', 'addi')
- *  ('major.csv', '15', 'addis')
- *  ('major.csv', '24', 'ori')
- *  ('major.csv', '25', 'oris')
- *  ('major.csv', '8', 'subfic')
- *  ('major.csv', '26', 'xori')
- *  ('major.csv', '27', 'xoris')
-
-##  in1: R in2: 0 in3: 0 out: R CR in: 0 CR out: 1 ldst len: 0 rc: 1 lk: 0
-
- *  ('major.csv', '13', 'addic.')
- *  ('major.csv', '28', 'andi.')
- *  ('major.csv', '29', 'andis.')
-
-##  in1: 0 in2: 0 in3: 0 out: 0 CR in: 1 CR out: 0 ldst len: 0 rc: 0 lk: 1
-
- *  ('major.csv', '16', 'bc')
- *  ('minor_19.csv', '0b1000010000', 'bcctr')
- *  ('minor_19.csv', '0b0000010000', 'bclr')
- *  ('minor_19.csv', '0b1000110000', 'bctar')
-
-##  in1: 0 in2: 0 in3: 0 out: 0 CR in: 0 CR out: 0 ldst len: 0 rc: 0 lk: 0
-
- *  ('major.csv', '17', 'sc')
- *  ('extra.csv', '01100000000000000000000000000000', 'nop')
- *  ('minor_19.csv', '0b0010010110', 'isync')
- *  ('minor_19.csv', '0b0000010010', 'rfid')
- *  ('minor_19.csv', '0b0100010010', 'hrfid')
- *  ('minor_31.csv', '0b0001010110', 'dcbf')
- *  ('minor_31.csv', '0b0000110110', 'dcbst')
- *  ('minor_31.csv', '0b0100010110', 'dcbt')
- *  ('minor_31.csv', '0b0011110110', 'dcbtst')
- *  ('minor_31.csv', '0b1111010110', 'icbi')
- *  ('minor_31.csv', '0b0000010110', 'icbt')
- *  ('minor_31.csv', '0b0111110010', 'slbia')
- *  ('minor_31.csv', '0b1001010110', 'sync')
-
-##  in1: 0 in2: 0 in3: 0 out: 0 CR in: 0 CR out: 0 ldst len: 0 rc: R lk: 0
-
- *  ('minor_19_00000.csv', '0b00010', 'add pcis not implemented yet')
- *  ('extra.csv', '000000---------------0100000000-', 'attn')
-
-##  in1: 0 in2: 0 in3: 0 out: 0 CR in: 1 CR out: 1 ldst len: 1 rc: R lk: 
-
- *  ('minor_31.csv', '0b0011000000', 'cmprb')
- *  ('minor_31.csv', '0b1011110011', 'darn')
- *  ('minor_31.csv', '0b1000000000', 'mcrxr')
- *  ('minor_31.csv', '0b1001000000', 'mcrxrx')
-
-##  in1: 0 in2: R in3: R out: R CR in: 0 CR out: 1 ldst len: 0 rc: R lk: 0
-
- *  ('minor_30.csv', '0b1000', 'rldcl')
- *  ('minor_30.csv', '0b1001', 'rldcr')
- *  ('minor_31.csv', '0b0000011011', 'sld')
- *  ('minor_31.csv', '0b0000011000', 'slw')
- *  ('minor_31.csv', '0b1100011010', 'srad')
- *  ('minor_31.csv', '0b1100011000', 'sraw')
- *  ('minor_31.csv', '0b1000011011', 'srd')
- *  ('minor_31.csv', '0b1000011000', 'srw')
-
-##  in1: 0 in2: 0 in3: 0 out: 0 CR in: 0 CR out: 0 ldst len: 0 rc: 0 lk: 1
-
- *  ('major.csv', '18', 'b')
-
-##  in1: R in2: R in3: 0 out: R CR in: 0 CR out: 0 ldst len: 1 rc: 0 lk: 0
-
- *  ('minor_31.csv', '0b0000110100', 'lbarx')
- *  ('minor_31.csv', '0b1101010101', 'lbzcix')
- *  ('minor_31.csv', '0b0001110111', 'lbzux')
- *  ('minor_31.csv', '0b0001010111', 'lbzx')
- *  ('minor_31.csv', '0b0001010100', 'ldarx')
- *  ('minor_31.csv', '0b1000010100', 'ldbrx')
- *  ('minor_31.csv', '0b1101110101', 'ldcix')
- *  ('minor_31.csv', '0b0000110101', 'ldux')
- *  ('minor_31.csv', '0b0000010101', 'ldx')
- *  ('minor_31.csv', '0b0001110100', 'lharx')
- *  ('minor_31.csv', '0b0101110111', 'lhaux')
- *  ('minor_31.csv', '0b0101010111', 'lhax')
- *  ('minor_31.csv', '0b1100010110', 'lhbrx')
- *  ('minor_31.csv', '0b1100110101', 'lhzcix')
- *  ('minor_31.csv', '0b0100110111', 'lhzux')
- *  ('minor_31.csv', '0b0100010111', 'lhzx')
- *  ('minor_31.csv', '0b0000010100', 'lwarx')
- *  ('minor_31.csv', '0b0101110101', 'lwaux')
- *  ('minor_31.csv', '0b0101010101', 'lwax')
- *  ('minor_31.csv', '0b1000010110', 'lwbrx')
- *  ('minor_31.csv', '0b1100010101', 'lwzcix')
- *  ('minor_31.csv', '0b0000110111', 'lwzux')
- *  ('minor_31.csv', '0b0000010111', 'lwzx')
-
-##  in1: 0 in2: 0 in3: 0 out: R CR in: 1 CR out: 0 ldst len: 0 rc: 0 lk: 0
-
- *  ('minor_31.csv', '0b0000010011', 'mfcr/mfocrf')
- *  ('minor_31.csv', '0b0010000000', 'setb')
-
-##  in1: R in2: 0 in3: 0 out: R CR in: 0 CR out: 0 ldst len: 0 rc: R lk: 0
-
- *  ('minor_31.csv', '0b0001101000', 'neg')
- *  ('minor_31.csv', '0b1001101000', 'nego')
-
-##  in1: 0 in2: R in3: 0 out: 0 CR in: 0 CR out: 0 ldst len: 0 rc: 0 lk: 0
-
- *  ('minor_31.csv', '0b0100110010', 'tlbie')
- *  ('minor_31.csv', '0b0100010010', 'tlbiel')
-
-##  in1: 0 in2: 0 in3: 0 out: R CR in: 0 CR out: 0 ldst len: 0 rc: 0 lk: 0
-
- *  ('extra.csv', '000001---------------0000000011-', 'sim_cfg')
- *  ('minor_31.csv', '0b0001010011', 'mfmsr')
- *  ('minor_31.csv', '0b0101010011', 'mfspr')
-
-##  in1: R in2: 0 in3: 0 out: R CR in: 0 CR out: 1 ldst len: 0 rc: 0 lk: 0
-
- *  ('major.csv', '7', 'mulli')
-
-##  in1: 0 in2: 0 in3: R out: R CR in: 0 CR out: 1 ldst len: 0 rc: R lk: 0
-
- *  ('minor_30.csv', '0b0100', 'rldic')
- *  ('minor_30.csv', '0b0101', 'rldic')
- *  ('minor_30.csv', '0b0000', 'rldicl')
- *  ('minor_30.csv', '0b0001', 'rldicl')
- *  ('minor_30.csv', '0b0010', 'rldicr')
- *  ('minor_30.csv', '0b0011', 'rldicr')
- *  ('minor_31.csv', '0b1101111010', 'extswsli')
- *  ('minor_31.csv', '0b1101111011', 'extswsli')
- *  ('minor_31.csv', '0b1100111010', 'sradi')
- *  ('minor_31.csv', '0b1100111011', 'sradi')
- *  ('minor_31.csv', '0b1100111000', 'srawi')
-
-##  in1: R in2: 0 in3: 0 out: R CR in: 0 CR out: 1 ldst len: 1 rc: R lk: 0
-
- *  ('minor_31.csv', '0b1110111010', 'extsb')
- *  ('minor_31.csv', '0b1110011010', 'extsh')
- *  ('minor_31.csv', '0b1111011010', 'extsw')
-
-##  in1: 0 in2: 0 in3: 0 out: 0 CR in: 1 CR out: 1 ldst len: 0 rc: 0 lk: 0
-
- *  ('minor_19.csv', '0b0000000000', 'mcrf')
- *  ('minor_19.csv', '0b0100000001', 'crand')
- *  ('minor_19.csv', '0b0010000001', 'crandc')
- *  ('minor_19.csv', '0b0100100001', 'creqv')
- *  ('minor_19.csv', '0b0011100001', 'crnand')
- *  ('minor_19.csv', '0b0000100001', 'crnor')
- *  ('minor_19.csv', '0b0111000001', 'cror')
- *  ('minor_19.csv', '0b0110100001', 'crorc')
- *  ('minor_19.csv', '0b0011000001', 'crxor')
-
-##  in1: R in2: R in3: 0 out: R CR in: 1 CR out: 0 ldst len: 0 rc: 0 lk: 0
-
- *  ('minor_31.csv', '0b0000001111', 'isel')
- *  ('minor_31.csv', '0b0000101111', 'isel')
- *  ('minor_31.csv', '0b0001001111', 'isel')
- *  ('minor_31.csv', '0b0001101111', 'isel')
- *  ('minor_31.csv', '0b0010001111', 'isel')
- *  ('minor_31.csv', '0b0010101111', 'isel')
- *  ('minor_31.csv', '0b0011001111', 'isel')
- *  ('minor_31.csv', '0b0011101111', 'isel')
- *  ('minor_31.csv', '0b0100001111', 'isel')
- *  ('minor_31.csv', '0b0100101111', 'isel')
- *  ('minor_31.csv', '0b0101001111', 'isel')
- *  ('minor_31.csv', '0b0101101111', 'isel')
- *  ('minor_31.csv', '0b0110001111', 'isel')
- *  ('minor_31.csv', '0b0110101111', 'isel')
- *  ('minor_31.csv', '0b0111001111', 'isel')
- *  ('minor_31.csv', '0b0111101111', 'isel')
- *  ('minor_31.csv', '0b1000001111', 'isel')
- *  ('minor_31.csv', '0b1000101111', 'isel')
- *  ('minor_31.csv', '0b1001001111', 'isel')
- *  ('minor_31.csv', '0b1001101111', 'isel')
- *  ('minor_31.csv', '0b1010001111', 'isel')
- *  ('minor_31.csv', '0b1010101111', 'isel')
- *  ('minor_31.csv', '0b1011001111', 'isel')
- *  ('minor_31.csv', '0b1011101111', 'isel')
- *  ('minor_31.csv', '0b1100001111', 'isel')
- *  ('minor_31.csv', '0b1100101111', 'isel')
- *  ('minor_31.csv', '0b1101001111', 'isel')
- *  ('minor_31.csv', '0b1101101111', 'isel')
- *  ('minor_31.csv', '0b1110001111', 'isel')
- *  ('minor_31.csv', '0b1110101111', 'isel')
- *  ('minor_31.csv', '0b1111001111', 'isel')
- *  ('minor_31.csv', '0b1111101111', 'isel')
-
-##  in1: R in2: R in3: R out: 0 CR in: 0 CR out: 0 ldst len: 1 rc: 0 lk: 0
-
- *  ('minor_31.csv', '0b1111010101', 'stbcix')
- *  ('minor_31.csv', '0b1010010100', 'stdbrx')
- *  ('minor_31.csv', '0b1111110101', 'stdcix')
- *  ('minor_31.csv', '0b0011010110', 'stdcx')
- *  ('minor_31.csv', '0b0010110101', 'stdux')
- *  ('minor_31.csv', '0b0010010101', 'stdx')
- *  ('minor_31.csv', '0b1110010110', 'sthbrx')
- *  ('minor_31.csv', '0b1110110101', 'sthcix')
- *  ('minor_31.csv', '0b1011010110', 'sthcx')
- *  ('minor_31.csv', '0b0110110111', 'sthux')
- *  ('minor_31.csv', '0b0110010111', 'sthx')
- *  ('minor_31.csv', '0b1010010110', 'stwbrx')
- *  ('minor_31.csv', '0b1110010101', 'stwcix')
- *  ('minor_31.csv', '0b0010010110', 'stwcx')
- *  ('minor_31.csv', '0b0010110111', 'stwux')
- *  ('minor_31.csv', '0b0010010111', 'stwx')
-
-##  in1: R in2: 0 in3: 0 out: R CR in: 0 CR out: 1 ldst len: 0 rc: R lk: 0
-
- *  ('minor_31.csv', '0b0011101010', 'addme')
- *  ('minor_31.csv', '0b1011101010', 'addmeo')
- *  ('minor_31.csv', '0b0011001010', 'addze')
- *  ('minor_31.csv', '0b1011001010', 'addzeo')
- *  ('minor_31.csv', '0b0000111010', 'cntlzd')
- *  ('minor_31.csv', '0b0000011010', 'cntlzw')
- *  ('minor_31.csv', '0b1000111010', 'cnttzd')
- *  ('minor_31.csv', '0b1000011010', 'cnttzw')
- *  ('minor_31.csv', '0b0011101000', 'subfme')
- *  ('minor_31.csv', '0b1011101000', 'subfmeo')
- *  ('minor_31.csv', '0b0011001000', 'subfze')
- *  ('minor_31.csv', '0b1011001000', 'subfzeo')
-
-##  in1: R in2: 0 in3: 0 out: 0 CR in: 1 CR out: 1 ldst len: 0 rc: 0 lk: 0
-
- *  ('minor_31.csv', '0b0010010000', 'mtcrf/mtocrf')
-
-##  in1: R in2: 0 in3: R out: 0 CR in: 0 CR out: 0 ldst len: 1 rc: 0 lk: 0
-
- *  ('minor_62.csv', '0', 'std')
- *  ('minor_62.csv', '1', 'stdu')
- *  ('major.csv', '38', 'stb')
- *  ('major.csv', '39', 'stbu')
- *  ('major.csv', '44', 'sth')
- *  ('major.csv', '45', 'sthu')
- *  ('major.csv', '36', 'stw')
- *  ('major.csv', '37', 'stwu')
-
-##  in1: 0 in2: R in3: R out: R CR in: 0 CR out: 0 ldst len: 0 rc: R lk: 0
-
- *  ('major.csv', '23', 'rlwnm')
-
-##  in1: R in2: 0 in3: 0 out: 0 CR in: 0 CR out: 1 ldst len: 0 rc: 0 lk: 0
-
- *  ('major.csv', '11', 'cmpi')
- *  ('major.csv', '10', 'cmpli')
 
 ##  in1: R in2: R in3: 0 out: R CR in: 0 CR out: 1 ldst len: 0 rc: R lk: 0
 
- *  ('minor_31.csv', '0b0100001010', 'add')
- *  ('minor_31.csv', '0b1100001010', 'addo')
- *  ('minor_31.csv', '0b0000001010', 'addc')
- *  ('minor_31.csv', '0b1000001010', 'addco')
- *  ('minor_31.csv', '0b0010001010', 'adde')
- *  ('minor_31.csv', '0b1010001010', 'addeo')
- *  ('minor_31.csv', '0b0000011100', 'and')
- *  ('minor_31.csv', '0b0000111100', 'andc')
- *  ('minor_31.csv', '0b0110001001', 'divdeu')
- *  ('minor_31.csv', '0b1110001001', 'divdeuo')
- *  ('minor_31.csv', '0b0110001011', 'divweu')
- *  ('minor_31.csv', '0b1110001011', 'divweuo')
- *  ('minor_31.csv', '0b0110101001', 'divde')
- *  ('minor_31.csv', '0b1110101001', 'divdeo')
- *  ('minor_31.csv', '0b0110101011', 'divwe')
- *  ('minor_31.csv', '0b1110101011', 'divweo')
- *  ('minor_31.csv', '0b0111001001', 'divdu')
- *  ('minor_31.csv', '0b1111001001', 'divduo')
- *  ('minor_31.csv', '0b0111001011', 'divwu')
- *  ('minor_31.csv', '0b1111001011', 'divwuo')
- *  ('minor_31.csv', '0b0111101001', 'divd')
- *  ('minor_31.csv', '0b1111101001', 'divdo')
- *  ('minor_31.csv', '0b0111101011', 'divw')
- *  ('minor_31.csv', '0b1111101011', 'divwo')
- *  ('minor_31.csv', '0b0100011100', 'eqv')
- *  ('minor_31.csv', '0b0001001001', 'mulhd')
- *  ('minor_31.csv', '0b0000001001', 'mulhdu')
- *  ('minor_31.csv', '0b0001001011', 'mulhw')
- *  ('minor_31.csv', '0b0000001011', 'mulhwu')
- *  ('minor_31.csv', '0b1001001001', 'mulhd')
- *  ('minor_31.csv', '0b1000001001', 'mulhdu')
- *  ('minor_31.csv', '0b1001001011', 'mulhw')
- *  ('minor_31.csv', '0b1000001011', 'mulhwu')
- *  ('minor_31.csv', '0b0011101001', 'mulld')
- *  ('minor_31.csv', '0b1011101001', 'mulldo')
- *  ('minor_31.csv', '0b0011101011', 'mullw')
- *  ('minor_31.csv', '0b1011101011', 'mullwo')
- *  ('minor_31.csv', '0b0111011100', 'nand')
- *  ('minor_31.csv', '0b0001111100', 'nor')
- *  ('minor_31.csv', '0b0110111100', 'or')
- *  ('minor_31.csv', '0b0110011100', 'orc')
- *  ('minor_31.csv', '0b0000101000', 'subf')
- *  ('minor_31.csv', '0b1000101000', 'subfo')
- *  ('minor_31.csv', '0b0000001000', 'subfc')
- *  ('minor_31.csv', '0b1000001000', 'subfco')
- *  ('minor_31.csv', '0b0010001000', 'subfe')
- *  ('minor_31.csv', '0b1010001000', 'subfeo')
- *  ('minor_31.csv', '0b0100111100', 'xor')
+ *  ('minor_31.csv', '0b0100001010', 'add', 'XO-Form')
+ *  ('minor_31.csv', '0b1100001010', 'addo', 'XO-Form')
+ *  ('minor_31.csv', '0b0000001010', 'addc', 'XO-Form')
+ *  ('minor_31.csv', '0b1000001010', 'addco', 'XO-Form')
+ *  ('minor_31.csv', '0b0010001010', 'adde', 'XO-Form')
+ *  ('minor_31.csv', '0b1010001010', 'addeo', 'XO-Form')
+ *  ('minor_31.csv', '0b0000011100', 'and', 'X-Form')
+ *  ('minor_31.csv', '0b0000111100', 'andc', 'X-Form')
+ *  ('minor_31.csv', '0b0110001001', 'divdeu', 'XO-Form')
+ *  ('minor_31.csv', '0b1110001001', 'divdeuo', 'XO-Form')
+ *  ('minor_31.csv', '0b0110001011', 'divweu', 'XO-Form')
+ *  ('minor_31.csv', '0b1110001011', 'divweuo', 'XO-Form')
+ *  ('minor_31.csv', '0b0110101001', 'divde', 'XO-Form')
+ *  ('minor_31.csv', '0b1110101001', 'divdeo', 'XO-Form')
+ *  ('minor_31.csv', '0b0110101011', 'divwe', 'XO-Form')
+ *  ('minor_31.csv', '0b1110101011', 'divweo', 'XO-Form')
+ *  ('minor_31.csv', '0b0111001001', 'divdu', 'XO-Form')
+ *  ('minor_31.csv', '0b1111001001', 'divduo', 'XO-Form')
+ *  ('minor_31.csv', '0b0111001011', 'divwu', 'XO-Form')
+ *  ('minor_31.csv', '0b1111001011', 'divwuo', 'XO-Form')
+ *  ('minor_31.csv', '0b0111101001', 'divd', 'XO-Form')
+ *  ('minor_31.csv', '0b1111101001', 'divdo', 'XO-Form')
+ *  ('minor_31.csv', '0b0111101011', 'divw', 'XO-Form')
+ *  ('minor_31.csv', '0b1111101011', 'divwo', 'XO-Form')
+ *  ('minor_31.csv', '0b0100011100', 'eqv', 'X-Form')
+ *  ('minor_31.csv', '0b0001001001', 'mulhd', 'XO-Form')
+ *  ('minor_31.csv', '0b0000001001', 'mulhdu', 'XO-Form')
+ *  ('minor_31.csv', '0b0001001011', 'mulhw', 'XO-Form')
+ *  ('minor_31.csv', '0b0000001011', 'mulhwu', 'XO-Form')
+ *  ('minor_31.csv', '0b1001001001', 'mulhd', 'XO-Form')
+ *  ('minor_31.csv', '0b1000001001', 'mulhdu', 'XO-Form')
+ *  ('minor_31.csv', '0b1001001011', 'mulhw', 'XO-Form')
+ *  ('minor_31.csv', '0b1000001011', 'mulhwu', 'XO-Form')
+ *  ('minor_31.csv', '0b0011101001', 'mulld', 'XO-Form')
+ *  ('minor_31.csv', '0b1011101001', 'mulldo', 'XO-Form')
+ *  ('minor_31.csv', '0b0011101011', 'mullw', 'XO-Form')
+ *  ('minor_31.csv', '0b1011101011', 'mullwo', 'XO-Form')
+ *  ('minor_31.csv', '0b0111011100', 'nand', 'X-Form')
+ *  ('minor_31.csv', '0b0001111100', 'nor', 'X-Form')
+ *  ('minor_31.csv', '0b0110111100', 'or', 'X-Form')
+ *  ('minor_31.csv', '0b0110011100', 'orc', 'X-Form')
+ *  ('minor_31.csv', '0b0000101000', 'subf', 'XO-Form')
+ *  ('minor_31.csv', '0b1000101000', 'subfo', 'XO-Form')
+ *  ('minor_31.csv', '0b0000001000', 'subfc', 'XO-Form')
+ *  ('minor_31.csv', '0b1000001000', 'subfco', 'XO-Form')
+ *  ('minor_31.csv', '0b0010001000', 'subfe', 'XO-Form')
+ *  ('minor_31.csv', '0b1010001000', 'subfeo', 'XO-Form')
+ *  ('minor_31.csv', '0b0100111100', 'xor', 'X-Form')
+
+##  in1: 0 in2: 0 in3: R out: R CR in: 0 CR out: 1 ldst len: 0 rc: R lk: 0
+
+ *  ('minor_30.csv', '0b0100', 'rldic', 'MD-Form')
+ *  ('minor_30.csv', '0b0101', 'rldic', 'MD-Form')
+ *  ('minor_30.csv', '0b0000', 'rldicl', 'MDS-Form')
+ *  ('minor_30.csv', '0b0001', 'rldicl', 'MDS-Form')
+ *  ('minor_30.csv', '0b0010', 'rldicr', 'MD-Form')
+ *  ('minor_30.csv', '0b0011', 'rldicr', 'MD-Form')
+ *  ('minor_31.csv', '0b1101111010', 'extswsli', 'XS-Form')
+ *  ('minor_31.csv', '0b1101111011', 'extswsli', 'XS-Form')
+ *  ('minor_31.csv', '0b1100111010', 'sradi', 'XS-Form')
+ *  ('minor_31.csv', '0b1100111011', 'sradi', 'XS-Form')
+ *  ('minor_31.csv', '0b1100111000', 'srawi', 'X-Form')
+
+##  in1: R in2: R in3: 0 out: 0 CR in: 0 CR out: 1 ldst len: 0 rc: 0 lk: 0
+
+ *  ('minor_31.csv', '0b0000000000', 'cmp', 'X-Form')
+ *  ('minor_31.csv', '0b0011100000', 'cmpeqb', 'X-Form')
+ *  ('minor_31.csv', '0b0000100000', 'cmpl', 'X-Form')
+
+##  in1: 0 in2: 0 in3: 0 out: 0 CR in: 1 CR out: 1 ldst len: 1 rc: R lk: 
+
+ *  ('minor_31.csv', '0b0011000000', 'cmprb', 'X-Form')
+ *  ('minor_31.csv', '0b1011110011', 'darn', 'X-Form')
+ *  ('minor_31.csv', '0b1000000000', 'mcrxr', 'X-Form')
+ *  ('minor_31.csv', '0b1001000000', 'mcrxrx', 'X-Form')
+
+##  in1: R in2: 0 in3: 0 out: 0 CR in: 0 CR out: 1 ldst len: 0 rc: 0 lk: 0
+
+ *  ('major.csv', '11', 'cmpi', 'D-Form')
+ *  ('major.csv', '10', 'cmpli', 'D-Form')
+
+##  in1: 0 in2: 0 in3: 0 out: 0 CR in: 0 CR out: 0 ldst len: 0 rc: 0 lk: 0
+
+ *  ('major.csv', '17', 'sc', 'SC-Form')
+ *  ('extra.csv', '01100000000000000000000000000000', 'nop', 'D-Form')
+ *  ('minor_19.csv', '0b0010010110', 'isync', 'XL-Form')
+ *  ('minor_19.csv', '0b0000010010', 'rfid', 'XL-Form')
+ *  ('minor_19.csv', '0b0100010010', 'hrfid', 'XL-Form')
+ *  ('minor_31.csv', '0b0001010110', 'dcbf', 'X-Form')
+ *  ('minor_31.csv', '0b0000110110', 'dcbst', 'X-Form')
+ *  ('minor_31.csv', '0b0100010110', 'dcbt', 'X-Form')
+ *  ('minor_31.csv', '0b0011110110', 'dcbtst', 'X-Form')
+ *  ('minor_31.csv', '0b1111010110', 'icbi', 'X-Form')
+ *  ('minor_31.csv', '0b0000010110', 'icbt', 'X-Form')
+ *  ('minor_31.csv', '0b0111110010', 'slbia', 'X-Form')
+ *  ('minor_31.csv', '0b1001010110', 'sync', 'X-Form')
+
+##  in1: R in2: R in3: R out: 0 CR in: 0 CR out: 0 ldst len: 1 rc: 0 lk: 0
+
+ *  ('minor_31.csv', '0b1111010101', 'stbcix', 'X-Form')
+ *  ('minor_31.csv', '0b1010010100', 'stdbrx', 'X-Form')
+ *  ('minor_31.csv', '0b1111110101', 'stdcix', 'X-Form')
+ *  ('minor_31.csv', '0b0011010110', 'stdcx', 'X-Form')
+ *  ('minor_31.csv', '0b0010110101', 'stdux', 'X-Form')
+ *  ('minor_31.csv', '0b0010010101', 'stdx', 'X-Form')
+ *  ('minor_31.csv', '0b1110010110', 'sthbrx', 'X-Form')
+ *  ('minor_31.csv', '0b1110110101', 'sthcix', 'X-Form')
+ *  ('minor_31.csv', '0b1011010110', 'sthcx', 'X-Form')
+ *  ('minor_31.csv', '0b0110110111', 'sthux', 'X-Form')
+ *  ('minor_31.csv', '0b0110010111', 'sthx', 'X-Form')
+ *  ('minor_31.csv', '0b1010010110', 'stwbrx', 'X-Form')
+ *  ('minor_31.csv', '0b1110010101', 'stwcix', 'X-Form')
+ *  ('minor_31.csv', '0b0010010110', 'stwcx', 'X-Form')
+ *  ('minor_31.csv', '0b0010110111', 'stwux', 'X-Form')
+ *  ('minor_31.csv', '0b0010010111', 'stwx', 'X-Form')
+
+##  in1: R in2: 0 in3: 0 out: 0 CR in: 0 CR out: 0 ldst len: 0 rc: 0 lk: 0
+
+ *  ('major.csv', '2', 'tdi', 'D-Form')
+ *  ('major.csv', '3', 'twi', 'D-Form')
+ *  ('minor_31.csv', '0b0010110010', 'mtmsrd', 'X-Form')
+ *  ('minor_31.csv', '0b0010010010', 'mtmsr', 'X-Form')
+ *  ('minor_31.csv', '0b0111010011', 'mtspr', 'XFX-Form')
+
+##  in1: R in2: 0 in3: 0 out: 0 CR in: 1 CR out: 1 ldst len: 0 rc: 0 lk: 0
+
+ *  ('minor_31.csv', '0b0010010000', 'mtcrf/mtocrf', 'XFX-Form')
+
+##  in1: R in2: 0 in3: R out: 0 CR in: 0 CR out: 0 ldst len: 1 rc: 0 lk: 0
+
+ *  ('minor_62.csv', '0', 'std', 'DS-Form')
+ *  ('minor_62.csv', '1', 'stdu', 'DS-Form')
+ *  ('major.csv', '38', 'stb', 'D-Form')
+ *  ('major.csv', '39', 'stbu', 'D-Form')
+ *  ('major.csv', '44', 'sth', 'D-Form')
+ *  ('major.csv', '45', 'sthu', 'D-Form')
+ *  ('major.csv', '36', 'stw', 'D-Form')
+ *  ('major.csv', '37', 'stwu', 'D-Form')
+
+##  in1: R in2: R in3: 0 out: R CR in: 0 CR out: 0 ldst len: 1 rc: 0 lk: 0
+
+ *  ('minor_31.csv', '0b0000110100', 'lbarx', 'X-Form')
+ *  ('minor_31.csv', '0b1101010101', 'lbzcix', 'X-Form')
+ *  ('minor_31.csv', '0b0001110111', 'lbzux', 'X-Form')
+ *  ('minor_31.csv', '0b0001010111', 'lbzx', 'X-Form')
+ *  ('minor_31.csv', '0b0001010100', 'ldarx', 'X-Form')
+ *  ('minor_31.csv', '0b1000010100', 'ldbrx', 'X-Form')
+ *  ('minor_31.csv', '0b1101110101', 'ldcix', 'X-Form')
+ *  ('minor_31.csv', '0b0000110101', 'ldux', 'X-Form')
+ *  ('minor_31.csv', '0b0000010101', 'ldx', 'X-Form')
+ *  ('minor_31.csv', '0b0001110100', 'lharx', 'X-Form')
+ *  ('minor_31.csv', '0b0101110111', 'lhaux', 'X-Form')
+ *  ('minor_31.csv', '0b0101010111', 'lhax', 'X-Form')
+ *  ('minor_31.csv', '0b1100010110', 'lhbrx', 'X-Form')
+ *  ('minor_31.csv', '0b1100110101', 'lhzcix', 'X-Form')
+ *  ('minor_31.csv', '0b0100110111', 'lhzux', 'X-Form')
+ *  ('minor_31.csv', '0b0100010111', 'lhzx', 'X-Form')
+ *  ('minor_31.csv', '0b0000010100', 'lwarx', 'X-Form')
+ *  ('minor_31.csv', '0b0101110101', 'lwaux', 'X-Form')
+ *  ('minor_31.csv', '0b0101010101', 'lwax', 'X-Form')
+ *  ('minor_31.csv', '0b1000010110', 'lwbrx', 'X-Form')
+ *  ('minor_31.csv', '0b1100010101', 'lwzcix', 'X-Form')
+ *  ('minor_31.csv', '0b0000110111', 'lwzux', 'X-Form')
+ *  ('minor_31.csv', '0b0000010111', 'lwzx', 'X-Form')
+
+##  in1: R in2: 0 in3: 0 out: R CR in: 0 CR out: 0 ldst len: 0 rc: 0 lk: 0
+
+ *  ('major.csv', '12', 'addic', 'D-Form')
+ *  ('major.csv', '14', 'addi', 'D-Form')
+ *  ('major.csv', '15', 'addis', 'D-Form')
+ *  ('major.csv', '24', 'ori', 'D-Form')
+ *  ('major.csv', '25', 'oris', 'D-Form')
+ *  ('major.csv', '8', 'subfic', 'D-Form')
+ *  ('major.csv', '26', 'xori', 'D-Form')
+ *  ('major.csv', '27', 'xoris', 'D-Form')
+
+##  in1: R in2: 0 in3: 0 out: R CR in: 0 CR out: 1 ldst len: 0 rc: 1 lk: 0
+
+ *  ('major.csv', '13', 'addic.', 'D-Form')
+ *  ('major.csv', '28', 'andi.', 'B-Form')
+ *  ('major.csv', '29', 'andis.', 'B-Form')
 
 ##  in1: 0 in2: 0 in3: R out: R CR in: 0 CR out: 0 ldst len: 0 rc: R lk: 0
 
- *  ('major.csv', '21', 'rlwinm')
+ *  ('major.csv', '21', 'rlwinm', 'M-Form')
+
+##  in1: R in2: 0 in3: 0 out: R CR in: 0 CR out: 1 ldst len: 0 rc: 0 lk: 0
+
+ *  ('major.csv', '7', 'mulli', 'D-Form')
+
+##  in1: R in2: 0 in3: 0 out: R CR in: 0 CR out: 0 ldst len: 0 rc: R lk: 0
+
+ *  ('minor_31.csv', '0b0001101000', 'neg', 'XO-Form')
+ *  ('minor_31.csv', '0b1001101000', 'nego', 'XO-Form')
+
+##  in1: 0 in2: 0 in3: 0 out: 0 CR in: 1 CR out: 0 ldst len: 0 rc: 0 lk: 1
+
+ *  ('major.csv', '16', 'bc', 'B-Form')
+ *  ('minor_19.csv', '0b1000010000', 'bcctr', 'XL-Form')
+ *  ('minor_19.csv', '0b0000010000', 'bclr', 'XL-Form')
+ *  ('minor_19.csv', '0b1000110000', 'bctar', 'XL-Form')
+
+##  in1: R in2: R in3: R out: 0 CR in: 0 CR out: 1 ldst len: 1 rc: R lk: 0
+
+ *  ('minor_31.csv', '0b1010110110', 'stbcx', 'X-Form')
+ *  ('minor_31.csv', '0b0011110111', 'stbux', 'X-Form')
+ *  ('minor_31.csv', '0b0011010111', 'stbx', 'X-Form')
+
+##  in1: R in2: R in3: 0 out: R CR in: 1 CR out: 0 ldst len: 0 rc: 0 lk: 0
+
+ *  ('minor_31.csv', '0b0000001111', 'isel', 'A-Form')
+ *  ('minor_31.csv', '0b0000101111', 'isel', 'A-Form')
+ *  ('minor_31.csv', '0b0001001111', 'isel', 'A-Form')
+ *  ('minor_31.csv', '0b0001101111', 'isel', 'A-Form')
+ *  ('minor_31.csv', '0b0010001111', 'isel', 'A-Form')
+ *  ('minor_31.csv', '0b0010101111', 'isel', 'A-Form')
+ *  ('minor_31.csv', '0b0011001111', 'isel', 'A-Form')
+ *  ('minor_31.csv', '0b0011101111', 'isel', 'A-Form')
+ *  ('minor_31.csv', '0b0100001111', 'isel', 'A-Form')
+ *  ('minor_31.csv', '0b0100101111', 'isel', 'A-Form')
+ *  ('minor_31.csv', '0b0101001111', 'isel', 'A-Form')
+ *  ('minor_31.csv', '0b0101101111', 'isel', 'A-Form')
+ *  ('minor_31.csv', '0b0110001111', 'isel', 'A-Form')
+ *  ('minor_31.csv', '0b0110101111', 'isel', 'A-Form')
+ *  ('minor_31.csv', '0b0111001111', 'isel', 'A-Form')
+ *  ('minor_31.csv', '0b0111101111', 'isel', 'A-Form')
+ *  ('minor_31.csv', '0b1000001111', 'isel', 'A-Form')
+ *  ('minor_31.csv', '0b1000101111', 'isel', 'A-Form')
+ *  ('minor_31.csv', '0b1001001111', 'isel', 'A-Form')
+ *  ('minor_31.csv', '0b1001101111', 'isel', 'A-Form')
+ *  ('minor_31.csv', '0b1010001111', 'isel', 'A-Form')
+ *  ('minor_31.csv', '0b1010101111', 'isel', 'A-Form')
+ *  ('minor_31.csv', '0b1011001111', 'isel', 'A-Form')
+ *  ('minor_31.csv', '0b1011101111', 'isel', 'A-Form')
+ *  ('minor_31.csv', '0b1100001111', 'isel', 'A-Form')
+ *  ('minor_31.csv', '0b1100101111', 'isel', 'A-Form')
+ *  ('minor_31.csv', '0b1101001111', 'isel', 'A-Form')
+ *  ('minor_31.csv', '0b1101101111', 'isel', 'A-Form')
+ *  ('minor_31.csv', '0b1110001111', 'isel', 'A-Form')
+ *  ('minor_31.csv', '0b1110101111', 'isel', 'A-Form')
+ *  ('minor_31.csv', '0b1111001111', 'isel', 'A-Form')
+ *  ('minor_31.csv', '0b1111101111', 'isel', 'A-Form')
+
+##  in1: 0 in2: R in3: R out: R CR in: 0 CR out: 1 ldst len: 0 rc: R lk: 0
+
+ *  ('minor_30.csv', '0b1000', 'rldcl', 'MD-Form')
+ *  ('minor_30.csv', '0b1001', 'rldcr', 'MD-Form')
+ *  ('minor_31.csv', '0b0000011011', 'sld', 'X-Form')
+ *  ('minor_31.csv', '0b0000011000', 'slw', 'X-Form')
+ *  ('minor_31.csv', '0b1100011010', 'srad', 'X-Form')
+ *  ('minor_31.csv', '0b1100011000', 'sraw', 'X-Form')
+ *  ('minor_31.csv', '0b1000011011', 'srd', 'X-Form')
+ *  ('minor_31.csv', '0b1000011000', 'srw', 'X-Form')
+
+##  in1: R in2: 0 in3: R out: R CR in: 0 CR out: 0 ldst len: 0 rc: R lk: 0
+
+ *  ('major.csv', '20', 'rlwimi', 'M-Form')
+
+##  in1: 0 in2: 0 in3: 0 out: R CR in: 0 CR out: 0 ldst len: 0 rc: 0 lk: 0
+
+ *  ('extra.csv', '000001---------------0000000011-', 'sim_cfg', 'NONE-Form')
+ *  ('minor_31.csv', '0b0001010011', 'mfmsr', 'X-Form')
+ *  ('minor_31.csv', '0b0101010011', 'mfspr', 'XFX-Form')
+
+##  in1: 0 in2: R in3: R out: R CR in: 0 CR out: 0 ldst len: 0 rc: R lk: 0
+
+ *  ('major.csv', '23', 'rlwnm', 'M-Form')
+
+##  in1: 0 in2: 0 in3: 0 out: 0 CR in: 0 CR out: 0 ldst len: 0 rc: 0 lk: 1
+
+ *  ('major.csv', '18', 'b', 'I-Form')
+
+##  in1: R in2: R in3: 0 out: 0 CR in: 0 CR out: 0 ldst len: 0 rc: 0 lk: 0
+
+ *  ('minor_31.csv', '0b1111110110', 'dcbz', 'X-Form')
+ *  ('minor_31.csv', '0b0001000100', 'td', 'X-Form')
+ *  ('minor_31.csv', '0b0000000100', 'tw', 'X-Form')
+
+##  in1: R in2: R in3: 0 out: R CR in: 0 CR out: 0 ldst len: 0 rc: 0 lk: 0
+
+ *  ('minor_31.csv', '0b0011111100', 'bpermd', 'X-Form')
+ *  ('minor_31.csv', '0b0111111100', 'cmpb', 'X-Form')
+ *  ('minor_31.csv', '0b0100001001', 'modud', 'X-Form')
+ *  ('minor_31.csv', '0b0100001011', 'moduw', 'X-Form')
+ *  ('minor_31.csv', '0b1100001001', 'modsd', 'X-Form')
+ *  ('minor_31.csv', '0b1100001011', 'modsw', 'X-Form')
+
+##  in1: R in2: 0 in3: 0 out: R CR in: 0 CR out: 0 ldst len: 1 rc: 0 lk: 0
+
+ *  ('minor_58.csv', '0', 'ld', 'DS-Form')
+ *  ('minor_58.csv', '1', 'ldu', 'DS-Form')
+ *  ('minor_58.csv', '2', 'lwa', 'DS-Form')
+ *  ('major.csv', '34', 'lbz', 'D-Form')
+ *  ('major.csv', '35', 'lbzu', 'D-Form')
+ *  ('major.csv', '42', 'lha', 'D-Form')
+ *  ('major.csv', '43', 'lhau', 'D-Form')
+ *  ('major.csv', '40', 'lhz', 'D-Form')
+ *  ('major.csv', '41', 'lhzu', 'D-Form')
+ *  ('major.csv', '32', 'lwz', 'D-Form')
+ *  ('major.csv', '33', 'lwzu', 'D-Form')
+ *  ('minor_31.csv', '0b0001111010', 'popcntb', 'X-Form')
+ *  ('minor_31.csv', '0b0111111010', 'popcntd', 'X-Form')
+ *  ('minor_31.csv', '0b0101111010', 'popcntw', 'X-Form')
+ *  ('minor_31.csv', '0b0010111010', 'prtyd', 'X-Form')
+ *  ('minor_31.csv', '0b0010011010', 'prtyw', 'X-Form')
 
 ##  in1: R in2: 0 in3: R out: R CR in: 0 CR out: 1 ldst len: 0 rc: R lk: 0
 
- *  ('minor_30.csv', '0b0110', 'rldimi')
- *  ('minor_30.csv', '0b0111', 'rldimi')
+ *  ('minor_30.csv', '0b0110', 'rldimi', 'MD-Form')
+ *  ('minor_30.csv', '0b0111', 'rldimi', 'MD-Form')
+
+##  in1: 0 in2: 0 in3: 0 out: 0 CR in: 0 CR out: 0 ldst len: 0 rc: R lk: 0
+
+ *  ('minor_19_00000.csv', '0b00010', 'add pcis not implemented yet', 'DX-Form')
+ *  ('extra.csv', '000000---------------0100000000-', 'attn', 'NONE-Form')
+
+##  in1: 0 in2: 0 in3: 0 out: R CR in: 1 CR out: 0 ldst len: 0 rc: 0 lk: 0
+
+ *  ('minor_31.csv', '0b0000010011', 'mfcr/mfocrf', 'XFX-Form')
+ *  ('minor_31.csv', '0b0010000000', 'setb', 'VX-Form')
+
+##  in1: 0 in2: R in3: 0 out: 0 CR in: 0 CR out: 0 ldst len: 0 rc: 0 lk: 0
+
+ *  ('minor_31.csv', '0b0100110010', 'tlbie', 'X-Form')
+ *  ('minor_31.csv', '0b0100010010', 'tlbiel', 'X-Form')
+
+##  in1: R in2: 0 in3: 0 out: R CR in: 0 CR out: 1 ldst len: 1 rc: R lk: 0
+
+ *  ('minor_31.csv', '0b1110111010', 'extsb', 'X-Form')
+ *  ('minor_31.csv', '0b1110011010', 'extsh', 'X-Form')
+ *  ('minor_31.csv', '0b1111011010', 'extsw', 'X-Form')
+
+##  in1: R in2: 0 in3: 0 out: R CR in: 0 CR out: 1 ldst len: 0 rc: R lk: 0
+
+ *  ('minor_31.csv', '0b0011101010', 'addme', 'XO-Form')
+ *  ('minor_31.csv', '0b1011101010', 'addmeo', 'XO-Form')
+ *  ('minor_31.csv', '0b0011001010', 'addze', 'XO-Form')
+ *  ('minor_31.csv', '0b1011001010', 'addzeo', 'XO-Form')
+ *  ('minor_31.csv', '0b0000111010', 'cntlzd', 'X-Form')
+ *  ('minor_31.csv', '0b0000011010', 'cntlzw', 'X-Form')
+ *  ('minor_31.csv', '0b1000111010', 'cnttzd', 'X-Form')
+ *  ('minor_31.csv', '0b1000011010', 'cnttzw', 'X-Form')
+ *  ('minor_31.csv', '0b0011101000', 'subfme', 'XO-Form')
+ *  ('minor_31.csv', '0b1011101000', 'subfmeo', 'XO-Form')
+ *  ('minor_31.csv', '0b0011001000', 'subfze', 'XO-Form')
+ *  ('minor_31.csv', '0b1011001000', 'subfzeo', 'XO-Form')
+
+##  in1: 0 in2: 0 in3: 0 out: 0 CR in: 1 CR out: 1 ldst len: 0 rc: 0 lk: 0
+
+ *  ('minor_19.csv', '0b0000000000', 'mcrf', 'XL-Form')
+ *  ('minor_19.csv', '0b0100000001', 'crand', 'XL-Form')
+ *  ('minor_19.csv', '0b0010000001', 'crandc', 'XL-Form')
+ *  ('minor_19.csv', '0b0100100001', 'creqv', 'XL-Form')
+ *  ('minor_19.csv', '0b0011100001', 'crnand', 'XL-Form')
+ *  ('minor_19.csv', '0b0000100001', 'crnor', 'XL-Form')
+ *  ('minor_19.csv', '0b0111000001', 'cror', 'XL-Form')
+ *  ('minor_19.csv', '0b0110100001', 'crorc', 'XL-Form')
+ *  ('minor_19.csv', '0b0011000001', 'crxor', 'XL-Form')
 
