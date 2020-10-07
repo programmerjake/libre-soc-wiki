@@ -24,11 +24,12 @@ def blank_key(row):
             return False
     return True
 
+keycolumns = ['in1', 'in2', 'in3', 'out', 'CR in', 'CR out',
+                 'ldst len', 'rc', 'lk']
 def create_key(row):
     res = OrderedDict()
     #print ("row", row)
-    for key in ['in1', 'in2', 'in3', 'out', 'CR in', 'CR out',
-                 'ldst len', 'rc', 'lk']:
+    for key in keycolumns:
         # registers
         if key in ['in1', 'in2', 'in3', 'out']:
             if row[key].startswith('R'):
@@ -66,6 +67,9 @@ def dformat(d):
         res.append("%s: %s" % (k, v))
     return ' '.join(res)
 
+def tformat(d):
+    return "|" + ' | '.join(d) + "|"
+
 
 def process_csvs():
     csvs = {}
@@ -98,8 +102,9 @@ def process_csvs():
 
     print ("# keys")
     print ()
+    print (tformat(keycolumns))
     for key in primarykeys:
-        print (" * ", dformat(dictkeys[key]))
+        print (tformat(dictkeys[key].values()))
     print ()
 
     for key in primarykeys:
