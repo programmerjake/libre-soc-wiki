@@ -68,7 +68,7 @@ def dformat(d):
     return ' '.join(res)
 
 def tformat(d):
-    return "|" + ' | '.join(d) + "|"
+    return ' | '.join(d) + "|"
 
 
 def process_csvs():
