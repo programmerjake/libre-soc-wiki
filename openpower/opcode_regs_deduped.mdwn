@@ -1,50 +1,48 @@
 # keys
 
 [[!table  data="""
-in1 | in2 | in3 | out | CR in | CR out | ldst len | rc | lk|
-0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0|
-0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1|
-0 | 0 | 0 | 0 | 0 | 0 | 0 | R | 0|
-0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 1|
-0 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0|
-0 | 0 | 0 | 0 | 1 | 1 | 1 | R | |
-0 | 0 | 0 | R | 0 | 0 | 0 | 0 | 0|
-0 | 0 | 0 | R | 1 | 0 | 0 | 0 | 0|
-0 | 0 | R | R | 0 | 1 | 0 | R | 0|
-0 | R | 0 | 0 | 0 | 0 | 0 | 0 | 0|
-0 | R | R | R | 0 | 0 | 0 | R | 0|
-0 | R | R | R | 0 | 1 | 0 | R | 0|
-R | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0|
-R | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0|
-R | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0|
-R | 0 | 0 | R | 0 | 0 | 0 | 0 | 0|
-R | 0 | 0 | R | 0 | 0 | 0 | R | 0|
-R | 0 | 0 | R | 0 | 0 | 1 | 0 | 0|
-R | 0 | 0 | R | 0 | 1 | 0 | 0 | 0|
-R | 0 | 0 | R | 0 | 1 | 0 | 1 | 0|
-R | 0 | 0 | R | 0 | 1 | 0 | R | 0|
-R | 0 | 0 | R | 0 | 1 | 1 | R | 0|
-R | 0 | R | 0 | 0 | 0 | 1 | 0 | 0|
-R | 0 | R | R | 0 | 1 | 0 | R | 0|
-R | R | 0 | 0 | 0 | 0 | 0 | 0 | 0|
-R | R | 0 | 0 | 0 | 1 | 0 | 0 | 0|
-R | R | 0 | R | 0 | 0 | 0 | 0 | 0|
-R | R | 0 | R | 0 | 0 | 1 | 0 | 0|
-R | R | 0 | R | 0 | 1 | 0 | R | 0|
-R | R | 0 | R | 1 | 0 | 0 | 0 | 0|
-R | R | R | 0 | 0 | 0 | 1 | 0 | 0|
-R | R | R | 0 | 0 | 1 | 1 | R | 0|
+in1 | in2 | in3 | out | CR in | CR out | ldst len|
+0 | 0 | 0 | 0 | 0 | 0 | 0|
+0 | 0 | 0 | 0 | 1 | 0 | 0|
+0 | 0 | 0 | 0 | 1 | 1 | 0|
+0 | 0 | 0 | 0 | 1 | 1 | 1|
+0 | 0 | 0 | R | 0 | 0 | 0|
+0 | 0 | 0 | R | 1 | 0 | 0|
+0 | 0 | R | R | 0 | 1 | 0|
+0 | R | 0 | 0 | 0 | 0 | 0|
+0 | R | R | R | 0 | 0 | 0|
+0 | R | R | R | 0 | 1 | 0|
+R | 0 | 0 | 0 | 0 | 0 | 0|
+R | 0 | 0 | 0 | 0 | 1 | 0|
+R | 0 | 0 | 0 | 1 | 1 | 0|
+R | 0 | 0 | R | 0 | 0 | 0|
+R | 0 | 0 | R | 0 | 0 | 1|
+R | 0 | 0 | R | 0 | 1 | 0|
+R | 0 | 0 | R | 0 | 1 | 1|
+R | 0 | R | 0 | 0 | 0 | 1|
+R | 0 | R | R | 0 | 1 | 0|
+R | R | 0 | 0 | 0 | 0 | 0|
+R | R | 0 | 0 | 0 | 1 | 0|
+R | R | 0 | R | 0 | 0 | 0|
+R | R | 0 | R | 0 | 0 | 1|
+R | R | 0 | R | 0 | 1 | 0|
+R | R | 0 | R | 1 | 0 | 0|
+R | R | R | 0 | 0 | 0 | 1|
+R | R | R | 0 | 0 | 1 | 1|
 """]]
 
-##  in1: 0 in2: 0 in3: 0 out: 0 CR in: 0 CR out: 0 ldst len: 0 rc: 0 lk: 0
+##  in1: 0 in2: 0 in3: 0 out: 0 CR in: 0 CR out: 0 ldst len: 0
 
 [[!table  data="""
 CSV | opcode | asm | form|
+extra.csv | 000000---------------0100000000- | attn | NONE-Form|
 extra.csv | 01100000000000000000000000000000 | nop | D-Form|
 major.csv | 17 | sc | SC-Form|
+major.csv | 18 | b | I-Form|
 minor_19.csv | 0b0000010010 | rfid | XL-Form|
 minor_19.csv | 0b0010010110 | isync | XL-Form|
 minor_19.csv | 0b0100010010 | hrfid | XL-Form|
+minor_19_00000.csv | 0b00010 | add pcis not implemented yet | DX-Form|
 minor_31.csv | 0b0000010110 | icbt | X-Form|
 minor_31.csv | 0b0000110110 | dcbst | X-Form|
 minor_31.csv | 0b0001010110 | dcbf | X-Form|
@@ -55,22 +53,7 @@ minor_31.csv | 0b1001010110 | sync | X-Form|
 minor_31.csv | 0b1111010110 | icbi | X-Form|
 """]]
 
-##  in1: 0 in2: 0 in3: 0 out: 0 CR in: 0 CR out: 0 ldst len: 0 rc: 0 lk: 1
-
-[[!table  data="""
-CSV | opcode | asm | form|
-major.csv | 18 | b | I-Form|
-"""]]
-
-##  in1: 0 in2: 0 in3: 0 out: 0 CR in: 0 CR out: 0 ldst len: 0 rc: R lk: 0
-
-[[!table  data="""
-CSV | opcode | asm | form|
-extra.csv | 000000---------------0100000000- | attn | NONE-Form|
-minor_19_00000.csv | 0b00010 | add pcis not implemented yet | DX-Form|
-"""]]
-
-##  in1: 0 in2: 0 in3: 0 out: 0 CR in: 1 CR out: 0 ldst len: 0 rc: 0 lk: 1
+##  in1: 0 in2: 0 in3: 0 out: 0 CR in: 1 CR out: 0 ldst len: 0
 
 [[!table  data="""
 CSV | opcode | asm | form|
@@ -80,7 +63,7 @@ minor_19.csv | 0b1000010000 | bcctr | XL-Form|
 minor_19.csv | 0b1000110000 | bctar | XL-Form|
 """]]
 
-##  in1: 0 in2: 0 in3: 0 out: 0 CR in: 1 CR out: 1 ldst len: 0 rc: 0 lk: 0
+##  in1: 0 in2: 0 in3: 0 out: 0 CR in: 1 CR out: 1 ldst len: 0
 
 [[!table  data="""
 CSV | opcode | asm | form|
@@ -95,7 +78,7 @@ minor_19.csv | 0b0110100001 | crorc | XL-Form|
 minor_19.csv | 0b0111000001 | cror | XL-Form|
 """]]
 
-##  in1: 0 in2: 0 in3: 0 out: 0 CR in: 1 CR out: 1 ldst len: 1 rc: R lk: 
+##  in1: 0 in2: 0 in3: 0 out: 0 CR in: 1 CR out: 1 ldst len: 1
 
 [[!table  data="""
 CSV | opcode | asm | form|
@@ -105,7 +88,7 @@ minor_31.csv | 0b1001000000 | mcrxrx | X-Form|
 minor_31.csv | 0b1011110011 | darn | X-Form|
 """]]
 
-##  in1: 0 in2: 0 in3: 0 out: R CR in: 0 CR out: 0 ldst len: 0 rc: 0 lk: 0
+##  in1: 0 in2: 0 in3: 0 out: R CR in: 0 CR out: 0 ldst len: 0
 
 [[!table  data="""
 CSV | opcode | asm | form|
@@ -114,7 +97,7 @@ minor_31.csv | 0b0001010011 | mfmsr | X-Form|
 minor_31.csv | 0b0101010011 | mfspr | XFX-Form|
 """]]
 
-##  in1: 0 in2: 0 in3: 0 out: R CR in: 1 CR out: 0 ldst len: 0 rc: 0 lk: 0
+##  in1: 0 in2: 0 in3: 0 out: R CR in: 1 CR out: 0 ldst len: 0
 
 [[!table  data="""
 CSV | opcode | asm | form|
@@ -122,7 +105,7 @@ minor_31.csv | 0b0000010011 | mfcr/mfocrf | XFX-Form|
 minor_31.csv | 0b0010000000 | setb | VX-Form|
 """]]
 
-##  in1: 0 in2: 0 in3: R out: R CR in: 0 CR out: 1 ldst len: 0 rc: R lk: 0
+##  in1: 0 in2: 0 in3: R out: R CR in: 0 CR out: 1 ldst len: 0
 
 [[!table  data="""
 CSV | opcode | asm | form|
@@ -140,7 +123,7 @@ minor_31.csv | 0b1101111010 | extswsli | XS-Form|
 minor_31.csv | 0b1101111011 | extswsli | XS-Form|
 """]]
 
-##  in1: 0 in2: R in3: 0 out: 0 CR in: 0 CR out: 0 ldst len: 0 rc: 0 lk: 0
+##  in1: 0 in2: R in3: 0 out: 0 CR in: 0 CR out: 0 ldst len: 0
 
 [[!table  data="""
 CSV | opcode | asm | form|
@@ -148,14 +131,14 @@ minor_31.csv | 0b0100010010 | tlbiel | X-Form|
 minor_31.csv | 0b0100110010 | tlbie | X-Form|
 """]]
 
-##  in1: 0 in2: R in3: R out: R CR in: 0 CR out: 0 ldst len: 0 rc: R lk: 0
+##  in1: 0 in2: R in3: R out: R CR in: 0 CR out: 0 ldst len: 0
 
 [[!table  data="""
 CSV | opcode | asm | form|
 major.csv | 23 | rlwnm | M-Form|
 """]]
 
-##  in1: 0 in2: R in3: R out: R CR in: 0 CR out: 1 ldst len: 0 rc: R lk: 0
+##  in1: 0 in2: R in3: R out: R CR in: 0 CR out: 1 ldst len: 0
 
 [[!table  data="""
 CSV | opcode | asm | form|
@@ -169,7 +152,7 @@ minor_31.csv | 0b1100011000 | sraw | X-Form|
 minor_31.csv | 0b1100011010 | srad | X-Form|
 """]]
 
-##  in1: R in2: 0 in3: 0 out: 0 CR in: 0 CR out: 0 ldst len: 0 rc: 0 lk: 0
+##  in1: R in2: 0 in3: 0 out: 0 CR in: 0 CR out: 0 ldst len: 0
 
 [[!table  data="""
 CSV | opcode | asm | form|
@@ -180,7 +163,7 @@ minor_31.csv | 0b0010110010 | mtmsrd | X-Form|
 minor_31.csv | 0b0111010011 | mtspr | XFX-Form|
 """]]
 
-##  in1: R in2: 0 in3: 0 out: 0 CR in: 0 CR out: 1 ldst len: 0 rc: 0 lk: 0
+##  in1: R in2: 0 in3: 0 out: 0 CR in: 0 CR out: 1 ldst len: 0
 
 [[!table  data="""
 CSV | opcode | asm | form|
@@ -188,14 +171,14 @@ major.csv | 10 | cmpli | D-Form|
 major.csv | 11 | cmpi | D-Form|
 """]]
 
-##  in1: R in2: 0 in3: 0 out: 0 CR in: 1 CR out: 1 ldst len: 0 rc: 0 lk: 0
+##  in1: R in2: 0 in3: 0 out: 0 CR in: 1 CR out: 1 ldst len: 0
 
 [[!table  data="""
 CSV | opcode | asm | form|
 minor_31.csv | 0b0010010000 | mtcrf/mtocrf | XFX-Form|
 """]]
 
-##  in1: R in2: 0 in3: 0 out: R CR in: 0 CR out: 0 ldst len: 0 rc: 0 lk: 0
+##  in1: R in2: 0 in3: 0 out: R CR in: 0 CR out: 0 ldst len: 0
 
 [[!table  data="""
 CSV | opcode | asm | form|
@@ -207,17 +190,11 @@ major.csv | 25 | oris | D-Form|
 major.csv | 26 | xori | D-Form|
 major.csv | 27 | xoris | D-Form|
 major.csv | 8 | subfic | D-Form|
-"""]]
-
-##  in1: R in2: 0 in3: 0 out: R CR in: 0 CR out: 0 ldst len: 0 rc: R lk: 0
-
-[[!table  data="""
-CSV | opcode | asm | form|
 minor_31.csv | 0b0001101000 | neg | XO-Form|
 minor_31.csv | 0b1001101000 | nego | XO-Form|
 """]]
 
-##  in1: R in2: 0 in3: 0 out: R CR in: 0 CR out: 0 ldst len: 1 rc: 0 lk: 0
+##  in1: R in2: 0 in3: 0 out: R CR in: 0 CR out: 0 ldst len: 1
 
 [[!table  data="""
 CSV | opcode | asm | form|
@@ -239,26 +216,14 @@ minor_58.csv | 1 | ldu | DS-Form|
 minor_58.csv | 2 | lwa | DS-Form|
 """]]
 
-##  in1: R in2: 0 in3: 0 out: R CR in: 0 CR out: 1 ldst len: 0 rc: 0 lk: 0
-
-[[!table  data="""
-CSV | opcode | asm | form|
-major.csv | 7 | mulli | D-Form|
-"""]]
-
-##  in1: R in2: 0 in3: 0 out: R CR in: 0 CR out: 1 ldst len: 0 rc: 1 lk: 0
+##  in1: R in2: 0 in3: 0 out: R CR in: 0 CR out: 1 ldst len: 0
 
 [[!table  data="""
 CSV | opcode | asm | form|
 major.csv | 13 | addic. | D-Form|
 major.csv | 28 | andi. | B-Form|
 major.csv | 29 | andis. | B-Form|
-"""]]
-
-##  in1: R in2: 0 in3: 0 out: R CR in: 0 CR out: 1 ldst len: 0 rc: R lk: 0
-
-[[!table  data="""
-CSV | opcode | asm | form|
+major.csv | 7 | mulli | D-Form|
 minor_31.csv | 0b0000011010 | cntlzw | X-Form|
 minor_31.csv | 0b0000111010 | cntlzd | X-Form|
 minor_31.csv | 0b0011001000 | subfze | XO-Form|
@@ -273,7 +238,7 @@ minor_31.csv | 0b1011101000 | subfmeo | XO-Form|
 minor_31.csv | 0b1011101010 | addmeo | XO-Form|
 """]]
 
-##  in1: R in2: 0 in3: 0 out: R CR in: 0 CR out: 1 ldst len: 1 rc: R lk: 0
+##  in1: R in2: 0 in3: 0 out: R CR in: 0 CR out: 1 ldst len: 1
 
 [[!table  data="""
 CSV | opcode | asm | form|
@@ -282,7 +247,7 @@ minor_31.csv | 0b1110111010 | extsb | X-Form|
 minor_31.csv | 0b1111011010 | extsw | X-Form|
 """]]
 
-##  in1: R in2: 0 in3: R out: 0 CR in: 0 CR out: 0 ldst len: 1 rc: 0 lk: 0
+##  in1: R in2: 0 in3: R out: 0 CR in: 0 CR out: 0 ldst len: 1
 
 [[!table  data="""
 CSV | opcode | asm | form|
@@ -296,7 +261,7 @@ minor_62.csv | 0 | std | DS-Form|
 minor_62.csv | 1 | stdu | DS-Form|
 """]]
 
-##  in1: R in2: 0 in3: R out: R CR in: 0 CR out: 1 ldst len: 0 rc: R lk: 0
+##  in1: R in2: 0 in3: R out: R CR in: 0 CR out: 1 ldst len: 0
 
 [[!table  data="""
 CSV | opcode | asm | form|
@@ -305,7 +270,7 @@ minor_30.csv | 0b0110 | rldimi | MD-Form|
 minor_30.csv | 0b0111 | rldimi | MD-Form|
 """]]
 
-##  in1: R in2: R in3: 0 out: 0 CR in: 0 CR out: 0 ldst len: 0 rc: 0 lk: 0
+##  in1: R in2: R in3: 0 out: 0 CR in: 0 CR out: 0 ldst len: 0
 
 [[!table  data="""
 CSV | opcode | asm | form|
@@ -314,7 +279,7 @@ minor_31.csv | 0b0001000100 | td | X-Form|
 minor_31.csv | 0b1111110110 | dcbz | X-Form|
 """]]
 
-##  in1: R in2: R in3: 0 out: 0 CR in: 0 CR out: 1 ldst len: 0 rc: 0 lk: 0
+##  in1: R in2: R in3: 0 out: 0 CR in: 0 CR out: 1 ldst len: 0
 
 [[!table  data="""
 CSV | opcode | asm | form|
@@ -323,7 +288,7 @@ minor_31.csv | 0b0000100000 | cmpl | X-Form|
 minor_31.csv | 0b0011100000 | cmpeqb | X-Form|
 """]]
 
-##  in1: R in2: R in3: 0 out: R CR in: 0 CR out: 0 ldst len: 0 rc: 0 lk: 0
+##  in1: R in2: R in3: 0 out: R CR in: 0 CR out: 0 ldst len: 0
 
 [[!table  data="""
 CSV | opcode | asm | form|
@@ -335,7 +300,7 @@ minor_31.csv | 0b1100001001 | modsd | X-Form|
 minor_31.csv | 0b1100001011 | modsw | X-Form|
 """]]
 
-##  in1: R in2: R in3: 0 out: R CR in: 0 CR out: 0 ldst len: 1 rc: 0 lk: 0
+##  in1: R in2: R in3: 0 out: R CR in: 0 CR out: 0 ldst len: 1
 
 [[!table  data="""
 CSV | opcode | asm | form|
@@ -364,7 +329,7 @@ minor_31.csv | 0b1101010101 | lbzcix | X-Form|
 minor_31.csv | 0b1101110101 | ldcix | X-Form|
 """]]
 
-##  in1: R in2: R in3: 0 out: R CR in: 0 CR out: 1 ldst len: 0 rc: R lk: 0
+##  in1: R in2: R in3: 0 out: R CR in: 0 CR out: 1 ldst len: 0
 
 [[!table  data="""
 CSV | opcode | asm | form|
@@ -418,7 +383,7 @@ minor_31.csv | 0b1111101001 | divdo | XO-Form|
 minor_31.csv | 0b1111101011 | divwo | XO-Form|
 """]]
 
-##  in1: R in2: R in3: 0 out: R CR in: 1 CR out: 0 ldst len: 0 rc: 0 lk: 0
+##  in1: R in2: R in3: 0 out: R CR in: 1 CR out: 0 ldst len: 0
 
 [[!table  data="""
 CSV | opcode | asm | form|
@@ -456,7 +421,7 @@ minor_31.csv | 0b1111001111 | isel | A-Form|
 minor_31.csv | 0b1111101111 | isel | A-Form|
 """]]
 
-##  in1: R in2: R in3: R out: 0 CR in: 0 CR out: 0 ldst len: 1 rc: 0 lk: 0
+##  in1: R in2: R in3: R out: 0 CR in: 0 CR out: 0 ldst len: 1
 
 [[!table  data="""
 CSV | opcode | asm | form|
@@ -478,7 +443,7 @@ minor_31.csv | 0b1111010101 | stbcix | X-Form|
 minor_31.csv | 0b1111110101 | stdcix | X-Form|
 """]]
 
-##  in1: R in2: R in3: R out: 0 CR in: 0 CR out: 1 ldst len: 1 rc: R lk: 0
+##  in1: R in2: R in3: R out: 0 CR in: 0 CR out: 1 ldst len: 1
 
 [[!table  data="""
 CSV | opcode | asm | form|

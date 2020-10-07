@@ -29,7 +29,7 @@ def blank_key(row):
 
 
 keycolumns = ['in1', 'in2', 'in3', 'out', 'CR in', 'CR out',
-                 'ldst len', 'rc', 'lk']
+                 'ldst len'] # don't think we need these: , 'rc', 'lk']
 
 def create_key(row):
     res = OrderedDict()
