@@ -123,7 +123,9 @@ def process_csvs():
         print ()
         print ('[[!table  data="""')
         print (tformat(['CSV', 'opcode', 'asm', 'form']))
-        for row in bykey[key]:
+        rows = bykey[key]
+        rows.sort()
+        for row in rows:
             print (tformat(row))
         print ('"""]]')
         print ()
