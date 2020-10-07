@@ -101,10 +101,14 @@ def process_csvs():
             bykey[key].append((csvname, row['opcode'], row['comment'],
                                row['form'].upper() + '-Form'))
 
+    primarykeys = list(primarykeys)
+    primarykeys.sort()
+
     print ("# keys")
     print ()
     print ('[[!table  data="""')
     print (tformat(keycolumns))
+
     for key in primarykeys:
         print (tformat(dictkeys[key].values()))
     print ('"""]]')
