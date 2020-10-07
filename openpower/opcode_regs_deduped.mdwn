@@ -10,7 +10,6 @@ in1 | in2 | in3 | out | CR in | CR out | ldst len|
 0 | 0 | 0 | R | 1 | 0 | 0|
 0 | 0 | R | R | 0 | 1 | 0|
 0 | R | 0 | 0 | 0 | 0 | 0|
-0 | R | R | R | 0 | 0 | 0|
 0 | R | R | R | 0 | 1 | 0|
 R | 0 | 0 | 0 | 0 | 0 | 0|
 R | 0 | 0 | 0 | 0 | 1 | 0|
@@ -131,17 +130,11 @@ minor_31.csv | 0b0100010010 | tlbiel | X-Form|
 minor_31.csv | 0b0100110010 | tlbie | X-Form|
 """]]
 
-##  in1: 0 in2: R in3: R out: R CR in: 0 CR out: 0 ldst len: 0
-
-[[!table  data="""
-CSV | opcode | asm | form|
-major.csv | 23 | rlwnm | M-Form|
-"""]]
-
 ##  in1: 0 in2: R in3: R out: R CR in: 0 CR out: 1 ldst len: 0
 
 [[!table  data="""
 CSV | opcode | asm | form|
+major.csv | 23 | rlwnm | M-Form|
 minor_30.csv | 0b1000 | rldcl | MD-Form|
 minor_30.csv | 0b1001 | rldcr | MD-Form|
 minor_31.csv | 0b0000011000 | slw | X-Form|
