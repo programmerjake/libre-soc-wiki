@@ -113,8 +113,11 @@ def process_csvs():
     for key in primarykeys:
         print ("## ", dformat(dictkeys[key]))
         print ()
+        print ('[[!table  data="""')
+        print (tformat(['CSV', 'opcode', 'asm', 'form']))
         for row in bykey[key]:
-            print (" * ", row)
+            print (tformat(row))
+        print ('"""]]')
         print ()
 
     bykey = {}
