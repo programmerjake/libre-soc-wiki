@@ -102,9 +102,11 @@ def process_csvs():
 
     print ("# keys")
     print ()
+    print ("[[!table  data=""")
     print (tformat(keycolumns))
     for key in primarykeys:
         print (tformat(dictkeys[key].values()))
+    print ("]]")
     print ()
 
     for key in primarykeys:
