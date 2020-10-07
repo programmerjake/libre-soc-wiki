@@ -121,7 +121,7 @@ def process_csvs():
     primarykeys.sort()
 
     print ("# keys")
-    print ()
+    print ('')
     print ('[[!table  data="""')
     print (tformat(keycolumns)) # TODO use alternative here which has
                                 # 'in' rather than in1, in2, in3
@@ -129,11 +129,11 @@ def process_csvs():
     for key in primarykeys:
         print (tformat(dictkeys[key].values()))
     print ('"""]]')
-    print ()
+    print ('')
 
     for key in primarykeys:
-        print ("## ", dformat(dictkeys[key]))
-        print ()
+        print ("## %s " % dformat(dictkeys[key]))
+        print ('')
         print ('[[!table  data="""')
         print (tformat(['CSV', 'opcode', 'asm', 'form']))
         rows = bykey[key]
@@ -141,7 +141,7 @@ def process_csvs():
         for row in rows:
             print (tformat(row))
         print ('"""]]')
-        print ()
+        print ('')
 
     bykey = {}
     for fname, csv in csvs.items():
