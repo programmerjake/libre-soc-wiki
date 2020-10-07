@@ -30,12 +30,21 @@ def blank_key(row):
 
 keycolumns = ['in1', 'in2', 'in3', 'out', 'CR in', 'CR out',
                  'ldst len', 'rc', 'lk']
+
 def create_key(row):
     res = OrderedDict()
     #print ("row", row)
     for key in keycolumns:
-        # registers
-        if key in ['in1', 'in2', 'in3', 'out']:
+        # registers IN
+        if key in ['in1', 'in2', 'in3']:
+            # TODO: replace this with a counter row['in']
+            # will need row['in'] initialising to 0 *outside* of the for-loop
+            if row[key].startswith('R'):
+                res[key] = 'R'
+            else:
+                res[key] = '0'
+        # registers OUT
+        if key == 'out':
             if row[key].startswith('R'):
                 res[key] = 'R'
             else:
@@ -111,7 +120,8 @@ def process_csvs():
     print ("# keys")
     print ()
     print ('[[!table  data="""')
-    print (tformat(keycolumns))
+    print (tformat(keycolumns)) # TODO use alternative here which has
+                                # 'in' rather than in1, in2, in3
 
     for key in primarykeys:
         print (tformat(dictkeys[key].values()))
