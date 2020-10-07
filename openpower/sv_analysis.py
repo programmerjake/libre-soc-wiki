@@ -27,6 +27,9 @@ def blank_key(row):
             return False
     return True
 
+def isreg(field):
+    return field.startswith('R') or field.startswith('FR')
+
 
 keycolumns = ['in1', 'in2', 'in3', 'out', 'CR in', 'CR out',
                  'ldst len'] # don't think we need these: , 'rc', 'lk']
@@ -39,13 +42,13 @@ def create_key(row):
         if key in ['in1', 'in2', 'in3']:
             # TODO: replace this with a counter row['in']
             # will need row['in'] initialising to 0 *outside* of the for-loop
-            if row[key].startswith('R'):
+            if isreg(row[key]):
                 res[key] = 'R'
             else:
                 res[key] = '0'
         # registers OUT
         if key == 'out':
-            if row[key].startswith('R'):
+            if isreg(row[key]):
                 res[key] = 'R'
             else:
                 res[key] = '0'
