@@ -440,7 +440,9 @@ Pseudo-code:
 
     dividend[0:63] <- (RA)[32:63] || [0]*32
     divisor[0:63] <- EXTS64((RB)[32:63])
-    if (divisor = 0x0000_0000_0000_0000) then
+    if (((dividend = 0x8000_0000_0000_0000) &
+         (divisor = 0xffff_ffff_ffff_ffff)) |
+         (divisor = 0x0000_0000_0000_0000)) then
         overflow <- 1
     else
         result <- DIVS(dividend, divisor)
@@ -713,14 +715,17 @@ XO-Form
 
 Pseudo-code:
 
-    dividend[0:127] <-  (RA) || [0]*64
-    divisor[0:127] <- [0]*64 || (RB)
-    if divisor = [0]*128 then
+    dividend[0:127] <- (RA) || [0]*64
+    divisor[0:127] <- EXTS128((RB))
+    if (((dividend = 0x8000_0000_0000_0000_0000_0000_0000_0000) &
+         (divisor = 0xffff_ffff_ffff_ffff_ffff_ffff_ffff_ffff)) |
+         (divisor = 0x0000_0000_0000_0000_0000_0000_0000_0000)) then
         overflow <- 1
     else
         result <- DIVS(dividend, divisor)
-        if result[0:63] = 0x0000_0000_0000_0000 then
-            RT <- result[0:63]
+        result64[0:127] <- EXTS128(result[64:127])
+        if (result64 = result) then
+            RT <- result[64:127]
             overflow <- 0
         else
             overflow <- 1
@@ -748,9 +753,9 @@ Pseudo-code:
     if divisor = [0]*128 then
         overflow <- 1
     else
-        result <- dividend /  divisor
-        if (RA) < (RB) then
-            RT <- result[0:63]
+        result <- dividend / divisor
+        if (RA) <u (RB) then
+            RT <- result[64:127]
             overflow <- 0
         else
             overflow <- 1
