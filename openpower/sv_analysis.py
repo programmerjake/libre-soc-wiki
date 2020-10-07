@@ -19,10 +19,14 @@ def get_csv(name):
         return list(reader)
 
 def blank_key(row):
-    for v in row.items():
+    #for v in row.values():
+    #    if 'SPR' in v: # skip all SPRs
+    #        return True
+    for v in row.values():
         if v:
             return False
     return True
+
 
 keycolumns = ['in1', 'in2', 'in3', 'out', 'CR in', 'CR out',
                  'ldst len', 'rc', 'lk']
