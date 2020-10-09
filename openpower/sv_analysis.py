@@ -96,20 +96,21 @@ def tformat(d):
     return ' | '.join(d) + "|"
 
 def keyname(row):
-    if row['out'] == 'R':
-        out = '1'
-    else:
-        out = '0'
-    res = '%sR-%sW' % (row['in'], out)
-    if row['CR in'] == '1' and row['CR out'] == '1':
-        res += "-CRio"
-    elif row['CR in'] == '1':
-        res += "-CRi"
-    elif row['CR out'] == '1':
-        res += "-CRo"
+    res = []
     if row['unit'] != 'OTHER':
-        return '%s-' % row['unit'] + res
-    return res
+        res.append(row['unit'])
+    if row['in'] != '0':
+        res.append('%sR' % row['in'])
+    if row['out'] == 'R':
+        res.append('1W')
+    if row['CR in'] == '1' and row['CR out'] == '1':
+        res.append("CRio")
+    elif row['CR in'] == '1':
+        res.append("CRi")
+    elif row['CR out'] == '1':
+        res.append("CRo")
+        res += "-CRo"
+    return '-'.join(res)
 
 
 def process_csvs():
