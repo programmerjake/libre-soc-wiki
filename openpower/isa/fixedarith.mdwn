@@ -441,8 +441,8 @@ Pseudo-code:
     dividend[0:63] <- (RA)[32:63] || [0]*32
     divisor[0:63] <- EXTS64((RB)[32:63])
     if (((dividend = 0x8000_0000_0000_0000) &
-         (divisor = 0xffff_ffff_ffff_ffff)) |
-         (divisor = 0x0000_0000_0000_0000)) then
+         (divisor = [1]*64)) |
+         (divisor = [0]*64)) then
         overflow <- 1
     else
         result <- DIVS(dividend, divisor)
@@ -474,7 +474,7 @@ Pseudo-code:
 
     dividend[0:63] <- (RA)[32:63] || [0]*32
     divisor[0:63] <- [0]*32 || (RB)[32:63]
-    if (divisor = 0x0000_0000_0000_0000) then
+    if (divisor = [0]*64) then
         overflow <- 1
     else
         result <- dividend / divisor
@@ -503,8 +503,8 @@ Pseudo-code:
     dividend[0:31] <- (RA)[32:63]
     divisor[0:31] <- (RB)[32:63]
     if (((dividend = 0x8000_0000) &
-         (divisor = 0xffff_ffff)) |
-         (divisor = 0x0000_0000)) then
+         (divisor = [1]*32)) |
+         (divisor = [0]*32)) then
         RT[0:63] <- undefined([0]*64)
         overflow <- 1
     else
@@ -526,7 +526,7 @@ Pseudo-code:
 
     dividend[0:31] <- (RA) [32:63]
     divisor [0:31] <- (RB) [32:63]
-    if divisor = 0x0000_0000 then
+    if divisor = [0]*32 then
         RT[0:63] <- undefined([0]*64)
         overflow <- 1
     else
@@ -667,8 +667,8 @@ Pseudo-code:
     dividend[0:63] <- (RA)
     divisor[0:63] <- (RB)
     if (((dividend = 0x8000_0000_0000_0000) &
-         (divisor = 0xffff_ffff_ffff_ffff)) |
-         (divisor = 0x0000_0000_0000_0000)) then
+         (divisor = [1]*64)) |
+         (divisor = [0]*64)) then
         RT[0:63] <- undefined([0]*64)
         overflow <- 1
     else
@@ -693,7 +693,7 @@ Pseudo-code:
 
     dividend[0:63] <- (RA)
     divisor[0:63] <- (RB)
-    if (divisor = 0x0000_0000_0000_0000) then
+    if (divisor = [0]*64) then
         RT[0:63] <- undefined([0]*64)
         overflow <- 1
     else
@@ -719,8 +719,8 @@ Pseudo-code:
     dividend[0:127] <- (RA) || [0]*64
     divisor[0:127] <- EXTS128((RB))
     if (((dividend = 0x8000_0000_0000_0000_0000_0000_0000_0000) &
-         (divisor = 0xffff_ffff_ffff_ffff_ffff_ffff_ffff_ffff)) |
-         (divisor = 0x0000_0000_0000_0000_0000_0000_0000_0000)) then
+         (divisor = [1]*128)) |
+         (divisor = [0]*128)) then
         overflow <- 1
     else
         result <- DIVS(dividend, divisor)
@@ -779,8 +779,8 @@ Pseudo-code:
     dividend <- (RA)
     divisor  <- (RB)
     if (((dividend = 0x8000_0000_0000_0000) &
-         (divisor = 0xffff_ffff_ffff_ffff)) |
-         (divisor = 0x0000_0000_0000_0000)) then
+         (divisor = [1]*64)) |
+         (divisor = [0]*64)) then
         RT[0:63] <- undefined([0]*64)
         overflow <- 1
     else
@@ -801,7 +801,7 @@ Pseudo-code:
 
     dividend <- (RA)
     divisor  <- (RB)
-    if (divisor = 0x0000_0000_0000_0000) then
+    if (divisor = [0]*64) then
         RT[0:63] <- undefined([0]*64)
         overflow <- 1
     else
