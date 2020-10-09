@@ -109,7 +109,6 @@ def keyname(row):
         res.append("CRi")
     elif row['CR out'] == '1':
         res.append("CRo")
-        res += "-CRo"
     return '-'.join(res)
 
 
