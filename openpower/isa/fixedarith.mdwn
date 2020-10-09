@@ -386,9 +386,9 @@ Pseudo-code:
 
     dividend[0:31] <-  (RA)[32:63]
     divisor[0:31] <- (RB) [32:63]
-    if (((dividend = 0x8000_0000) &
-         (divisor = 0xffff_ffff)) |
-         (divisor = 0x0000_0000)) then
+    if (((dividend = ([0]*31 || [1])) &
+         (divisor = [1]*32)) |
+         (divisor = [0]*32)) then
         RT[0:63] <- undefined([0]*64)
         overflow <- 1
     else
