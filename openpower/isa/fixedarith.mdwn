@@ -365,7 +365,7 @@ XO-Form
 
 Pseudo-code:
 
-    prod[0:63] <- (RA)[32:63] *  (RB)[32:63]
+    prod[0:63] <- (RA)[32:63] * (RB)[32:63]
     RT[32:63] <- prod[0:31]
     RT[0:31] <- unsigned(prod[0:31])
 
@@ -384,7 +384,7 @@ XO-Form
 
 Pseudo-code:
 
-    dividend[0:31] <-  (RA)[32:63]
+    dividend[0:31] <- (RA)[32:63]
     divisor[0:31] <- (RB) [32:63]
     if (((dividend = 0x8000_0000) &
          (divisor = [1]*32)) |
@@ -415,7 +415,7 @@ Pseudo-code:
     dividend[0:31] <- (RA)[32:63]
     divisor[0:31] <- (RB)[32:63]
     if divisor != 0 then
-        RT[32:63] <-  dividend / divisor
+        RT[32:63] <- dividend / divisor
         RT[0:31] <- undefined([0]*32)
         overflow <- 0
     else
@@ -598,7 +598,7 @@ XO-Form
 
 Pseudo-code:
 
-    prod[0:127] <- (RA) *  (RB)
+    prod[0:127] <- (RA) * (RB)
     RT <- prod[0:63]
 
 Special Registers Altered:
@@ -749,7 +749,7 @@ XO-Form
 
 Pseudo-code:
 
-    dividend[0:127] <-  (RA) || [0]*64
+    dividend[0:127] <- (RA) || [0]*64
     divisor[0:127] <- [0]*64 || (RB)
     if divisor = [0]*128 then
         overflow <- 1
@@ -777,14 +777,14 @@ X-Form
 Pseudo-code:
 
     dividend <- (RA)
-    divisor  <- (RB)
+    divisor <- (RB)
     if (((dividend = 0x8000_0000_0000_0000) &
          (divisor = [1]*64)) |
          (divisor = [0]*64)) then
         RT[0:63] <- undefined([0]*64)
         overflow <- 1
     else
-        RT       <- MODS(dividend, divisor)
+        RT <- MODS(dividend, divisor)
         overflow <- 0
 
 Special Registers Altered:
@@ -800,12 +800,12 @@ X-Form
 Pseudo-code:
 
     dividend <- (RA)
-    divisor  <- (RB)
+    divisor <- (RB)
     if (divisor = [0]*64) then
         RT[0:63] <- undefined([0]*64)
         overflow <- 1
     else
-        RT       <- dividend % divisor
+        RT <- dividend % divisor
         overflow <- 0
 
 Special Registers Altered:
