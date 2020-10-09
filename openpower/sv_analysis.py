@@ -31,21 +31,22 @@ def isreg(field):
     return field.startswith('R') or field.startswith('FR')
 
 
-keycolumns = ['in1', 'in2', 'in3', 'out', 'CR in', 'CR out',
-                 'ldst len'] # don't think we need these: , 'rc', 'lk']
+keycolumns = ['unit', 'in1', 'in2', 'in3', 'out', 'CR in', 'CR out',
+                 ] # don't think we need these: 'ldst len', 'rc', 'lk']
+
+tablecols = ['unit', 'in', 'out', 'CR in', 'CR out',
+                 ] # don't think we need these: 'ldst len', 'rc', 'lk']
 
 def create_key(row):
     res = OrderedDict()
     #print ("row", row)
     for key in keycolumns:
-        # registers IN
+        # registers IN - special-case: count number of regs RA/RB/RC/RS
         if key in ['in1', 'in2', 'in3']:
-            # TODO: replace this with a counter row['in']
-            # will need row['in'] initialising to 0 *outside* of the for-loop
+            if 'in' not in res:
+                res['in'] = 0
             if isreg(row[key]):
-                res[key] = 'R'
-            else:
-                res[key] = '0'
+                res['in'] += 1
         # registers OUT
         if key == 'out':
             if isreg(row[key]):
@@ -58,6 +59,12 @@ def create_key(row):
                 res[key] = '0'
             else:
                 res[key] = '1'
+        # unit
+        if key == 'unit':
+            if row[key] == 'LDST': # we care about LDST units
+                res[key] = row[key]
+            else:
+                res[key] = 'OTHER'
         # LDST len
         if key.startswith('ldst'):
             if row[key].startswith('NONE'):
@@ -75,6 +82,8 @@ def create_key(row):
         if key == 'lk':
             res[key] = row[key]
 
+    res['in'] = str(res['in'])
+
     return res
 
 def dformat(d):
@@ -85,6 +94,22 @@ def dformat(d):
 
 def tformat(d):
     return ' | '.join(d) + "|"
+
+def keyname(row):
+    if row['out'] == 'R':
+        out = '1'
+    else:
+        out = '0'
+    res = '%sR-%sW' % (row['in'], out)
+    if row['CR in'] == '1' and row['CR out'] == '1':
+        res += "-CRio"
+    elif row['CR in'] == '1':
+        res += "-CRi"
+    elif row['CR out'] == '1':
+        res += "-CRo"
+    if row['unit'] != 'OTHER':
+        return '%s-' % row['unit'] + res
+    return res
 
 
 def process_csvs():
@@ -123,16 +148,17 @@ def process_csvs():
     print ("# keys")
     print ('')
     print ('[[!table  data="""')
-    print (tformat(keycolumns)) # TODO use alternative here which has
-                                # 'in' rather than in1, in2, in3
+    print (tformat(tablecols) + " name |")
 
     for key in primarykeys:
-        print (tformat(dictkeys[key].values()))
+        name = keyname(dictkeys[key])
+        print (tformat(dictkeys[key].values()) + " %s |" % name)
     print ('"""]]')
     print ('')
 
     for key in primarykeys:
-        print ("## %s " % dformat(dictkeys[key]))
+        name = keyname(dictkeys[key])
+        print ("## %s " % name)
         print ('')
         print ('[[!table  data="""')
         print (tformat(['CSV', 'opcode', 'asm', 'form']))
