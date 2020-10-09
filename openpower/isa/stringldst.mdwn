@@ -38,7 +38,7 @@ Pseudo-code:
     n <- XER[57:63]
     r <- RT - 1
     i <- 32
-    RT <- undefined
+    RT <- undefined([0]*64)
     do while n > 0
         if i = 32 then
             r <-  (r + 1) % 32
