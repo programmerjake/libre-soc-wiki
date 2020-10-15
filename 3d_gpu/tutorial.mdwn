@@ -1,6 +1,11 @@
 # Tutorial on how to get into Libre-SOC development
 
-This tutorial is a guide for anyone wishing, literally, to start from scratch and learn how to contribute to the Libre-SOC.  Much of this you should go through (skim and extract) the [[HDL_workflow]] document, however until you begin to participate much of that document is not fully relevant. This one is intended to get you "up to speed" with basic concepts.
+This tutorial is a guide for anyone wishing, literally, to start from
+scratch and learn how to contribute to the Libre-SOC.  Much of this you
+should go through (skim and extract) the [[HDL_workflow]] document,
+however until you begin to participate much of that document is not
+fully relevant. This one is intended to get you "up to speed" with
+basic concepts.
 
 Discussions here:
 
@@ -9,25 +14,66 @@ Discussions here:
 
 # Programming vs hardware.
 
-We are assuming here you know some programming language.  You know that it works in sequence (unless you went to Imperial College in the 80s and have heard of [Parlog](https://en.m.wikipedia.org/wiki/Parlog)).
+We are assuming here you know some programming language.  You know that
+it works in sequence (unless you went to Imperial College in the 80s
+and have heard of [Parlog](https://en.m.wikipedia.org/wiki/Parlog)).
 
-Hardware basically comprises transistor circuits. There's nothing in the universe or the laws of physics that says light and electricity have to operate sequentially, and consequently all Digital ASICs are an absolutely massive arrays of unbelievably excruciatingly tediously low level "gates", in parallel, separated occasionally by clock-synchronised "latches" that capture data from one processing section before passing it on to the next.
+Hardware basically comprises transistor circuits. There's nothing in the
+universe or the laws of physics that says light and electricity have to
+operate sequentially, and consequently all Digital ASICs are an absolutely
+massive arrays of unbelievably excruciatingly tediously low level "gates",
+in parallel, separated occasionally by clock-synchronised "latches" that
+capture data from one processing section before passing it on to the next.
 
-Thus, it is imperative to conceptually remind yourself, at all times, that everything that you do, even when writing your HDL code line by line, is, in fact, at the gate level, done as massively-parallel processing, **not** as sequential processing, at all.  If you want "sequential" you have to store the results of one parallel block of processing in "latches", wait for the clock to "tick", and pass it on to the next block.
+Thus, it is imperative to conceptually remind yourself, at all times,
+that everything that you do, even when writing your HDL code line by line,
+is, in fact, at the gate level, done as massively-parallel processing,
+**not** as sequential processing, at all.  If you want "sequential"
+you have to store the results of one parallel block of processing in
+"latches", wait for the clock to "tick", and pass it on to the next block.
 
-ASIC designers avoid going completely off their heads at the level of detail involved by "compartmentalising" designs into a huge hierarchy of modular design, where the tools selected aid and assist in isolating as much of the contextually-irrelevant detail as practical, allowing the developer to think in relevant concepts without being overwhelmed.
+ASIC designers avoid going completely off their heads at the level of
+detail involved by "compartmentalising" designs into a huge hierarchy of
+modular design, where the tools selected aid and assist in isolating as
+much of the contextually-irrelevant detail as practical, allowing the
+developer to think in relevant concepts without being overwhelmed.
 
-Understanding this is particularly important because the level of hierarchy of design may be *one hundred* or more modules deep *just in nmigen alone*, (and that's before understanding the abstraction that nmigen itself provides); yosys goes through several layers as well, and finally, alliance / corilolis2 have their own separate layers.
+Understanding this is particularly important because the level of
+hierarchy of design may be *one hundred* or more modules deep *just in
+nmigen alone*, (and that's before understanding the abstraction that
+nmigen itself provides); yosys goes through several layers as well,
+and finally, alliance / corilolis2 have their own separate layers.
 
-Throughout each layer, the abstractions of a higher layer are removed and replaced with topologically-equivalent but increasingly detailed equivalents.  nmigen has the *concept* of integers (not really: it has the concept of something that, when the tool is executed, will create a representation *of* an integer), and this is passed through intact to yosys.  yosys however knows that integers need to be replaced by wires, buses and gates, so that's what it does.
+Throughout each layer, the abstractions of a higher layer are removed
+and replaced with topologically-equivalent but increasingly detailed
+equivalents.  nmigen has the *concept* of integers (not really: it has
+the concept of something that, when the tool is executed, will create
+a representation *of* an integer), and this is passed through intact to
+yosys.  yosys however knows that integers need to be replaced by wires,
+buses and gates, so that's what it does.
 
-Thus, you can think safely in terms of "integers" when designing and writing the HDL, confident that the details of converting to gates and wires is taken care of.
+Thus, you can think safely in terms of "integers" when designing and
+writing the HDL, confident that the details of converting to gates and
+wires is taken care of.
 
-It is also critically important to remember that unlike a software environment there is no memory or stack, only if you create an actual SRAM and lay out the gates to address it with a binary to unary selector. There is no register file unless you actually create one. There is no ALU unless you make one... and so on.  And beyond that hardware, if you forget to add something that might be needed for exceptional purposes, if it's not there you simply cannot add it later like you can in software. If it's not there, it's not there and that's the end of the discussion.  Consequently a vast amount of time goes into planning and simulation (software, FPGA and SPICE) as mistakes and omissions can literally cost tens of millions of dollars to rectify.
+It is also critically important to remember that unlike a software
+environment there is no memory or stack, only if you create an actual SRAM
+and lay out the gates to address it with a binary to unary selector. There
+is no register file unless you actually create one. There is no ALU unless
+you make one... and so on.  And beyond that hardware, if you forget to
+add something that might be needed for exceptional purposes, if it's
+not there you simply cannot add it later like you can in software. If
+it's not there, it's not there and that's the end of the discussion.
+Consequently a vast amount of time goes into planning and simulation
+(software, FPGA and SPICE) as mistakes and omissions can literally cost
+tens of millions of dollars to rectify.
 
 # Debian
 
-Sorry, ubuntu, macosx and windows lovers: start by installing debian either in actual hardware or in a VM.  A VM has the psychological disadvantage of making you feel like you are not taking things seriously (it's a toy), so consider dual booting or getting a second machine.
+Sorry, ubuntu, macosx and windows lovers: start by installing debian
+either in actual hardware or in a VM.  A VM has the psychological
+disadvantage of making you feel like you are not taking things seriously
+(it's a toy), so consider dual booting or getting a second machine.
 
 # Python
 
@@ -39,35 +85,67 @@ cause you and everyone else who tries to read your code a world of pain.
 
 # Git
 
-Git is essential.  look up git workflow: clone, pull, push, add, commit.  Create some test repos and get familiar with it. Read the [[HDL_workflow]] document.
+Git is essential.  look up git workflow: clone, pull, push, add, commit.
+Create some test repos and get familiar with it. Read the [[HDL_workflow]]
+document.
 
 # Basics of gates
 
-You need to understand what gates are.  look up AND, OR, XOR, NOT, NAND, NOR, MUX, DFF, SR latch on electronics forums and wikipedia. also look up "register latches", then HALF ADDER and FULL ADDER.  If you would like a particularly amusing relevant distraction, look up the guy who built an entire functional computer out of 74 series logic chips, on breadboards.  It's now in a museum.
+You need to understand what gates are.  look up AND, OR, XOR, NOT, NAND,
+NOR, MUX, DFF, SR latch on electronics forums and wikipedia. also look up
+"register latches", then HALF ADDER and FULL ADDER.  If you would like a
+particularly amusing relevant distraction, look up the guy who built an
+entire functional computer out of 74 series logic chips, on breadboards.
+It's now in a museum.
 
-For some reason, ASIC designers call collections of gates (such as MUXers) "Cells", no matter how large they are.  There are some more complex "Cells" such as "4-input MUX" or "3-input XOR" and so on, which should be self-explanatory.  Thus you will see the words "Cell Library" used.
+For some reason, ASIC designers call collections of gates (such as MUXers)
+"Cells", no matter how large they are.  There are some more complex
+"Cells" such as "4-input MUX" or "3-input XOR" and so on, which should
+be self-explanatory.  Thus you will see the words "Cell Library" used.
 
-Yes you can create your own cell libraries, however you will also see Foundries refer to things called "Standard Cell Libraries" which they  expect you to use (under NDA. sigh).
+Yes you can create your own cell libraries, however you will also see
+Foundries refer to things called "Standard Cell Libraries" which they
+expect you to use (under NDA. sigh).
 
-Also look up "boolean algebra", "Karnaugh maps", truth tables and things like that.
+Also look up "boolean algebra", "Karnaugh maps", truth tables and things
+like that.
 
-From there you can begin to appreciate how deeply ridiculously low level this all is, and why we are using nmigen.  nmigen constructs "useful" concepts like "32 bit numbers", which actually do not exist at the gate level: they only exist by way of being constructed from chains of 1 bit (binary) processing!
+From there you can begin to appreciate how deeply ridiculously low level
+this all is, and why we are using nmigen.  nmigen constructs "useful"
+concepts like "32 bit numbers", which actually do not exist at the gate
+level: they only exist by way of being constructed from chains of 1 bit
+(binary) processing!
 
-So for example, a 32 bit adder is "constructed" from a batch of 32 FULL ADDERs (actually, 31 FULL and one HALF).  Even things like comparing two numbers, the simple "==" or ">=" operators, are done entirely with a bit-level cascade!
+So for example, a 32 bit adder is "constructed" from a batch of 32 FULL
+ADDERs (actually, 31 FULL and one HALF).  Even things like comparing
+two numbers, the simple "==" or ">=" operators, are done entirely with
+a bit-level cascade!
 
-This would drive you nuts if you had to think at this level all the time, consequently "High" in "High Level Language" was invented. Luckily in python, you can override \_\_add\_\_ and so on in order that when you put "a + b" into a nmigen program it gives you the *impression* that two "actual" numbers are being added, whereas in fact you requested that the HDL create a massive bunch of "gates" on your behalf.
+This would drive you nuts if you had to think at this level all the time,
+consequently "High" in "High Level Language" was invented. Luckily in
+python, you can override \_\_add\_\_ and so on in order that when you put
+"a + b" into a nmigen program it gives you the *impression* that two
+"actual" numbers are being added, whereas in fact you requested that
+the HDL create a massive bunch of "gates" on your behalf.
 
-i.e. *behind the scenes* the HDL uses "cells" that in a massive hierarchical cascade ultimately end up at nothing more than "gates".
+i.e. *behind the scenes* the HDL uses "cells" that in a massive
+hierarchical cascade ultimately end up at nothing more than "gates".
 
-Yes you really do need to know this because those "gates" cost both power, space, and take time to switch.  So if you have too many of them in a chain, your chip is limited in its top speed.  This is the point at which you should be looking up "pipelines" and "register latches", as well as "combinatorial blocks".
+Yes you really do need to know this because those "gates" cost both
+power, space, and take time to switch.  So if you have too many of them
+in a chain, your chip is limited in its top speed.  This is the point
+at which you should be looking up "pipelines" and "register latches",
+as well as "combinatorial blocks".
 
-you also want to look up the concept of a FSM (Finite State Machine) and the difference between a Mealy and a Moore FSM.
+you also want to look up the concept of a FSM (Finite State Machine)
+and the difference between a Mealy and a Moore FSM.
 
 ## NDAs...
 
 These are a nuisance.  There are around 4 levels of NDAs to bust through:
 Full chip designs, peripherals and other third party components, Cell
-Libraries, and Foundries.  Often, the Foundries supply their own Standard Cell Libraries (see above).
+Libraries, and Foundries.  Often, the Foundries supply their own Standard
+Cell Libraries (see above).
 
 Sometimes you want to design something not under NDA (as we do), but
 in order to do so you still need to know the "shape" of the Cells.
@@ -77,46 +155,76 @@ The official Industry term for these is "phantom views".  See
 <http://bugs.libre-riscv.org/show_bug.cgi?id=178#c106> for discussion.
 
 Then there are also "abstract" views: these are also under NDA.
-So, we will be doing the layout in generic "lambda" design,
-and a conversion pass (under NDA) is carried out which maps to
-TSMC. See
+So, we will be doing the layout in generic "lambda" design, and a
+conversion pass (under NDA) is carried out which maps to TSMC. See
 <http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2020-March/004804.html>
 
 
 # nmigen
 
-Once you understand gates and python, nmigen starts to make sense. 
+Once you understand gates and python, nmigen starts to make sense.
 
-Nmigen works by creating an in-memory "Abstract Syntax Tree" which is handed to yosys (via yosys "ILANG" format) which in turn actually generates the cells and netlists.
+Nmigen works by creating an in-memory "Abstract Syntax Tree" which
+is handed to yosys (via yosys "ILANG" format) which in turn actually
+generates the cells and netlists.
 
-So you write code in python, using the nmigen library of classes and helper routines, to construct an AST which *represents* the actual hardware. Yosys takes care of the level *below* nmigen, and is just a tool.
+So you write code in python, using the nmigen library of classes and
+helper routines, to construct an AST which *represents* the actual
+hardware. Yosys takes care of the level *below* nmigen, and is just
+a tool.
 
-Install nmigen (and yosys) by following [[HDL_workflow]] then follow the excellent tutorial by Robert <https://github.com/RobertBaruch/nmigen-tutorial>
-and also look up the resources here <https://nmigen.info/nmigen/latest/tutorial.html>
+Install nmigen (and yosys) by following [[HDL_workflow]]
+then follow the excellent tutorial by Robert
+<https://github.com/RobertBaruch/nmigen-tutorial> and also look up the
+resources here <https://nmigen.info/nmigen/latest/tutorial.html>
 
-Pay particular attention to the bits in HDL workflow about using yosys "show" command.  This is essential because the nmigen code gets turned into gates, and yosys show will bring up a graph that allows you to see that.
-It's also very useful to run the "proc" and "opt" command followed by
-a second "show top" (or show {insert module name}).  Yosys "process"
+Pay particular attention to the bits in HDL workflow about using yosys
+"show" command.  This is essential because the nmigen code gets turned
+into gates, and yosys show will bring up a graph that allows you to see
+that.  It's also very useful to run the "proc" and "opt" command followed
+by a second "show top" (or show {insert module name}).  Yosys "process"
 and "optimise" commands transform the design into something closer to
 what is actually synthesised at the gate level.
 
-In nmigen, pay particular attention to "comb" (combinatorial) and "sync" (synchronous).  Comb is a sequence of gates without any clock-synchronised latches.  With comb it is absolutely essential that you **do not** create a "loop" by mistake:  i.e. combinatorial output must never, under any circumstances, loop back to combinatorial input.  "comb" blocks must be DAGs (Directed Acyclic Graphs) in other words.  "sync" will *automatically* create a clock synchronised register for you.  This is how you construct pipelines.  Also, if you want to create cyclic graphs, you absolutely **must** store partial results of combinatorial blocks in registers (with sync) *before* passing those partial results back into more (or the same) combinatorial blocks.
+In nmigen, pay particular attention to "comb" (combinatorial)
+and "sync" (synchronous).  Comb is a sequence of gates without any
+clock-synchronised latches.  With comb it is absolutely essential that
+you **do not** create a "loop" by mistake:  i.e. combinatorial output
+must never, under any circumstances, loop back to combinatorial input.
+"comb" blocks must be DAGs (Directed Acyclic Graphs) in other words.
+"sync" will *automatically* create a clock synchronised register for you.
+This is how you construct pipelines.  Also, if you want to create cyclic
+graphs, you absolutely **must** store partial results of combinatorial
+blocks in registers (with sync) *before* passing those partial results
+back into more (or the same) combinatorial blocks.
 
 * http://www.clifford.at/yosys/cmd_proc.html
 
 # verilog
 
-Verilog is really worth mentioning in passing.  You will see it a lot.  Verilog was designed in the 1980s, when the state of the art in computer programming was BASIC, FORTRAN, and, if you were lucky, PASCAL.
+Verilog is really worth mentioning in passing.  You will see it a lot.
+Verilog was designed in the 1980s, when the state of the art in computer
+programming was BASIC, FORTRAN, and, if you were lucky, PASCAL.
 
-Object-orientated design was a buzzword in Universities.  java did not exist.  c++ did not exist.  Consequently, even just for testing of ASICs, which were still being done at the gate level, some bright spark decided to write a test suite in a high level language.
+Object-orientated design was a buzzword in Universities.  java did
+not exist.  c++ did not exist.  Consequently, even just for testing of
+ASICs, which were still being done at the gate level, some bright spark
+decided to write a test suite in a high level language.
 
 That language was: verilog.
 
-Soon afterwards, someone realised that actual ASICs themselves could be written *in* verilog.  Unfortunately, however, with verilog being designed on 1980s state of the art programming concepts, it has hampered ASiC design ever since.
+Soon afterwards, someone realised that actual ASICs themselves could
+be written *in* verilog.  Unfortunately, however, with verilog being
+designed on 1980s state of the art programming concepts, it has hampered
+ASiC design ever since.
 
-We use nmigen because we can do proper OO. we can do multiple inheritance, class MixIns.  proper parameterisation and much more, all of which would be absolute hell to do in verilog.  We would need some form of massive macro preprocessing system or a nonstandard version of verilog.
+We use nmigen because we can do proper OO. we can do multiple inheritance,
+class MixIns.  proper parameterisation and much more, all of which would
+be absolute hell to do in verilog.  We would need some form of massive
+macro preprocessing system or a nonstandard version of verilog.
 
-Rather than inflict that kind of pain onto both ourselves and the rest of the world, we went with nmigen. Now you know why. hurrah.
+Rather than inflict that kind of pain onto both ourselves and the rest
+of the world, we went with nmigen. Now you know why. hurrah.
 
 p.s. here's the
 [full discussion](http://lists.libre-riscv.org/pipermail/libre-riscv-dev/2018-November/000171.html)
