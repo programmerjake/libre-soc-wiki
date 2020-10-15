@@ -31,7 +31,11 @@ Sorry, ubuntu, macosx and windows lovers: start by installing debian either in a
 
 # Python
 
-First: learn python.  python3 to be precise.  Start by learning the basic data types: string, int, float then dict, list and tuple.  Then move on to functions, then classes, exceptions and the "with" statement.  Along the way you will pick up imports. Do not use "import *" it will cause you a world of pain.
+First: learn python.  python3 to be precise.  Start by learning the basic
+data types: string, int, float then dict, list and tuple.  Then move
+on to functions, then classes, exceptions and the "with" statement.
+Along the way you will pick up imports. Do not use "import \*" it will
+cause you and everyone else who tries to read your code a world of pain.
 
 # Git
 
@@ -88,6 +92,7 @@ Nmigen works by creating an in-memory "Abstract Syntax Tree" which is handed to 
 So you write code in python, using the nmigen library of classes and helper routines, to construct an AST which *represents* the actual hardware. Yosys takes care of the level *below* nmigen, and is just a tool.
 
 Install nmigen (and yosys) by following [[HDL_workflow]] then follow the excellent tutorial by Robert <https://github.com/RobertBaruch/nmigen-tutorial>
+and also look up the resources here <https://nmigen.info/nmigen/latest/tutorial.html>
 
 Pay particular attention to the bits in HDL workflow about using yosys "show" command.  This is essential because the nmigen code gets turned into gates, and yosys show will bring up a graph that allows you to see that.
 It's also very useful to run the "proc" and "opt" command followed by
