@@ -1,0 +1,53 @@
+[[!tag standards]]
+
+# Example execution of vector chaining through masks stored in integer registers
+
+As described in [bug 213 comment 56](https://bugs.libre-soc.org/show_bug.cgi?id=213#c56)
+and [bug 213 comment 53](https://bugs.libre-soc.org/show_bug.cgi?id=213#c53).
+
+See [Chaining on the Cray-1](http://homepages.inf.ed.ac.uk/cgi/rni/comp-arch.pl?Vect/cray1-ch.html,Vect/cray1-ch-f.html,Vect/menu-cr1.html).
+
+Using the following assembly language:
+
+    # starts with VL = 20
+    vec.cmpw.ge r10, r30, r50
+    andc r12, r10, r11
+    vec.fadds f30, f30, f50, mask=r12
+
+The examples assume a computer with a 4x32-bit SIMD integer pipe and a 4x32-bit SIMD FP pipe and a scalar integer pipe.
+
+For ease of viewing, the following examples combines execution pipelines and the scheduling FUs, which are separate things.
+
+## Treating integer registers as whole registers at the scheduler level (chaining\* doesn't work)
+
+Slow because the `fadds` instructions have to wait for all the `cmpw.ge` and `andc` instructions to complete before any can start executing.
+
+| Cycle | SIMD integer pipe                     | SIMD FP pipe                                     | scalar integer pipe              |
+|-------|---------------------------------------|--------------------------------------------------|----------------------------------|
+| 0     | `r10.0-3 <- cmpw.ge r30-31, r50-51`   | waiting on `r12.0-63`                            | waiting on `r10.0-63`            |
+| 1     | `r10.4-7 <- cmpw.ge r32-33, r52-53`   | waiting on `r12.0-63`                            | waiting on `r10.0-63`            |
+| 2     | `r10.8-11 <- cmpw.ge r34-35, r54-55`  | waiting on `r12.0-63`                            | waiting on `r10.0-63`            |
+| 3     | `r10.12-15 <- cmpw.ge r36-37, r56-57` | waiting on `r12.0-63`                            | waiting on `r10.0-63`            |
+| 4     | `r10.16-19 <- cmpw.ge r38-39, r58-59` | waiting on `r12.0-63`                            | waiting on `r10.0-63`            |
+| 5     |                                       | waiting on `r12.0-63`                            | `r12.0-63 <- andc r10.0-63, r11` |
+| 6     |                                       | `f30-31 <- fadds f30-31, f50-51, mask=r12.0-3`   |                                  |
+| 7     |                                       | `f32-33 <- fadds f32-33, f52-53, mask=r12.4-7`   |                                  |
+| 8     |                                       | `f34-35 <- fadds f34-35, f54-55, mask=r12.8-11`  |                                  |
+| 9     |                                       | `f36-37 <- fadds f36-37, f56-57, mask=r12.12-15` |                                  |
+| 10    |                                       | `f38-39 <- fadds f38-39, f58-59, mask=r12.16-19` |                                  |
+
+## Treating integer registers\* as many single-bit registers at the scheduler level (vector chaining works)
+
+\* or at least the register(s) optimized for usage as masks
+
+Faster because `fadds` instructions only have to wait for their vector lanes' mask bits to complete, rather than all vector lanes.
+
+| Cycle | SIMD integer pipe                     | SIMD FP pipe                                     | scalar integer pipe                      |
+|-------|---------------------------------------|--------------------------------------------------|------------------------------------------|
+| 0     | `r10.0-3 <- cmpw.ge r30-31, r50-51`   | waiting on `r12.0-3`                             | waiting on `r10.0-3`                     |
+| 1     | `r10.4-7 <- cmpw.ge r32-33, r52-53`   | waiting on `r12.0-3`                             | `r12.0-3 <- andc r10.0-3, r11.0-3`       |
+| 2     | `r10.8-11 <- cmpw.ge r34-35, r54-55`  | `f30-31 <- fadds f30-31, f50-51, mask=r12.0-3`   | `r12.4-7 <- andc r10.4-7, r11.4-7`       |
+| 3     | `r10.12-15 <- cmpw.ge r36-37, r56-57` | `f32-33 <- fadds f32-33, f52-53, mask=r12.4-7`   | `r12.8-11 <- andc r10.8-11, r11.8-11`    |
+| 4     | `r10.16-19 <- cmpw.ge r38-39, r58-59` | `f34-35 <- fadds f34-35, f54-55, mask=r12.8-11`  | `r12.12-15 <- andc r10.12-15, r11.12-15` |
+| 5     |                                       | `f36-37 <- fadds f36-37, f56-57, mask=r12.12-15` | `r12.16-19 <- andc r10.16-19, r11.16-19` |
+| 6     |                                       | `f38-39 <- fadds f38-39, f58-59, mask=r12.16-19` |                                          |
