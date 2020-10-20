@@ -1,1 +1,16 @@
+# Simple-V Vectorisation for the OpenPOWER ISA
+
+Fundamental design principles:
+
+* Simplicity of introduction and implementation on the existing OpenPOWER ISA
+* Effectively a hardware for-loop, pausing PC, issuing multiple scalar operations
+* Augments ("tags") existing instructions, providing Vectorisation "context" rather than adding new ones.
+
+Advantages of these design principles:
+
+* It is therefore easy to create a first (and sometimes only) implementation as literally a for-loop in hardware, simulators, and compilers.
+* As (mostly) a high-level "context" it is minimally-disruptive and consequently stands a reasonable chance of broad community adoption and acceptance
+
+Pages being developed
+
 * [[openpower/sv/predication]]
