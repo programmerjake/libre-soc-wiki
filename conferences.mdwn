@@ -47,6 +47,7 @@
 * Using litex, nmigen, opencores HDL
   - heavily depending on python OO (not possible with VHDL or Verilog)
   - leap-frogging ahead by not reinventing the wheel
+  - yosys converts nmigen to verilog for standard tools.
 
 ## Why is it different from other SoCs?
 
@@ -54,13 +55,12 @@
   - OpenPOWER ISA *itself* is extended to include 3D and Video instructions
   - (SIN, ATAN2, YUV2RGB, Texture Interpolation)
   - Only after approval of OpenPOWER Foundation!
+  - There is no separate GPU or VPU: it really is the same core.
   - Massively simplifies driver development and application debugging
 * Vectorisation is "Simple-V" (VSX not being implemented)
   - VSX is SIMD and is considered harmful
   - https://www.sigarch.org/simd-instructions-considered-harmful/
-* Developed in python HDL called "nmigen"
-  - OO programming techniques can be used (not possible in VHDL/Verilog)
-  - yosys converts nmigen to verilog for standard tools.
+
 
 ## What is being developed? (Roadmap)
 
