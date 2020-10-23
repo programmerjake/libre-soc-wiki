@@ -211,7 +211,7 @@ The three exports are best added to ~/.bash_profile for later convenience
 
 Install alliance-check-toolkit in the chroot:
 
-* <https://gitlab.lip6.fr/vlsi-eda/alliance.git>
+* <https://gitlab.lip6.fr/vlsi-eda/alliance-check-toolkit.git>
 * See coriolis-2.x/Linux.x86_64/Release.Shared/install/share/doc/coriolis2/en/html/main/PythonTutorial/index.html
 
 Run the following (if not done already):
@@ -220,16 +220,16 @@ Run the following (if not done already):
 
 Git clone alliance-check-toolkit:
 
-    git clone https://gitlab.lip6.fr/vlsi-eda/alliance.git
+    git clone https://gitlab.lip6.fr/vlsi-eda/alliance-check-toolkit.git
 
 You must create a configuration for your user in alliance-check-toolkit to define where the various tools are installed:
 
-    touch alliance-check-toolkit/etc/mk/users.d/user-USERNAME.mk
-    cat <<EOF >>alliance-check-toolkit/etc/mk/users.d/user-USERNAME.mk
-    export CORIOLIS_TOP=/home/USERNAME/coriolis-2.x/Linux.x86_64/Release.Shared/install
-    export ALLIANCE_TOP=/home/USERNAME/alliance/install
-    export CHECK_TOOLKIT=/home/USERNAME/alliance-check-toolkit
-    export YOSYS_TOP=/home/USERNAME/yosys
+    touch alliance-check-toolkit/etc/mk/users.d/user-$USERNAME.mk
+    cat <<EOF >>alliance-check-toolkit/etc/mk/users.d/user-$USERNAME.mk
+    export CORIOLIS_TOP=/home/$USERNAME/coriolis-2.x/Linux.x86_64/Release.Shared/install
+    export ALLIANCE_TOP=/home/$USERNAME/alliance/install
+    export CHECK_TOOLKIT=/home/$USERNAME/alliance-check-toolkit
+    export YOSYS_TOP=/home/$USERNAME/yosys
     EOF
 
 You can try the ARM in alliance-check-toolkit:
