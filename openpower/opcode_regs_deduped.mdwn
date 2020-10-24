@@ -1,31 +1,35 @@
 # keys
 
 [[!table  data="""
-unit | in | out | CR in | CR out| name |
-LDST | 1 | R | 0 | 0| LDST-1R-1W |
+unit | in | outcnt | CR in | CR out| name |
+LDST | 1 | 1 | 0 | 0| LDST-1R-1W |
+LDST | 1 | 2 | 0 | 0| LDST-1R-2W |
 LDST | 2 | 0 | 0 | 0| LDST-2R |
-LDST | 2 | R | 0 | 0| LDST-2R-1W |
+LDST | 2 | 1 | 0 | 0| LDST-2R-1W |
+LDST | 2 | 2 | 0 | 0| LDST-2R-2W |
 LDST | 3 | 0 | 0 | 0| LDST-3R |
 LDST | 3 | 0 | 0 | 1| LDST-3R-CRo |
+LDST | 3 | 1 | 0 | 0| LDST-3R-1W |
+LDST | 3 | 1 | 0 | 1| LDST-3R-1W-CRo |
 OTHER | 0 | 0 | 0 | 0|  |
 OTHER | 0 | 0 | 1 | 0| CRi |
 OTHER | 0 | 0 | 1 | 1| CRio |
-OTHER | 0 | R | 0 | 0| 1W |
-OTHER | 0 | R | 1 | 0| 1W-CRi |
+OTHER | 0 | 1 | 0 | 0| 1W |
+OTHER | 0 | 1 | 1 | 0| 1W-CRi |
 OTHER | 1 | 0 | 0 | 0| 1R |
 OTHER | 1 | 0 | 0 | 1| 1R-CRo |
 OTHER | 1 | 0 | 1 | 1| 1R-CRio |
-OTHER | 1 | R | 0 | 0| 1R-1W |
-OTHER | 1 | R | 0 | 1| 1R-1W-CRo |
-OTHER | 1 | R | 1 | 1| 1R-1W-CRio |
+OTHER | 1 | 1 | 0 | 0| 1R-1W |
+OTHER | 1 | 1 | 0 | 1| 1R-1W-CRo |
+OTHER | 1 | 1 | 1 | 1| 1R-1W-CRio |
 OTHER | 2 | 0 | 0 | 0| 2R |
 OTHER | 2 | 0 | 0 | 1| 2R-CRo |
 OTHER | 2 | 0 | 1 | 1| 2R-CRio |
-OTHER | 2 | R | 0 | 0| 2R-1W |
-OTHER | 2 | R | 0 | 1| 2R-1W-CRo |
-OTHER | 2 | R | 1 | 0| 2R-1W-CRi |
-OTHER | 2 | R | 1 | 1| 2R-1W-CRio |
-OTHER | 3 | R | 1 | 1| 3R-1W-CRio |
+OTHER | 2 | 1 | 0 | 0| 2R-1W |
+OTHER | 2 | 1 | 0 | 1| 2R-1W-CRo |
+OTHER | 2 | 1 | 1 | 0| 2R-1W-CRi |
+OTHER | 2 | 1 | 1 | 1| 2R-1W-CRio |
+OTHER | 3 | 1 | 1 | 1| 3R-1W-CRio |
 """]]
 
 ## LDST-1R-1W 
@@ -33,16 +37,22 @@ OTHER | 3 | R | 1 | 1| 3R-1W-CRio |
 [[!table  data="""
 CSV | opcode | asm | form|
 major.csv | 32 | lwz | D-Form|
-major.csv | 33 | lwzu | D-Form|
 major.csv | 34 | lbz | D-Form|
-major.csv | 35 | lbzu | D-Form|
 major.csv | 40 | lhz | D-Form|
-major.csv | 41 | lhzu | D-Form|
 major.csv | 42 | lha | D-Form|
-major.csv | 43 | lhau | D-Form|
 minor_58.csv | 0 | ld | DS-Form|
-minor_58.csv | 1 | ldu | DS-Form|
 minor_58.csv | 2 | lwa | DS-Form|
+"""]]
+
+## LDST-1R-2W 
+
+[[!table  data="""
+CSV | opcode | asm | form|
+major.csv | 33 | lwzu | D-Form|
+major.csv | 35 | lbzu | D-Form|
+major.csv | 41 | lhzu | D-Form|
+major.csv | 43 | lhau | D-Form|
+minor_58.csv | 1 | ldu | DS-Form|
 """]]
 
 ## LDST-2R 
@@ -50,35 +60,28 @@ minor_58.csv | 2 | lwa | DS-Form|
 [[!table  data="""
 CSV | opcode | asm | form|
 major.csv | 36 | stw | D-Form|
-major.csv | 37 | stwu | D-Form|
 major.csv | 38 | stb | D-Form|
-major.csv | 39 | stbu | D-Form|
 major.csv | 44 | sth | D-Form|
-major.csv | 45 | sthu | D-Form|
 minor_62.csv | 0 | std | DS-Form|
-minor_62.csv | 1 | stdu | DS-Form|
 """]]
 
 ## LDST-2R-1W 
 
 [[!table  data="""
 CSV | opcode | asm | form|
+major.csv | 37 | stwu | D-Form|
+major.csv | 39 | stbu | D-Form|
+major.csv | 45 | sthu | D-Form|
 minor_31.csv | 0b0000010100 | lwarx | X-Form|
 minor_31.csv | 0b0000010101 | ldx | X-Form|
 minor_31.csv | 0b0000010111 | lwzx | X-Form|
 minor_31.csv | 0b0000110100 | lbarx | X-Form|
-minor_31.csv | 0b0000110101 | ldux | X-Form|
-minor_31.csv | 0b0000110111 | lwzux | X-Form|
 minor_31.csv | 0b0001010100 | ldarx | X-Form|
 minor_31.csv | 0b0001010111 | lbzx | X-Form|
 minor_31.csv | 0b0001110100 | lharx | X-Form|
-minor_31.csv | 0b0001110111 | lbzux | X-Form|
 minor_31.csv | 0b0100010111 | lhzx | X-Form|
-minor_31.csv | 0b0100110111 | lhzux | X-Form|
 minor_31.csv | 0b0101010101 | lwax | X-Form|
 minor_31.csv | 0b0101010111 | lhax | X-Form|
-minor_31.csv | 0b0101110101 | lwaux | X-Form|
-minor_31.csv | 0b0101110111 | lhaux | X-Form|
 minor_31.csv | 0b1000010100 | ldbrx | X-Form|
 minor_31.csv | 0b1000010110 | lwbrx | X-Form|
 minor_31.csv | 0b1100010101 | lwzcix | X-Form|
@@ -86,6 +89,19 @@ minor_31.csv | 0b1100010110 | lhbrx | X-Form|
 minor_31.csv | 0b1100110101 | lhzcix | X-Form|
 minor_31.csv | 0b1101010101 | lbzcix | X-Form|
 minor_31.csv | 0b1101110101 | ldcix | X-Form|
+minor_62.csv | 1 | stdu | DS-Form|
+"""]]
+
+## LDST-2R-2W 
+
+[[!table  data="""
+CSV | opcode | asm | form|
+minor_31.csv | 0b0000110101 | ldux | X-Form|
+minor_31.csv | 0b0000110111 | lwzux | X-Form|
+minor_31.csv | 0b0001110111 | lbzux | X-Form|
+minor_31.csv | 0b0100110111 | lhzux | X-Form|
+minor_31.csv | 0b0101110101 | lwaux | X-Form|
+minor_31.csv | 0b0101110111 | lhaux | X-Form|
 """]]
 
 ## LDST-3R 
@@ -95,11 +111,8 @@ CSV | opcode | asm | form|
 minor_31.csv | 0b0010010101 | stdx | X-Form|
 minor_31.csv | 0b0010010110 | stwcx | X-Form|
 minor_31.csv | 0b0010010111 | stwx | X-Form|
-minor_31.csv | 0b0010110101 | stdux | X-Form|
-minor_31.csv | 0b0010110111 | stwux | X-Form|
 minor_31.csv | 0b0011010110 | stdcx | X-Form|
 minor_31.csv | 0b0110010111 | sthx | X-Form|
-minor_31.csv | 0b0110110111 | sthux | X-Form|
 minor_31.csv | 0b1010010100 | stdbrx | X-Form|
 minor_31.csv | 0b1010010110 | stwbrx | X-Form|
 minor_31.csv | 0b1011010110 | sthcx | X-Form|
@@ -115,8 +128,23 @@ minor_31.csv | 0b1111110101 | stdcix | X-Form|
 [[!table  data="""
 CSV | opcode | asm | form|
 minor_31.csv | 0b0011010111 | stbx | X-Form|
-minor_31.csv | 0b0011110111 | stbux | X-Form|
 minor_31.csv | 0b1010110110 | stbcx | X-Form|
+"""]]
+
+## LDST-3R-1W 
+
+[[!table  data="""
+CSV | opcode | asm | form|
+minor_31.csv | 0b0010110101 | stdux | X-Form|
+minor_31.csv | 0b0010110111 | stwux | X-Form|
+minor_31.csv | 0b0110110111 | sthux | X-Form|
+"""]]
+
+## LDST-3R-1W-CRo 
+
+[[!table  data="""
+CSV | opcode | asm | form|
+minor_31.csv | 0b0011110111 | stbux | X-Form|
 """]]
 
 ##  
@@ -164,10 +192,8 @@ minor_19.csv | 0b0100000001 | crand | XL-Form|
 minor_19.csv | 0b0100100001 | creqv | XL-Form|
 minor_19.csv | 0b0110100001 | crorc | XL-Form|
 minor_19.csv | 0b0111000001 | cror | XL-Form|
-minor_31.csv | 0b0011000000 | cmprb | X-Form|
 minor_31.csv | 0b1000000000 | mcrxr | X-Form|
 minor_31.csv | 0b1001000000 | mcrxrx | X-Form|
-minor_31.csv | 0b1011110011 | darn | X-Form|
 minor_63l.csv | 0b000000010 | 2/0=mcrfs | -Form|
 minor_63l.csv | 0b011000001 | 1/6=mtfsb1 | -Form|
 minor_63l.csv | 0b011000010 | 2/6=mtfsb0 | -Form|
@@ -217,6 +243,7 @@ major.csv | 11 | cmpi | D-Form|
 [[!table  data="""
 CSV | opcode | asm | form|
 minor_31.csv | 0b0010010000 | mtcrf/mtocrf | XFX-Form|
+minor_31.csv | 0b1011110011 | darn | X-Form|
 minor_63l.csv | 0b000000101 | 5/0=ftsqrt | -Form|
 minor_63l.csv | 0b011110110 | 22/7=mtfsf | -Form|
 """]]
@@ -327,6 +354,7 @@ minor_31.csv | 0b1111110110 | dcbz | X-Form|
 CSV | opcode | asm | form|
 minor_31.csv | 0b0000000000 | cmp | X-Form|
 minor_31.csv | 0b0000100000 | cmpl | X-Form|
+minor_31.csv | 0b0011000000 | cmprb | X-Form|
 minor_31.csv | 0b0011100000 | cmpeqb | X-Form|
 """]]
 

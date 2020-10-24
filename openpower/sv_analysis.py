@@ -49,7 +49,7 @@ def isreg(field):
 keycolumns = ['unit', 'in1', 'in2', 'in3', 'out', 'CR in', 'CR out',
                  ] # don't think we need these: 'ldst len', 'rc', 'lk']
 
-tablecols = ['unit', 'in', 'out', 'CR in', 'CR out', 'outcnt',
+tablecols = ['unit', 'in', 'outcnt', 'CR in', 'CR out', 
                  ] # don't think we need these: 'ldst len', 'rc', 'lk']
 
 def create_key(row):
@@ -65,14 +65,11 @@ def create_key(row):
 
         # registers OUT
         if key == 'out':
-            if isreg(row[key]):
-                res[key] = 'R'
-            else:
-                res[key] = '0'
-
             # If upd is 1 then increment the count of outputs
             if 'outcnt' not in res:
                 res['outcnt'] = 0
+            if isreg(row[key]):
+                res['outcnt'] += 1
             if row['upd'] == '1':
                 res['outcnt'] += 1
 
@@ -127,8 +124,8 @@ def keyname(row):
         res.append(row['unit'])
     if row['in'] != '0':
         res.append('%sR' % row['in'])
-    if row['out'] == 'R':
-        res.append('1W')
+    if row['outcnt'] != '0':
+        res.append('%sW' % row['outcnt'])
     if row['CR in'] == '1' and row['CR out'] == '1':
         res.append("CRio")
     elif row['CR in'] == '1':
