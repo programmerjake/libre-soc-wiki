@@ -13,3 +13,34 @@
 * must be easily implementable in any  microarchitecture including out-of-order 
 * must not compromise or penalise any microarchitectural performance
 * must cover up to 64 elements
+
+# Proposals
+
+## CR-based predication proposal
+
+this involves treating each CR as providing one bit of predicate. If there is limited space in SVPrefix it will be a fixed bit (bit 0) otherwise it may be selected (bit 0 to 3 of the CR)
+
+the crucial advantage of this proposal is that the Function Units can have one more register (a CR) added as their Read Dependency Hazards just like all the other incoming source registers.
+
+an analysis of changing the element widths (for SIMD) gives the following potential arrangements, for which it is assumed that 2x 32-bit FUs "pair up" for single 64 bit arithmetic, HI32 and LO32 style.
+
+* 64-bit operations.  2 FUs and their DM rows "collaborate" 
+  - 2x 32-bit source registers gang together for 64 bit input
+  - 2x 32-bit output registers likewise for output
+  - 1x CR (from the LO32 FU DM side) for a predicate bit
+* 32-bit operations.  2 FUs collaborate 2x32 SIMD style
+  - 2x 32-bit source registers go into separate input halves of the SIMD ALU
+  - 2x 32-bit outputs likewise for output
+  - 2x CRs (one for HI32, one for LO32) for a predicate bit for each of the 2x32bit SIMD pair
+* 16-bit operations. 2 FUs collaborate 4x16 SIMD style
+  - 2x 2x16-bit source registers group together to provide 4x16 inputs
+  - likewise for outputs
+  - EITHER 2x 2xCRs (2 for HI32, 2 for LO32) provide 4 predicate bits
+  - OR 1x 8xCR "full" port is utilised (on LO32 FU) followed by masking at the ALU behind the FU pair, extracting the required 4 predicate bits
+* 8-bit operations. 2 FUs collaborate 8x8 SIMD style
+  - 2x 4x8-bit source registers
+  - likewise for outputs
+  - 1x 8xCR "full" port is utilised (on LO32 FU) and all 8 bits are passed through to the underlying 64-bit ALU to perform 8x 8-bit predicated operations
+
+a big advantage of this is that unpredicated operations just set the predicate to an immediate of all 1s and the actual ALUs require very little modification.
+
