@@ -20,7 +20,7 @@
 
 this involves treating each CR as providing one bit of predicate. If there is limited space in SVPrefix it will be a fixed bit (bit 0) otherwise it may be selected (bit 0 to 3 of the CR)
 
-the crucial advantage of this proposal is that the Function Units can have one more register (a CR) added as their Read Dependency Hazards just like all the other incoming source registers.
+the crucial advantage of this proposal is that the Function Units can have one more register (a CR) added as their Read Dependency Hazards just like all the other incoming source registers, and there is no need for a special "Predicate Shadow Function Unit".
 
 an analysis of changing the element widths (for SIMD) gives the following potential arrangements, for which it is assumed that 2x 32-bit FUs "pair up" for single 64 bit arithmetic, HI32 and LO32 style.
 
