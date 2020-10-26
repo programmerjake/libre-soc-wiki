@@ -29,7 +29,7 @@ Implementation note: even in in-order microarchitectures it is strongly adviseab
 
 ## General implications and considerations
 
-XER.SO (sticky overflow) is known to cause massive slowdown in pretty much every microarchitecture and it definitely compromises the perfornance of out-of-order systems.  The reason is that it introduces READ-MODIFY-WRITE between XER.SO and CR0 (which contains a copy of the SO field after inclusion of the overflow). The result and source registers branch off as RaW and WaR hazards from this RMW chain.
+XER.SO (sticky overflow) is known to cause massive slowdown in pretty much every microarchitecture and it definitely compromises the performance of out-of-order systems.  The reason is that it introduces a READ-MODIFY-WRITE cycle between XER.SO and CR0 (which contains a copy of the SO field after inclusion of the overflow). The result and source registers branch off as RaW and WaR hazards from this RMW chain.
 
 This is even before predication or vectorisation were to be added on top, i.e. these are existing weaknesses in OpenPOWER as a scalar ISA.
 
