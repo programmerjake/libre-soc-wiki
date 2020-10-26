@@ -2,10 +2,12 @@
 
 <https://bugs.libre-soc.org/show_bug.cgi?id=213>
 
-* idea 1: modify cmp (and other CR generators?) with qualifiers that create single bit prefix vector into int reg
+* idea 1: modify cmp (and other CR generators?) with qualifiers that
+  create single bit prefix vector into int reg
 * idea 2: override CR SO field in vector form to be predicate bit per element
 * idea 3: reading of predicates is from bits of int reg
-* idea 4: SO CR field no longer overflow, contains copy of int reg predicate element bit (passed through).  when OE set?
+* idea 4: SO CR field no longer overflow, contains copy of int reg
+  predicate element bit (passed through).  when OE set?
 
 
 # Requirements
@@ -18,69 +20,127 @@
 
 ## CR-based predication proposal
 
-this involves treating each CR as providing one bit of predicate. If there is limited space in SVPrefix it will be a fixed bit (bit 0) otherwise it may be selected (bit 0 to 3 of the CR)
+this involves treating each CR as providing one bit of predicate. If
+there is limited space in SVPrefix it will be a fixed bit (bit 0)
+otherwise it may be selected (bit 0 to 3 of the CR)
 
-the crucial advantage of this proposal is that the Function Units can have one more register (a CR) added as their Read Dependency Hazards just like all the other incoming source registers, and there is no need for a special "Predicate Shadow Function Unit".
+the crucial advantage of this proposal is that the Function Units can
+have one more register (a CR) added as their Read Dependency Hazards
+just like all the other incoming source registers, and there is no need
+for a special "Predicate Shadow Function Unit".
 
-an analysis of changing the element widths (for SIMD) gives the following potential arrangements, for which it is assumed that 2x 32-bit FUs "pair up" for single 64 bit arithmetic, HI32 and LO32 style.
+an analysis of changing the element widths (for SIMD) gives the following
+potential arrangements, for which it is assumed that 2x 32-bit FUs
+"pair up" for single 64 bit arithmetic, HI32 and LO32 style.
 
 * 64-bit operations.  2 FUs and their DM rows "collaborate" 
   - 2x 32-bit source registers gang together for 64 bit input
   - 2x 32-bit output registers likewise for output
   - 1x CR (from the LO32 FU DM side) for a predicate bit
 * 32-bit operations.  2 FUs collaborate 2x32 SIMD style
-  - 2x 32-bit source registers go into separate input halves of the SIMD ALU
+  - 2x 32-bit source registers go into separate input halves of the
+    SIMD ALU
   - 2x 32-bit outputs likewise for output
-  - 2x CRs (one for HI32, one for LO32) for a predicate bit for each of the 2x32bit SIMD pair
+  - 2x CRs (one for HI32, one for LO32) for a predicate bit for each of
+    the 2x32bit SIMD pair
 * 16-bit operations. 2 FUs collaborate 4x16 SIMD style
   - 2x 2x16-bit source registers group together to provide 4x16 inputs
   - likewise for outputs
   - EITHER 2x 2xCRs (2 for HI32, 2 for LO32) provide 4 predicate bits
-  - OR 1x 8xCR "full" port is utilised (on LO32 FU) followed by masking at the ALU behind the FU pair, extracting the required 4 predicate bits
+  - OR 1x 8xCR "full" port is utilised (on LO32 FU) followed by masking
+    at the ALU behind the FU pair, extracting the required 4 predicate bits
 * 8-bit operations. 2 FUs collaborate 8x8 SIMD style
   - 2x 4x8-bit source registers
   - likewise for outputs
-  - 1x 8xCR "full" port is utilised (on LO32 FU) and all 8 bits are passed through to the underlying 64-bit ALU to perform 8x 8-bit predicated operations
+  - 1x 8xCR "full" port is utilised (on LO32 FU) and all 8 bits are
+    passed through to the underlying 64-bit ALU to perform 8x 8-bit
+    predicated operations
 
-a big advantage of this is that unpredicated operations just set the predicate to an immediate of all 1s and the actual ALUs require very little modification.
+a big advantage of this is that unpredicated operations just set the
+predicate to an immediate of all 1s and the actual ALUs require very
+little modification.
 
 ## Scalar (single) integer as predicate, with one DM row
 
 This idea has several disadvantages.
 
-* the single DM entry for the entire 64 bits creates a read hazard that has to be resolved through the addition of a special Shadowing Function Unit.  Only when the entire predicate is available can the die-cancel/ok be pulled on the FU elements each bit covers
-* this situation is exacerbated if one vector creates a predicate mask that is then used to mask immediately following instructions.  Ordinarily (i.e. without the predicate involved), Cray-style "chaining" would be possible.  The single DM entry for the entire predicate mask prohibits this because the subsequent operations can only proceed when the *entire* mask has been computed.
-* Allocation of bits to FUs gets particularly complex for SIMD (elwidth overrides) requiring shift and mask logic that is simply not needed compared to "one-for-one" schemes (above)
+* the single DM entry for the entire 64 bits creates a read hazard
+  that has to be resolved through the addition of a special Shadowing
+  Function Unit.  Only when the entire predicate is available can the
+  die-cancel/ok be pulled on the FU elements each bit covers
+* this situation is exacerbated if one vector creates a predicate
+  mask that is then used to mask immediately following instructions.
+  Ordinarily (i.e. without the predicate involved), Cray-style "chaining"
+  would be possible.  The single DM entry for the entire predicate mask
+  prohibits this because the subsequent operations can only proceed when
+  the *entire* mask has been computed.
+* Allocation of bits to FUs gets particularly complex for SIMD (elwidth
+  overrides) requiring shift and mask logic that is simply not needed
+  compared to "one-for-one" schemes (above)
 
 Overall there is very little in favour of this concept.
 
 ## Scalar (single) integer as predicate with one DM row per bit
 
-The Dependency Matrix logic from the CR proposal favourably applies equally to this proposal.  However there are additional caveats that weigh against it:
+The Dependency Matrix logic from the CR proposal favourably applies
+equally to this proposal.  However there are additional caveats that
+weigh against it:
 
-* Like the single scalar DM entry proposal, the integer scalar register had to be covered also by a single FM entry (for when it is used *as* an integer register).
-* Unlike the same, it must also be covered by a 64-wide suite of bitlevel Dependency Matrix Rows.  These numbers are so massive as to cause some concern.
-* A solution is to introduce a virtual register naming scheme however this slso introduces huge complexity as the register cache has to be capable of swapping reservations from 64 bitlevel to full 64bit scalar level *and* keep the Dependency Matrices synchronised
+* Like the single scalar DM entry proposal, the integer scalar register
+  had to be covered also by a single FM entry (for when it is used *as*
+  an integer register).
+* Unlike the same, it must also be covered by a 64-wide suite of bitlevel
+  Dependency Matrix Rows.  These numbers are so massive as to cause some
+  concern.
+* A solution is to introduce a virtual register naming scheme however
+  this slso introduces huge complexity as the register cache has to be
+  capable of swapping reservations from 64 bitlevel to full 64bit scalar
+  level *and* keep the Dependency Matrices synchronised
 
-it is enormously complex and likely to result in debugging, verification and ongoing maintenance difficulties.
+it is enormously complex and likely to result in debugging, verification
+and ongoing maintenance difficulties.
 
 ## Schemes which split integer regs into chunks
 
-These ideas are based on the principle that each chunk of 8 (or 16) bits of a scalar integer register may be covered by its own DM row.  8 chunks would for example require 8 DM entries.
+These ideas are based on the principle that each chunk of 8 (or 16)
+bits of a scalar integer register may be covered by its own DM row.
+8 chunks would for example require 8 DM entries.
 
-This would, for vector sizes of 8, solve the "chaining" problem reasonably well even when two FUs (or two clock cycles) were required to deal with 4 elements at a time.  The "compare" that generated the predicate would be ready to go into the first "chunk" of predicate bits whilst the second compare was still being issued.
+This would, for vector sizes of 8, solve the "chaining" problem reasonably
+well even when two FUs (or two clock cycles) were required to deal with
+4 elements at a time.  The "compare" that generated the predicate would
+be ready to go into the first "chunk" of predicate bits whilst the second
+compare was still being issued.
 
-It would also require a lot smaller DMs than the single-bit-per-element ideas.
+It would also require a lot smaller DMs than the single-bit-per-element
+ideas.
 
-The problems start when trying to allocate bits of predicate to units.  Just like the single-DM-row per entire scalar reg case, a shadow-capable Predicate Funxtion Unit is now required (already determined to be costly) except now if there are 8 chunks requiring 8 Predicate FUs *the problem is now made 8x worse*.
+The problems start when trying to allocate bits of predicate to units.
+Just like the single-DM-row per entire scalar reg case, a shadow-capable
+Predicate Funxtion Unit is now required (already determined to be costly)
+except now if there are 8 chunks requiring 8 Predicate FUs *the problem
+is now made 8x worse*.
 
-Not only that but it is even more complex when trying to bring in virtual register cacheing in order to bring down overall FU-REGs DM row count, although the numbers are much lower: 8x 8-bit chunks of scalar int only requires 8 DM Rows and 8 virtual subdivisions however *this is per in-flight register*.
+Not only that but it is even more complex when trying to bring in virtual
+register cacheing in order to bring down overall FU-REGs DM row count,
+although the numbers are much lower: 8x 8-bit chunks of scalar int
+only requires 8 DM Rows and 8 virtual subdivisions however *this is per
+in-flight register*.
 
-Out-of-order systems, to be effective, require several operations to be "in-flight" (POWER10 has up to 1,000 in-flight instructions) and if every predicated vector operation needed one 8-chunked scalar register each it becomes exceedingly complex very quickly.
+Out-of-order systems, to be effective, require several operations to
+be "in-flight" (POWER10 has up to 1,000 in-flight instructions) and if
+every predicated vector operation needed one 8-chunked scalar register
+each it becomes exceedingly complex very quickly.
 
-Even more than that, in a predicated chaining scenario, when computing the mask from a vector "compare", the groupings are troublesome to think through how to implement, which is itself a bad sign.  It is suspected that chaining will be complex or adversely affected by certain combinations of element width.
+Even more than that, in a predicated chaining scenario, when computing
+the mask from a vector "compare", the groupings are troublesome to
+think through how to implement, which is itself a bad sign.  It is
+suspected that chaining will be complex or adversely affected by certain
+combinations of element width.
 
 (see [[masked_vector_chaining]])
 
 
-Overall this idea which initially seems to save resources brings together all the least favourable aspects of other proposals and combines all of them!
+Overall this idea which initially seems to save resources brings together
+all the least favourable aspects of other proposals and combines all
+of them!
