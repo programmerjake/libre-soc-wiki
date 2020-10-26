@@ -58,6 +58,19 @@ datapath to the relevant FUs.  This could be reduced by adding yet another
 type of special virtual register port or datapath that masks out the
 required predicate bits closer to the regfile.
 
+## One scalar int per predicate element.
+
+Similar to RVV and similar to the one-CR-per-element concept above, the idea here is to use the LSB of any given element in a vector of predicates.  This idea has quite a lot of merit to it.
+
+Implementation-wise just like in the CR-based case a special regfile port could be added that gets the LSB of each scalar integer register and routes them through to the broadcast bus.
+
+The disadvantages appear on closer analysis:
+
+* Unlike the "full" CR port (which reads 8x CRs CR0-7 in one hit) trying the same trick on the scalar integer regfile, to obtain 8 predicate bits, would require a whopping 8x64bit set of reads to the INT regfile instead of a scant 1x32bit read.  Resource-wise, then, this idea is expensive.
+* With predicate bits being distributed out amongst 64 bit scalar registers, scalar bitmanipulation operations that can be performed after transferring Vectors of CMP operations from CRs to INTs (vectorised-mfcr) are more challenging and costly.  Rather than use vectorised mfcr, complex transfers of the LSBs into a single scalar int are required.
+
+On balance this is a less favourable option than vectorising CRs
+
 ### Predicated SIMD HI32-LO32 FUs
 
 an analysis of changing the element widths (for SIMD) gives the following
