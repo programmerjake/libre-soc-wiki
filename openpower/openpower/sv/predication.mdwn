@@ -53,3 +53,13 @@ This idea has several disadvantages.
 * Allocation of bits to FUs gets particularly complex for SIMD (elwidth overrides) requiring shift and mask logic that is simply not needed compared to "one-for-one" schemes (above)
 
 Overall there is very little in favour of this concept.
+
+## Scalar (single) integer as predicate with one DM row per bit
+
+The Dependency Matrix logic from the CR proposal favourably applies equally to this proposal.  However there are additional caveats that weigh against it:
+
+* Like the single scalar DM entry proposal, the integer scalar register had to be covered also by a single FM entry (for when it is used *as* an integer register).
+* Unlike the same, it must also be covered by a 64-wide suite of bitlevel Dependency Matrix Rows.  These numbers are so massive as to cause some concern.
+* A solution is to introduce a virtual register naming scheme however this slso introduces huge complexity as the register cache has to be capable of swapping reservations from 64 bitlevel to full 64bit scalar level *and* keep the Dependency Matrices synchronised
+
+it is enormously complex and likely to result in debugging, verification and ongoing maintenance difficulties.
