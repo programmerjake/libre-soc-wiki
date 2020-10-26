@@ -43,9 +43,11 @@ As well-known weaknesses that compromise performance, very little use of OE=1 is
 
 One of the design principles of SV is that the use of VL should be as closrly equivalent to a direct substitution of the scalar operations of the hardware for-loop as possible, as if those looped operations were actually in the instruction stream rather than being issued from the Vector loop.
 
-The implications here are that **register dependency hazards still have to be respected inter-element**.
+The implications here are that *register dependency hazards still have to be respected inter-element*.
 
-Using a multi-issue out-of-order engine as the underlying microarchitectural basis this is not as difficult to achieve as it first seems.  In addition, Vectir Chaining should also be possible for a multi-issue out-of-order rngine to cope with, as long as false (unnecessary) Dependency Hazards are not introduced.
+Using a multi-issue out-of-order engine as the underlying microarchitectural basis this is not as difficult to achieve as it first seems.  In addition, Vector Chaining should also be possible for a multi-issue out-of-order rngine to cope with, as long as false (unnecessary) Dependency Hazards are not introduced in between Vectors, where the dependencies actually only exist between elements *in* the Vector.
+
+The concept of recognising that it is the elements within the Vector that have Dependency Hazards rather than the Vectors themselves is what permits Cray-style "chaining". 
 
 This "false/unnecessary hazard" condition eliminates and/or compromises the performance or drives up resource utilisation in at least two of the proposals below.
 
