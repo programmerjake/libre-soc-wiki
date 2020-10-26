@@ -35,7 +35,9 @@ new vector-related instructions unless essential or compelling.
 All other proposals utilise existing scalar opcodes which already happen to have bitmanipulation, arithmetic, and inter-file transfer capability (mfcr, mfspr etc).
 They also involve adding extra bitmanip opcodes, such that by utilising those scalar registers as predicate masks SV achieves "par" with other Cray-style Vector ISAs, all without actually having to add any actual Vector opcodes.
 
-Adding special opcodes just for manipulating predicate masks is anomalous, costly, and unnecessary.
+In addition those bitmanip operations, although some of them are obscure and unusual in the scalar world, do actually have practical applicatiobe outside of a vector context.
+
+Adding a full set special vector opcodes just for manipulating predicate masks and being able to transfer them to other regfiles (a la mfcr) is however anomalous, costly, and unnecessary.
 
 ## CR-based predication proposal
 
