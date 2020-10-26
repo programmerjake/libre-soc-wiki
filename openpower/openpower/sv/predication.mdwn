@@ -44,3 +44,12 @@ an analysis of changing the element widths (for SIMD) gives the following potent
 
 a big advantage of this is that unpredicated operations just set the predicate to an immediate of all 1s and the actual ALUs require very little modification.
 
+## Scalar (single) integer as predicate, with one DM row
+
+This idea has several disadvantages.
+
+* the single DM entry for the entire 64 bits creates a read hazard that has to be resolved through the addition of a special Shadowing Function Unit.  Only when the entire predicate is available can the die-cancel/ok be pulled on the FU elements each bit covers
+* this situation is exacerbated if one vector creates a predicate mask that is then used to mask immediately following instructions.  Ordinarily, Cray-styke "chaining" would be possible.  The single DM entry for the entire predicate mask prohibits this.
+* Allocation of bits to FUs gets particularly complex for SIMD (elwidth overrides) requiring shift and mask logic that is simply not needed compared to "one-for-one" schemes (above)
+
+Overall there is very little in favour of this concept.
