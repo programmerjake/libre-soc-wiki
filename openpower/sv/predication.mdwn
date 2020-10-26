@@ -29,11 +29,25 @@ Implementation note: even in in-order microarchitectures it is strongly adviseab
 
 ## General implications and considerations
 
+### OE=1 and SO
+
 XER.SO (sticky overflow) is known to cause massive slowdown in pretty much every microarchitecture and it definitely compromises the performance of out-of-order systems.  The reason is that it introduces a READ-MODIFY-WRITE cycle between XER.SO and CR0 (which contains a copy of the SO field after inclusion of the overflow). The result and source registers branch off as RaW and WaR hazards from this RMW chain.
 
 This is even before predication or vectorisation were to be added on top, i.e. these are existing weaknesses in OpenPOWER as a scalar ISA.
 
 As well-known weaknesses that compromise performance, very little use of OE=1 is actually made, outside of unit tests and Conformance Tests.  Consequently it makes very little sense to continue to propagate OE=1 in the Vectorisation context of SV.
+
+### Vector Chaining
+
+(see [[masked_vector_chaining]])
+
+One of the design principles of SV is that the use of VL should be as closrly equivalent to a direct substitution of the scalar operations of the hardware for-loop as possible, as if those looped operations were actually in the instruction stream rather than being issued from the Vector loop.
+
+The implications here are that **register dependency hazards still have to be respected inter-element**.
+
+Using a multi-issue out-of-order engine as the underlying microarchitectural basis this is not as difficult to achieve as it first seems.  In addition, Vectir Chaining should also be possible for a multi-issue out-of-order rngine to cope with, as long as false (unnecessary) Dependency Hazards are not introduced.
+
+This "false/unnecessary hazard" condition eliminates and/or compromises the performance or drives up resource utilisation in at least two of the proposals below.
 
 # Proposals
 
@@ -239,8 +253,6 @@ the mask from a vector "compare", the groupings are troublesome to
 think through how to implement, which is itself a bad sign.  It is
 suspected that chaining will be complex or adversely affected by certain
 combinations of element width.
-
-(see [[masked_vector_chaining]])
 
 Overall this idea which initially seems to save resources brings together
 all the least favourable implementation aspects of other proposals and
