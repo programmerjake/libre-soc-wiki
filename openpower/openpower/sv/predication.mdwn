@@ -74,7 +74,7 @@ It would also require a lot smaller DMs than the single-bit-per-element ideas.
 
 The problems start when trying to allocate bits of predicate to units.  Just like the single-DM-row per entire scalar reg case, a shadow-capable Predicate Funxtion Unit is now required (already determined to be costly) except now if there are 8 chunks requiring 8 Predicate FUs *the problem is now made 8x worse*.
 
-Not only that but it is even more complex when trying to bring in virtual register cachring in order to bring down overall FU-REGs DM row count, although the numbers are much lower: 8x 8-bit chunks of scalar int only requires 8 DM Rows and 8 virtual subdivisions however *this is per in-flight register*.
+Not only that but it is even more complex when trying to bring in virtual register cacheing in order to bring down overall FU-REGs DM row count, although the numbers are much lower: 8x 8-bit chunks of scalar int only requires 8 DM Rows and 8 virtual subdivisions however *this is per in-flight register*.
 
 Out-of-order systems, to be effective, require several operations to be "in-flight" (POWER10 has up to 1,000 in-flight instructions) and if every predicated vector operation needed one 8-chunked scalar register each it becomes exceedingly complex very quickly.
 
