@@ -45,7 +45,7 @@ One of the design principles of SV is that the use of VL should be as closrly eq
 
 The implications here are that *register dependency hazards still have to be respected inter-element*.
 
-Using a multi-issue out-of-order engine as the underlying microarchitectural basis this is not as difficult to achieve as it first seems (the hard work habing been done by the Dependency Matrices).  In addition, Vector Chaining should also be possible for a multi-issue out-of-order rngine to cope with, as long as false (unnecessary) Dependency Hazards are not introduced in between Vectors, where the dependencies actually only exist between elements *in* the Vector.
+Using a multi-issue out-of-order engine as the underlying microarchitectural basis this is not as difficult to achieve as it first seems (the hard work habing been done by the Dependency Matrices).  In addition, Vector Chaining should also be possible for a multi-issue out-of-order engine to cope with, as long as false (unnecessary) Dependency Hazards are not introduced in between Vectors, where the dependencies actually only exist between elements *in* the Vector.
 
 The concept of recognising that it is the elements within the Vector that have Dependency Hazards rather than the Vectors themselves is what permits Cray-style "chaining". 
 
