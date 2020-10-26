@@ -27,6 +27,14 @@
 
 Implementation note: even in in-order microarchitectures it is strongly adviseable to use byte-level write-enable lines on the register file.  This in combination with 8-bit SIMD element overrides allows, in "non-zeroing" mode, the predicate mask to be directly ANDed with the regfile write-enable lines to achieve the required functionality.  The alternative is to perform a READ-MODIFY-MASK-WRITE cycle which is costly and compromises performance.  Avoided very simply with byte-level write-enable.
 
+## General implications and considerations
+
+XER.SO (sticky overflow) is known to cause massive slowdown in pretty much every microarchitecture and it definitely compromises the perfornance of out-of-order systems.  The reason is that it introduces READ-MODIFY-WRITE between XER.SO and CR0 (which contains a copy of the SO field after inclusion of the overflow). The result and source registers branch off as RaW and WaR hazards from this RMW chain.
+
+This is even before predication or vectorisation were to be added on top, i.e. these are existing weaknesses in OpenPOWER as a scalar ISA.
+
+As well-known weaknesses that compromise performance, very little use of OE=1 is actually made, outside of unit tests and Conformance Tests.  Consequently it nakes very little sense to continue to propagate OE=1 in the Vectorisation context of SV.
+
 # Proposals
 
 ## Adding new predicate register file type and associated opcodes
