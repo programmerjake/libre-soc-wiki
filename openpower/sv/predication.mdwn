@@ -131,7 +131,7 @@ Implementation-wise just like in the CR-based case a special regfile port could 
 
 The disadvantages appear on closer analysis:
 
-* Unlike the "full" CR port (which reads 8x CRs CR0-7 in one hit) trying the same trick on the scalar integer regfile, to obtain 8 predicate bits, would require a whopping 8x64bit set of reads to the INT regfile instead of a scant 1x32bit read.  Resource-wise, then, this idea is expensive.
+* Unlike the "full" CR port (which reads 8x CRs CR0-7 in one hit) trying the same trick on the scalar integer regfile, to obtain just 8 predicate bits (each being an LSB of a given 64 bit scalar int), would require a whopping 8x64bit set of reads to the INT regfile instead of a scant 1x32bit read.  Resource-wise, then, this idea is expensive.
 * With predicate bits being distributed out amongst 64 bit scalar registers, scalar bitmanipulation operations that can be performed after transferring Vectors of CMP operations from CRs to INTs (vectorised-mfcr) are more challenging and costly.  Rather than use vectorised mfcr, complex transfers of the LSBs into a single scalar int are required.
 
 In a "normal" Vector ISA this would be solved by adding opcodes that perform the kinds of bitmanipulation operations normally needed for predicate masks, as specialist operations *on* those masks.  However for SV the rule has been set: "no unnecessary additional Vector Instructions" because it is possible to use existing PowerISA scalar bitmanip opcodes to cover the same job.
