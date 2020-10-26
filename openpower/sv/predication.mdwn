@@ -186,7 +186,8 @@ and ongoing maintenance difficulties.
 ## Schemes which split (a scalar) integer reg into mask "chunks"
 
 These ideas are based on the principle that each chunk of 8 (or 16)
-bits of a scalar integer register may be covered by its own DM row.
+bits of a scalar integer register may be covered by its own DM column
+  in FU-REGs.
 8 chunks of a scalar 64-bit integer register for use as a bit-level
 predicate mask onto 64 vector elements would for example require 8
 DM entries.
