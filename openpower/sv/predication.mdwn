@@ -43,7 +43,7 @@ As well-known weaknesses that compromise performance, very little use of OE=1 is
 
 One of the design principles of SV is that the use of VL should be as closrly equivalent to a direct substitution of the scalar operations of the hardware for-loop as possible, as if those looped operations were actually in the instruction stream (as scalar operations) rather than being issued from the Vector loop.
 
-The implications here are that *register dependency hazards still have to be respected inter-element*.
+The implications here are that *register dependency hazards still have to be respected inter-element* even when (conceptually) pushed into the instruction stream from a hardware for-loop.
 
 Using a multi-issue out-of-order engine as the underlying microarchitectural basis this is not as difficult to achieve as it first seems (the hard work having been done by the Dependency Matrices).  In addition, Vector Chaining should also be possible for a multi-issue out-of-order engine to cope with, as long as false (unnecessary) Dependency Hazards are not introduced in between Vectors, where the dependencies actually only exist between elements *in* the Vector.
 
