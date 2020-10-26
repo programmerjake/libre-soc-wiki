@@ -62,7 +62,7 @@ new vector-related instructions unless essential or compelling.
 All other proposals utilise existing scalar opcodes which already happen to have bitmanipulation, arithmetic, and inter-file transfer capability (mfcr, mfspr etc).
 They also involve adding extra scalar bitmanip opcodes, such that by utilising  scalar registers as predicate masks SV achieves "par" with other Cray-style (variable-length) Vector ISAs, all without actually having to add any actual Vector opcodes.
 
-In addition those scalar 64-bit bitmanip operations, although some of them are obscure and unusual in the scalar world, do actually have practical applicatiobe outside of a vector context.
+In addition those scalar 64-bit bitmanip operations, although some of them are obscure and unusual in the scalar world, do actually have practical applications outside of a vector context.
 
 (Hilariously and confusingly those very same scalar bitmanip opcodes may themselves be SV-vectorised however with VL only being up to 64 elements it is not anticipated that SV-bitmanip would be used to generate up to 64 bit predicate masks!).
 
