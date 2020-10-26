@@ -5,6 +5,7 @@ Fundamental design principles:
 * Simplicity of introduction and implementation on the existing OpenPOWER ISA
 * Effectively a hardware for-loop, pausing PC, issuing multiple scalar operations
 * Augments ("tags") existing instructions, providing Vectorisation "context" rather than adding new ones.
+* Does not modify or deviate from the underly scalar OpenPOWER ISA unless it provides significant performance or other advantage to do so in the Vector space (dropping XER.SO and OE=1 for example)
 
 Advantages of these design principles:
 
