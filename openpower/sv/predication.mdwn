@@ -29,6 +29,18 @@ have one more register (a CR) added as their Read Dependency Hazards
 just like all the other incoming source registers, and there is no need
 for a special "Predicate Shadow Function Unit".
 
+a big advantage of this is that unpredicated operations just set the
+predicate to an immediate of all 1s and the actual ALUs require very
+little modification.
+
+a disadvantage is that to support the selection of 8 bit of predicate
+from 8 CRs (via the "full" 8x CR port") would require allocating 32-bit
+datapath to the relevant FUs.  This could be reduced by adding yet another
+type of special virtual register port or datapath that masks out the
+required predicate bits closer to the regfile.
+
+### Predicated SIMD HI32-LO32 FUs
+
 an analysis of changing the element widths (for SIMD) gives the following
 potential arrangements, for which it is assumed that 2x 32-bit FUs
 "pair up" for single 64 bit arithmetic, HI32 and LO32 style.
@@ -56,9 +68,37 @@ potential arrangements, for which it is assumed that 2x 32-bit FUs
     passed through to the underlying 64-bit ALU to perform 8x 8-bit
     predicated operations
 
-a big advantage of this is that unpredicated operations just set the
-predicate to an immediate of all 1s and the actual ALUs require very
-little modification.
+### Predicated SIMD straight 64-bit FUs
+
+* 64-bit operations. 1 FU, 1 64 bit operation
+  - 1x 64-bit source register
+  - 1x 64-bit output register
+  - 1x CR for a predicate bit
+* 32-bit operations.  1 FUs 2x32 SIMD style
+  - 1x 64-bit source register dynamically splits to 2x 32-bit
+  - 1x 64-bit output likewise
+  - 2x CRs for a predicate bit for each of the 2x32bit SIMD pair
+* 16-bit operations. 1 FUs 4x16 SIMD style
+  - 1x 4x16-bit source registers 
+  - likewise for outputs
+  - 1x 8xCR "full" port is utilised followed by masking at the ALU behind
+    the FU pair, extracting the required 4 predicate bits
+* 8-bit operations. 1 FU 8x8 SIMD style
+  - 1x 8x8-bit source registers
+  - likewise for outputs
+  - 1x 8xCR "full" port is utilised LO32 and all 8 bits used
+    to perform 8x 8-bit predicated operations
+
+Here again the underying 64-bit ALU requires the 8x predicate bits to
+cover the 8x8-bit SIMD operations (7 of which are dormant/unused in 64-bit
+predicated operations but still have to be there to cover 8x8-bit SIMD).
+
+Given that the initial idea of using the "full" (virtual) 32-bit CR read
+port (which reads all 8 CRs CR0-CR7 simultaneously) would require a
+32-bit broadcast bus to every predication-capable Function Unit, the bus
+bandwidth can again be reduced by performing the selection of the masks
+(bit 0 thru bit 3 of each CR) closer to the regfile i.e. before hitting
+the broadcast bus.
 
 ## Scalar (single) integer as predicate, with one DM row
 
