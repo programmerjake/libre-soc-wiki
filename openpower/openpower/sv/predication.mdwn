@@ -78,6 +78,6 @@ Not only that but it is even more complex when trying to bring in virtual regist
 
 Out-of-order systems, to be effective, require several operations to be "in-flight" (POWER10 has up to 1,000 in-flight instructions) and if every predicated vector operation needed one 8-chunked scalar register each it becomes exceedingly complex very quickly.
 
-Even more than that, when computing the mask from a vector "compare", the groupings are troublesome to think through how to implement, which is itself a bad sign.  It is suspected that chaining will be complex or adversely affected by certain combinations of element width.
+Even more than that, in a predicated chaining scenario, when computing the mask from a vector "compare", the groupings are troublesome to think through how to implement, which is itself a bad sign.  It is suspected that chaining will be complex or adversely affected by certain combinations of element width.
 
 Overall this idea which initially seems to save resources brings together all the least favourable aspects of other proposals and combines all of them!
