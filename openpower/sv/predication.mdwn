@@ -41,7 +41,7 @@ As well-known weaknesses that compromise performance, very little use of OE=1 is
 
 (see [[masked_vector_chaining]])
 
-One of the design principles of SV is that the use of VL should be as closrly equivalent to a direct substitution of the scalar operations of the hardware for-loop as possible, as if those looped operations were actually in the instruction stream rather than being issued from the Vector loop.
+One of the design principles of SV is that the use of VL should be as closrly equivalent to a direct substitution of the scalar operations of the hardware for-loop as possible, as if those looped operations were actually in the instruction stream (as scalar operations) rather than being issued from the Vector loop.
 
 The implications here are that *register dependency hazards still have to be respected inter-element*.
 
