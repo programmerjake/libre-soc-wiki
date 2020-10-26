@@ -60,9 +60,11 @@ violates the fundamental design principles of SV to not add
 new vector-related instructions unless essential or compelling.
 
 All other proposals utilise existing scalar opcodes which already happen to have bitmanipulation, arithmetic, and inter-file transfer capability (mfcr, mfspr etc).
-They also involve adding extra bitmanip opcodes, such that by utilising those scalar registers as predicate masks SV achieves "par" with other Cray-style Vector ISAs, all without actually having to add any actual Vector opcodes.
+They also involve adding extra scalar bitmanip opcodes, such that by utilising  scalar registers as predicate masks SV achieves "par" with other Cray-style (variable-length) Vector ISAs, all without actually having to add any actual Vector opcodes.
 
-In addition those bitmanip operations, although some of them are obscure and unusual in the scalar world, do actually have practical applicatiobe outside of a vector context.
+In addition those scalar 64-bit bitmanip operations, although some of them are obscure and unusual in the scalar world, do actually have practical applicatiobe outside of a vector context.
+
+(Hilariously and confusingly those very same scalar bitmanip opcodes may themselves be SV-vectorised however with VL only being up to 64 elements it is not anticipated that SV-bitmanip would be used to generate up to 64 bit predicate masks!).
 
 Adding a full set special vector opcodes just for manipulating predicate masks and being able to transfer them to other regfiles (a la mfcr) is however anomalous, costly, and unnecessary.
 
@@ -70,7 +72,7 @@ Adding a full set special vector opcodes just for manipulating predicate masks a
 
 this involves treating each CR as providing one bit of predicate. If
 there is limited space in SVPrefix it will be a fixed bit (bit 0)
-otherwise it may be selected (bit 0 to 3 of the CR) through a firld in the opcode.
+otherwise it may be selected (bit 0 to 3 of the CR) through a field in the opcode.
 
 the crucial advantage of this proposal is that the Function Units can
 have one more register (a CR) added as their Read Dependency Hazards
