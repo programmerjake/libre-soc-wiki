@@ -142,6 +142,8 @@ On balance this is a less favourable option than vectorising CRs
 
 ## Scalar (single) integer as predicate, with one DM row
 
+This idea has merit in that to perform predicate bitmanip operations the preficate is already in scalar INT reg form and consequently standard scalar INT bitmanip operations can be done straight away.  Vectorised mfcr can be used to get CMP results or Vectorised Rc=1 CRs into the scalar INT, easily.
+
 This idea has several disadvantages.
 
 * the single DM entry for the entire 64 bits creates a read hazard
