@@ -70,6 +70,8 @@ These ideas are based on the principle that each chunk of 8 (or 16) bits of a sc
 
 This would, for vector sizes of 8, solve the "chaining" problem reasonably well even when two FUs (or two clock cycles) were required to deal with 4 elements at a time.  The "compare" that generated the predicate would be ready to go into the first "chunk" of predicate bits whilst the second compare was still being issued.
 
+It would also require a lot smaller DMs than the single-bit-per-element ideas.
+
 The problems start when trying to allocate bits of predicate to units.  Just like the single-DM-row per entire scalar reg case, a shadow-capable Predicate Funxtion Unit is now required (already determined to be costly) except now if there are 8 chunks requiring 8 Predicate FUs *the problem is now made 8x worse*.
 
 Not only that but it is even more complex when trying to bring in virtual register cachring in order to bring down overall FU-REGs DM row count, although the numbers are much lower: 8x 8-bit chunks of scalar int only requires 8 DM Rows and 8 virtual subdivisions however *this is per in-flight register*.
