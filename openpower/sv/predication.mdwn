@@ -15,6 +15,12 @@
 * must be easily implementable in any  microarchitecture including out-of-order 
 * must not compromise or penalise any microarchitectural performance
 * must cover up to 64 elements
+* must still work for elwidth over-rides
+
+# Capabilities
+
+* two modes, "zeroing" and "non-zeroing". zeroing mode places a zero in the masked-out element results, where non-zeroing leaves the destination (result) element unmodified.
+* predicate must be invertable via an opcode bit (to avoid the need for an instruction which inverts all bits of the predicate mask)
 
 # Proposals
 
