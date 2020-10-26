@@ -64,7 +64,7 @@ They also involve adding extra scalar bitmanip opcodes, such that by utilising  
 
 In addition those scalar 64-bit bitmanip operations, although some of them are obscure and unusual in the scalar world, do actually have practical applications outside of a vector context.
 
-(Hilariously and confusingly those very same scalar bitmanip opcodes may themselves be SV-vectorised however with VL only being up to 64 elements it is not anticipated that SV-bitmanip would be used to generate up to 64 bit predicate masks!).
+(Hilariously and confusingly those very same scalar bitmanip opcodes may themselves be SV-vectorised however with VL only being up to 64 elements it is not anticipated that SV-bitmanip would be used to generate up to 64 bit predicate masks, when a single 64 bit scalar operation will suffice).
 
 Adding a full set special vector opcodes just for manipulating predicate masks and being able to transfer them to other regfiles (a la mfcr) is however anomalous, costly, and unnecessary.
 
