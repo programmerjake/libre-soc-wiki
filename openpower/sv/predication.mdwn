@@ -18,6 +18,17 @@
 
 # Proposals
 
+## Adding new predicate register types and associated opcodes
+
+This idea, adding new predicate manipulation opcodes,
+violates the fundamental design principles of SV to not add
+new vector-related instructions unless essential or compelling.
+
+All other proposals utilise existing scalar opcodes which already happen to have bitmanipulation, arithmetic, and inter-file transfer capability (mfcr, mfspr etc).
+They also involve adding extra bitmanip opcodes, such that by utilising those scalar registers as predicate masks SV achieves "par" with other Cray-style Vector ISAs, all without actually having to add any actual Vector opcodes.
+
+Adding special opcodes just for manipulating predicate masks is anomalous, costly, and unnecessary.
+
 ## CR-based predication proposal
 
 this involves treating each CR as providing one bit of predicate. If
