@@ -113,7 +113,8 @@ This idea has several disadvantages.
   Ordinarily (i.e. without the predicate involved), Cray-style "chaining"
   would be possible.  The single DM entry for the entire predicate mask
   prohibits this because the subsequent operations can only proceed when
-  the *entire* mask has been computed.
+  the *entire* mask has been computed and placed in full
+  into the scalar integer register.
 * Allocation of bits to FUs gets particularly complex for SIMD (elwidth
   overrides) requiring shift and mask logic that is simply not needed
   compared to "one-for-one" schemes (above)
