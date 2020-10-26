@@ -43,7 +43,7 @@ Adding a full set special vector opcodes just for manipulating predicate masks a
 
 this involves treating each CR as providing one bit of predicate. If
 there is limited space in SVPrefix it will be a fixed bit (bit 0)
-otherwise it may be selected (bit 0 to 3 of the CR)
+otherwise it may be selected (bit 0 to 3 of the CR) through a firld in the opcode.
 
 the crucial advantage of this proposal is that the Function Units can
 have one more register (a CR) added as their Read Dependency Hazards
