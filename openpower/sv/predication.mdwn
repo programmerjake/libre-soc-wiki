@@ -66,7 +66,7 @@ In addition those scalar 64-bit bitmanip operations, although some of them are o
 
 (Hilariously and confusingly those very same scalar bitmanip opcodes may themselves be SV-vectorised however with VL only being up to 64 elements it is not anticipated that SV-bitmanip would be used to generate up to 64 bit predicate masks, when a single 64 bit scalar operation will suffice).
 
-Adding a full set special vector opcodes just for manipulating predicate masks and being able to transfer them to other regfiles (a la mfcr) is however anomalous, costly, and unnecessary.
+The summary is that adding a full set special vector opcodes just for manipulating predicate masks and being able to transfer them to other regfiles (a la mfcr) is anomalous, costly, and unnecessary.
 
 ## CR-based predication proposal
 
