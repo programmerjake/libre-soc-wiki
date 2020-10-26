@@ -60,6 +60,8 @@ datapath to the relevant FUs.  This could be reduced by adding yet another
 type of special virtual register port or datapath that masks out the
 required predicate bits closer to the regfile.
 
+another disadvantage is that the CR regfile needs to be expanded from 8x 4bit CRs to a minimum of 64x or preferably 128x 4-bit CRs.  Beyond that rhey can be transferred using vectirised mfcr and mtcrf into INT regs.  this is a huge number of CR regs, each of which will need a DM column in the FU-REGs Matrix.  however this cost can be mitigated through regfile cacheing, bringing FU-REGs column numbers back down to "sane".
+
 ### Predicated SIMD HI32-LO32 FUs
 
 an analysis of changing the element widths (for SIMD) gives the following
