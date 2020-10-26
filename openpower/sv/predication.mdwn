@@ -100,11 +100,13 @@ weigh against it:
 it is enormously complex and likely to result in debugging, verification
 and ongoing maintenance difficulties.
 
-## Schemes which split integer regs into chunks
+## Schemes which split (a scalar) integer reg into mask "chunks"
 
 These ideas are based on the principle that each chunk of 8 (or 16)
 bits of a scalar integer register may be covered by its own DM row.
-8 chunks would for example require 8 DM entries.
+8 chunks of a scalar 64-bit integer register for use as a bit-level
+predicate mask onto 64 vector elements would for example require 8
+DM entries.
 
 This would, for vector sizes of 8, solve the "chaining" problem reasonably
 well even when two FUs (or two clock cycles) were required to deal with
@@ -127,6 +129,11 @@ although the numbers are much lower: 8x 8-bit chunks of scalar int
 only requires 8 DM Rows and 8 virtual subdivisions however *this is per
 in-flight register*.
 
+The additional complexity of the cross-over point between use as a chunked
+predicate mask and when the same underlying register is used as an actual
+scalar (or even vector) integer register is also carried over from the
+bit-level DM subdivision case.
+
 Out-of-order systems, to be effective, require several operations to
 be "in-flight" (POWER10 has up to 1,000 in-flight instructions) and if
 every predicated vector operation needed one 8-chunked scalar register
@@ -140,7 +147,6 @@ combinations of element width.
 
 (see [[masked_vector_chaining]])
 
-
 Overall this idea which initially seems to save resources brings together
-all the least favourable aspects of other proposals and combines all
-of them!
+all the least favourable implementation aspects of other proposals and
+requires and combines all of them.
