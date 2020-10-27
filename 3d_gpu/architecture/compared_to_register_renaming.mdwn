@@ -12,7 +12,8 @@ are spread out across multiple physical registers.
 stations.  unlike in the Tomasulo Algorithm, they're just not given
 "names" because Cray and Thornton solved a problem they didn't realise
 everyone else would have.  See [[tomasulo_transformation]] and
-<http://lists.libre-soc.org/pipermail/libre-soc-dev/2020-October/001050.html>)
+<http://lists.libre-soc.org/pipermail/libre-soc-dev/2020-October/001050.html>
+However further investigation shows that this may be WaW hazard relate)
 
 The following diagrams are assuming that the fetch, decode, branch
 prediction, and register renaming can handle 4 instructions per clock
