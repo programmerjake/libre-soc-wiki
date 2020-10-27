@@ -1,6 +1,23 @@
-One critical difference between the 6600-derived architecture and traditional register-renaming OoO speculative processors is that writes to any one particular ISA-level register max out at 1 per clock cycle (without special measures to improve that) in the 6600-derived architecture, whereas the register-renamed version can easily handle multiple such register writes per clock cycle since the register writes are spread out across multiple physical registers.
+One critical difference between the 6600-derived architecture and
+traditional register-renaming OoO speculative processors is that
+writes to any one particular ISA-level register max out at 1 per clock
+cycle (without special measures to improve that) in the 6600-derived
+architecture, whereas the register-renamed version can easily handle
+multiple such register writes per clock cycle since the register writes
+are spread out across multiple physical registers.
 
-The following diagrams are assuming that the fetch, decode, branch prediction, and register renaming can handle 4 instructions per clock cycle (usual on Intel's processors for many generations). They assume that `ldu` can write the address register after 1 clock cycle of execution and the destination register after 4 clock cycles of execution (can be achieved by splitting into 2 separate micro-ops).
+(Note from lkcl: 6600 Reservation Stations *are* "register-renaming"
+stations.  unlike in the Tomasulo Algorithm, they're just not given
+"names" because Cray and Thornton solved a problem they didn't realise
+everyone else would have.  See [[tomasulo_transformation]] and
+<http://lists.libre-soc.org/pipermail/libre-soc-dev/2020-October/001050.html>)
+
+The following diagrams are assuming that the fetch, decode, branch
+prediction, and register renaming can handle 4 instructions per clock
+cycle (usual on Intel's processors for many generations). They assume that
+`ldu` can write the address register after 1 clock cycle of execution
+and the destination register after 4 clock cycles of execution (can be
+achieved by splitting into 2 separate micro-ops).
 
 The following C program is used:
 
