@@ -93,14 +93,24 @@ The register rename table starts out as following:
 
 ## 6600-derived
 
-Notice how the WaR Waits on `r9` cause 2 instructions to finish per cycle (5 micro-ops per 2 cycles) instead of the 4 per cycle for the Register Renaming version, this means the processor's resources will eventually be full, limiting total throughput to 2 instructions/clock.
+Notice how the WaR Waits on `r9` cause 2 instructions to finish per cycle
+(5 micro-ops per 2 cycles) instead of the 4 per cycle for the Register
+Renaming version, this means the processor's resources will eventually
+be full, limiting total throughput to 2 instructions/clock.
 
 For the following table:
-- Assumes that `ldu` instructions are split into two micro-ops in the decode stage. The address computation is denoted "#5.a" and the memory read is denoted "#5.m".
-- Assumes that a mechanism for forwarding from a FU's result latch to a waiting operation is in place, without having to wait until the result can be written to the register file.
-- "Av `r3`" denotes that the value to be written to `r3` is computed and is available for forwarding but can't yet be written to the register file.
-- "SW: #4" denotes that the instruction is waiting on the shadow produced by instruction #4.
-- "Rf #5:`r5`" denotes that the instruction reads the result latch for instruction #5's new value for `r5` through the forwarding mechanism.
+- Assumes that `ldu` instructions are split into two micro-ops in the
+  decode stage. The address computation is denoted "#5.a" and the memory
+  read is denoted "#5.m".
+- Assumes that a mechanism for forwarding from a FU's result latch to a
+  waiting operation is in place, without having to wait until the result
+  can be written to the register file.
+- "Av `r3`" denotes that the value to be written to `r3` is computed and
+  is available for forwarding but can't yet be written to the register file.
+- "SW: #4" denotes that the instruction is waiting on the shadow produced
+  by instruction #4.
+- "Rf #5:`r5`" denotes that the instruction reads the result latch for
+  instruction #5's new value for `r5` through the forwarding mechanism.
 
 | ISA-level instruction | Num   | 0     | 1      | 2             | 3            | 4                | 5                | 6                | 7                 | 8                | 9                         | 10                         | 11                         | 12             | 13             | 14             | 15             | 16          | 17     |
 |-----------------------|-------|-------|--------|---------------|--------------|------------------|------------------|------------------|-------------------|------------------|---------------------------|----------------------------|----------------------------|----------------|----------------|----------------|----------------|-------------|--------|
