@@ -1,3 +1,32 @@
 # Lookup table for Virtual Registers including renaming
 
 [[!img isa_to_virtual_regs_table.jpg size="900x"]]
+
+Explanation:
+
+* ISA reg numbers are in rows
+* Virtual (including renamed) reg numbers are in columns
+* from both the bottom *and* the right are multi-issue (unary) "Set1,
+  Set2" signals
+* where these cross they are ANDed to set a Latch in a given cell
+  - at no time will there be more than one cell set per row
+  - OR per column
+* there being only one per column a "reset" signal can be per column
+* for regfile port "lookup" the per-column Set1/Set2 wires may be re-used
+  - they may be binary or unary as preferred
+  - read and write ports are all numbered
+* a "request virtual-to-real regfile port redirection" signal is along
+  the bottom
+  - this is ANDed with the Latch
+  - that is MUXed with the per-column Set1/Set2 wires
+  - ANDs which accumulate in Great Big ORs fire per-row outputs
+
+in this way any "virtual" read or write request to a register file port
+may be translated to a "real" request.  the actual regfile data transfers
+on respective associated broadcast buses are external and do not need
+routing through this Matrix: the Matrix simply provides name translation,
+nothing else.
+
+note that if regfile port IDs are encoded in binary, an entire column
+can light up like a Mythbusters Christmas tree with XOR gates unless
+the EN is carefully arranged.
