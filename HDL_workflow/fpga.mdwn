@@ -1,0 +1,149 @@
+# ULX3S JTAG Connection with STLINKV2
+
+Cross referenced with:
+https://bugs.libre-soc.org/show_bug.cgi?id=517
+http://lists.libre-soc.org/pipermail/libre-soc-dev/2020-October/000873.html
+
+```lkcl
+the JTAG TAP interface on the *FPGA* is hard-coded silicon.
+
+the JTAG TAP interface connected on the processor and soft-implemented
+*by* the FPGA is likely completely inaccessible until someone
+allocates pins to "jtag_tdi/tdo/tms/tck" in the litex config.
+
+which means: someone's going to have to to through this file:
+https://github.com/enjoy-digital/litex/blob/master/litex/boards/platforms/ulx3s.py#L72
+(which defines the pin allocations)
+
+and in this file do some Voodoo Magic on this file's TestSoC:
+https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/litex/florent/ulx3s85f.py;hb=HEAD
+
+similar to these four lines:
+https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/litex/florent/ls180soc.py;h=4279effcffe2fbf15f877e9b2a1b76beab248dac;hb=HEAD#l460
+
+but instead doing something like... err....
+gpio0_pads = platform.reqiest("gpio", 0) # because back in ulx3s.py
+there's gpio 0, 1, and 2
+self.comb += self.cpu.jtag_tck.eq(gpio0_pads.p) # because again back
+in that file there are 2 pins, one named "p", one named "n"
+self.comb += self.cpu.jtag_tms.eq(gpio0_pads.n) # etc.
+
+and then request gpio1 for the other 2 pins
+
+theeeen you'll need to go back to that ulx3s.py litex platform file,
+look up the pin names B11, C11, A10, A11, and find out what the hell
+they are, whether they're suitable for use.
+
+if they are, then great! these are what you wire up the STLINKv2 to,
+according to what you decided to connect to just above.
+
+but for god's sake do not get this wrong, such as driving an input as
+an output or vice-versa, or wiring up 5.0V to GND with those
+jumper-cables.
+
+do *NOT* randomly upload and power up the ulx3s until this has been
+THOROUGHLY triple-checked.  or, you are entirely free to not bother
+and to end up learning the hard way by destroying the FPGA.
+```
+
+Connecting the dots:
+
+
+litex platform file
+```litex-boards/litex_boards/platforms/ulx3s.py
+("gpio", 0,
+    Subsignal("p", Pins("B11")),
+    Subsignal("n", Pins("C11")),
+    IOStandard("LVCMOS33")
+),
+("gpio", 1,
+    Subsignal("p", Pins("A10")),
+    Subsignal("n", Pins("A11")),
+    IOStandard("LVCMOS33")
+),
+```
+
+ulx3s contstraints file
+```github.com/emard/ulx3s/blob/master/doc/constraints/ulx3s_v20.lpf#L341-342
+LOCATE COMP "gp[0]" SITE "B11"; # J1_5+  GP0 PCLK
+LOCATE COMP "gn[0]" SITE "C11"; # J1_5-  GN0 PCLK
+LOCATE COMP "gp[1]" SITE "A10"; # J1_7+  GP1 PCLK
+LOCATE COMP "gn[1]" SITE "A11"; # J1_7-  GN1 PCLK
+```
+
+```https://github.com/emard/ulx3s/blob/master/doc/schematics_v308.pdf
+
+J1 J2 PIN number 1-40 is for FEMALE 90° ANGLED header.
+For MALE VERTICAL header, SWAP EVEN and ODD pin numbers.
+
+                    J1
+
+ Label  [GP{x}]|PCB pin label|[GN{x}] Label
+           (Pin count +)(Pin count -)
+_________________V__________V________________
+ IO VOLT REF 3V3 2  |3.3V|  1  NOT CONNECTED
+           [GND] 4  | -| |  3  NOT CONNECTED
+PCLKT0_0   [GP0] 6  |  0 |  5  [GN0] PCLKC0_0
+PCLKT0_1   [GP1] 8  |  1 |  7  [GN1] PCLKC0_1 
+
+
+GP,GN 0-7 single-ended connected to Bank0
+GP,GN 8-13 differential bidirectional connected to BANK7
+```
+
+``` Connecting all the dots
+Board pin # (count) | Board pin label # | FPGA IO PAD | GPIO # (n/p) |   Label  |
+      5 (J1_5-)     |         0         |      C11    |    gn[0]     | PCLKC0_0 |
+      6 (J1_5+)     |         0         |      B11    |    gp[0]     | PCLKT0_0 |
+      7 (J1_7-)     |         1         |      A11    |    gn[1]     | PCLKC0_1 |
+      8 (J1_7+)     |         1         |      A10    |    gp[1]     | PCLKT0_1 |
+```
+
+As noted in the schematic pins GP,GN 0-7 are single ended non-differential pairs, whereas pins GP,GN 8-13 I haven't mapped out here as they are bidirectional differential pairs.
+
+
+```proposed FPGA External Pin to STLINK JTAG pin connections
+   all pin #'s have headers pins on the fpga unless denoted as (no header)
+ ______________________________________________________________________________
+|             | board |             |             |                |           |
+|             | label |             |             |STLINKV2  JTAG  |           |
+|    pin #    |   #   | FPGA IO PAD |GPIO # (n/p) | Pin #  (Signal)|Wire Colour|
+|_____________|_______|_____________|_____________|________________|___________|
+|1 (no header)|  3.3v |NOT CONNECTED|NOT CONNECTED| NOT CONNECTED  |    NOT    |
+|2            |  3.3v | IO VOLT REF | IO VOLT REF |    2 (MCU VDD) |    Red    |
+|3 (no header)|-|(GND)|NOT CONNECTED|NOT CONNECTED| NOT CONNECTED  |    NOT    |
+|4            |-|(GND)|    NONE     |     GND     |    4 (GND)     |   Black   |
+|5 (J1_5-)    |   0   |     C11     |    gn[0]    |    5 (JTDI)    |   Green   |
+|6 (J1_5+)    |   0   |     B11     |    gp[0]    |    7 (JTMS)    |   Blue    |
+|7 (J1_7-)    |   1   |     A11     |    gn[1]    |    9 (JTCK)    |   White   |
+|8 (J1_7+)    |   1   |     A10     |    gp[1]    |   13 (JTDO)    |   Yellow  |
+|_____________|_______|_____________|_____________|________________|___________|
+```
+
+```complete diagram
+
+Pins intentionally have no header or are not connected to the STLINKVT are marked
+and therefore have no value are marked with 'NOT'
+
+(ST# JTAG) = (STLINKV2 pin #   JTAG signal name)
+
+
+                             J1
+            Wire                             Wire
+           Colour [GP{x}]|PCB label|[GN{x}] Colour
+(ST# JTAG)        (Pin count +)(Pin count -)      (ST# JTAG)
+ ________________________V__________V_________________________
+|                                                             |
+|( 2 JVDD) red    [VREF] 2  |3.3V|  1   NOT   NOT    NOT      |
+|( 4 JGND) black   [GND] 4  | -| |  3   NOT   NOT    NOT      |
+|( 7 JTMS) blue    [GP0] 6  |  0 |  5  [GN0] green (5 JTDI)   |
+|(13 JTDO) yellow  [GP1] 8  |  1 |  7  [GN1] white (9 JTCK)   |
+|_____________________________________________________________|
+```
+
+pic fpga                                     pic stlinkv2
+
+Luke do the labels of PCLK[C|T]0_[0|1] and GR_PCLK0_[0|1] have any significance? Should we be using the CLK labeled pins specifically for JTAG or specifically avoid using them for JTAG?
+
+Additionally, does the note in the schematic about needing to swap EVEN and ODD pin numbers if using MALE VERTICAL header instead of FEMALE 90° ANGLED header apply to us?
+
