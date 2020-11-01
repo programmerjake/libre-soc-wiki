@@ -4,7 +4,8 @@ Cross referenced with:
 https://bugs.libre-soc.org/show_bug.cgi?id=517
 http://lists.libre-soc.org/pipermail/libre-soc-dev/2020-October/000873.html
 
-```lkcl
+lkcl:
+```
 the JTAG TAP interface on the *FPGA* is hard-coded silicon.
 
 the JTAG TAP interface connected on the processor and soft-implemented
@@ -48,9 +49,8 @@ and to end up learning the hard way by destroying the FPGA.
 
 Connecting the dots:
 
-
 litex platform file litex-boards/litex_boards/platforms/ulx3s.py
-```
+
 ("gpio", 0,
     Subsignal("p", Pins("B11")),
     Subsignal("n", Pins("C11")),
@@ -61,15 +61,13 @@ litex platform file litex-boards/litex_boards/platforms/ulx3s.py
     Subsignal("n", Pins("A11")),
     IOStandard("LVCMOS33")
 ),
-```
 
-ulx3s contstraints file github.com/emard/ulx3s/blob/master/doc/constraints/ulx3s_v20.lpf#L341-342
-```
+ULX3S FPGA constraints file github.com/emard/ulx3s/blob/master/doc/constraints/ulx3s_v20.lpf#L341-342
+
 LOCATE COMP "gp[0]" SITE "B11"; # J1_5+  GP0 PCLK
 LOCATE COMP "gn[0]" SITE "C11"; # J1_5-  GN0 PCLK
 LOCATE COMP "gp[1]" SITE "A10"; # J1_7+  GP1 PCLK
 LOCATE COMP "gn[1]" SITE "A11"; # J1_7-  GN1 PCLK
-```
 
 ULX3S FPGA Schematic https://github.com/emard/ulx3s/blob/master/doc/schematics_v308.pdf
 
