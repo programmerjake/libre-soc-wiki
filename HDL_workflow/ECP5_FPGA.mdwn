@@ -165,6 +165,18 @@ Additionally, does the note in the schematic about needing to swap EVEN and ODD 
 
 # VERSA ECP5 Connections
 
+|-------------|-------------|----------------|-----------|
+|             |             |STLINKV2  JTAG  |           |
+|    pin #    | FPGA IO PAD | Pin #  (Signal)|Wire Colour|
+|-------------|-------------|----------------|-----------|
+|1 GND        | GND         | GND            |   Black   |
+|2 NC         |NOT CONNECTED| NOT CONNECTED  |    NC     |
+|3 +2V5       | 2.5V supply | 2 (MCU VDD)    |   Red     |
+|4 IO29       |  B19        |    9 (TCK)     |   Black   |
+|5 IO30       |  B12        |    7 (TMS)     |   Green   |
+|6 IO31       |  B9         |    5 (TDI)     |   Blue    |
+|7 IO32       |  E6         |   13 (TDO)     |   White   |
+
 [[!img 2020-11-03_13-22.png size="900x" ]] 
 
 [[!img 2020-11-03_13-25.png size="900x" ]] 
