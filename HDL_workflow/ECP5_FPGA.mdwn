@@ -8,49 +8,9 @@ Cross referenced with:
 
 ## Original Instructions
 
-lkcl:
+See https://bugs.libre-soc.org/show_bug.cgi?id=517#c0
 
-
-> the JTAG TAP interface on the *FPGA* is hard-coded silicon.
-
-> the JTAG TAP interface connected on the processor and soft-implemented
-> *by* the FPGA is likely completely inaccessible until someone
-> allocates pins to "jtag_tdi/tdo/tms/tck" in the litex config.
->
-> which means: someone's going to have to to through this file:
-> <https://github.com/enjoy-digital/litex/blob/master/litex/boards/platforms/ulx3s.py#L72>
-> (which defines the pin allocations)
-> 
-> and in this file do some Voodoo Magic on this file's TestSoC:
-> <https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/litex/florent/ulx3s85f.py;hb=HEAD>
->
-> similar to these four lines:
-> <https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/litex/florent/ls180soc.py;h=4279effcffe2fbf15f877e9b2a1b76beab248dac;hb=HEAD#l460>
->
-> but instead doing something like... err....
->
->    gpio0_pads = platform.reqiest("gpio", 0) # because back in ulx3s.py there's gpio 0, 1, and 2
->
->    self.comb += self.cpu.jtag_tck.eq(gpio0_pads.p) # because again back in that file there are 2 pins, one named "p", one named "n"
->
->    self.comb += self.cpu.jtag_tms.eq(gpio0_pads.n) # etc.
->
-> and then request gpio1 for the other 2 pins
->
-> theeeen you'll need to go back to that ulx3s.py litex platform file,
-> look up the pin names B11, C11, A10, A11, and find out what the hell
-> they are, whether they're suitable for use.
->
-> if they are, then great! these are what you wire up the STLINKv2 to,
-> according to what you decided to connect to just above.
->
-> but for god's sake do not get this wrong, such as driving an input as
-> an output or vice-versa, or wiring up 5.0V to GND with those
-> jumper-cables.
-> 
-> do *NOT* randomly upload and power up the ulx3s until this has been
-> THOROUGHLY triple-checked. or, you are entirely free to not bother
-> and to end up learning the hard way by destroying the FPGA.
+TODO checklist based on above
 
 ## Connecting the dots:
 
