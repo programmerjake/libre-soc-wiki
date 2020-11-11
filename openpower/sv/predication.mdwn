@@ -26,7 +26,7 @@
 * two modes, "zeroing" and "non-zeroing". zeroing mode places a zero in the masked-out element results, where non-zeroing leaves the destination (result) element unmodified.
 * predicate must be invertable via an opcode bit (to avoid the need for an instruction which inverts all bits of the predicate mask)
 
-Implementation note: even in in-order microarchitectures it is strongly adviseable to use byte-level write-enable lines on the register file.  This in combination with 8-bit SIMD element overrides allows, in "non-zeroing" mode, the predicate mask can very simply be directly ANDed with the regfile write-enable lines to achieve the required functionality of leaving masked-out elements unmodified.  The alternative is to perform a READ-MODIFY-MASK-WRITE cycle which is costly and compromises performance.  Avoided very simply with byte-level write-enable.
+Implementation note: even in in-order microarchitectures it is strongly adviseable to use byte-level write-enable lines on the register file.  This in combination with 8-bit SIMD element overrides allows, in "non-zeroing" mode, the predicate mask to very simply be directly ANDed with the regfile write-enable lines to achieve the required functionality of leaving masked-out elements unmodified, right down to the 8 bit element level.  The alternative is to perform a READ-MODIFY-MASK-WRITE cycle which is costly and compromises performance.  Avoided very simply with byte-level write-enable.
 
 ## General implications and considerations
 
