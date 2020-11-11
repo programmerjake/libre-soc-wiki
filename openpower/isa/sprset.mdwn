@@ -210,3 +210,33 @@ Special Registers Altered:
 
     None
 
+# Data Cache Block set to Zero
+
+X-Form
+
+* dcbz RA,RB
+
+Pseudo-code:
+
+    if RA = 0 then b <- 0
+    else           b <-(RA)
+    EA <- b + (RB)
+
+Special Registers Altered:
+
+    None
+
+# TLB Invalidate Entry
+
+X-Form
+
+* tlbie RB,RS,RIC,PRS,R
+
+Pseudo-code:
+
+    IS <- (RB) [52:53]
+
+Special Registers Altered:
+
+    None
+
