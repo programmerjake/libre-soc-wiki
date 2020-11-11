@@ -1,0 +1,29 @@
+# Major Opcode Allocation
+
+SimpleV Prefix, 16-bit Compressed, and SV VBLOCK all require considerable opcode space.  Similar to OpenPOWER v3.1 "prefixes" the key driving difference here is to reduce overall instruction size and thus greatly reduce I-Cache size and thus in turn power consumption.
+
+Consequently rather than settle for a v3.1 32 bit prefix, 8 major opcodes are taken up and given new meanings.  Two options here involve either:
+
+* Taking 8 arbitrary unused major opcodes as-is
+* Moving anything in the range 0-7 elsewhere
+
+This **only** in "LibreSOC Mode".  Candidates for moving elsewhere include twi and tdi.
+
+* 2 opcodes are required in order to give SV-P48 the 11 bits needed for prefixing
+* 2 opcodes are likewise required for SV-P64 to have 27 bits available
+* Ideally 2 opcodes would also be reserved for SV-P32 (prefixing of 16-bit Compressed instructions)
+* 1 opcode for 16-bit Compressed instructions
+* 1 opcode for SV VBLOCK
+
+With only one opcode for 16-bit Compressed, this only leaves 10 available bits and consequently it may be better to use the opportunity to switch into "16 bit mode".  Interestingly SV-P32 could likewise switch into the same.
+
+# LE/BE complications.
+
+See <https://bugs.libre-soc.org/show_bug.cgi?id=529> for discussion
+
+With the Major Opcode being at the opposite end of the sequential byte order when read from memory in LE mode, a solution which allows 16 and 48 bit instructions to co-exist with 32 bit ones is to look at bytes 2 and 3 *before* looking at 0 and 1.
+
+A 16 bit instruction would therefore be in bytes 2 and 3, removed from the instruction stream *ahead* of bytes 0 and 1, which would remain where they were.  The next instruction would repeat the analysis, starting now instead at the *new* byte 2-3.
+
+A 48 bit instruction would again use bytes 2 and 3, read the major opcode, and extract bytes 0 thru 5 from the stream.  However the 48 bit instruction would be constructed from bytes 2,3,0,1,4,5.  Again: after these 6 bytes were extracted fron the stream the analysis would begin again for the next instruction at bytes 2 and 3.
+
