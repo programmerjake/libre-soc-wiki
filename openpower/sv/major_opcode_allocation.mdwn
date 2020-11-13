@@ -56,4 +56,14 @@ This latter would be useful in the Vector context to have an alternative meaning
     |16 bit opcode  alt vec. mode ^ |
     | extra vector prefix if alt set|
 
+Using a major opcode to enter 16 bit mode, leaves 10 bits to find something to use them for:
 
+    0 1 2 3 4 5 6 7 8 9 a b c d e f |
+    |major op   | what to do here 1 |
+    |16 bit    stay in 16bit mode 1 |
+    |16 bit    stay in 16bit mode 1 |
+    |16 bit       exit 16bit mode 0 |
+
+One possibility is that the 10 bits are used for bank selection, with some room for additional context such as altering the registers used for the 16 bit operations (bank selection of which scalar regs)
+
+Another is to use the 10 bits for only the utmost commonly used instructions.  That being the case then even one of those 10 bits would also need to be dedicated to saying if 16 bit mode is to be continued.  9 bits remain for actual opcodes!
