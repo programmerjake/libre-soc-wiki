@@ -23,7 +23,15 @@ See <https://bugs.libre-soc.org/show_bug.cgi?id=529> for discussion
 
 With the Major Opcode being at the opposite end of the sequential byte order when read from memory in LE mode, a solution which allows 16 and 48 bit instructions to co-exist with 32 bit ones is to look at bytes 2 and 3 *before* looking at 0 and 1.
 
+Option 1:
+
 A 16 bit instruction would therefore be in bytes 2 and 3, removed from the instruction stream *ahead* of bytes 0 and 1, which would remain where they were.  The next instruction would repeat the analysis, starting now instead at the *new* byte 2-3.
 
 A 48 bit instruction would again use bytes 2 and 3, read the major opcode, and extract bytes 0 thru 5 from the stream.  However the 48 bit instruction would be constructed from bytes 2,3,0,1,4,5.  Again: after these 6 bytes were extracted fron the stream the analysis would begin again for the next instruction at bytes 2 and 3.
+
+Option 2:
+
+When reading from memory, before handing to the instruction decoder, bytes 0 and 1 are swapped unconditionally with bytes 2 and 3.  Effectively this is near-identical to LE/BE byte-level swapping on a 32-bit block except this time it is half-word (16 bit) swapping on a 32-bit block.
+
+With the Major Opcode then always being in the 1st 2 bytes it becomes much simpler for the pre-analysis phase to determine instruction length, regardless of what that length is (16/32/48/64/VBLOCK).
 
