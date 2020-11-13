@@ -11,7 +11,7 @@ This **only** in "LibreSOC Mode".  Candidates for moving elsewhere include twi a
 
 * 2 opcodes are required in order to give SV-P48 the 11 bits needed for prefixing
 * 2 opcodes are likewise required for SV-P64 to have 27 bits available
-* Ideally 2 opcodes would also be reserved for SV-P32 (prefixing of 16-bit Compressed instructions)
+* Ideally 2 opcodes would also be reserved for SV-C32 (prefixing of 16-bit Compressed instructions)
 * 1 opcode for 16-bit Compressed instructions
 * 1 opcode for SV VBLOCK
 
@@ -34,4 +34,27 @@ Option 2:
 When reading from memory, before handing to the instruction decoder, bytes 0 and 1 are swapped unconditionally with bytes 2 and 3.  Effectively this is near-identical to LE/BE byte-level swapping on a 32-bit block except this time it is half-word (16 bit) swapping on a 32-bit block.
 
 With the Major Opcode then always being in the 1st 2 bytes it becomes much simpler for the pre-analysis phase to determine instruction length, regardless of what that length is (16/32/48/64/VBLOCK).
+
+# 16 bit Compressed
+
+This one is a conundrum.  OpenPOWER ISA was never designed with 16 bit in mind.  VLE was added 10 years ago but only by way of marking an entire 64k page as "VLE".  With no means to mix 32 bit and 16 bit, jumping between the two would have been painful and taken up space.
+
+Here, in order to embed 16 bit into a predominantly 32 bit stream the overhead of using an entire 16 bits just to switch into Compressed mode is itself a significant overhead.  The situation is made worse by 6 bits being taken up by Major Opcode space, leaving only 10 bits to allocate to actual instructions.
+
+In addition we would like to add SV-C32 which is a Vectorised version of 16 bit Compressed, and ideally have a variant that adds the 27-bit prefix format from SV-P64, as well.
+
+Potential ways to reduce pressure on the 16 bit space are:
+
+* To provide "paging".  This involves bank-switching to alternative optimised encodings for specific workloads
+* To enter "16 bit mode" for durations specified at the start
+* To reserve one bit of every 16 bit instruction to indicate that the 16 bit mode is to continue to be sustained
+
+This latter would be useful in the Vector context to have an alternative meaning: as the bit which determines whether the instruction is 11-bit prefixed or 27-bit prefixed:
+
+'''
+0 1 2 3 4 5 6 7 8 9 a b c d e f |
+|major op | 11 bit vector prefix|
+|16 bit opcode  alt vec. mode ^ |
+| extra vector prefix if alt set|
+'''
 
