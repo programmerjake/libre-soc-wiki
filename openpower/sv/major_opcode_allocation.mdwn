@@ -71,6 +71,8 @@ Another is to use the 11 bits for only the utmost commonly used instructions.  T
 
 ### Branch
 
+10 bit mode may be expanded by 16 bit mode later, adding capabilities that do not fit in the extreme limited space.
+
     | 5 6 7 | 8 9 | a b | c d | e  | f |
     | 0 0 0 |     offs        | LK | 1 | b
     | 0 0 1 | 01  | BI  | BO  | LK | 1 | bclr
@@ -87,9 +89,30 @@ Another is to use the 11 bits for only the utmost commonly used instructions.  T
 
 ### Arithmetic
 
+    | 5 6 7 | 8 9 a | b c d | e | f |
+    | 0 1 0 | RA    | RB    | 0 | 1 | add
+    | 0 1 0 | RA    | RB    | 1 | 1 | mul
+    | 0 1 1 | RA    | RB    | 0 | 1 | sub
+    | 0 1 1 | RA    | RB    | 1 | 1 | cmp
+
 ### Logical
+
+    | 5 6 7 | 8 9 a | b c d | e | f |
+    | 1 0 0 | RA    | RB    | 0 | 1 | and
+    | 1 0 0 | RA    | RB    | 1 | 1 | nand
+    | 1 0 1 | RA    | RB    | 0 | 1 | or
+    | 1 0 1 | RA    | RB    | 1 | 1 | nor
 
 ### Floating Point
 
+    | 5 6 7 | 8 9 a | b c d | e | f |
+    | 1 1 0 | RA    | RB    | 0 | 1 | add
+    | 1 1 0 | RA    | RB    | 1 | 1 | mul
+    | 1 1 1 | RA    | RB    | 0 | 1 | sub
+    | 1 1 1 | RA    | RB    | 1 | 1 | cmp
+
 ### Condition Register
+
+    | 5 6 7 | 8 9 | a b | c d | e  | f |
+    | 0 0 1 | 00  | BF  | BFA | 0  | 1 | mcrf
 
