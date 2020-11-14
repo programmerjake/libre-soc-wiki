@@ -1,0 +1,151 @@
+# 16 bit Compressed
+
+This one is a conundrum.  OpenPOWER ISA was never designed with 16
+bit in mind.  VLE was added 10 years ago but only by way of marking
+an entire 64k page as "VLE".  With no means to mix 32 bit and 16 bit,
+jumping between the two would have been painful and taken up space.
+
+Here, in order to embed 16 bit into a predominantly 32 bit stream the
+overhead of using an entire 16 bits just to switch into Compressed mode
+is itself a significant overhead.  The situation is made worse by 5 bits
+being taken up by Major Opcode space, leaving only 11 bits to allocate
+to actual instructions.
+
+In addition we would like to add SV-C32 which is a Vectorised version
+of 16 bit Compressed, and ideally have a variant that adds the 27-bit
+prefix format from SV-P64, as well.
+
+Potential ways to reduce pressure on the 16 bit space are:
+
+* To provide "paging".  This involves bank-switching to alternative optimised encodings for specific workloads
+* To enter "16 bit mode" for durations specified at the start
+* To reserve one bit of every 16 bit instruction to indicate that the 16 bit mode is to continue to be sustained
+
+This latter would be useful in the Vector context to have an alternative
+meaning: as the bit which determines whether the instruction is 11-bit
+prefixed or 27-bit prefixed:
+
+    0 1 2 3 4 5 6 7 8 9 a b c d e f |
+    |major op | 11 bit vector prefix|
+    |16 bit opcode  alt vec. mode ^ |
+    | extra vector prefix if alt set|
+
+Using a major opcode to enter 16 bit mode, leaves 11 bits to find
+something to use them for:
+
+    0 1 2 3 4 5 6 7 8 9 a b c d e f |
+    |major op | what to do here   1 |
+    |16 bit    stay in 16bit mode 1 |
+    |16 bit    stay in 16bit mode 1 |
+    |16 bit       exit 16bit mode 0 |
+
+One possibility is that the 11 bits are used for bank selection, with
+some room for additional context such as altering the registers used
+for the 16 bit operations (bank selection of which scalar regs)
+
+Another is to use the 11 bits for only the utmost commonly used
+instructions.  That being the case then even one of those 11 bits would
+also need to be dedicated to saying if 16 bit mode is to be continued.
+10 bits remain for actual opcodes!
+
+# Opcode Allocation Ideas
+
+## Opcodes exploration (Attempt 1)
+
+### Branch
+
+10 bit mode may be expanded by 16 bit mode later, adding capabilities
+that do not fit in the extreme limited space.
+
+    | 0 1 | 2 3 4 | | 5 6 7 | 8 9 | a b | c d | e  | f |
+    |   offs2     | | 0 0 0 |     offs        | LK | 1 | b
+    | BO2 | BI3   | | 0 0 1 | 00  | BI  | BO  | LK | 1 | bclr
+    | BO2 | BI3   | | 0 0 1 | 01  | BI  | BO  | LK | 1 | bctar
+
+16 bit mode:
+
+* offs2 extends offset in MSBs
+* BI3 extends BI in MSBs to allow selection of full CR
+* BO2 extends BO
+
+10 bit mode:
+
+* BO[0] enables CR check, BO[1] inverts check
+* BI refers to CR0 only (4 bits of)
+* no Branch Conditional with immediate
+* no Absolute Address
+* no CTR mode (and no bctr)
+* offs is to 2 byte (signed) aligned
+* all branches to 2 byte aligned
+
+### LD/ST
+
+    | 0 | 1   | 2 3 4 | | 5 6 7 | 8 9 | a b | c d | e | f |
+    | F | RA2 |  RT   | | 0 0 1 | 11  | RA  | RB  | 0 | 1 | ld
+    | F | RT2 |  RB   | | 0 0 1 | 11  | RA  | RT  | 1 | 1 | st
+
+* elwidth overrides can set different widths
+
+16 bit mode:
+
+* F=1 is FLD, FST
+* RA2 extends RA to 3 bits (MSB)
+* RT2 extends RT to 3 bits (MSB)
+
+10 bit mode:
+
+* RA and RB are only 2 bit (0-3)
+* for LD, RT is implicitly RB: ld RT=RB, RA(RB)
+* for ST, there is no offset: st RT, RA(0)
+
+### Arithmetic
+
+    | 0 1 | 2 3 4 | | 5 6 7 | 8 9 a | b c d | e | f |
+    |     |       | | 0 1 0 | RB    | RA    | 0 | 1 | add
+    |     |       | | 0 1 0 | RB    | RA    | 1 | 1 | mul
+    |     |       | | 0 1 1 | RB    | (RA|0)| 0 | 1 | sub
+    |     |       | | 0 1 1 | RB    | (RA|0)| 1 | 1 | cmp
+
+10 bit mode:
+
+* cmp default target is CR0
+* for (RA|0) when RA=0 the input is a zero immediate,
+  meaning that sub becomes neg, and cmp becomes cmp-against-zero
+
+### Logical
+
+    | 0 1 | 2 3 4 | | 5 6 7 | 8 9 a | b c d | e | f |
+    |     |       | | 1 0 0 | RB    | RA    | 0 | 1 | and
+    |     |       | | 1 0 0 | RB    | RA    | 1 | 1 | nand
+    |     |       | | 1 0 1 | RB    | RA    | 0 | 1 | or
+    |     |       | | 1 0 1 | RB    | (RA|0)| 1 | 1 | nor
+
+10 bit mode:
+
+* for (RA|0) when RA=0 the input is a zero immediate,
+  meaning that nor becomes not
+
+### Floating Point
+
+    | 0 1 | 2 3 4 | | 5 6 7 | 8 9 a | b c d | e | f |
+    |     |  RT   | | 1 1 0 | RB    | RA!=0 | 0 | 1 | fadd
+    |     |  RT   | | 1 1 0 | RB    | 0 0 0 | 0 | 1 | fabs
+    |     |  RT   | | 1 1 0 | RB    | RA    | 1 | 1 | fmul
+    |     |  RT   | | 1 1 1 | RB    | (RA|0)| 0 | 1 | fsub
+    |     |  RT   | | 1 1 1 | RB    | (RA|0)| 1 | 1 | fcmp
+
+10 bit mode:
+
+* fcmp default target is CR1
+* for (RA|0) when RA=0 the input is a zero immediate,
+  meaning that fsub becomes fneg, and fcmp becomes fcmp-against-zero
+
+### Condition Register
+
+    | 0 1 2 3 | 4   | | 5 6 7 | 8 9 | a b | c d e  | f |
+    | 0 0 0 0 | BF2 | | 0 0 1 | 10  | BF  | BFA    | 1 | mcrf
+
+10 bit mode:
+
+* BF is only 2 bits which means the destination is only CR0-CR3
+
