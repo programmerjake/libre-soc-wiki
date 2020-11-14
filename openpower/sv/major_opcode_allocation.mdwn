@@ -136,15 +136,23 @@ that do not fit in the extreme limited space.
 
 ### LD/ST
 
-    | 0 1 | 2 3 4 | | 5 6 7 | 8 9 | a b | c d | e | f |
-    |     |  RT   | | 0 0 1 | 11  | RB  | RA  | 0 | 1 | ld
-    |     |  RT   | | 0 0 1 | 11  | RB  | RA  | 1 | 1 | st
+    | 0 | 1   | 2 3 4 | | 5 6 7 | 8 9 | a b | c d | e | f |
+    | F | RA2 |  RT   | | 0 0 1 | 11  | RA  | RB  | 0 | 1 | ld
+    | F | RT2 |  RB   | | 0 0 1 | 11  | RA  | RT  | 1 | 1 | st
 
 * elwidth overrides can set different widths
 
 16 bit mode:
 
+* F=1 is FLD, FST
+* RA2 extends RA to 3 bits (MSB)
+* RT2 extends RT to 3 bits (MSB)
+
 10 bit mode:
+
+* RA and RB are only 2 bit (0-3)
+* for LD, RT is implicitly RB: ld RT=RB, RA(RB)
+* for ST, there is no offset: st RT, RA(0)
 
 ### Arithmetic
 
@@ -176,11 +184,11 @@ that do not fit in the extreme limited space.
 ### Floating Point
 
     | 0 1 | 2 3 4 | | 5 6 7 | 8 9 a | b c d | e | f |
-    |     |       | | 1 1 0 | RB    | RA!=0 | 0 | 1 | fadd
-    |     |       | | 1 1 0 | RB    | 0 0 0 | 0 | 1 | fabs
-    |     |       | | 1 1 0 | RB    | RA    | 1 | 1 | fmul
-    |     |       | | 1 1 1 | RB    | (RA|0)| 0 | 1 | fsub
-    |     |       | | 1 1 1 | RB    | (RA|0)| 1 | 1 | fcmp
+    |     |  RT   | | 1 1 0 | RB    | RA!=0 | 0 | 1 | fadd
+    |     |  RT   | | 1 1 0 | RB    | 0 0 0 | 0 | 1 | fabs
+    |     |  RT   | | 1 1 0 | RB    | RA    | 1 | 1 | fmul
+    |     |  RT   | | 1 1 1 | RB    | (RA|0)| 0 | 1 | fsub
+    |     |  RT   | | 1 1 1 | RB    | (RA|0)| 1 | 1 | fcmp
 
 10 bit mode:
 
@@ -190,8 +198,8 @@ that do not fit in the extreme limited space.
 
 ### Condition Register
 
-    | 0 1 2 3 4 | | 5 6 7 | 8 9 | a b | c d e  | f |
-    |           | | 0 0 1 | 10  | BF  | BFA    | 1 | mcrf
+    | 0 1 2 3 | 4   | | 5 6 7 | 8 9 | a b | c d e  | f |
+    | 0 0 0 0 | BF2 | | 0 0 1 | 10  | BF  | BFA    | 1 | mcrf
 
 10 bit mode:
 
