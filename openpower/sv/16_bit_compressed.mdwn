@@ -7,8 +7,8 @@ See:
 
 This one is a conundrum.  OpenPOWER ISA was never designed with 16
 bit in mind.  VLE was added 10 years ago but only by way of marking
-an entire 64k page as "VLE".  With no means to mix 32 bit and 16 bit,
-jumping between the two would have been painful and taken up space.
+an entire 64k page as "VLE".  With VLE not maintained it is not
+fully compatible with current PowerISA.
 
 Here, in order to embed 16 bit into a predominantly 32 bit stream the
 overhead of using an entire 16 bits just to switch into Compressed mode
