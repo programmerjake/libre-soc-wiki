@@ -66,3 +66,30 @@ Using a major opcode to enter 16 bit mode, leaves 11 bits to find something to u
 One possibility is that the 11 bits are used for bank selection, with some room for additional context such as altering the registers used for the 16 bit operations (bank selection of which scalar regs)
 
 Another is to use the 11 bits for only the utmost commonly used instructions.  That being the case then even one of those 11 bits would also need to be dedicated to saying if 16 bit mode is to be continued.  10 bits remain for actual opcodes!
+
+## 10 bit common opcodes exploration
+
+### Branch
+
+    | 5 6 7 | 8 9 | a b | c d | e  | f |
+    | 0 0 0 |     offs        | LK | 1 | b
+    | 0 0 1 | 01  | BI  | BO  | LK | 1 | bclr
+    | 0 0 1 | 10  | BI  | BO  | LK | 1 | bctar
+    | 0 0 1 | 11  | BI  | BO  | LK | 1 | bctr
+
+* BO[0] enables CR check, BO[1] inverts check
+* BI refers to CR0 only (4 bits of)
+* no Branch Conditional with immediate
+* no Absolute Address
+* no CTR mode
+* offs is to 2 byte (signed) aligbed
+* all branches to 2 byte aligned
+
+### Arithmetic
+
+### Logical
+
+### Floating Point
+
+### Condition Register
+
