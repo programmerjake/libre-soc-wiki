@@ -1,46 +1,77 @@
 # Major Opcode Allocation
 
-SimpleV Prefix, 16-bit Compressed, and SV VBLOCK all require considerable opcode space.  Similar to OpenPOWER v3.1 "prefixes" the key driving difference here is to reduce overall instruction size and thus greatly reduce I-Cache size and thus in turn power consumption.
+SimpleV Prefix, 16-bit Compressed, and SV VBLOCK all require considerable
+opcode space.  Similar to OpenPOWER v3.1 "prefixes" the key driving
+difference here is to reduce overall instruction size and thus greatly
+reduce I-Cache size and thus in turn power consumption.
 
-Consequently rather than settle for a v3.1 32 bit prefix, 8 major opcodes are taken up and given new meanings.  Two options here involve either:
+Consequently rather than settle for a v3.1 32 bit prefix, 8 major opcodes
+are taken up and given new meanings.  Two options here involve either:
 
 * Taking 8 arbitrary unused major opcodes as-is
 * Moving anything in the range 0-7 elsewhere
 
-This **only** in "LibreSOC Mode".  Candidates for moving elsewhere include mulli, twi and tdi.
+This **only** in "LibreSOC Mode".  Candidates for moving elsewhere
+include mulli, twi and tdi.
 
 * 2 opcodes for 16-bit Compressed instructions with 11 bits available
 * 2 opcodes are required in order to give SV-P48 (and SV-C32) the 11 bits needed for prefixing
 * 2 opcodes are likewise required for SV-P64 (and SV-C48) to have 27 bits available
 * 2 opcodes for SV VBLOCK
 
-With only 11 bits for 16-bit Compressed, it may be better to use the opportunity to switch into "16 bit mode".  Interestingly SV-P32 could likewise switch into the same.
+With only 11 bits for 16-bit Compressed, it may be better to use the
+opportunity to switch into "16 bit mode".  Interestingly SV-P32 could
+likewise switch into the same.
 
 # LE/BE complications.
 
 See <https://bugs.libre-soc.org/show_bug.cgi?id=529> for discussion
 
-With the Major Opcode being at the opposite end of the sequential byte order when read from memory in LE mode, a solution which allows 16 and 48 bit instructions to co-exist with 32 bit ones is to look at bytes 2 and 3 *before* looking at 0 and 1.
+With the Major Opcode being at the opposite end of the sequential byte
+order when read from memory in LE mode, a solution which allows 16 and
+48 bit instructions to co-exist with 32 bit ones is to look at bytes 2
+and 3 *before* looking at 0 and 1.
 
 Option 1:
 
-A 16 bit instruction would therefore be in bytes 2 and 3, removed from the instruction stream *ahead* of bytes 0 and 1, which would remain where they were.  The next instruction would repeat the analysis, starting now instead at the *new* byte 2-3.
+A 16 bit instruction would therefore be in bytes 2 and 3, removed from
+the instruction stream *ahead* of bytes 0 and 1, which would remain
+where they were.  The next instruction would repeat the analysis,
+starting now instead at the *new* byte 2-3.
 
-A 48 bit instruction would again use bytes 2 and 3, read the major opcode, and extract bytes 0 thru 5 from the stream.  However the 48 bit instruction would be constructed from bytes 2,3,0,1,4,5.  Again: after these 6 bytes were extracted fron the stream the analysis would begin again for the next instruction at bytes 2 and 3.
+A 48 bit instruction would again use bytes 2 and 3, read the major
+opcode, and extract bytes 0 thru 5 from the stream.  However the 48
+bit instruction would be constructed from bytes 2,3,0,1,4,5.  Again:
+after these 6 bytes were extracted fron the stream the analysis would
+begin again for the next instruction at bytes 2 and 3.
 
 Option 2:
 
-When reading from memory, before handing to the instruction decoder, bytes 0 and 1 are swapped unconditionally with bytes 2 and 3.  Effectively this is near-identical to LE/BE byte-level swapping on a 32-bit block except this time it is half-word (16 bit) swapping on a 32-bit block.
+When reading from memory, before handing to the instruction decoder, bytes
+0 and 1 are swapped unconditionally with bytes 2 and 3.  Effectively this
+is near-identical to LE/BE byte-level swapping on a 32-bit block except
+this time it is half-word (16 bit) swapping on a 32-bit block.
 
-With the Major Opcode then always being in the 1st 2 bytes it becomes much simpler for the pre-analysis phase to determine instruction length, regardless of what that length is (16/32/48/64/VBLOCK).
+With the Major Opcode then always being in the 1st 2 bytes it becomes
+much simpler for the pre-analysis phase to determine instruction length,
+regardless of what that length is (16/32/48/64/VBLOCK).
 
 # 16 bit Compressed
 
-This one is a conundrum.  OpenPOWER ISA was never designed with 16 bit in mind.  VLE was added 10 years ago but only by way of marking an entire 64k page as "VLE".  With no means to mix 32 bit and 16 bit, jumping between the two would have been painful and taken up space.
+This one is a conundrum.  OpenPOWER ISA was never designed with 16
+bit in mind.  VLE was added 10 years ago but only by way of marking
+an entire 64k page as "VLE".  With no means to mix 32 bit and 16 bit,
+jumping between the two would have been painful and taken up space.
 
-Here, in order to embed 16 bit into a predominantly 32 bit stream the overhead of using an entire 16 bits just to switch into Compressed mode is itself a significant overhead.  The situation is made worse by 5 bits being taken up by Major Opcode space, leaving only 11 bits to allocate to actual instructions.
+Here, in order to embed 16 bit into a predominantly 32 bit stream the
+overhead of using an entire 16 bits just to switch into Compressed mode
+is itself a significant overhead.  The situation is made worse by 5 bits
+being taken up by Major Opcode space, leaving only 11 bits to allocate
+to actual instructions.
 
-In addition we would like to add SV-C32 which is a Vectorised version of 16 bit Compressed, and ideally have a variant that adds the 27-bit prefix format from SV-P64, as well.
+In addition we would like to add SV-C32 which is a Vectorised version
+of 16 bit Compressed, and ideally have a variant that adds the 27-bit
+prefix format from SV-P64, as well.
 
 Potential ways to reduce pressure on the 16 bit space are:
 
@@ -48,14 +79,17 @@ Potential ways to reduce pressure on the 16 bit space are:
 * To enter "16 bit mode" for durations specified at the start
 * To reserve one bit of every 16 bit instruction to indicate that the 16 bit mode is to continue to be sustained
 
-This latter would be useful in the Vector context to have an alternative meaning: as the bit which determines whether the instruction is 11-bit prefixed or 27-bit prefixed:
+This latter would be useful in the Vector context to have an alternative
+meaning: as the bit which determines whether the instruction is 11-bit
+prefixed or 27-bit prefixed:
 
     0 1 2 3 4 5 6 7 8 9 a b c d e f |
     |major op | 11 bit vector prefix|
     |16 bit opcode  alt vec. mode ^ |
     | extra vector prefix if alt set|
 
-Using a major opcode to enter 16 bit mode, leaves 11 bits to find something to use them for:
+Using a major opcode to enter 16 bit mode, leaves 11 bits to find
+something to use them for:
 
     0 1 2 3 4 5 6 7 8 9 a b c d e f |
     |major op | what to do here   1 |
@@ -63,15 +97,21 @@ Using a major opcode to enter 16 bit mode, leaves 11 bits to find something to u
     |16 bit    stay in 16bit mode 1 |
     |16 bit       exit 16bit mode 0 |
 
-One possibility is that the 11 bits are used for bank selection, with some room for additional context such as altering the registers used for the 16 bit operations (bank selection of which scalar regs)
+One possibility is that the 11 bits are used for bank selection, with
+some room for additional context such as altering the registers used
+for the 16 bit operations (bank selection of which scalar regs)
 
-Another is to use the 11 bits for only the utmost commonly used instructions.  That being the case then even one of those 11 bits would also need to be dedicated to saying if 16 bit mode is to be continued.  10 bits remain for actual opcodes!
+Another is to use the 11 bits for only the utmost commonly used
+instructions.  That being the case then even one of those 11 bits would
+also need to be dedicated to saying if 16 bit mode is to be continued.
+10 bits remain for actual opcodes!
 
 ## 10 bit common opcodes exploration
 
 ### Branch
 
-10 bit mode may be expanded by 16 bit mode later, adding capabilities that do not fit in the extreme limited space.
+10 bit mode may be expanded by 16 bit mode later, adding capabilities
+that do not fit in the extreme limited space.
 
     | 5 6 7 | 8 9 | a b | c d | e  | f |
     | 0 0 0 |     offs        | LK | 1 | b
@@ -89,39 +129,51 @@ Another is to use the 11 bits for only the utmost commonly used instructions.  T
 ### LD/ST
 
     | 5 6 7 | 8 9 | a b | c d | e | f |
-    | 0 0 1 | 11  | RT  | RA  | 0 | 1 | ld
-    | 0 0 1 | 11  | RT  | RA  | 1 | 1 | st
+    | 0 0 1 | 11  | RB  | RA  | 0 | 1 | ld
+    | 0 0 1 | 11  | RB  | RA  | 1 | 1 | st
 
 * elwidth overrides can set different widths
 
 ### Arithmetic
 
     | 5 6 7 | 8 9 a | b c d | e | f |
-    | 0 1 0 | RT    | RA    | 0 | 1 | add
-    | 0 1 0 | RT    | RA    | 1 | 1 | mul
-    | 0 1 1 | RT    | (RA|0)| 0 | 1 | sub
-    | 0 1 1 | RT    | RA    | 1 | 1 | cmp
+    | 0 1 0 | RB    | RA    | 0 | 1 | add
+    | 0 1 0 | RB    | RA    | 1 | 1 | mul
+    | 0 1 1 | RB    | (RA|0)| 0 | 1 | sub
+    | 0 1 1 | RB    | (RA|0)| 1 | 1 | cmp
+
+* cmp default target is CR0
+* for (RA|0) when RA=0 the input is a zero immediate,
+  meaning that sub becomes neg, and cmp becomes cmp-against-zero
 
 ### Logical
 
     | 5 6 7 | 8 9 a | b c d | e | f |
-    | 1 0 0 | RT    | RA    | 0 | 1 | and
-    | 1 0 0 | RT    | RA    | 1 | 1 | nand
-    | 1 0 1 | RT    | RA    | 0 | 1 | or
-    | 1 0 1 | RT    | RA    | 1 | 1 | nor
-    | 0 0 1 | 10  0 | RA    | 1 | 1 | extsb
-    | 0 0 1 | 10  1 | RA    | 1 | 1 | inv
+    | 1 0 0 | RB    | RA    | 0 | 1 | and
+    | 1 0 0 | RB    | RA    | 1 | 1 | nand
+    | 1 0 1 | RB    | RA    | 0 | 1 | or
+    | 1 0 1 | RB    | (RA|0)| 1 | 1 | nor
+
+* for (RA|0) when RA=0 the input is a zero immediate,
+  meaning that nor becomes not
 
 ### Floating Point
 
     | 5 6 7 | 8 9 a | b c d | e | f |
-    | 1 1 0 | RT    | RA    | 0 | 1 | fadd
-    | 1 1 0 | RT    | RA    | 1 | 1 | fmul
-    | 1 1 1 | RT    | (RA|0)| 0 | 1 | fsub
-    | 1 1 1 | RT    | RA    | 1 | 1 | fcmp
+    | 1 1 0 | RB    | RA!=0 | 0 | 1 | fadd
+    | 1 1 0 | RB    | 0 0 0 | 0 | 1 | fabs
+    | 1 1 0 | RB    | RA    | 1 | 1 | fmul
+    | 1 1 1 | RB    | (RA|0)| 0 | 1 | fsub
+    | 1 1 1 | RB    | (RA|0)| 1 | 1 | fcmp
+
+* fcmp default target is CR1
+* for (RA|0) when RA=0 the input is a zero immediate,
+  meaning that fsub becomes fneg, and fcmp becomes fcmp-against-zero
 
 ### Condition Register
 
-    | 5 6 7 | 8 9 | a b | c d | e  | f |
-    | 0 0 1 | 10  | BF  | BFA | 0  | 1 | mcrf
+    | 5 6 7 | 8 9 | a b | c d e  | f |
+    | 0 0 1 | 10  | BF  | BFA    | 1 | mcrf
+
+* BF is only 2 bits which means the destination is only CR0-CR3
 
