@@ -106,17 +106,19 @@ instructions.  That being the case then even one of those 11 bits would
 also need to be dedicated to saying if 16 bit mode is to be continued.
 10 bits remain for actual opcodes!
 
-## 10 bit common opcodes exploration
+## 16 bit Compressed opcodes exploration
 
 ### Branch
 
 10 bit mode may be expanded by 16 bit mode later, adding capabilities
 that do not fit in the extreme limited space.
 
-    | 5 6 7 | 8 9 | a b | c d | e  | f |
-    | 0 0 0 |     offs        | LK | 1 | b
-    | 0 0 1 | 00  | BI  | BO  | LK | 1 | bclr
-    | 0 0 1 | 01  | BI  | BO  | LK | 1 | bctar
+    | 0 1 2 3 4 | | 5 6 7 | 8 9 | a b | c d | e  | f |
+    |           | | 0 0 0 |     offs        | LK | 1 | b
+    |           | | 0 0 1 | 00  | BI  | BO  | LK | 1 | bclr
+    |           | | 0 0 1 | 01  | BI  | BO  | LK | 1 | bctar
+
+10 bit mode:
 
 * BO[0] enables CR check, BO[1] inverts check
 * BI refers to CR0 only (4 bits of)
@@ -128,19 +130,21 @@ that do not fit in the extreme limited space.
 
 ### LD/ST
 
-    | 5 6 7 | 8 9 | a b | c d | e | f |
-    | 0 0 1 | 11  | RB  | RA  | 0 | 1 | ld
-    | 0 0 1 | 11  | RB  | RA  | 1 | 1 | st
+    | 0 1 2 3 4 | | 5 6 7 | 8 9 | a b | c d | e | f |
+    |           | | 0 0 1 | 11  | RB  | RA  | 0 | 1 | ld
+    |           | | 0 0 1 | 11  | RB  | RA  | 1 | 1 | st
 
 * elwidth overrides can set different widths
 
 ### Arithmetic
 
-    | 5 6 7 | 8 9 a | b c d | e | f |
-    | 0 1 0 | RB    | RA    | 0 | 1 | add
-    | 0 1 0 | RB    | RA    | 1 | 1 | mul
-    | 0 1 1 | RB    | (RA|0)| 0 | 1 | sub
-    | 0 1 1 | RB    | (RA|0)| 1 | 1 | cmp
+    | 0 1 2 3 4 | | 5 6 7 | 8 9 a | b c d | e | f |
+    |           | | 0 1 0 | RB    | RA    | 0 | 1 | add
+    |           | | 0 1 0 | RB    | RA    | 1 | 1 | mul
+    |           | | 0 1 1 | RB    | (RA|0)| 0 | 1 | sub
+    |           | | 0 1 1 | RB    | (RA|0)| 1 | 1 | cmp
+
+10 bit mode:
 
 * cmp default target is CR0
 * for (RA|0) when RA=0 the input is a zero immediate,
@@ -148,23 +152,27 @@ that do not fit in the extreme limited space.
 
 ### Logical
 
-    | 5 6 7 | 8 9 a | b c d | e | f |
-    | 1 0 0 | RB    | RA    | 0 | 1 | and
-    | 1 0 0 | RB    | RA    | 1 | 1 | nand
-    | 1 0 1 | RB    | RA    | 0 | 1 | or
-    | 1 0 1 | RB    | (RA|0)| 1 | 1 | nor
+    | 0 1 2 3 4 | | 5 6 7 | 8 9 a | b c d | e | f |
+    |           | | 1 0 0 | RB    | RA    | 0 | 1 | and
+    |           | | 1 0 0 | RB    | RA    | 1 | 1 | nand
+    |           | | 1 0 1 | RB    | RA    | 0 | 1 | or
+    |           | | 1 0 1 | RB    | (RA|0)| 1 | 1 | nor
+
+10 bit mode:
 
 * for (RA|0) when RA=0 the input is a zero immediate,
   meaning that nor becomes not
 
 ### Floating Point
 
-    | 5 6 7 | 8 9 a | b c d | e | f |
-    | 1 1 0 | RB    | RA!=0 | 0 | 1 | fadd
-    | 1 1 0 | RB    | 0 0 0 | 0 | 1 | fabs
-    | 1 1 0 | RB    | RA    | 1 | 1 | fmul
-    | 1 1 1 | RB    | (RA|0)| 0 | 1 | fsub
-    | 1 1 1 | RB    | (RA|0)| 1 | 1 | fcmp
+    | 0 1 2 3 4 | | 5 6 7 | 8 9 a | b c d | e | f |
+    |           | | 1 1 0 | RB    | RA!=0 | 0 | 1 | fadd
+    |           | | 1 1 0 | RB    | 0 0 0 | 0 | 1 | fabs
+    |           | | 1 1 0 | RB    | RA    | 1 | 1 | fmul
+    |           | | 1 1 1 | RB    | (RA|0)| 0 | 1 | fsub
+    |           | | 1 1 1 | RB    | (RA|0)| 1 | 1 | fcmp
+
+10 bit mode:
 
 * fcmp default target is CR1
 * for (RA|0) when RA=0 the input is a zero immediate,
@@ -172,8 +180,10 @@ that do not fit in the extreme limited space.
 
 ### Condition Register
 
-    | 5 6 7 | 8 9 | a b | c d e  | f |
-    | 0 0 1 | 10  | BF  | BFA    | 1 | mcrf
+    | 0 1 2 3 4 | | 5 6 7 | 8 9 | a b | c d e  | f |
+    |           | | 0 0 1 | 10  | BF  | BFA    | 1 | mcrf
+
+10 bit mode:
 
 * BF is only 2 bits which means the destination is only CR0-CR3
 
