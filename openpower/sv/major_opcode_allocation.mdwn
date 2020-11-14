@@ -75,45 +75,53 @@ Another is to use the 11 bits for only the utmost commonly used instructions.  T
 
     | 5 6 7 | 8 9 | a b | c d | e  | f |
     | 0 0 0 |     offs        | LK | 1 | b
-    | 0 0 1 | 01  | BI  | BO  | LK | 1 | bclr
-    | 0 0 1 | 10  | BI  | BO  | LK | 1 | bctar
-    | 0 0 1 | 11  | BI  | BO  | LK | 1 | bctr
+    | 0 0 1 | 00  | BI  | BO  | LK | 1 | bclr
+    | 0 0 1 | 01  | BI  | BO  | LK | 1 | bctar
 
 * BO[0] enables CR check, BO[1] inverts check
 * BI refers to CR0 only (4 bits of)
 * no Branch Conditional with immediate
 * no Absolute Address
-* no CTR mode
-* offs is to 2 byte (signed) aligbed
+* no CTR mode (and no bctr)
+* offs is to 2 byte (signed) aligned
 * all branches to 2 byte aligned
+
+### LD/ST
+
+    | 5 6 7 | 8 9 | a b | c d | e | f |
+    | 0 0 1 | 11  | RT  | RA  | 0 | 1 | ld
+    | 0 0 1 | 11  | RT  | RA  | 1 | 1 | st
+
+* elwidth overrides can set different widths
 
 ### Arithmetic
 
     | 5 6 7 | 8 9 a | b c d | e | f |
-    | 0 1 0 | RA    | RB    | 0 | 1 | add
-    | 0 1 0 | RA    | RB    | 1 | 1 | mul
-    | 0 1 1 | RA    | (RB|0)| 0 | 1 | sub
-    | 0 1 1 | RA    | RB    | 1 | 1 | cmp
+    | 0 1 0 | RT    | RA    | 0 | 1 | add
+    | 0 1 0 | RT    | RA    | 1 | 1 | mul
+    | 0 1 1 | RT    | (RA|0)| 0 | 1 | sub
+    | 0 1 1 | RT    | RA    | 1 | 1 | cmp
 
 ### Logical
 
     | 5 6 7 | 8 9 a | b c d | e | f |
-    | 0 0 1 | 0 0 0 | RB    | 1 | 1 | inv
-    | 1 0 0 | RA    | RB    | 0 | 1 | and
-    | 1 0 0 | RA    | RB    | 1 | 1 | nand
-    | 1 0 1 | RA    | RB    | 0 | 1 | or
-    | 1 0 1 | RA    | RB    | 1 | 1 | nor
+    | 1 0 0 | RT    | RA    | 0 | 1 | and
+    | 1 0 0 | RT    | RA    | 1 | 1 | nand
+    | 1 0 1 | RT    | RA    | 0 | 1 | or
+    | 1 0 1 | RT    | RA    | 1 | 1 | nor
+    | 0 0 1 | 10  0 | RA    | 1 | 1 | extsb
+    | 0 0 1 | 10  1 | RA    | 1 | 1 | inv
 
 ### Floating Point
 
     | 5 6 7 | 8 9 a | b c d | e | f |
-    | 1 1 0 | RA    | RB    | 0 | 1 | fadd
-    | 1 1 0 | RA    | RB    | 1 | 1 | fmul
-    | 1 1 1 | RA    | (RB|0)| 0 | 1 | fsub
-    | 1 1 1 | RA    | RB    | 1 | 1 | fcmp
+    | 1 1 0 | RT    | RA    | 0 | 1 | fadd
+    | 1 1 0 | RT    | RA    | 1 | 1 | fmul
+    | 1 1 1 | RT    | (RA|0)| 0 | 1 | fsub
+    | 1 1 1 | RT    | RA    | 1 | 1 | fcmp
 
 ### Condition Register
 
     | 5 6 7 | 8 9 | a b | c d | e  | f |
-    | 0 0 1 | 00  | BF  | BFA | 0  | 1 | mcrf
+    | 0 0 1 | 10  | BF  | BFA | 0  | 1 | mcrf
 
