@@ -92,12 +92,13 @@ Another is to use the 11 bits for only the utmost commonly used instructions.  T
     | 5 6 7 | 8 9 a | b c d | e | f |
     | 0 1 0 | RA    | RB    | 0 | 1 | add
     | 0 1 0 | RA    | RB    | 1 | 1 | mul
-    | 0 1 1 | RA    | RB    | 0 | 1 | sub
+    | 0 1 1 | RA    | (RB|0)| 0 | 1 | sub
     | 0 1 1 | RA    | RB    | 1 | 1 | cmp
 
 ### Logical
 
     | 5 6 7 | 8 9 a | b c d | e | f |
+    | 0 0 1 | 0 0 0 | RB    | 1 | 1 | inv
     | 1 0 0 | RA    | RB    | 0 | 1 | and
     | 1 0 0 | RA    | RB    | 1 | 1 | nand
     | 1 0 1 | RA    | RB    | 0 | 1 | or
@@ -106,10 +107,10 @@ Another is to use the 11 bits for only the utmost commonly used instructions.  T
 ### Floating Point
 
     | 5 6 7 | 8 9 a | b c d | e | f |
-    | 1 1 0 | RA    | RB    | 0 | 1 | add
-    | 1 1 0 | RA    | RB    | 1 | 1 | mul
-    | 1 1 1 | RA    | RB    | 0 | 1 | sub
-    | 1 1 1 | RA    | RB    | 1 | 1 | cmp
+    | 1 1 0 | RA    | RB    | 0 | 1 | fadd
+    | 1 1 0 | RA    | RB    | 1 | 1 | fmul
+    | 1 1 1 | RA    | (RB|0)| 0 | 1 | fsub
+    | 1 1 1 | RA    | RB    | 1 | 1 | fcmp
 
 ### Condition Register
 
