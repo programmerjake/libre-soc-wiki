@@ -137,13 +137,19 @@ that do not fit in the extreme limited space.
     |     |  RT   | | 011 | RB    | (RA|0)| 1 | 1 | fsub.
     |     |  RT   | | 110 | RB    | RA!=0 | 0 | 1 | fadd
     |     |  RT   | | 110 | RB    | 0 0 0 | 0 | 1 | fabs
-    |     |  RT   | | 110 | RB    | RA    | 1 | 1 | fmul
+    |     |  RT   | | 110 | RB    | RA!=0 | 1 | 1 | fmul
+    |     |  RT   | | 110 | RB    | 0 0 0 | 1 | 1 | fmr.
 
 10 bit mode:
 
-* fcmp default target is CR1
+* fsub default target is CR1
 * for (RA|0) when RA=0 the input is a zero immediate,
   meaning that fsub becomes fneg, and fcmp becomes fcmp-against-zero
+* fmr. is **not available** in 10-bit mode
+
+16 bit mode:
+
+* fmr. copies RB to RT (and sets CR1)
 
 ### Condition Register
 
