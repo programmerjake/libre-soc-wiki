@@ -62,10 +62,10 @@ also need to be dedicated to saying if 16 bit mode is to be continued.
 10 bit mode may be expanded by 16 bit mode later, adding capabilities
 that do not fit in the extreme limited space.
 
-    | 0 1 | 2 3 4 | | 567 | 89 | a b | c d | e  | f |
-    |   offs2     | | 000 |    offs        | LK | 1 | b
-    | BO2 | BI3   | | 001 | 00 | BI  | BO  | LK | 1 | bclr
-    | BO2 | BI3   | | 001 | 01 | BI  | BO  | LK | 1 | bctar
+    | 0 1 | 2 3 4 | | 567 | 8 9 a | b c d | e  | f |
+    |   offs2     | | 000 |    offs       | LK | 1 | b
+    | BO2 | BI3   | | 001 | 0  BI | 0  BO | LK | 1 | bclr
+    | BO2 | BI3   | | 001 | 0  BI | 1  BO | LK | 1 | bctar
 
 16 bit mode:
 
@@ -85,11 +85,11 @@ that do not fit in the extreme limited space.
 
 ### LD/ST
 
-    | 0   | 1   | 2 3 4 | | 567 | 89  | a b | c d | e | f |
-    | RB2 | RA2 |  RT   | | 001 | 11  | RA  | RB  | 0 | 1 | fld
-    | RA2 | RT2 |  RB   | | 001 | 11  | RA  | RT  | 1 | 1 | fst
-    |     |     |  RT   | | 111 | RAB2| RA  | RB  | 0 | 1 | ld
-    |     |     |  RB   | | 111 | RAT2| RA  | RT  | 1 | 1 | st
+    | 0   | 1   | 2 3 4 | | 567 | 8 9 a | b c d | e | f |
+    | RB2 | RA2 |  RT   | | 001 | 1  RA | 1  RB | 0 | 1 | fld
+    | RA2 | RT2 |  RB   | | 001 | 1  RA | 1  RT | 1 | 1 | fst
+    |     |     |  RT   | | 111 |  RA   |  RB   | 0 | 1 | ld
+    |     |     |  RB   | | 111 |  RA   |  RT   | 1 | 1 | st
 
 * elwidth overrides can set different widths
 
@@ -147,16 +147,16 @@ that do not fit in the extreme limited space.
 
 ### Condition Register
 
-    | 0 1 2 3 | 4   | | 567 | 89 | a b | c d e  | f |
-    | 0 0 0 0 | BF2 | | 001 | 10 | BF  | BFA    | 1 | mcrf
-    | 0 0 0 1 | BA2 | | 001 | 10 | BA  | BB     | 1 | crnor
-    | 0 1 0 0 | BA2 | | 001 | 10 | BA  | BB     | 1 | crandc
-    | 0 1 1 0 | BA2 | | 001 | 10 | BA  | BB     | 1 | crxor
-    | 0 1 1 1 | BA2 | | 001 | 10 | BA  | BB     | 1 | crnand
-    | 1 0 0 0 | BA2 | | 001 | 10 | BA  | BB     | 1 | crand
-    | 1 0 0 1 | BA2 | | 001 | 10 | BA  | BB     | 1 | creqv
-    | 1 1 0 1 | BA2 | | 001 | 10 | BA  | BB     | 1 | crorc
-    | 1 1 1 0 | BA2 | | 001 | 10 | BA  | BB     | 1 | cror
+    | 0 1 2 3 | 4   | | 567 | 8 9 a | b c d e | f |
+    | 0 0 0 0 | BF2 | | 001 | 1  BF | 0  BFA  | 1 | mcrf
+    | 0 0 0 1 | BA2 | | 001 | 1  BA | 0  BB   | 1 | crnor
+    | 0 1 0 0 | BA2 | | 001 | 1  BA | 0  BB   | 1 | crandc
+    | 0 1 1 0 | BA2 | | 001 | 1  BA | 0  BB   | 1 | crxor
+    | 0 1 1 1 | BA2 | | 001 | 1  BA | 0  BB   | 1 | crnand
+    | 1 0 0 0 | BA2 | | 001 | 1  BA | 0  BB   | 1 | crand
+    | 1 0 0 1 | BA2 | | 001 | 1  BA | 0  BB   | 1 | creqv
+    | 1 1 0 1 | BA2 | | 001 | 1  BA | 0  BB   | 1 | crorc
+    | 1 1 1 0 | BA2 | | 001 | 1  BA | 0  BB   | 1 | cror
 
 10 bit mode:
 
