@@ -102,21 +102,23 @@ that do not fit in the extreme limited space.
 10 bit mode:
 
 * RA and RB are only 2 bit (0-3)
-* for LD, RT is implicitly RB: ld RT=RB, RA(RB)
-* for ST, there is no offset: st RT, RA(0)
+* for LD, RT is implicitly RB: "ld RT=RB, RA(RB)"
+* for ST, there is no offset: "st RT, RA(0)"
 
 ### Arithmetic
 
     | 0 1 | 2 3 4 | | 567 | 8 9 a | b c d | e | f |
     |     |  RT   | | 010 | RB    | RA!=0 | 0 | 1 | add
+    |     |  RT   | | 011 | RB    | RA!=0 | 0 | 1 | sub.
     |     |  RT   | | 010 | RB    | RA    | 1 | 1 | mul
-    |     |  RT   | | 011 | RB    | (RA|0)| 0 | 1 | sub.
+    |     |  RT   | | 011 | RB    | 0 0 0 | 0 | 1 | neg.
 
 10 bit mode:
 
 * sub. default CR target is CR0
 * for (RA|0) when RA=0 the input is a zero immediate,
   meaning that sub. becomes neg.
+* RT is implicitly RB: "add RT(=RB), RA, RB"
 
 ### Logical
 
@@ -134,6 +136,8 @@ that do not fit in the extreme limited space.
 
 * for (RA|0) when RA=0 the input is a zero immediate,
   meaning that nor becomes not
+* cntlz, popcnt, exts **not available** in 10-bit mode
+* RT is implicitly RB: "and RT(=RB), RA, RB"
 
 ### Floating Point
 
