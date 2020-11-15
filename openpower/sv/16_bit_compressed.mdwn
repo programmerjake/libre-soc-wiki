@@ -85,9 +85,11 @@ that do not fit in the extreme limited space.
 
 ### LD/ST
 
-    | 0 | 1   | 2 3 4 | | 5 6 7 | 8 9 | a b | c d | e | f |
-    | F | RA2 |  RT   | | 0 0 1 | 11  | RA  | RB  | 0 | 1 | ld
-    | F | RT2 |  RB   | | 0 0 1 | 11  | RA  | RT  | 1 | 1 | st
+    | 0   | 1   | 2 3 4 | | 5 6 7 | 8 9 | a b | c d | e | f |
+    | RB2 | RA2 |  RT   | | 0 0 1 | 11  | RA  | RB  | 0 | 1 | fld
+    | RA2 | RT2 |  RB   | | 0 0 1 | 11  | RA  | RT  | 1 | 1 | fst
+    |     |     |  RT   | | 1 1 1 | RAB2| RA  | RB  | 0 | 1 | ld
+    |     |     |  RB   | | 1 1 1 | RAT2| RA  | RT  | 1 | 1 | st
 
 * elwidth overrides can set different widths
 
@@ -108,14 +110,13 @@ that do not fit in the extreme limited space.
     | 0 1 | 2 3 4 | | 5 6 7 | 8 9 a | b c d | e | f |
     |     |       | | 0 1 0 | RB    | RA    | 0 | 1 | add
     |     |       | | 0 1 0 | RB    | RA    | 1 | 1 | mul
-    |     |       | | 0 1 1 | RB    | (RA|0)| 0 | 1 | sub
-    |     |       | | 0 1 1 | RB    | (RA|0)| 1 | 1 | cmp
+    |     |       | | 0 1 1 | RB    | (RA|0)| 0 | 1 | sub.
 
 10 bit mode:
 
-* cmp default target is CR0
+* sub. default CR target is CR0
 * for (RA|0) when RA=0 the input is a zero immediate,
-  meaning that sub becomes neg, and cmp becomes cmp-against-zero
+  meaning that sub. becomes neg.
 
 ### Logical
 
@@ -133,11 +134,10 @@ that do not fit in the extreme limited space.
 ### Floating Point
 
     | 0 1 | 2 3 4 | | 5 6 7 | 8 9 a | b c d | e | f |
+    |     |  RT   | | 0 1 1 | RB    | (RA|0)| 1 | 1 | fsub.
     |     |  RT   | | 1 1 0 | RB    | RA!=0 | 0 | 1 | fadd
     |     |  RT   | | 1 1 0 | RB    | 0 0 0 | 0 | 1 | fabs
     |     |  RT   | | 1 1 0 | RB    | RA    | 1 | 1 | fmul
-    |     |  RT   | | 1 1 1 | RB    | (RA|0)| 0 | 1 | fsub
-    |     |  RT   | | 1 1 1 | RB    | (RA|0)| 1 | 1 | fcmp
 
 10 bit mode:
 
