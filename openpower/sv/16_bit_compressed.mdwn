@@ -108,7 +108,7 @@ that do not fit in the extreme limited space.
 ### Arithmetic
 
     | 0 1 | 2 3 4 | | 567 | 8 9 a | b c d | e | f |
-    |     |  RT   | | 010 | RB    | RA    | 0 | 1 | add
+    |     |  RT   | | 010 | RB    | RA!=0 | 0 | 1 | add
     |     |  RT   | | 010 | RB    | RA    | 1 | 1 | mul
     |     |  RT   | | 011 | RB    | (RA|0)| 0 | 1 | sub.
 
@@ -122,9 +122,13 @@ that do not fit in the extreme limited space.
 
     | 0 1 | 2 3 4 | | 567 | 8 9 a | b c d | e | f |
     |     |  RT   | | 100 | RB    | RA!=0 | 0 | 1 | and
-    |     |  RT   | | 100 | RB    | RA    | 1 | 1 | nand
-    |     |  RT   | | 101 | RB    | RA    | 0 | 1 | or
-    |     |  RT   | | 101 | RB    | (RA|0)| 1 | 1 | nor
+    |     |  RT   | | 100 | RB    | RA!=0 | 1 | 1 | nand
+    |     |  RT   | | 101 | RB    | RA!=0 | 0 | 1 | or
+    |     |  RT   | | 101 | RB    | RA!=0 | 1 | 1 | nor
+    |     |  RT   | | 100 | RB    | 0 0 0 | 0 | 1 | exts
+    |     |  RT   | | 100 | RB    | 0 0 0 | 1 | 1 | cntlz
+    |     |  RT   | | 101 | RB    | 0 0 0 | 0 | 1 | popcnt
+    |     |  RT   | | 101 | RB    | 0 0 0 | 1 | 1 | not
 
 10 bit mode:
 
@@ -134,17 +138,16 @@ that do not fit in the extreme limited space.
 ### Floating Point
 
     | 0 1 | 2 3 4 | | 567 | 8 9 a | b c d | e | f |
-    |     |  RT   | | 011 | RB    | (RA|0)| 1 | 1 | fsub.
+    |     |  RT   | | 011 | RB    | RA!=0 | 1 | 1 | fsub.
     |     |  RT   | | 110 | RB    | RA!=0 | 0 | 1 | fadd
-    |     |  RT   | | 110 | RB    | 0 0 0 | 0 | 1 | fabs
     |     |  RT   | | 110 | RB    | RA!=0 | 1 | 1 | fmul
+    |     |  RT   | | 011 | RB    | 0 0 0 | 1 | 1 | fneg.
+    |     |  RT   | | 110 | RB    | 0 0 0 | 0 | 1 | fabs
     |     |  RT   | | 110 | RB    | 0 0 0 | 1 | 1 | fmr.
 
 10 bit mode:
 
-* fsub default target is CR1
-* for (RA|0) when RA=0 the input is a zero immediate,
-  meaning that fsub becomes fneg, and fcmp becomes fcmp-against-zero
+* fsub. fneg. and fmr. default target is CR1
 * fmr. is **not available** in 10-bit mode
 
 16 bit mode:
@@ -167,7 +170,7 @@ that do not fit in the extreme limited space.
 10 bit mode:
 
 * mcrf BF is only 2 bits which means the destination is only CR0-CR3
-* CR operations: **not available**
+* CR operations: **not available** in 10-bit mode
 
 16 bit mode:
 
@@ -184,8 +187,8 @@ SV (Vector Mode):
 10/16-bit mode:
 
     | 0 1 | 2 3 4 | | 567 | 8 9 a | b c d | e | f |
-    |     |       | | 100 | 0 0 0 | 0 0 0 | 0 | 1 | sc
-    |     |       | | 100 | 0 0 1 | 0 0 0 | 0 | 1 | rfid
+    |     |       | | 010 | 0 0 0 | 0 0 0 | 0 | 1 | sc
+    |     |       | | 010 | 0 0 1 | 0 0 0 | 0 | 1 | rfid
 
 **not available** in 10-bit mode:
 
@@ -202,12 +205,12 @@ SV (Vector Mode):
 ### Unallocated
 
     | 0 1 | 2 3 4 | | 567 | 8 9 a | b c d | e | f |
-    |     |       | | 100 | 0 1 0 | 0 0 0 | 0 | 1 |
-    |     |       | | 100 | 0 1 1 | 0 0 0 | 0 | 1 |
-    |     |       | | 100 | 1 0 0 | 0 0 0 | 0 | 1 |
-    |     |       | | 100 | 1 0 1 | 0 0 0 | 0 | 1 |
-    |     |       | | 100 | 1 1 0 | 0 0 0 | 0 | 1 |
-    |     |       | | 100 | 1 1 1 | 0 0 0 | 0 | 1 |
+    |     |       | | 010 | 0 1 0 | 0 0 0 | 0 | 1 |
+    |     |       | | 010 | 0 1 1 | 0 0 0 | 0 | 1 |
+    |     |       | | 010 | 1 0 0 | 0 0 0 | 0 | 1 |
+    |     |       | | 010 | 1 0 1 | 0 0 0 | 0 | 1 |
+    |     |       | | 010 | 1 1 0 | 0 0 0 | 0 | 1 |
+    |     |       | | 010 | 1 1 1 | 0 0 0 | 0 | 1 |
 
     | 0 1 2 3 | 4  | | 567 | 8 9 a | b c d e  | f |
     | 0 0 1 0 |    | | 001 | 1     | 0        | 1 |
