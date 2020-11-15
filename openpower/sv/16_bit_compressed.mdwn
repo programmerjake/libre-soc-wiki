@@ -105,7 +105,7 @@ that do not fit in the extreme limited space.
     | 16-bit mode | | 10-bit mode              |
     | 0 | 1 | 2 3 4 | | 567 | 8 9 a | b c d | e  | f |
     | BO2   | BI3   | | 000 | 0  BI | 0  BO | LK | M | bclr
-    | BO2   | BI3   | | 000 | 0  BI | 1  BO | LK | M | bctar
+    | BO2   | BI3   | | 000 | 0  BI | 1  BO | LK | M | bctr
     | N | offs2     | | 001 |    offs       | LK | M | b
 
 16 bit mode:
@@ -249,11 +249,9 @@ Encode/Decode.
     | 0 1 2 3 | 4  | | 567 | 8 9 a | b c d e  | f |
     | 1 1 1 1 | 0  | | 000 | 1  00 | 0  RT    | M | mtlr
     | 1 1 1 1 | 0  | | 000 | 1  01 | 0  RT    | M | mtctr
-    | 1 1 1 1 | 0  | | 000 | 1  10 | 0  RT    | M | mttar
     | 1 1 1 1 | 0  | | 000 | 1  11 | 0  RT    | M | mtcr
     | 1 1 1 1 | 1  | | 000 | 1  00 | 0  RA    | M | mflr
     | 1 1 1 1 | 1  | | 000 | 1  01 | 0  RA    | M | mfctr
-    | 1 1 1 1 | 1  | | 000 | 1  10 | 0  RA    | M | mftar
     | 1 1 1 1 | 1  | | 000 | 1  11 | 0  RA    | M | mfcr
 
 ### Unallocated
@@ -265,4 +263,6 @@ Encode/Decode.
     | 1 0 1 0 |    | | 000 | 1     | 0        | M |
     | 1 0 1 1 |    | | 000 | 1     | 0        | M |
     | 1 1 0 0 |    | | 000 | 1     | 0        | M |
+    | 1 1 1 1 | 0  | | 000 | 1  10 | 0        | M |
+    | 1 1 1 1 | 1  | | 000 | 1  10 | 0        | M |
 
