@@ -72,7 +72,7 @@ in 10-bit mode, and M and N in 16-bit mode.
 
 Once in 16-bit mode:
 
-* 0b01: stay in 16-bit mode
+* 0b01 (M=1, N=0): stay in 16-bit mode
 * 0b00: leave 16-bit mode permanently (return to standard OpenPOWER ISA)
 * 0b10: leave 16-bit mode for one cycle (return to standard OpenPOWER ISA)
 * 0b11: free to be used for something completely different.
@@ -81,17 +81,21 @@ The current "top" idea for 0b11 is to use it for a new encoding format
 of predominantly "immediates-based" 16-bit instructions (branch-conditional,
 addi, mulli etc.)
 
+The Compressed Major Opcode is in bits 5-7.
+
+* M+N mode-switching is not available for C-Major 0b000 or 0b111
+
 ### Immediate Opcodes
 
-only available in 16-bit mode
+only available in 16-bit mode, and only available when M=1 and N=1
 
     | 0 | 1  | 2 3 4 | | 567 | 8 9 a | b c d | e | f |
-    | 1 | offs2      | | 000 | o  BI | o BO | LK | 1 | bc
+    | 1 | offs2      | | 001 | o  BI | o BO | LK | 1 | bc
     | 1 | o2 |  RT   | | 010 | RB    | offs      | 1 | addis
     | 1 | o2 |  RT   | | 011 | RB    | offs      | 1 | mulis
     | 1 | o2 |       | | 100 |       | offs      | 1 | 
-    | 1 | o2 |       | | 101 |       | offs      | 1 | ldi
-    | 1 | o2 |       | | 110 |       | offs      | 1 | sti
+    | 1 | o2 |  RT   | | 101 | RA    | offs      | 1 | ldi
+    | 1 | o2 |  RT   | | 110 | RA    | offs      | 1 | sti
 
 ### Branch
 
@@ -100,9 +104,9 @@ that do not fit in the extreme limited space.
 
     | 16-bit mode | | 10-bit mode              |
     | 0 | 1 | 2 3 4 | | 567 | 8 9 a | b c d | e  | f |
-    | N | offs2     | | 000 |    offs       | LK | M | b
-    | BO2   | BI3   | | 001 | 0  BI | 0  BO | LK | M | bclr
-    | BO2   | BI3   | | 001 | 0  BI | 1  BO | LK | M | bctar
+    | BO2   | BI3   | | 000 | 0  BI | 0  BO | LK | M | bclr
+    | BO2   | BI3   | | 000 | 0  BI | 1  BO | LK | M | bctar
+    | N | offs2     | | 001 |    offs       | LK | M | b
 
 16 bit mode:
 
@@ -205,15 +209,15 @@ that do not fit in the extreme limited space.
 
     | 16-bit mode   | | 10-bit mode           |
     | 0 1 2 3 | 4   | | 567 | 8 9 a | b c d e | f |
-    | 0 0 0 0 | BF2 | | 001 | 1  BF | 0  BFA  | M | mcrf
-    | 0 0 0 1 | BA2 | | 001 | 1  BA | 0  BB   | M | crnor
-    | 0 1 0 0 | BA2 | | 001 | 1  BA | 0  BB   | M | crandc
-    | 0 1 1 0 | BA2 | | 001 | 1  BA | 0  BB   | M | crxor
-    | 0 1 1 1 | BA2 | | 001 | 1  BA | 0  BB   | M | crnand
-    | 1 0 0 0 | BA2 | | 001 | 1  BA | 0  BB   | M | crand
-    | 1 0 0 1 | BA2 | | 001 | 1  BA | 0  BB   | M | creqv
-    | 1 1 0 1 | BA2 | | 001 | 1  BA | 0  BB   | M | crorc
-    | 1 1 1 0 | BA2 | | 001 | 1  BA | 0  BB   | M | cror
+    | 0 0 0 0 | BF2 | | 000 | 1  BF | 0  BFA  | M | mcrf
+    | 0 0 0 1 | BA2 | | 000 | 1  BA | 0  BB   | M | crnor
+    | 0 1 0 0 | BA2 | | 000 | 1  BA | 0  BB   | M | crandc
+    | 0 1 1 0 | BA2 | | 000 | 1  BA | 0  BB   | M | crxor
+    | 0 1 1 1 | BA2 | | 000 | 1  BA | 0  BB   | M | crnand
+    | 1 0 0 0 | BA2 | | 000 | 1  BA | 0  BB   | M | crand
+    | 1 0 0 1 | BA2 | | 000 | 1  BA | 0  BB   | M | creqv
+    | 1 1 0 1 | BA2 | | 000 | 1  BA | 0  BB   | M | crorc
+    | 1 1 1 0 | BA2 | | 000 | 1  BA | 0  BB   | M | cror
 
 10 bit mode:
 
@@ -243,22 +247,22 @@ Encode/Decode.
 **not available** in 10-bit mode:
 
     | 0 1 2 3 | 4  | | 567 | 8 9 a | b c d e  | f |
-    | 1 1 1 1 | 0  | | 001 | 1  00 | 0  RT    | M | mtlr
-    | 1 1 1 1 | 0  | | 001 | 1  01 | 0  RT    | M | mtctr
-    | 1 1 1 1 | 0  | | 001 | 1  10 | 0  RT    | M | mttar
-    | 1 1 1 1 | 0  | | 001 | 1  11 | 0  RT    | M | mtcr
-    | 1 1 1 1 | 1  | | 001 | 1  00 | 0  RA    | M | mflr
-    | 1 1 1 1 | 1  | | 001 | 1  01 | 0  RA    | M | mfctr
-    | 1 1 1 1 | 1  | | 001 | 1  10 | 0  RA    | M | mftar
-    | 1 1 1 1 | 1  | | 001 | 1  11 | 0  RA    | M | mfcr
+    | 1 1 1 1 | 0  | | 000 | 1  00 | 0  RT    | M | mtlr
+    | 1 1 1 1 | 0  | | 000 | 1  01 | 0  RT    | M | mtctr
+    | 1 1 1 1 | 0  | | 000 | 1  10 | 0  RT    | M | mttar
+    | 1 1 1 1 | 0  | | 000 | 1  11 | 0  RT    | M | mtcr
+    | 1 1 1 1 | 1  | | 000 | 1  00 | 0  RA    | M | mflr
+    | 1 1 1 1 | 1  | | 000 | 1  01 | 0  RA    | M | mfctr
+    | 1 1 1 1 | 1  | | 000 | 1  10 | 0  RA    | M | mftar
+    | 1 1 1 1 | 1  | | 000 | 1  11 | 0  RA    | M | mfcr
 
 ### Unallocated
 
     | 0 1 2 3 | 4  | | 567 | 8 9 a | b c d e  | f |
-    | 0 0 1 0 |    | | 001 | 1     | 0        | M |
-    | 0 0 1 1 |    | | 001 | 1     | 0        | M |
-    | 0 1 0 1 |    | | 001 | 1     | 0        | M |
-    | 1 0 1 0 |    | | 001 | 1     | 0        | M |
-    | 1 0 1 1 |    | | 001 | 1     | 0        | M |
-    | 1 1 0 0 |    | | 001 | 1     | 0        | M |
+    | 0 0 1 0 |    | | 000 | 1     | 0        | M |
+    | 0 0 1 1 |    | | 000 | 1     | 0        | M |
+    | 0 1 0 1 |    | | 000 | 1     | 0        | M |
+    | 1 0 1 0 |    | | 000 | 1     | 0        | M |
+    | 1 0 1 1 |    | | 000 | 1     | 0        | M |
+    | 1 1 0 0 |    | | 000 | 1     | 0        | M |
 
