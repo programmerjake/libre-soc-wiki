@@ -108,9 +108,9 @@ that do not fit in the extreme limited space.
 ### Arithmetic
 
     | 0 1 | 2 3 4 | | 567 | 8 9 a | b c d | e | f |
-    |     |       | | 010 | RB    | RA    | 0 | 1 | add
-    |     |       | | 010 | RB    | RA    | 1 | 1 | mul
-    |     |       | | 011 | RB    | (RA|0)| 0 | 1 | sub.
+    |     |  RT   | | 010 | RB    | RA    | 0 | 1 | add
+    |     |  RT   | | 010 | RB    | RA    | 1 | 1 | mul
+    |     |  RT   | | 011 | RB    | (RA|0)| 0 | 1 | sub.
 
 10 bit mode:
 
@@ -121,10 +121,10 @@ that do not fit in the extreme limited space.
 ### Logical
 
     | 0 1 | 2 3 4 | | 567 | 8 9 a | b c d | e | f |
-    |     |       | | 100 | RB    | RA    | 0 | 1 | and
-    |     |       | | 100 | RB    | RA    | 1 | 1 | nand
-    |     |       | | 101 | RB    | RA    | 0 | 1 | or
-    |     |       | | 101 | RB    | (RA|0)| 1 | 1 | nor
+    |     |  RT   | | 100 | RB    | RA!=0 | 0 | 1 | and
+    |     |  RT   | | 100 | RB    | RA    | 1 | 1 | nand
+    |     |  RT   | | 101 | RB    | RA    | 0 | 1 | or
+    |     |  RT   | | 101 | RB    | (RA|0)| 1 | 1 | nor
 
 10 bit mode:
 
@@ -161,6 +161,7 @@ that do not fit in the extreme limited space.
 10 bit mode:
 
 * mcrf BF is only 2 bits which means the destination is only CR0-CR3
+* CR operations: **not available**
 
 16 bit mode:
 
@@ -171,4 +172,42 @@ that do not fit in the extreme limited space.
 SV (Vector Mode):
 
 * CR operations: greatly extended reach/range (useful for predicates)
+
+### System
+
+10/16-bit mode:
+
+    | 0 1 | 2 3 4 | | 567 | 8 9 a | b c d | e | f |
+    |     |       | | 100 | 0 0 0 | 0 0 0 | 0 | 1 | sc
+    |     |       | | 100 | 0 0 1 | 0 0 0 | 0 | 1 | rfid
+
+**not available** in 10-bit mode:
+
+    | 0 1 2 3 | 4  | | 567 | 8 9 a | b c d e  | f |
+    | 1 1 1 1 | 0  | | 001 | 1  00 | 0  RT    | 1 | mtlr
+    | 1 1 1 1 | 0  | | 001 | 1  01 | 0  RT    | 1 | mtctr
+    | 1 1 1 1 | 0  | | 001 | 1  10 | 0  RT    | 1 | mttar
+    | 1 1 1 1 | 0  | | 001 | 1  11 | 0  RT    | 1 | mtcr
+    | 1 1 1 1 | 1  | | 001 | 1  00 | 0  RA    | 1 | mflr
+    | 1 1 1 1 | 1  | | 001 | 1  01 | 0  RA    | 1 | mfctr
+    | 1 1 1 1 | 1  | | 001 | 1  10 | 0  RA    | 1 | mftar
+    | 1 1 1 1 | 1  | | 001 | 1  11 | 0  RA    | 1 | mfcr
+
+### Unallocated
+
+    | 0 1 | 2 3 4 | | 567 | 8 9 a | b c d | e | f |
+    |     |       | | 100 | 0 1 0 | 0 0 0 | 0 | 1 |
+    |     |       | | 100 | 0 1 1 | 0 0 0 | 0 | 1 |
+    |     |       | | 100 | 1 0 0 | 0 0 0 | 0 | 1 |
+    |     |       | | 100 | 1 0 1 | 0 0 0 | 0 | 1 |
+    |     |       | | 100 | 1 1 0 | 0 0 0 | 0 | 1 |
+    |     |       | | 100 | 1 1 1 | 0 0 0 | 0 | 1 |
+
+    | 0 1 2 3 | 4  | | 567 | 8 9 a | b c d e  | f |
+    | 0 0 1 0 |    | | 001 | 1     | 0        | 1 |
+    | 0 0 1 1 |    | | 001 | 1     | 0        | 1 |
+    | 0 1 0 1 |    | | 001 | 1     | 0        | 1 |
+    | 1 0 1 0 |    | | 001 | 1     | 0        | 1 |
+    | 1 0 1 1 |    | | 001 | 1     | 0        | 1 |
+    | 1 1 0 0 |    | | 001 | 1     | 0        | 1 |
 
