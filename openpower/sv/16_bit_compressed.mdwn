@@ -61,15 +61,35 @@ also need to be dedicated to saying if 16 bit mode is to be continued.
 
 ## Opcodes exploration (Attempt 1)
 
+Switching between different encoding modes is controlled by M (alone)
+in 10-bit mode, and M and N in 16-bit mode.
+
+* M in 10-bit mode if zero indicates that following instructions are
+  standard OpenPOWER ISA 32-bit encoded (including, redundantly,
+  further 10/16-bit instructions)
+* M in 10-bit mode if 1 indicates that following instructions are
+  in 16-bit encoding mode
+
+Once in 16-bit mode:
+
+* 0b01: stay in 16-bit mode
+* 0b00: leave 16-bit mode permanently (return to standard OpenPOWER ISA)
+* 0b10: leave 16-bit mode for one cycle (return to standard OpenPOWER ISA)
+* 0b11: free to be used for something completely different.
+
+The current "top" idea for 0b11 is to use it for a new encoding format
+of predominantly "immediates-based" 16-bit instructions (branch-conditional,
+addi, mulli etc.)
+
 ### Branch
 
 10 bit mode may be expanded by 16 bit mode later, adding capabilities
 that do not fit in the extreme limited space.
 
     | 0 1 | 2 3 4 | | 567 | 8 9 a | b c d | e  | f |
-    |   offs2     | | 000 |    offs       | LK | 1 | b
-    | BO2 | BI3   | | 001 | 0  BI | 0  BO | LK | 1 | bclr
-    | BO2 | BI3   | | 001 | 0  BI | 1  BO | LK | 1 | bctar
+    |   offs2     | | 000 |    offs       | LK | M | b
+    | BO2 | BI3   | | 001 | 0  BI | 0  BO | LK | M | bclr
+    | BO2 | BI3   | | 001 | 0  BI | 1  BO | LK | M | bctar
 
 16 bit mode:
 
@@ -90,10 +110,10 @@ that do not fit in the extreme limited space.
 ### LD/ST
 
     | 0   | 1   | 2 3 4 | | 567 | 8 9 a | b c d | e | f |
-    | RB2 | RA2 |  RT   | | 001 | 1  RA | 1  RB | 0 | 1 | fld
-    | RA2 | RT2 |  RB   | | 001 | 1  RA | 1  RT | 1 | 1 | fst
-    |     |     |  RT   | | 111 |  RA   |  RB   | 0 | 1 | ld
-    |     |     |  RB   | | 111 |  RA   |  RT   | 1 | 1 | st
+    | RB2 | RA2 |  RT   | | 001 | 1  RA | 1  RB | 0 | M | fld
+    | RA2 | RT2 |  RB   | | 001 | 1  RA | 1  RT | 1 | M | fst
+    |     |     |  RT   | | 111 |  RA   |  RB   | 0 | M | ld
+    |     |     |  RB   | | 111 |  RA   |  RT   | 1 | M | st
 
 * elwidth overrides can set different widths
 
@@ -111,11 +131,11 @@ that do not fit in the extreme limited space.
 
 ### Arithmetic
 
-    | 0 1 | 2 3 4 | | 567 | 8 9 a | b c d | e | f |
-    |     |  RT   | | 010 | RB    | RA!=0 | 0 | 1 | add
-    |     |  RT   | | 011 | RB    | RA!=0 | 0 | 1 | sub.
-    |     |  RT   | | 010 | RB    | RA    | 1 | 1 | mul
-    |     |  RT   | | 011 | RB    | 0 0 0 | 0 | 1 | neg.
+    | 0 | 1 | 2 3 4 | | 567 | 8 9 a | b c d | e | f |
+    | N |   |  RT   | | 010 | RB    | RA!=0 | 0 | M | add
+    | N |   |  RT   | | 011 | RB    | RA!=0 | 0 | M | sub.
+    | N |   |  RT   | | 010 | RB    | RA    | 1 | M | mul
+    | N |   |  RT   | | 011 | RB    | 0 0 0 | 0 | M | neg.
 
 10 bit mode:
 
@@ -126,15 +146,15 @@ that do not fit in the extreme limited space.
 
 ### Logical
 
-    | 0 1 | 2 3 4 | | 567 | 8 9 a | b c d | e | f |
-    |     |  RT   | | 100 | RB    | RA!=0 | 0 | 1 | and
-    |     |  RT   | | 100 | RB    | RA!=0 | 1 | 1 | nand
-    |     |  RT   | | 101 | RB    | RA!=0 | 0 | 1 | or
-    |     |  RT   | | 101 | RB    | RA!=0 | 1 | 1 | nor
-    |     |  RT   | | 100 | RB    | 0 0 0 | 0 | 1 | exts
-    |     |  RT   | | 100 | RB    | 0 0 0 | 1 | 1 | cntlz
-    |     |  RT   | | 101 | RB    | 0 0 0 | 0 | 1 | popcnt
-    |     |  RT   | | 101 | RB    | 0 0 0 | 1 | 1 | not
+    | 0 | 1 | 2 3 4 | | 567 | 8 9 a | b c d | e | f |
+    | N |   |  RT   | | 100 | RB    | RA!=0 | 0 | M | and
+    | N |   |  RT   | | 100 | RB    | RA!=0 | 1 | M | nand
+    | N |   |  RT   | | 101 | RB    | RA!=0 | 0 | M | or
+    | N |   |  RT   | | 101 | RB    | RA!=0 | 1 | M | nor
+    | N |   |  RT   | | 100 | RB    | 0 0 0 | 0 | M | exts
+    | N |   |  RT   | | 100 | RB    | 0 0 0 | 1 | M | cntlz
+    | N |   |  RT   | | 101 | RB    | 0 0 0 | 0 | M | popcnt
+    | N |   |  RT   | | 101 | RB    | 0 0 0 | 1 | M | not
 
 10 bit mode:
 
@@ -145,13 +165,13 @@ that do not fit in the extreme limited space.
 
 ### Floating Point
 
-    | 0 1 | 2 3 4 | | 567 | 8 9 a | b c d | e | f |
-    |     |  RT   | | 011 | RB    | RA!=0 | 1 | 1 | fsub.
-    |     |  RT   | | 110 | RB    | RA!=0 | 0 | 1 | fadd
-    |     |  RT   | | 110 | RB    | RA!=0 | 1 | 1 | fmul
-    |     |  RT   | | 011 | RB    | 0 0 0 | 1 | 1 | fneg.
-    |     |  RT   | | 110 | RB    | 0 0 0 | 0 | 1 | fabs
-    |     |  RT   | | 110 | RB    | 0 0 0 | 1 | 1 | fmr.
+    | 0 | 1 | 2 3 4 | | 567 | 8 9 a | b c d | e | f |
+    | N |   |  RT   | | 011 | RB    | RA!=0 | 1 | M | fsub.
+    | N |   |  RT   | | 110 | RB    | RA!=0 | 0 | M | fadd
+    | N |   |  RT   | | 110 | RB    | RA!=0 | 1 | M | fmul
+    | N |   |  RT   | | 011 | RB    | 0 0 0 | 1 | M | fneg.
+    | N |   |  RT   | | 110 | RB    | 0 0 0 | 0 | M | fabs
+    | N |   |  RT   | | 110 | RB    | 0 0 0 | 1 | M | fmr.
 
 10 bit mode:
 
@@ -165,15 +185,15 @@ that do not fit in the extreme limited space.
 ### Condition Register
 
     | 0 1 2 3 | 4   | | 567 | 8 9 a | b c d e | f |
-    | 0 0 0 0 | BF2 | | 001 | 1  BF | 0  BFA  | 1 | mcrf
-    | 0 0 0 1 | BA2 | | 001 | 1  BA | 0  BB   | 1 | crnor
-    | 0 1 0 0 | BA2 | | 001 | 1  BA | 0  BB   | 1 | crandc
-    | 0 1 1 0 | BA2 | | 001 | 1  BA | 0  BB   | 1 | crxor
-    | 0 1 1 1 | BA2 | | 001 | 1  BA | 0  BB   | 1 | crnand
-    | 1 0 0 0 | BA2 | | 001 | 1  BA | 0  BB   | 1 | crand
-    | 1 0 0 1 | BA2 | | 001 | 1  BA | 0  BB   | 1 | creqv
-    | 1 1 0 1 | BA2 | | 001 | 1  BA | 0  BB   | 1 | crorc
-    | 1 1 1 0 | BA2 | | 001 | 1  BA | 0  BB   | 1 | cror
+    | 0 0 0 0 | BF2 | | 001 | 1  BF | 0  BFA  | M | mcrf
+    | 0 0 0 1 | BA2 | | 001 | 1  BA | 0  BB   | M | crnor
+    | 0 1 0 0 | BA2 | | 001 | 1  BA | 0  BB   | M | crandc
+    | 0 1 1 0 | BA2 | | 001 | 1  BA | 0  BB   | M | crxor
+    | 0 1 1 1 | BA2 | | 001 | 1  BA | 0  BB   | M | crnand
+    | 1 0 0 0 | BA2 | | 001 | 1  BA | 0  BB   | M | crand
+    | 1 0 0 1 | BA2 | | 001 | 1  BA | 0  BB   | M | creqv
+    | 1 1 0 1 | BA2 | | 001 | 1  BA | 0  BB   | M | crorc
+    | 1 1 1 0 | BA2 | | 001 | 1  BA | 0  BB   | M | cror
 
 10 bit mode:
 
@@ -197,27 +217,27 @@ meanings to opcodes.  Example: CBank=0b001 is heavily optimised to A/Video
 Encode/Decode.
 
     | 0 1 | 2 3 4 | | 567 | 8 9 a | b c d | e | f |
-    |       Bank2 | | 010 | CBank | 0 0 0 | 0 | 1 | cbank
+    |       Bank2 | | 010 | CBank | 0 0 0 | 0 | M | cbank
 
 **not available** in 10-bit mode:
 
     | 0 1 2 3 | 4  | | 567 | 8 9 a | b c d e  | f |
-    | 1 1 1 1 | 0  | | 001 | 1  00 | 0  RT    | 1 | mtlr
-    | 1 1 1 1 | 0  | | 001 | 1  01 | 0  RT    | 1 | mtctr
-    | 1 1 1 1 | 0  | | 001 | 1  10 | 0  RT    | 1 | mttar
-    | 1 1 1 1 | 0  | | 001 | 1  11 | 0  RT    | 1 | mtcr
-    | 1 1 1 1 | 1  | | 001 | 1  00 | 0  RA    | 1 | mflr
-    | 1 1 1 1 | 1  | | 001 | 1  01 | 0  RA    | 1 | mfctr
-    | 1 1 1 1 | 1  | | 001 | 1  10 | 0  RA    | 1 | mftar
-    | 1 1 1 1 | 1  | | 001 | 1  11 | 0  RA    | 1 | mfcr
+    | 1 1 1 1 | 0  | | 001 | 1  00 | 0  RT    | M | mtlr
+    | 1 1 1 1 | 0  | | 001 | 1  01 | 0  RT    | M | mtctr
+    | 1 1 1 1 | 0  | | 001 | 1  10 | 0  RT    | M | mttar
+    | 1 1 1 1 | 0  | | 001 | 1  11 | 0  RT    | M | mtcr
+    | 1 1 1 1 | 1  | | 001 | 1  00 | 0  RA    | M | mflr
+    | 1 1 1 1 | 1  | | 001 | 1  01 | 0  RA    | M | mfctr
+    | 1 1 1 1 | 1  | | 001 | 1  10 | 0  RA    | M | mftar
+    | 1 1 1 1 | 1  | | 001 | 1  11 | 0  RA    | M | mfcr
 
 ### Unallocated
 
     | 0 1 2 3 | 4  | | 567 | 8 9 a | b c d e  | f |
-    | 0 0 1 0 |    | | 001 | 1     | 0        | 1 |
-    | 0 0 1 1 |    | | 001 | 1     | 0        | 1 |
-    | 0 1 0 1 |    | | 001 | 1     | 0        | 1 |
-    | 1 0 1 0 |    | | 001 | 1     | 0        | 1 |
-    | 1 0 1 1 |    | | 001 | 1     | 0        | 1 |
-    | 1 1 0 0 |    | | 001 | 1     | 0        | 1 |
+    | 0 0 1 0 |    | | 001 | 1     | 0        | M |
+    | 0 0 1 1 |    | | 001 | 1     | 0        | M |
+    | 0 1 0 1 |    | | 001 | 1     | 0        | M |
+    | 1 0 1 0 |    | | 001 | 1     | 0        | M |
+    | 1 0 1 1 |    | | 001 | 1     | 0        | M |
+    | 1 1 0 0 |    | | 001 | 1     | 0        | M |
 
