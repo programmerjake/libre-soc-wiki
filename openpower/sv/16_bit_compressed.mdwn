@@ -86,6 +86,7 @@ addi, mulli etc.)
 10 bit mode may be expanded by 16 bit mode later, adding capabilities
 that do not fit in the extreme limited space.
 
+    | 16-bit mode | | 10-bit mode              |
     | 0 1 | 2 3 4 | | 567 | 8 9 a | b c d | e  | f |
     |   offs2     | | 000 |    offs       | LK | M | b
     | BO2 | BI3   | | 001 | 0  BI | 0  BO | LK | M | bclr
@@ -109,6 +110,7 @@ that do not fit in the extreme limited space.
 
 ### LD/ST
 
+    | 16-bit mode       | | 10-bit mode             |
     | 0   | 1   | 2 3 4 | | 567 | 8 9 a | b c d | e | f |
     | RB2 | RA2 |  RT   | | 001 | 1  RA | 1  RB | 0 | M | fld
     | RA2 | RT2 |  RB   | | 001 | 1  RA | 1  RT | 1 | M | fst
@@ -131,6 +133,7 @@ that do not fit in the extreme limited space.
 
 ### Arithmetic
 
+    | 16-bit mode   | | 10-bit mode             |
     | 0 | 1 | 2 3 4 | | 567 | 8 9 a | b c d | e | f |
     | N |   |  RT   | | 010 | RB    | RA!=0 | 0 | M | add
     | N |   |  RT   | | 011 | RB    | RA!=0 | 0 | M | sub.
@@ -146,6 +149,7 @@ that do not fit in the extreme limited space.
 
 ### Logical
 
+    | 16-bit mode   | | 10-bit mode             |
     | 0 | 1 | 2 3 4 | | 567 | 8 9 a | b c d | e | f |
     | N |   |  RT   | | 100 | RB    | RA!=0 | 0 | M | and
     | N |   |  RT   | | 100 | RB    | RA!=0 | 1 | M | nand
@@ -165,10 +169,12 @@ that do not fit in the extreme limited space.
 
 ### Floating Point
 
+    | 16-bit mode   | | 10-bit mode             |
     | 0 | 1 | 2 3 4 | | 567 | 8 9 a | b c d | e | f |
     | N |   |  RT   | | 011 | RB    | RA!=0 | 1 | M | fsub.
     | N |   |  RT   | | 110 | RB    | RA!=0 | 0 | M | fadd
-    | N |   |  RT   | | 110 | RB    | RA!=0 | 1 | M | fmul
+    | N | 0 |  RT   | | 110 | RB    | RA!=0 | 1 | M | fmul
+    | N | 1 |  RT   | | 110 | RB    | RA!=0 | 1 | M | fdiv
     | N |   |  RT   | | 011 | RB    | 0 0 0 | 1 | M | fneg.
     | N |   |  RT   | | 110 | RB    | 0 0 0 | 0 | M | fabs
     | N |   |  RT   | | 110 | RB    | 0 0 0 | 1 | M | fmr.
@@ -177,6 +183,7 @@ that do not fit in the extreme limited space.
 
 * fsub. fneg. and fmr. default target is CR1
 * fmr. is **not available** in 10-bit mode
+* fdiv is **not available** in 10-bit mode
 
 16 bit mode:
 
@@ -184,6 +191,7 @@ that do not fit in the extreme limited space.
 
 ### Condition Register
 
+    | 16-bit mode   | | 10-bit mode           |
     | 0 1 2 3 | 4   | | 567 | 8 9 a | b c d e | f |
     | 0 0 0 0 | BF2 | | 001 | 1  BF | 0  BFA  | M | mcrf
     | 0 0 0 1 | BA2 | | 001 | 1  BA | 0  BB   | M | crnor
@@ -216,6 +224,7 @@ Selection of Compressed-encoding "Bank".  Different "banks" give different
 meanings to opcodes.  Example: CBank=0b001 is heavily optimised to A/Video
 Encode/Decode.
 
+    | 16-bit mode | | 10-bit mode             |
     | 0 1 | 2 3 4 | | 567 | 8 9 a | b c d | e | f |
     |       Bank2 | | 010 | CBank | 0 0 0 | 0 | M | cbank
 
