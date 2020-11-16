@@ -95,7 +95,7 @@ only available in 16-bit mode, and only available when M=1 and N=1
 
     | 0 | 1  | 2 3 4 | | 567.8 | 9ab  | c d e | f |
     | 1 | i2 |  RT   | | 010.0 | RB|0 | imm   | 1 | addi.
-    | 1 | i2 |  RT   | | 010.1 | RB|0 | imm   | 1 | addis.
+    | 1 | i2 |  RT   | | 010.1 | RB|0 | imm   | 1 | naddi.
     | 1 | i2         | | 011.0 | RB   | imm   | 1 | cmpdi
     | 1 | i2         | | 011.1 | RB   | imm   | 1 | cmpwi
     | 1 | i2         | | 100.0 | RT   | imm   | 1 | sti
@@ -107,6 +107,8 @@ only available in 16-bit mode, and only available when M=1 and N=1
 
 * Note that bc is included (below)
 * immediate is constructed from imm (LSBs) and i2 (MSB)
+* "naddi." is "negative signed immediate" (maps to addis in 32-bit space,
+  range is -NNN to -1.  zero is excluded because it is covered by addi.)
 * for LD/ST, offset is aligned.  8-byte: i2||imm||0b000 4-byte: 0b00
 * SV Prefix over-rides help provide alternative bitwidths for LD/ST
 * RB|0 if RB is zero, addi. becomes "li" (this only works if RT takes
