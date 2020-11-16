@@ -83,7 +83,7 @@ addi, mulli etc.)
 
 The Compressed Major Opcode is in bits 5-7.
 
-* M+N mode-switching is not available for C-Major 0b000 or 0b111
+* M+N mode-switching is not available for C-Major 0b001 or 0b111
 
 ### Immediate Opcodes
 
@@ -111,10 +111,10 @@ that do not fit in the extreme limited space.
 
     | 16-bit mode | | 10-bit mode              |
     | 0 | 1 | 234 | | 567 | 8 9a | b | cd | e  | f |
-    | 0 | 0   000 | | 000 | 0 00 | 0   00 | 0  | 0 |
-    | N | BO3 BI3 | | 000 | 0 BI | BO     | LK | M | bclr, bclrl
-    | N | offs2   | | 001 |   offs        | LK | M | b, bl
-    | 1 | offs2   | | 001 | BI   | BO1 oo | LK | 1 | bc, bcl
+    | 0 | 0   000 | | 000 | 0 00 | 0   00 | 0  | 0 | illeg
+    | N | offs2   | | 000 |   offs        | LK | M | b, bl
+    | 1 | offs2   | | 000 | BI   | BO1 oo | LK | 1 | bc, bcl
+    | N | BO3 BI3 | | 001 | 0 BI | BO     | LK | M | bclr, bclrl
 
 16 bit mode:
 
@@ -141,8 +141,8 @@ that do not fit in the extreme limited space.
 
     | 16-bit mode       | | 10-bit mode             |
     | 0   | 1   | 2 3 4 | | 567 | 8 9 a | b c d | e | f |
-    | RB2 | RA2 |  RT   | | 001 | 1  RA | 1  RB | 0 | M | fld
-    | RA2 | RT2 |  RB   | | 001 | 1  RA | 1  RT | 1 | M | fst
+    | RB2 | RA2 |  RT   | | 000 | 1  RA | 1  RB | 0 | M | fld
+    | RA2 | RT2 |  RB   | | 000 | 1  RA | 1  RT | 1 | M | fst
     |     |     |  RT   | | 111 |  RA   |  RB   | 0 | M | ld
     |     |     |  RB   | | 111 |  RA   |  RT   | 1 | M | st
 
@@ -247,15 +247,15 @@ Note here that elwidth overrides (SV Prefix) can be used to select FP16/32/64
 
     | 16-bit mode   | | 10-bit mode           |
     | 0 1 2 3 | 4   | | 567 | 8 9 a | b c d e | f |
-    | 0 0 0 0 | BF2 | | 000 | 1  BF | 0  BFA  | M | mcrf
-    | 0 0 0 1 | BA2 | | 000 | 1  BA | 0  BB   | M | crnor
-    | 0 1 0 0 | BA2 | | 000 | 1  BA | 0  BB   | M | crandc
-    | 0 1 1 0 | BA2 | | 000 | 1  BA | 0  BB   | M | crxor
-    | 0 1 1 1 | BA2 | | 000 | 1  BA | 0  BB   | M | crnand
-    | 1 0 0 0 | BA2 | | 000 | 1  BA | 0  BB   | M | crand
-    | 1 0 0 1 | BA2 | | 000 | 1  BA | 0  BB   | M | creqv
-    | 1 1 0 1 | BA2 | | 000 | 1  BA | 0  BB   | M | crorc
-    | 1 1 1 0 | BA2 | | 000 | 1  BA | 0  BB   | M | cror
+    | 0 0 0 0 | BF2 | | 001 | 1  BF | 0  BFA  | M | mcrf
+    | 0 0 0 1 | BA2 | | 001 | 1  BA | 0  BB   | M | crnor
+    | 0 1 0 0 | BA2 | | 001 | 1  BA | 0  BB   | M | crandc
+    | 0 1 1 0 | BA2 | | 001 | 1  BA | 0  BB   | M | crxor
+    | 0 1 1 1 | BA2 | | 001 | 1  BA | 0  BB   | M | crnand
+    | 1 0 0 0 | BA2 | | 001 | 1  BA | 0  BB   | M | crand
+    | 1 0 0 1 | BA2 | | 001 | 1  BA | 0  BB   | M | creqv
+    | 1 1 0 1 | BA2 | | 001 | 1  BA | 0  BB   | M | crorc
+    | 1 1 1 0 | BA2 | | 001 | 1  BA | 0  BB   | M | cror
 
 10 bit mode:
 
@@ -285,22 +285,22 @@ Encode/Decode.
 **not available** in 10-bit mode:
 
     | 0 1 2 3 | 4  | | 567 | 8 9 a | b c d e  | f |
-    | 1 1 1 1 | 0  | | 000 | 1  00 | 0  RT    | M | mtlr
-    | 1 1 1 1 | 0  | | 000 | 1  01 | 0  RT    | M | mtctr
-    | 1 1 1 1 | 0  | | 000 | 1  11 | 0  RT    | M | mtcr
-    | 1 1 1 1 | 1  | | 000 | 1  00 | 0  RA    | M | mflr
-    | 1 1 1 1 | 1  | | 000 | 1  01 | 0  RA    | M | mfctr
-    | 1 1 1 1 | 1  | | 000 | 1  11 | 0  RA    | M | mfcr
+    | 1 1 1 1 | 0  | | 001 | 1  00 | 0  RT    | M | mtlr
+    | 1 1 1 1 | 0  | | 001 | 1  01 | 0  RT    | M | mtctr
+    | 1 1 1 1 | 0  | | 001 | 1  11 | 0  RT    | M | mtcr
+    | 1 1 1 1 | 1  | | 001 | 1  00 | 0  RA    | M | mflr
+    | 1 1 1 1 | 1  | | 001 | 1  01 | 0  RA    | M | mfctr
+    | 1 1 1 1 | 1  | | 001 | 1  11 | 0  RA    | M | mfcr
 
 ### Unallocated
 
     | 0 1 2 3 | 4  | | 567 | 8 9 a | b c d e  | f |
-    | 0 0 1 0 |    | | 000 | 1     | 0        | M |
-    | 0 0 1 1 |    | | 000 | 1     | 0        | M |
-    | 0 1 0 1 |    | | 000 | 1     | 0        | M |
-    | 1 0 1 0 |    | | 000 | 1     | 0        | M |
-    | 1 0 1 1 |    | | 000 | 1     | 0        | M |
-    | 1 1 0 0 |    | | 000 | 1     | 0        | M |
-    | 1 1 1 1 | 0  | | 000 | 1  10 | 0        | M |
-    | 1 1 1 1 | 1  | | 000 | 1  10 | 0        | M |
+    | 0 0 1 0 |    | | 001 | 1     | 0        | M |
+    | 0 0 1 1 |    | | 001 | 1     | 0        | M |
+    | 0 1 0 1 |    | | 001 | 1     | 0        | M |
+    | 1 0 1 0 |    | | 001 | 1     | 0        | M |
+    | 1 0 1 1 |    | | 001 | 1     | 0        | M |
+    | 1 1 0 0 |    | | 001 | 1     | 0        | M |
+    | 1 1 1 1 | 0  | | 001 | 1  10 | 0        | M |
+    | 1 1 1 1 | 1  | | 001 | 1  10 | 0        | M |
 
