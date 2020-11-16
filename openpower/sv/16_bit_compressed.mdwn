@@ -89,15 +89,15 @@ The Compressed Major Opcode is in bits 5-7.
 
 only available in 16-bit mode, and only available when M=1 and N=1
 
-    | 0 | 1  | 2 3 4 | | 567 | e | 89a  | b c | d   | e | f |
-    | 1 | o2 |  RT   | | 010 | 1 | RB|0 | offs      | 1 | addi.
-    | 1 | o2 |  RT   | | 011 | 1 | RB|0 | offs      | 1 | addis.
-    | 1 | o2     | 0 | | 100 | 1 | RB   | offs      | 1 | cmpdi
-    | 1 | o2     | 1 | | 100 | 1 | RB   | offs      | 1 | cmpwi
-    | 1 | o2     | 0 | | 101 | 1 | RA   | offs      | 1 | ldi
-    | 1 | o2     | 1 | | 101 | 1 | RA   | offs      | 1 | lwi
-    | 1 | o2     | 0 | | 110 | 1 | RA   | offs      | 1 | flwi
-    | 1 | o2     | 1 | | 110 | 1 | RA   | offs      | 1 | fldi
+    | 0 | 1  | 2 3 4 | | 567.8 | 9ab  | c d e     | f |
+    | 1 | o2 |  RT   | | 010.1 | RB|0 | offs      | addi.
+    | 1 | o2 |  RT   | | 011.1 | RB|0 | offs      | addis.
+    | 1 | o2     | 0 | | 100.1 | RB   | offs      | cmpdi
+    | 1 | o2     | 1 | | 100.1 | RB   | offs      | cmpwi
+    | 1 | o2     | 0 | | 101.1 | RA   | offs      | ldi
+    | 1 | o2     | 1 | | 101.1 | RA   | offs      | lwi
+    | 1 | o2     | 0 | | 110.1 | RA   | offs      | flwi
+    | 1 | o2     | 1 | | 110.1 | RA   | offs      | fldi
 
 * Note that bc is included (below)
 * immediate is constructed from offs (LSBs) and o2 (MSB)
@@ -110,11 +110,12 @@ only available in 16-bit mode, and only available when M=1 and N=1
 that do not fit in the extreme limited space.
 
     | 16-bit mode | | 10-bit mode              |
-    | 0 | 1 | 234 | | 567 | 8 9a | b | cd | e  | f |
-    | 0 | 0   000 | | 000 | 0 00 | 0   00 | 0  | 0 | illeg
-    | N | offs2   | | 000 | LK offs            | M | b, bl
-    | 1 | offs2   | | 000 | LK | BI   | BO1 oo | 1 | bc, bcl
-    | N | BO3 BI3 | | 001 | LK | 0 BI | BO     | M | bclr, bclrl
+    | 0 | 1 | 234 | | 567.8  | 9  ab | c   de | f |
+    | 0 | 0   000 | | 000.0  | 0  00 | 0   00 | 0 | illeg
+    | 0 | 0   000 | | 000.1  | 0  00 | 0   00 | 0 | nop
+    | N | offs2   | | 000.LK | offs!=0        | M | b, bl
+    | 1 | offs2   | | 000.LK | BI    | BO1 oo | 1 | bc, bcl
+    | N | BO3 BI3 | | 001.0  | LK BI | BO     | M | bclr, bclrl
 
 16 bit mode:
 
@@ -128,6 +129,8 @@ that do not fit in the extreme limited space.
 
 10 bit mode:
 
+* illegal (all zeros) covers part of branch (offs=0,M=0,LK=0)
+* nop also covers part of branch (offs=0,M=0,LK=1)
 * bc **not available** in 10-bit mode
 * BO[0] enables CR check, BO[1] inverts check
 * BI refers to CR0 only (4 bits of)
@@ -140,11 +143,11 @@ that do not fit in the extreme limited space.
 ### LD/ST
 
     | 16-bit mode       | | 10-bit mode             |
-    | 0   | 1   | 2 3 4 | | 567 | e | 8 9 a | b c d | f |
-    | RB2 | RA2 |  RT   | | 001 | 0 | 1  RA | 1  RB | M | fld
-    | RA2 | RT2 |  RB   | | 001 | 1 | 1  RA | 1  RT | M | fst
-    |     |     |  RT   | | 111 | 0 |  RA   |  RB   | M | ld
-    |     |     |  RB   | | 111 | 1 |  RA   |  RT   | M | st
+    | 0   | 1   | 2 3 4 | | 567.8 | 9 a b | c d e | f |
+    | RB2 | RA2 |  RT   | | 001.1 | 1  RA | 0  RB | M | fld
+    | RA2 | RT2 |  RB   | | 001.1 | 1  RA | 1  RT | M | fst
+    |     |     |  RT   | | 111.0 |  RA   |  RB   | M | ld
+    |     |     |  RB   | | 111.1 |  RA   |  RT   | M | st
 
 * elwidth overrides can set different widths
 
@@ -163,13 +166,13 @@ that do not fit in the extreme limited space.
 ### Arithmetic
 
     | 16-bit mode   | | 10-bit mode           |
-    | 0 | 1 | 2 3 4 | | 567 | e | 89a | b c d | f |
-    | N |   |  RT   | | 010 | 0 | RB  | RA!=0 | M | add
-    | N |   |  RT   | | 010 | 1 | RB  | RA    | M | mul
-    | N |   | RT!=0 | | 011 | 0 | RB  | RA!=0 | M | sub.
-    | N | 0 | 000   | | 011 | 0 | RB  | RA!=0 | M | cmpw
-    | N | 1 | 000   | | 011 | 0 | RB  | RA!=0 | M | cmpl
-    | N |   |  RT   | | 011 | 0 | RB  | 000   | M | neg.
+    | 0 | 1 | 2 3 4 | | 567.8 | 9ab | c d e | f |
+    | N |   |  RT   | | 010.0 | RB  | RA!=0 | M | add
+    | N |   |  RT   | | 010.1 | RB  | RA    | M | mul
+    | N |   | RT!=0 | | 011.0 | RB  | RA!=0 | M | sub.
+    | N | 0 | 000   | | 011.0 | RB  | RA!=0 | M | cmpw
+    | N | 1 | 000   | | 011.0 | RB  | RA!=0 | M | cmpl
+    | N |   |  RT   | | 011.0 | RB  | 000   | M | neg.
 
 10 bit mode:
 
@@ -181,27 +184,27 @@ that do not fit in the extreme limited space.
 ### Logical
 
     | 16-bit mode   | | 10-bit mode             |
-    | 0 | 1 | 2 3 4 | | 567 | e | 8 9 a | b c d | f |
-    | N | 0 |  RT   | | 100 | 0 | RB    | RA!=0 | M | and
-    | N | 0 |  RT   | | 100 | 1 | RB    | RA!=0 | M | nand
-    | N | 0 |  RT   | | 101 | 0 | RB    | RA!=0 | M | or
-    | N | 0 |  RT   | | 101 | 1 | RB    | RA!=0 | M | nor
-    | N | 0 |  RT   | | 100 | 0 | RB    | 0 0 0 | M | extsw
-    | N | 0 |  RT   | | 100 | 1 | RB    | 0 0 0 | M | cntlz
-    | N | 0 |  RT   | | 101 | 0 | RB    | 0 0 0 | M | popcnt
-    | N | 0 |  RT   | | 101 | 1 | RB    | 0 0 0 | M | not
+    | 0 | 1 | 2 3 4 | | 567.8 | 9ab | c d e | f |
+    | N | 0 |  RT   | | 100.0 | RB  | RA!=0 | M | and
+    | N | 0 |  RT   | | 100.1 | RB  | RA!=0 | M | nand
+    | N | 0 |  RT   | | 101.0 | RB  | RA!=0 | M | or
+    | N | 0 |  RT   | | 101.1 | RB  | RA!=0 | M | nor
+    | N | 0 |  RT   | | 100.0 | RB  | 0 0 0 | M | extsw
+    | N | 0 |  RT   | | 100.1 | RB  | 0 0 0 | M | cntlz
+    | N | 0 |  RT   | | 101.0 | RB  | 0 0 0 | M | popcnt
+    | N | 0 |  RT   | | 101.1 | RB  | 0 0 0 | M | not
 
 16-bit mode only:
 
-    | 0 | 1 | 2 3 4 | | 567 | e | 8 9 a | b c d | f |
-    | N | 1 |  RT   | | 100 | 0 | RB    | RA!=0 | M | 
-    | N | 1 |  RT   | | 100 | 1 | RB    | RA!=0 | M | 
-    | N | 1 |  RT   | | 101 | 0 | RB    | RA!=0 | M | xor
-    | N | 1 |  RT   | | 101 | 1 | RB    | RA!=0 | M | eqv (xnor)
-    | N | 1 |  RT   | | 100 | 0 | RB    | 0 0 0 | M | extsb
-    | N | 1 |  RT   | | 100 | 1 | RB    | 0 0 0 | M | cnttz
-    | N | 1 |  RT   | | 101 | 0 | RB    | 0 0 0 | M | 
-    | N | 1 |  RT   | | 101 | 1 | RB    | 0 0 0 | M | extsh
+    | 0 | 1 | 2 3 4 | | 567.8 | 9ab | c d e | f |
+    | N | 1 |  RT   | | 100.0 | RB  | RA!=0 | M |
+    | N | 1 |  RT   | | 100.1 | RB  | RA!=0 | M |
+    | N | 1 |  RT   | | 101.0 | RB  | RA!=0 | M | xor
+    | N | 1 |  RT   | | 101.1 | RB  | RA!=0 | M | eqv (xnor)
+    | N | 1 |  RT   | | 100.0 | RB  | 0 0 0 | M | extsb
+    | N | 1 |  RT   | | 100.1 | RB  | 0 0 0 | M | cnttz
+    | N | 1 |  RT   | | 101.0 | RB  | 0 0 0 | M |
+    | N | 1 |  RT   | | 101.1 | RB  | 0 0 0 | M | extsh
 
 10 bit mode:
 
@@ -215,23 +218,23 @@ that do not fit in the extreme limited space.
 Note here that elwidth overrides (SV Prefix) can be used to select FP16/32/64
 
     | 16-bit mode   | | 10-bit mode             |
-    | 0 | 1 | 2 3 4 | | 567 | e | 8 9 a | b c d | f |
-    | N |   |  RT   | | 011 | 1 | RB    | RA!=0 | M | fsub.
-    | N | 0 |  RT   | | 110 | 0 | RB    | RA!=0 | M | fadd
-    | N | 0 |  RT   | | 110 | 1 | RB    | RA!=0 | M | fmul
-    | N | 0 |  RT   | | 011 | 1 | RB    | 0 0 0 | M | fneg.
-    | N | 0 |  RT   | | 110 | 0 | RB    | 0 0 0 | M | 
-    | N | 0 |  RT   | | 110 | 1 | RB    | 0 0 0 | M | 
+    | 0 | 1 | 2 3 4 | | 567.8 | 9ab | c d e | f |
+    | N |   |  RT   | | 011.1 | RB  | RA!=0 | M | fsub.
+    | N | 0 |  RT   | | 110.0 | RB  | RA!=0 | M | fadd
+    | N | 0 |  RT   | | 110.1 | RB  | RA!=0 | M | fmul
+    | N | 0 |  RT   | | 011.1 | RB  | 0 0 0 | M | fneg.
+    | N | 0 |  RT   | | 110.0 | RB  | 0 0 0 | M |
+    | N | 0 |  RT   | | 110.1 | RB  | 0 0 0 | M |
 
 16-bit mode only:
 
-    | 0 | 1 | 2 3 4 | | 567 | e | 8 9 a | b c d | f |
-    | N | 1 |  RT   | | 011 | 1 | RB    | RA!=0 | M |
-    | N | 1 |  RT   | | 110 | 0 | RB    | RA!=0 | M | 
-    | N | 1 |  RT   | | 110 | 1 | RB    | RA!=0 | M | fdiv
-    | N | 1 |  RT   | | 011 | 1 | RB    | 0 0 0 | M | fabs.
-    | N | 1 |  RT   | | 110 | 0 | RB    | 0 0 0 | M | fmr.
-    | N | 1 |  RT   | | 110 | 1 | RB    | 0 0 0 | M | 
+    | 0 | 1 | 2 3 4 | | 567.8 | 9ab | c d e | f |
+    | N | 1 |  RT   | | 011.1 | RB  | RA!=0 | M |
+    | N | 1 |  RT   | | 110.0 | RB  | RA!=0 | M |
+    | N | 1 |  RT   | | 110.1 | RB  | RA!=0 | M | fdiv
+    | N | 1 |  RT   | | 011.1 | RB  | 0 0 0 | M | fabs.
+    | N | 1 |  RT   | | 110.0 | RB  | 0 0 0 | M | fmr.
+    | N | 1 |  RT   | | 110.1 | RB  | 0 0 0 | M |
 
 10 bit mode:
 
@@ -245,17 +248,17 @@ Note here that elwidth overrides (SV Prefix) can be used to select FP16/32/64
 
 ### Condition Register
 
-    | 16-bit mode   | | 10-bit mode           |
-    | 0 1 2 3 | 4   | | 567 | 8 9 a | b c d e | f |
-    | 0 0 0 0 | BF2 | | 001 | 1  BF | 0  BFA  | M | mcrf
-    | 0 0 0 1 | BA2 | | 001 | 1  BA | 0  BB   | M | crnor
-    | 0 1 0 0 | BA2 | | 001 | 1  BA | 0  BB   | M | crandc
-    | 0 1 1 0 | BA2 | | 001 | 1  BA | 0  BB   | M | crxor
-    | 0 1 1 1 | BA2 | | 001 | 1  BA | 0  BB   | M | crnand
-    | 1 0 0 0 | BA2 | | 001 | 1  BA | 0  BB   | M | crand
-    | 1 0 0 1 | BA2 | | 001 | 1  BA | 0  BB   | M | creqv
-    | 1 1 0 1 | BA2 | | 001 | 1  BA | 0  BB   | M | crorc
-    | 1 1 1 0 | BA2 | | 001 | 1  BA | 0  BB   | M | cror
+    | 16-bit mode   | | 10-bit mode          |
+    | 0 1 2 3 | 4   | | 567.8 | 9 ab | cde | f |
+    | 0 0 0 0 | BF2 | | 001.1 | 0 BF | BFA | M | mcrf
+    | 0 0 0 1 | BA2 | | 001.1 | 0 BA | BB  | M | crnor
+    | 0 1 0 0 | BA2 | | 001.1 | 0 BA | BB  | M | crandc
+    | 0 1 1 0 | BA2 | | 001.1 | 0 BA | BB  | M | crxor
+    | 0 1 1 1 | BA2 | | 001.1 | 0 BA | BB  | M | crnand
+    | 1 0 0 0 | BA2 | | 001.1 | 0 BA | BB  | M | crand
+    | 1 0 0 1 | BA2 | | 001.1 | 0 BA | BB  | M | creqv
+    | 1 1 0 1 | BA2 | | 001.1 | 0 BA | BB  | M | crorc
+    | 1 1 1 0 | BA2 | | 001.1 | 0 BA | BB  | M | cror
 
 10 bit mode:
 
@@ -280,28 +283,28 @@ Example: CBank=0b001 is heavily optimised to A/Video
 Encode/Decode.
 
     | 16-bit mode | | 10-bit mode             |
-    | 0 1 | 2 3 4 | | 567 | 8 9 a | b c d | e | f |
-    |       Bank2 | | 010 | CBank | 0 0 0 | 0 | M | cbank
+    | 0 1 | 2 3 4 | | 567.8 | 9 a b | c d e | f |
+    |       Bank2 | | 010.0 | CBank | 0 0 0 | M | cbank
 
 **not available** in 10-bit mode:
 
-    | 0 1 2 3 | 4  | | 567 | 8 9 a | b c d e  | f |
-    | 1 1 1 1 | 0  | | 001 | 1  00 | 0  RT    | M | mtlr
-    | 1 1 1 1 | 0  | | 001 | 1  01 | 0  RT    | M | mtctr
-    | 1 1 1 1 | 0  | | 001 | 1  11 | 0  RT    | M | mtcr
-    | 1 1 1 1 | 1  | | 001 | 1  00 | 0  RA    | M | mflr
-    | 1 1 1 1 | 1  | | 001 | 1  01 | 0  RA    | M | mfctr
-    | 1 1 1 1 | 1  | | 001 | 1  11 | 0  RA    | M | mfcr
+    | 0 1 2 3 | 4  | | 567.8 | 9 ab | c d e  | f |
+    | 1 1 1 1 | 0  | | 001.1 | 0 00 |  RT    | M | mtlr
+    | 1 1 1 1 | 0  | | 001.1 | 0 01 |  RT    | M | mtctr
+    | 1 1 1 1 | 0  | | 001.1 | 0 11 |  RT    | M | mtcr
+    | 1 1 1 1 | 1  | | 001.1 | 0 00 |  RA    | M | mflr
+    | 1 1 1 1 | 1  | | 001.1 | 0 01 |  RA    | M | mfctr
+    | 1 1 1 1 | 1  | | 001.1 | 0 11 |  RA    | M | mfcr
 
 ### Unallocated
 
-    | 0 1 2 3 | 4  | | 567 | 8 9 a | b c d e  | f |
-    | 0 0 1 0 |    | | 001 | 1     | 0        | M |
-    | 0 0 1 1 |    | | 001 | 1     | 0        | M |
-    | 0 1 0 1 |    | | 001 | 1     | 0        | M |
-    | 1 0 1 0 |    | | 001 | 1     | 0        | M |
-    | 1 0 1 1 |    | | 001 | 1     | 0        | M |
-    | 1 1 0 0 |    | | 001 | 1     | 0        | M |
-    | 1 1 1 1 | 0  | | 001 | 1  10 | 0        | M |
-    | 1 1 1 1 | 1  | | 001 | 1  10 | 0        | M |
+    | 0 1 2 3 | 4  | | 567.8 | 9 ab | c d e  | f |
+    | 0 0 1 0 |    | | 001.1 | 0    | 0      | M |
+    | 0 0 1 1 |    | | 001.1 | 0    | 0      | M |
+    | 0 1 0 1 |    | | 001.1 | 0    | 0      | M |
+    | 1 0 1 0 |    | | 001.1 | 0    | 0      | M |
+    | 1 0 1 1 |    | | 001.1 | 0    | 0      | M |
+    | 1 1 0 0 |    | | 001.1 | 0    | 0      | M |
+    | 1 1 1 1 | 0  | | 001.1 | 0 10 | 0      | M |
+    | 1 1 1 1 | 1  | | 001.1 | 0 10 | 0      | M |
 
