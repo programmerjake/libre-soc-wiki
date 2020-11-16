@@ -89,38 +89,46 @@ The Compressed Major Opcode is in bits 5-7.
 
 only available in 16-bit mode, and only available when M=1 and N=1
 
-    | 0 | 1  | 2 3 4 | | 567 | 8 9 a | b c d | e | f |
-    | 1 | offs2      | | 001 | o  BI | o BO | LK | 1 | bc
-    | 1 | o2 |  RT   | | 010 | RB    | offs      | 1 | addis
-    | 1 | o2 |  RT   | | 011 | RB    | offs      | 1 | mulis
-    | 1 | o2 |       | | 100 |       | offs      | 1 | 
-    | 1 | o2 |  RT   | | 101 | RA    | offs      | 1 | ldi
-    | 1 | o2 |  RT   | | 110 | RA    | offs      | 1 | sti
+    | 0 | 1  | 2 3 4 | | 567 | 89a | b c | d   | e | f |
+    | 1 | o2 |  RT   | | 010 | RB  | offs      | 1 | addi.
+    | 1 | o2 |  RT   | | 011 | RB  | offs      | 1 | addis.
+    | 1 | o2 |       | | 100 |     | offs      | 1 | 
+    | 1 | o2 |  RT   | | 101 | RA  | offs      | 1 | ldi
+    | 1 | o2 |  RT   | | 110 | RA  | offs      | 1 | sti
+
+* Note that bc is included (below)
+* immediate is constructed from offs (LSBs) and o2 (MSB)
 
 ### Branch
 
 10 bit mode may be expanded by 16 bit mode later, adding capabilities
 that do not fit in the extreme limited space.
 
-    | 16-bit mode | | 10-bit mode              |
-    | 0 | 1 | 2 3 4 | | 567 | 8 9 a | b c d | e  | f |
-    | BO2   | BI3   | | 000 | 0  BI | 0  BO | LK | M | bclr
-    | BO2   | BI3   | | 000 | 0  BI | 1  BO | LK | M | bctr
-    | N | offs2     | | 001 |    offs       | LK | M | b
+    | 16-bit mode | | 10-bit mode                |
+    | 0 | 1 | 234 | | 567 | 8 9 a | b | c d | e  | f |
+    | BO2   | BI3 | | 000 | 0  BI | 0   BO  | LK | M | bclr
+    | BO2   | BI3 | | 000 | 0  BI | 1   BO  | LK | M | bctr
+    | N | offs2   | | 001 |    offs         | LK | M | b
+    | 1 | offs2   | | 001 | BI    | BO1 oo  | LK | 1 | bc
 
 16 bit mode:
 
+* bc only available when N,M=0b11
 * offs2 extends offset in MSBs
 * BI3 extends BI in MSBs to allow selection of full CR
 * BO2 extends BO
+* bc offset constructed from oo as LSBs and offs2 as MSBs
+* bc BI allows selection of all bits from CR0 or CR1
+* bc CR check is always active (as if BO0=1) therefore BO1 inverts
 
 10 bit mode:
 
+* bc **not available**
 * BO[0] enables CR check, BO[1] inverts check
 * BI refers to CR0 only (4 bits of)
 * no Branch Conditional with immediate
 * no Absolute Address
-* no CTR mode (and no bctr)
+* no CTR mode (TBD?)
 * offs is to 2 byte (signed) aligned
 * all branches to 2 byte aligned
 
