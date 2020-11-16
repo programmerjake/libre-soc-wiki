@@ -1,5 +1,7 @@
 # 16 bit Compressed
 
+Similar to VLE (but without immediate-prefixing) this encoding is designed to fit on top of OpenPOWER ISA v3.0B when a "Modeswitch bit" is set (PCR is recommended). Note that it is *mutually exclusively incompatible* with OoenPOWER v3.1B "prefixing" due to using (requiring) both EXT000 and EXT001. Hypothetically it could be made to use anything other than EXT001, with some inconvenience (extra gates).  The incompatibility is "fixed" by swapping out of "Compressed" Mode and back into "Normal" (v3.1B) Mode, at runtime, as needed.
+
 See:
 
 * <https://bugs.libre-soc.org/show_bug.cgi?id=238>
