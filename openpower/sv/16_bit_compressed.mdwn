@@ -93,29 +93,31 @@ addi, mulli etc.)
 
 only available in 16-bit mode, and only available when M=1 and N=1
 
-    | 0 | 1  | 2 3 4 | | 567.8  | 9ab  | c d e | f |
-    | 1 | i2 |  RT   | | 010.i3 | RB|0 | imm   | 1 | addi.
-    | 1 | i2         | | 011.0  | RB   | imm   | 1 | cmpdi
-    | 1 | i2         | | 011.1  | RB   | imm   | 1 | cmpwi
-    | 1 | i2         | | 100.0  | RT   | imm   | 1 | sti
-    | 1 | i2         | | 100.1  | RT   | imm   | 1 | fstwi
-    | 1 | i2         | | 101.0  | RA   | imm   | 1 | ldi
-    | 1 | i2         | | 101.1  | RA   | imm   | 1 | lwi
-    | 1 | i2         | | 110.0  | RA   | imm   | 1 | flwi
-    | 1 | i2         | | 110.1  | RA   | imm   | 1 | fldi
+    | 0 | 1  | 2 3 4 | | 567.8 | 9ab   | cde | f |
+    | 1 | i2 |  RT   | | 010.0 | RA|0  | imm | 1 | addi
+    | 1 | i2         | | 010.1 | RA    | imm | 1 | addis
+    | 1 | i2         | | 011.0 | RB    | imm | 1 | cmpdi
+    | 1 | i2         | | 011.1 | RB    | imm | 1 | cmpwi
+    | 1 | i2         | | 100.0 | RT    | imm | 1 | sti
+    | 1 | i2         | | 100.1 | RT    | imm | 1 | fstwi
+    | 1 | i2         | | 101.0 | RA    | imm | 1 | ldi
+    | 1 | i2         | | 101.1 | RA    | imm | 1 | lwi
+    | 1 | i2         | | 110.0 | RA    | imm | 1 | flwi
+    | 1 | i2         | | 110.1 | RA    | imm | 1 | fldi
 
 Construction of immediate:
 
-* addi is EXTS(i3||i2||imm) to give a 5-bit range -32 to +31
+* addi is EXTS(i2||imm) to give a 4-bit range -8 to +7
+* addis is EXTS(i2||imm||000) to give a 11-bit range -1024 to +1023 in increments of 8 
 * all others are EXTS(i2||imm) to give a 7-bit range -128 to +127
   (further for LD/ST due to word/dword-alignment)
 
 Further Notes:
 
-* bc also has an immediate mode, listed below in Branch section
+* bc also has an immediate mode, listed separately below in Branch section
 * for LD/ST, offset is aligned.  8-byte: i2||imm||0b000 4-byte: 0b00
 * SV Prefix over-rides help provide alternative bitwidths for LD/ST
-* RB|0 if RB is zero, addi. becomes "li"
+* RA|0 if RA is zero, addi. becomes "li"
  - this only works if RT takes part of opcode
  - mv is also possible by specifying an immediate of zero
 
