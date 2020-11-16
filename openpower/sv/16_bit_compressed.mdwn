@@ -164,10 +164,10 @@ that do not fit in the extreme limited space.
     | 16-bit mode   | | 10-bit mode             |
     | 0 | 1 | 2 3 4 | | 567 | 89a | b c d | e | f |
     | N |   |  RT   | | 010 | RB  | RA!=0 | 0 | M | add
+    | N |   |  RT   | | 010 | RB  | RA    | 1 | M | mul
     | N |   | RT!=0 | | 011 | RB  | RA!=0 | 0 | M | sub.
     | N | 0 | 000   | | 011 | RB  | RA!=0 | 0 | M | cmpw
     | N | 1 | 000   | | 011 | RB  | RA!=0 | 0 | M | cmpl
-    | N |   |  RT   | | 010 | RB  | RA    | 1 | M | mul
     | N |   |  RT   | | 011 | RB  | 000   | 0 | M | neg.
 
 10 bit mode:
