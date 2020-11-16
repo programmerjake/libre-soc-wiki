@@ -21,30 +21,13 @@ the pseudo-code for all opcodes in the POWER v3.0B Public Spec
 
 Table 9: Primary Opcode Map (opcode bits 0:5)
 
-                 000                   001              010                011              100                101                 110              111
-     000                                                tdi                
-    twi           EXT04                                                    mulli    000
-                                         PPC             D P1              D {extended}                                              P1              D
-     8               I9                  10              I 11              I 12               I 13               I 14              I 15              I
- 001       subfic                                cmpli               cmpi             addic              addic.              addi             addis    001
-     P1              D {reserved}        P1              D P1              D P1               D P1               D P1              D P1              D
-     16              I 17                18              I 19                20               I 21               I 22                23              I
- 010       bc[l][a]            EXT17             b[l][a]            EXT19           rlwimi[.]          rlwinm[.]                            rlwnm[.]   010
-     P1              B {extended}        P1               I {extended}       P1               M P1               M {reserved}        P1              M
-     24              I 25              I 26              I 27              I 28               I 29               I 30                31
- 011         ori                  oris             xori              xoris            andi.              andis.            EXT30             EXT31     011
-     P1              D P1              D P1              D P1              D P1               D P1               D {extended}        {extended}
-     32              I 33              I 34              I 35              I 36               I 37               I 38              I 39              I
- 100         lwz                 lwzu               lbz              lbzu               stw               stwu                 stb            stbu     100
-     P1              D P1              D P1              D P1              D P1               D P1               D P1              D P1              D
-     40              I 41              I 42              I 43              I 44               I 45               I 46              I 47              I
- 101         lhz                  lhzu              lha              lhau               sth               sthu                lmw             stmw     101
-     P1              D P1              D P1              D P1              D P1               D P1               D P1              D P1              D
-     48              I 49              I 50              I 51              I 52               I 53               I 54              I 55              I
- 110          lfs                 lfsu              lfd               lfdu             stfs               stfsu               stfd            stfdu    110
-     P1              D P1              D P1              D P1              D P1               D P1               D P1              D P1              D
-     56              I 57                58                 59               60                 61                 62                63
- 111          lq               EXT57             EXT58              EXT59            EXT60               EXT61             EXT62             EXT63     111
-     v2.03          DQ {extended}        {extended}         {extended}       {extended}         {extended}         {extended}        {extended}
-             000                   001              010                011              100                101                 110              111
-
+        |  000   |   001 |  010  | 011   |  100  |    101 |  110  |  111
+    000 |        |       |  tdi  | twi   | EXT04 |        |       | mulli | 000
+    001 | subfic |       | cmpli | cmpi  | addic | addic. | addi  | addis | 001
+    010 | bc/l/a | EXT17 | b/l/a | EXT19 | rlwimi| rlwinm |       | rlwnm | 010
+    011 |  ori   | oris  | xori  | xoris | andi. | andis. | EXT30 | EXT31 | 011
+    100 |  lwz   | lwzu  | lbz   | lbzu  | stw   | stwu   | stb   | stbu  | 100
+    101 |  lhz   | lhzu  | lha   | lhau  | sth   | sthu   | lmw   | stmw  | 101
+    110 |  lfs   | lfsu  | lfd   | lfdu  | stfs  | stfsu  | stfd  | stfdu | 110
+    111 |  lq    | EXT57 | EXT58 | EXT59 | EXT60 | EXT61  | EXT62 | EXT63 | 111
+        |  000   |   001 |   010 |  011  |   100 |   101  | 110   |  111
