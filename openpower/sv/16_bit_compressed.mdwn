@@ -107,8 +107,7 @@ that do not fit in the extreme limited space.
 
     | 16-bit mode | | 10-bit mode                |
     | 0 | 1 | 234 | | 567 | 8 9 a | b | c d | e  | f |
-    | BO2   | BI3 | | 000 | 0  BI | 0   BO  | LK | M | bclr
-    | BO2   | BI3 | | 000 | 0  BI | 1   BO  | LK | M | bctr
+    | N | BO3 BI3 | | 000 | 0  BI | BO      | LK | M | b, blr
     | N | offs2   | | 001 |    offs         | LK | M | b
     | 1 | offs2   | | 001 | BI    | BO1 oo  | LK | 1 | bc
 
@@ -117,19 +116,19 @@ that do not fit in the extreme limited space.
 * bc only available when N,M=0b11
 * offs2 extends offset in MSBs
 * BI3 extends BI in MSBs to allow selection of full CR
-* BO2 extends BO
+* BO3 extends BO
 * bc offset constructed from oo as LSBs and offs2 as MSBs
 * bc BI allows selection of all bits from CR0 or CR1
 * bc CR check is always active (as if BO0=1) therefore BO1 inverts
 
 10 bit mode:
 
-* bc **not available**
+* bc **not available** in 10-bit mode
 * BO[0] enables CR check, BO[1] inverts check
 * BI refers to CR0 only (4 bits of)
 * no Branch Conditional with immediate
 * no Absolute Address
-* no CTR mode (TBD?)
+* CTR mode allowed with BO[2] for b only.
 * offs is to 2 byte (signed) aligned
 * all branches to 2 byte aligned
 
