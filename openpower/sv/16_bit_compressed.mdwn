@@ -94,20 +94,20 @@ addi, mulli etc.)
 only available in 16-bit mode, and only available when M=1 and N=1
 
     | 0 | 1  | 2 3 4 | | 567.8 | 9ab  | c d e | f |
-    | 1 | o2 |  RT   | | 010.0 | RB|0 | offs  | 1 | addi.
-    | 1 | o2 |  RT   | | 010.1 | RB|0 | offs  | 1 | addis.
-    | 1 | o2         | | 011.0 | RB   | offs  | 1 | cmpdi
-    | 1 | o2         | | 011.1 | RB   | offs  | 1 | cmpwi
-    | 1 | o2         | | 100.0 | RT   | offs  | 1 | sti
-    | 1 | o2         | | 100.1 | RT   | offs  | 1 | fstwi
-    | 1 | o2         | | 101.0 | RA   | offs  | 1 | ldi
-    | 1 | o2         | | 101.1 | RA   | offs  | 1 | lwi
-    | 1 | o2         | | 110.0 | RA   | offs  | 1 | flwi
-    | 1 | o2         | | 110.1 | RA   | offs  | 1 | fldi
+    | 1 | i2 |  RT   | | 010.0 | RB|0 | imm   | 1 | addi.
+    | 1 | i2 |  RT   | | 010.1 | RB|0 | imm   | 1 | addis.
+    | 1 | i2         | | 011.0 | RB   | imm   | 1 | cmpdi
+    | 1 | i2         | | 011.1 | RB   | imm   | 1 | cmpwi
+    | 1 | i2         | | 100.0 | RT   | imm   | 1 | sti
+    | 1 | i2         | | 100.1 | RT   | imm   | 1 | fstwi
+    | 1 | i2         | | 101.0 | RA   | imm   | 1 | ldi
+    | 1 | i2         | | 101.1 | RA   | imm   | 1 | lwi
+    | 1 | i2         | | 110.0 | RA   | imm   | 1 | flwi
+    | 1 | i2         | | 110.1 | RA   | imm   | 1 | fldi
 
 * Note that bc is included (below)
-* immediate is constructed from offs (LSBs) and o2 (MSB)
-* for LD/ST, offset is aligned.  8-byte: o2||offs||0b000 4-byte: 0b00
+* immediate is constructed from imm (LSBs) and i2 (MSB)
+* for LD/ST, offset is aligned.  8-byte: i2||imm||0b000 4-byte: 0b00
 * SV Prefix over-rides help provide alternative bitwidths for LD/ST
 * RB|0 if RB is zero, addi. becomes "li" (this only works if RT takes
   part of opcode).
