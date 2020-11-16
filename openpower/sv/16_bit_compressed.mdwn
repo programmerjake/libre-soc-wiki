@@ -141,8 +141,8 @@ that do not fit in the extreme limited space.
 
     | 16-bit mode       | | 10-bit mode             |
     | 0   | 1   | 2 3 4 | | 567 | 8 9 a | b c d | e | f |
-    | RB2 | RA2 |  RT   | | 000 | 1  RA | 1  RB | 0 | M | fld
-    | RA2 | RT2 |  RB   | | 000 | 1  RA | 1  RT | 1 | M | fst
+    | RB2 | RA2 |  RT   | | 001 | 1  RA | 1  RB | 0 | M | fld
+    | RA2 | RT2 |  RB   | | 001 | 1  RA | 1  RT | 1 | M | fst
     |     |     |  RT   | | 111 |  RA   |  RB   | 0 | M | ld
     |     |     |  RB   | | 111 |  RA   |  RT   | 1 | M | st
 
@@ -274,8 +274,9 @@ SV (Vector Mode):
 
 ### System
 
-* cbank: Selection of Compressed-encoding "Bank".  Different "banks" give different
-meanings to opcodes.  Example: CBank=0b001 is heavily optimised to A/Video
+cbank: Selection of Compressed-encoding "Bank".  Different "banks" give different
+meanings to opcodes.
+Example: CBank=0b001 is heavily optimised to A/Video
 Encode/Decode.
 
     | 16-bit mode | | 10-bit mode             |
