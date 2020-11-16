@@ -92,7 +92,8 @@ only available in 16-bit mode, and only available when M=1 and N=1
     | 0 | 1  | 2 3 4 | | 567 | 89a | b c | d   | e | f |
     | 1 | o2 |  RT   | | 010 | RB  | offs      | 1 | addi.
     | 1 | o2 |  RT   | | 011 | RB  | offs      | 1 | addis.
-    | 1 | o2 |       | | 100 |     | offs      | 1 | 
+    | 1 | o2     | 0 | | 100 | RB  | offs      | 1 | cmpdi
+    | 1 | o2     | 1 | | 100 | RB  | offs      | 1 | cmpwi
     | 1 | o2 |  RT   | | 101 | RA  | offs      | 1 | ldi
     | 1 | o2 |  RT   | | 110 | RA  | offs      | 1 | sti
 
