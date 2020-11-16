@@ -81,9 +81,13 @@ The current "top" idea for 0b11 is to use it for a new encoding format
 of predominantly "immediates-based" 16-bit instructions (branch-conditional,
 addi, mulli etc.)
 
-The Compressed Major Opcode is in bits 5-7.
-
+* The Compressed Major Opcode is in bits 5-7.
+* Minor opcode in bit 8.
+* In some cases bit 9 is taken as an additional sub-opcode, followed
+  by bits 0-4 (for CR operations)
 * M+N mode-switching is not available for C-Major 0b001 or 0b111
+* 10 bit mode may be expanded by 16 bit mode, adding capabilities
+  that do not fit in the extreme limited space.
 
 ### Immediate Opcodes
 
@@ -104,13 +108,17 @@ only available in 16-bit mode, and only available when M=1 and N=1
 * Note that bc is included (below)
 * immediate is constructed from offs (LSBs) and o2 (MSB)
 * for LD/ST, offset is aligned.  8-byte: o2||offs||0b000 4-byte: 0b00
+* SV Prefix over-rides help provide alternative bitwidths for LD/ST
 * RB|0 if RB is zero, addi. becomes "li" (this only works if RT takes
   part of opcode).
 
 ### Branch
 
-10 bit mode may be expanded by 16 bit mode later, adding capabilities
-that do not fit in the extreme limited space.
+Note that illeg and nop are all zeros, including in the 16-bit mode.
+Given that C is allocated to OpenPOWER ISA Major opcodes EXT000 and
+EXT001 this ensures that in both 10-bit *and* 16-bit mode, a 16-bit
+run of all zeros is considered "illegal" whilst 0b0000.0000.1000.0000
+is "nop"
 
     | 16-bit mode | | 10-bit mode                 |
     | 0 | 1 | 234 | | 567.8  | 9  ab | c   de | f |
