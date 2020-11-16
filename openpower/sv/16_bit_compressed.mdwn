@@ -112,9 +112,9 @@ that do not fit in the extreme limited space.
     | 16-bit mode | | 10-bit mode              |
     | 0 | 1 | 234 | | 567 | 8 9a | b | cd | e  | f |
     | 0 | 0   000 | | 000 | 0 00 | 0   00 | 0  | 0 | illeg
-    | N | offs2   | | 000 |   offs        | LK | M | b, bl
-    | 1 | offs2   | | 000 | BI   | BO1 oo | LK | 1 | bc, bcl
-    | N | BO3 BI3 | | 001 | 0 BI | BO     | LK | M | bclr, bclrl
+    | N | offs2   | | 000 | LK offs            | M | b, bl
+    | 1 | offs2   | | 000 | LK | BI   | BO1 oo | 1 | bc, bcl
+    | N | BO3 BI3 | | 001 | LK | 0 BI | BO     | M | bclr, bclrl
 
 16 bit mode:
 
