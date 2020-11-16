@@ -15,13 +15,16 @@ This **only** in "LibreSOC Mode".  Candidates for moving elsewhere
 include mulli, twi and tdi.
 
 * 2 opcodes for 16-bit Compressed instructions with 11 bits available
-* 2 opcodes are required in order to give SV-P48 (and SV-C32) the 11 bits needed for prefixing
-* 2 opcodes are likewise required for SV-P64 (and SV-C48) to have 27 bits available
-* 2 opcodes for SV VBLOCK
+* 2 opcodes are required in order to give SV-P48 the 11 bits needed for prefixing
+* 2 opcodes are likewise required for SV-P64 to have 27 bits available
+* 2 opcodes for SV-C32 and SV-C48 (32 bit versions of P48 and P64)
 
 With only 11 bits for 16-bit Compressed, it may be better to use the
-opportunity to switch into "16 bit mode".  Interestingly SV-P32 could
+opportunity to switch into "16 bit mode".  Interestingly SV-C32 could
 likewise switch into the same.
+
+VBLOCK can be added later by using further VSX dedicated major opcodes
+(EXT62, EXT63)
 
 # LE/BE complications.
 
@@ -55,6 +58,10 @@ this time it is half-word (16 bit) swapping on a 32-bit block.
 With the Major Opcode then always being in the 1st 2 bytes it becomes
 much simpler for the pre-analysis phase to determine instruction length,
 regardless of what that length is (16/32/48/64/VBLOCK).
+
+Option 3:
+
+Just as in VLE, require instructions to be in BE order. Data, which has nothing to do with instruction order, may optionally remain in LE order.
 
 # 16 bit Compressed
 
