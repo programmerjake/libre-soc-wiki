@@ -215,8 +215,8 @@ Note here that elwidth overrides (SV Prefix) can be used to select FP16/32/64
     | N | 0 |  RT   | | 110 | RB    | RA!=0 | 0 | M | fadd
     | N | 0 |  RT   | | 110 | RB    | RA!=0 | 1 | M | fmul
     | N | 0 |  RT   | | 011 | RB    | 0 0 0 | 1 | M | fneg.
-    | N |   |  RT   | | 110 | RB    | 0 0 0 | 0 | M | 
-    | N |   |  RT   | | 110 | RB    | 0 0 0 | 1 | M | 
+    | N | 0 |  RT   | | 110 | RB    | 0 0 0 | 0 | M | 
+    | N | 0 |  RT   | | 110 | RB    | 0 0 0 | 1 | M | 
 
 16-bit mode only:
 
@@ -225,8 +225,8 @@ Note here that elwidth overrides (SV Prefix) can be used to select FP16/32/64
     | N | 1 |  RT   | | 110 | RB    | RA!=0 | 0 | M | 
     | N | 1 |  RT   | | 110 | RB    | RA!=0 | 1 | M | fdiv
     | N | 1 |  RT   | | 011 | RB    | 0 0 0 | 1 | M | fabs.
-    | N |   |  RT   | | 110 | RB    | 0 0 0 | 0 | M | fmr.
-    | N |   |  RT   | | 110 | RB    | 0 0 0 | 1 | M | 
+    | N | 1 |  RT   | | 110 | RB    | 0 0 0 | 0 | M | fmr.
+    | N | 1 |  RT   | | 110 | RB    | 0 0 0 | 1 | M | 
 
 10 bit mode:
 
