@@ -190,12 +190,20 @@ is "nop"
 
     | 16-bit mode   | | 10-bit mode             |
     | 0 | 1 | 2 3 4 | | 567.8 | 9ab | c d e | f |
-    | N |   |  RT   | | 010.0 | RB  | RA!=0 | M | add
-    | N |   |  RT   | | 010.1 | RB  | RA    | M | mul
-    | N |   | RT!=0 | | 011.0 | RB  | RA!=0 | M | sub.
+    | N | 0 |  RT   | | 010.0 | RB  | RA!=0 | M | add
+    | N | 0 |  RT   | | 010.1 | RB  | RA    | M | mul
+    | N | 0 | RT!=0 | | 011.0 | RB  | RA!=0 | M | sub.
     | N | 0 | 000   | | 011.0 | RB  | RA!=0 | M | cmpw
+    | N | 0 |  RT   | | 011.0 | RB  | 000   | M | neg.
+
+16 bit mode only:
+
+    | 0 | 1 | 2 3 4 | | 567.8 | 9ab | c d e | f |
+    | N | 1 |  RT   | | 010.0 |     |       | M | 
+    | N | 1 |  RT   | | 010.1 | RB  | RA    | M | div
+    | N | 1 | RT!=0 | | 011.0 | RB  | RA!=0 | M |
     | N | 1 | 000   | | 011.0 | RB  | RA!=0 | M | cmpl
-    | N |   |  RT   | | 011.0 | RB  | 000   | M | neg.
+    | N | 1 |  RT   | | 011.0 | RB  | 000   | M |
 
 10 bit mode:
 
@@ -302,34 +310,34 @@ SV (Vector Mode):
 
 ### System
 
-cbank: Selection of Compressed-encoding "Bank".  Different "banks" give different
-meanings to opcodes.
-Example: CBank=0b001 is heavily optimised to A/Video
-Encode/Decode.
+cbank: Selection of Compressed-encoding "Bank".  Different "banks"
+give different meanings to opcodes.  Example: CBank=0b001 is heavily
+optimised to A/Video Encode/Decode.  cbank borrows from add's encoding
+space (when RA==0)
 
     | 16-bit mode | | 10-bit mode               |
-    | 0 | 1 2 3 4 | | 567.8 | 9 a b | c d e | f |
-    | N |   Bank2 | | 010.0 | CBank | 0 0 0 | M | cbank
+    | 0 | 1 2 3 4 | | 567.8 | 9ab   | cde | f |
+    | N | 0 Bank2 | | 010.0 | CBank | 000 | M | cbank
 
 **not available** in 10-bit mode:
 
-    | 0 1 2 3 | 4  | | 567.8 | 9 ab | c d e  | f |
-    | 1 1 1 1 | 0  | | 001.1 | 0 00 |  RT    | M | mtlr
-    | 1 1 1 1 | 0  | | 001.1 | 0 01 |  RT    | M | mtctr
-    | 1 1 1 1 | 0  | | 001.1 | 0 11 |  RT    | M | mtcr
-    | 1 1 1 1 | 1  | | 001.1 | 0 00 |  RA    | M | mflr
-    | 1 1 1 1 | 1  | | 001.1 | 0 01 |  RA    | M | mfctr
-    | 1 1 1 1 | 1  | | 001.1 | 0 11 |  RA    | M | mfcr
+    | 0 1 2 3 | 4  | | 567.8 | 9 ab | cde  | f |
+    | 1 1 1 1 | 0  | | 001.1 | 0 00 |  RT  | M | mtlr
+    | 1 1 1 1 | 0  | | 001.1 | 0 01 |  RT  | M | mtctr
+    | 1 1 1 1 | 0  | | 001.1 | 0 11 |  RT  | M | mtcr
+    | 1 1 1 1 | 1  | | 001.1 | 0 00 |  RA  | M | mflr
+    | 1 1 1 1 | 1  | | 001.1 | 0 01 |  RA  | M | mfctr
+    | 1 1 1 1 | 1  | | 001.1 | 0 11 |  RA  | M | mfcr
 
 ### Unallocated
 
-    | 0 1 2 3 | 4  | | 567.8 | 9 ab | c d e  | f |
-    | 0 0 1 0 |    | | 001.1 | 0    |        | M |
-    | 0 0 1 1 |    | | 001.1 | 0    |        | M |
-    | 0 1 0 1 |    | | 001.1 | 0    |        | M |
-    | 1 0 1 0 |    | | 001.1 | 0    |        | M |
-    | 1 0 1 1 |    | | 001.1 | 0    |        | M |
-    | 1 1 0 0 |    | | 001.1 | 0    |        | M |
-    | 1 1 1 1 | 0  | | 001.1 | 0 10 |        | M |
-    | 1 1 1 1 | 1  | | 001.1 | 0 10 |        | M |
+    | 0 1 2 3 | 4  | | 567.8 | 9 ab | cde  | f |
+    | 0 0 1 0 |    | | 001.1 | 0    |      | M |
+    | 0 0 1 1 |    | | 001.1 | 0    |      | M |
+    | 0 1 0 1 |    | | 001.1 | 0    |      | M |
+    | 1 0 1 0 |    | | 001.1 | 0    |      | M |
+    | 1 0 1 1 |    | | 001.1 | 0    |      | M |
+    | 1 1 0 0 |    | | 001.1 | 0    |      | M |
+    | 1 1 1 1 | 0  | | 001.1 | 0 10 |      | M |
+    | 1 1 1 1 | 1  | | 001.1 | 0 10 |      | M |
 
