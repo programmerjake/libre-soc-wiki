@@ -103,8 +103,6 @@ addi, mulli etc.)
 * 10 bit mode may be expanded by 16 bit mode, adding capabilities
   that do not fit in the extreme limited space.
 
-### Encodings
-
 Mode-switching FSM showing relationship between v3.0B, C 10bit and C 16bit.
 16-bit immediate mode remains in 16-bit.
 
@@ -122,6 +120,8 @@ Notes:
   are zero, therefore the 6th bit is actually part of Cmaj.
 * "10bit then 16bit" means "this instruction is encoded C 10bit
   and the following one in C 16bit"
+
+### C Instruction Encoding types
 
 10-bit Opcode formats (all start with v3.0B EXT000 or EXT001
 Major Opcodes)
