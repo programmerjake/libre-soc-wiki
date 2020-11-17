@@ -9,8 +9,8 @@ EXT001, with some inconvenience (extra gates).  The incompatibility is
 "fixed" by swapping out of "Compressed" Mode and back into "Normal"
 (v3.1B) Mode, at runtime, as needed.
 
-Although initially intended to be augmented by Simple-V Prefixing, to
-add Vector context, width overrides (e.g IEEE754 FP16) and predication yet not put pressure on I-Cache power
+Although initially intended to be augmented by Simple-V Prefixing (to
+add Vector context, width overrides, e.g IEEE754 FP16, and predication) yet not put pressure on I-Cache power
 or size, this Compressed Encoding is not critically dependent
 *on* SV Prefixing, and may be used stand-alone.
 
@@ -29,7 +29,10 @@ Here, in order to embed 16 bit into a predominantly 32 bit stream the
 overhead of using an entire 16 bits just to switch into Compressed mode
 is itself a significant overhead.  The situation is made worse by 6 bits
 being taken up by Major Opcode space, leaving only 10 bits to allocate
-to actual instructions. Contrast this with RVC which takes 3 out of 4 of the 1st 2 bits for indicating 16-bit (anything with 0b00 to 0b10 in the LSBs), easily allowing standard 32 bit and 16 bit to intermingle cleanly.
+to actual instructions.
+
+Contrast this with RVC which takes 3 out of 4 
+combinations of the first 2 bits for indicating 16-bit (anything with 0b00 to 0b10 in the LSBs), and uses the 4th as a Huffman-style escape-sequence, easily allowing standard 32 bit and 16 bit to intermingle cleanly.  To achieve the same thing on OpenPOWER would require a whopping 24 6-bit Major Opcodes which is clearly impractical: other schemes need to be devised.
 
 In addition we would like to add SV-C32 which is a Vectorised version
 of 16 bit Compressed, and ideally have a variant that adds the 27-bit
