@@ -178,13 +178,13 @@ and when Cmaj.min is not 0b001.1.
     | 1 | i2           | | 011.0 | RA   | imm | 1 | cmpdi
     | 1 | i2           | | 011.1 | RA   | imm | 1 | cmpwi
     | 1 | i2           | | 100.0 | RT   | imm | 1 | stwi
-    | 1 | i2           | | 100.1 | RT   | imm | 1 | fstwi
+    | 1 | i2           | | 100.1 | RT   | imm | 1 | stdi
     | 1 | i2           | | 101.0 | RA   | imm | 1 | ldi
     | 1 | i2           | | 101.1 | RA   | imm | 1 | lwi
-    | 1 | i2           | | 110.0 | RT   | imm | 1 | sti
-    | 1 | i2           | | 110.1 | RT   | imm | 1 | stdi
-    | 1 | i2           | | 111.0 | RA   | imm | 1 | flwi
-    | 1 | i2           | | 111.1 | RA   | imm | 1 | fldi
+    | 1 | i2 | RA      | | 110.0 | RT   | imm | 1 | fsti
+    | 1 | i2 | RA      | | 110.1 | RT   | imm | 1 | fstdi
+    | 1 | i2 | RT      | | 111.0 | RA   | imm | 1 | flwi
+    | 1 | i2 | RT      | | 111.1 | RA   | imm | 1 | fldi
 
 Construction of immediate:
 
