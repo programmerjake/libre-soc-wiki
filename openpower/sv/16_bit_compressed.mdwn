@@ -37,6 +37,8 @@ prefix format from SV-P64, as well.
 
 Potential ways to reduce pressure on the 16 bit space are:
 
+* To use more than one v3.0B Major Opcode, preferably an odd-even
+  contiguous pair
 * To provide "paging".  This involves bank-switching to alternative optimised encodings for specific workloads
 * To enter "16 bit mode" for durations specified at the start
 * To reserve one bit of every 16 bit instruction to indicate that the 16 bit mode is to continue to be sustained
@@ -67,6 +69,15 @@ Another is to use the 11 bits for only the utmost commonly used
 instructions.  That being the case then even one of those 11 bits would
 also need to be dedicated to saying if 16 bit mode is to be continued.
 10 bits remain for actual opcodes, which is ridiculously tight.
+
+The reason for picking 2 contiguous Major v3.0B opcodes is illustrated belo:
+
+     0 1 2 3 4 5 6 7 8 9 a b c d e f|
+    |major op..0| LO Half C space   |
+    |major op..1| HI Half C space   |
+    |N N N N N|<--11 bits C space-->|
+
+If NNNNN is the same value (two contiguous Major v3.0B Opcodes) this saves gates at a critical part of the decode phase.
 
 # Opcode Allocation Ideas
 
