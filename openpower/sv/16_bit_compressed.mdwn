@@ -162,9 +162,10 @@ Notes:
 ### Immediate Opcodes
 
 only available in 16-bit mode, only available when M=1 and N=1
-and when Cmaj is not 0b001.
+and when Cmaj.min is not 0b001.1.
 
     | 0 | 1  | 2 3 4 | | 567.8 | 9ab   | cde | f |
+    | 1 |            | | 001.0 |       |     | 1 |
     | 1 | i2 |  RT   | | 010.0 | RA|0  | imm | 1 | addi
     | 1 | i2         | | 010.1 | RA    | imm | 1 | addis
     | 1 | i2         | | 011.0 | RA    | imm | 1 | cmpdi
