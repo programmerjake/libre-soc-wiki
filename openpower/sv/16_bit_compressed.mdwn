@@ -211,14 +211,13 @@ is "nop"
 
     | 1 | 0   000 | | 000.0  | 0  00 | 0   00 | 0 | nop
 
-
 ### Branch
 
     | 16-bit mode | | 10-bit mode                 |
-    | 0 | 1 | 234 | | 567.8  | 9ab | c   de | f |
-    | N | offs2   | | 000.LK | offs!=0      | M | b, bl
-    | 1 | offs2   | | 000.LK | BI  | BO1 oo | 1 | bc, bcl
-    | N | BO3 BI3 | | 001.LK | BI  | BO     | M | bclr, bclrl
+    | 0 | 1 | 234 | | 567.8  | 9  ab | c   de | f |
+    | N | offs2   | | 000.LK | offs!=0        | M | b, bl
+    | 1 | offs2   | | 000.LK | BI    | BO1 oo | 1 | bc, bcl
+    | N | BO3 BI3 | | 001.0  | LK BI | BO     | M | bclr, bclrl
 
 16 bit mode:
 
