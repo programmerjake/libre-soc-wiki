@@ -258,26 +258,24 @@ is "nop"
 
 ### Arithmetic
 
-    | 16-bit mode   | | 10-bit mode             |
-    | 0 | 1 | 2 3 4 | | 567.8 | 9ab | c d e | f |
-    | N | 0 |  RT   | | 010.0 | RB  | RA!=0 | M | add
-    | N | 0 |  RT   | | 010.1 | RB  | RA    | M | sub.
-    | N | 0 | RT!=0 | | 010.1 | RB  | 000   | M | neg.
-    | N | 0 | 000   | | 010.1 | RB  | 000   | M | 
-    | N | 0 | BF    | | 011.0 | RB  | RA|0  | M | cmpl
+    | 16-bit mode | | 10-bit mode             |
+    | 0 | 1 | 234 | | 567.8 | 9ab | c d e | f |
+    | N | 0 | RT  | | 010.0 | RB  | RA!=0 | M | add
+    | N | 0 | RT  | | 010.1 | RB  | RA|0  | M | sub.
+    | N | 0 | BF  | | 011.0 | RB  | RA|0  | M | cmpl
 
 16 bit mode only:
 
-    | 0 | 1 | 2 3 4 | | 567.8 | 9ab | c d e | f |
-    | N | 1 |  RT   | | 010.0 |     |       | 0 | 
-    | N | 1 |  RT   | | 010.1 |     |       | 0 |
-    | N | 1 | BF    | | 011.0 | RB  | RA|0  | 0 | cmpw
+    | 0 | 1 | 234 | | 567.8 | 9ab | cde  | f |
+    | N | 1 | RT  | | 010.0 |     |      | 0 | 
+    | N | 1 | RT  | | 010.1 |     |      | 0 |
+    | N | 1 | BF  | | 011.0 | RB  | RA|0 | 0 | cmpw
 
 10 bit mode:
 
-* sub. default CR target is CR0
+* sub. and cmpl: default CR target is CR0
 * for (RA|0) when RA=0 the input is a zero immediate,
-  meaning that sub. becomes neg.
+  meaning that sub. becomes neg. and cmp becomes cmpi against zero
 * RT is implicitly RB: "add RT(=RB), RA, RB"
 * Opcode 0b010.0 RA=0 is not missing from the above:
   it is a system-wide instruction, "cbank" (section below)
