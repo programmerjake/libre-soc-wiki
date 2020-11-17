@@ -155,14 +155,16 @@ only available in 16-bit mode, and only available when M=1 and N=1
     | 0 | 1  | 2 3 4 | | 567.8 | 9ab   | cde | f |
     | 1 | i2 |  RT   | | 010.0 | RA|0  | imm | 1 | addi
     | 1 | i2         | | 010.1 | RA    | imm | 1 | addis
-    | 1 | i2         | | 011.0 | RB    | imm | 1 | cmpdi
-    | 1 | i2         | | 011.1 | RB    | imm | 1 | cmpwi
-    | 1 | i2         | | 100.0 | RT    | imm | 1 | sti
+    | 1 | i2         | | 011.0 | RA    | imm | 1 | cmpdi
+    | 1 | i2         | | 011.1 | RA    | imm | 1 | cmpwi
+    | 1 | i2         | | 100.0 | RT    | imm | 1 | stwi
     | 1 | i2         | | 100.1 | RT    | imm | 1 | fstwi
     | 1 | i2         | | 101.0 | RA    | imm | 1 | ldi
     | 1 | i2         | | 101.1 | RA    | imm | 1 | lwi
-    | 1 | i2         | | 110.0 | RA    | imm | 1 | flwi
-    | 1 | i2         | | 110.1 | RA    | imm | 1 | fldi
+    | 1 | i2         | | 110.0 | RT    | imm | 1 | sti
+    | 1 | i2         | | 110.1 | RT    | imm | 1 | stdi
+    | 1 | i2         | | 111.0 | RA    | imm | 1 | flwi
+    | 1 | i2         | | 111.1 | RA    | imm | 1 | fldi
 
 Construction of immediate:
 
@@ -221,18 +223,18 @@ is "nop"
 
 ### LD/ST
 
-    | 16-bit mode       | | 10-bit mode               |
-    | 0   | 1   | 2 3 4 | | 567.8 | 9 a b | c d e | f |
-    | RB2 | RA2 |  RT   | | 001.1 | 1  RA | 0  RB | M | fld
-    | RA2 | RT2 |  RB   | | 001.1 | 1  RA | 1  RT | M | fst
-    |     |     |  RT   | | 111.0 |  RA   |  RB   | M | ld
-    |     |     |  RB   | | 111.1 |  RA   |  RT   | M | st
+    | 16-bit mode      | | 10-bit mode               |
+    | 0   | 1  | 2 3 4 | | 567.8 | 9 a b | c d e | f |
+    | RA2 | SZ |  RB   | | 001.1 | 1  RA | 0  RT | M | st
+    | RA2 | SZ |  RB   | | 001.1 | 1  RA | 1  RT | M | fst
+    | N   | SZ |  RT   | | 111.0 |  RA   |  RB   | M | ld
+    | N   | SZ |  RT   | | 111.1 |  RA   |  RB   | M | fld
 
 * elwidth overrides can set different widths
 
 16 bit mode:
 
-* F=1 is FLD, FST
+* SZ=1 is 64 bit, SZ=0 is 32 bit
 * RA2 extends RA to 3 bits (MSB)
 * RT2 extends RT to 3 bits (MSB)
 
