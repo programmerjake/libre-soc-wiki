@@ -2,16 +2,17 @@
 
 Similar to VLE (but without immediate-prefixing) this encoding is designed
 to fit on top of OpenPOWER ISA v3.0B when a "Modeswitch" bit is set (PCR
-is recommended). Note that Compressed it is *mutually exclusively incompatible*
-with OoenPOWER v3.1B "prefixing" due to using (requiring) both EXT000
+is recommended). Note that Compressed is *mutually exclusively incompatible*
+with OpenPOWER v3.1B "prefixing" due to using (requiring) both EXT000
 and EXT001. Hypothetically it could be made to use anything other than
 EXT001, with some inconvenience (extra gates).  The incompatibility is
 "fixed" by swapping out of "Compressed" Mode and back into "Normal"
 (v3.1B) Mode, at runtime, as needed.
 
 Although initially intended to be augmented by Simple-V Prefixing, to
-add Vector context and predication, this Compressed Encoding is not
-critically dependent *on* SV Prefixing, and may be used stand-alone
+add Vector context and predication yet not put pressure on I-Cache power
+or size, this Compressed Encoding is not critically dependent
+*on* SV Prefixing, and may be used stand-alone
 
 See:
 
