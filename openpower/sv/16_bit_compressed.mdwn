@@ -84,8 +84,8 @@ If NNNNN is the same value (two contiguous Major v3.0B Opcodes) this saves gates
 
 # Opcode Allocation Ideas
 
-* one bit from the 16-bit mode is used to indicate that 32-bit mode
-  is to be dropped into for only one single instruction
+* one bit from the 16-bit mode is used to indicate that standard
+  (v3.0B) mode is to be dropped into for only one single instruction
   <https://bugs.libre-soc.org/show_bug.cgi?id=238#c2>
 
 ## Opcodes exploration (Attempt 1)
@@ -114,7 +114,7 @@ addi, mulli etc.)
 * Minor opcode in bit 8.
 * In some cases bit 9 is taken as an additional sub-opcode, followed
   by bits 0-4 (for CR operations)
-* M+N mode-switching is not available for C-Major 0b001 or 0b111
+* M+N mode-switching is not available for C-Major.minor 0b001.1
 * 10 bit mode may be expanded by 16 bit mode, adding capabilities
   that do not fit in the extreme limited space.
 
@@ -126,8 +126,8 @@ Mode-switching FSM showing relationship between v3.0B, C 10bit and C 16bit.
     |EXT000/1  | Cmaj.m | fields | 1 | 10bit then 16bit
     | 0 | flds | Cmaj.m | fields | 0 | 16bit then v3.0B
     | 0 | flds | Cmaj.m | fields | 1 | 16bit then 16bit
-    | 1 | flds | Cmaj.m | fields | 1 | 16b/imm then 16bit
     | 1 | flds | Cmaj.m | fields | 0 | 16b then 1x v3.0B
+    | 1 | flds | Cmaj.m | fields | 1 | 16b/imm then 16bit
 
 Notes:
 
@@ -214,6 +214,8 @@ is "nop"
 16 bit mode only:
 
     | 1 | 0   000 | | 000.0  | 0  00 | 0   00 | 0 | nop
+    | 1 | nonzero | | 000.0  | 0  00 | 0   00 | 0 | TBD
+
 
 ### Branch
 
@@ -315,13 +317,13 @@ Notes:
 16-bit mode only:
 
     | 0 | 1 | 2 3 4 | | 567.8 | 9ab | c d e | f |
-    | N | 1 |  RT   | | 100.0 | RB  | RA!=0 | 0 |
-    | N | 1 |  RT   | | 100.1 | RB  | RA!=0 | 0 |
+    | N | 1 |  RT   | | 100.0 | RB  | RA!=0 | 0 | TBD
+    | N | 1 |  RT   | | 100.1 | RB  | RA!=0 | 0 | TBD
     | N | 1 |  RT   | | 101.0 | RB  | RA!=0 | 0 | xor
     | N | 1 |  RT   | | 101.1 | RB  | RA!=0 | 0 | eqv (xnor)
     | N | 1 |  RT   | | 100.0 | RB  | 0 0 0 | 0 | extsb
     | N | 1 |  RT   | | 100.1 | RB  | 0 0 0 | 0 | cnttz
-    | N | 1 |  RT   | | 101.0 | RB  | 0 0 0 | 0 |
+    | N | 1 |  RT   | | 101.0 | RB  | 0 0 0 | 0 | TBD
     | N | 1 |  RT   | | 101.1 | RB  | 0 0 0 | 0 | extsh
 
 10 bit mode:
@@ -423,6 +425,4 @@ space (when RA==0)
     | 1 0 1 0 |    | | 001.1 | 0    |      | M |
     | 1 0 1 1 |    | | 001.1 | 0    |      | M |
     | 1 1 0 0 |    | | 001.1 | 0    |      | M |
-    | 1 1 1 1 | 0  | | 001.1 | 0 10 |      | M |
-    | 1 1 1 1 | 1  | | 001.1 | 0 10 |      | M |
-
+    | 1 1 1 1 |    | | 001.1 | 0 10 |      | M |
