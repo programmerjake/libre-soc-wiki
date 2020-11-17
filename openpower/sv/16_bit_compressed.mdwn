@@ -264,14 +264,7 @@ is "nop"
     | N | 0 | RT  | | 010.1 | RB  | RA|0  | M | sub.
     | N | 0 | BF  | | 011.0 | RB  | RA|0  | M | cmpl
 
-16 bit mode only:
-
-    | 0 | 1 | 234 | | 567.8 | 9ab | cde  | f |
-    | N | 1 | RT  | | 010.0 |     |      | 0 | 
-    | N | 1 | RT  | | 010.1 |     |      | 0 |
-    | N | 1 | BF  | | 011.0 | RB  | RA|0 | 0 | cmpw
-
-10 bit mode:
+Notes:
 
 * sub. and cmpl: default CR target is CR0
 * for (RA|0) when RA=0 the input is a zero immediate,
@@ -279,6 +272,19 @@ is "nop"
 * RT is implicitly RB: "add RT(=RB), RA, RB"
 * Opcode 0b010.0 RA=0 is not missing from the above:
   it is a system-wide instruction, "cbank" (section below)
+
+16 bit mode only:
+
+    | 0 | 1 | 234 | | 567.8 | 9ab | cde   | f |
+    | N | 1 | RA  | | 010.0 | RB  | RS    | 0 | sld.
+    | N | 1 | RA  | | 010.1 | RB  | RS!=0 | 0 | srd.
+    | N | 1 | RA  | | 010.1 | RB  | 000   | 0 | srad.
+    | N | 1 | BF  | | 011.0 | RB  | RA|0  | 0 | cmpw
+
+Notes:
+
+* for srad, RS=RA: "srad. RA(=RS), RS, RB"
+
 
 ### Logical
 
