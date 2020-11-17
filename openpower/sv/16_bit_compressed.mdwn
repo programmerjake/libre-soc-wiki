@@ -161,7 +161,8 @@ Notes:
 
 ### Immediate Opcodes
 
-only available in 16-bit mode, and only available when M=1 and N=1
+only available in 16-bit mode, only available when M=1 and N=1
+and when Cmaj is not 0b000 or 0b001
 
     | 0 | 1  | 2 3 4 | | 567.8 | 9ab   | cde | f |
     | 1 | i2 |  RT   | | 010.0 | RA|0  | imm | 1 | addi
@@ -384,7 +385,7 @@ give different meanings to opcodes.  Example: CBank=0b001 is heavily
 optimised to A/Video Encode/Decode.  cbank borrows from add's encoding
 space (when RA==0)
 
-    | 16-bit mode | | 10-bit mode               |
+    | 16-bit mode | | 10-bit mode             |
     | 0 | 1 2 3 4 | | 567.8 | 9ab   | cde | f |
     | N | 0 Bank2 | | 010.0 | CBank | 000 | M | cbank
 
