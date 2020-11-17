@@ -18,6 +18,7 @@ See:
 
 * <https://bugs.libre-soc.org/show_bug.cgi?id=238>
 * <https://ftp.libre-soc.org/VLE_314-68105.pdf> VLE Encoding
+* <http://lists.mailinglist.openpowerfoundation.org/pipermail/openpower-hdl-cores/2020-November/000210.html>
 
 This one is a conundrum.  OpenPOWER ISA was never designed with 16
 bit in mind.  VLE was added 10 years ago but only by way of marking
@@ -26,9 +27,9 @@ fully compatible with current PowerISA.
 
 Here, in order to embed 16 bit into a predominantly 32 bit stream the
 overhead of using an entire 16 bits just to switch into Compressed mode
-is itself a significant overhead.  The situation is made worse by 5 bits
-being taken up by Major Opcode space, leaving only 11 bits to allocate
-to actual instructions.
+is itself a significant overhead.  The situation is made worse by 6 bits
+being taken up by Major Opcode space, leaving only 10 bits to allocate
+to actual instructions. Contrast this with RVC which takes 3 out of 4 of the 1st 2 bits for indicating 16-bit (anything with 0b00 to 0b10 in the LSBs), easily allowing standard 32 bit and 16 bit to intermingle cleanly.
 
 In addition we would like to add SV-C32 which is a Vectorised version
 of 16 bit Compressed, and ideally have a variant that adds the 27-bit
@@ -65,7 +66,7 @@ for the 16 bit operations (bank selection of which scalar regs)
 Another is to use the 11 bits for only the utmost commonly used
 instructions.  That being the case then even one of those 11 bits would
 also need to be dedicated to saying if 16 bit mode is to be continued.
-10 bits remain for actual opcodes!
+10 bits remain for actual opcodes, which is ridiculously tight.
 
 # Opcode Allocation Ideas
 
