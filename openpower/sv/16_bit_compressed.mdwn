@@ -103,6 +103,33 @@ addi, mulli etc.)
 * 10 bit mode may be expanded by 16 bit mode, adding capabilities
   that do not fit in the extreme limited space.
 
+### Encodings
+
+Mode-switching FSM showing relationship between v3.0B, C 10bit and C 16bit.
+16-bit immediate mode remains in 16-bit.
+
+    | 0 | 1234 | 567  8 | 9abcde | f | explanation
+    |EXT000/1  | Cmaj.m | fields | 0 | 10bit then v3.0B
+    |EXT000/1  | Cmaj.m | fields | 1 | 10bit then 16bit
+    | 0 | flds | Cmaj.m | fields | 1 | 16bit then 16bit
+    | 1 | flds | Cmaj.m | fields | 1 | 16b/imm then 16bit
+    | 1 | flds | Cmaj.m | fields | 0 | 16bit then v3.0B
+
+Notes:
+
+* Cmaj.m is the C major/minor opcode: 3 bits for major, 1 for minor
+* EXT000 and EXT001 are v3.0B Major Opcodes.  The first 5 bits
+  are zero, therefore the 6th bit is actually part of Cmaj.
+* "10bit then 16bit" means "this instruction is encoded C 10bit
+  and the following one in C 16bit"
+
+Opcode formats:
+
+    | 01234 | 567  8 | 9  | a b | c  | d e | f | enc
+    | E01   | Cmaj.m | fld1     | fld2     | M | 10b
+    | E01   | Cmaj.m | offset              | M | 10b b
+    | E01   | 001.1  | S1 | fd1 | S2 | fd2 | M | 10b sub
+
 ### Immediate Opcodes
 
 only available in 16-bit mode, and only available when M=1 and N=1
