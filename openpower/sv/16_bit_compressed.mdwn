@@ -123,12 +123,28 @@ Notes:
 * "10bit then 16bit" means "this instruction is encoded C 10bit
   and the following one in C 16bit"
 
-Opcode formats:
+10-bit Opcode formats (all start with v3.0B EXT000 or EXT001
+Major Opcodes)
 
-    | 01234 | 567  8 | 9  | a b | c  | d e | f | enc
-    | E01   | Cmaj.m | fld1     | fld2     | M | 10b
-    | E01   | Cmaj.m | offset              | M | 10b b
-    | E01   | 001.1  | S1 | fd1 | S2 | fd2 | M | 10b sub
+    | 01234    | 567  8 | 9  | a b | c  | d e | f | enc
+    | E01      | Cmaj.m | fld1     | fld2     | M | 10b
+    | E01      | Cmaj.m | offset              | M | 10b b
+    | E01      | 001.1  | S1 | fd1 | S2 | fd2 | M | 10b sub
+    | E01      | 111.m  | fld1     | fld2     | M | 10b LDST
+
+16-bit Opcode formats (including 10/16/v3.0B Switching)
+
+    | 0 | 1234 | 567  8 | 9  | a b | c  | d e | f | enc
+    | N | immf | Cmaj.m | fld1     | fld2     | M | 16b
+    | 1 | immf | Cmaj.m | fld1     | imm      | 1 | 16b imm
+    | fd3      | 001.1  | S1 | fd1 | S2 | fd2 | M | 16b sub
+    | fd4      | 111.m  | fld1     | fld2     | M | 16b LDST
+
+Notes:
+
+* fld1 and fld2 can contain reg numbers, immediates, or opcode
+  fields (BO, BI, LK)
+* S1 and S2 are further sub-selectors of C 001.1
 
 ### Immediate Opcodes
 
@@ -161,7 +177,6 @@ Further Notes:
 * RA|0 if RA is zero, addi. becomes "li"
  - this only works if RT takes part of opcode
  - mv is also possible by specifying an immediate of zero
-
 
 ### Branch
 
