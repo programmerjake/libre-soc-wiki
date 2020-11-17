@@ -162,7 +162,7 @@ Notes:
 ### Immediate Opcodes
 
 only available in 16-bit mode, only available when M=1 and N=1
-and when Cmaj is not 0b000 or 0b001
+and when Cmaj is not 0b000.
 
     | 0 | 1  | 2 3 4 | | 567.8 | 9ab   | cde | f |
     | 1 | i2 |  RT   | | 010.0 | RA|0  | imm | 1 | addi
@@ -194,9 +194,9 @@ Further Notes:
  - this only works if RT takes part of opcode
  - mv is also possible by specifying an immediate of zero
 
-### Branch
+### Illegal and nop
 
-Note that illeg and nop are all zeros, including in the 16-bit mode.
+Note that illeg is all zeros, including in the 16-bit mode.
 Given that C is allocated to OpenPOWER ISA Major opcodes EXT000 and
 EXT001 this ensures that in both 10-bit *and* 16-bit mode, a 16-bit
 run of all zeros is considered "illegal" whilst 0b0000.0000.1000.0000
@@ -205,10 +205,20 @@ is "nop"
     | 16-bit mode | | 10-bit mode                 |
     | 0 | 1 | 234 | | 567.8  | 9  ab | c   de | f |
     | 0 | 0   000 | | 000.0  | 0  00 | 0   00 | 0 | illeg
-    | 0 | 0   000 | | 000.1  | 0  00 | 0   00 | 0 | nop
-    | N | offs2   | | 000.LK | offs!=0        | M | b, bl
-    | 1 | offs2   | | 000.LK | BI    | BO1 oo | 1 | bc, bcl
-    | N | BO3 BI3 | | 001.0  | LK BI | BO     | M | bclr, bclrl
+    | 0 | 0   000 | | 000.0  | 0  00 | 0   00 | 1 | nop
+
+16 bit mode only:
+
+    | 1 | 0   000 | | 000.0  | 0  00 | 0   00 | 0 | nop
+
+
+### Branch
+
+    | 16-bit mode | | 10-bit mode                 |
+    | 0 | 1 | 234 | | 567.8  | 9ab | c   de | f |
+    | N | offs2   | | 000.LK | offs!=0      | M | b, bl
+    | 1 | offs2   | | 000.LK | BI  | BO1 oo | 1 | bc, bcl
+    | N | BO3 BI3 | | 001.LK | BI  | BO     | M | bclr, bclrl
 
 16 bit mode:
 
