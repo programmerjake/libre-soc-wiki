@@ -233,9 +233,11 @@ Notes:
   M=1 being an indication "return to Standard v3.0B Encoding Mode". 
 * The 16-bit nop (bit 0, N=1) is intended for circumstances where a
   return to Standard v3.0B Encoding is required for one cycle
-  but one cycle where alignment to a 32-bit boundary is needed
+  but one cycle where alignment to a 32-bit boundary is needed.
+  Examples of this would be to return to "strict" (non-C) mode
+  where the PC may not be on a non-word-aligned boundary.
 * If for any reason multiple 16 bit nops are needed in succession
-  the 10-bit variant can be used, because each one returns to
+  the M=1 variant can be used, because each one returns to
   Standard v3.0B Encoding Mode, each time.
 
 In essence the 2 nops are needed due to there being 2 different C forms: 10 and 16 bit.  
