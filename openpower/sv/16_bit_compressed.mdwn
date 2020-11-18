@@ -225,16 +225,20 @@ is "nop"
 
 Notes:
 
+* All-zeros being an illegal instruction is normal for ISAs.  Ensuring that 
+  this remains true at all times i.e. for both 10 bit and 16 bit mode is
+  common sense.
 * The 10-bit nop (bit 15, M=1) is intended for circumstances
-  where alignment to 32-bit before rwturning to v3.0B is required.
-  M=1 being an indication
-  "return to Standard v3.0B Encoding Mode"
+  where alignment to 32-bit before returning to v3.0B is required.
+  M=1 being an indication "return to Standard v3.0B Encoding Mode". 
 * The 16-bit nop (bit 0, N=1) is intended for circumstances where a
   return to Standard v3.0B Encoding is required for one cycle
   but one cycle where alignment to a 32-bit boundary is needed
 * If for any reason multiple 16 bit nops are needed in succession
   the 10-bit variant can be used, because each one returns to
   Standard v3.0B Encoding Mode, each time.
+
+In essence the 2 nops are needed due to there being 2 different C forms: 10 and 16 bit.  
 
 ### Branch
 
