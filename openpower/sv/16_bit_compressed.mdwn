@@ -220,6 +220,18 @@ is "nop"
     | 1 | 0   000 | | 000.0  | 0  00 | 0   00 | 0 | nop
     | 1 | nonzero | | 000.0  | 0  00 | 0   00 | 0 | TBD
 
+Notes:
+
+* The 10-bit nop (bit 15, M=1) is intended for circumstances
+  where alignment to 32-bit before rwturning to v3.0B is required.
+  M=1 being an indication
+  "return to Standard v3.0B Encoding Mode"
+* The 16-bit nop (bit 0, N=1) is intended for circumstances where a
+  return to Standard v3.0B Encoding is required for one cycle
+  but one cycle where alignment to a 32-bit boundary is needed
+* If for any reason multiple 16 bit nops are needed in succession
+  the 10-bit variant can be used, because each one returns to
+  Standard v3.0B Encoding Mode, each time.
 
 ### Branch
 
