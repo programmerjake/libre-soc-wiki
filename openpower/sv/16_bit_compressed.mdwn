@@ -171,7 +171,8 @@ Notes:
 only available in 16-bit mode, only available when M=1 and N=1
 and when Cmaj.min is not 0b001.1.
 
-instruction counts from objdump on /bin/bash
+instruction counts from objdump on /bin/bash:
+
       466 extsw r1,r1
       649 stw r1,1(r1)
       691 lwz r1,1(r1)
@@ -195,8 +196,9 @@ instruction counts from objdump on /bin/bash
     | 1 | i2 |  RT     | | 010.0 | RA|0 | imm | 1 | addi
     | 1 | i2!=0        | | 010.1 | RA   | imm | 1 | addis [1]
     | 1 | 0 | 0    0 0 | | 010.1 |      |     | 1 | TBD
-    | 1 | i2           | | 011.0 | RA   | imm | 1 | cmpdi
-    | 1 | i2           | | 011.1 | RA   | imm | 1 | cmpwi
+    | 1 | 0 | i2       | | 011.0 | RA   | imm | 1 | cmpdi
+    | 1 | 1 | i2       | | 011.0 | RA   | imm | 1 | cmpwi
+    | 1 |              | | 011.1 | RA   | imm | 1 | TBD
     | 1 | i2           | | 100.0 | RT   | imm | 1 | stwi
     | 1 | i2           | | 100.1 | RT   | imm | 1 | stdi
     | 1 | i2           | | 101.0 | RA   | imm | 1 | ldi
