@@ -174,7 +174,7 @@ and when Cmaj.min is not 0b001.1.
     | 1 | 1  | 0 | sh2 | | 001.0 | RA   | sh  | 1 | srawi.
     | 1 | 1  | 1 |     | | 001.0 |      |     | 1 | TBD
     | 1 | i2 |  RT     | | 010.0 | RA|0 | imm | 1 | addi
-    | 1 | i2!=0        | | 010.1 | RA   | imm | 1 | addis
+    | 1 | i2!=0        | | 010.1 | RA   | imm | 1 | addis [1]
     | 1 | 0 | 0    0 0 | | 010.1 |      |     | 1 | TBD
     | 1 | i2           | | 011.0 | RA   | imm | 1 | cmpdi
     | 1 | i2           | | 011.1 | RA   | imm | 1 | cmpwi
@@ -189,6 +189,8 @@ and when Cmaj.min is not 0b001.1.
 
 Construction of immediate:
 
+* [1] not the same as v3.0B addis: the shift amount is smaller and actually
+  still maps to within the v3.0B addi immediate range.
 * addi is EXTS(i2||imm) to give a 4-bit range -8 to +7
 * addis is EXTS(i2||imm||000) to give a 11-bit range -1024 to +1023 in increments of 8 
 * all others are EXTS(i2||imm) to give a 7-bit range -128 to +127
