@@ -171,6 +171,21 @@ Notes:
 only available in 16-bit mode, only available when M=1 and N=1
 and when Cmaj.min is not 0b001.1.
 
+instruction counts from objdump on /bin/bash
+      466 extsw r1,r1
+      649 stw r1,1(r1)
+      691 lwz r1,1(r1)
+      705 cmpdi r1,1
+      791 cmpwi r1,1
+      794 addis r1,r1,1
+     1474 std r1,1(r1)
+     1846 li r1,1
+     2031 mr r1,r1
+     2473 addi r1,r1,1
+     3012 nop
+     3028 ld r1,1(r1)
+
+
     | 0 | 1  | 2 | 3 4 | | 567.8 | 9ab  | cde | f |
     | 1 | 0  | 0   0 0 | | 001.0 |      | 000 | 1 | TBD
     | 1 | 0  |  sh2    | | 001.0 | RA   | sh  | 1 | sradi.
