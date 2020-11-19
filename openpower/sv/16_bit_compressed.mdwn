@@ -213,6 +213,8 @@ instruction counts from objdump on /bin/bash:
 
 Construction of immediate:
 
+* LD/ST r1 (SP) variants shoukd be offset by -256
+ see <https://bugs.libre-soc.org/show_bug.cgi?id=238#c43>
 * [1] not the same as v3.0B addis: the shift amount is smaller and actually
   still maps to within the v3.0B addi immediate range.
 * addi is EXTS(i2||imm) to give a 4-bit range -8 to +7
