@@ -27,12 +27,13 @@ fully compatible with current PowerISA.
 
 Here, in order to embed 16 bit into a predominantly 32 bit stream the
 overhead of using an entire 16 bits just to switch into Compressed mode
-is itself a significant overhead.  The situation is made worse by 6 bits
-being taken up by Major Opcode space, leaving only 10 bits to allocate
+is itself a significant overhead.  The situation is made worse by 
+OpenPOWER ISA being fundamentally designed with 6 bits uniformly
+taking up Major Opcode space, leaving only 10 bits to allocate
 to actual instructions.
 
 Contrast this with RVC which takes 3 out of 4 
-combinations of the first 2 bits for indicating 16-bit (anything with 0b00 to 0b10 in the LSBs), and uses the 4th as a Huffman-style escape-sequence, easily allowing standard 32 bit and 16 bit to intermingle cleanly.  To achieve the same thing on OpenPOWER would require a whopping 24 6-bit Major Opcodes which is clearly impractical: other schemes need to be devised.
+combinations of the first 2 bits for indicating 16-bit (anything with 0b00 to 0b10 in the LSBs), and uses the 4th (0b11) as a Huffman-style escape-sequence, easily allowing standard 32 bit and 16 bit to intermingle cleanly.  To achieve the same thing on OpenPOWER would require a whopping 24 6-bit Major Opcodes which is clearly impractical: other schemes need to be devised.
 
 In addition we would like to add SV-C32 which is a Vectorised version
 of 16 bit Compressed, and ideally have a variant that adds the 27-bit
