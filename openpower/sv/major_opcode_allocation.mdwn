@@ -26,11 +26,17 @@ likewise switch into the same.
 VBLOCK can be added later by using further VSX dedicated major opcodes
 (EXT62, EXT60)
 
+* EXT00 - unused
 * EXT01 - v3.1B prefix
+* EXT02 - twi
+* EXT03 - tdi
 * EXT04 - vector/bcd
+* EXT05 - unused
 * EXT06 - vector
+* EXT07 - mulli
 * EXT09 - reserved
 * EXT22 - reserved sandbox
+* EXT56 - lq
 * EXT57 - vector ld
 * EXT58 - ld (leave ok)
 * EXT59 - FP (leave ok)
@@ -38,6 +44,15 @@ VBLOCK can be added later by using further VSX dedicated major opcodes
 * EXT61 - st (leave ok)
 * EXT62 - vector st
 * EXT63 - FP (leave ok)
+
+Potential allocations:
+
+* EXT00/01 - Compressed 16 bit
+* EXT02/03 - SV-P48 / SV-C32
+* EXT04/05 - SV-P64 / SV-C48
+* EXT06/07 - SV-C64 / ?
+* EXT56/57 - SV-C32-Swizzle
+* EXT60/62 - VBLOCK
 
 # LE/BE complications.
 
