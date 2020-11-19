@@ -196,12 +196,10 @@ instruction counts from objdump on /bin/bash:
     | 1 | i2 |  RT     | | 010.0 | RA|0 | imm | 1 | addi
     | 1 | 0 | i2       | | 010.1 | RA   | imm | 1 | cmpdi
     | 1 | 1 | i2       | | 010.1 | RA   | imm | 1 | cmpwi
-    | 1 | 0 | i2       | | 011.0 | RT!=1| imm | 1 | ldspi
-    | 1 | 1 | i2       | | 011.0 | RT!=1| imm | 1 | lwspi
-    | 1 | 0 | i2       | | 011.1 | RT!=1| imm | 1 | stwspi
-    | 1 | 1 | i2       | | 011.1 | RT!=1| imm | 1 | stdspi
-    | 1 |              | | 011.0 | 001  |     | 1 | TBD
-    | 1 |              | | 011.1 | 001  |     | 1 | TBD
+    | 1 | 0 | i2       | | 011.0 | RT   | imm | 1 | ldspi
+    | 1 | 1 | i2       | | 011.0 | RT   | imm | 1 | lwspi
+    | 1 | 0 | i2       | | 011.1 | RT   | imm | 1 | stwspi
+    | 1 | 1 | i2       | | 011.1 | RT   | imm | 1 | stdspi
     | 1 | i2           | | 100.0 | RT   | imm | 1 | stwi
     | 1 | i2           | | 100.1 | RT   | imm | 1 | stdi
     | 1 | i2           | | 101.0 | RA   | imm | 1 | ldi
