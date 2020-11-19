@@ -196,10 +196,10 @@ instruction counts from objdump on /bin/bash:
     | 1 | i2 |  RT     | | 010.0 | RA|0 | imm | 1 | addi
     | 1 | 0 | i2       | | 010.1 | RA   | imm | 1 | cmpdi
     | 1 | 1 | i2       | | 010.1 | RA   | imm | 1 | cmpwi
-    | 1 | 0 | i2       | | 011.0 | RT!=1| imm | 1 | ldi r1
-    | 1 | 1 | i2       | | 011.0 | RT!=1| imm | 1 | lwi r1
-    | 1 | 0 | i2       | | 011.1 | RT!=1| imm | 1 | stwi r1
-    | 1 | 1 | i2       | | 011.1 | RT!=1| imm | 1 | stdi r1
+    | 1 | 0 | i2       | | 011.0 | RT!=1| imm | 1 | ldspi
+    | 1 | 1 | i2       | | 011.0 | RT!=1| imm | 1 | lwspi
+    | 1 | 0 | i2       | | 011.1 | RT!=1| imm | 1 | stwspi
+    | 1 | 1 | i2       | | 011.1 | RT!=1| imm | 1 | stdspi
     | 1 |              | | 011.0 | 001  |     | 1 | TBD
     | 1 |              | | 011.1 | 001  |     | 1 | TBD
     | 1 | i2           | | 100.0 | RT   | imm | 1 | stwi
@@ -213,8 +213,10 @@ instruction counts from objdump on /bin/bash:
 
 Construction of immediate:
 
-* LD/ST r1 (SP) variants shoukd be offset by -256
+* LD/ST r1 (SP) variants should be offset by -256
  see <https://bugs.libre-soc.org/show_bug.cgi?id=238#c43>
+  - SP variants map to e.g ld RT, imm(r1)
+  - SV Prefixing can be used to map r1 to alternate regs
 * [1] not the same as v3.0B addis: the shift amount is smaller and actually
   still maps to within the v3.0B addi immediate range.
 * addi is EXTS(i2||imm) to give a 4-bit range -8 to +7
