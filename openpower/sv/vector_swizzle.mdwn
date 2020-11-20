@@ -14,3 +14,25 @@ The reason for the dramatic increase is that the reordering of each element in v
 
 There is also benefit to encoding some useful immediates into src operands, on a per sub-element basis: being able to specify for example that the Z element of a vec4 is to be 1.0 saves a complex LD-immediate merging operation for that lane.
 
+# Options
+
+## Predication plus indices
+
+* 4 bits for predication
+* 2 bits per element
+
+## SUBVL plus indices
+
+* SUBVL specifies the length (vec2/3/4)
+* However index selection is 2 bits per element
+* Therefore the src SUBVL must be separate and distinct from the dest SUBVL
+
+# Predication mixed with immediates and indices
+
+* Three bits per element.
+* One encoding (0b000) indicates "mask"
+* Four encodings (0b1NN) indicate vec4 selection
+* Three remaining indices indicate constants
+  - 0 (or 0.0)
+  - 1 (or 1.0)
+  - -1 (or -1.0) or some other option?
