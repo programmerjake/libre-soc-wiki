@@ -1,0 +1,16 @@
+# SV Vector Prefix Swizzle
+
+3D GPU operations on batches of vec2, vec3 and vec4 often require re-ordering of the elements in an "out of lane" fashion with respect to standard high performance non-GPU-centric Vector Processors.  Examples include:
+
+* Normalisation of Vectors of XYZ with respect to one dimension
+* Alteration of ARGB pixel vectors wuth respect to opacity (A)
+* Adjustment of YUV vectors with respect to luminosity
+
+and many more.  Lane-based Vector Processors not having the 2/3/4 inter-lane crossing have some difficulty processing such data and require it to be pushed into memory and retrieved, which is prohibitively costly in both instructions, time, and power consumption.
+
+The cost is so great and the requirement so common that it easily justifies augmenting the ISA of a GPU to be able to specify the reordering of vec2/3/4 elements, often drastically increasing the instruction size in the process.
+
+The reason for the dramatic increase is that the reordering of each element in vec4 requires 2 bits per element, plus a predicate mask.  This means a minimum of 3 bits per element: 12 bits for a vec4, and if there are 2 src operands this is a whopping 24 bits of immediate data, per instruction.
+
+There is also benefit to encoding some useful immediates into src operands, on a per sub-element basis: being able to specify for example that the Z element of a vec4 is to be 1.0 saves a complex LD-immediate merging operation for that lane.
+
