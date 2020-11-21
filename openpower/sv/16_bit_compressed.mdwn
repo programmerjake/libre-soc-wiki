@@ -91,7 +91,7 @@ If NNNNN is the same value (two contiguous Major v3.0B Opcodes) this saves gates
 
 Unlike RVC, the above "context" encodings require state, to be stored in the PCR, MSR, or a dedicated SPR.  These bits (just like LE/BE 32bit mode and the IEEE754 FPCSR mode) all require taking that context into consideration.
 
-In particular it is critically important to recognise that the context is part of the ABI implemented for example by glibc6, and that it **not** be permiyted to cross into or out of a function call.
+In particular it is critically important to recognise that context (in general) is an implicit part of the ABI implemented for example by glibc6.  Therefore (in specific) Compressed Mode Context **must not** be permitted to cross into or out of a function call.
 
 Thus it is the mandatory responsibility of the compiler to ensure that context returns to "v3.0B Standard" prior to entering a function call (responsibility of caller) and prior to exit from a function call (responsibility of callee).
 
