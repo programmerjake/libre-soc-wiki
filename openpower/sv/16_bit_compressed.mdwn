@@ -97,6 +97,8 @@ Thus it is the mandatory responsibility of the compiler to ensure that context r
 
 Trap Handlers also take responsibility for saving and restoring of Compressed Mode state, just as they already take responsibility for other critical state.  This makes traps transparent to functions as far as Compressed Mode Context is concerned, just as traps are already transparent to functions.
 
+Note however that there are exceptions in a compiler to the otherwise hard rule that Compressed Mode context not be permitted to cross function boundaries: inline functions and static functions.  static functions, if correctly identified as never to be called externally, may, as an optimisation, disregard standard ABIs, bearing in mind that this will be fraught (pointers to functions) and not easy to get right.
+
 # Opcode Allocation Ideas
 
 * one bit from the 16-bit mode is used to indicate that standard
