@@ -87,6 +87,16 @@ The reason for picking 2 contiguous Major v3.0B opcodes is illustrated below:
 
 If NNNNN is the same value (two contiguous Major v3.0B Opcodes) this saves gates at a critical part of the decode phase.
 
+## ABI considerations
+
+Unlike RVC, the above "context" encodings require state, to be stored in the PCR, MSR, or a dedicated SPR.  These bits (just like LE/BE 32bit mode and the IEEE754 FPCSR mode) all require taking that context into consideration.
+
+In particular it is critically important to recognise that the context is part of the ABI implemented for example by glibc6, and that it **not** be permiyted to cross into or out of a function call.
+
+Thus it is the mandatory responsibility of the compiler to ensure that context returns to "v3.0B Standard" prior to entering a function call (responsibility of caller) and prior to exit from a function call (responsibility of callee).
+
+Trap Handlers also take responsibility for saving and restoring of Compressed Mode state, just as they already take responsibility for other critical state.  This makes traps transparent to functions as far as Compressed Mode Context is concerned, just as traps are already transparent to functions.
+
 # Opcode Allocation Ideas
 
 * one bit from the 16-bit mode is used to indicate that standard
