@@ -15,4 +15,18 @@ The first three instructions are setup to establish the desired address with the
 
     lwz r9, {TOC+4}(r0)
 
-Behind the scenes, 
+Behind the scenes, the first ld (estsblishing the entry pointed to via the TOC) occurs automatically.  However this is only one instruction saved.  What if large immediates were stored at data pointed to via the TOC, as well? Take the following code (a common pattern for 64 bit immediates):
+
+    addi r9, r0, NNNN
+    addis r9, r9, NNNN
+    sldi r9, r9, 32
+    addi r9, r9, NNNN
+    addis r9, r9, NNNN
+    cmpl r5, r9 # actual operation, test r5
+
+What instead if this could be replaced by:
+
+    cmpli r5, {TOC+8}
+
+where again, behind the scenes, a hidden micro-coded LD occurs at an address 8(TOC) to be loaded into the immediate operand, as if it were possible to have a full 64 bit operand in the cmpli instruction?
+
