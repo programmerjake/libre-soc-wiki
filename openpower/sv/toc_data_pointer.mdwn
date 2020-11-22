@@ -1,0 +1,7 @@
+# Data Pointer (aka TOC) Immediate Loading
+
+See <https://bugs.libre-soc.org/show_bug.cgi?id=286>
+
+The concept and convention of a Table of Contents in RISC is a common one, to deal with the fsct that immediates range is short and very inefficient to get a 64 bit immediate (6 instructions in v3.0B). The TOC allows a short-range immediate to access full 64 bit data via LDs.
+
+However with a huge percentage of typical instructions being TOC style LDs (typically 6%) it makes them a high priority target for reducing executable size and I-Cache pressure.  What if there were a way to indicate that a given use of an immediate, in any instruction, was to be a micro-coded implicit TOC Load?
