@@ -10,15 +10,34 @@ Cross referenced with:
 
 See <https://bugs.libre-soc.org/show_bug.cgi?id=517#c0>
 
-TODO checklist based on above
+Checklist based on above
+
+* For god's sake make sure you get this right, ***quadruple*** check everything.
+    
+* ***DO*** make sure to ***only*** drive an input as an input, and to ***only*** drive an output as an output.
+
+* ***DO*** make sure to ***only*** wire up 5.0V to 5.0V and to ***only*** wire up GND to GND with the jumper-cables.
+
+* ***DO*** make sure that ***before*** even ***thinking*** of uploading to and powering up the FPGA that everything has been ***THOROUGHLY*** triple-checked.
+
+If you violate any of the above stated hard-and-fast rules you will end up learning the hard way by **DESTROYING** the FPGA.
 
 | Done?   | Checklist Step |
-|---------|-------------|
-|         | For god's sake do not get this wrong |
-|         | ***DO NOT*** drive an input as an output or vice-versa |
-|         | ***DO NOT*** wire up 5.0V to GND with the jumper-cables |
-|         | ***DO NOT*** randomly upload and power up the FPGA until this has been ***THOROUGHLY*** triple-checked |
-|         | If you violate any of the above stated hard-and-fast rules you will end up learning the hard way by **DESTROYING** the FPGA.
+|---------|----------------|
+|         | Ensure there are **NO** wires connected to either the FPGA or the STLINKv2 |
+|         | Review the STLINKv2 Connector diagram and table |
+|         | Review the connections table for your model of fpga |
+|         | Ensure there are **ZERO** wires connected to either the FPGA or the STLINKv2, there should not even be a usb, mirco-usb, or power cable anywhere these components |
+|         | Make sure the orientation of your FPGA board and your STLINKv2 are the same as the images and diagrams on this page |
+|         | Wire each of the coloured jumper cables to the corresponding pins on the FPGA and the STLINKv2 according to the diagrams, tables, and images on this page |
+|         | Wire the **RED** jumper cable to (**ULX3S pin #2**) then wire it to (**STLINKv2 pin #2**), this will serve as the **Voltage Reference** signal (**VREF**) |
+|         | Wire the **BLACK** jumper cable to (**ULX3S pin #4**) then wire it to (**STLINKv2 pin #4**), this will serve as the **Ground** signal (**GND**) |
+|         | Wire the **GREEN** jumper cable to (**ULX3S pin #5**) then wire it to (**STLINKv2 pin #5**), this will serve as the **Test Data In** signal (**TDI**) |
+|         | Wire the **BLUE** jumper cable to (**ULX3S pin #6**) then wire it to (**STLINKv2 pin#7**), this will serve as the **Test Mode Select** signal (**TMS**) |
+|         | Wire the **WHITE** jumper cable to (**ULX3S pin #7**) then wire it to (**STLINKv2 pin #9**), this will serve as the **Test Clock** signal (**TCK**) |
+|         | Wire the **YELLOW** jumper cable to (**ULX3S pin #8**) then wire it to (**STLINKv2 pin #13**), this will serve as the **Test Data Out** signal (**TDO**) |
+|         | Check each jumper wire connection between the corresponding pins on the FPGA and the STLINKv2 **four** times |
+|         | I don't know what's next, need to review with lkcl |
 
 ## Connecting the dots:
 
