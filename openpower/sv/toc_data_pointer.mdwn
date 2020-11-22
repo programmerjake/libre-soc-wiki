@@ -26,7 +26,13 @@ Behind the scenes, the first ld (estsblishing the entry pointed to via the TOC) 
 
 What instead if this could be replaced by:
 
-    cmpli r5, {TOC+8}
+    cmpi r5, {TOC+8}
 
 where again, behind the scenes, a hidden micro-coded LD occurs at an address 8(TOC) to be loaded into the immediate operand, as if it were possible to have a full 64 bit operand in the cmpli instruction?
 
+This could hypothetically be encoded with existing v3.0B instructions, loadingvthe 64 bit immediate into a temporary register, followed by using cmp rather than cmpi:
+
+    ld r9, 8(r10) # r10 loaded from TOC
+    cmp r5, r9
+
+However the very fact that it requires the extra LD instruction (explicitly, rather than implicitly micro-coded) tells us that there is still a benefit to this approach.
