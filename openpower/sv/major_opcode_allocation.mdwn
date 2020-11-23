@@ -91,6 +91,19 @@ Option 3:
 
 Just as in VLE, require instructions to be in BE order. Data, which has nothing to do with instruction order, may optionally remain in LE order.
 
+## Why does VLE use a separate 64k page?
+
+VLE requires that the memory page be marked as VLE-encoded.  It also requires rhat the instructions be in BE order even when 32 bit standard opcodes are mixed in.
+
+Questions:
+
+* What would happen without the page being marked, when attempting to call ppc64le ABI code?
+* How would ppc64le code in the same page be distinguished from SVPrefix code?
+
+The answers are that it is either impossible or that it requires a special mode-switching instruction to be called on entry and exit from functions, transitioning to and from ppc64le mode.
+
+This transition may be achieved very simply by marking the 64k page.
+
 # 16 bit Compressed
 
 See [[16_bit_compressed]]
