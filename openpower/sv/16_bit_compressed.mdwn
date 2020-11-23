@@ -553,6 +553,13 @@ additional range for immediate and offset operands, effectively
 forming a 32-bit operation, enabling us to remain in compressed mode
 even longer.
 
+    | byte 0 | byte 1 | byte 2 | byte 3 |
+    | v3.0B standard 32 bit instruction |
+    | EXT000 | 16 bit          | 16...  |
+    | .. bit | 8nop   | v3.0b stand...  |
+    | .. ard 32 bit   | EXT000 | 16...  |
+    | .. bit | 16 bit          | 8nop   |
+    | v3.0B standard 32 bit instruction |
 
 # Analysis techniques and tools
 
