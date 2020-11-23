@@ -533,6 +533,26 @@ compressed mode; if we fall-through, we remain in 16-bit mode; and if
 we branch to it from compressed mode, whether we jump to the odd or
 the even address, we end up in compressed mode as desired.
 
+Tables explaining encoding:
+
+    | byte 0 | byte 1 | byte 2 | byte 3 |
+    | v3.0B standard 32 bit instruction |
+    | EXT000 | 16 bit          | 16...  |
+    | .. bit | 8nop   | v3.0b stand...  |
+    | .. ard 32 bit   | EXT000 | 16...  |
+    | .. bit | 16 bit          | 8nop   |
+    | v3.0B standard 32 bit instruction |
+
+
+### TODO 
+
+* make a preliminary assessment of branch in/out viability
+* confirm FSM encoding (is LSB of PC really enough?)
+* guestimate opcode and register allocation (without necessarily doing a full encoding)
+* write throwaway python program that estimates compression ratio from objdump raw parsing
+* finally do full opcode allocation
+* rerun objdump compression ratio estimates
+
 ### Use 2- rather than 3-register opcodes
 
 Successful compact ISAs have used 2- rather than 3-register insns, in
@@ -552,14 +572,6 @@ input operand to use rather than the output register, or with
 additional range for immediate and offset operands, effectively
 forming a 32-bit operation, enabling us to remain in compressed mode
 even longer.
-
-    | byte 0 | byte 1 | byte 2 | byte 3 |
-    | v3.0B standard 32 bit instruction |
-    | EXT000 | 16 bit          | 16...  |
-    | .. bit | 8nop   | v3.0b stand...  |
-    | .. ard 32 bit   | EXT000 | 16...  |
-    | .. bit | 16 bit          | 8nop   |
-    | v3.0B standard 32 bit instruction |
 
 # Analysis techniques and tools
 
