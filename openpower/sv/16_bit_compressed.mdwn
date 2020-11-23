@@ -498,6 +498,62 @@ space (when RA==0)
     | 1 1 0 0 |    | | 001.1 | 0    |      | M |
     | 1 1 1 1 |    | | 001.1 | 0 10 |      | M |
 
+## Other ideas (Attempt 2)
+
+### 8-bit mode-switching instructions, odd addresses for C mode
+
+Drop the complexity of the 16-bit encoding further reduced to 10-bit,
+and use a single byte instead of two to switch between modes.  This
+would place compressed (C) mode instructions at odd bytes, so the LSB
+of the PC can be used for the processor to tell which mode it is in.
+
+To switch from traditional to compressed mode, the single-byte
+instruction would be at the MSByte, that holds the EXT bits.  (When we
+break up a 32-bit instruction across words, the most significant half
+should go in the word with the lower address.)
+
+To switch from compressed mode to traditional mode, the single-byte
+instruction would also be at the opcode/format portion, placed in the
+lower-address word if split across words, so that the instruction can
+be recognized as the mode-switching one without going for its second
+byte.
+
+The C-mode nop should be encoded so that its second byte encodes a
+switch to compressed mode, if decoded in traditional mode.  This
+enables such a nop to straddle across a label:
+
+    8-bit first half of nop
+  Label:
+    8-bit second half of nop AKA switch to compressed mode
+    16-bit insns...
+
+so that if traditional code jumps to the word-aligned label (because
+traditional branches drop the 2 LSB), it immediately switches to
+compressed mode; if we fall-through, we remain in 16-bit mode; and if
+we branch to it from compressed mode, whether we jump to the odd or
+the even address, we end up in compressed mode as desired.
+
+### Use 2- rather than 3-register opcodes
+
+Successful compact ISAs have used 2- rather than 3-register insns, in
+which the same register serves as input and output.  Some 20% of
+general-purpose 3-register insns already use either input register as
+output, without any effort by the compiler to do so.
+
+Repurposing the 3 bits used to encode one one of the input registers
+in arithmetic, logical and floating-pointer registers, and the 2 bits
+used to encode the mode of the next two insns, we could make the full
+register files available to the opcodes already selected for
+compressed mode, with one bit to spare to bring additional opcodes in.
+
+An opcode could be assigned to an instruction that combines and
+extends with the subsequent instruction, providing it with a separate
+input operand to use rather than the output register, or with
+additional range for immediate and offset operands, effectively
+forming a 32-bit operation, enabling us to remain in compressed mode
+even longer.
+
+
 # Analysis techniques and tools
 
     objdump -d --no-show-raw-insn /bin/bash | sed 'y/\t/ /;
