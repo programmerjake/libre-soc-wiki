@@ -35,11 +35,17 @@ To start we have to ensure we have a safe set up.
 |         | Make sure the orientation of your FPGA board and your STLINKv2 are the same as the images and diagrams on this page |
 |         | Wire each of the coloured jumper cables to the corresponding pins on the FPGA and the STLINKv2 according to the diagrams, tables, and images on this page. Below are separate checklist for each model of FPGA |
 
+ADD TABLE CONNECTING STLINK MALE-TO-FEMALE JUMPERS HERE.  START WITH DUPLICATE COPY OF ULX3S TABLE AND REMOVE "(ULX3S PIN #N)"
+
 Follow this section if you have the ULX3S FPGA:
 
 | Done?   | Checklist Step |
 |---------|----------------|
-|         | Wire the **RED** jumper cable to (**ULX3S pin #2**) then wire it to (**STLINKv2 pin #2**), this will serve as the **Voltage Reference** signal (**VREF**) |
+|         | Wire the **RED** jumper cable to (**ULX3S pin #2**) then wire it to (**STLINKv2 pin #2**), this will serve as the **Voltage Reference** signal (**VREF**) 
+
+REMOVE MENTION OF STLINK FROM HERE.  REQUIRE JUMPER TO BE FEMALETOFEMALE.
+  REPEAT FOR ALL TABLE ENTRIES
+
 |         | Wire the **BLACK** jumper cable to (**ULX3S pin #4**) then wire it to (**STLINKv2 pin #4**), this will serve as the **Ground** signal (**GND**) |
 |         | Wire the **GREEN** jumper cable to (**ULX3S pin #5**) then wire it to (**STLINKv2 pin #5**), this will serve as the **Test Data In** signal (**TDI**) |
 |         | Wire the **BLUE** jumper cable to (**ULX3S pin #6**) then wire it to (**STLINKv2 pin #7**), this will serve as the **Test Mode Select** signal (**TMS**) |
