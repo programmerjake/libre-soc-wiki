@@ -38,18 +38,18 @@ Now lets review all of the relevant material on this page before we begin the wi
 |         | Review the connections table for your model of fpga |
 |         | Make sure the orientation of your FPGA board and your STLINKv2 are the same as the images and diagrams on this page |
 
-Next we will wire up the STLINKv2 and our FPGA in three separate stages. First attaching a FEMALE-TO-FEMALE jumper cable to each male header pin on the STLINKv2. Then attaching a ***COMPLETELY DIFFERENT*** FEMALE-TO-FEMALE jumper cable to each male header pin on the FPGA. Finally, we will use MALE-TO-MALE jumper cables to connect the wires from the STLINKv2 to the wires from the FPGA. This way you do not lose the connections when you want to disconnect and store the two devices. We are using FEMALE-TO-FEMALE jumper cables on the male header pins of each of the two devices so that the wires do not randomly damage the STLINKv2 due to a short.
+Next we will wire up the STLINKv2 and our FPGA in three separate stages. First attaching the FEMALE end of a FEMALE-TO-MALE jumper cable to each male header pins on the STLINKv2. Then we will attach a ***COMPLETELY DIFFERENT*** FEMALE-TO-FEMALE jumper cable to each male header pin on the FPGA. Finally, we will connect the wires from the STLINKv2 to the wires from the FPGA by matching the colours of the wires. This way you do not lose the connections when you want to disconnect and store the two devices. We are using FEMALE-TO-FEMALE jumper cables on the male header pins of each of the FPGA so that the wires do not randomly damage the bare PCB due to a short.
 
 We will wire each of the pins on the the STLINKv2 according to the diagrams, tables, and images on this page. 
 
 | Done?   | Checklist Step |
 |---------|----------------|
-|         | Attach one end of a FEMALE-TO-FEMALE **RED** jumper cable to (**STLINKv2 pin #2**), this will serve as the **Voltage Reference** signal (**VREF**) 
-|         | Attach one end of a FEMALE-TO-FEMALE **BLACK** jumper cable to (**STLINKv2 pin #4**), this will serve as the **Ground** signal (**GND**) |
-|         | Attach one end of a FEMALE-TO-FEMALE **GREEN** jumper cable to (**STLINKv2 pin #5**), this will serve as the **Test Data In** signal (**TDI**) |
-|         | Attach one end of a FEMALE-TO-FEMALE **BLUE** jumper cable to (**STLINKv2 pin #7**), this will serve as the **Test Mode Select** signal (**TMS**) |
-|         | Attach one end of a FEMALE-TO-FEMALE **WHITE** jumper cable to  (**STLINKv2 pin #9**), this will serve as the **Test Clock** signal (**TCK**) |
-|         | Attach one end of a FEMALE-TO-FEMALE **YELLOW** jumper cable to (**STLINKv2 pin #13**), this will serve as the **Test Data Out** signal (**TDO**)
+|         | Attach the FEMALE end of a FEMALE-TO-MALE **RED** jumper cable to (**STLINKv2 pin #2**), this will serve as the **Voltage Reference** signal (**VREF**) 
+|         | Attach the FEMALE end of a FEMALE-TO-MALE **BLACK** jumper cable to (**STLINKv2 pin #4**), this will serve as the **Ground** signal (**GND**) |
+|         | Attach the FEMALE end of a FEMALE-TO-MALE **GREEN** jumper cable to (**STLINKv2 pin #5**), this will serve as the **Test Data In** signal (**TDI**) |
+|         | Attach the FEMALE end of a FEMALE-TO-MALE **BLUE** jumper cable to (**STLINKv2 pin #7**), this will serve as the **Test Mode Select** signal (**TMS**) |
+|         | Attach the FEMALE end of a FEMALE-TO-MALE **WHITE** jumper cable to  (**STLINKv2 pin #9**), this will serve as the **Test Clock** signal (**TCK**) |
+|         | Attach the FEMALE end of a FEMALE-TO-MALE **YELLOW** jumper cable to (**STLINKv2 pin #13**), this will serve as the **Test Data Out** signal (**TDO**)
 
 Next, we will wire each of the pins on the the FPGA according to the diagrams, tables, and images on this page.
 
@@ -83,17 +83,16 @@ Final steps for both FPGA boards:
 |         | ***lckl*** check for ground loops? |
 
 
-Finally, we will connect the unattached ends of each of the FEMALE-TO-FEMALE jumper cables on the STLINKv2 and FPGA together using MALE-TO-MALE jumper cables.
+Finally, we will connect the MALE end of the jumper cable from the STLINKv2 to the FEMALE end of the jumper cable from the FPGA.
 
 | Done?   | Checklist Step |
 |---------|----------------|
-|         | Attach one end of a MALE-TO-MALE **RED** jumper cable to the **RED** FEMALE-TO-FEMALE jumper cable coming from the STLINKv2. Connect the other end of the MALE-TO-MALE **RED** jumper cable to the **RED** FEMALE-TO-FEMALE jumper cable coming from the FPGA |
-|         | Attach one end of a MALE-TO-MALE **BLACK** jumper cable to the **BLACK** FEMALE-TO-FEMALE jumper cable coming from the STLINKv2. Connect the other end of the MALE-TO-MALE **BLACK** jumper cable to the **BLACK** FEMALE-TO-FEMALE jumper cable coming from the FPGA |
-|         | Attach one end of a MALE-TO-MALE **GREEN** jumper cable to the **GREEN** FEMALE-TO-FEMALE jumper cable coming from the STLINKv2. Connect the other end of the MALE-TO-MALE **GREEN** jumper cable to the **GREEN** FEMALE-TO-FEMALE jumper cable coming from the FPGA |
-|         | Attach one end of a MALE-TO-MALE **BLUE** jumper cable to the **BLUE** FEMALE-TO-FEMALE jumper cable coming from the STLINKv2. Connect the other end of the MALE-TO-MALE **BLUE** jumper cable to the **BLUE** FEMALE-TO-FEMALE jumper cable coming from the FPGA |
-|         | Attach one end of a MALE-TO-MALE **WHITE** jumper cable to the **WHITE** FEMALE-TO-FEMALE jumper cable coming from the STLINKv2. Connect the other end of the MALE-TO-MALE **WHITE** jumper cable to the **WHITE** FEMALE-TO-FEMALE jumper cable coming from the FPGA |
-|         | Attach one end of a MALE-TO-MALE **YELLOW** jumper cable to the **YELLOW** FEMALE-TO-FEMALE jumper cable coming from the STLINKv2. Connect the other end of the MALE-TO-MALE **YELLOW** jumper cable to the **YELLOW** FEMALE-TO-FEMALE jumper cable coming from the FPGA |
-
+|         | Attach the MALE end of the **RED** jumper cable from the STLINKv2 cable to the FEMALE end of the **RED** jumper cable from the FPGA. |
+|         | Attach the MALE end of the **BLACK** jumper cable from the STLINKv2 cable to the FEMALE end of the **BLACK** jumper cable from the FPGA. |
+|         | Attach the MALE end of the **GREEN** jumper cable from the STLINKv2 cable to the FEMALE end of the **GREEN** jumper cable from the FPGA. |
+|         | Attach the MALE end of the **BLUE** jumper cable from the STLINKv2 cable to the FEMALE end of the **BLUE** jumper cable from the FPGA. |
+|         | Attach the MALE end of the **WHITE** jumper cable from the STLINKv2 cable to the FEMALE end of the **WHITE** jumper cable from the FPGA. |
+|         | Attach the MALE end of the **YELLOW** jumper cable from the STLINKv2 cable to the FEMALE end of the **YELLOW** jumper cable from the FPGA. |
 
 ## Connecting the dots:
 
