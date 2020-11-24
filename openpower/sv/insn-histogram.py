@@ -62,13 +62,21 @@ for line in sys.stdin:
         for operand in operands.split(','):
             count(ops, operand)
 
+intregcounts = {}
+crregcounts = {}
+
+# for each instruction print out a regcount.  first, sort by instr count
 hist = list(histogram.items())
 hist.sort(key = (lambda x : x[1][0]))
+
+# now print each instruction and its register usage
 for x in hist:
     print('%6i %s:' % (x[1][0], x[0]))
     ops = list(x[1][1].items())
     ops.sort(key = (lambda x : x[1]))
+
     # split out "-bit" from "-bit range" from "regs"
+
     # first "rNs" or "anything-weird"
     for x in ops:
         if '-bit' in x[0]:
@@ -76,21 +84,43 @@ for x in hist:
         if x[0].startswith('cr'):
             continue
         print('\t%6i %s' % (x[1], x[0]))
+        # total up integer register counts
+        if not x[0].startswith('r'):
+            continue
+        if not x[0] in intregcounts:
+            intregcounts[x[0]] = 0
+        intregcounts[x[0]] += x[1]
     print()
+    # TODO: FP regs.
+    # ...
+
     # now Condition Registers
     for x in ops:
         if '-bit' in x[0]:
             continue
         if x[0].startswith('cr'):
             print('\t%6i %s' % (x[1], x[0]))
+            if not x[0] in crregcounts:
+                crregcounts[x[0]] = 0
+            crregcounts[x[0]] += x[1]
     print()
+
     # now "N-bit immediates"
     for x in ops:
         if x[0].endswith('-bit'):
             print('\t%6i %s' % (x[1], x[0]))
     print()
+
     # finally "bit-range" immediates
     for x in ops:
         if '-bit range' in x[0]:
             print('\t%6i %s' % (x[1], x[0]))
+    print()
+
+# print out regs usage totals (TODO: FP)
+for regcounts in [intregcounts, crregcounts]:
+    regnums = list(regcounts.items())
+    regnums.sort(key = (lambda x : x[1]))
+    for x in regnums:
+        print('%6i %s' % (x[1], x[0]))
     print()
