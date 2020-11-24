@@ -1,4 +1,5 @@
 #! /bin/env python3
+# see https://bugs.libre-soc.org/show_bug.cgi?id=532
 
 # Feed this script the output of:
 # powerpc64le-gnu-objdump -d -M raw --no-show-raw-insn ppc-prog
