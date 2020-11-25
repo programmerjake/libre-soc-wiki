@@ -205,8 +205,10 @@ instruction counts from objdump on /bin/bash:
     | 1 | 0  |  sh2    | | 001.0 | RA   | sh  | 1 | sradi.
     | 1 | 1  | 0   0 0 | | 001.0 |      | 000 | 1 | TBD
     | 1 | 1  | 0 | sh2 | | 001.0 | RA   | sh  | 1 | srawi.
-    | 1 | 1  | 1 |     | | 001.0 |      |     | 1 | TBD
-    | 1 | i2 |  RT     | | 010.0 | RA|0 | imm | 1 | addi
+    | 1 | 1  | 1 |     | | 001.0 | 000  | imm | 1 | TBD
+    | 1 | 1  | 1 | i2  | | 001.0 | RA!=0| imm | 1 | addis
+    | 1 |              | | 010.0 | 000  |     | 1 | TBD
+    | 1 | i2           | | 010.0 | RA!=0| imm | 1 | addi
     | 1 | 0  | i2      | | 010.1 | RA   | imm | 1 | cmpdi
     | 1 | 1  | i2      | | 010.1 | RA   | imm | 1 | cmpwi
     | 1 | 0  | i2      | | 011.0 | RT   | imm | 1 | ldspi
