@@ -61,7 +61,7 @@ Note that bit numbering goes from 0 to 31 in the prefix, then 0 to 31 in the suf
 | Field       | Value                                          |
 |-------------|------------------------------------------------|
 | Mnemonic    | `paddi RT, RA, immed`                          |
-| PO (0:5)    | 14                                             |
+| PO (0:5)    | 1                                              |
 | (6:7)       | 2                                              |
 | (8)         | 0                                              |
 | (9:10)      | //                                             |
@@ -85,33 +85,236 @@ Note that bit numbering goes from 0 to 31 in the prefix, then 0 to 31 in the suf
 
 | Mnemonic      | PO (0:5) | placeholder (6:20) | XO (21:30) | placeholder (31:47) | Operation   |
 |---------------|----------|--------------------|------------|---------------------|-------------|
-| x.placeholder | 0        | placeholder        | != 256     | placeholder         | placeholder |
+| x.placeholder | 0        | placeholder        | 1          | placeholder         | placeholder |
 
 ### Compressed Mode
 
 #### Compressed Mode 16-bit Instructions (New)
 
-| Mnemonic       | SCMT (0) | SOH (1:5) | SO (6:8) | SRT (9:11) | SRS (12:14) | SCM (15) | Operation                                               |
-|----------------|----------|-----------|----------|------------|-------------|----------|---------------------------------------------------------|
-| c.add RT, RS   | 0        | 1         | 0        | RT         | RS          | 0        | RT <- RT + RS                                           |
-| cs.add RT, RS  | 0        | 1         | 0        | RT         | RS          | 1        | RT <- RT + RS <br/> Swap to Compressed Mode             |
-| cst.add RT, RS | 1        | 1         | 0        | RT         | RS          | 1        | RT <- RT + RS <br/> Swap to Compressed Mode Temporarily |
+| Mnemonic       | SCMT (0) | SOH (1:5) | SO (6:8) | SRT (9:11) | SRS (12:14) | SCM (15) | Operation                                             |
+|----------------|----------|-----------|----------|------------|-------------|----------|-------------------------------------------------------|
+| c.add RT, RS   | 0        | 1         | 0        | RT         | RS          | 0        | RT <- RT + RS                                         |
+| cs.add RT, RS  | 0        | 1         | 0        | RT         | RS          | 1        | RT <- RT + RS <br/> Swap to Standard Mode             |
+| cst.add RT, RS | 1        | 1         | 0        | RT         | RS          | 1        | RT <- RT + RS <br/> Swap to Standard Mode Temporarily |
 
-## LE mode
+### Assembler bash script
 
-TODO(programmerjake): finish
+[[demo_assembler.sh]]
 
-| Address | Byte | Description |
-|---------|------|-------------|
-| 0x1000  |      |             |
-| 0x1001  |      |             |
+## Big-Endian Machine Code
 
-## BE mode
+| Address | Byte | PC     | Instruction               |
+|---------|------|--------|---------------------------|
+| 0x1000  | 0x38 | 0x1000 | addi r3, r4, 5            |
+| 0x1001  | 0x64 | 0x1000 | addi r3, r4, 5            |
+| 0x1002  | 0x00 | 0x1000 | addi r3, r4, 5            |
+| 0x1003  | 0x05 | 0x1000 | addi r3, r4, 5            |
+| 0x1004  | 0x06 | 0x1004 | paddi r3, r5, 0xDEADBEEF  |
+| 0x1005  | 0x00 | 0x1004 | paddi r3, r5, 0xDEADBEEF  |
+| 0x1006  | 0xDE | 0x1004 | paddi r3, r5, 0xDEADBEEF  |
+| 0x1007  | 0xAD | 0x1004 | paddi r3, r5, 0xDEADBEEF  |
+| 0x1008  | 0x38 | 0x1004 | paddi r3, r5, 0xDEADBEEF  |
+| 0x1009  | 0x65 | 0x1004 | paddi r3, r5, 0xDEADBEEF  |
+| 0x100A  | 0xBE | 0x1004 | paddi r3, r5, 0xDEADBEEF  |
+| 0x100B  | 0xEF | 0x1004 | paddi r3, r5, 0xDEADBEEF  |
+| 0x100C  | 0x00 | 0x100C | x.placeholder             |
+| 0x100D  | 0x00 | 0x100C | x.placeholder             |
+| 0x100E  | 0x00 | 0x100C | x.placeholder             |
+| 0x100F  | 0x02 | 0x100C | x.placeholder             |
+| 0x1010  | 0x00 | 0x100C | x.placeholder             |
+| 0x1011  | 0x00 | 0x100C | x.placeholder             |
+| 0x1012  | 0x38 | 0x1012 | addi r3, r4, 5            |
+| 0x1013  | 0x64 | 0x1012 | addi r3, r4, 5            |
+| 0x1014  | 0x00 | 0x1012 | addi r3, r4, 5            |
+| 0x1015  | 0x05 | 0x1012 | addi r3, r4, 5            |
+| 0x1016  | 0x06 | 0x1016 | paddi r3, r5, 0x89ABCDEF  |
+| 0x1017  | 0x00 | 0x1016 | paddi r3, r5, 0x89ABCDEF  |
+| 0x1018  | 0x89 | 0x1016 | paddi r3, r5, 0x89ABCDEF  |
+| 0x1019  | 0xAB | 0x1016 | paddi r3, r5, 0x89ABCDEF  |
+| 0x101A  | 0x38 | 0x1016 | paddi r3, r5, 0x89ABCDEF  |
+| 0x101B  | 0x65 | 0x1016 | paddi r3, r5, 0x89ABCDEF  |
+| 0x101C  | 0xCD | 0x1016 | paddi r3, r5, 0x89ABCDEF  |
+| 0x101D  | 0xEF | 0x1016 | paddi r3, r5, 0x89ABCDEF  |
+| 0x101E  | 0x00 | 0x101E | x.placeholder             |
+| 0x101F  | 0x00 | 0x101E | x.placeholder             |
+| 0x1020  | 0x00 | 0x101E | x.placeholder             |
+| 0x1021  | 0x02 | 0x101E | x.placeholder             |
+| 0x1022  | 0x00 | 0x101E | x.placeholder             |
+| 0x1023  | 0x00 | 0x101E | x.placeholder             |
+| 0x1024  | 0x14 | 0x1024 | h.add r3, r4              |
+| 0x1025  | 0x02 | 0x1024 | h.add r3, r4              |
+| 0x1026  | 0x38 | 0x1026 | addi r3, r6, 7            |
+| 0x1027  | 0x66 | 0x1026 | addi r3, r6, 7            |
+| 0x1028  | 0x00 | 0x1026 | addi r3, r6, 7            |
+| 0x1029  | 0x07 | 0x1026 | addi r3, r6, 7            |
+| 0x102A  | 0x14 | 0x102A | hs.add r3, r31            |
+| 0x102B  | 0x0F | 0x102A | hs.add r3, r31            |
+| 0x102C  | 0x04 | 0x102C | c.add r3, r30             |
+| 0x102D  | 0x0C | 0x102C | c.add r3, r30             |
+| 0x102E  | 0x84 | 0x102E | cst.add r3, r29           |
+| 0x102F  | 0x0B | 0x102E | cst.add r3, r29           |
+| 0x1030  | 0x06 | 0x1030 | paddi r3, r31, 0x12345678 |
+| 0x1031  | 0x00 | 0x1030 | paddi r3, r31, 0x12345678 |
+| 0x1032  | 0x12 | 0x1030 | paddi r3, r31, 0x12345678 |
+| 0x1033  | 0x34 | 0x1030 | paddi r3, r31, 0x12345678 |
+| 0x1034  | 0x38 | 0x1030 | paddi r3, r31, 0x12345678 |
+| 0x1035  | 0x7F | 0x1030 | paddi r3, r31, 0x12345678 |
+| 0x1036  | 0x56 | 0x1030 | paddi r3, r31, 0x12345678 |
+| 0x1037  | 0x78 | 0x1030 | paddi r3, r31, 0x12345678 |
+| 0x1038  | 0x04 | 0x1038 | c.add r3, r5              |
+| 0x1039  | 0x04 | 0x1038 | c.add r3, r5              |
+| 0x103A  | 0x04 | 0x103A | c.add r3, r3              |
+| 0x103B  | 0x00 | 0x103A | c.add r3, r3              |
+| 0x103C  | 0x04 | 0x103C | cs.add r3, r6             |
+| 0x103D  | 0x07 | 0x103C | cs.add r3, r6             |
+| 0x103E  | 0x38 | 0x103E | addi r3, r3, 0x23         |
+| 0x103F  | 0x63 | 0x103E | addi r3, r3, 0x23         |
+| 0x1040  | 0x00 | 0x103E | addi r3, r3, 0x23         |
+| 0x1041  | 0x23 | 0x103E | addi r3, r3, 0x23         |
+| 0x1042  | 0x38 | 0x1042 | addi r3, r10, 0xA         |
+| 0x1043  | 0x6A | 0x1042 | addi r3, r10, 0xA         |
+| 0x1044  | 0x00 | 0x1042 | addi r3, r10, 0xA         |
+| 0x1045  | 0x0A | 0x1042 | addi r3, r10, 0xA         |
+| 0x1046  | 0x14 | 0x1046 | hs.add r3, r5             |
+| 0x1047  | 0x05 | 0x1046 | hs.add r3, r5             |
+| 0x1048  | 0x84 | 0x1048 | cst.add r3, r4            |
+| 0x1049  | 0x03 | 0x1048 | cst.add r3, r4            |
+| 0x104A  | 0x14 | 0x104A | hs.add r3, r6             |
+| 0x104B  | 0x07 | 0x104A | hs.add r3, r6             |
+| 0x104C  | 0x84 | 0x104C | cst.add r3, r28           |
+| 0x104D  | 0x09 | 0x104C | cst.add r3, r28           |
+| 0x104E  | 0x14 | 0x104E | h.add r3, r29             |
+| 0x104F  | 0x0A | 0x104E | h.add r3, r29             |
+| 0x1050  | 0x84 | 0x1050 | cst.add r3, r30           |
+| 0x1051  | 0x0D | 0x1050 | cst.add r3, r30           |
+| 0x1052  | 0x00 | 0x1052 | x.placeholder             |
+| 0x1053  | 0x00 | 0x1052 | x.placeholder             |
+| 0x1054  | 0x00 | 0x1052 | x.placeholder             |
+| 0x1055  | 0x02 | 0x1052 | x.placeholder             |
+| 0x1056  | 0x00 | 0x1052 | x.placeholder             |
+| 0x1057  | 0x00 | 0x1052 | x.placeholder             |
+| 0x1058  | 0x84 | 0x1058 | cst.add r3, r31           |
+| 0x1059  | 0x0F | 0x1058 | cst.add r3, r31           |
+| 0x105A  | 0x38 | 0x105A | addi r3, r15, 0xF         |
+| 0x105B  | 0x6F | 0x105A | addi r3, r15, 0xF         |
+| 0x105C  | 0x00 | 0x105A | addi r3, r15, 0xF         |
+| 0x105D  | 0x0F | 0x105A | addi r3, r15, 0xF         |
+| 0x105E  | 0x04 | 0x105E | cs.add r3, r4             |
+| 0x105F  | 0x03 | 0x105E | cs.add r3, r4             |
+| 0x1060  | 0x38 | 0x1060 | addi r3, r10, 0xF         |
+| 0x1061  | 0x6A | 0x1060 | addi r3, r10, 0xF         |
+| 0x1062  | 0x00 | 0x1060 | addi r3, r10, 0xF         |
+| 0x1063  | 0x0F | 0x1060 | addi r3, r10, 0xF         |
+| 0x1064  | 0x38 | 0x1064 | addi r3, r11, 0xF         |
+| 0x1065  | 0x6B | 0x1064 | addi r3, r11, 0xF         |
+| 0x1066  | 0x00 | 0x1064 | addi r3, r11, 0xF         |
+| 0x1067  | 0x0F | 0x1064 | addi r3, r11, 0xF         |
 
-TODO(programmerjake): finish
+## Little-Endian Machine Code
 
-| Address | Byte | Description |
-|---------|------|-------------|
-| 0x1000  |      |             |
-| 0x1001  |      |             |
-
+| Address | Byte | PC     | Instruction               |
+|---------|------|--------|---------------------------|
+| 0x1000  | 0x05 | 0x1000 | addi r3, r4, 5            |
+| 0x1001  | 0x00 | 0x1000 | addi r3, r4, 5            |
+| 0x1002  | 0x64 | 0x1000 | addi r3, r4, 5            |
+| 0x1003  | 0x38 | 0x1000 | addi r3, r4, 5            |
+| 0x1004  | 0xAD | 0x1004 | paddi r3, r5, 0xDEADBEEF  |
+| 0x1005  | 0xDE | 0x1004 | paddi r3, r5, 0xDEADBEEF  |
+| 0x1006  | 0x00 | 0x1004 | paddi r3, r5, 0xDEADBEEF  |
+| 0x1007  | 0x06 | 0x1004 | paddi r3, r5, 0xDEADBEEF  |
+| 0x1008  | 0xEF | 0x1004 | paddi r3, r5, 0xDEADBEEF  |
+| 0x1009  | 0xBE | 0x1004 | paddi r3, r5, 0xDEADBEEF  |
+| 0x100A  | 0x65 | 0x1004 | paddi r3, r5, 0xDEADBEEF  |
+| 0x100B  | 0x38 | 0x1004 | paddi r3, r5, 0xDEADBEEF  |
+| 0x100C  | 0x02 | 0x100C | x.placeholder             |
+| 0x100D  | 0x00 | 0x100C | x.placeholder             |
+| 0x100E  | 0x00 | 0x100C | x.placeholder             |
+| 0x100F  | 0x00 | 0x100C | x.placeholder             |
+| 0x1010  | 0x64 | 0x1012 | addi r3, r4, 5            |
+| 0x1011  | 0x38 | 0x1012 | addi r3, r4, 5            |
+| 0x1012  | 0x00 | 0x100C | x.placeholder             |
+| 0x1013  | 0x00 | 0x100C | x.placeholder             |
+| 0x1014  | 0x00 | 0x1016 | paddi r3, r5, 0x89ABCDEF  |
+| 0x1015  | 0x06 | 0x1016 | paddi r3, r5, 0x89ABCDEF  |
+| 0x1016  | 0x05 | 0x1012 | addi r3, r4, 5            |
+| 0x1017  | 0x00 | 0x1012 | addi r3, r4, 5            |
+| 0x1018  | 0x65 | 0x1016 | paddi r3, r5, 0x89ABCDEF  |
+| 0x1019  | 0x38 | 0x1016 | paddi r3, r5, 0x89ABCDEF  |
+| 0x101A  | 0xAB | 0x1016 | paddi r3, r5, 0x89ABCDEF  |
+| 0x101B  | 0x89 | 0x1016 | paddi r3, r5, 0x89ABCDEF  |
+| 0x101C  | 0x00 | 0x101E | x.placeholder             |
+| 0x101D  | 0x00 | 0x101E | x.placeholder             |
+| 0x101E  | 0xEF | 0x1016 | paddi r3, r5, 0x89ABCDEF  |
+| 0x101F  | 0xCD | 0x1016 | paddi r3, r5, 0x89ABCDEF  |
+| 0x1020  | 0x00 | 0x101E | x.placeholder             |
+| 0x1021  | 0x00 | 0x101E | x.placeholder             |
+| 0x1022  | 0x02 | 0x101E | x.placeholder             |
+| 0x1023  | 0x00 | 0x101E | x.placeholder             |
+| 0x1024  | 0x66 | 0x1026 | addi r3, r6, 7            |
+| 0x1025  | 0x38 | 0x1026 | addi r3, r6, 7            |
+| 0x1026  | 0x02 | 0x1024 | h.add r3, r4              |
+| 0x1027  | 0x14 | 0x1024 | h.add r3, r4              |
+| 0x1028  | 0x0F | 0x102A | hs.add r3, r31            |
+| 0x1029  | 0x14 | 0x102A | hs.add r3, r31            |
+| 0x102A  | 0x07 | 0x1026 | addi r3, r6, 7            |
+| 0x102B  | 0x00 | 0x1026 | addi r3, r6, 7            |
+| 0x102C  | 0x0B | 0x102E | cst.add r3, r29           |
+| 0x102D  | 0x84 | 0x102E | cst.add r3, r29           |
+| 0x102E  | 0x0C | 0x102C | c.add r3, r30             |
+| 0x102F  | 0x04 | 0x102C | c.add r3, r30             |
+| 0x1030  | 0x34 | 0x1030 | paddi r3, r31, 0x12345678 |
+| 0x1031  | 0x12 | 0x1030 | paddi r3, r31, 0x12345678 |
+| 0x1032  | 0x00 | 0x1030 | paddi r3, r31, 0x12345678 |
+| 0x1033  | 0x06 | 0x1030 | paddi r3, r31, 0x12345678 |
+| 0x1034  | 0x78 | 0x1030 | paddi r3, r31, 0x12345678 |
+| 0x1035  | 0x56 | 0x1030 | paddi r3, r31, 0x12345678 |
+| 0x1036  | 0x7F | 0x1030 | paddi r3, r31, 0x12345678 |
+| 0x1037  | 0x38 | 0x1030 | paddi r3, r31, 0x12345678 |
+| 0x1038  | 0x00 | 0x103A | c.add r3, r3              |
+| 0x1039  | 0x04 | 0x103A | c.add r3, r3              |
+| 0x103A  | 0x04 | 0x1038 | c.add r3, r5              |
+| 0x103B  | 0x04 | 0x1038 | c.add r3, r5              |
+| 0x103C  | 0x63 | 0x103E | addi r3, r3, 0x23         |
+| 0x103D  | 0x38 | 0x103E | addi r3, r3, 0x23         |
+| 0x103E  | 0x07 | 0x103C | cs.add r3, r6             |
+| 0x103F  | 0x04 | 0x103C | cs.add r3, r6             |
+| 0x1040  | 0x6A | 0x1042 | addi r3, r10, 0xA         |
+| 0x1041  | 0x38 | 0x1042 | addi r3, r10, 0xA         |
+| 0x1042  | 0x23 | 0x103E | addi r3, r3, 0x23         |
+| 0x1043  | 0x00 | 0x103E | addi r3, r3, 0x23         |
+| 0x1044  | 0x05 | 0x1046 | hs.add r3, r5             |
+| 0x1045  | 0x14 | 0x1046 | hs.add r3, r5             |
+| 0x1046  | 0x0A | 0x1042 | addi r3, r10, 0xA         |
+| 0x1047  | 0x00 | 0x1042 | addi r3, r10, 0xA         |
+| 0x1048  | 0x07 | 0x104A | hs.add r3, r6             |
+| 0x1049  | 0x14 | 0x104A | hs.add r3, r6             |
+| 0x104A  | 0x03 | 0x1048 | cst.add r3, r4            |
+| 0x104B  | 0x84 | 0x1048 | cst.add r3, r4            |
+| 0x104C  | 0x0A | 0x104E | h.add r3, r29             |
+| 0x104D  | 0x14 | 0x104E | h.add r3, r29             |
+| 0x104E  | 0x09 | 0x104C | cst.add r3, r28           |
+| 0x104F  | 0x84 | 0x104C | cst.add r3, r28           |
+| 0x1050  | 0x00 | 0x1052 | x.placeholder             |
+| 0x1051  | 0x00 | 0x1052 | x.placeholder             |
+| 0x1052  | 0x0D | 0x1050 | cst.add r3, r30           |
+| 0x1053  | 0x84 | 0x1050 | cst.add r3, r30           |
+| 0x1054  | 0x00 | 0x1052 | x.placeholder             |
+| 0x1055  | 0x00 | 0x1052 | x.placeholder             |
+| 0x1056  | 0x02 | 0x1052 | x.placeholder             |
+| 0x1057  | 0x00 | 0x1052 | x.placeholder             |
+| 0x1058  | 0x6F | 0x105A | addi r3, r15, 0xF         |
+| 0x1059  | 0x38 | 0x105A | addi r3, r15, 0xF         |
+| 0x105A  | 0x0F | 0x1058 | cst.add r3, r31           |
+| 0x105B  | 0x84 | 0x1058 | cst.add r3, r31           |
+| 0x105C  | 0x03 | 0x105E | cs.add r3, r4             |
+| 0x105D  | 0x04 | 0x105E | cs.add r3, r4             |
+| 0x105E  | 0x0F | 0x105A | addi r3, r15, 0xF         |
+| 0x105F  | 0x00 | 0x105A | addi r3, r15, 0xF         |
+| 0x1060  | 0x0F | 0x1060 | addi r3, r10, 0xF         |
+| 0x1061  | 0x00 | 0x1060 | addi r3, r10, 0xF         |
+| 0x1062  | 0x6A | 0x1060 | addi r3, r10, 0xF         |
+| 0x1063  | 0x38 | 0x1060 | addi r3, r10, 0xF         |
+| 0x1064  | 0x0F | 0x1064 | addi r3, r11, 0xF         |
+| 0x1065  | 0x00 | 0x1064 | addi r3, r11, 0xF         |
+| 0x1066  | 0x6B | 0x1064 | addi r3, r11, 0xF         |
+| 0x1067  | 0x38 | 0x1064 | addi r3, r11, 0xF         |
