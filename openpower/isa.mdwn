@@ -17,17 +17,3 @@ the pseudo-code for all opcodes in the POWER v3.0B Public Spec
 * [[isa/stringldst]]
 * [[isa/system]]
 
-# Major opcode map
-
-Table 9: Primary Opcode Map (opcode bits 0:5)
-
-        |  000   |   001 |  010  | 011   |  100  |    101 |  110  |  111
-    000 |        |       |  tdi  | twi   | EXT04 |        |       | mulli | 000
-    001 | subfic |       | cmpli | cmpi  | addic | addic. | addi  | addis | 001
-    010 | bc/l/a | EXT17 | b/l/a | EXT19 | rlwimi| rlwinm |       | rlwnm | 010
-    011 |  ori   | oris  | xori  | xoris | andi. | andis. | EXT30 | EXT31 | 011
-    100 |  lwz   | lwzu  | lbz   | lbzu  | stw   | stwu   | stb   | stbu  | 100
-    101 |  lhz   | lhzu  | lha   | lhau  | sth   | sthu   | lmw   | stmw  | 101
-    110 |  lfs   | lfsu  | lfd   | lfdu  | stfs  | stfsu  | stfd  | stfdu | 110
-    111 |  lq    | EXT57 | EXT58 | EXT59 | EXT60 | EXT61  | EXT62 | EXT63 | 111
-        |  000   |   001 |   010 |  011  |   100 |   101  | 110   |  111
