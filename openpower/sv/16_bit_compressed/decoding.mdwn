@@ -1,0 +1,207 @@
+# Decoding variable-length instructions efficiently
+
+We can use a method similar to carry look-ahead to make decoding `N` instructions take time `O(log N)`:
+
+Using the encoding in:
+<http://lists.libre-soc.org/pipermail/libre-soc-dev/2020-November/001282.html>
+and
+[[demo]]
+
+See following code [on Compiler Explorer](https://gcc.godbolt.org/z/8e3WEn):
+
+```C++
+#include <stddef.h>
+#include <stdint.h>
+#include <assert.h>
+
+enum Mode {
+    Standard,
+    Compressed,
+    StandardOnceThenCompressed,
+};
+
+struct SizeAndMode {
+    size_t size; // size in bytes; always even
+    Mode mode;
+};
+
+struct RangeSummary {
+    // SizeAndMode::mode fields are the new mode after executing
+    // the instructions summarized by this RangeSummary
+    SizeAndMode mode_was_standard;
+    SizeAndMode mode_was_compressed;
+    SizeAndMode mode_was_standard_once_then_compressed;
+};
+
+// predecodes a single uint16_t, treating it as if it were the first
+// uint16_t in an instruction
+RangeSummary predecode_one(uint16_t nth, uint16_t n_plus_1th) {
+    uint16_t po_field = nth >> 10;
+    uint16_t scm_field = nth & 0x1;
+    uint16_t scmt_field = nth >> 15;
+    uint16_t xo_field = n_plus_1th >> 1;
+    SizeAndMode mode_was_standard = {
+        .size = 4, // 32-bit
+        .mode = Standard,
+    };
+    SizeAndMode mode_was_standard_once_then_compressed = {
+        .size = 4, // 32-bit
+        .mode = Compressed,
+    };
+    switch(po_field) {
+    case 0: // 32/48-bits
+        // check for bit set by "Support Processor Attention" instruction
+        if((xo_field & 256) == 0) {
+            mode_was_standard.size = 6; // 48-bit
+            mode_was_standard_once_then_compressed.size = 6;
+        } else {
+            // SVP32 or "Support Processor Attention"
+            // leave sizes as 32-bit
+        }
+        break;
+    case 1: // PowerISA v3.1 prefix & SVP64
+        mode_was_standard.size = 8; // 64-bit
+        mode_was_standard_once_then_compressed.size = 8;
+        break;
+    case 5:
+        mode_was_standard.size = 2; // 16-bit
+        mode_was_standard_once_then_compressed.size = 2;
+        if(scm_field != 0) // swap to compressed mode
+            mode_was_standard.mode = Compressed;
+        break;
+    default: // standard PowerISA instructions
+        // leave sizes as 32-bit
+        break;
+    }
+    SizeAndMode mode_was_compressed = {
+        .size = 2, // 16-bit
+        .mode = Compressed,
+    };
+    if(scm_field) { // swap to standard mode
+        if(scmt_field) // swap to standard mode temporarily
+            mode_was_compressed.mode = StandardOnceThenCompressed;
+        else
+            mode_was_compressed.mode = Standard;
+    } else
+        mode_was_compressed.mode = Compressed;
+    return RangeSummary{
+        .mode_was_standard = mode_was_standard,
+        .mode_was_compressed = mode_was_compressed,
+        .mode_was_standard_once_then_compressed =
+            mode_was_standard_once_then_compressed,
+    };
+}
+
+SizeAndMode propagate_through_range(SizeAndMode in,
+                                    RangeSummary range_summary) {
+    SizeAndMode picked;
+    switch(in.mode) {
+    case Standard:
+        picked = range_summary.mode_was_standard;
+        break;
+    case Compressed:
+        picked = range_summary.mode_was_compressed;
+        break;
+    case StandardOnceThenCompressed:
+        picked = range_summary.mode_was_standard_once_then_compressed;
+        break;
+    }
+    return SizeAndMode{
+        .size = in.size + picked.size,
+        .mode = picked.mode,
+    };
+}
+
+RangeSummary merge(RangeSummary first, RangeSummary second) {
+    SizeAndMode s = propagate_through_range(
+        first.mode_was_standard, second);
+    SizeAndMode c = propagate_through_range(
+        first.mode_was_compressed, second);
+    SizeAndMode sc = propagate_through_range(
+        first.mode_was_standard_once_then_compressed, second);
+    return RangeSummary{
+        .mode_was_standard = s,
+        .mode_was_compressed = c,
+        .mode_was_standard_once_then_compressed = sc,
+    };
+}
+
+enum Endian {
+    LittleEndian,
+    BigEndian,
+};
+
+const size_t INSTRUCTION_MEMORY_SIZE = 0x1000000; // just for demo purposes
+uint8_t instruction_memory[INSTRUCTION_MEMORY_SIZE];
+
+// get the uint16_t corresponding to the instruction indicated by the PC
+uint16_t get_u16(Endian endian, size_t pc) {
+    assert((pc & 1) == 0); // pc must be aligned to 2 bytes
+    uint8_t lsb_byte;
+    uint8_t msb_byte;
+    switch(endian) {
+    case LittleEndian:
+        msb_byte = instruction_memory[(pc ^ 2) + 1];
+        lsb_byte = instruction_memory[pc ^ 2];
+        break;
+    case BigEndian:
+        msb_byte = instruction_memory[pc];
+        lsb_byte = instruction_memory[pc + 1];
+        break;
+    }
+    return (uint16_t)lsb_byte | ((uint16_t)msb_byte << 8);
+}
+
+struct PredecodedInstruction {
+    Mode mode; // mode for this instruction
+    bool is_start; // true if this is the initial uint16_t in an instruction
+};
+
+// decode width in uint16_t units
+// can replace with whatever value you like
+const size_t DECODE_WIDTH = 8;
+
+void predecode_all(Endian endian, size_t pc, Mode starting_mode,
+                   PredecodedInstruction outputs[DECODE_WIDTH]) {
+    RangeSummary range_summaries[DECODE_WIDTH];
+    for(size_t i = 0; i < DECODE_WIDTH; i++) {
+        uint16_t nth = get_u16(endian, pc + i * 2);
+        uint16_t n_plus_1th = get_u16(endian, pc + (i + 1) * 2);
+        range_summaries[i] = predecode_one(nth, n_plus_1th);
+    }
+
+    // use a parallel prefix-sum algorithm,
+    // using `merge()` as the sum's operation.
+    // use a simple recursive algorithm
+    for(size_t step = 1; step < DECODE_WIDTH; step *= 2) {
+        // outer loop loops ceil(log2(DECODE_WIDTH)) times
+
+        RangeSummary temp[DECODE_WIDTH];
+        for(size_t i = 0; i < DECODE_WIDTH; i++) {
+            if(i < step)
+                temp[i] = range_summaries[i];
+            else
+                temp[i] = merge(range_summaries[i - step],
+                                range_summaries[i]);
+        }
+        for(size_t i = 0; i < DECODE_WIDTH; i++) {
+            range_summaries[i] = temp[i];
+        }
+    }
+
+    for(size_t i = 0; i < DECODE_WIDTH; i++) {
+        SizeAndMode size_and_mode{
+            .size = 0,
+            .mode = starting_mode,
+        };
+        if(i > 0) {
+            size_and_mode = propagate_through_range(size_and_mode,
+                                                    range_summaries[i - 1]);
+        }
+        outputs[i] = PredecodedInstruction{
+            .mode = size_and_mode.mode,
+            .is_start = (size_and_mode.size == pc + i * 2),
+        };
+    }
+}
+```
