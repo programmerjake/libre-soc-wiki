@@ -49,7 +49,7 @@ def isreg(field):
 keycolumns = ['unit', 'in1', 'in2', 'in3', 'out', 'CR in', 'CR out',
                  ] # don't think we need these: 'ldst len', 'rc', 'lk']
 
-tablecols = ['unit', 'in', 'outcnt', 'CR in', 'CR out', 
+tablecols = ['unit', 'in', 'outcnt', 'CR in', 'CR out', 'imm'
                  ] # don't think we need these: 'ldst len', 'rc', 'lk']
 
 def create_key(row):
@@ -106,6 +106,12 @@ def create_key(row):
     res['in'] = str(res['in'])
     res['outcnt'] = str(res['outcnt'])
 
+    # constants
+    if row['in2'].startswith('CONST_'):
+        res['imm'] = row['in2'].split("_")[1]
+    else:
+        res['imm'] = ''
+
     return res
 
 #
@@ -132,6 +138,8 @@ def keyname(row):
         res.append("CRi")
     elif row['CR out'] == '1':
         res.append("CRo")
+    elif 'imm' in row:
+        res.append("imm")
     return '-'.join(res)
 
 
