@@ -41,20 +41,24 @@ small_regs[29]=5
 small_regs[30]=6
 small_regs[31]=7
 colors=("800" "880" "080" "088" "008" "808")
+bright_colors=("F00" "FF0" "0F0" "0FF" "00F" "F0F")
+modes=("Standard" "Compressed" "Std. Then Comp.")
 pc=0x1000
+mode=0
 initial_pc=$((pc))
 last_pc=$((pc))
 last_color=0
 bytes=()
 function out_byte_text() {
     local s
-    printf -v s '| %4s | %6s | %-30s |' "$1" "$2" "$3"
-    bytes+=("$s")
+    printf -v s ' %s |' "$@"
+    bytes+=("|$s")
 }
 function out_byte() {
     local a b
     printf -v a '0x%02X' $(($1))
-    printf -v b '0x%04X' $((pc))
+    printf -v b '0x%04X+%i' $((pc)) $((${#bytes[@]} + initial_pc - pc))
+    local m="${modes[mode]}"
     local l="$line"
     if ((${#colors[@]} != 0)); then
         if ((last_pc != pc)); then
@@ -63,11 +67,15 @@ function out_byte() {
             ((last_color %= ${#colors[@]}))
         fi
         local color="${colors[last_color]}"
+        if ((${#bytes[@]} + initial_pc - pc == 1)); then
+            color="${bright_colors[last_color]}"
+        fi
         a="<div class=\"color-$color\">$a</div>"
         b="<div class=\"color-$color\">$b</div>"
+        m="<div class=\"color-$color\">$m</div>"
         l="<div class=\"color-$color\">$l</div>"
     fi
-    out_byte_text "$a" "$b" "$l"
+    out_byte_text "$a" "$b" "$m" "$l"
 }
 function out_16() {
     out_byte $(($1 >> 8))
@@ -89,6 +97,7 @@ for line in "${lines[@]}"; do
     fi
     arg1s="${small_regs[arg1]}"
     arg2s="${small_regs[arg2]}"
+    next_mode=$((mode))
     case "$opcode" in
     addi)
         out_32 $((14 << 31 - 5 | arg1 << 31 - 10 | arg2 << 31 - 15 | arg3 & 0xFFFF))
@@ -111,6 +120,7 @@ for line in "${lines[@]}"; do
     hs.add)
         out_16 $((5 << 15 - 5 | arg1s << 15 - 11 | arg2s << 15 - 14 | 1))
         ((pc += 2))
+        next_mode=1
         ;;
     c.add)
         out_16 $((1 << 15 - 5 | arg1s << 15 - 11 | arg2s << 15 - 14))
@@ -119,10 +129,12 @@ for line in "${lines[@]}"; do
     cs.add)
         out_16 $((1 << 15 - 5 | arg1s << 15 - 11 | arg2s << 15 - 14 | 1))
         ((pc += 2))
+        next_mode=0
         ;;
     cst.add)
         out_16 $((1 << 15 | 1 << 15 - 5 | arg1s << 15 - 11 | arg2s << 15 - 14 | 1))
         ((pc += 2))
+        next_mode=2
         ;;
     *)
         echo "invalid opcode: $opcode"
@@ -130,6 +142,11 @@ for line in "${lines[@]}"; do
         exit 1
         ;;
     esac
+    if (( mode == 2 )); then
+        next_mode=1
+    fi
+    #printf "pc=0x%X mode=%i next_mode=%i\n" $((pc)) $((mode)) $((next_mode))
+    mode=$((next_mode))
 done
 while ((${#bytes[@]} % 4 != 0)); do
     out_byte_text "" "" ""
@@ -140,8 +157,8 @@ function write() {
     local endian_bits=$(($2))
     echo "## $endian Machine Code"
     echo
-    echo "| Address | Byte | PC     | Instruction                    |"
-    echo "|---------|------|--------|--------------------------------|"
+    echo "| Address | Byte | PC | Mode | Instruction |"
+    echo "|---------|------|----|------|-------------|"
     for((i=0;i<${#bytes[@]};i++)); do
         printf "| 0x%04X  %s\n" $((i + initial_pc)) "${bytes[i ^ endian_bits]}"
     done
