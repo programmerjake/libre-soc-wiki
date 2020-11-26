@@ -43,6 +43,8 @@ small_regs[31]=7
 colors=("800" "880" "080" "088" "008" "808")
 pc=0x1000
 initial_pc=$((pc))
+last_pc=$((pc))
+last_color=0
 bytes=()
 function out_byte_text() {
     local s
@@ -55,7 +57,12 @@ function out_byte() {
     printf -v b '0x%04X' $((pc))
     local l="$line"
     if ((${#colors[@]} != 0)); then
-        local color="${colors[(pc - initial_pc) / 2 % ${#colors[@]}]}"
+        if ((last_pc != pc)); then
+            last_pc=$((pc))
+            ((last_color++))
+            ((last_color %= ${#colors[@]}))
+        fi
+        local color="${colors[last_color]}"
         a="<div class=\"color-$color\">$a</div>"
         b="<div class=\"color-$color\">$b</div>"
         l="<div class=\"color-$color\">$l</div>"
