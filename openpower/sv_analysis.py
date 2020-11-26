@@ -174,6 +174,29 @@ def process_csvs():
     primarykeys = list(primarykeys)
     primarykeys.sort()
 
+    # mapping to old SVPrefix "Forms"
+    mapsto = {'3R-1W-CRio': 'FR4',
+              '2R-1W-CRio': 'R',
+              '2R-1W-CRi': 'R',
+              '2R-1W-CRo': 'R',
+              '2R-1W': 'R',
+              '2R-CRio': 'R',
+              '2R-CRo': 'R',
+              '1R-1W-CRio': 'R',
+              '1R-1W-CRo': 'R',
+              '1R-1W': 'R',
+              '1R-1W': 'R',
+              }
+    print ("# map to old SV Prefix")
+    print ('')
+    print ('[[!table  data="""')
+    for key in primarykeys:
+        name = keyname(dictkeys[key])
+        value = mapsto.get(name, "-")
+        print (tformat([name, value+ " "]))
+    print ('"""]]')
+    print ('')
+
     print ("# keys")
     print ('')
     print ('[[!table  data="""')
