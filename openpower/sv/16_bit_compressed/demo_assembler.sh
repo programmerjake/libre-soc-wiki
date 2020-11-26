@@ -41,7 +41,6 @@ small_regs[29]=5
 small_regs[30]=6
 small_regs[31]=7
 colors=("800" "880" "080" "088" "008" "808")
-bright_colors=("F00" "888" "0F0" "0FF" "00F" "F0F")
 modes=("Standard" "Compressed" "Std. Then Comp.")
 pc=0x1000
 mode=0
@@ -68,7 +67,10 @@ function out_byte() {
         fi
         local color="${colors[last_color]}"
         if ((${#bytes[@]} + initial_pc - pc == 0)); then
-            color="${bright_colors[last_color]}"
+            a="<b>$a</b>"
+            b="<b>$b</b>"
+            m="<b>$m</b>"
+            l="<b>$l</b>"
         fi
         a="<div class=\"color-$color\">$a</div>"
         b="<div class=\"color-$color\">$b</div>"
