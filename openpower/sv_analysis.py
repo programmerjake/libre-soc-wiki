@@ -194,6 +194,11 @@ def process_csvs():
               '1R-1W-CRo': 'R',
               '1R-1W': 'R',
               '1R-1W': 'R',
+              '1R-Imm': 'U',
+              'LDST-2R-imm': 'S',
+              'LDST-2R-1W-imm': 'S',
+              'LDST-1R-1W-imm': 'I',
+              'LDST-1R-2W-imm': 'I',
               }
     print ("# map to old SV Prefix")
     print ('')
