@@ -103,218 +103,218 @@ Note that bit numbering goes from 0 to 31 in the prefix, then 0 to 31 in the suf
 
 ## Big-Endian Machine Code
 
-| Address | Byte | PC     | Instruction               |
-|---------|------|--------|---------------------------|
-| 0x1000  | 0x38 | 0x1000 | addi r3, r4, 5            |
-| 0x1001  | 0x64 | 0x1000 | addi r3, r4, 5            |
-| 0x1002  | 0x00 | 0x1000 | addi r3, r4, 5            |
-| 0x1003  | 0x05 | 0x1000 | addi r3, r4, 5            |
-| 0x1004  | 0x06 | 0x1004 | paddi r3, r5, 0xDEADBEEF  |
-| 0x1005  | 0x00 | 0x1004 | paddi r3, r5, 0xDEADBEEF  |
-| 0x1006  | 0xDE | 0x1004 | paddi r3, r5, 0xDEADBEEF  |
-| 0x1007  | 0xAD | 0x1004 | paddi r3, r5, 0xDEADBEEF  |
-| 0x1008  | 0x38 | 0x1004 | paddi r3, r5, 0xDEADBEEF  |
-| 0x1009  | 0x65 | 0x1004 | paddi r3, r5, 0xDEADBEEF  |
-| 0x100A  | 0xBE | 0x1004 | paddi r3, r5, 0xDEADBEEF  |
-| 0x100B  | 0xEF | 0x1004 | paddi r3, r5, 0xDEADBEEF  |
-| 0x100C  | 0x00 | 0x100C | x.placeholder             |
-| 0x100D  | 0x00 | 0x100C | x.placeholder             |
-| 0x100E  | 0x00 | 0x100C | x.placeholder             |
-| 0x100F  | 0x02 | 0x100C | x.placeholder             |
-| 0x1010  | 0x00 | 0x100C | x.placeholder             |
-| 0x1011  | 0x00 | 0x100C | x.placeholder             |
-| 0x1012  | 0x38 | 0x1012 | addi r3, r4, 5            |
-| 0x1013  | 0x64 | 0x1012 | addi r3, r4, 5            |
-| 0x1014  | 0x00 | 0x1012 | addi r3, r4, 5            |
-| 0x1015  | 0x05 | 0x1012 | addi r3, r4, 5            |
-| 0x1016  | 0x06 | 0x1016 | paddi r3, r5, 0x89ABCDEF  |
-| 0x1017  | 0x00 | 0x1016 | paddi r3, r5, 0x89ABCDEF  |
-| 0x1018  | 0x89 | 0x1016 | paddi r3, r5, 0x89ABCDEF  |
-| 0x1019  | 0xAB | 0x1016 | paddi r3, r5, 0x89ABCDEF  |
-| 0x101A  | 0x38 | 0x1016 | paddi r3, r5, 0x89ABCDEF  |
-| 0x101B  | 0x65 | 0x1016 | paddi r3, r5, 0x89ABCDEF  |
-| 0x101C  | 0xCD | 0x1016 | paddi r3, r5, 0x89ABCDEF  |
-| 0x101D  | 0xEF | 0x1016 | paddi r3, r5, 0x89ABCDEF  |
-| 0x101E  | 0x00 | 0x101E | x.placeholder             |
-| 0x101F  | 0x00 | 0x101E | x.placeholder             |
-| 0x1020  | 0x00 | 0x101E | x.placeholder             |
-| 0x1021  | 0x02 | 0x101E | x.placeholder             |
-| 0x1022  | 0x00 | 0x101E | x.placeholder             |
-| 0x1023  | 0x00 | 0x101E | x.placeholder             |
-| 0x1024  | 0x14 | 0x1024 | h.add r3, r4              |
-| 0x1025  | 0x02 | 0x1024 | h.add r3, r4              |
-| 0x1026  | 0x38 | 0x1026 | addi r3, r6, 7            |
-| 0x1027  | 0x66 | 0x1026 | addi r3, r6, 7            |
-| 0x1028  | 0x00 | 0x1026 | addi r3, r6, 7            |
-| 0x1029  | 0x07 | 0x1026 | addi r3, r6, 7            |
-| 0x102A  | 0x14 | 0x102A | hs.add r3, r31            |
-| 0x102B  | 0x0F | 0x102A | hs.add r3, r31            |
-| 0x102C  | 0x04 | 0x102C | c.add r3, r30             |
-| 0x102D  | 0x0C | 0x102C | c.add r3, r30             |
-| 0x102E  | 0x84 | 0x102E | cst.add r3, r29           |
-| 0x102F  | 0x0B | 0x102E | cst.add r3, r29           |
-| 0x1030  | 0x06 | 0x1030 | paddi r3, r31, 0x12345678 |
-| 0x1031  | 0x00 | 0x1030 | paddi r3, r31, 0x12345678 |
-| 0x1032  | 0x12 | 0x1030 | paddi r3, r31, 0x12345678 |
-| 0x1033  | 0x34 | 0x1030 | paddi r3, r31, 0x12345678 |
-| 0x1034  | 0x38 | 0x1030 | paddi r3, r31, 0x12345678 |
-| 0x1035  | 0x7F | 0x1030 | paddi r3, r31, 0x12345678 |
-| 0x1036  | 0x56 | 0x1030 | paddi r3, r31, 0x12345678 |
-| 0x1037  | 0x78 | 0x1030 | paddi r3, r31, 0x12345678 |
-| 0x1038  | 0x04 | 0x1038 | c.add r3, r5              |
-| 0x1039  | 0x04 | 0x1038 | c.add r3, r5              |
-| 0x103A  | 0x04 | 0x103A | c.add r3, r3              |
-| 0x103B  | 0x00 | 0x103A | c.add r3, r3              |
-| 0x103C  | 0x04 | 0x103C | cs.add r3, r6             |
-| 0x103D  | 0x07 | 0x103C | cs.add r3, r6             |
-| 0x103E  | 0x38 | 0x103E | addi r3, r3, 0x23         |
-| 0x103F  | 0x63 | 0x103E | addi r3, r3, 0x23         |
-| 0x1040  | 0x00 | 0x103E | addi r3, r3, 0x23         |
-| 0x1041  | 0x23 | 0x103E | addi r3, r3, 0x23         |
-| 0x1042  | 0x38 | 0x1042 | addi r3, r10, 0xA         |
-| 0x1043  | 0x6A | 0x1042 | addi r3, r10, 0xA         |
-| 0x1044  | 0x00 | 0x1042 | addi r3, r10, 0xA         |
-| 0x1045  | 0x0A | 0x1042 | addi r3, r10, 0xA         |
-| 0x1046  | 0x14 | 0x1046 | hs.add r3, r5             |
-| 0x1047  | 0x05 | 0x1046 | hs.add r3, r5             |
-| 0x1048  | 0x84 | 0x1048 | cst.add r3, r4            |
-| 0x1049  | 0x03 | 0x1048 | cst.add r3, r4            |
-| 0x104A  | 0x14 | 0x104A | hs.add r3, r6             |
-| 0x104B  | 0x07 | 0x104A | hs.add r3, r6             |
-| 0x104C  | 0x84 | 0x104C | cst.add r3, r28           |
-| 0x104D  | 0x09 | 0x104C | cst.add r3, r28           |
-| 0x104E  | 0x14 | 0x104E | h.add r3, r29             |
-| 0x104F  | 0x0A | 0x104E | h.add r3, r29             |
-| 0x1050  | 0x84 | 0x1050 | cst.add r3, r30           |
-| 0x1051  | 0x0D | 0x1050 | cst.add r3, r30           |
-| 0x1052  | 0x00 | 0x1052 | x.placeholder             |
-| 0x1053  | 0x00 | 0x1052 | x.placeholder             |
-| 0x1054  | 0x00 | 0x1052 | x.placeholder             |
-| 0x1055  | 0x02 | 0x1052 | x.placeholder             |
-| 0x1056  | 0x00 | 0x1052 | x.placeholder             |
-| 0x1057  | 0x00 | 0x1052 | x.placeholder             |
-| 0x1058  | 0x84 | 0x1058 | cst.add r3, r31           |
-| 0x1059  | 0x0F | 0x1058 | cst.add r3, r31           |
-| 0x105A  | 0x38 | 0x105A | addi r3, r15, 0xF         |
-| 0x105B  | 0x6F | 0x105A | addi r3, r15, 0xF         |
-| 0x105C  | 0x00 | 0x105A | addi r3, r15, 0xF         |
-| 0x105D  | 0x0F | 0x105A | addi r3, r15, 0xF         |
-| 0x105E  | 0x04 | 0x105E | cs.add r3, r4             |
-| 0x105F  | 0x03 | 0x105E | cs.add r3, r4             |
-| 0x1060  | 0x38 | 0x1060 | addi r3, r10, 0xF         |
-| 0x1061  | 0x6A | 0x1060 | addi r3, r10, 0xF         |
-| 0x1062  | 0x00 | 0x1060 | addi r3, r10, 0xF         |
-| 0x1063  | 0x0F | 0x1060 | addi r3, r10, 0xF         |
-| 0x1064  | 0x38 | 0x1064 | addi r3, r11, 0xF         |
-| 0x1065  | 0x6B | 0x1064 | addi r3, r11, 0xF         |
-| 0x1066  | 0x00 | 0x1064 | addi r3, r11, 0xF         |
-| 0x1067  | 0x0F | 0x1064 | addi r3, r11, 0xF         |
+| Address | Byte                              | PC                                  | Instruction                                            |
+|---------|-----------------------------------|-------------------------------------|--------------------------------------------------------|
+| 0x1000  | <div class="color-800">0x38</div> | <div class="color-800">0x1000</div> | <div class="color-800">addi r3, r4, 5</div>            |
+| 0x1001  | <div class="color-800">0x64</div> | <div class="color-800">0x1000</div> | <div class="color-800">addi r3, r4, 5</div>            |
+| 0x1002  | <div class="color-800">0x00</div> | <div class="color-800">0x1000</div> | <div class="color-800">addi r3, r4, 5</div>            |
+| 0x1003  | <div class="color-800">0x05</div> | <div class="color-800">0x1000</div> | <div class="color-800">addi r3, r4, 5</div>            |
+| 0x1004  | <div class="color-080">0x06</div> | <div class="color-080">0x1004</div> | <div class="color-080">paddi r3, r5, 0xDEADBEEF</div>  |
+| 0x1005  | <div class="color-080">0x00</div> | <div class="color-080">0x1004</div> | <div class="color-080">paddi r3, r5, 0xDEADBEEF</div>  |
+| 0x1006  | <div class="color-080">0xDE</div> | <div class="color-080">0x1004</div> | <div class="color-080">paddi r3, r5, 0xDEADBEEF</div>  |
+| 0x1007  | <div class="color-080">0xAD</div> | <div class="color-080">0x1004</div> | <div class="color-080">paddi r3, r5, 0xDEADBEEF</div>  |
+| 0x1008  | <div class="color-080">0x38</div> | <div class="color-080">0x1004</div> | <div class="color-080">paddi r3, r5, 0xDEADBEEF</div>  |
+| 0x1009  | <div class="color-080">0x65</div> | <div class="color-080">0x1004</div> | <div class="color-080">paddi r3, r5, 0xDEADBEEF</div>  |
+| 0x100A  | <div class="color-080">0xBE</div> | <div class="color-080">0x1004</div> | <div class="color-080">paddi r3, r5, 0xDEADBEEF</div>  |
+| 0x100B  | <div class="color-080">0xEF</div> | <div class="color-080">0x1004</div> | <div class="color-080">paddi r3, r5, 0xDEADBEEF</div>  |
+| 0x100C  | <div class="color-800">0x00</div> | <div class="color-800">0x100C</div> | <div class="color-800">x.placeholder</div>             |
+| 0x100D  | <div class="color-800">0x00</div> | <div class="color-800">0x100C</div> | <div class="color-800">x.placeholder</div>             |
+| 0x100E  | <div class="color-800">0x00</div> | <div class="color-800">0x100C</div> | <div class="color-800">x.placeholder</div>             |
+| 0x100F  | <div class="color-800">0x02</div> | <div class="color-800">0x100C</div> | <div class="color-800">x.placeholder</div>             |
+| 0x1010  | <div class="color-800">0x00</div> | <div class="color-800">0x100C</div> | <div class="color-800">x.placeholder</div>             |
+| 0x1011  | <div class="color-800">0x00</div> | <div class="color-800">0x100C</div> | <div class="color-800">x.placeholder</div>             |
+| 0x1012  | <div class="color-088">0x38</div> | <div class="color-088">0x1012</div> | <div class="color-088">addi r3, r4, 5</div>            |
+| 0x1013  | <div class="color-088">0x64</div> | <div class="color-088">0x1012</div> | <div class="color-088">addi r3, r4, 5</div>            |
+| 0x1014  | <div class="color-088">0x00</div> | <div class="color-088">0x1012</div> | <div class="color-088">addi r3, r4, 5</div>            |
+| 0x1015  | <div class="color-088">0x05</div> | <div class="color-088">0x1012</div> | <div class="color-088">addi r3, r4, 5</div>            |
+| 0x1016  | <div class="color-808">0x06</div> | <div class="color-808">0x1016</div> | <div class="color-808">paddi r3, r5, 0x89ABCDEF</div>  |
+| 0x1017  | <div class="color-808">0x00</div> | <div class="color-808">0x1016</div> | <div class="color-808">paddi r3, r5, 0x89ABCDEF</div>  |
+| 0x1018  | <div class="color-808">0x89</div> | <div class="color-808">0x1016</div> | <div class="color-808">paddi r3, r5, 0x89ABCDEF</div>  |
+| 0x1019  | <div class="color-808">0xAB</div> | <div class="color-808">0x1016</div> | <div class="color-808">paddi r3, r5, 0x89ABCDEF</div>  |
+| 0x101A  | <div class="color-808">0x38</div> | <div class="color-808">0x1016</div> | <div class="color-808">paddi r3, r5, 0x89ABCDEF</div>  |
+| 0x101B  | <div class="color-808">0x65</div> | <div class="color-808">0x1016</div> | <div class="color-808">paddi r3, r5, 0x89ABCDEF</div>  |
+| 0x101C  | <div class="color-808">0xCD</div> | <div class="color-808">0x1016</div> | <div class="color-808">paddi r3, r5, 0x89ABCDEF</div>  |
+| 0x101D  | <div class="color-808">0xEF</div> | <div class="color-808">0x1016</div> | <div class="color-808">paddi r3, r5, 0x89ABCDEF</div>  |
+| 0x101E  | <div class="color-088">0x00</div> | <div class="color-088">0x101E</div> | <div class="color-088">x.placeholder</div>             |
+| 0x101F  | <div class="color-088">0x00</div> | <div class="color-088">0x101E</div> | <div class="color-088">x.placeholder</div>             |
+| 0x1020  | <div class="color-088">0x00</div> | <div class="color-088">0x101E</div> | <div class="color-088">x.placeholder</div>             |
+| 0x1021  | <div class="color-088">0x02</div> | <div class="color-088">0x101E</div> | <div class="color-088">x.placeholder</div>             |
+| 0x1022  | <div class="color-088">0x00</div> | <div class="color-088">0x101E</div> | <div class="color-088">x.placeholder</div>             |
+| 0x1023  | <div class="color-088">0x00</div> | <div class="color-088">0x101E</div> | <div class="color-088">x.placeholder</div>             |
+| 0x1024  | <div class="color-800">0x14</div> | <div class="color-800">0x1024</div> | <div class="color-800">h.add r3, r4</div>              |
+| 0x1025  | <div class="color-800">0x02</div> | <div class="color-800">0x1024</div> | <div class="color-800">h.add r3, r4</div>              |
+| 0x1026  | <div class="color-880">0x38</div> | <div class="color-880">0x1026</div> | <div class="color-880">addi r3, r6, 7</div>            |
+| 0x1027  | <div class="color-880">0x66</div> | <div class="color-880">0x1026</div> | <div class="color-880">addi r3, r6, 7</div>            |
+| 0x1028  | <div class="color-880">0x00</div> | <div class="color-880">0x1026</div> | <div class="color-880">addi r3, r6, 7</div>            |
+| 0x1029  | <div class="color-880">0x07</div> | <div class="color-880">0x1026</div> | <div class="color-880">addi r3, r6, 7</div>            |
+| 0x102A  | <div class="color-088">0x14</div> | <div class="color-088">0x102A</div> | <div class="color-088">hs.add r3, r31</div>            |
+| 0x102B  | <div class="color-088">0x0F</div> | <div class="color-088">0x102A</div> | <div class="color-088">hs.add r3, r31</div>            |
+| 0x102C  | <div class="color-008">0x04</div> | <div class="color-008">0x102C</div> | <div class="color-008">c.add r3, r30</div>             |
+| 0x102D  | <div class="color-008">0x0C</div> | <div class="color-008">0x102C</div> | <div class="color-008">c.add r3, r30</div>             |
+| 0x102E  | <div class="color-808">0x84</div> | <div class="color-808">0x102E</div> | <div class="color-808">cst.add r3, r29</div>           |
+| 0x102F  | <div class="color-808">0x0B</div> | <div class="color-808">0x102E</div> | <div class="color-808">cst.add r3, r29</div>           |
+| 0x1030  | <div class="color-800">0x06</div> | <div class="color-800">0x1030</div> | <div class="color-800">paddi r3, r31, 0x12345678</div> |
+| 0x1031  | <div class="color-800">0x00</div> | <div class="color-800">0x1030</div> | <div class="color-800">paddi r3, r31, 0x12345678</div> |
+| 0x1032  | <div class="color-800">0x12</div> | <div class="color-800">0x1030</div> | <div class="color-800">paddi r3, r31, 0x12345678</div> |
+| 0x1033  | <div class="color-800">0x34</div> | <div class="color-800">0x1030</div> | <div class="color-800">paddi r3, r31, 0x12345678</div> |
+| 0x1034  | <div class="color-800">0x38</div> | <div class="color-800">0x1030</div> | <div class="color-800">paddi r3, r31, 0x12345678</div> |
+| 0x1035  | <div class="color-800">0x7F</div> | <div class="color-800">0x1030</div> | <div class="color-800">paddi r3, r31, 0x12345678</div> |
+| 0x1036  | <div class="color-800">0x56</div> | <div class="color-800">0x1030</div> | <div class="color-800">paddi r3, r31, 0x12345678</div> |
+| 0x1037  | <div class="color-800">0x78</div> | <div class="color-800">0x1030</div> | <div class="color-800">paddi r3, r31, 0x12345678</div> |
+| 0x1038  | <div class="color-008">0x04</div> | <div class="color-008">0x1038</div> | <div class="color-008">c.add r3, r5</div>              |
+| 0x1039  | <div class="color-008">0x04</div> | <div class="color-008">0x1038</div> | <div class="color-008">c.add r3, r5</div>              |
+| 0x103A  | <div class="color-808">0x04</div> | <div class="color-808">0x103A</div> | <div class="color-808">c.add r3, r3</div>              |
+| 0x103B  | <div class="color-808">0x00</div> | <div class="color-808">0x103A</div> | <div class="color-808">c.add r3, r3</div>              |
+| 0x103C  | <div class="color-800">0x04</div> | <div class="color-800">0x103C</div> | <div class="color-800">cs.add r3, r6</div>             |
+| 0x103D  | <div class="color-800">0x07</div> | <div class="color-800">0x103C</div> | <div class="color-800">cs.add r3, r6</div>             |
+| 0x103E  | <div class="color-880">0x38</div> | <div class="color-880">0x103E</div> | <div class="color-880">addi r3, r3, 0x23</div>         |
+| 0x103F  | <div class="color-880">0x63</div> | <div class="color-880">0x103E</div> | <div class="color-880">addi r3, r3, 0x23</div>         |
+| 0x1040  | <div class="color-880">0x00</div> | <div class="color-880">0x103E</div> | <div class="color-880">addi r3, r3, 0x23</div>         |
+| 0x1041  | <div class="color-880">0x23</div> | <div class="color-880">0x103E</div> | <div class="color-880">addi r3, r3, 0x23</div>         |
+| 0x1042  | <div class="color-088">0x38</div> | <div class="color-088">0x1042</div> | <div class="color-088">addi r3, r10, 0xA</div>         |
+| 0x1043  | <div class="color-088">0x6A</div> | <div class="color-088">0x1042</div> | <div class="color-088">addi r3, r10, 0xA</div>         |
+| 0x1044  | <div class="color-088">0x00</div> | <div class="color-088">0x1042</div> | <div class="color-088">addi r3, r10, 0xA</div>         |
+| 0x1045  | <div class="color-088">0x0A</div> | <div class="color-088">0x1042</div> | <div class="color-088">addi r3, r10, 0xA</div>         |
+| 0x1046  | <div class="color-808">0x14</div> | <div class="color-808">0x1046</div> | <div class="color-808">hs.add r3, r5</div>             |
+| 0x1047  | <div class="color-808">0x05</div> | <div class="color-808">0x1046</div> | <div class="color-808">hs.add r3, r5</div>             |
+| 0x1048  | <div class="color-800">0x84</div> | <div class="color-800">0x1048</div> | <div class="color-800">cst.add r3, r4</div>            |
+| 0x1049  | <div class="color-800">0x03</div> | <div class="color-800">0x1048</div> | <div class="color-800">cst.add r3, r4</div>            |
+| 0x104A  | <div class="color-880">0x14</div> | <div class="color-880">0x104A</div> | <div class="color-880">hs.add r3, r6</div>             |
+| 0x104B  | <div class="color-880">0x07</div> | <div class="color-880">0x104A</div> | <div class="color-880">hs.add r3, r6</div>             |
+| 0x104C  | <div class="color-080">0x84</div> | <div class="color-080">0x104C</div> | <div class="color-080">cst.add r3, r28</div>           |
+| 0x104D  | <div class="color-080">0x09</div> | <div class="color-080">0x104C</div> | <div class="color-080">cst.add r3, r28</div>           |
+| 0x104E  | <div class="color-088">0x14</div> | <div class="color-088">0x104E</div> | <div class="color-088">h.add r3, r29</div>             |
+| 0x104F  | <div class="color-088">0x0A</div> | <div class="color-088">0x104E</div> | <div class="color-088">h.add r3, r29</div>             |
+| 0x1050  | <div class="color-008">0x84</div> | <div class="color-008">0x1050</div> | <div class="color-008">cst.add r3, r30</div>           |
+| 0x1051  | <div class="color-008">0x0D</div> | <div class="color-008">0x1050</div> | <div class="color-008">cst.add r3, r30</div>           |
+| 0x1052  | <div class="color-808">0x00</div> | <div class="color-808">0x1052</div> | <div class="color-808">x.placeholder</div>             |
+| 0x1053  | <div class="color-808">0x00</div> | <div class="color-808">0x1052</div> | <div class="color-808">x.placeholder</div>             |
+| 0x1054  | <div class="color-808">0x00</div> | <div class="color-808">0x1052</div> | <div class="color-808">x.placeholder</div>             |
+| 0x1055  | <div class="color-808">0x02</div> | <div class="color-808">0x1052</div> | <div class="color-808">x.placeholder</div>             |
+| 0x1056  | <div class="color-808">0x00</div> | <div class="color-808">0x1052</div> | <div class="color-808">x.placeholder</div>             |
+| 0x1057  | <div class="color-808">0x00</div> | <div class="color-808">0x1052</div> | <div class="color-808">x.placeholder</div>             |
+| 0x1058  | <div class="color-080">0x84</div> | <div class="color-080">0x1058</div> | <div class="color-080">cst.add r3, r31</div>           |
+| 0x1059  | <div class="color-080">0x0F</div> | <div class="color-080">0x1058</div> | <div class="color-080">cst.add r3, r31</div>           |
+| 0x105A  | <div class="color-088">0x38</div> | <div class="color-088">0x105A</div> | <div class="color-088">addi r3, r15, 0xF</div>         |
+| 0x105B  | <div class="color-088">0x6F</div> | <div class="color-088">0x105A</div> | <div class="color-088">addi r3, r15, 0xF</div>         |
+| 0x105C  | <div class="color-088">0x00</div> | <div class="color-088">0x105A</div> | <div class="color-088">addi r3, r15, 0xF</div>         |
+| 0x105D  | <div class="color-088">0x0F</div> | <div class="color-088">0x105A</div> | <div class="color-088">addi r3, r15, 0xF</div>         |
+| 0x105E  | <div class="color-808">0x04</div> | <div class="color-808">0x105E</div> | <div class="color-808">cs.add r3, r4</div>             |
+| 0x105F  | <div class="color-808">0x03</div> | <div class="color-808">0x105E</div> | <div class="color-808">cs.add r3, r4</div>             |
+| 0x1060  | <div class="color-800">0x38</div> | <div class="color-800">0x1060</div> | <div class="color-800">addi r3, r10, 0xF</div>         |
+| 0x1061  | <div class="color-800">0x6A</div> | <div class="color-800">0x1060</div> | <div class="color-800">addi r3, r10, 0xF</div>         |
+| 0x1062  | <div class="color-800">0x00</div> | <div class="color-800">0x1060</div> | <div class="color-800">addi r3, r10, 0xF</div>         |
+| 0x1063  | <div class="color-800">0x0F</div> | <div class="color-800">0x1060</div> | <div class="color-800">addi r3, r10, 0xF</div>         |
+| 0x1064  | <div class="color-080">0x38</div> | <div class="color-080">0x1064</div> | <div class="color-080">addi r3, r11, 0xF</div>         |
+| 0x1065  | <div class="color-080">0x6B</div> | <div class="color-080">0x1064</div> | <div class="color-080">addi r3, r11, 0xF</div>         |
+| 0x1066  | <div class="color-080">0x00</div> | <div class="color-080">0x1064</div> | <div class="color-080">addi r3, r11, 0xF</div>         |
+| 0x1067  | <div class="color-080">0x0F</div> | <div class="color-080">0x1064</div> | <div class="color-080">addi r3, r11, 0xF</div>         |
 
 ## Little-Endian Machine Code
 
-| Address | Byte | PC     | Instruction               |
-|---------|------|--------|---------------------------|
-| 0x1000  | 0x05 | 0x1000 | addi r3, r4, 5            |
-| 0x1001  | 0x00 | 0x1000 | addi r3, r4, 5            |
-| 0x1002  | 0x64 | 0x1000 | addi r3, r4, 5            |
-| 0x1003  | 0x38 | 0x1000 | addi r3, r4, 5            |
-| 0x1004  | 0xAD | 0x1004 | paddi r3, r5, 0xDEADBEEF  |
-| 0x1005  | 0xDE | 0x1004 | paddi r3, r5, 0xDEADBEEF  |
-| 0x1006  | 0x00 | 0x1004 | paddi r3, r5, 0xDEADBEEF  |
-| 0x1007  | 0x06 | 0x1004 | paddi r3, r5, 0xDEADBEEF  |
-| 0x1008  | 0xEF | 0x1004 | paddi r3, r5, 0xDEADBEEF  |
-| 0x1009  | 0xBE | 0x1004 | paddi r3, r5, 0xDEADBEEF  |
-| 0x100A  | 0x65 | 0x1004 | paddi r3, r5, 0xDEADBEEF  |
-| 0x100B  | 0x38 | 0x1004 | paddi r3, r5, 0xDEADBEEF  |
-| 0x100C  | 0x02 | 0x100C | x.placeholder             |
-| 0x100D  | 0x00 | 0x100C | x.placeholder             |
-| 0x100E  | 0x00 | 0x100C | x.placeholder             |
-| 0x100F  | 0x00 | 0x100C | x.placeholder             |
-| 0x1010  | 0x64 | 0x1012 | addi r3, r4, 5            |
-| 0x1011  | 0x38 | 0x1012 | addi r3, r4, 5            |
-| 0x1012  | 0x00 | 0x100C | x.placeholder             |
-| 0x1013  | 0x00 | 0x100C | x.placeholder             |
-| 0x1014  | 0x00 | 0x1016 | paddi r3, r5, 0x89ABCDEF  |
-| 0x1015  | 0x06 | 0x1016 | paddi r3, r5, 0x89ABCDEF  |
-| 0x1016  | 0x05 | 0x1012 | addi r3, r4, 5            |
-| 0x1017  | 0x00 | 0x1012 | addi r3, r4, 5            |
-| 0x1018  | 0x65 | 0x1016 | paddi r3, r5, 0x89ABCDEF  |
-| 0x1019  | 0x38 | 0x1016 | paddi r3, r5, 0x89ABCDEF  |
-| 0x101A  | 0xAB | 0x1016 | paddi r3, r5, 0x89ABCDEF  |
-| 0x101B  | 0x89 | 0x1016 | paddi r3, r5, 0x89ABCDEF  |
-| 0x101C  | 0x00 | 0x101E | x.placeholder             |
-| 0x101D  | 0x00 | 0x101E | x.placeholder             |
-| 0x101E  | 0xEF | 0x1016 | paddi r3, r5, 0x89ABCDEF  |
-| 0x101F  | 0xCD | 0x1016 | paddi r3, r5, 0x89ABCDEF  |
-| 0x1020  | 0x00 | 0x101E | x.placeholder             |
-| 0x1021  | 0x00 | 0x101E | x.placeholder             |
-| 0x1022  | 0x02 | 0x101E | x.placeholder             |
-| 0x1023  | 0x00 | 0x101E | x.placeholder             |
-| 0x1024  | 0x66 | 0x1026 | addi r3, r6, 7            |
-| 0x1025  | 0x38 | 0x1026 | addi r3, r6, 7            |
-| 0x1026  | 0x02 | 0x1024 | h.add r3, r4              |
-| 0x1027  | 0x14 | 0x1024 | h.add r3, r4              |
-| 0x1028  | 0x0F | 0x102A | hs.add r3, r31            |
-| 0x1029  | 0x14 | 0x102A | hs.add r3, r31            |
-| 0x102A  | 0x07 | 0x1026 | addi r3, r6, 7            |
-| 0x102B  | 0x00 | 0x1026 | addi r3, r6, 7            |
-| 0x102C  | 0x0B | 0x102E | cst.add r3, r29           |
-| 0x102D  | 0x84 | 0x102E | cst.add r3, r29           |
-| 0x102E  | 0x0C | 0x102C | c.add r3, r30             |
-| 0x102F  | 0x04 | 0x102C | c.add r3, r30             |
-| 0x1030  | 0x34 | 0x1030 | paddi r3, r31, 0x12345678 |
-| 0x1031  | 0x12 | 0x1030 | paddi r3, r31, 0x12345678 |
-| 0x1032  | 0x00 | 0x1030 | paddi r3, r31, 0x12345678 |
-| 0x1033  | 0x06 | 0x1030 | paddi r3, r31, 0x12345678 |
-| 0x1034  | 0x78 | 0x1030 | paddi r3, r31, 0x12345678 |
-| 0x1035  | 0x56 | 0x1030 | paddi r3, r31, 0x12345678 |
-| 0x1036  | 0x7F | 0x1030 | paddi r3, r31, 0x12345678 |
-| 0x1037  | 0x38 | 0x1030 | paddi r3, r31, 0x12345678 |
-| 0x1038  | 0x00 | 0x103A | c.add r3, r3              |
-| 0x1039  | 0x04 | 0x103A | c.add r3, r3              |
-| 0x103A  | 0x04 | 0x1038 | c.add r3, r5              |
-| 0x103B  | 0x04 | 0x1038 | c.add r3, r5              |
-| 0x103C  | 0x63 | 0x103E | addi r3, r3, 0x23         |
-| 0x103D  | 0x38 | 0x103E | addi r3, r3, 0x23         |
-| 0x103E  | 0x07 | 0x103C | cs.add r3, r6             |
-| 0x103F  | 0x04 | 0x103C | cs.add r3, r6             |
-| 0x1040  | 0x6A | 0x1042 | addi r3, r10, 0xA         |
-| 0x1041  | 0x38 | 0x1042 | addi r3, r10, 0xA         |
-| 0x1042  | 0x23 | 0x103E | addi r3, r3, 0x23         |
-| 0x1043  | 0x00 | 0x103E | addi r3, r3, 0x23         |
-| 0x1044  | 0x05 | 0x1046 | hs.add r3, r5             |
-| 0x1045  | 0x14 | 0x1046 | hs.add r3, r5             |
-| 0x1046  | 0x0A | 0x1042 | addi r3, r10, 0xA         |
-| 0x1047  | 0x00 | 0x1042 | addi r3, r10, 0xA         |
-| 0x1048  | 0x07 | 0x104A | hs.add r3, r6             |
-| 0x1049  | 0x14 | 0x104A | hs.add r3, r6             |
-| 0x104A  | 0x03 | 0x1048 | cst.add r3, r4            |
-| 0x104B  | 0x84 | 0x1048 | cst.add r3, r4            |
-| 0x104C  | 0x0A | 0x104E | h.add r3, r29             |
-| 0x104D  | 0x14 | 0x104E | h.add r3, r29             |
-| 0x104E  | 0x09 | 0x104C | cst.add r3, r28           |
-| 0x104F  | 0x84 | 0x104C | cst.add r3, r28           |
-| 0x1050  | 0x00 | 0x1052 | x.placeholder             |
-| 0x1051  | 0x00 | 0x1052 | x.placeholder             |
-| 0x1052  | 0x0D | 0x1050 | cst.add r3, r30           |
-| 0x1053  | 0x84 | 0x1050 | cst.add r3, r30           |
-| 0x1054  | 0x00 | 0x1052 | x.placeholder             |
-| 0x1055  | 0x00 | 0x1052 | x.placeholder             |
-| 0x1056  | 0x02 | 0x1052 | x.placeholder             |
-| 0x1057  | 0x00 | 0x1052 | x.placeholder             |
-| 0x1058  | 0x6F | 0x105A | addi r3, r15, 0xF         |
-| 0x1059  | 0x38 | 0x105A | addi r3, r15, 0xF         |
-| 0x105A  | 0x0F | 0x1058 | cst.add r3, r31           |
-| 0x105B  | 0x84 | 0x1058 | cst.add r3, r31           |
-| 0x105C  | 0x03 | 0x105E | cs.add r3, r4             |
-| 0x105D  | 0x04 | 0x105E | cs.add r3, r4             |
-| 0x105E  | 0x0F | 0x105A | addi r3, r15, 0xF         |
-| 0x105F  | 0x00 | 0x105A | addi r3, r15, 0xF         |
-| 0x1060  | 0x0F | 0x1060 | addi r3, r10, 0xF         |
-| 0x1061  | 0x00 | 0x1060 | addi r3, r10, 0xF         |
-| 0x1062  | 0x6A | 0x1060 | addi r3, r10, 0xF         |
-| 0x1063  | 0x38 | 0x1060 | addi r3, r10, 0xF         |
-| 0x1064  | 0x0F | 0x1064 | addi r3, r11, 0xF         |
-| 0x1065  | 0x00 | 0x1064 | addi r3, r11, 0xF         |
-| 0x1066  | 0x6B | 0x1064 | addi r3, r11, 0xF         |
-| 0x1067  | 0x38 | 0x1064 | addi r3, r11, 0xF         |
+| Address | Byte                              | PC                                  | Instruction                                            |
+|---------|-----------------------------------|-------------------------------------|--------------------------------------------------------|
+| 0x1000  | <div class="color-800">0x05</div> | <div class="color-800">0x1000</div> | <div class="color-800">addi r3, r4, 5</div>            |
+| 0x1001  | <div class="color-800">0x00</div> | <div class="color-800">0x1000</div> | <div class="color-800">addi r3, r4, 5</div>            |
+| 0x1002  | <div class="color-800">0x64</div> | <div class="color-800">0x1000</div> | <div class="color-800">addi r3, r4, 5</div>            |
+| 0x1003  | <div class="color-800">0x38</div> | <div class="color-800">0x1000</div> | <div class="color-800">addi r3, r4, 5</div>            |
+| 0x1004  | <div class="color-080">0xAD</div> | <div class="color-080">0x1004</div> | <div class="color-080">paddi r3, r5, 0xDEADBEEF</div>  |
+| 0x1005  | <div class="color-080">0xDE</div> | <div class="color-080">0x1004</div> | <div class="color-080">paddi r3, r5, 0xDEADBEEF</div>  |
+| 0x1006  | <div class="color-080">0x00</div> | <div class="color-080">0x1004</div> | <div class="color-080">paddi r3, r5, 0xDEADBEEF</div>  |
+| 0x1007  | <div class="color-080">0x06</div> | <div class="color-080">0x1004</div> | <div class="color-080">paddi r3, r5, 0xDEADBEEF</div>  |
+| 0x1008  | <div class="color-080">0xEF</div> | <div class="color-080">0x1004</div> | <div class="color-080">paddi r3, r5, 0xDEADBEEF</div>  |
+| 0x1009  | <div class="color-080">0xBE</div> | <div class="color-080">0x1004</div> | <div class="color-080">paddi r3, r5, 0xDEADBEEF</div>  |
+| 0x100A  | <div class="color-080">0x65</div> | <div class="color-080">0x1004</div> | <div class="color-080">paddi r3, r5, 0xDEADBEEF</div>  |
+| 0x100B  | <div class="color-080">0x38</div> | <div class="color-080">0x1004</div> | <div class="color-080">paddi r3, r5, 0xDEADBEEF</div>  |
+| 0x100C  | <div class="color-800">0x02</div> | <div class="color-800">0x100C</div> | <div class="color-800">x.placeholder</div>             |
+| 0x100D  | <div class="color-800">0x00</div> | <div class="color-800">0x100C</div> | <div class="color-800">x.placeholder</div>             |
+| 0x100E  | <div class="color-800">0x00</div> | <div class="color-800">0x100C</div> | <div class="color-800">x.placeholder</div>             |
+| 0x100F  | <div class="color-800">0x00</div> | <div class="color-800">0x100C</div> | <div class="color-800">x.placeholder</div>             |
+| 0x1010  | <div class="color-088">0x64</div> | <div class="color-088">0x1012</div> | <div class="color-088">addi r3, r4, 5</div>            |
+| 0x1011  | <div class="color-088">0x38</div> | <div class="color-088">0x1012</div> | <div class="color-088">addi r3, r4, 5</div>            |
+| 0x1012  | <div class="color-800">0x00</div> | <div class="color-800">0x100C</div> | <div class="color-800">x.placeholder</div>             |
+| 0x1013  | <div class="color-800">0x00</div> | <div class="color-800">0x100C</div> | <div class="color-800">x.placeholder</div>             |
+| 0x1014  | <div class="color-808">0x00</div> | <div class="color-808">0x1016</div> | <div class="color-808">paddi r3, r5, 0x89ABCDEF</div>  |
+| 0x1015  | <div class="color-808">0x06</div> | <div class="color-808">0x1016</div> | <div class="color-808">paddi r3, r5, 0x89ABCDEF</div>  |
+| 0x1016  | <div class="color-088">0x05</div> | <div class="color-088">0x1012</div> | <div class="color-088">addi r3, r4, 5</div>            |
+| 0x1017  | <div class="color-088">0x00</div> | <div class="color-088">0x1012</div> | <div class="color-088">addi r3, r4, 5</div>            |
+| 0x1018  | <div class="color-808">0x65</div> | <div class="color-808">0x1016</div> | <div class="color-808">paddi r3, r5, 0x89ABCDEF</div>  |
+| 0x1019  | <div class="color-808">0x38</div> | <div class="color-808">0x1016</div> | <div class="color-808">paddi r3, r5, 0x89ABCDEF</div>  |
+| 0x101A  | <div class="color-808">0xAB</div> | <div class="color-808">0x1016</div> | <div class="color-808">paddi r3, r5, 0x89ABCDEF</div>  |
+| 0x101B  | <div class="color-808">0x89</div> | <div class="color-808">0x1016</div> | <div class="color-808">paddi r3, r5, 0x89ABCDEF</div>  |
+| 0x101C  | <div class="color-088">0x00</div> | <div class="color-088">0x101E</div> | <div class="color-088">x.placeholder</div>             |
+| 0x101D  | <div class="color-088">0x00</div> | <div class="color-088">0x101E</div> | <div class="color-088">x.placeholder</div>             |
+| 0x101E  | <div class="color-808">0xEF</div> | <div class="color-808">0x1016</div> | <div class="color-808">paddi r3, r5, 0x89ABCDEF</div>  |
+| 0x101F  | <div class="color-808">0xCD</div> | <div class="color-808">0x1016</div> | <div class="color-808">paddi r3, r5, 0x89ABCDEF</div>  |
+| 0x1020  | <div class="color-088">0x00</div> | <div class="color-088">0x101E</div> | <div class="color-088">x.placeholder</div>             |
+| 0x1021  | <div class="color-088">0x00</div> | <div class="color-088">0x101E</div> | <div class="color-088">x.placeholder</div>             |
+| 0x1022  | <div class="color-088">0x02</div> | <div class="color-088">0x101E</div> | <div class="color-088">x.placeholder</div>             |
+| 0x1023  | <div class="color-088">0x00</div> | <div class="color-088">0x101E</div> | <div class="color-088">x.placeholder</div>             |
+| 0x1024  | <div class="color-880">0x66</div> | <div class="color-880">0x1026</div> | <div class="color-880">addi r3, r6, 7</div>            |
+| 0x1025  | <div class="color-880">0x38</div> | <div class="color-880">0x1026</div> | <div class="color-880">addi r3, r6, 7</div>            |
+| 0x1026  | <div class="color-800">0x02</div> | <div class="color-800">0x1024</div> | <div class="color-800">h.add r3, r4</div>              |
+| 0x1027  | <div class="color-800">0x14</div> | <div class="color-800">0x1024</div> | <div class="color-800">h.add r3, r4</div>              |
+| 0x1028  | <div class="color-088">0x0F</div> | <div class="color-088">0x102A</div> | <div class="color-088">hs.add r3, r31</div>            |
+| 0x1029  | <div class="color-088">0x14</div> | <div class="color-088">0x102A</div> | <div class="color-088">hs.add r3, r31</div>            |
+| 0x102A  | <div class="color-880">0x07</div> | <div class="color-880">0x1026</div> | <div class="color-880">addi r3, r6, 7</div>            |
+| 0x102B  | <div class="color-880">0x00</div> | <div class="color-880">0x1026</div> | <div class="color-880">addi r3, r6, 7</div>            |
+| 0x102C  | <div class="color-808">0x0B</div> | <div class="color-808">0x102E</div> | <div class="color-808">cst.add r3, r29</div>           |
+| 0x102D  | <div class="color-808">0x84</div> | <div class="color-808">0x102E</div> | <div class="color-808">cst.add r3, r29</div>           |
+| 0x102E  | <div class="color-008">0x0C</div> | <div class="color-008">0x102C</div> | <div class="color-008">c.add r3, r30</div>             |
+| 0x102F  | <div class="color-008">0x04</div> | <div class="color-008">0x102C</div> | <div class="color-008">c.add r3, r30</div>             |
+| 0x1030  | <div class="color-800">0x34</div> | <div class="color-800">0x1030</div> | <div class="color-800">paddi r3, r31, 0x12345678</div> |
+| 0x1031  | <div class="color-800">0x12</div> | <div class="color-800">0x1030</div> | <div class="color-800">paddi r3, r31, 0x12345678</div> |
+| 0x1032  | <div class="color-800">0x00</div> | <div class="color-800">0x1030</div> | <div class="color-800">paddi r3, r31, 0x12345678</div> |
+| 0x1033  | <div class="color-800">0x06</div> | <div class="color-800">0x1030</div> | <div class="color-800">paddi r3, r31, 0x12345678</div> |
+| 0x1034  | <div class="color-800">0x78</div> | <div class="color-800">0x1030</div> | <div class="color-800">paddi r3, r31, 0x12345678</div> |
+| 0x1035  | <div class="color-800">0x56</div> | <div class="color-800">0x1030</div> | <div class="color-800">paddi r3, r31, 0x12345678</div> |
+| 0x1036  | <div class="color-800">0x7F</div> | <div class="color-800">0x1030</div> | <div class="color-800">paddi r3, r31, 0x12345678</div> |
+| 0x1037  | <div class="color-800">0x38</div> | <div class="color-800">0x1030</div> | <div class="color-800">paddi r3, r31, 0x12345678</div> |
+| 0x1038  | <div class="color-808">0x00</div> | <div class="color-808">0x103A</div> | <div class="color-808">c.add r3, r3</div>              |
+| 0x1039  | <div class="color-808">0x04</div> | <div class="color-808">0x103A</div> | <div class="color-808">c.add r3, r3</div>              |
+| 0x103A  | <div class="color-008">0x04</div> | <div class="color-008">0x1038</div> | <div class="color-008">c.add r3, r5</div>              |
+| 0x103B  | <div class="color-008">0x04</div> | <div class="color-008">0x1038</div> | <div class="color-008">c.add r3, r5</div>              |
+| 0x103C  | <div class="color-880">0x63</div> | <div class="color-880">0x103E</div> | <div class="color-880">addi r3, r3, 0x23</div>         |
+| 0x103D  | <div class="color-880">0x38</div> | <div class="color-880">0x103E</div> | <div class="color-880">addi r3, r3, 0x23</div>         |
+| 0x103E  | <div class="color-800">0x07</div> | <div class="color-800">0x103C</div> | <div class="color-800">cs.add r3, r6</div>             |
+| 0x103F  | <div class="color-800">0x04</div> | <div class="color-800">0x103C</div> | <div class="color-800">cs.add r3, r6</div>             |
+| 0x1040  | <div class="color-088">0x6A</div> | <div class="color-088">0x1042</div> | <div class="color-088">addi r3, r10, 0xA</div>         |
+| 0x1041  | <div class="color-088">0x38</div> | <div class="color-088">0x1042</div> | <div class="color-088">addi r3, r10, 0xA</div>         |
+| 0x1042  | <div class="color-880">0x23</div> | <div class="color-880">0x103E</div> | <div class="color-880">addi r3, r3, 0x23</div>         |
+| 0x1043  | <div class="color-880">0x00</div> | <div class="color-880">0x103E</div> | <div class="color-880">addi r3, r3, 0x23</div>         |
+| 0x1044  | <div class="color-808">0x05</div> | <div class="color-808">0x1046</div> | <div class="color-808">hs.add r3, r5</div>             |
+| 0x1045  | <div class="color-808">0x14</div> | <div class="color-808">0x1046</div> | <div class="color-808">hs.add r3, r5</div>             |
+| 0x1046  | <div class="color-088">0x0A</div> | <div class="color-088">0x1042</div> | <div class="color-088">addi r3, r10, 0xA</div>         |
+| 0x1047  | <div class="color-088">0x00</div> | <div class="color-088">0x1042</div> | <div class="color-088">addi r3, r10, 0xA</div>         |
+| 0x1048  | <div class="color-880">0x07</div> | <div class="color-880">0x104A</div> | <div class="color-880">hs.add r3, r6</div>             |
+| 0x1049  | <div class="color-880">0x14</div> | <div class="color-880">0x104A</div> | <div class="color-880">hs.add r3, r6</div>             |
+| 0x104A  | <div class="color-800">0x03</div> | <div class="color-800">0x1048</div> | <div class="color-800">cst.add r3, r4</div>            |
+| 0x104B  | <div class="color-800">0x84</div> | <div class="color-800">0x1048</div> | <div class="color-800">cst.add r3, r4</div>            |
+| 0x104C  | <div class="color-088">0x0A</div> | <div class="color-088">0x104E</div> | <div class="color-088">h.add r3, r29</div>             |
+| 0x104D  | <div class="color-088">0x14</div> | <div class="color-088">0x104E</div> | <div class="color-088">h.add r3, r29</div>             |
+| 0x104E  | <div class="color-080">0x09</div> | <div class="color-080">0x104C</div> | <div class="color-080">cst.add r3, r28</div>           |
+| 0x104F  | <div class="color-080">0x84</div> | <div class="color-080">0x104C</div> | <div class="color-080">cst.add r3, r28</div>           |
+| 0x1050  | <div class="color-808">0x00</div> | <div class="color-808">0x1052</div> | <div class="color-808">x.placeholder</div>             |
+| 0x1051  | <div class="color-808">0x00</div> | <div class="color-808">0x1052</div> | <div class="color-808">x.placeholder</div>             |
+| 0x1052  | <div class="color-008">0x0D</div> | <div class="color-008">0x1050</div> | <div class="color-008">cst.add r3, r30</div>           |
+| 0x1053  | <div class="color-008">0x84</div> | <div class="color-008">0x1050</div> | <div class="color-008">cst.add r3, r30</div>           |
+| 0x1054  | <div class="color-808">0x00</div> | <div class="color-808">0x1052</div> | <div class="color-808">x.placeholder</div>             |
+| 0x1055  | <div class="color-808">0x00</div> | <div class="color-808">0x1052</div> | <div class="color-808">x.placeholder</div>             |
+| 0x1056  | <div class="color-808">0x02</div> | <div class="color-808">0x1052</div> | <div class="color-808">x.placeholder</div>             |
+| 0x1057  | <div class="color-808">0x00</div> | <div class="color-808">0x1052</div> | <div class="color-808">x.placeholder</div>             |
+| 0x1058  | <div class="color-088">0x6F</div> | <div class="color-088">0x105A</div> | <div class="color-088">addi r3, r15, 0xF</div>         |
+| 0x1059  | <div class="color-088">0x38</div> | <div class="color-088">0x105A</div> | <div class="color-088">addi r3, r15, 0xF</div>         |
+| 0x105A  | <div class="color-080">0x0F</div> | <div class="color-080">0x1058</div> | <div class="color-080">cst.add r3, r31</div>           |
+| 0x105B  | <div class="color-080">0x84</div> | <div class="color-080">0x1058</div> | <div class="color-080">cst.add r3, r31</div>           |
+| 0x105C  | <div class="color-808">0x03</div> | <div class="color-808">0x105E</div> | <div class="color-808">cs.add r3, r4</div>             |
+| 0x105D  | <div class="color-808">0x04</div> | <div class="color-808">0x105E</div> | <div class="color-808">cs.add r3, r4</div>             |
+| 0x105E  | <div class="color-088">0x0F</div> | <div class="color-088">0x105A</div> | <div class="color-088">addi r3, r15, 0xF</div>         |
+| 0x105F  | <div class="color-088">0x00</div> | <div class="color-088">0x105A</div> | <div class="color-088">addi r3, r15, 0xF</div>         |
+| 0x1060  | <div class="color-800">0x0F</div> | <div class="color-800">0x1060</div> | <div class="color-800">addi r3, r10, 0xF</div>         |
+| 0x1061  | <div class="color-800">0x00</div> | <div class="color-800">0x1060</div> | <div class="color-800">addi r3, r10, 0xF</div>         |
+| 0x1062  | <div class="color-800">0x6A</div> | <div class="color-800">0x1060</div> | <div class="color-800">addi r3, r10, 0xF</div>         |
+| 0x1063  | <div class="color-800">0x38</div> | <div class="color-800">0x1060</div> | <div class="color-800">addi r3, r10, 0xF</div>         |
+| 0x1064  | <div class="color-080">0x0F</div> | <div class="color-080">0x1064</div> | <div class="color-080">addi r3, r11, 0xF</div>         |
+| 0x1065  | <div class="color-080">0x00</div> | <div class="color-080">0x1064</div> | <div class="color-080">addi r3, r11, 0xF</div>         |
+| 0x1066  | <div class="color-080">0x6B</div> | <div class="color-080">0x1064</div> | <div class="color-080">addi r3, r11, 0xF</div>         |
+| 0x1067  | <div class="color-080">0x38</div> | <div class="color-080">0x1064</div> | <div class="color-080">addi r3, r11, 0xF</div>         |

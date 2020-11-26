@@ -40,6 +40,7 @@ small_regs[28]=4
 small_regs[29]=5
 small_regs[30]=6
 small_regs[31]=7
+colors=("800" "880" "080" "088" "008" "808")
 pc=0x1000
 initial_pc=$((pc))
 bytes=()
@@ -52,7 +53,14 @@ function out_byte() {
     local a b
     printf -v a '0x%02X' $(($1))
     printf -v b '0x%04X' $((pc))
-    out_byte_text "$a" "$b" "$line"
+    local l="$line"
+    if ((${#colors[@]} != 0)); then
+        local color="${colors[(pc - initial_pc) / 2 % ${#colors[@]}]}"
+        a="<div class=\"color-$color\">$a</div>"
+        b="<div class=\"color-$color\">$b</div>"
+        l="<div class=\"color-$color\">$l</div>"
+    fi
+    out_byte_text "$a" "$b" "$l"
 }
 function out_16() {
     out_byte $(($1 >> 8))
