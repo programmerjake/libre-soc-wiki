@@ -64,6 +64,28 @@ Spare:
 
 * EXT22
 
+## C10/16 FSM
+
+    if EXT == 00/01
+         start @ 10bit
+    if state==10bit:
+         if bit15:
+             next = 16bit
+         else:
+             next = Standard
+    if state==16bit:
+         if bit0 & bit15:
+             insn = C.immediate
+         if ~bit15:
+             if ~bit0:
+                 next = Standard
+             else
+                 next = Standard.then.16bit
+
+## SV-Compressed
+
+TODO
+
 # Major opcode map
 
 Table 9: Primary Opcode Map (opcode bits 0:5)
