@@ -50,14 +50,15 @@ VBLOCK can be added later by using further VSX dedicated major opcodes
 
 Potential allocations:
 
-* EXT00/01 - Compressed 16 bit
-* EXT02/03 - SV-P48 / SV-C32
-* EXT04/05 - SV-P64 / SV-C48
-* EXT06/07 - SV-C32-Swizzle / SV-C64
-* EXT56/57 - Predicated-SV-C32-Swizzle / SV-P48-Swizzle
-* EXT60/62 - VBLOCK
-* EXT09/17 - Predicated SV-P48 / SV-C32
-* EXT46/47 - Predicated SV-P64 / SV-C48
+    |  hword 0   | hword1  |  hword2    |  hword 3   |
+    EXT00/01 - C 10bit -> 16bit
+    EXT60/62 - VBLOCK
+    EXT09/17 - SV-C32 and other SV-C
+    EXT06/07 - SV-C32-Swizzle and other SV-C-Swizzle
+    EXT02/03 - SV-P48                
+    EXT04/05 - SV-P64
+    EXT56/57 - Predicated-SV-P48
+    EXT46/47 - Predicated SV-P64
 
 Spare:
 
