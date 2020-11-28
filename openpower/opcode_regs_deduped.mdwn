@@ -7,20 +7,20 @@ LDST-2R-imm | S |
 LDST-2R-1W | I |
 LDST-2R-1W-imm | S |
 LDST-2R-2W | I |
-LDST-3R | R/TBD |
-LDST-3R-CRo | R/TBD |
-LDST-3R-1W | R/TBD |
+LDST-3R | R/TBD - st*x |
+LDST-3R-CRo | R/TBD - st*x |
+LDST-3R-1W | R/TBD - st*x |
  | non-SV |
 imm | non-SV |
 CRi | non-SV |
 CRi | non-SV |
-CRio | R/TBD |
+CRio | R/TBD - needs subdivision (cr ops) |
 1W | non-SV |
-1W-CRi | TBD |
+1W-CRi | TBD - needs close inspection |
 1R | non-SV |
 1R-imm | non-SV |
 1R-CRo | I |
-1R-CRio | TBD |
+1R-CRio | TBD - need close inspection |
 1R-1W | R |
 1R-1W-imm | I |
 1R-1W-CRo | R |
@@ -155,7 +155,7 @@ minor_31.csv | 0b0101110101 | lwaux | X-Form|
 minor_31.csv | 0b0101110111 | lhaux | X-Form|
 """]]
 
-## LDST-3R (R/TBD)
+## LDST-3R (R/TBD - st*x)
 
 [[!table  data="""
 CSV | opcode | asm | form|
@@ -174,7 +174,7 @@ minor_31.csv | 0b1111010101 | stbcix | X-Form|
 minor_31.csv | 0b1111110101 | stdcix | X-Form|
 """]]
 
-## LDST-3R-CRo (R/TBD)
+## LDST-3R-CRo (R/TBD - st*x)
 
 [[!table  data="""
 CSV | opcode | asm | form|
@@ -182,7 +182,7 @@ minor_31.csv | 0b0011010111 | stbx | X-Form|
 minor_31.csv | 0b1010110110 | stbcx | X-Form|
 """]]
 
-## LDST-3R-1W (R/TBD)
+## LDST-3R-1W (R/TBD - st*x)
 
 [[!table  data="""
 CSV | opcode | asm | form|
@@ -236,7 +236,7 @@ CSV | opcode | asm | form|
 major.csv | 16 | bc | B-Form|
 """]]
 
-## CRio (R/TBD)
+## CRio (R/TBD - needs subdivision (cr ops))
 
 [[!table  data="""
 CSV | opcode | asm | form|
@@ -266,7 +266,7 @@ minor_31.csv | 0b0001010011 | mfmsr | X-Form|
 minor_31.csv | 0b0101010011 | mfspr | XFX-Form|
 """]]
 
-## 1W-CRi (TBD)
+## 1W-CRi (TBD - needs close inspection)
 
 [[!table  data="""
 CSV | opcode | asm | form|
@@ -301,7 +301,7 @@ major.csv | 10 | cmpli | D-Form|
 major.csv | 11 | cmpi | D-Form|
 """]]
 
-## 1R-CRio (TBD)
+## 1R-CRio (TBD - need close inspection)
 
 [[!table  data="""
 CSV | opcode | asm | form|
