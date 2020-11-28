@@ -108,7 +108,7 @@ def create_key(row):
 
     # constants
     if row['in2'].startswith('CONST_'):
-        res['imm'] = row['in2'].split("_")[1]
+        res['imm'] = "1" # row['in2'].split("_")[1]
     else:
         res['imm'] = ''
 
@@ -138,7 +138,7 @@ def keyname(row):
         res.append("CRi")
     elif row['CR out'] == '1':
         res.append("CRo")
-    elif 'imm' in row:
+    elif 'imm' in row and row['imm']:
         res.append("imm")
     return '-'.join(res)
 
