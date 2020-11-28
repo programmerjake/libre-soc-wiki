@@ -227,7 +227,8 @@ def process_csvs():
 
     for key in primarykeys:
         name = keyname(dictkeys[key])
-        print ("## %s " % name)
+        value = mapsto.get(name, "-")
+        print ("## %s (%s)" % (name, value))
         print ('')
         print ('[[!table  data="""')
         print (tformat(['CSV', 'opcode', 'asm', 'form']))
