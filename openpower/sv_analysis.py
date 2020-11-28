@@ -152,6 +152,12 @@ def process_csvs():
     primarykeys = set()
     dictkeys = OrderedDict()
 
+    print ("# OpenPOWER ISA register 'profile's")
+    print ('')
+    print ("this page is auto-generated, do not edit")
+    print ("created by http://libre-soc.org/openpower/sv_analysis.py")
+    print ('')
+
     # Expand that (all .csv files)
     pth = find_wiki_file("*.csv")
 
