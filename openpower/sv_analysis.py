@@ -195,6 +195,7 @@ def process_csvs():
               '1R-CRio': 'TBD',
               '2R-CRio': 'R',
               '2R-CRo': 'R',
+              '1R': 'non-SV',
               '1R-1W-CRio': 'R',
               '1R-1W-CRo': 'R',
               '1R-1W': 'R',
@@ -209,8 +210,13 @@ def process_csvs():
               '': 'non-SV',
               'LDST-2R-imm': 'S',
               'LDST-2R-1W-imm': 'S',
+              'LDST-2R-1W': 'I',
+              'LDST-2R-2W': 'I',
               'LDST-1R-1W-imm': 'I',
               'LDST-1R-2W-imm': 'I',
+              'LDST-3R': 'R/TBD',     # these are st*x
+              'LDST-3R-CRo': 'R/TBD', # st*x
+              'LDST-3R-1W': 'R/TBD',  # st*x
               }
     print ("# map to old SV Prefix")
     print ('')
