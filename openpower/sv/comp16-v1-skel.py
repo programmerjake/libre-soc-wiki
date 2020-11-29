@@ -95,6 +95,8 @@ def same01(opcode, ops):
         return 0
 
 # Registers representable in a made-up 3-bit mapping.
+# TODO: use insn_histogram.py to show the best targets
+# (remember to exclude nop - ori r0,r0,0 as this skews numbers)
 cregs2 = { 1, 2, 3, 4, 5, 6, 7, 31 }
 
 # Return true iff mop is a regular register present in cregs2
