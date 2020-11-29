@@ -1,0 +1,162 @@
+introduce -M histogram for ppc objdump -d
+
+From: Alexandre Oliva <oliva@gnu.org>
+
+With -M histogram, the disassembler counts the occurrences of each
+opcode it encounters, and prints the totals at the end.
+---
+ opcodes/disassemble.c |    4 ++
+ opcodes/ppc-dis.c     |   94 +++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 98 insertions(+)
+
+diff --git a/opcodes/disassemble.c b/opcodes/disassemble.c
+index 290dcdd100d19..961aeabfc1632 100644
+--- a/opcodes/disassemble.c
++++ b/opcodes/disassemble.c
+@@ -763,6 +763,10 @@ disassemble_free_target (struct disassemble_info *info)
+ #endif
+ #ifdef ARCH_powerpc
+     case bfd_arch_powerpc:
++      {
++	extern void ppc_disassemble_free_target (struct disassemble_info *);
++	ppc_disassemble_free_target (info);
++      }
+       break;
+ #endif
+ #ifdef ARCH_riscv
+diff --git a/opcodes/ppc-dis.c b/opcodes/ppc-dis.c
+index f3c84e06452dc..f5065c40ff663 100644
+--- a/opcodes/ppc-dis.c
++++ b/opcodes/ppc-dis.c
+@@ -27,6 +27,7 @@
+ #include "opintl.h"
+ #include "opcode/ppc.h"
+ #include "libiberty.h"
++#include "hashtab.h"
+ 
+ /* This file provides several disassembler functions, all of which use
+    the disassembler interface defined in dis-asm.h.  Several functions
+@@ -36,12 +37,61 @@
+ static int print_insn_powerpc (bfd_vma, struct disassemble_info *, int,
+ 			       ppc_cpu_t);
+ 
++struct opcode_counter
++{
++  const struct powerpc_opcode *opcode;
++  size_t count;
++};
++
++static hashval_t
++hash_opcode_counter (const void *opcnt)
++{
++  const struct opcode_counter *oc = (const struct opcode_counter *)opcnt;
++  return htab_hash_pointer (oc->opcode);
++}
++
++static int
++same_opcode_counter (const void *opcnt1, const void *opcnt2)
++{
++  const struct opcode_counter *oc1 = (const struct opcode_counter *)opcnt1;
++  const struct opcode_counter *oc2 = (const struct opcode_counter *)opcnt2;
++  return htab_eq_pointer (oc1->opcode, oc2->opcode);
++}
++
+ struct dis_private
+ {
+   /* Stash the result of parsing disassembler_options here.  */
+   ppc_cpu_t dialect;
++
++  /* Counters for encountered opcodes.  */
++  htab_t histogram;
+ };
+ 
++static int
++increment_opcode_counter (struct disassemble_info *info,
++			  const struct powerpc_opcode *opcode)
++{
++  struct dis_private *priv = (struct dis_private *) (info->private_data);
++
++  if (!priv->histogram)
++    return 0;
++
++  struct opcode_counter oc, *ocp;
++  oc.opcode = opcode;
++
++  void **ret = htab_find_slot (priv->histogram, &oc, INSERT);
++  ocp = *ret;
++  if (ocp == HTAB_EMPTY_ENTRY)
++    {
++      *ret = ocp = calloc (sizeof (oc), 1);
++      ocp->opcode = opcode;
++    }
++
++  ocp->count++;
++
++  return 1;
++}
++
+ #define POWERPC_DIALECT(INFO) \
+   (((struct dis_private *) ((INFO)->private_data))->dialect)
+ 
+@@ -381,6 +431,11 @@ powerpc_init_dialect (struct disassemble_info *info)
+ 	dialect |= PPC_OPCODE_64;
+       else if ((new_cpu = ppc_parse_cpu (dialect, &sticky, opt)) != 0)
+ 	dialect = new_cpu;
++      else if (disassembler_options_cmp (opt, "histogram") == 0)
++	priv->histogram = htab_create (17,
++				       hash_opcode_counter,
++				       same_opcode_counter,
++				       free);
+       else
+ 	/* xgettext: c-format */
+ 	opcodes_error_handler (_("warning: ignoring unknown -M%s option"), opt);
+@@ -864,6 +919,8 @@ print_insn_powerpc (bfd_vma memaddr,
+       bfd_boolean skip_optional;
+       int blanks;
+ 
++      increment_opcode_counter (info, opcode);
++
+       (*info->fprintf_func) (info->stream, "%s", opcode->name);
+       /* gdb fprintf_func doesn't return count printed.  */
+       blanks = 8 - strlen (opcode->name);
+@@ -1013,3 +1070,40 @@ the -M switch:\n"));
+     }
+   fprintf (stream, "\n");
+ }
++
++static int
++dump_opcode_histogram (void **ocp, void *info_)
++{
++  struct opcode_counter *oc = *ocp;
++  struct disassemble_info *info = info_;
++
++  (*info->fprintf_func) (info->stream, "%8lu %s (%lx)\n",
++			 (unsigned long)oc->count,
++			 oc->opcode->name,
++			 (unsigned long)oc->opcode->opcode);
++
++  return 1;
++}
++
++void ppc_disassemble_free_target (struct disassemble_info *info);
++
++void
++ppc_disassemble_free_target (struct disassemble_info *info)
++{
++  struct dis_private *priv = (struct dis_private *) (info->private_data);
++
++  if (priv->histogram)
++    {
++      if (htab_elements (priv->histogram))
++	{
++	  (*info->fprintf_func) (info->stream, "\n\nOpcode histogram\n");
++	  htab_traverse (priv->histogram, dump_opcode_histogram, info);
++	}
++
++      htab_delete (priv->histogram);
++      priv->histogram = NULL;
++    }
++
++  free (priv);
++  info->private_data = NULL;
++}
