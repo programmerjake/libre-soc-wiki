@@ -18,3 +18,23 @@ Purpose:
   CR operations (crand, cror, crxor) with mfcr and mtcrf
 * To provide a vectorised version of the same, suitable for advanced
   predication
+
+# Instruction form and pseudocode
+
+    | 0-5 | 6-10 | 11 | 12-15 | 16-18 | 19-20 | 21-30 | 31 |
+    | 19  | RT   | 0  | mask  | BB    |  m2   | XO    | /  |
+    | 19  | RT   | 1  | mask  | BB    |  m2   | XO    | /  |
+
+mode is encoded in XO and from m2 to produce 4 bits
+
+bit 11=0:
+
+    crweird: RT, BB, mask.mode
+
+    creg = CRfile[32+BB*4:36+BB*4]
+    n0 = mask[1] & (mode[0] == creg[0]
+    n1 = mask[1] & (mode[1] == creg[1]
+    n2 = mask[2] & (mode[2] == creg[2]
+    n3 = mask[3] & (mode[3] == creg[3]
+    RT[0] = n0 | n1 | n2 | b3
+
