@@ -1,6 +1,26 @@
 #! /bin/env python3
 # see https://bugs.libre-soc.org/show_bug.cgi?id=532
 
+# Print a per-opcode histogram for ppc asm.
+
+
+# This script is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3, or (at your option)
+# any later version.
+
+# This script is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this script; see the file COPYING3.  If not see
+# <http://www.gnu.org/licenses/>.
+
+# Originally by Alexandre Oliva <oliva@gnu.org>.
+
+
 # Feed this script the output of:
 # powerpc64le-gnu-objdump -d -M raw --no-show-raw-insn ppc-prog
 
