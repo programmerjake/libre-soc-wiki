@@ -138,7 +138,7 @@ comments = ['', '\t; 16-bit', '\t; tentative 16+16-bit', '\t; 10-bit']
 # cur stands for the insn kind that we read and processed in the
 # previous iteration of the loop, and prev is the one before it.  the
 # one we're processing in the current iteration will be stored in
-# next until we make it cur at the very end of the loop.
+# nexti until we make it cur at the very end of the loop.
 prev = cur = 0
 
 for line in sys.stdin:
@@ -157,17 +157,17 @@ for line in sys.stdin:
     operands = match['operands']
 
     if opcode in copcond:
-        next = copcond[opcode](opcode,
+        nexti = copcond[opcode](opcode,
                                [mapop(op) for op in operands.split(',')])
     else:
-        next = 0
+        nexti = 0
 
     comment = None
 
     if cur is 0:
-        if next is 0:
+        if nexti is 0:
             True # Uncompressed mode for good.
-        elif next is 1:
+        elif nexti is 1:
             # If cur was not a single uncompressed mode insn,
             # tentatively encode a 10-bit nop to enter compressed
             # mode, and then 16-bit.  It takes as much space as
@@ -179,68 +179,68 @@ for line in sys.stdin:
                 print('\t\th.nop\t\t; tentatively switch to compressed mode')
                 count[4] += 1
                 comment = 'tentatively compressed to 16-bit'
-        elif next is 2:
-            # We can use compressed encoding for next after an
+        elif nexti is 2:
+            # We can use compressed encoding for nexti after an
             # uncompressed insn only if it's the single-insn
             # uncompressed mode slot.  For anything else, we're better
-            # off using uncompressed encoding for next, since it makes
+            # off using uncompressed encoding for nexti, since it makes
             # no sense to spend a 10-bit nop to switch to compressed
             # mode for a 16+16-bit insn.  If subsequent insns would
             # benefit from compressed encoding, we can switch then.
             if prev is not 1:
-                next = 0
+                nexti = 0
                 comment = 'not worth a nop for 16+16-bit'
-        elif next is 3:
+        elif nexti is 3:
             # If prev was 16-bit compressed, cur would be in the
-            # single-insn uncompressed slot, so next could be encoded
+            # single-insn uncompressed slot, so nexti could be encoded
             # as 16-bit, enabling another 1-insn uncompressed slot
-            # after next that a 10-bit insn wouldn't, so make it so.
+            # after nexti that a 10-bit insn wouldn't, so make it so.
             if prev is 1:
-                next = 1
+                nexti = 1
                 comment = '16-bit, could be 10-bit'
     elif cur is 1:
         # After a 16-bit insn, anything goes.  If it remains in 16-bit
-        # mode, we can have 1 or 2 as next; if it returns to 32-bit
+        # mode, we can have 1 or 2 as nexti; if it returns to 32-bit
         # mode, we can have 0 or 3.  Using 1 instead of 3 makes room
         # for a subsequent single-insn compressed mode, so prefer
         # that.
-        if next is 3:
-            next = 1
+        if nexti is 3:
+            nexti = 1
             comment = '16-bit, could be 10-bit'
     elif cur is 2:
         # After a 16+16-bit insn, we can't switch directly to 32-bit
         # mode.  However, cur could have been encoded as 32-bit, since
         # any 16+16-bit insn can.  Indeed, we may have an arbitrary
-        # long sequence of 16+16-bit insns before next, and if next
+        # long sequence of 16+16-bit insns before nexti, and if nexti
         # can only be encoded in 32-bit mode, we can "resolve" all
         # previous adjacent 16+16-bit insns to the corresponding
         # 32-bit insns in the encoding, and "adjust" the 16-bit or
         # 10-bit insn that enabled the potential 16+16-bit encoding to
         # switch to 32-bit mode then instead.
-        if next is 0:
+        if nexti is 0:
             prev = cur = 0
             comment = '32-bit, like tentative 16+16-bit insns above'
     elif cur is 3:
         # After a 10-bit insn, another insn that could be encoded as
         # 10-bit might as well be encoded as 16-bit, to make room for
         # a single-insn uncompressed insn afterwards.
-        if next is 3:
-            next = 1
+        if nexti is 3:
+            nexti = 1
             comment = '16-bit, could be 10-bit'
     else:
         raise "unknown mode for previous insn"
 
-    count[next] += 1
+    count[nexti] += 1
 
     if comment is None:
-        comment = comments[next]
+        comment = comments[nexti]
     else:
         comment = '\t; ' + comment
     
     print(line + comment)
 
     prev = cur
-    cur = next
+    cur = nexti
 
 transition_bytes = 2 * count[4]
 compressed_bytes = 2 * (count[1] + count[3])
