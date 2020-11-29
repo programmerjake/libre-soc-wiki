@@ -1,0 +1,43 @@
+2020-11-28
+
+	* 532: Implemented a skeleton for compression ratio estimation,
+	initially with the simpler mode switching of the 8-bit nop,
+	odd-address 16-bit insns.  Next, rewrite it for all the complexity
+	of mode switching envisioned for the "attempt 1" proposal.  (2:02)
+
+2020-11-23
+
+	* 238: Debating various possibilities of 16-bit encoding.  (5:20)
+
+	* 532: Wrote a histogram python script, that breaks counts down
+	per opcode, and within them, by operands.  (2:05)
+
+2020-11-22
+
+	* 529: Brought up the possibilities of using 8-bit nops to switch
+	between modes, so that 16-bit insns would be at odd addresses, so
+	that we could use the full 16-bits; of using 2-operand insns
+	instead of 3- for 16-bit mode so as to increase the coverage of
+	the compact encoding.
+	* 238: Luke moved the comment above here, where it belonged.
+	* 529: Elaborated how using actual odd-addresses for 16-bit insns
+	would be dealt with WRT endianness.  Prompted by luke, added it to
+	the wiki.
+	* Wiki: Added self to team.  (11:50)
+
+2020-11-21
+
+	* 532: Wrote patch for binutils to print insn histogram.
+	* Mission: Restated the proposal of adding "and users" to the
+	mission statement, next to customers, as those we wish to enable
+	to trust our products.  (6:48)
+
+2020-11-20
+
+	Reposted join message to the correct list.
+	* 238: Started looking into it, from
+	https://libre-soc.org/openpower/sv/16_bit_compressed/
+
+2020-11-19
+
+	Joined.
