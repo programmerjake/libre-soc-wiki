@@ -1,5 +1,25 @@
 2020-11-28
 
+	* 532: Figured out and implemented the logic to infer mode
+	switching for best compression under attempt 1 proposed encoding,
+	namely with 10-bit insns, 16-bit insns, 16+16-bit insns, and
+	32-bit insns.  10-bit insns appear in uncompressed mode, and can
+	be followed by insns in either mode; 16-bit ones appear in
+	compressed mode, and can remain in compressed mode, or switch to
+	uncomprssed mode for 1 insn or for good; 16+16-bit ones appear in
+	compressed mode, and cannot switch modes; 32-bit ones appear only
+	in uncompressed mode, or in the single-insn slot after a 16-bit
+	that requests it.  If we find a 16-bit insn while we're in
+	uncompressed mode, use a 10-bit nop to tentatively switch.  Insns
+	that can be encoded in 10-bits, but appear in compressed mode, had
+	better be encoded in 16-bits, for that offers further subsequent
+	encoding options, without downsides for size estimation.  Insns
+	that can be encoded as 16+16-bit decay to 32-bit if in
+	uncompressed mode, or if, after a sequence thereof, a later insn
+	forces a switch to 32-bit mode without an intervening switching
+	insn.  Still missing: the code to select what insns can be encoded
+	in what modes.  (6:42)
+
 	* 532: Implemented a skeleton for compression ratio estimation,
 	initially with the simpler mode switching of the 8-bit nop,
 	odd-address 16-bit insns.  Next, rewrite it for all the complexity
