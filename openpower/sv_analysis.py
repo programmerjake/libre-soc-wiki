@@ -151,6 +151,7 @@ def process_csvs():
     bykey = {}
     primarykeys = set()
     dictkeys = OrderedDict()
+    immediates = {}
 
     print ("# OpenPOWER ISA register 'profile's")
     print ('')
@@ -187,6 +188,13 @@ def process_csvs():
                 bykey[key] = []
             bykey[key].append((csvname, row['opcode'], row['comment'],
                                row['form'].upper() + '-Form'))
+
+            # detect immediates, collate them (useful info)
+            if row['in2'].startswith('CONST_'):
+                imm = row['in2'].split("_")[1]
+                if key not in immediates:
+                    immediates[key] = set()
+                immediates[key].add(imm)
 
     primarykeys = list(primarykeys)
     primarykeys.sort()
@@ -237,11 +245,14 @@ def process_csvs():
     print ("# keys")
     print ('')
     print ('[[!table  data="""')
-    print (tformat(tablecols) + " name |")
+    print (tformat(tablecols) + " imms | name |")
 
     for key in primarykeys:
         name = keyname(dictkeys[key])
-        print (tformat(dictkeys[key].values()) + " %s |" % name)
+        row = tformat(dictkeys[key].values())
+        row += " %s | " % ("/".join(list(immediates.get(key, ""))))
+        row += " %s |" % name
+        print (row)
     print ('"""]]')
     print ('')
 

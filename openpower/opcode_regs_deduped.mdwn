@@ -45,41 +45,41 @@ CRio | R/TBD - needs subdivision (cr ops) |
 # keys
 
 [[!table  data="""
-unit | in | outcnt | CR in | CR out | imm| name |
-LDST | 1 | 1 | 0 | 0 | 1| LDST-1R-1W-imm |
-LDST | 1 | 2 | 0 | 0 | 1| LDST-1R-2W-imm |
-LDST | 2 | 0 | 0 | 0 | 1| LDST-2R-imm |
-LDST | 2 | 1 | 0 | 0 | | LDST-2R-1W |
-LDST | 2 | 1 | 0 | 0 | 1| LDST-2R-1W-imm |
-LDST | 2 | 2 | 0 | 0 | | LDST-2R-2W |
-LDST | 3 | 0 | 0 | 0 | | LDST-3R |
-LDST | 3 | 0 | 0 | 1 | | LDST-3R-CRo |
-LDST | 3 | 1 | 0 | 0 | | LDST-3R-1W |
-OTHER | 0 | 0 | 0 | 0 | |  |
-OTHER | 0 | 0 | 0 | 0 | 1| imm |
-OTHER | 0 | 0 | 1 | 0 | | CRi |
-OTHER | 0 | 0 | 1 | 0 | 1| CRi |
-OTHER | 0 | 0 | 1 | 1 | | CRio |
-OTHER | 0 | 1 | 0 | 0 | | 1W |
-OTHER | 0 | 1 | 1 | 0 | | 1W-CRi |
-OTHER | 1 | 0 | 0 | 0 | | 1R |
-OTHER | 1 | 0 | 0 | 0 | 1| 1R-imm |
-OTHER | 1 | 0 | 0 | 1 | 1| 1R-CRo |
-OTHER | 1 | 0 | 1 | 1 | | 1R-CRio |
-OTHER | 1 | 1 | 0 | 0 | | 1R-1W |
-OTHER | 1 | 1 | 0 | 0 | 1| 1R-1W-imm |
-OTHER | 1 | 1 | 0 | 1 | | 1R-1W-CRo |
-OTHER | 1 | 1 | 0 | 1 | 1| 1R-1W-CRo |
-OTHER | 1 | 1 | 1 | 1 | | 1R-1W-CRio |
-OTHER | 2 | 0 | 0 | 0 | | 2R |
-OTHER | 2 | 0 | 0 | 1 | | 2R-CRo |
-OTHER | 2 | 0 | 1 | 1 | | 2R-CRio |
-OTHER | 2 | 1 | 0 | 0 | | 2R-1W |
-OTHER | 2 | 1 | 0 | 1 | | 2R-1W-CRo |
-OTHER | 2 | 1 | 0 | 1 | 1| 2R-1W-CRo |
-OTHER | 2 | 1 | 1 | 0 | | 2R-1W-CRi |
-OTHER | 2 | 1 | 1 | 1 | | 2R-1W-CRio |
-OTHER | 3 | 1 | 1 | 1 | | 3R-1W-CRio |
+unit | in | outcnt | CR in | CR out | imm| imms | name |
+LDST | 1 | 1 | 0 | 0 | 1| SI/DS |  LDST-1R-1W-imm |
+LDST | 1 | 2 | 0 | 0 | 1| SI/DS |  LDST-1R-2W-imm |
+LDST | 2 | 0 | 0 | 0 | 1| SI/DS |  LDST-2R-imm |
+LDST | 2 | 1 | 0 | 0 | |  |  LDST-2R-1W |
+LDST | 2 | 1 | 0 | 0 | 1| SI/DS |  LDST-2R-1W-imm |
+LDST | 2 | 2 | 0 | 0 | |  |  LDST-2R-2W |
+LDST | 3 | 0 | 0 | 0 | |  |  LDST-3R |
+LDST | 3 | 0 | 0 | 1 | |  |  LDST-3R-CRo |
+LDST | 3 | 1 | 0 | 0 | |  |  LDST-3R-1W |
+OTHER | 0 | 0 | 0 | 0 | |  |   |
+OTHER | 0 | 0 | 0 | 0 | 1| LI |  imm |
+OTHER | 0 | 0 | 1 | 0 | |  |  CRi |
+OTHER | 0 | 0 | 1 | 0 | 1| BD |  CRi |
+OTHER | 0 | 0 | 1 | 1 | |  |  CRio |
+OTHER | 0 | 1 | 0 | 0 | |  |  1W |
+OTHER | 0 | 1 | 1 | 0 | |  |  1W-CRi |
+OTHER | 1 | 0 | 0 | 0 | |  |  1R |
+OTHER | 1 | 0 | 0 | 0 | 1| SI |  1R-imm |
+OTHER | 1 | 0 | 0 | 1 | 1| SI/UI |  1R-CRo |
+OTHER | 1 | 0 | 1 | 1 | |  |  1R-CRio |
+OTHER | 1 | 1 | 0 | 0 | |  |  1R-1W |
+OTHER | 1 | 1 | 0 | 0 | 1| SI/UI |  1R-1W-imm |
+OTHER | 1 | 1 | 0 | 1 | |  |  1R-1W-CRo |
+OTHER | 1 | 1 | 0 | 1 | 1| M1/SI/SH/UI/SH32 |  1R-1W-CRo |
+OTHER | 1 | 1 | 1 | 1 | |  |  1R-1W-CRio |
+OTHER | 2 | 0 | 0 | 0 | |  |  2R |
+OTHER | 2 | 0 | 0 | 1 | |  |  2R-CRo |
+OTHER | 2 | 0 | 1 | 1 | |  |  2R-CRio |
+OTHER | 2 | 1 | 0 | 0 | |  |  2R-1W |
+OTHER | 2 | 1 | 0 | 1 | |  |  2R-1W-CRo |
+OTHER | 2 | 1 | 0 | 1 | 1| SH/SH32 |  2R-1W-CRo |
+OTHER | 2 | 1 | 1 | 0 | |  |  2R-1W-CRi |
+OTHER | 2 | 1 | 1 | 1 | |  |  2R-1W-CRio |
+OTHER | 3 | 1 | 1 | 1 | |  |  3R-1W-CRio |
 """]]
 
 ## LDST-1R-1W-imm (I)
