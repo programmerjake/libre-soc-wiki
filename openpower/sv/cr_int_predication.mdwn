@@ -1,0 +1,20 @@
+# New instructions for CR/INT predication
+
+See:
+
+* <https://bugs.libre-soc.org/show_bug.cgi?id=533>
+
+Basic concept:
+
+* CR-based instructions that perform simple AND/OR/XOR from all four bits
+  of a CR to create a single bit value (0/1) in an integer register
+* Inverse of the same, taking a single bit value (0/1) from an integer
+  register to selectively target all four bits of a given CR
+* Vectorisation of the same
+
+Purpose:
+
+* To provide a merged version of what is currently a multi-sequence of
+  CR operations (crand, cror, crxor) with mfcr and mtcrf
+* To provide a vectorised version of the same, suitable for advanced
+  predication
