@@ -4,6 +4,9 @@
 
 # It will look for insns that can be represented in compressed mode,
 # according to the encoding rules in the copcond dictionary below.
+# It's just a skeleton for testing of the logic,
+# the encoding rules are yet to be filled in.
+
 # Nothing is assumed as to the actual bit-encoding of the insns, this
 # is just to experiment with insn selection and get a quick feedback
 # loop for the encoding options in compressed mode.
