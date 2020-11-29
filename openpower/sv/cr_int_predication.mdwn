@@ -10,12 +10,15 @@ Basic concept:
   of a CR to create a single bit value (0/1) in an integer register
 * Inverse of the same, taking a single bit value (0/1) from an integer
   register to selectively target all four bits of a given CR
+* CR-to-CR version of the same, allowing multiple bits to be AND/OR/XORed
+  in one hit.
 * Vectorisation of the same
 
 Purpose:
 
 * To provide a merged version of what is currently a multi-sequence of
-  CR operations (crand, cror, crxor) with mfcr and mtcrf
+  CR operations (crand, cror, crxor) with mfcr and mtcrf, reducing
+  instruction count.
 * To provide a vectorised version of the same, suitable for advanced
   predication
 
@@ -25,24 +28,26 @@ Side-effects:
 
 # Instruction form and pseudocode
 
-    | 0-5 | 6-10 | 11 | 12-15 | 16-18 | 19-20 | 21-30 | 31 |
-    | 19  | RT   | 0  | mask  | BB    |  m2   | XO    | /  |
-    | 19  | RA   | 1  | mask  | BB    |  m2   | XO    | /  |
+    | 0-5 | 6-10  | 11 | 12-15 | 16-18 | 19-20 | 21-30 | 31 |
+    | 19  | RT    | 0  | mask  | BB    |  0 /  | XO    | /  |
+    | 19  | RA    | 1  | mask  | BB    |  0 /  | XO    | /  |
+    | 19  | BT // | 0  | mask  | BB    |  1 /  | XO    | /  |
+    | 19  | BFT   | 1  | mask  | BB    |  1 /  | XO    | /  |
 
-mode is encoded in XO and from m2 to produce 4 bits
+mode is encoded in XO and is 4 bits
 
-bit 11=0:
+bit 11=0, bit 19=0
 
-    crweird: RT, BB, mask.mode
+    crrweird: RT, BB, mask.mode
 
     creg = CRfile[32+BB*4:36+BB*4]
     n0 = mask[0] & (mode[0] == creg[0])
     n1 = mask[1] & (mode[1] == creg[1])
     n2 = mask[2] & (mode[2] == creg[2])
     n3 = mask[3] & (mode[3] == creg[3])
-    RT[0] = n0 | n1 | n2 | b3
+    RT[0] = n0|n1|n2|n3
 
-bit 11=1:
+bit 11=1, bit 19=0
 
     mtcrweird: RA, BB, mask.mode
 
@@ -51,7 +56,29 @@ bit 11=1:
     n1 = mask[1] & (mode[1] == reg[0])
     n2 = mask[2] & (mode[2] == reg[0])
     n3 = mask[3] & (mode[3] == reg[0])
-    CRfile[32+BB*4:36+BB*4] = n0 || n1 || n2 || b3
+    CRfile[32+BB*4:36+BB*4] = n0 || n1 || n2 || n3
+
+bit 11=0, bit 19=1
+
+    crweird: BT, BB, mask.mode
+
+    creg = CRfile[32+BB*4:36+BB*4]
+    n0 = mask[0] & (mode[0] == creg[0])
+    n1 = mask[1] & (mode[1] == creg[1])
+    n2 = mask[2] & (mode[2] == creg[2])
+    n3 = mask[3] & (mode[3] == creg[3])
+    CRfile[32+BT*4:36+BT*4] = n0 || n1 || n2 || n3
+
+bit 11=1, bit 19=1
+
+    crweirder: BFT, BB, mask.mode
+
+    creg = CRfile[32+BB*4:36+BB*4]
+    n0 = mask[0] & (mode[0] == creg[0])
+    n1 = mask[1] & (mode[1] == creg[1])
+    n2 = mask[2] & (mode[2] == creg[2])
+    n3 = mask[3] & (mode[3] == creg[3])
+    CRfile[32+BFT] = n0|n1|n2|n3
 
 Pseudo-op:
 
