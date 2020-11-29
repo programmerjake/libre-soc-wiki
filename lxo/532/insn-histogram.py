@@ -1,0 +1,1 @@
+../../openpower/sv/insn-histogram.py
