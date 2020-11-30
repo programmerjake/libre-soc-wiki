@@ -171,7 +171,7 @@ Mode-switching FSM showing relationship between v3.0B, C 10bit and C 16bit.
     | EXT000/1 | Cmaj.m | fields | 1 | 10bit then 16bit
     | 0 | flds | Cmaj.m | fields | 0 | 16bit then v3.0B
     | 0 | flds | Cmaj.m | fields | 1 | 16bit then 16bit
-    | 1 | flds | Cmaj.m | fields | 0 | 16b then 1x v3.0B thrn 16b
+    | 1 | flds | Cmaj.m | fields | 0 | 16b, 1x v3.0B, 16b
     | 1 | flds | Cmaj.m | fields | 1 | 16b/imm then 16bit
 
 Notes:
@@ -181,6 +181,9 @@ Notes:
   are zero, therefore the 6th bit is actually part of Cmaj.
 * "10bit then 16bit" means "this instruction is encoded C 10bit
   and the following one in C 16bit"
+* "16b, 1x v3.0B, 16b" means, "this instruction is encoded C 16bit,
+  the following one is V3.0B Standard, and the one after that is
+  back to 16bit".
 
 ### C Instruction Encoding types
 
