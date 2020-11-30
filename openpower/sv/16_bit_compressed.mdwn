@@ -32,8 +32,12 @@ OpenPOWER ISA being fundamentally designed with 6 bits uniformly
 taking up Major Opcode space, leaving only 10 bits to allocate
 to actual instructions.
 
-Contrast this with RVC which takes 3 out of 4 
-combinations of the first 2 bits for indicating 16-bit (anything with 0b00 to 0b10 in the LSBs), and uses the 4th (0b11) as a Huffman-style escape-sequence, easily allowing standard 32 bit and 16 bit to intermingle cleanly.  To achieve the same thing on OpenPOWER would require a whopping 24 6-bit Major Opcodes which is clearly impractical: other schemes need to be devised.
+Contrast this with RVC which takes 3 out of 4 combinations of the first 2
+bits for indicating 16-bit (anything with 0b00 to 0b10 in the LSBs), and
+uses the 4th (0b11) as a Huffman-style escape-sequence, easily allowing
+standard 32 bit and 16 bit to intermingle cleanly.  To achieve the same
+thing on OpenPOWER would require a whopping 24 6-bit Major Opcodes which
+is clearly impractical: other schemes need to be devised.
 
 In addition we would like to add SV-C32 which is a Vectorised version
 of 16 bit Compressed, and ideally have a variant that adds the 27-bit
@@ -43,9 +47,11 @@ Potential ways to reduce pressure on the 16 bit space are:
 
 * To use more than one v3.0B Major Opcode, preferably an odd-even
   contiguous pair
-* To provide "paging".  This involves bank-switching to alternative optimised encodings for specific workloads
+* To provide "paging".  This involves bank-switching to alternative
+  optimised encodings for specific workloads
 * To enter "16 bit mode" for durations specified at the start
-* To reserve one bit of every 16 bit instruction to indicate that the 16 bit mode is to continue to be sustained
+* To reserve one bit of every 16 bit instruction to indicate that the
+  16 bit mode is to continue to be sustained
 
 This latter would be useful in the Vector context to have an alternative
 meaning: as the bit which determines whether the instruction is 11-bit
@@ -65,18 +71,20 @@ something to use them for:
     |16 bit    stay in 16bit mode 1 |
     |16 bit       exit 16bit mode 0 |
 
-One possibility is that the 11 bits are used for bank selection, with
-some room for additional context such as altering the registers used
-for the 16 bit operations (bank selection of which scalar regs).
+One possibility is that the 11 bits are used for bank selection,
+with some room for additional context such as altering the registers
+used for the 16 bit operations (bank selection of which scalar regs).
 However the downside is that short sequences of Compressed instructions
-become penalised by the fixed overhead.  Even a single 16 bit instruction requires a 16 bit overhead to "gain access" to 16 bit "mode", making the exercise pointless.
+become penalised by the fixed overhead.  Even a single 16 bit instruction
+requires a 16 bit overhead to "gain access" to 16 bit "mode", making
+the exercise pointless.
 
-An alternative is to use the first 11 bits for only the utmost commonly used
-instructions.  That being the case then one of those 11 bits could
+An alternative is to use the first 11 bits for only the utmost commonly
+used instructions.  That being the case then one of those 11 bits could
 be dedicated to saying if 16 bit mode is to be continued, at which
-point *all* 16 bits can be used for Compressed.
-10 bits remain for actual opcodes, which is ridiculously tight,
-however the opportunity to subsequently use all 16 bits is worth it.
+point *all* 16 bits can be used for Compressed.  10 bits remain for
+actual opcodes, which is ridiculously tight, however the opportunity to
+subsequently use all 16 bits is worth it.
 
 The reason for picking 2 contiguous Major v3.0B opcodes is illustrated below:
 
@@ -85,19 +93,38 @@ The reason for picking 2 contiguous Major v3.0B opcodes is illustrated below:
     |major op..1| HI Half C space   |
     |N N N N N|<--11 bits C space-->|
 
-If NNNNN is the same value (two contiguous Major v3.0B Opcodes) this saves gates at a critical part of the decode phase.
+If NNNNN is the same value (two contiguous Major v3.0B Opcodes) this
+saves gates at a critical part of the decode phase.
 
 ## ABI considerations
 
-Unlike RVC, the above "context" encodings require state, to be stored in the PCR, MSR, or a dedicated SPR.  These bits (just like LE/BE 32bit mode and the IEEE754 FPCSR mode) all require taking that context into consideration.
+Unlike RVC, the above "context" encodings require state, to be stored
+in the PCR, MSR, or a dedicated SPR.  These bits (just like LE/BE 32bit
+mode and the IEEE754 FPCSR mode) all require taking that context into
+consideration.
 
-In particular it is critically important to recognise that context (in general) is an implicit part of the ABI implemented for example by glibc6.  Therefore (in specific) Compressed Mode Context **must not** be permitted to cross into or out of a function call.
+In particular it is critically important to recognise that context (in
+general) is an implicit part of the ABI implemented for example by glibc6.
+Therefore (in specific) Compressed Mode Context **must not** be permitted
+to cross into or out of a function call.
 
-Thus it is the mandatory responsibility of the compiler to ensure that context returns to "v3.0B Standard" prior to entering a function call (responsibility of caller) and prior to exit from a function call (responsibility of callee).
+Thus it is the mandatory responsibility of the compiler to ensure that
+context returns to "v3.0B Standard" prior to entering a function call
+(responsibility of caller) and prior to exit from a function call
+(responsibility of callee).
 
-Trap Handlers also take responsibility for saving and restoring of Compressed Mode state, just as they already take responsibility for other critical state.  This makes traps transparent to functions as far as Compressed Mode Context is concerned, just as traps are already transparent to functions.
+Trap Handlers also take responsibility for saving and restoring of
+Compressed Mode state, just as they already take responsibility for
+other critical state.  This makes traps transparent to functions as
+far as Compressed Mode Context is concerned, just as traps are already
+transparent to functions.
 
-Note however that there are exceptions in a compiler to the otherwise hard rule that Compressed Mode context not be permitted to cross function boundaries: inline functions and static functions.  static functions, if correctly identified as never to be called externally, may, as an optimisation, disregard standard ABIs, bearing in mind that this will be fraught (pointers to functions) and not easy to get right.
+Note however that there are exceptions in a compiler to the otherwise
+hard rule that Compressed Mode context not be permitted to cross function
+boundaries: inline functions and static functions.  static functions,
+if correctly identified as never to be called externally, may, as an
+optimisation, disregard standard ABIs, bearing in mind that this will
+be fraught (pointers to functions) and not easy to get right.
 
 # Opcode Allocation Ideas
 
@@ -233,7 +260,8 @@ Construction of immediate:
 * [1] not the same as v3.0B addis: the shift amount is smaller and actually
   still maps to within the v3.0B addi immediate range.
 * addi is EXTS(i2||imm) to give a 4-bit range -8 to +7
-* addis is EXTS(i2||imm||000) to give a 11-bit range -1024 to +1023 in increments of 8 
+* addis is EXTS(i2||imm||000) to give a 11-bit range -1024 to +1023 in
+  increments of 8
 * all others are EXTS(i2||imm) to give a 7-bit range -128 to +127
   (further for LD/ST due to word/dword-alignment)
 
