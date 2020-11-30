@@ -740,6 +740,94 @@ However this Compressed Encoding is designed for High performance multi-issue sy
 
 By eliminating such 16+16 (actually, 32bit conflation) tricks outlined in (2), Compressed is *specifically* designed to fit into a very small FSM, suitable for multi-issue, that in no way requires "deep-dive" analysis. Yet, despite it never being designed with 16 bit encodings in mind, is still suitable for retro-fitting onto OpenPOWER.
 
+## Compressed Decoder (Phase 1 and Phase 2)
+
+Phase 1 is defined as the minimum necessary FSM required to determine insteuction length and mode.  This is implemented with the absolute bare minimum of gates and is based on the 6 encodings involving N, M and EXTNNN
+
+Phase 2 is defined as the "full decoder" that includes taking into account the length and mode from Phase 1.  Given a pipelined decoder it is categorically **impossible** for Phase 2 to go backwards in time and affect the decisions made in Phase 1.
+
+### Phase 1
+
+Table Reminder of the 6 16-bit encodings:
+
+    | 0 | 1234 | 567  8 | 9abcde | f | explanation
+    | - | ---- | ------ | ------ | - | -----------
+    | EXT000/1 | Cmaj.m | fields | 0 | 10bit then v3.0B
+    | EXT000/1 | Cmaj.m | fields | 1 | 10bit then 16bit
+    | 0 | flds | Cmaj.m | fields | 0 | 16bit then v3.0B
+    | 0 | flds | Cmaj.m | fields | 1 | 16bit then 16bit
+    | 1 | flds | Cmaj.m | fields | 0 | 16b, 1x v3.0B, 16b
+    | 1 | flds | Cmaj.m | fields | 1 | 16b/imm then 16bit
+
+The Phase 1 length/mode identification takes into accoint only 3 pieces of information:
+
+* extc_id: insn[0:4] == EXTNNN (Compressed)
+* M: insn[0]
+* N: insn[15]
+
+The Phase 1 length/mode produces the following lengths/modes:
+
+* 32 - v3.0B
+* 16 - 10bit
+* 16 - 16bit
+
+**NOTE THAT FURTHER SUBIDENTIFICATION OF C MODES IS NOT CARRIED OUT AT PHASE 1**
+
+Pseudocode:
+
+    # starting point for FSM
+    previ = v3.0B
+
+    if previ.mode == v3.0B:
+        # previous was v3.0B, look for compressed tag
+        if extc_id:
+             # found it.  move to 10bit mode
+             nexti.length = 16
+             nexti.mode = 10bit
+        else:
+             # nope. stay in v3.0B
+             nexti.length = 32
+             nexti.mode = v3.0B
+
+    elif previ.mode == 10bit:
+         # previous was v3.0B, move to v3.0B or 16bit?
+        if N == 0:
+             next.length = 32
+             nexti.mode = v3.0B
+         else:
+             # otherwise stay in 16bit mode
+             nexti.length = 16
+             nexti.mode = 16bit
+
+    elif previ.mode == 16bit:
+          # previous was 16bit, stay there or move?
+          if N == 0:
+             # back to v3.0B
+             next.length = 32
+             if M == 1:
+                  # ... but only for 1 insn
+                  nexti.mode = v3.0B_then_16bit
+             else:
+                  nexti.mode = v3.0B
+         else:
+             # otherwise stay in 16bit mode
+             nexti.length = 16
+             nexti.mode = 16bit
+
+## Phase 2
+
+At this phase, knowing that the length is 16bit and the mode is either 10b or 16b, further analysis is required to determine if the 16bit.immediate encoding is active, and so on.
+
+    if mode == 10bit:
+        decode_10bit(insn)
+    if mode == 16bit:
+        if N == 1 and M == 1:
+            decode_16bit_immed_mode(insn)
+        else:
+            decode_16bit_nonimmed_mode(insn)
+
+
+  
 ## Demo of encoding that's backward-compatible with PowerISA v3.1 in both LE and BE mode
 
 [[demo]]
