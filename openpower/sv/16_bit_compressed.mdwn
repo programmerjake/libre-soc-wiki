@@ -740,11 +740,11 @@ However this Compressed Encoding is designed for High performance multi-issue sy
 
 By eliminating such 16+16 (actually, 32bit conflation) tricks outlined in (2), Compressed is *specifically* designed to fit into a very small FSM, suitable for multi-issue, that in no way requires "deep-dive" analysis. Yet, despite it never being designed with 16 bit encodings in mind, is still suitable for retro-fitting onto OpenPOWER.
 
-## Compressed Decoder (Phase 1 and Phase 2)
+## Compressed Decoder Phases
 
-Phase 1 is defined as the minimum necessary FSM required to determine insteuction length and mode.  This is implemented with the absolute bare minimum of gates and is based on the 6 encodings involving N, M and EXTNNN
+Phase 1 (stage 1 of a 2-stage pipelined decoder) is defined as the minimum necessary FSM required to determine instruction length and mode.  This is implemented with the absolute bare minimum of gates and is based on the 6 encodings involving N, M and EXTNNN
 
-Phase 2 is defined as the "full decoder" that includes taking into account the length and mode from Phase 1.  Given a pipelined decoder it is categorically **impossible** for Phase 2 to go backwards in time and affect the decisions made in Phase 1.
+Phase 2 (stage 2 of a 2-stage pipelined decoder) is defined as the "full decoder" that includes taking into account the length and mode from Phase 1.  Given a 2-stage pipelined decoder it is categorically **impossible** for Phase 2 to go backwards in time and affect the decisions made in Phase 1.
 
 These two phases are specifically designed to take multi-issue execution into account.  Phase 1 is intended to be part of an O(log N) algorithm that can use a form of carry-lookahead propagation. Phase 2 is intended to be on a 2nd pipelined clock cycle, comprising a separate suite of independent local-state-only parallel pipelines that do not require any inter-communication of any kind.
 
