@@ -471,19 +471,19 @@ Note here that elwidth overrides (SV Prefix) can be used to select FP16/32/64
     | N | 0 |  RT | | 110.0 | RB  | RA!=0 | M | fadd
     | N | 0 |  RT | | 110.1 | RB  | RA!=0 | M | fmul
     | N | 0 |  RT | | 011.1 | RB  | 0 0 0 | M | fneg.
-    | N | 0 |  RT | | 110.0 | RB  | 0 0 0 | M |
-    | N | 0 |  RT | | 110.1 | RB  | 0 0 0 | M |
+    | N | 0 |     | | 110.0 |     | 0 0 0 | M | TBD
+    | N | 0 |     | | 110.1 |     | 0 0 0 | M | TND
 
 16-bit mode only (note that bit 1 == 1):
 
     | 0 | 1 | 234 | | 567.8 | 9ab | c d e | f |
     | - | - | --- | | ----- | --- | ----- | - |
-    | N | 1 |  RT | | 011.1 | RB  | RA!=0 | M |
-    | N | 1 |  RT | | 110.0 | RB  | RA!=0 | M |
+    | N | 1 |     | | 011.1 |     | RA!=0 | M | TBD
+    | N | 1 |     | | 110.0 |     | RA!=0 | M | TBD
     | N | 1 |  RT | | 110.1 | RB  | RA!=0 | M | fdiv
     | N | 1 |  RT | | 011.1 | RB  | 0 0 0 | M | fabs.
     | N | 1 |  RT | | 110.0 | RB  | 0 0 0 | M | fmr.
-    | N | 1 |  RT | | 110.1 | RB  | 0 0 0 | M |
+    | N | 1 |     | | 110.1 |     | 0 0 0 | M | TBD
 
 16 bit only, FP to INT convert (using C 0b001.1 subencoding)
 
