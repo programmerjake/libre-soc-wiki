@@ -310,7 +310,8 @@ Notes:
   the M=1 variant can be used, because each one returns to
   Standard v3.0B Encoding Mode, each time.
 
-In essence the 2 nops are needed due to there being 2 different C forms: 10 and 16 bit.  
+In essence the 2 nops are needed due to there being 2 different C forms:
+10 and 16 bit.
 
 ### Branch
 
@@ -597,8 +598,10 @@ Tables explaining encoding:
 
 * make a preliminary assessment of branch in/out viability
 * confirm FSM encoding (is LSB of PC really enough?)
-* guestimate opcode and register allocation (without necessarily doing a full encoding)
-* write throwaway python program that estimates compression ratio from objdump raw parsing
+* guestimate opcode and register allocation (without necessarily doing
+  a full encoding)
+* write throwaway python program that estimates compression ratio from
+  objdump raw parsing
 * finally do full opcode allocation
 * rerun objdump compression ratio estimates
 
@@ -632,7 +635,9 @@ even longer.
 
 # gcc register allocation
 
-FTR, information extracted from gcc's gcc/config/rs6000/rs6000.h about fixed registers (assigned to special purposes) and register allocation order:
+FTR, information extracted from gcc's gcc/config/rs6000/rs6000.h about
+fixed registers (assigned to special purposes) and register allocation
+order:
 
 Special-purpose registers on ppc are:
 
@@ -647,9 +652,11 @@ Special-purpose registers on ppc are:
     r31: frame pointer
     lr: return address register
 
-the register allocation order in GCC (i.e., it takes the earliest available register that fits the constraints) is:
+the register allocation order in GCC (i.e., it takes the earliest
+available register that fits the constraints) is:
 
-     We allocate in the following order:
+    We allocate in the following order:
+
 	fp0		(not saved or used for anything)
 	fp13 - fp2	(not saved; incoming fp arg registers)
 	fp1		(not saved; return value)
