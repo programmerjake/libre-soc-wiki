@@ -746,9 +746,9 @@ Phase 1 is defined as the minimum necessary FSM required to determine insteuctio
 
 Phase 2 is defined as the "full decoder" that includes taking into account the length and mode from Phase 1.  Given a pipelined decoder it is categorically **impossible** for Phase 2 to go backwards in time and affect the decisions made in Phase 1.
 
-### Phase 1
+These two phases are specifically designed to take multi-issue execution into account.  Phase 1 is intended to be part of an O(log N) algorithm that can use a form of carry-lookahead propagation. Phase 2 is intended to be on a 2nd pipelined clock cycle, comprising a separate suite of independent local-state-only parallel pipelines that do not require any inter-communication of any kind.
 
-Table Reminder of the 6 16-bit encodings:
+Table: Reminder of the 6 16-bit encodings:
 
     | 0 | 1234 | 567  8 | 9abcde | f | explanation
     | - | ---- | ------ | ------ | - | -----------
@@ -759,7 +759,9 @@ Table Reminder of the 6 16-bit encodings:
     | 1 | flds | Cmaj.m | fields | 0 | 16b, 1x v3.0B, 16b
     | 1 | flds | Cmaj.m | fields | 1 | 16b/imm then 16bit
 
-The Phase 1 length/mode identification takes into accoint only 3 pieces of information:
+### Phase 1
+
+The Phase 1 length/mode identification takes into account only 3 pieces of information:
 
 * extc_id: insn[0:4] == EXTNNN (Compressed)
 * M: insn[0]
@@ -767,11 +769,11 @@ The Phase 1 length/mode identification takes into accoint only 3 pieces of infor
 
 The Phase 1 length/mode produces the following lengths/modes:
 
-* 32 - v3.0B
+* 32 - v3.0B (includes v3.0B followed by 16bit)
 * 16 - 10bit
 * 16 - 16bit
 
-**NOTE THAT FURTHER SUBIDENTIFICATION OF C MODES IS NOT CARRIED OUT AT PHASE 1**
+**NOTE THAT FURTHER SUBIDENTIFICATION OF C MODES IS NOT CARRIED OUT AT PHASE 1**. In particular note specifically that 16 bit "immediate mode" is **not** part of the Phase 1 FSM, but is specifically isolated to Phase 2.
 
 Pseudocode:
 
@@ -813,6 +815,10 @@ Pseudocode:
              # otherwise stay in 16bit mode
              nexti.length = 16
              nexti.mode = 16bit
+
+    # rest of FSM involving 3.0B to 16bit
+    # and back transitions left to implementor
+    # (or for someone else to add)
 
 ## Phase 2 Compressed (16bit decoding)
 
