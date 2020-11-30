@@ -604,7 +604,7 @@ Tables explaining encoding:
     | v3.0B standard 32 bit instruction |
 
 
-### TODO 
+# TODO 
 
 * make a preliminary assessment of branch in/out viability
 * confirm FSM encoding (is LSB of PC really enough?)
@@ -635,7 +635,9 @@ additional range for immediate and offset operands, effectively
 forming a 32-bit operation, enabling us to remain in compressed mode
 even longer.
 
-# Analysis techniques and tools
+# Appendix
+
+## Analysis techniques and tools
 
     objdump -d --no-show-raw-insn /bin/bash | sed 'y/\t/ /;
       s/^[ x0-9A-F]*: *\([a-z.]\+\) *\(.*\)/\1 \2 /p; d' |
@@ -643,7 +645,7 @@ even longer.
       s/\([ ,]\)-*[0-9]\+\([^0-9]\)/\11\2/g' | sort | uniq --count |
       sort -n | less
 
-# gcc register allocation
+## gcc register allocation
 
 FTR, information extracted from gcc's gcc/config/rs6000/rs6000.h about
 fixed registers (assigned to special purposes) and register allocation
@@ -694,7 +696,6 @@ available register that fits the constraints) is:
 	vrsave, vscr	(fixed)
 	sfp		(fixed)
 
-# Appendix
 ## Comparison to VLE
 
 VLE was a means to reduce executable size through three interleaved methods:
