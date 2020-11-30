@@ -814,9 +814,9 @@ Pseudocode:
              nexti.length = 16
              nexti.mode = 16bit
 
-## Phase 2
+## Phase 2 Compressed (16bit decoding)
 
-At this phase, knowing that the length is 16bit and the mode is either 10b or 16b, further analysis is required to determine if the 16bit.immediate encoding is active, and so on.
+At this phase, knowing that the length is 16bit and the mode is either 10b or 16b, further analysis is required to determine if the 16bit.immediate encoding is active, and so on.  This is a fully combinatorial block that **at no time** steps outside of the strict bounds already determined by Phase 1.
 
     if mode == 10bit:
         decode_10bit(insn)
@@ -826,7 +826,7 @@ At this phase, knowing that the length is 16bit and the mode is either 10b or 16
         else:
             decode_16bit_nonimmed_mode(insn)
 
-
+From this point onwards each of the decode_* functions perform straightforward combinatorial decoding of the 16 bits of "insn".
   
 ## Demo of encoding that's backward-compatible with PowerISA v3.1 in both LE and BE mode
 
