@@ -832,7 +832,7 @@ At this phase, knowing that the length is 16bit and the mode is either 10b or 16
         else:
             decode_16bit_nonimmed_mode(insn)
 
-From this point onwards each of the decode_* functions perform straightforward combinatorial decoding of the 16 bits of "insn".  In sone cases this involves further analysis of bit 1, in some cases (Cmaj.m = 0b010.1) even further deep-dive decoding is required (CR ops).  *All* of it is entirely combinatorial and at **no time** involves changing of, or interaction with, or disruption of, the Phase 1 determination of Length+Mode (that has *already taken place* in an earlier decoding pipeline time-schedule)
+From this point onwards each of the decode_xx functions perform straightforward combinatorial decoding of the 16 bits of "insn".  In sone cases this involves further analysis of bit 1, in some cases (Cmaj.m = 0b010.1) even further deep-dive decoding is required (CR ops).  *All* of it is entirely combinatorial and at **no time** involves changing of, or interaction with, or disruption of, the Phase 1 determination of Length+Mode (that has *already taken place* in an earlier decoding pipeline time-schedule)
   
 ## Demo of encoding that's backward-compatible with PowerISA v3.1 in both LE and BE mode
 
