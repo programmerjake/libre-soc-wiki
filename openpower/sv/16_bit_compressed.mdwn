@@ -102,13 +102,14 @@ VLE was a means to reduce executable size through three interleaved methods:
 
 * (1) invention of 16 bit encodings (of exactly 16 bit in length)
 * (2) invention of 16+16 bit encodings (a 16 bit instruction format but with
-  an *additional* 16 bit immediate "tacked on" to the end)
+  an *additional* 16 bit immediate "tacked on" to the end, actually
+  making a 32-bit instruction format)
 * (3) seamless and transparent embedding and intermingling of the
   above in amongst arbitrary v2.06/7 BE 32 bit instruction sequences,
   with no additional state,
   including when the PC was not aligned on a 4-byte boundary.
 
-Whilst (1) and (3) make perfect sense, (2) makes no sense at all given that 16 bit immediates is the norm for v2.06/7 and v3.0B standard instructions.  (2) in effect **is** a 32 bit instruction.  (2) **is not** a 16 bit instuction.  Why "reinvent" an encoding that is 32 bit, when there already exists a 32 bit encoding that does the exact same job?
+Whilst (1) and (3) make perfect sense, (2) makes no sense at all given that, inspection of "ori" and others, I-Form 16 bit immediates is the "norm" for v2.06/7 and v3.0B standard instructions.  (2) in effect **is** a 32 bit instruction.  (2) **is not** a 16 bit instuction.  Why "reinvent" an encoding that is 32 bit, when there already exists a 32 bit encoding that does the exact same job?
 
 Consequently, we do **not** envisage a scenario where (2) would ever be implemented, nor in the future would this Compressed Encoding be extended beyond 16 bit.  Compressed is Compressed and is **by definition** limited to precisely  - and only - 16 bit.
 
