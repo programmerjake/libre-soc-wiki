@@ -375,7 +375,7 @@ Notes:
     | N | 0 |  RT   | | 100.0 | RB  | RA!=0 | M | and
     | N | 0 |  RT   | | 100.1 | RB  | RA!=0 | M | nand
     | N | 0 |  RT   | | 101.0 | RB  | RA!=0 | M | or
-    | N | 0 |  RT   | | 101.1 | RB  | RA!=0 | M | nor
+    | N | 0 |  RT   | | 101.1 | RB  | RA!=0 | M | nor/mr
     | N | 0 |  RT   | | 100.0 | RB  | 0 0 0 | M | extsw
     | N | 0 |  RT   | | 100.1 | RB  | 0 0 0 | M | cntlz
     | N | 0 |  RT   | | 101.0 | RB  | 0 0 0 | M | popcnt
@@ -395,6 +395,9 @@ Notes:
 
 10 bit mode:
 
+* idea: for 10bit mode, nor is actually 'mr' because mr is
+  a more common operation.  in 16bit however, this encoding
+  (Cmaj.min=0b101.1, N=0) is 'nor'
 * for (RA|0) when RA=0 the input is a zero immediate,
   meaning that nor becomes not
 * cntlz, popcnt, exts **not available** in 10-bit mode
