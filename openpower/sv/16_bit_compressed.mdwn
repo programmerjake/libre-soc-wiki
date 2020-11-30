@@ -827,7 +827,7 @@ At this phase, knowing that the length is 16bit and the mode is either 10b or 16
     if mode == 10bit:
         decode_10bit(insn)
     elif mode == 16bit:
-        if N == 1 and M == 1:
+        if N == 1 & M == 1 & insn[5:8] != 0b001.1
             decode_16bit_immed_mode(insn)
         else:
             # see immediate opcodes table
