@@ -358,21 +358,19 @@ TODO: document that branching whilst using mode-switching bits (M/N) is perfectl
 
 Note: for 10-bit, ignore bits 0-4 (used by EXTNNN=Compressed)
 
-    | 16-bit mode    | | 10-bit mode             |
-    | 0   | 1  | 234 | | 567.8 | 9 a b | c d e | f |
-    | --- | -- | --- | | ----- | ----- | ----- | - |
-    | RA2 | SZ |  RB | | 001.1 | 1  RA | 0  RT | M | st
-    | RA2 | SZ |  RB | | 001.1 | 1  RA | 1  RT | M | fst
-    | N   | SZ |  RT | | 111.0 |  RA   |  RB   | M | ld
-    | N   | SZ |  RT | | 111.1 |  RA   |  RB   | M | fld
+    | 16-bit mode  | | 10-bit mode               |
+    | 0 | 1  | 234 | | 567.8 | 9 a b | c d e | f |
+    | - | -- | --- | | ----- | ----- | ----- | - |
+    | N | SZ |  RB | | 001.1 | 1  RA | 0  RT | M | st
+    | N | SZ |  RB | | 001.1 | 1  RA | 1  RT | M | fst
+    | N | SZ |  RT | | 111.0 |  RA   |  RB   | M | ld
+    | N | SZ |  RT | | 111.1 |  RA   |  RB   | M | fld
 
 * elwidth overrides can set different widths
 
 16 bit mode:
 
 * SZ=1 is 64 bit, SZ=0 is 32 bit
-* RA2 extends RA to 3 bits (MSB)
-* RT2 extends RT to 3 bits (MSB)
 
 10 bit mode:
 
