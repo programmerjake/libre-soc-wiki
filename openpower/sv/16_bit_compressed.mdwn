@@ -490,10 +490,10 @@ Note here that elwidth overrides (SV Prefix) can be used to select FP16/32/64
 
 16 bit only, FP to INT convert (using C 0b001.1 subencoding)
 
-    | 0123 | 4 | | 567.8 | 9 ab | cde  | f |
-    | ---- | - | | ----- | ---- | ---- | - |
-    | 0010 | X | | 001.1 | 0 RA | Y RT | M | fp2int
-    | 0011 | X | | 001.1 | 0 RA | Y RT | M | int2fp
+    | 0 | 123 | 4 | | 567.8 | 9 ab | cde  | f |
+    | - | --- | - | | ----- | ---- | ---- | - |
+    | N | 101 | X | | 001.1 | 0 RA | Y RT | M | fp2int
+    | N | 110 | X | | 001.1 | 0 RA | Y RT | M | int2fp
 
 * X: signed=1, unsigned=0
 * Y: FP32=0, FP64=1
@@ -574,9 +574,6 @@ space (when RA==0)
 
     | 0 | 123 | 4 | | 567.8 | 9 ab | cde  | f |
     | - | --- | - | | ----- | ---- | ---- | - |
-    | N | 101 |   | | 001.1 | 0    |      | M |
-    | N | 101 |   | | 001.1 | 0    |      | M |
-    | N | 110 |   | | 001.1 | 0    |      | M |
     | N | 111 |   | | 001.1 | 0 10 |      | M |
 
 ## Other ideas (Attempt 2)
