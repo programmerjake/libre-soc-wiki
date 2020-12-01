@@ -1,3 +1,72 @@
+2020-11-30
+
+	* 238: Settled the N-without-M issue, it was likely an error in
+	the tables.  Raised an inconsistency in decoder pseudocode's
+	reversal of M and N.  Returned to the uncertainty and need for
+	specifying how to handle conflicts between
+	standard-then-compressed followed by 10-bit with M=0.  Raised
+	issue of missing documentation that branch targets are always
+	uncompressed, not just 32-bit aligned.  Raised issue of the
+	purpose of M and N bits, particularly in unconditional branches.
+	Explained why I believe phase 1 decoder hsa to look at Cmaj.m bits
+	to tell whether or not N is there, brought crnand and crand
+	encodings as example, and asked whether crand with M=0 should
+	switch to 32-bit mode for only one insn, because the bit that
+	usually holds N=1, or permanently, because there's no N field in
+	the applicable encoding.  (2:33)
+
+	* 238: Detailed the motivations for my proposal of bit-shuffling
+	in the 16-bit encoding, to reduce wires and selections in the
+	realigning muxer.  Restated my question on N without M as I can't
+	relate the answer with the question, it appears to have been
+	misunderstood.  Further expanded on the advantages of moving the
+	Cmaj.m and M bits as suggested, even going as far as enabling an
+	extended compressed opcode reusing the bit that signals a match
+	for a 10-bit insn in uncompressed mode.  (3:29)
+
+2020-11-29
+
+	* 238: Noted some apparent contradictions in the rejection of
+	extended 16-bit insns in the face of 16+16-bit insns.  Luke hit me
+	with clarification that there's no such thing as a 16+16-bit insn
+	in compressed mode, and I could see how I'd totally made it up by
+	myself by reviewing the proposal.  Hit and asked other questions:
+	what's the N for when there's no M, and what are the SV prefixes
+	mentioned there, now that I no longer assume them to be something
+	like extend-next.  Then I recorded some thoughts on minimizing the
+	bits the muxer has to look into by making the bits that encode N,
+	Cmaj.m and M onto the same bits that, in traditional mode, encode
+	the primary opcode.  Finally, I was hit by the realization that,
+	if we change the perspective from "uncompressed insns used to be
+	32-bit only" to "uncompressed can be 32- or 16-bit depending on
+	the opcode", on account of the 10-bit insns, the need for taking
+	the opcode into account to tell whether we're looking at a 16- or
+	32-bit insn, so why is it ok there, but not ok in compressed mode?
+	Finally, I propose an encoding scheme that encodes lengths of
+	subsequent insns in an early insn, achieving more coverage for
+	16-bit insns, better limit compression, far more flexible mode
+	switching, enabling savings at far more sparse settings, and
+	without eating up a pair of primary opcodes: the 32-bit
+	mode-switching insn could even be an extended opcode, though it
+	would probably not have as many pre-length encoding bits then.  It
+	would fit an entire 16-bit insn, which could do useful work, or
+	queue up further pre-length bits, that correspond to static
+	upcoming insns and tell whether to decode them as 32-bit or as
+	(pairs of?) 16-bit ones.  Compared max ratio, representation
+	overhead, and break-even density.  Shared some more thoughts on
+	48- and 64-bit insns.  (7:39)
+
+	* 532: Got a little confused about some encodings; it's not clear
+	whether the N and M bits in 16-bit instructions have uniform
+	interpretation, or whether some proposed opcodes are repurposing
+	them.  I'm surprised with such short immediate operands in the
+	immediate instructions, if they don't get a 16-bit extension, or
+	otherwise with the apparent requirement for an extended 16-bit
+	immediate for something as simple as an mr encoded as addi.  Asked
+	for clarification.  Not sure about how to proceed before I get it;
+	the logic of the estimator would be too significantly impacted.
+	(2:48)
+
 2020-11-28
 
 	* 532: Figured out and implemented the logic to infer mode
