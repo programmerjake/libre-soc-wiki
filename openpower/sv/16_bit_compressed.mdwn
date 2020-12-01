@@ -513,24 +513,22 @@ Note here that elwidth overrides (SV Prefix) can be used to select FP16/32/64
 10-bit or 16 bit:
 
     | 16-bit mode| | 10-bit mode            |
-    | 0123 | 4   | | 567.8 | 9 ab | cde | f |
-    | ---- | --- | | ----- | ---- | --- | - |
-    | 0000 | BF2 | | 001.1 | 0 BF | BFA | M | mcrf
+    | 0 | 123 | 4   | | 567.8 | 9 ab | cde | f |
+    | - | --- | --- | | ----- | ---- | --- | - |
+    | N | 000 | BF2 | | 001.1 | 0 BF | BFA | M | mcrf
 
 16-bit only:
 
-    | 0123 | 4   | | 567.8 | 9 ab | cde | f |
-    | ---- | --- | | ----- | ---- | --- | - |
-    | 0001 | BA2 | | 001.1 | 0 BA | BB  | M | crnor
-    | 0100 | BA2 | | 001.1 | 0 BA | BB  | M | crandc
-    | 0110 | BA2 | | 001.1 | 0 BA | BB  | M | crxor
-    | 0111 | BA2 | | 001.1 | 0 BA | BB  | M | crnand
-    | 1000 | BA2 | | 001.1 | 0 BA | BB  | M | crand
-    | 1001 | BA2 | | 001.1 | 0 BA | BB  | M | creqv
-    | 1101 | BA2 | | 001.1 | 0 BA | BB  | M | crorc
-    | 1110 | BA2 | | 001.1 | 0 BA | BB  | M | cror
-
-TODO: note that whilst M=0 allows a return to v3.0B, no information exists which allows deciding whether it is more appropriate to enter v3.0B-then-back-to-16bit.  this requires statistical analysis.
+    | 0 | 1234 | | 567.8 | 9 ab | cde | f |
+    | - | ---- | | ----- | ---- | --- | - |
+    | N | 0010 | | 001.1 | 0 BA | BB  | M | crnor
+    | N | 0011 | | 001.1 | 0 BA | BB  | M | crandc
+    | N | 0100 | | 001.1 | 0 BA | BB  | M | crxor
+    | N | 0101 | | 001.1 | 0 BA | BB  | M | crnand
+    | N | 0110 | | 001.1 | 0 BA | BB  | M | crand
+    | N | 0111 | | 001.1 | 0 BA | BB  | M | creqv
+    | N | 1000 | | 001.1 | 0 BA | BB  | M | crorc
+    | N | 1001 | | 001.1 | 0 BA | BB  | M | cror
 
 Notes
 
@@ -563,26 +561,23 @@ space (when RA==0)
 
 **not available** in 10-bit mode, **only** in 16-bit mode:
 
-    | 0123 | 4 | | 567.8 | 9 ab | cde  | f |
-    | ---- | - | | ----- | ---- | ---- | - |
-    | 1111 | 0 | | 001.1 | 0 00 |  RT  | M | mtlr
-    | 1111 | 0 | | 001.1 | 0 01 |  RT  | M | mtctr
-    | 1111 | 0 | | 001.1 | 0 11 |  RT  | M | mtcr
-    | 1111 | 1 | | 001.1 | 0 00 |  RA  | M | mflr
-    | 1111 | 1 | | 001.1 | 0 01 |  RA  | M | mfctr
-    | 1111 | 1 | | 001.1 | 0 11 |  RA  | M | mfcr
-
-TODO: note that whilst M=0 allows a return to v3.0B, no information exists which allows deciding whether it is more appropriate to enter v3.0B-then-back-to-16bit.  this requires statistical analysis.
+    | 0 | 1234 | | 567.8 | 9 ab | cde  | f |
+    | - | ---- | | ----- | ---- | ---- | - |
+    | N | 1110 | | 001.1 | 0 00 |  RT  | M | mtlr
+    | N | 1110 | | 001.1 | 0 01 |  RT  | M | mtctr
+    | N | 1110 | | 001.1 | 0 11 |  RT  | M | mtcr
+    | N | 1111 | | 001.1 | 0 00 |  RA  | M | mflr
+    | N | 1111 | | 001.1 | 0 01 |  RA  | M | mfctr
+    | N | 1111 | | 001.1 | 0 11 |  RA  | M | mfcr
 
 ### Unallocated
 
-    | 0123 | 4 | | 567.8 | 9 ab | cde  | f |
-    | ---- | - | | ----- | ---- | ---- | - |
-    | 0101 |   | | 001.1 | 0    |      | M |
-    | 1010 |   | | 001.1 | 0    |      | M |
-    | 1011 |   | | 001.1 | 0    |      | M |
-    | 1100 |   | | 001.1 | 0    |      | M |
-    | 1111 |   | | 001.1 | 0 10 |      | M |
+    | 0 | 123 | 4 | | 567.8 | 9 ab | cde  | f |
+    | - | --- | - | | ----- | ---- | ---- | - |
+    | N | 101 |   | | 001.1 | 0    |      | M |
+    | N | 101 |   | | 001.1 | 0    |      | M |
+    | N | 110 |   | | 001.1 | 0    |      | M |
+    | N | 111 |   | | 001.1 | 0 10 |      | M |
 
 ## Other ideas (Attempt 2)
 
