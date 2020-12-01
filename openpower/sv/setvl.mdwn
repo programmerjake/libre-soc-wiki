@@ -54,7 +54,9 @@ See links:
     if rt != 0 {
         // rt is not zero
         regs[rt] = VL;
-        if Rc {
-            // update CR from VL
-        }
+    }
+    // write CR?
+    if Rc {
+        // update CR from VL (not rt)
+        CR0 = ....
     }
