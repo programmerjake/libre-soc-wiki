@@ -4,3 +4,40 @@ See links:
 
 * <http://lists.libre-soc.org/pipermail/libre-soc-dev/2020-November/001366.html>
 * <https://bugs.libre-soc.org/show_bug.cgi?id=535>
+
+# Format
+
+| 0..5 |6....10|11....16|17...20|21.22|23.24|25.26|27...30|31|  name   |
+|------|-------|--------|-------|-----|-----|--|--|-------|--|---------|
+| 19   | RT    | RA     |       | XO[0:4]        XO[5:10] |/ | XL-Form |
+| 19   | (RT|0)| (RA|0) |vlimmed      |//   |vs|ms| NNNNN |/ | setvl/i |
+
+# Pseudocode
+
+    // instruction fields:
+    rd = get_rt_field();
+    ra = get_ra_field();
+    vlimmed = get_immed_field();
+
+    if vs {
+       VL = vlimmed
+    } else {
+       VL = SPR[SV_VL]
+    }
+    if ms {
+       MVL = vlimmed
+    } else {
+       MVL = SPR[SV_MVL]
+    }
+    // calculate VL
+    VL = min(VL, MVL)
+
+    // store VL, MVL
+    SPR[SV_VL] = VL
+    SPR[SV_MVL] = MVL
+
+    // write rd
+    if rd != 0 {
+        // rd is not x0
+        regs[rd] = VL;
+    }
