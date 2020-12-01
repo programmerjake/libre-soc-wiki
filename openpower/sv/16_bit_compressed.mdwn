@@ -238,7 +238,7 @@ instruction counts from objdump on /bin/bash:
     | 1 | 1  | 0 | sh2 | | 001.0 | RA   | sh  | 1 | srawi.
     | 1 | 1  | 1 |     | | 001.0 | 000  | imm | 1 | TBD
     | 1 | 1  | 1 | i2  | | 001.0 | RA!=0| imm | 1 | addis
-    | 1 |              | | 010.0 | 000  |     | 1 | TBD
+    | 1 | i2           | | 010.0 | 000  | imm | 1 | setmvli
     | 1 | i2           | | 010.0 | RA!=0| imm | 1 | addi
     | 1 | 0  | i2      | | 010.1 | RA   | imm | 1 | cmpdi
     | 1 | 1  | i2      | | 010.1 | RA   | imm | 1 | cmpwi
@@ -322,7 +322,7 @@ In essence the 2 nops are needed due to there being 2 different C forms:
 
 ### Branch
 
-TODO: document that branching whilst using mode-switching bits (M/N) is perfectly well permitted but is specifically and wholly the complier/assembler writers responsibility to obey ABI rules and ensure that even with branches and returns that, at no time, is an incorrect mode entered or left that could result in any instruction being misinterpreted.
+TODO: document that branching whilst using mode-switching bits (M/N) is perfectly well permitted, the caveat being: it is specifically and wholly the complier/assembler writers responsibility to obey ABI rules and ensure that even with branches and returns that, at no time, is an incorrect mode entered or left that could result in any instruction being misinterpreted.
 
     | 16-bit mode | | 10-bit mode                 |
     | 0 | 1 | 234 | | 567.8  | 9  ab | c   de | f |
@@ -429,9 +429,9 @@ Notes:
     | N | 0 |  RT | | 100.1 | RB  | RA!=0 | M | nand
     | N | 0 |  RT | | 101.0 | RB  | RA!=0 | M | or
     | N | 0 |  RT | | 101.1 | RB  | RA!=0 | M | nor/mr
-    | N | 0 |  RT | | 100.0 | RB  | 0 0 0 | M | extsw
+    | N | 0 |  RT | | 100.0 | RB  | 0 0 0 | M | popcnt
     | N | 0 |  RT | | 100.1 | RB  | 0 0 0 | M | cntlz
-    | N | 0 |  RT | | 101.0 | RB  | 0 0 0 | M | popcnt
+    | N | 0 |  RT | | 101.0 | RB  | 0 0 0 | M | extsw
     | N | 0 |  RT | | 101.1 | RB  | 0 0 0 | M | not
 
 16-bit mode only (note that bit 1 == 1):
@@ -442,9 +442,9 @@ Notes:
     | N | 1 |  RT | | 100.1 | RB  | RA!=0 | M | TBD
     | N | 1 |  RT | | 101.0 | RB  | RA!=0 | M | xor
     | N | 1 |  RT | | 101.1 | RB  | RA!=0 | M | eqv (xnor)
-    | N | 1 |  RT | | 100.0 | RB  | 0 0 0 | M | extsb
+    | N | 1 |  RT | | 100.0 | RB  | 0 0 0 | M | setvl.
     | N | 1 |  RT | | 100.1 | RB  | 0 0 0 | M | cnttz
-    | N | 1 |  RT | | 101.0 | RB  | 0 0 0 | M | TBD
+    | N | 1 |  RT | | 101.0 | RB  | 0 0 0 | M | extsb
     | N | 1 |  RT | | 101.1 | RB  | 0 0 0 | M | extsh
 
 10 bit mode:
