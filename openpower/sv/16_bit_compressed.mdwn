@@ -321,7 +321,7 @@ In essence the 2 nops are needed due to there being 2 different C forms:
 
 ### Branch
 
-TODO: document that branching whilst leaving modes still set (M/N) is perfectly well permitted but is the complier/assembler writers responsibility to obey ABI rules and ensure that even with branches and returns that, at no time, is an incorrect mode entered or left.
+TODO: document that branching whilst using mode-switching bits (M/N) is perfectly well permitted but is specifically and wholly the complier/assembler writers responsibility to obey ABI rules and ensure that even with branches and returns that, at no time, is an incorrect mode entered or left that could result in any instruction being misinterpreted.
 
     | 16-bit mode | | 10-bit mode                 |
     | 0 | 1 | 234 | | 567.8  | 9  ab | c   de | f |
