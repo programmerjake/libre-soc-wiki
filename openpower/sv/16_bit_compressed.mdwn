@@ -795,7 +795,7 @@ Pseudocode:
 
     elif previ.mode == 10bit:
          # previous was v3.0B, move to v3.0B or 16bit?
-        if N == 0:
+        if M == 0:
              next.length = 32
              nexti.mode = v3.0B
          else:
@@ -805,10 +805,10 @@ Pseudocode:
 
     elif previ.mode == 16bit:
           # previous was 16bit, stay there or move?
-          if N == 0:
+          if M == 0:
              # back to v3.0B
              next.length = 32
-             if M == 1:
+             if N == 1:
                   # ... but only for 1 insn
                   nexti.mode = v3.0B_then_16bit
              else:
