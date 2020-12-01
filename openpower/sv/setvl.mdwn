@@ -68,7 +68,7 @@ Note that setmvli is a pseudo-op, based on RT=0, and setvli likewise, based on R
 ## Core concept loop
 
     loop:
-    setvli a3, a0, MVL=8   #  update a3 with vl
+    setvl a3, a0, MVL=8    #  update a3 with vl
                            # (# of elements this iteration)
                            # set MVL to 8
     # do vector operations at up to 8 length (MVL=8)
