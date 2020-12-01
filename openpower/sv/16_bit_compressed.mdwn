@@ -744,7 +744,7 @@ By eliminating such 16+16 (actually, 32bit conflation) tricks outlined in (2), C
 
 ## Compressed Decoder Phases
 
-Phase 1 (stage 1 of a 2-stage pipelined decoder) is defined as the minimum necessary FSM required to determine instruction length and mode.  This is implemented with the absolute bare minimum of gates and is based on the 6 encodings involving N, M and EXTNNN
+Phase 1 (stage 1 of a 2-stage pipelined decoder) is defined as the minimum necessary FSM required to determine instruction length and mode.  This is implemented with the absolute bare minimum of gates and is based on the 6 encodings involving N, M and EXTNNN (see table, below)
 
 Phase 2 (stage 2 of a 2-stage pipelined decoder) is defined as the "full decoder" that includes taking into account the length and mode from Phase 1.  Given a 2-stage pipelined decoder it is categorically **impossible** for Phase 2 to go backwards in time and affect the decisions made in Phase 1.
 
