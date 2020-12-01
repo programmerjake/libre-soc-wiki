@@ -60,3 +60,16 @@ See links:
         // update CR from VL (not rt)
         CR0 = ....
     }
+
+# Examples
+
+## Core concept loop
+
+    loop:
+    setvli a3, a0, MVL=8   #  update a3 with vl
+                           # (# of elements this iteration)
+                           # set MVL to 8
+    # do vector operations at up to 8 length (MVL=8)
+    # ...
+    sub a0, a0, a3   # Decrement count by vl
+    bnez a0, loop    # Any more?
