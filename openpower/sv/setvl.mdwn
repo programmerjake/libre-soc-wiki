@@ -31,13 +31,15 @@ Note that setmvli is a pseudo-op, based on RA/RT=0, and setvli likewise
     // set VL (or not).
     // 3 options: from SPR, from immed, from ra
     if vs {
-       if ra == 0 {
-           VL = SPR[SV_VL]
+       // VL to be sourced from fields/regs
+       if ra != 0 {
+           VL = GPR[ra]  
        } else {
            VL = vlimmed
        }
-    } elif ra != 0 {
-       VL = GPR[ra]
+    } else {
+       // VL not to change, source from SPR
+       VL = SPR[SV_VL]
     }
 
     // set MVL (or not).
