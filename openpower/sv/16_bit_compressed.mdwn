@@ -111,7 +111,9 @@ to cross into or out of a function call.
 Thus it is the mandatory responsibility of the compiler to ensure that
 context returns to "v3.0B Standard" prior to entering a function call
 (responsibility of caller) and prior to exit from a function call
-(responsibility of callee).
+(responsibility of callee) by setting appropriate M and N bits.
+
+If however it is known to the compiler that certain static leaf node functions and their immediate callers will never, under any circumstances, be called by externsl ABI compliant code, then of course the compiler may choose to write such static functions as it sees fit.
 
 Trap Handlers also take responsibility for saving and restoring of
 Compressed Mode state, just as they already take responsibility for
