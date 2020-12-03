@@ -4,4 +4,36 @@ The plan is to create an encoding for SVP64, then to create an encoding for
 SVP48, then to reorganize them both to improve field overlap, reducing the
 amount of decoder hardware necessary.
 
+All bit numbers are in MSB0 form (the bits are numbered from 0 at the MSB and
+counting up as you move to the LSB end). All bit ranges are inclusive (so
+`4:6` means bits 4, 5, and 6).
+
+64-bit instructions are split into two 32-bit words, the prefix and the suffix. The prefix always comes before the suffix in PC order.
+
+## Prefix Opcode Map (64-bit instruction encoding) (prefix bits 6:11)
+
+(shows both PowerISA v3.1 instructions as well as new SVP instructions; empty spaces are yet-to-be-allocated Illegal Instructions)
+
+| bits 6:11 | ---000   | ---001     | ---010   | ---011   | ---100   | ---101   | ---110   | ---111   |
+|-----------|----------|------------|----------|----------|----------|----------|----------|----------|
+| 000---    | 8LS-form | 8LS-form   | 8LS-form | 8LS-form | 8LS-form | 8LS-form | 8LS-form | 8LS-form |
+| 001---    |          |            |          |          |          |          |          |          |
+| 010---    | 8RR-form |            |          |          | SVP64    | SVP64    | SVP64    | SVP64    |
+| 011---    |          |            |          |          | SVP64    | SVP64    | SVP64    | SVP64    |
+| 100---    | MLS-form | MLS-form   | MLS-form | MLS-form | MLS-form | MLS-form | MLS-form | MLS-form |
+| 101---    |          |            |          |          |          |          |          |          |
+| 110---    | MRR-form |            |          |          | SVP64    | SVP64    | SVP64    | SVP64    |
+| 111---    |          | MMIRR-form |          |          | SVP64    | SVP64    | SVP64    | SVP64    |
+
+## Prefix Fields
+
+| Prefix Field Name   | Field bits | Constant Value | Description                            |
+|---------------------|------------|----------------|----------------------------------------|
+| PO (Primary Opcode) | `0:5`      | `1`            | Indicates this is a 64-bit instruction |
+| TBD                 | `6`        |                |                                        |
+| SVP64_7             | `7`        | `1`            | Indicates this is a SVP64 instruction  |
+| TBD                 | `8`        |                |                                        |
+| SVP64_9             | `9`        | `1`            | Indicates this is a SVP64 instruction  |
+| TBD                 | `10:31`    |                |                                        |
+
 TBD
