@@ -36,4 +36,26 @@ counting up as you move to the LSB end). All bit ranges are inclusive (so
 | SVP64_9             | `9`        | `1`            | Indicates this is a SVP64 instruction  |
 | TBD                 | `10:31`    |                |                                        |
 
+# Operation
+
+## CR fields as inputs/outputs of vector operations
+
+When vectorized, the CR inputs/outputs are read/written to 4-bit CR fields
+starting from CR6 and incrementing from there. If CR63 is reached, the next CR
+field used wraps around to CR0, then incrementing from there.
+
+CR6 was chosen to balance avoiding needing to save CR2-CR4 (which are
+callee-saved) just to use SV vectors with VL <= 61 as well as having the first
+few used CR fields readily accessible to standard CR instructions and branches.
+Additionally, CR6 is used as the implicit result of a OpenPower ISA v3.1
+standard vector instruction with Rc=1.
+
+# Forms
+
+## SVP64-A-FORM
+
+Suffix is an A-FORM Instruction
+
+
+
 TBD
