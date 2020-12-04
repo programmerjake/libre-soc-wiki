@@ -83,40 +83,72 @@ Standard PowerISA Integer registers are aliased to some of the SV integer regist
 
 Standard PowerISA floating-point and VSX registers are aliased to some of the SV floating-point registers:
 
-| FP<br/>Register | VSX Register          | SV FP<br/>Register | FP<br/>Register | VSX Register          | SV FP<br/>Register | FP<br/>Register | VSX Register          | SV FP<br/>Register | FP<br/>Register | VSX Register          | SV FP<br/>Register |
-|-----------------|-----------------------|--------------------|-----------------|-----------------------|--------------------|-----------------|-----------------------|--------------------|-----------------|-----------------------|--------------------|
-| FPR\[0\]        | VSR\[0\]\.dword\[0\]  | SVFR0\_00          | FPR\[8\]        | VSR\[8\]\.dword\[0\]  | SVFR8\_00          | FPR\[16\]       | VSR\[16\]\.dword\[0\] | SVFR16\_00         | FPR\[24\]       | VSR\[24\]\.dword\[0\] | SVFR24\_00         |
-|                 | VSR\[0\]\.dword\[1\]  | SVFR0\_01          |                 | VSR\[8\]\.dword\[1\]  | SVFR8\_01          |                 | VSR\[16\]\.dword\[1\] | SVFR16\_01         |                 | VSR\[24\]\.dword\[1\] | SVFR24\_01         |
-|                 | VSR\[32\]\.dword\[0\] | SVFR0\_10          |                 | VSR\[40\]\.dword\[0\] | SVFR8\_10          |                 | VSR\[48\]\.dword\[0\] | SVFR16\_10         |                 | VSR\[56\]\.dword\[0\] | SVFR24\_10         |
-|                 | VSR\[32\]\.dword\[1\] | SVFR0\_11          |                 | VSR\[40\]\.dword\[1\] | SVFR8\_11          |                 | VSR\[48\]\.dword\[1\] | SVFR16\_11         |                 | VSR\[56\]\.dword\[1\] | SVFR24\_11         |
-| FPR\[1\]        | VSR\[1\]\.dword\[0\]  | SVFR1\_00          | FPR\[9\]        | VSR\[9\]\.dword\[0\]  | SVFR9\_00          | FPR\[17\]       | VSR\[17\]\.dword\[0\] | SVFR17\_00         | FPR\[25\]       | VSR\[25\]\.dword\[0\] | SVFR25\_00         |
-|                 | VSR\[1\]\.dword\[1\]  | SVFR1\_01          |                 | VSR\[9\]\.dword\[1\]  | SVFR9\_01          |                 | VSR\[17\]\.dword\[1\] | SVFR17\_01         |                 | VSR\[25\]\.dword\[1\] | SVFR25\_01         |
-|                 | VSR\[33\]\.dword\[0\] | SVFR1\_10          |                 | VSR\[41\]\.dword\[0\] | SVFR9\_10          |                 | VSR\[49\]\.dword\[0\] | SVFR17\_10         |                 | VSR\[57\]\.dword\[0\] | SVFR25\_10         |
-|                 | VSR\[33\]\.dword\[1\] | SVFR1\_11          |                 | VSR\[41\]\.dword\[1\] | SVFR9\_11          |                 | VSR\[49\]\.dword\[1\] | SVFR17\_11         |                 | VSR\[57\]\.dword\[1\] | SVFR25\_11         |
-| FPR\[2\]        | VSR\[2\]\.dword\[0\]  | SVFR2\_00          | FPR\[10\]       | VSR\[10\]\.dword\[0\] | SVFR10\_00         | FPR\[18\]       | VSR\[18\]\.dword\[0\] | SVFR18\_00         | FPR\[26\]       | VSR\[26\]\.dword\[0\] | SVFR26\_00         |
-|                 | VSR\[2\]\.dword\[1\]  | SVFR2\_01          |                 | VSR\[10\]\.dword\[1\] | SVFR10\_01         |                 | VSR\[18\]\.dword\[1\] | SVFR18\_01         |                 | VSR\[26\]\.dword\[1\] | SVFR26\_01         |
-|                 | VSR\[34\]\.dword\[0\] | SVFR2\_10          |                 | VSR\[42\]\.dword\[0\] | SVFR10\_10         |                 | VSR\[50\]\.dword\[0\] | SVFR18\_10         |                 | VSR\[58\]\.dword\[0\] | SVFR26\_10         |
-|                 | VSR\[34\]\.dword\[1\] | SVFR2\_11          |                 | VSR\[42\]\.dword\[1\] | SVFR10\_11         |                 | VSR\[50\]\.dword\[1\] | SVFR18\_11         |                 | VSR\[58\]\.dword\[1\] | SVFR26\_11         |
-| FPR\[3\]        | VSR\[3\]\.dword\[0\]  | SVFR3\_00          | FPR\[11\]       | VSR\[11\]\.dword\[0\] | SVFR11\_00         | FPR\[19\]       | VSR\[19\]\.dword\[0\] | SVFR19\_00         | FPR\[27\]       | VSR\[27\]\.dword\[0\] | SVFR27\_00         |
-|                 | VSR\[3\]\.dword\[1\]  | SVFR3\_01          |                 | VSR\[11\]\.dword\[1\] | SVFR11\_01         |                 | VSR\[19\]\.dword\[1\] | SVFR19\_01         |                 | VSR\[27\]\.dword\[1\] | SVFR27\_01         |
-|                 | VSR\[35\]\.dword\[0\] | SVFR3\_10          |                 | VSR\[43\]\.dword\[0\] | SVFR11\_10         |                 | VSR\[51\]\.dword\[0\] | SVFR19\_10         |                 | VSR\[59\]\.dword\[0\] | SVFR27\_10         |
-|                 | VSR\[35\]\.dword\[1\] | SVFR3\_11          |                 | VSR\[43\]\.dword\[1\] | SVFR11\_11         |                 | VSR\[51\]\.dword\[1\] | SVFR19\_11         |                 | VSR\[59\]\.dword\[1\] | SVFR27\_11         |
-| FPR\[4\]        | VSR\[4\]\.dword\[0\]  | SVFR4\_00          | FPR\[12\]       | VSR\[12\]\.dword\[0\] | SVFR12\_00         | FPR\[20\]       | VSR\[20\]\.dword\[0\] | SVFR20\_00         | FPR\[28\]       | VSR\[28\]\.dword\[0\] | SVFR28\_00         |
-|                 | VSR\[4\]\.dword\[1\]  | SVFR4\_01          |                 | VSR\[12\]\.dword\[1\] | SVFR12\_01         |                 | VSR\[20\]\.dword\[1\] | SVFR20\_01         |                 | VSR\[28\]\.dword\[1\] | SVFR28\_01         |
-|                 | VSR\[36\]\.dword\[0\] | SVFR4\_10          |                 | VSR\[44\]\.dword\[0\] | SVFR12\_10         |                 | VSR\[52\]\.dword\[0\] | SVFR20\_10         |                 | VSR\[60\]\.dword\[0\] | SVFR28\_10         |
-|                 | VSR\[36\]\.dword\[1\] | SVFR4\_11          |                 | VSR\[44\]\.dword\[1\] | SVFR12\_11         |                 | VSR\[52\]\.dword\[1\] | SVFR20\_11         |                 | VSR\[60\]\.dword\[1\] | SVFR28\_11         |
-| FPR\[5\]        | VSR\[5\]\.dword\[0\]  | SVFR5\_00          | FPR\[13\]       | VSR\[13\]\.dword\[0\] | SVFR13\_00         | FPR\[21\]       | VSR\[21\]\.dword\[0\] | SVFR21\_00         | FPR\[29\]       | VSR\[29\]\.dword\[0\] | SVFR29\_00         |
-|                 | VSR\[5\]\.dword\[1\]  | SVFR5\_01          |                 | VSR\[13\]\.dword\[1\] | SVFR13\_01         |                 | VSR\[21\]\.dword\[1\] | SVFR21\_01         |                 | VSR\[29\]\.dword\[1\] | SVFR29\_01         |
-|                 | VSR\[37\]\.dword\[0\] | SVFR5\_10          |                 | VSR\[45\]\.dword\[0\] | SVFR13\_10         |                 | VSR\[53\]\.dword\[0\] | SVFR21\_10         |                 | VSR\[61\]\.dword\[0\] | SVFR29\_10         |
-|                 | VSR\[37\]\.dword\[1\] | SVFR5\_11          |                 | VSR\[45\]\.dword\[1\] | SVFR13\_11         |                 | VSR\[53\]\.dword\[1\] | SVFR21\_11         |                 | VSR\[61\]\.dword\[1\] | SVFR29\_11         |
-| FPR\[6\]        | VSR\[6\]\.dword\[0\]  | SVFR6\_00          | FPR\[14\]       | VSR\[14\]\.dword\[0\] | SVFR14\_00         | FPR\[22\]       | VSR\[22\]\.dword\[0\] | SVFR22\_00         | FPR\[30\]       | VSR\[30\]\.dword\[0\] | SVFR30\_00         |
-|                 | VSR\[6\]\.dword\[1\]  | SVFR6\_01          |                 | VSR\[14\]\.dword\[1\] | SVFR14\_01         |                 | VSR\[22\]\.dword\[1\] | SVFR22\_01         |                 | VSR\[30\]\.dword\[1\] | SVFR30\_01         |
-|                 | VSR\[38\]\.dword\[0\] | SVFR6\_10          |                 | VSR\[46\]\.dword\[0\] | SVFR14\_10         |                 | VSR\[54\]\.dword\[0\] | SVFR22\_10         |                 | VSR\[62\]\.dword\[0\] | SVFR30\_10         |
-|                 | VSR\[38\]\.dword\[1\] | SVFR6\_11          |                 | VSR\[46\]\.dword\[1\] | SVFR14\_11         |                 | VSR\[54\]\.dword\[1\] | SVFR22\_11         |                 | VSR\[62\]\.dword\[1\] | SVFR30\_11         |
-| FPR\[7\]        | VSR\[7\]\.dword\[0\]  | SVFR7\_00          | FPR\[15\]       | VSR\[15\]\.dword\[0\] | SVFR15\_00         | FPR\[23\]       | VSR\[23\]\.dword\[0\] | SVFR23\_00         | FPR\[31\]       | VSR\[31\]\.dword\[0\] | SVFR31\_00         |
-|                 | VSR\[7\]\.dword\[1\]  | SVFR7\_01          |                 | VSR\[15\]\.dword\[1\] | SVFR15\_01         |                 | VSR\[23\]\.dword\[1\] | SVFR23\_01         |                 | VSR\[31\]\.dword\[1\] | SVFR31\_01         |
-|                 | VSR\[39\]\.dword\[0\] | SVFR7\_10          |                 | VSR\[47\]\.dword\[0\] | SVFR15\_10         |                 | VSR\[55\]\.dword\[0\] | SVFR23\_10         |                 | VSR\[63\]\.dword\[0\] | SVFR31\_10         |
-|                 | VSR\[39\]\.dword\[1\] | SVFR7\_11          |                 | VSR\[47\]\.dword\[1\] | SVFR15\_11         |                 | VSR\[55\]\.dword\[1\] | SVFR23\_11         |                 | VSR\[63\]\.dword\[1\] | SVFR31\_11         |
+| FP<br/>Register | VSX Register          | SV FP<br/>Register | FP<br/>Register | VSX Register          | SV FP<br/>Register |
+|-----------------|-----------------------|--------------------|-----------------|-----------------------|--------------------|
+| FPR\[0\]        | VSR\[0\]\.dword\[0\]  | SVFR0\_00          | FPR\[16\]       | VSR\[16\]\.dword\[0\] | SVFR16\_00         |
+|                 | VSR\[0\]\.dword\[1\]  | SVFR0\_01          |                 | VSR\[16\]\.dword\[1\] | SVFR16\_01         |
+|                 | VSR\[32\]\.dword\[0\] | SVFR0\_10          |                 | VSR\[48\]\.dword\[0\] | SVFR16\_10         |
+|                 | VSR\[32\]\.dword\[1\] | SVFR0\_11          |                 | VSR\[48\]\.dword\[1\] | SVFR16\_11         |
+| FPR\[1\]        | VSR\[1\]\.dword\[0\]  | SVFR1\_00          | FPR\[17\]       | VSR\[17\]\.dword\[0\] | SVFR17\_00         |
+|                 | VSR\[1\]\.dword\[1\]  | SVFR1\_01          |                 | VSR\[17\]\.dword\[1\] | SVFR17\_01         |
+|                 | VSR\[33\]\.dword\[0\] | SVFR1\_10          |                 | VSR\[49\]\.dword\[0\] | SVFR17\_10         |
+|                 | VSR\[33\]\.dword\[1\] | SVFR1\_11          |                 | VSR\[49\]\.dword\[1\] | SVFR17\_11         |
+| FPR\[2\]        | VSR\[2\]\.dword\[0\]  | SVFR2\_00          | FPR\[18\]       | VSR\[18\]\.dword\[0\] | SVFR18\_00         |
+|                 | VSR\[2\]\.dword\[1\]  | SVFR2\_01          |                 | VSR\[18\]\.dword\[1\] | SVFR18\_01         |
+|                 | VSR\[34\]\.dword\[0\] | SVFR2\_10          |                 | VSR\[50\]\.dword\[0\] | SVFR18\_10         |
+|                 | VSR\[34\]\.dword\[1\] | SVFR2\_11          |                 | VSR\[50\]\.dword\[1\] | SVFR18\_11         |
+| FPR\[3\]        | VSR\[3\]\.dword\[0\]  | SVFR3\_00          | FPR\[19\]       | VSR\[19\]\.dword\[0\] | SVFR19\_00         |
+|                 | VSR\[3\]\.dword\[1\]  | SVFR3\_01          |                 | VSR\[19\]\.dword\[1\] | SVFR19\_01         |
+|                 | VSR\[35\]\.dword\[0\] | SVFR3\_10          |                 | VSR\[51\]\.dword\[0\] | SVFR19\_10         |
+|                 | VSR\[35\]\.dword\[1\] | SVFR3\_11          |                 | VSR\[51\]\.dword\[1\] | SVFR19\_11         |
+| FPR\[4\]        | VSR\[4\]\.dword\[0\]  | SVFR4\_00          | FPR\[20\]       | VSR\[20\]\.dword\[0\] | SVFR20\_00         |
+|                 | VSR\[4\]\.dword\[1\]  | SVFR4\_01          |                 | VSR\[20\]\.dword\[1\] | SVFR20\_01         |
+|                 | VSR\[36\]\.dword\[0\] | SVFR4\_10          |                 | VSR\[52\]\.dword\[0\] | SVFR20\_10         |
+|                 | VSR\[36\]\.dword\[1\] | SVFR4\_11          |                 | VSR\[52\]\.dword\[1\] | SVFR20\_11         |
+| FPR\[5\]        | VSR\[5\]\.dword\[0\]  | SVFR5\_00          | FPR\[21\]       | VSR\[21\]\.dword\[0\] | SVFR21\_00         |
+|                 | VSR\[5\]\.dword\[1\]  | SVFR5\_01          |                 | VSR\[21\]\.dword\[1\] | SVFR21\_01         |
+|                 | VSR\[37\]\.dword\[0\] | SVFR5\_10          |                 | VSR\[53\]\.dword\[0\] | SVFR21\_10         |
+|                 | VSR\[37\]\.dword\[1\] | SVFR5\_11          |                 | VSR\[53\]\.dword\[1\] | SVFR21\_11         |
+| FPR\[6\]        | VSR\[6\]\.dword\[0\]  | SVFR6\_00          | FPR\[22\]       | VSR\[22\]\.dword\[0\] | SVFR22\_00         |
+|                 | VSR\[6\]\.dword\[1\]  | SVFR6\_01          |                 | VSR\[22\]\.dword\[1\] | SVFR22\_01         |
+|                 | VSR\[38\]\.dword\[0\] | SVFR6\_10          |                 | VSR\[54\]\.dword\[0\] | SVFR22\_10         |
+|                 | VSR\[38\]\.dword\[1\] | SVFR6\_11          |                 | VSR\[54\]\.dword\[1\] | SVFR22\_11         |
+| FPR\[7\]        | VSR\[7\]\.dword\[0\]  | SVFR7\_00          | FPR\[23\]       | VSR\[23\]\.dword\[0\] | SVFR23\_00         |
+|                 | VSR\[7\]\.dword\[1\]  | SVFR7\_01          |                 | VSR\[23\]\.dword\[1\] | SVFR23\_01         |
+|                 | VSR\[39\]\.dword\[0\] | SVFR7\_10          |                 | VSR\[55\]\.dword\[0\] | SVFR23\_10         |
+|                 | VSR\[39\]\.dword\[1\] | SVFR7\_11          |                 | VSR\[55\]\.dword\[1\] | SVFR23\_11         |
+| FPR\[8\]        | VSR\[8\]\.dword\[0\]  | SVFR8\_00          | FPR\[24\]       | VSR\[24\]\.dword\[0\] | SVFR24\_00         |
+|                 | VSR\[8\]\.dword\[1\]  | SVFR8\_01          |                 | VSR\[24\]\.dword\[1\] | SVFR24\_01         |
+|                 | VSR\[40\]\.dword\[0\] | SVFR8\_10          |                 | VSR\[56\]\.dword\[0\] | SVFR24\_10         |
+|                 | VSR\[40\]\.dword\[1\] | SVFR8\_11          |                 | VSR\[56\]\.dword\[1\] | SVFR24\_11         |
+| FPR\[9\]        | VSR\[9\]\.dword\[0\]  | SVFR9\_00          | FPR\[25\]       | VSR\[25\]\.dword\[0\] | SVFR25\_00         |
+|                 | VSR\[9\]\.dword\[1\]  | SVFR9\_01          |                 | VSR\[25\]\.dword\[1\] | SVFR25\_01         |
+|                 | VSR\[41\]\.dword\[0\] | SVFR9\_10          |                 | VSR\[57\]\.dword\[0\] | SVFR25\_10         |
+|                 | VSR\[41\]\.dword\[1\] | SVFR9\_11          |                 | VSR\[57\]\.dword\[1\] | SVFR25\_11         |
+| FPR\[10\]       | VSR\[10\]\.dword\[0\] | SVFR10\_00         | FPR\[26\]       | VSR\[26\]\.dword\[0\] | SVFR26\_00         |
+|                 | VSR\[10\]\.dword\[1\] | SVFR10\_01         |                 | VSR\[26\]\.dword\[1\] | SVFR26\_01         |
+|                 | VSR\[42\]\.dword\[0\] | SVFR10\_10         |                 | VSR\[58\]\.dword\[0\] | SVFR26\_10         |
+|                 | VSR\[42\]\.dword\[1\] | SVFR10\_11         |                 | VSR\[58\]\.dword\[1\] | SVFR26\_11         |
+| FPR\[11\]       | VSR\[11\]\.dword\[0\] | SVFR11\_00         | FPR\[27\]       | VSR\[27\]\.dword\[0\] | SVFR27\_00         |
+|                 | VSR\[11\]\.dword\[1\] | SVFR11\_01         |                 | VSR\[27\]\.dword\[1\] | SVFR27\_01         |
+|                 | VSR\[43\]\.dword\[0\] | SVFR11\_10         |                 | VSR\[59\]\.dword\[0\] | SVFR27\_10         |
+|                 | VSR\[43\]\.dword\[1\] | SVFR11\_11         |                 | VSR\[59\]\.dword\[1\] | SVFR27\_11         |
+| FPR\[12\]       | VSR\[12\]\.dword\[0\] | SVFR12\_00         | FPR\[28\]       | VSR\[28\]\.dword\[0\] | SVFR28\_00         |
+|                 | VSR\[12\]\.dword\[1\] | SVFR12\_01         |                 | VSR\[28\]\.dword\[1\] | SVFR28\_01         |
+|                 | VSR\[44\]\.dword\[0\] | SVFR12\_10         |                 | VSR\[60\]\.dword\[0\] | SVFR28\_10         |
+|                 | VSR\[44\]\.dword\[1\] | SVFR12\_11         |                 | VSR\[60\]\.dword\[1\] | SVFR28\_11         |
+| FPR\[13\]       | VSR\[13\]\.dword\[0\] | SVFR13\_00         | FPR\[29\]       | VSR\[29\]\.dword\[0\] | SVFR29\_00         |
+|                 | VSR\[13\]\.dword\[1\] | SVFR13\_01         |                 | VSR\[29\]\.dword\[1\] | SVFR29\_01         |
+|                 | VSR\[45\]\.dword\[0\] | SVFR13\_10         |                 | VSR\[61\]\.dword\[0\] | SVFR29\_10         |
+|                 | VSR\[45\]\.dword\[1\] | SVFR13\_11         |                 | VSR\[61\]\.dword\[1\] | SVFR29\_11         |
+| FPR\[14\]       | VSR\[14\]\.dword\[0\] | SVFR14\_00         | FPR\[30\]       | VSR\[30\]\.dword\[0\] | SVFR30\_00         |
+|                 | VSR\[14\]\.dword\[1\] | SVFR14\_01         |                 | VSR\[30\]\.dword\[1\] | SVFR30\_01         |
+|                 | VSR\[46\]\.dword\[0\] | SVFR14\_10         |                 | VSR\[62\]\.dword\[0\] | SVFR30\_10         |
+|                 | VSR\[46\]\.dword\[1\] | SVFR14\_11         |                 | VSR\[62\]\.dword\[1\] | SVFR30\_11         |
+| FPR\[15\]       | VSR\[15\]\.dword\[0\] | SVFR15\_00         | FPR\[31\]       | VSR\[31\]\.dword\[0\] | SVFR31\_00         |
+|                 | VSR\[15\]\.dword\[1\] | SVFR15\_01         |                 | VSR\[31\]\.dword\[1\] | SVFR31\_01         |
+|                 | VSR\[47\]\.dword\[0\] | SVFR15\_10         |                 | VSR\[63\]\.dword\[0\] | SVFR31\_10         |
+|                 | VSR\[47\]\.dword\[1\] | SVFR15\_11         |                 | VSR\[63\]\.dword\[1\] | SVFR31\_11         |
 
 
 # Operation
