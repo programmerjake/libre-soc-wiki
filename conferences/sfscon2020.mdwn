@@ -1,0 +1,51 @@
+## Why a Libre 3D CPU / GPU / VPU?
+
+* Study of SoCs (Allwinner, Rockchip, NXP) shows none are fully Libre
+  - Either GPU driver firmware is proprietary, or VPU firmware, or bootloader
+* This causes customer product development issues
+  - https://tinyurl.com/valve-steam-intel
+* Businesses are waking up to lack of transparency
+  - Intel Management Engine (spying backdoor co-processor)
+  - Spectre, Meltdown, CSME (Chain-of-Trust) issues
+* Solution: full transparency.  All source available for everything.
+
+## How is LibreSOC being developed?
+
+* Using Libre (rather than "open") development practices
+  - no "I'll release it when it's ready": all development is real-time public access
+* No NDAs, no hidden discussions
+  - we can invite anyone (any expert) to help with review
+  - free to ask for help anywhere in the world (comp.arch, stackexchange)
+* Using litex, nmigen, opencores HDL
+  - heavily depending on python OO (not possible with VHDL or Verilog)
+  - leap-frogging ahead by not reinventing the wheel
+  - yosys converts nmigen to verilog for standard tools.
+
+## Why is it different from other SoCs?
+
+* LibreSOC is a hybrid CPU-VPU-GPU architecture.
+  - OpenPOWER ISA *itself* is extended to include 3D and Video instructions
+  - (SIN, ATAN2, YUV2RGB, Texture Interpolation)
+  - Only after approval of OpenPOWER Foundation!
+  - There is no separate GPU or VPU: it really is the same core.
+  - Massively simplifies driver development and application debugging
+* Vectorisation is "Simple-V" (VSX not being implemented)
+  - VSX is SIMD and is considered harmful
+  - https://www.sigarch.org/simd-instructions-considered-harmful/
+
+## What is being developed? (Roadmap)
+
+* First simple core achieved in simulation Sep 2020
+  - FPGA (ECP5) target followed shortly
+* First silicon tape-out 180nm deadline 2nd Dec 2020
+  - sponsored by NLnet, with help from Chips4Makers Libre Cell Libraries
+  - layout is entirely libre-licensed tools: coriolis2 from lip6.fr
+* Next chip is "SBC" style quad-core
+  - similar spec to Allwinner A64, Rockchip RK3399
+  - targets "Pi" boards, smartphones, tablets, Industrial IoT
+
+## Contact
+
+* Freenode IRC #libre-soc
+* Website https://libre-soc.org
+  - mailing list, git repos, bugtracker etc.
