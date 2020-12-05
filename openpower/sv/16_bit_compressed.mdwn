@@ -581,9 +581,9 @@ space (when RA==0)
     | N | 1 | 111 | | 001.1 | 0 10 |      | M |
     | N | 1 | 111 | | 001.1 | 0 11 |      | M |
 
-## Other ideas (Attempt 2)
+# Other ideas (Attempt 2)
 
-### 8-bit mode-switching instructions, odd addresses for C mode
+## 8-bit mode-switching instructions, odd addresses for C mode
 
 Drop the complexity of the 16-bit encoding further reduced to 10-bit,
 and use a single byte instead of two to switch between modes.  This
@@ -626,6 +626,14 @@ Tables explaining encoding:
     | .. bit | 16 bit          | 8nop   |
     | v3.0B standard 32 bit instruction |
 
+# Other ideas (v3)
+
+FSM state switching and mode switching deemed too complex.  Instead cut back to
+
+1. 10bit only (actually, 11 bit)
+2. SV-Prefixed 16bit only (aka SV-C32)
+
+Each will be entirely different which is a huge amount of work.
 
 # TODO 
 
