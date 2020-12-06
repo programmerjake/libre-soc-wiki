@@ -12,7 +12,6 @@ move things along from one stage to the next
 ## Currently working on
 
  - Project Management
- - <https://bugs.libre-soc.org/show_bug.cgi?id=94> LDST Dep Matrix (check if already RFPd)
  - <https://bugs.libre-soc.org/show_bug.cgi?id=214> ISAMux writeup
  - <https://bugs.libre-soc.org/show_bug.cgi?id=202> HDL changes for coriolis2
  - <https://bugs.libre-soc.org/show_bug.cgi?id=425>
@@ -36,26 +35,53 @@ move things along from one stage to the next
  - <https://bugs.libre-soc.org/show_bug.cgi?id=361> RA=0 tests
  - <https://bugs.libre-soc.org/show_bug.cgi?id=415> misc opcodes
  - <https://bugs.libre-soc.org/show_bug.cgi?id=310> FU multiple tasks
- - <https://bugs.libre-soc.org/show_bug.cgi?id=335> Branch proof
-   - EUR 400 shared 25% [[mnolan]] EUR 100
- - <https://bugs.libre-soc.org/show_bug.cgi?id=306> ALU proof
-   - EUR 500 shared [[mnolan]] samuel, TBD split
  - <https://bugs.libre-soc.org/show_bug.cgi?id=482> mul bug
  - <https://bugs.libre-soc.org/show_bug.cgi?id=427> LD/ST cache-inhibit
    - EUR 200
- - <https://bugs.libre-soc.org/show_bug.cgi?id=493> DMI to JTAG
-   - EUR 250 (share with cole)
  - <https://bugs.libre-soc.org/show_bug.cgi?id=490> litex peripheral set
- - <https://bugs.libre-soc.org/show_bug.cgi?id=508> pin-package for 180nm ASIC
  - <https://bugs.libre-soc.org/show_bug.cgi?id=514> ls180 reset review
  - <https://bugs.libre-soc.org/show_bug.cgi?id=515> JTAG boot upload/init
  - <https://bugs.libre-soc.org/show_bug.cgi?id=511> JTAG IO Boundary test
  - <https://bugs.libre-soc.org/show_bug.cgi?id=64> data handling API 
+ - <https://bugs.libre-soc.org/show_bug.cgi?id=211> Formal proof of decoder
+   - donated
+   - parent #198
+   - EUR 200
+ - <https://bugs.libre-soc.org/show_bug.cgi?id=342> parent #197
+  - MultiCompUnit (and Function Units) proof
+ - <https://bugs.libre-soc.org/show_bug.cgi?id=340> POWER9 ROTATE proof
+  - donated
+  - parent #195
 
 ## Completed but not yet submitted:
 
+ - <https://bugs.libre-soc.org/show_bug.cgi?id=519> ULX3S boot
+  - Project 2019-10-043 06dec2020 wishbone
+  - EUR 0 (TBD)
+
+### Project 2019-10-029 14mar2020 coriolis2
+
+ - <https://bugs.libre-soc.org/show_bug.cgi?id=508> pin-package for 180nm ASIC
+   - (total EUR 100 shared 50% with staf)
+   - EUR 50 lkcl
+ - <https://bugs.libre-soc.org/show_bug.cgi?id=514> ls180 ioring and pads
+   - (total EUR 1500 shared 50% with LIP6)
+   - EUR 750 lkcl
+ - <https://bugs.libre-soc.org/show_bug.cgi?id=514> multi-clock example
+   - (total EUR 400 shared 75% with LIP6)
+   - EUR 300 lkcl
+
+### Project 2019-02-012 06dec2020 Core
+
  - <https://bugs.libre-soc.org/show_bug.cgi?id=538> pipeline API continued
    - EUR 700 lkcl, EUR 500 [[programmerjake]], total EUR 1200
+ - <http://bugs.libre-riscv.org/show_bug.cgi?id=208> CORDIC
+   - EUR 750 donated
+ - <https://bugs.libre-soc.org/show_bug.cgi?id=94> LDST Dep Matrix
+   - EUR 1500
+
+### Project 2019-10-043 06dec2020 wishbone
+
  - <https://bugs.libre-soc.org/show_bug.cgi?id=348> SPR pipe
    - EUR 250 lkcl, EUR 50 [[programmerjake]], total EUR 300
  - <https://bugs.libre-soc.org/show_bug.cgi?id=416> DEC/TB
@@ -72,31 +98,25 @@ move things along from one stage to the next
    - EUR 450
  - <https://bugs.libre-soc.org/show_bug.cgi?id=476> addme bug
    - EUR 100
- - <https://bugs.libre-soc.org/show_bug.cgi?id=519> ULX3S boot
-
-donated:
-
  - <http://bugs.libre-riscv.org/show_bug.cgi?id=186> POWER Decoder
-     - with [[lkcl]]
- - <http://bugs.libre-riscv.org/show_bug.cgi?id=208> CORDIC
- - <https://bugs.libre-soc.org/show_bug.cgi?id=272>
-     - functions needed for simulator
-     - Shared 90% with [[lkcl]]
- - <https://bugs.libre-soc.org/show_bug.cgi?id=211> parent #198
-     - Formal proof of decoder
-     - EUR 200
- - <https://bugs.libre-soc.org/show_bug.cgi?id=306> parent #195
-     - POWER9 ALU proof
- - <https://bugs.libre-soc.org/show_bug.cgi?id=332> parent #195
-     - POWER9 CR proof
- - <https://bugs.libre-soc.org/show_bug.cgi?id=335> parent #195
-     - POWER9 BRANCH proof
- - <https://bugs.libre-soc.org/show_bug.cgi?id=331> parent #195
-     - POWER9 LOGICAL proof
- - <https://bugs.libre-soc.org/show_bug.cgi?id=340> parent #195
-    - POWER9 ROTATE proof
- - <https://bugs.libre-soc.org/show_bug.cgi?id=342> parent #197
-    - MultiCompUnit (and Function Units) proof
+   - EUR 200 donated
+ - <https://bugs.libre-soc.org/show_bug.cgi?id=493> DMI to JTAG
+   - EUR 250 (share with cole)
+
+### Project 2019-10-032 06dec2020 proofs
+
+ - <https://bugs.libre-soc.org/show_bug.cgi?id=306> POWER9 ALU proof
+   - parent #195
+   - EUR 400 donated
+ - <https://bugs.libre-soc.org/show_bug.cgi?id=332> POWER9 CR proof
+   - parent #195
+   - EUR 300 donated
+ - <https://bugs.libre-soc.org/show_bug.cgi?id=335> POWER9 BRANCH proof
+   - EUR 400 donated
+   - parent #195
+ - <https://bugs.libre-soc.org/show_bug.cgi?id=331> POWER9 LOGICAL proof
+   - EUR 400 donated
+   - parent #195
 
 ## Submitted for NLNet RFP
 
@@ -122,7 +142,7 @@ donation from NLNet confirmed received:
     - EUR 250, functions needed for simulator
     - Shared 20% with [[mnolan]], EUR 50
 
-#### proofs 2019-10-032
+### proofs 2019-10-032
 
  - <https://bugs.libre-soc.org/show_bug.cgi?id=421> Trap proof
    - EUR 500 shared 20% samuel, EUR 100
@@ -199,7 +219,8 @@ donation from NLNet confirmed received:
 
 ### Project 2019-10-029 Date 14mar2020
 
-* <http://bugs.libre-riscv.org/show_bug.cgi?id=178> coriolis2 start/tutorial EUR 1200
+* <http://bugs.libre-riscv.org/show_bug.cgi?id=178> coriolis2 start/tutorial
+  - EUR 1200
 
 ### Project 2019-02-012 Date 12mar2020
 
