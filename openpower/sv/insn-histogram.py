@@ -3,6 +3,8 @@
 
 # Print a per-opcode histogram for ppc asm.
 
+# Copyright 2020 Alexandre Oliva
+# Copyright 2020 Luke Kenneth Casson Leighton
 
 # This script is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
