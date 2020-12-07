@@ -1,5 +1,7 @@
 # Dynamic Partitioned Multiply
 
+* <https://git.libre-soc.org/?p=ieee754fpu.git;a=blob;f=src/ieee754/part_mul_add/multiply.py;hb=HEAD>
+
 This is complicated!  It is necessary to compute a full NxN matrix of partial multiplication results, then perform a cascade of adds (long multipication, in binary), using PartitionedAdd, which will "automatically" break the results down into segments, at all times, keeping each partitioned result separate.
 
 The [Wallace Tree](https://en.wikipedia.org/wiki/Wallace_tree) algorithm is presently deployed, here: we need to use the (more efficient) [Dadda algorithm](https://en.wikipedia.org/wiki/Dadda_multiplier)
