@@ -1,3 +1,22 @@
+2020-12-06
+
+	* 532: Adjusted the logic in comp16-v1-skel.py for 16-bit 16-imm
+	rather than the 16+16 I'd invented.  Implemented the most relevant
+	opcodes for 10-bit, and many of the 16-bit ones too.  Not yet
+	implemented are conditional branches, Immediate, CR and System
+	opcodes.  With all of nop, unconditional branch, ld/st,
+	arithmetic, logical and floating-point, we get less than 3%
+	compression in GCC, with not-entirely-unreasonable reg subsets.
+	It's not looking good.  (8:27)
+
+2020-12-02
+
+	* Microwatts meeting.
+	* 238: Added some thoghts on bl and blr, and implications about
+	modes.  Also detailed my worries about how to preserve dynamic
+	state, specifically switch-back-to-compressed-after-insn, across
+	interrupts.  (1:44)
+
 2020-11-30
 
 	* 238: Settled the N-without-M issue, it was likely an error in
