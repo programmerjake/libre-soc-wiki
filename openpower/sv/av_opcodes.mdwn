@@ -6,7 +6,21 @@ This page therefore has acompanying discussion at <https://bugs.libre-soc.org/sh
 
 # Audio
 
-TODO
+The fundamental principle for these instructions is:
+
+* identify the scalar primitive
+* assume that longer runs of scalars will have Simple-V vectorisatin applied
+* assume that "swizzle" may be applied at the (vec2 - SUBVL=2) Vector level
+
+Thus for example, where OpenPOWER VSX has vpkswss, this would be achieved in SV with simply:
+
+* addition of a scalar ext/clamp instruction
+* 1st op, swizzle-selection vec2 "select X only" from source to dest:
+  dest.X = extclamp(src.X)
+* 2nd op, swizzle-select vec2 "select Y only" from source to dest
+  dest.Y = extclamp(src.Y)
+
+Macro-op fusion may be used to detect that these two interleave cleanly.
 
 # Video
 
