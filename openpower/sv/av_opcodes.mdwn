@@ -18,13 +18,19 @@ TODO
 
 vpkpx is a 32-bit to 16-bit 8888 into 1555 conversion
 
+
+
+### vpks[*][*]s
+
+signed and unsigned, these are N-to-M (N=64/32/16, M=32/16/8) chop/clamp/sign/zero-extend operations
+ 
 ### vupkhpx / vupklpx
 
 these are 16-bit to 32-bit 1555 to 8888 conversion
 
 ### vavgs*
 
-signed and usigned, 8/16/32: these are all of the form:
+signed and unsigned, 8/16/32: these are all of the form:
 
     result = truncate((a + b + 1) >> 1))
 
