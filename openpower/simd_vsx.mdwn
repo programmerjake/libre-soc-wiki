@@ -1,0 +1,382 @@
+# OpenPOWER's SIMD VSX instruction set summary
+
+7.6.1.1.1 VSX Scalar Storage Access Instructions
+Mnemonic      Instruction Name                                  Page
+lxsd          Load VSX Scalar Dword                              480
+lxsdx         Load VSX Scalar Dword Indexed                      480
+lxsibzx       Load VSX Scalar as Integer Byte & Zero Indexed     482
+lxsihax       Load VSX Scalar as Integer Hword & Zero Indexed    482
+lxsiwax       Load VSX Scalar as Integer Word Algebraic Indexed  483
+lxsiwzx       Load VSX Scalar as Integer Word & Zero Indexed     484
+lxssp         Load VSX Scalar Single-Precision                   485
+lxsspx        Load VSX Scalar Single-Precision Indexed           485
+Table 8. VSX Scalar Load Instructions
+Mnemonic      Instruction Name                                  Page
+stxsd         Store VSX Scalar Dword                             498
+stxsdx        Store VSX Scalar Dword Indexed                     498
+stxsibx       Store VSX Scalar as Integer Byte Indexed           499
+stxsihx       Store VSX Scalar as Integer Hword Indexed          499
+stxsiwx       Store VSX Scalar as Integer Word Indexed           500
+stxssp        Store VSX Scalar Single-Precision                  501
+stxsspx       Store VSX Scalar Single-Precision Indexed          502
+Table 9. VSX Scalar Store Instructions
+7.6.1.1.2 VSX Vector Storage Access Instructions
+Mnemonic      Instruction Name                                  Page
+lxv           Load VSX Vector                                    492
+lxvb16x       Load VSX Vector Byte*16 Indexed                    487
+lxvd2x        Load VSX Vector Dword*2 Indexed                    488
+lxvh8x        Load VSX Vector Hword*8 Indexed                    495
+lxvw4x        Load VSX Vector Word*4 Indexed                     496
+lxvx          Load VSX Vector Indexed                            492
+Table 10.VSX Vector Load Instructions
+
+Mnemonic      Instruction Name                            Page
+lxvdsx        Load VSX Vector Dword and Splat Indexed      494
+lxvwsx        Load VSX Vector Word & Splat Indexed         497
+Table 11.VSX Vector Load & Splat Instructions
+Mnemonic      Instruction Name                            Page
+lxvl          Load VSX Vector with Length                  489
+lxvll         Load VSX Vector with Length Left-justified   491
+Table 12.VSX Vector Load with Length Instructions
+Mnemonic      Instruction Name                            Page
+stxv          Store VSX Vector                             507
+stxvb16x      Store VSX Vector Byte*16 Indexed             503
+stxvd2x       Store VSX Vector Dword*2 Indexed             504
+stxvh8x       Store VSX Vector Hword*8 Indexed             505
+stxvw4x       Store VSX Vector Word*4 Indexed              506
+stxvx         Store VSX Vector Indexed                     510
+Table 13.VSX Vector Store Instructions
+Mnemonic      Instruction Name                            Page
+stxvl         Store VSX Vector with Length                 507
+stxvll        Store VSX Vector with Length Left-justified  509
+Table 14.VSX Vector Store w/ Length Instructions
+7.6.1.2 VSX Binary Floating-Point Sign Manipulation Instructions
+7.6.1.2.1 VSX Scalar Binary Floating-Point Sign Manipulation Instructions
+Mnemonic      Instruction Name                                            Page
+xsabsdp       VSX Scalar Absolute Double-Precision                         512
+xsabsqp       VSX Scalar Absolute Quad-Precision                           512
+xscpsgndp     VSX Scalar Copy Sign Double-Precision                        533
+xscpsgnqp     VSX Scalar Copy Sign Quad-Precision                          533
+xsnabsdp      VSX Scalar Negative Absolute Double-Precision                606
+xsnabsqp      VSX Scalar Negative Absolute Quad-Precision                  606
+xsnegdp       VSX Scalar Negate Double-Precision                           607
+xsnegqp       VSX Scalar Negate Quad-Precision                             607
+Table 15.VSX Scalar BFP Sign Manipulation Instructions
+7.6.1.2.2 VSX Vector Binary Floating-Point Sign Manipulation Instructions
+Mnemonic      Instruction Name                                            Page
+xvabsdp       VSX Vector Absolute Value Double-Precision                   658
+xvabssp       VSX Vector Absolute Value Single-Precision                   658
+xvcpsgndp     VSX Vector Copy Sign Double-Precision                        671
+xvcpsgnsp     VSX Vector Copy Sign Single-Precision                        671
+xvnabsdp      VSX Vector Negative Absolute Value Double-Precision          725
+xvnabssp      VSX Vector Negative Absolute Value Single-Precision          725
+xvnegdp       VSX Vector Negate Double-Precision                           726
+xvnegsp       VSX Vector Negate Single-Precision                           726
+Table 16.VSX Vector BFP Sign Manipulation Instructions
+7.6.1.3 VSX Binary Floating-Point Arithmetic Instructions
+7.6.1.3.1 VSX Scalar Binary Floating-Point Arithmetic Instructions
+Mnemonic      Instruction Name                                            Page
+xsadddp       VSX Scalar Add Double-Precision                              513
+xsaddqp[o]    VSX Scalar Add Quad-Precision [using round to Odd]           520
+xsaddsp       VSX Scalar Add Single-Precision                              518
+xsdivdp       VSX Scalar Divide Double-Precision                           562
+xsdivqp[o]    VSX Scalar Divide Quad-Precision [using round to Odd]        564
+xsdivsp       VSX Scalar Divide Single-Precision                           566
+xsmuldp       VSX Scalar Multiply Double-Precision                         600
+xsmulqp[o]    VSX Scalar Multiply Quad-Precision [using round to Odd]      602
+xsmulsp       VSX Scalar Multiply Single-Precision                         604
+xssqrtdp      VSX Scalar Square Root Double-Precision                      641
+xssqrtqp[o]   VSX Scalar Square Root Quad-Precision [using round to Odd]   642
+xssqrtsp      VSX Scalar Square Root Single-Precision                      644
+xssubdp       VSX Scalar Subtract Double-Precision                         645
+xssubqp[o]    VSX Scalar Subtract Quad-Precision [using round to Odd]      647
+xssubsp       VSX Scalar Subtract Single-Precision                         649
+Table 17.VSX Scalar BFP Elementary Arithmetic Instructions
+Mnemonic      Instruction Name                                            Page
+xsmaddadp     VSX Scalar Multiply-Add Type-A Double-Precision              570
+xsmaddasp     VSX Scalar Multiply-Add Type-A Single-Precision              573
+Table 18.VSX Scalar BFP Multiply-Add-class Instructions
+Mnemonic      Instruction Name                                                          Page
+xsmaddmdp     VSX Scalar Multiply-Add Type-M Double-Precision                            570
+xsmaddmsp     VSX Scalar Multiply-Add Type-M Single-Precision                            573
+xsmaddqp[o]   VSX Scalar Multiply-Add Quad-Precision [using round to Odd]                576
+xsmsubadp     VSX Scalar Multiply-Subtract Type-A Double-Precision                       591
+xsmsubasp     VSX Scalar Multiply-Subtract Type-A Single-Precision                       594
+xsmsubmdp     VSX Scalar Multiply-Subtract Type-M Double-Precision                       591
+xsmsubmsp     VSX Scalar Multiply-Subtract Type-M Single-Precision                       594
+xsmsubqp[o]   VSX Scalar Multiply-Subtract Quad-Precision [using round to Odd]           597
+xsnmaddadp    VSX Scalar Negative Multiply-Add Type-A Double-Precision                   608
+xsnmaddasp    VSX Scalar Negative Multiply-Add Type-A Single-Precision                   613
+xsnmaddmdp    VSX Scalar Negative Multiply-Add Type-M Double-Precision                   608
+xsnmaddmsp    VSX Scalar Negative Multiply-Add Type-M Single-Precision                   613
+xsnmaddqp[o]  VSX Scalar Negative Multiply-Add Quad-Precision [using round to Odd]       616
+xsnmsubadp    VSX Scalar Negative Multiply-Subtract Type-A Double-Precision              619
+xsnmsubasp    VSX Scalar Negative Multiply-Subtract Type-A Single-Precision              622
+xsnmsubmdp    VSX Scalar Negative Multiply-Subtract Type-M Double-Precision              619
+xsnmsubmsp    VSX Scalar Negative Multiply-Subtract Type-M Single-Precision              622
+xsnmsubqp[o]  VSX Scalar Negative Multiply-Subtract Quad-Precision [using round to Odd]  625
+Table 18.VSX Scalar BFP Multiply-Add-class Instructions
+Mnemonic      Instruction Name                                                          Page
+xsredp        VSX Scalar Reciprocal Estimate Double-Precision                            632
+xsresp        VSX Scalar Reciprocal Estimate Single-Precision                            633
+xsrsqrtedp    VSX Scalar Reciprocal Square Root Estimate Double-Precision                639
+xsrsqrtesp    VSX Scalar Reciprocal Square Root Estimate Single-Precision                640
+xstdivdp      VSX Scalar Test for software Divide Double-Precision                       651
+xstsqrtdp     VSX Scalar Test for software Square Root Double-Precision                  652
+Table 19.VSX Scalar Software BFP Divide/Square Root Instructions
+7.6.1.3.2 VSX Vector BFP Arithmetic Instructions
+Mnemonic      Instruction Name                                                          Page
+xvadddp       VSX Vector Add Double-Precision                                            659
+xvaddsp       VSX Vector Add Single-Precision                                            663
+xvdivdp       VSX Vector Divide Double-Precision                                         696
+xvdivsp       VSX Vector Divide Single-Precision                                         698
+xvmuldp       VSX Vector Multiply Double-Precision                                       721
+xvmulsp       VSX Vector Multiply Single-Precision                                       723
+xvsqrtdp      VSX Vector Square Root Double-Precision                                    751
+xvsqrtsp      VSX Vector Square Root Single-Precision                                    752
+xvsubdp       VSX Vector Subtract Double-Precision                                       753
+xvsubsp       VSX Vector Subtract Single-Precision                                       755
+Table 20.VSX Vector BFP Elementary Arithmetic Instructions
+Mnemonic      Instruction Name                                              Page
+xvmaddadp     VSX Vector Multiply-Add Type-A Double-Precision                701
+xvmaddasp     VSX Vector Multiply-Add Type-A Single-Precision                704
+xvmaddmdp     VSX Vector Multiply-Add Type-M Double-Precision                701
+xvmaddmsp     VSX Vector Multiply-Add Type-M Single-Precision                704
+xvmsubadp     VSX Vector Multiply-Subtract Type-A Double-Precision           715
+xvmsubasp     VSX Vector Multiply-Subtract Type-A Single-Precision           718
+xvmsubmdp     VSX Vector Multiply-Subtract Type-M Double-Precision           715
+xvmsubmsp     VSX Vector Multiply-Subtract Type-M Single-Precision           718
+xvnmaddadp    VSX Vector Negative Multiply-Add Type-A Double-Precision       727
+xvnmaddasp    VSX Vector Negative Multiply-Add Type-A Single-Precision       732
+xvnmaddmdp    VSX Vector Negative Multiply-Add Type-M Double-Precision       727
+xvnmaddmsp    VSX Vector Negative Multiply-Add Type-M Single-Precision       732
+xvnmsubadp    VSX Vector Negative Multiply-Subtract Type-A Double-Precision  735
+xvnmsubasp    VSX Vector Negative Multiply-Subtract Type-A Single-Precision  738
+xvnmsubmdp    VSX Vector Negative Multiply-Subtract Type-M Double-Precision  735
+xvnmsubmsp    VSX Vector Negative Multiply-Subtract Type-M Single-Precision  738
+Table 21.VSX Vector BFP Multiply-Add-class Instructions
+Mnemonic      Instruction Name                                              Page
+xvredp        VSX Vector Reciprocal Estimate Double-Precision                744
+xvresp        VSX Vector Reciprocal Estimate Single-Precision                745
+xvrsqrtedp    VSX Vector Reciprocal Square Root Estimate Double-Precision    748
+xvrsqrtesp    VSX Vector Reciprocal Square Root Estimate Single-Precision    750
+xvtdivdp      VSX Vector Test for software Divide Double-Precision           757
+xvtdivsp      VSX Vector Test for software Divide Single-Precision           758
+xvtsqrtdp     VSX Vector Test for software Square Root Double-Precision      759
+xvtsqrtsp     VSX Vector Test for software Square Root Single-Precision      759
+Table 22.VSX Vector BFP Software Divide/Square Root Instructions
+7.6.1.4 VSX Binary Floating-Point Compare Instructions
+7.6.1.4.1 VSX Scalar BFP Compare Instructions
+Mnemonic      Instruction Name                                             Page
+xscmpodp      VSX Scalar Compare Ordered Double-Precision                   527
+xscmpoqp      VSX Scalar Compare Ordered Quad-Precision                     529
+xscmpudp      VSX Scalar Compare Unordered Double-Precision                 530
+xscmpuqp      VSX Scalar Compare Unordered Quad-Precision                   532
+Table 23.VSX Scalar BFP Compare Instructions
+Mnemonic      Instruction Name                                             Page
+xscmpeqdp     VSX Scalar Compare Equal Double-Precision                     524
+xscmpgedp     VSX Scalar Compare Greater Than or Equal Double-Precision     525
+xscmpgtdp     VSX Scalar Compare Greater Than Double-Precision              526
+Table 24.VSX Scalar BFP Predicate Compare Instructions
+Mnemonic      Instruction Name                                             Page
+xsmaxcdp      VSX Scalar Maximum Type-C Double-Precision                    581
+xsmaxdp       VSX Scalar Maximum Double-Precision                           579
+xsmaxjdp      VSX Scalar Maximum Type-J Double-Precision                    583
+xsmincdp      VSX Scalar Minimum Type-C Double-Precision                    587
+xsmindp       VSX Scalar Minimum Double-Precision                           585
+xsminjdp      VSX Scalar Minimum Type-J Double-Precision                    589
+Table 25.VSX Scalar BFP Maximum/Minimum Instructions
+7.6.1.4.2 VSX Vector BFP Compare Instructions
+Mnemonic      Instruction Name                                             Page
+xvcmpeqdp[.]  VSX Vector Compare Equal To Double-Precision                  665
+xvcmpeqsp[.]  VSX Vector Compare Equal To Single-Precision                  666
+xvcmpgedp[.]  VSX Vector Compare Greater Than or Equal To Double-Precision  667
+xvcmpgesp[.]  VSX Vector Compare Greater Than or Equal To Single-Precision  668
+xvcmpgtdp[.]  VSX Vector Compare Greater Than Double-Precision              669
+xvcmpgtsp[.]  VSX Vector Compare Greater Than Single-Precision              670
+Table 26.VSX Vector BFP Predicate Compare Instructions
+Mnemonic      Instruction Name                                             Page
+xvmaxdp       VSX Vector Maximum Double-Precision                           707
+xvmaxsp       VSX Vector Maximum Single-Precision                           709
+xvmindp       VSX Vector Minimum Double-Precision                           711
+xvminsp       VSX Vector Minimum Single-Precision                           713
+Table 27.VSX Vector BFP Maximum/Minimum Instructions
+7.6.1.5 VSX Binary Floating-Point Round to Shorter Precision Instructions
+Mnemonic      Instruction Name                                                                      Page
+xsrqpxp       VSX Scalar Round Quad-Precision to Double-Extended-Precision                           636
+xsrsp         VSX Scalar Round Double-Precision to Single-Precision                                  638
+Table 28.VSX Scalar BFP Round to Shorter Precision Instructions
+7.6.1.6 VSX Binary Floating-Point Convert to Shorter Precision Instructions
+Mnemonic      Instruction Name                                                                      Page
+xscvdphp      VSX Scalar Convert w/ round Double-Precision to Half-Precision format                  534
+xscvdpsp      VSX Scalar Convert w/ round Double-Precision to Single-Precision format                536
+xscvdpspn     VSX Scalar Convert Double-Precision to Single-Precision format Non-signalling          537
+              VSX Scalar Convert w/ round Quad-Precision to Double-Precision format [using round to
+xscvqpdp[o]                                                                                          638
+              Odd]
+Table 29.VSX Scalar BFP Convert to Shorter Precision Instructions
+Mnemonic      Instruction Name                                                                      Page
+xvcvdpsp      VSX Vector Convert w/ round Double-Precision to Single-Precision format                672
+xvcvsphp      VSX Vector Convert w/ round Single-Precision to Half-Precision format                  683
+Table 30.VSX Vector BFP Convert to Shorter Precision Instructions
+7.6.1.7 VSX Binary Floating-Point Convert to Longer Precision Instructions
+Mnemonic      Instruction Name                                                                      Page
+xscvdpqp      VSX Scalar Convert Double-Precision to Quad-Precision format                           535
+xscvhpdp      VSX Scalar Convert Half-Precision to Double-Precision format                           546
+xscvspdp      VSX Scalar Convert Single-Precision to Double-Precision format                         557
+xscvspdpn     VSX Scalar Convert Single-Precision to Double-Precision format Non-signalling          558
+Table 31.VSX Scalar BFP Convert to Longer Precision Instructions
+Mnemonic      Instruction Name                                                                      Page
+xvcvhpsp      VSX Vector Convert Half-Precision to Single-Precision format                           681
+xvcvspdp      VSX Vector Convert Single-Precision to Double-Precision format                         682
+Table 32.VSX Vector BFP Convert to Longer Precision Instructions
+7.6.1.8 VSX Binary Floating-Point Round to Integral Instructions
+7.6.1.8.1 VSX Scalar BFP Round to Integral Instructions
+Mnemonic      Instruction Name                                                               Page
+xsrdpi        VSX Scalar Round to Double-Precision Integer using round to Nearest Away        628
+xsrdpic       VSX Scalar Round to Double-Precision Integer Exact using Current rounding mode  629
+xsrdpim       VSX Scalar Round to Double-Precision Integer using round towards -Infinity      630
+xsrdpip       VSX Scalar Round to Double-Precision Integer using round towards +Infinity      630
+xsrdpiz       VSX Scalar Round to Double-Precision Integer using round towards Zero           631
+xsrqpi        VSX Scalar Round to Quad-Precision Integer                                      634
+xsrqpix       VSX Scalar Round Quad-Precision to Integral Exact                               634
+xvrdpi        VSX Vector Round to Double-Precision Integer using round to Nearest Away        741
+xvrdpic       VSX Vector Round to Double-Precision Integer Exact using Current rounding mode  741
+xvrdpim       VSX Vector Round to Double-Precision Integer using round towards -Infinity      742
+xvrdpip       VSX Vector Round to Double-Precision Integer using round towards +Infinity      742
+xvrdpiz       VSX Vector Round to Double-Precision Integer using round towards Zero           743
+Table 33.VSX Scalar BFP Round to Integral Instructions
+7.6.1.8.2 VSX Vector BFP Round to Integral Instructions
+Mnemonic      Instruction Name                                                               Page
+xvrdpi        VSX Vector Round to Double-Precision Integer using round to Nearest Away        741
+xvrdpic       VSX Vector Round to Double-Precision Integer Exact using Current rounding mode  741
+xvrdpim       VSX Vector Round to Double-Precision Integer using round towards -Infinity      742
+xvrdpip       VSX Vector Round to Double-Precision Integer using round towards +Infinity      742
+xvrdpiz       VSX Vector Round to Double-Precision Integer using round towards Zero           743
+xvrspi        VSX Vector Round to Single-Precision Integer using round to Nearest Away        746
+xvrspic       VSX Vector Round to Single-Precision Integer Exact using Current rounding mode  746
+xvrspim       VSX Vector Round to Single-Precision Integer using round towards -Infinity      747
+xvrspip       VSX Vector Round to Single-Precision Integer using round towards +Infinity      747
+xvrspiz       VSX Vector Round to Single-Precision Integer using round towards Zero           748
+Table 34.VSX Vector BFP Round to Integral Instructions
+7.6.1.9 VSX Binary Floating-Point Convert To Integer Instructions
+7.6.1.9.1 VSX Scalar BFP Convert To Integer Instructions
+Mnemonic      Instruction Name                                                               Page
+xscvdpsxds    VSX Scalar Convert w/ truncate Double-Precision to Signed Dword format          537
+xscvdpsxws    VSX Scalar Convert w/ truncate Double-Precision to Signed Word format           540
+xscvdpuxds    VSX Scalar Convert w/ truncate Double-Precision to Unsigned Dword format        542
+xscvdpuxws    VSX Scalar Convert w/ truncate Double-Precision to Unsigned Word format         544
+xscvqpsdz     VSX Scalar Convert w/ truncate Quad-Precision to Signed Dword format            548
+xscvqpswz     VSX Scalar Convert w/ truncate Quad-Precision to Signed Word format             550
+xscvqpudz     VSX Scalar Convert w/ truncate Quad-Precision to Unsigned Dword format          552
+xscvqpuwz     VSX Scalar Convert w/ truncate Quad-Precision to Unsigned Word format           554
+Table 35.VSX Scalar BFP Convert to Integer Instructions
+7.6.1.9.2 VSX Vector BFP Convert To Integer Instructions
+Mnemonic      Instruction Name                                                         Page
+xvcvdpsxds    VSX Vector Convert w/ truncate Double-Precision to Signed Dword format    673
+xvcvdpsxws    VSX Vector Convert w/ truncate Double-Precision to Signed Word format     675
+xvcvdpuxds    VSX Vector Convert w/ truncate Double-Precision to Unsigned Dword format  677
+xvcvdpuxws    VSX Vector Convert w/ truncate Double-Precision to Unsigned Word format   679
+xvcvspsxds    VSX Vector Convert w/ truncate Single-Precision to Signed Dword format    684
+xvcvspsxws    VSX Vector Convert w/ truncate Single-Precision to Signed Word format     686
+xvcvspuxds    VSX Vector Convert w/ truncate Single-Precision to Unsigned Dword format  688
+xvcvspuxws    VSX Vector Convert w/ truncate Single-Precision to Unsigned Word format   690
+Table 36.VSX Vector BFP Convert To Integer Instructions
+7.6.1.10 VSX Binary Floating-Point Convert From Integer Instructions
+7.6.1.10.1 VSX Scalar BFP Convert From Integer Instructions
+Mnemonic      Instruction Name                                                         Page
+xscvsdqp      VSX Scalar Convert Signed Dword to Quad-Precision format                  556
+xscvsxddp     VSX Scalar Convert w/ round Signed Dword to Double-Precision format       559
+xscvsxdsp     VSX Scalar Convert w/ round Signed Dword to Single-Precision format       559
+xscvudqp      VSX Scalar Convert Unsigned Dword to Quad-Precision format                560
+xscvuxddp     VSX Scalar Convert w/ round Unsigned Dword to Double-Precision format     561
+xscvuxdsp     VSX Scalar Convert w/ round Unsigned Dword to Single-Precision format     561
+Table 37.VSX Scalar BFP Convert from Integer Instructions
+7.6.1.10.2 VSX Vector BFP Convert From Integer Instructions
+Mnemonic      Instruction Name                                                         Page
+xvcvsxddp     VSX Vector Convert w/ round Signed Dword to Double-Precision format       692
+xvcvsxwdp     VSX Vector Convert Signed Word to Double-Precision format                 693
+xvcvuxddp     VSX Vector Convert w/ round Unsigned Dword to Double-Precision format     694
+xvcvuxwdp     VSX Vector Convert Unsigned Word to Double-Precision format               695
+xvcvsxdsp     VSX Vector Convert w/ round Signed Dword to Single-Precision format       692
+xvcvsxwsp     VSX Vector Convert w/ round Signed Word to Single-Precision format        693
+xvcvuxdsp     VSX Vector Convert w/ round Unsigned Dword to Single-Precision format     694
+xvcvuxwsp     VSX Vector Convert w/ round Unsigned Word to Single-Precision format      695
+Table 38.VSX Vector BFP Convert From Integer Instructions
+7.6.1.11 VSX Binary Floating-Point Math Support Instructions
+7.6.1.11.1 VSX Scalar BFP Math Support Instructions
+Mnemonic      Instruction Name                                                         Page
+xscmpexpdp    VSX Scalar Compare Exponents Double-Precision                             522
+xscmpexpqp    VSX Scalar Compare Exponents Quad-Precision                               523
+xsiexpdp      VSX Scalar Insert Exponent Double-Precision                               568
+xsiexpqp      VSX Scalar Insert Exponent Quad-Precision                                 569
+xststdcdp     VSX Scalar Test Data Class Double-Precision                               653
+xststdcqp     VSX Scalar Test Data Class Quad-Precision                                 654
+xststdcsp     VSX Scalar Test Data Class Single-Precision                               655
+xsxexpdp      VSX Scalar Extract Exponent Double-Precision                              656
+xsxexpqp      VSX Scalar Extract Exponent Quad-Precision                                656
+Table 39. VSX Scalar BFP Math Support Instructions
+Mnemonic      Instruction Name                                Page
+xsxsigdp      VSX Scalar Extract Significand Double-Precision  657
+xsxsigqp      VSX Scalar Extract Significand Quad-Precision    657
+Table 39. VSX Scalar BFP Math Support Instructions
+7.6.1.11.2 VSX Vector BFP Math Support Instructions
+Mnemonic      Instruction Name                                Page
+xviexpdp      VSX Vector Insert Exponent Double-Precision      700
+xviexpsp      VSX Vector Insert Exponent Single-Precision      700
+xvtstdcdp     VSX Vector Test Data Class Double-Precision      760
+xvtstdcsp     VSX Vector Test Data Class Single-Precision      761
+xvxexpdp      VSX Vector Extract Exponent Double-Precision     762
+xvxexpsp      VSX Vector Extract Exponent Single-Precision     762
+xvxsigdp      VSX Vector Extract Significand Double-Precision  763
+xvxsigsp      VSX Vector Extract Significand Single-Precision  763
+Table 40. VSX Vector BFP Math Support Instructions
+7.6.1.12 VSX Vector Logical Instructions
+7.6.1.12.1 VSX Vector Logical Instructions
+Mnemonic      Instruction Name                                Page
+xxland        VSX Vector Logical AND                           767
+xxlandc       VSX Vector Logical AND with Complement           767
+xxleqv        VSX Vector Logical Equivalence                   768
+xxlnand       VSX Vector Logical NAND                          768
+xxlnor        VSX Vector Logical NOR                           769
+xxlor         VSX Vector Logical OR                            770
+xxlorc        VSX Vector Logical OR with Complement            769
+xxlxor        VSX Vector Logical XOR                           770
+Table 41.VSX Logical Instructions
+7.6.1.12.2 VSX Vector Select Instruction
+Mnemonic      Instruction Name                                Page
+xxsel         VSX Vector Select                                773
+Table 42.VSX Vector Select Instruction
+7.6.1.13 VSX Vector Permute-class Instructions
+7.6.1.13.1 VSX Vector Byte-Reverse Instructions
+Mnemonic      Instruction Name                                Page
+xxbrd         VSX Vector Byte-Reverse Dword                    764
+xxbrh         VSX Vector Byte-Reverse Hword                    764
+xxbrq         VSX Vector Byte-Reverse Qword                    765
+xxbrw         VSX Vector Byte-Reverse Word                     765
+Table 43.VSX Vector Byte-Reverse Instructions
+7.6.1.13.2 VSX Vector Insert/Extract Instructions
+Mnemonic      Instruction Name                               Page
+xxextractuw   VSX Vector Extract Unsigned Word                766
+xxinsertw     VSX Vector Insert Word                          766
+Table 44.VSX Vector Insert/Extract Instructions
+7.6.1.13.3 VSX Vector Merge Instructions
+Mnemonic      Instruction Name                               Page
+xxmrghw       VSX Vector Merge High Word                      771
+xxmrglw       VSX Vector Merge Low Word                       771
+Table 45.VSX Vector Merge Instructions
+7.6.1.13.4 VSX Vector Splat Instructions
+Mnemonic      Instruction Name                               Page
+xxspltib      VSX Vector Splat Immediate Byte                 774
+xxspltw       VSX Vector Splat Word                           774
+Table 46.VSX Vector Splat Instructions
+7.6.1.13.5 VSX Vector Permute Instructions
+Mnemonic      Instruction Name                               Page
+xxpermdi      VSX Vector Permute Dword Immediate              773
+xxperm        VSX Vector Permute                              772
+xxpermr       VSX Vector Permute Right-indexed                772
+Table 47.VSX Vector Permute Instruction
+7.6.1.13.6 VSX Vector Shift Left Double Instructions
+Mnemonic      Instruction Name                               Page
+xxsldwi       VSX Vector Shift Left Double by Word Immediate  774
+Table 48.VSX Vector Shift Left Double Instruction
