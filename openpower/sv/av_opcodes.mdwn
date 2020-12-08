@@ -18,7 +18,14 @@ TODO
 
 vpkpx is a 32-bit to 16-bit 8888 into 1555 conversion
 
+SV notes:
 
+a single 32-bit to 16-bit operation should suffice, fitting cleanly into one single scalar op:
+
+    dest[0]     = src[7]
+    dest[1 : 5] = src[8 :12]
+    dest[6 :10] = src[16:20]
+    dest[11:15] = src[24:28]
 
 ### vpks[*][*]s
 
