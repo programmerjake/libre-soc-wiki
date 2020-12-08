@@ -20,7 +20,14 @@ Thus for example, where OpenPOWER VSX has vpkswss, this would be achieved in SV 
 * 2nd op, swizzle-select vec2 "select Y only" from source to dest
   dest.Y = extclamp(src.Y)
 
-Macro-op fusion may be used to detect that these two interleave cleanly.
+Macro-op fusion may be used to detect that these two interleave cleanly, overlapping the vec2.X with vec2.Y to produce a single vec2.XY operation.
+
+## Scalar element operations
+
+* clamping / saturation for signed and unsigned.  best done similar to FP rounding modes, i.e. with an SPR.
+* average-add.  result = (src1 + src2 + 1) >> 1
+* abs-diff: result = (src1 > src2) ? (src1-src2) : (src2-src1)
+* signed min/max
 
 # Video
 
