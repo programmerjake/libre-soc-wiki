@@ -26,9 +26,9 @@ Macro-op fusion may be used to detect that these two interleave cleanly.
 
 TODO
 
-## VSX SIMD
+# VSX SIMD
 
-### vpkpx
+## vpkpx
 
 vpkpx is a 32-bit to 16-bit 8888 into 1555 conversion
 
@@ -41,28 +41,28 @@ a single 32-bit to 16-bit operation should suffice, fitting cleanly into one sin
     dest[6 :10] = src[16:20]
     dest[11:15] = src[24:28]
 
-### vpks[*][*]s
+## vpks[*][*]s
 
 signed and unsigned, these are N-to-M (N=64/32/16, M=32/16/8) chop/clamp/sign/zero-extend operations
  
-### vupkhpx / vupklpx
+## vupkhpx / vupklpx
 
 these are 16-bit to 32-bit 1555 to 8888 conversion
 
-### vavgs*
+## vavgs*
 
 signed and unsigned, 8/16/32: these are all of the form:
 
     result = truncate((a + b + 1) >> 1))
 
-### vabsdu*
+## vabsdu*
 
 unsigned 8/16/32: these are all of the form:
 
     result = (src1 > src2) ? truncate(src1-src2) :
                              truncate(src2-src1)
 
-### vmaxs* / vmaxu* (and min)
+## vmaxs* / vmaxu* (and min)
 
 signed and unsigned, 8/16/32: these are all of the form:
 
