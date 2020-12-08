@@ -11,3 +11,34 @@ TODO
 # Video
 
 TODO
+
+## VSX SIMD
+
+### vpkpx
+
+vpkpx is a 32-bit to 16-bit 8888 into 1555 conversion
+
+### vupkhpx / vupklpx
+
+these are 16-bit to 32-bit 1555 to 8888 conversion
+
+### vavgs*
+
+signed and usigned, 8/16/32: these are all of the form:
+
+    result = truncate((a + b + 1) >> 1))
+
+### vabsdu*
+
+unsigned 8/16/32: these are all of the form:
+
+    result = (src1 > src2) ? truncate(src1-src2) :
+                             truncate(src2-src1)
+
+### vmaxs* / vmaxu* (and min)
+
+signed and unsigned, 8/16/32: these are all of the form:
+
+    result = (src1 > src2) ? src1 : src2 # max
+    result = (src1 < src2) ? src1 : src2 # min
+
