@@ -10,3 +10,18 @@
 totals: 22 bits leaving 2 spare for further modes.
 
 http://lists.libre-soc.org/pipermail/libre-soc-dev/2020-December/001434.html
+
+# Notes about Swizzle
+
+Basically, there isn't enough room to try to fit two src src1/2 swizzle, and SV, even into 64 bit.
+
+therefore the strategy proposed is:
+
+* design 16bit scalar ops
+* use the 11 bit old SV prefix to create 32bit insns
+* when those are embedded into v3.1B 64 prefix, the 24 bits are entirely allocated to swizzle.
+
+with 2x12 this would mean no need to have complex encoding of swizzle.
+
+if we really do need 2 bits spare then the complex encoder of swizzle could be deployed.
+
