@@ -222,7 +222,7 @@ def process_csvs():
               '1W': 'non-SV',
               '1W-CRi': 'TBD - needs close inspection',
               'CRio': 'R',
-              'CR=2I1O': 'R',
+              'CR=2R1W': 'R',
               'CRi': 'non-SV',
               'imm': 'non-SV',
               '': 'non-SV',
