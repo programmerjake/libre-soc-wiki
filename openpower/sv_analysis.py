@@ -79,6 +79,8 @@ def create_key(row):
                 res[key] = '0'
             else:
                 res[key] = '1'
+            if row['comment'].startswith('cr'):
+                res['crop'] = '1'
         # unit
         if key == 'unit':
             if row[key] == 'LDST': # we care about LDST units
@@ -105,6 +107,7 @@ def create_key(row):
     # Convert the numerics 'in' & 'outcnt' to strings
     res['in'] = str(res['in'])
     res['outcnt'] = str(res['outcnt'])
+
 
     # constants
     if row['in2'].startswith('CONST_'):
@@ -133,10 +136,10 @@ def keyname(row):
     if row['outcnt'] != '0':
         res.append('%sW' % row['outcnt'])
     if row['CR in'] == '1' and row['CR out'] == '1':
-        #if row['comment'].startswith('cr'):
-        #    res.append("CR-2io")
-        #else:
-        res.append("CRio")
+        if 'crop' in row:
+            res.append("CR=2R1W")
+        else:
+            res.append("CRio")
     elif row['CR in'] == '1':
         res.append("CRi")
     elif row['CR out'] == '1':
@@ -218,7 +221,8 @@ def process_csvs():
               '1R-imm': 'non-SV',
               '1W': 'non-SV',
               '1W-CRi': 'TBD - needs close inspection',
-              'CRio': 'R/TBD - needs subdivision (cr ops)',
+              'CRio': 'R',
+              'CR=2I1O': 'R',
               'CRi': 'non-SV',
               'imm': 'non-SV',
               '': 'non-SV',
@@ -250,7 +254,9 @@ def process_csvs():
     for key in primarykeys:
         name = keyname(dictkeys[key])
         row = tformat(dictkeys[key].values())
-        row += " %s | " % ("/".join(list(immediates.get(key, ""))))
+        imms = list(immediates.get(key, ""))
+        imms.sort()
+        row += " %s | " % ("/".join(imms))
         row += " %s |" % name
         print (row)
     print ('"""]]')

@@ -19,7 +19,8 @@ LDST-3R-1W | R/TBD - st*x |
 imm | non-SV |
 CRi | non-SV |
 CRi | non-SV |
-CRio | R/TBD - needs subdivision (cr ops) |
+CRio | R |
+CR=2R1W | - |
 1W | non-SV |
 1W-CRi | TBD - needs close inspection |
 1R | non-SV |
@@ -46,11 +47,11 @@ CRio | R/TBD - needs subdivision (cr ops) |
 
 [[!table  data="""
 unit | in | outcnt | CR in | CR out | imm| imms | name |
-LDST | 1 | 1 | 0 | 0 | 1| SI/DS |  LDST-1R-1W-imm |
-LDST | 1 | 2 | 0 | 0 | 1| SI/DS |  LDST-1R-2W-imm |
-LDST | 2 | 0 | 0 | 0 | 1| SI/DS |  LDST-2R-imm |
+LDST | 1 | 1 | 0 | 0 | 1| DS/SI |  LDST-1R-1W-imm |
+LDST | 1 | 2 | 0 | 0 | 1| DS/SI |  LDST-1R-2W-imm |
+LDST | 2 | 0 | 0 | 0 | 1| DS/SI |  LDST-2R-imm |
 LDST | 2 | 1 | 0 | 0 | |  |  LDST-2R-1W |
-LDST | 2 | 1 | 0 | 0 | 1| SI/DS |  LDST-2R-1W-imm |
+LDST | 2 | 1 | 0 | 0 | 1| DS/SI |  LDST-2R-1W-imm |
 LDST | 2 | 2 | 0 | 0 | |  |  LDST-2R-2W |
 LDST | 3 | 0 | 0 | 0 | |  |  LDST-3R |
 LDST | 3 | 0 | 0 | 1 | |  |  LDST-3R-CRo |
@@ -60,6 +61,7 @@ OTHER | 0 | 0 | 0 | 0 | 1| LI |  imm |
 OTHER | 0 | 0 | 1 | 0 | |  |  CRi |
 OTHER | 0 | 0 | 1 | 0 | 1| BD |  CRi |
 OTHER | 0 | 0 | 1 | 1 | |  |  CRio |
+OTHER | 0 | 0 | 1 | 1 | 1 | |  |  CR=2R1W |
 OTHER | 0 | 1 | 0 | 0 | |  |  1W |
 OTHER | 0 | 1 | 1 | 0 | |  |  1W-CRi |
 OTHER | 1 | 0 | 0 | 0 | |  |  1R |
@@ -69,7 +71,7 @@ OTHER | 1 | 0 | 1 | 1 | |  |  1R-CRio |
 OTHER | 1 | 1 | 0 | 0 | |  |  1R-1W |
 OTHER | 1 | 1 | 0 | 0 | 1| SI/UI |  1R-1W-imm |
 OTHER | 1 | 1 | 0 | 1 | |  |  1R-1W-CRo |
-OTHER | 1 | 1 | 0 | 1 | 1| M1/SI/SH/UI/SH32 |  1R-1W-CRo |
+OTHER | 1 | 1 | 0 | 1 | 1| M1/SH/SH32/SI/UI |  1R-1W-CRo |
 OTHER | 1 | 1 | 1 | 1 | |  |  1R-1W-CRio |
 OTHER | 2 | 0 | 0 | 0 | |  |  2R |
 OTHER | 2 | 0 | 0 | 1 | |  |  2R-CRo |
@@ -241,11 +243,23 @@ CSV | opcode | asm | form|
 major.csv | 16 | bc | B-Form|
 """]]
 
-## CRio (R/TBD - needs subdivision (cr ops))
+## CRio (R)
 
 [[!table  data="""
 CSV | opcode | asm | form|
 minor_19.csv | 0b0000000000 | mcrf | XL-Form|
+minor_31.csv | 0b1000000000 | mcrxr | X-Form|
+minor_31.csv | 0b1001000000 | mcrxrx | X-Form|
+minor_63l.csv | 0b000000010 | 2/0=mcrfs | -Form|
+minor_63l.csv | 0b011000001 | 1/6=mtfsb1 | -Form|
+minor_63l.csv | 0b011000010 | 2/6=mtfsb0 | -Form|
+minor_63l.csv | 0b011000100 | 4/6=mtfsfi | -Form|
+"""]]
+
+## CR=2R1W (-)
+
+[[!table  data="""
+CSV | opcode | asm | form|
 minor_19.csv | 0b0000100001 | crnor | XL-Form|
 minor_19.csv | 0b0010000001 | crandc | XL-Form|
 minor_19.csv | 0b0011000001 | crxor | XL-Form|
@@ -254,12 +268,6 @@ minor_19.csv | 0b0100000001 | crand | XL-Form|
 minor_19.csv | 0b0100100001 | creqv | XL-Form|
 minor_19.csv | 0b0110100001 | crorc | XL-Form|
 minor_19.csv | 0b0111000001 | cror | XL-Form|
-minor_31.csv | 0b1000000000 | mcrxr | X-Form|
-minor_31.csv | 0b1001000000 | mcrxrx | X-Form|
-minor_63l.csv | 0b000000010 | 2/0=mcrfs | -Form|
-minor_63l.csv | 0b011000001 | 1/6=mtfsb1 | -Form|
-minor_63l.csv | 0b011000010 | 2/6=mtfsb0 | -Form|
-minor_63l.csv | 0b011000100 | 4/6=mtfsfi | -Form|
 """]]
 
 ## 1W (non-SV)
