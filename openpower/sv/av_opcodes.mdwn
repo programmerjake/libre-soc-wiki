@@ -78,3 +78,10 @@ signed and unsigned, 8/16/32: these are all of the form:
     result = (src1 > src2) ? src1 : src2 # max
     result = (src1 < src2) ? src1 : src2 # min
 
+## vmerge operations
+
+these take two src vectors of various widths and splice them together.  the best technique to cover these is a simple straightforward predicated pair of mv operations, inverting the predicate in the second case, or, alternately, to use a pair of vec2 (SUBVL=2) swizzled operations.
+
+in the swizzle case the first instruction would be destvect2.X = srcvec2.X and the second would swizzle-select Y.  macro-op fusion in both the prefixated variant and the swizzle variant would interleave the two into the same SIMD backend ALUs.
+
+with twin predication the elwidth can be overridden on both src and dest such that either straight scalar mv or extsw/b/h can be used to provide the combinations of coverage needed, with only 2 actual instructions (plus vectir prefixing)
