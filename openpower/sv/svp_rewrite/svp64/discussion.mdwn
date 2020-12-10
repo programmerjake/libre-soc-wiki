@@ -12,8 +12,9 @@ do not try to jam VL or MAXVL in.  go with the flow of 24 bits spare.
 * 1: select INT or CR predication
 * 3: predicate selection and inversion (QTY 2 for tpred)
 * 4x2 or 3x3: src1/2/3/dest Vector/Scalar reg
+* 2: saturate mode
 
-totals: 22 bits leaving 2 spare for further modes.
+totals: 24 bits
 
 http://lists.libre-soc.org/pipermail/libre-soc-dev/2020-December/001434.html
 
@@ -23,23 +24,24 @@ twin predication and twin elwidth overrides is extremely important to have to be
 
 something like:
 
-| 0   1 | 2 3 | 4 5 | 6    | 7  9 | 10 12 | 13 18 |
-| ----- | --- | --- | ---- | ---- | ----- | ----- |
-| subvl | sew | dew | ptyp | psrc | pdst  | vspec |
+| 0   1 | 2 3 | 4 5 | 6    | 7  9 | 10 12 | 13 18 | 19 21 |
+| ----- | --- | --- | ---- | ---- | ----- | ----- | ----- |
+| subvl | sew | dew | ptyp | psrc | pdst  | vspec | sat   |
 
 * subvl - 1 to 4 scalar / vec2 / vec3 / vec4
 * sew / dew - DEFAULT / 8 / 16 /32 element width
 * ptyp - predication INT / CR
 * psrc / pdst - predicate mask selector and inversion
 * vspec - 3 bit src / dest scalar-vector extension
+* sat: DEFAULT / 8bit / 16bit / 32bit (signed/unsigned)
 
 # standard arith ops (single predication)
 
 these are of the form res = op(src1, src2, ...)
 
-| 0   1 | 2 3 | 4    | 5  7 | 8  16 |
-| ----- | --- | ---- | ---- | ----- |
-| subvl | ew  | ptyp | pred | vspec |
+| 0   1 | 2 3 | 4    | 5  7 | 8  16 | 17 19 |
+| ----- | --- | ---- | ---- | ----- | ----- |
+| subvl | ew  | ptyp | pred | vspec | sat   |
 
 
 * subvl - 1 to 4 scalar / vec2 / vec3 / vec4
@@ -47,6 +49,7 @@ these are of the form res = op(src1, src2, ...)
 * ptyp - predication INT / CR
 * pred - predicate mask selector and inversion
 * vspec - 2/3 bit src / dest scalar-vector extension
+* sat: DEFAULT / 8bit / 16bit / 32bit (signed/unsigned)
 
 For 2 op (dest/src1/src2) the tag may be 3 bits: total 9 bits.  for 3 op (dest/src1/2/3) the vspec may be 2 bits per reg: total 8 bits.
 
