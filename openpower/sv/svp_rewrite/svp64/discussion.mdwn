@@ -1,5 +1,7 @@
 # Notes on requirements for bit allocations
 
+do not try to jam VL or MAXVL in.  go with the flow of 24 bits spare.
+
 * 2: SUBVL
 * 2: elwidth
 * 2: twin-predication (src, dest) elwidth
@@ -31,7 +33,7 @@ something like:
 
 these are of the form res = op(src1, src2, ...)
 
-| 0   1 | 2 3 | 5    | 6  8 | 13 20 |
+| 0   1 | 2 3 | 4    | 5  7 | 8  16 |
 | ----- | --- | ---- | ---- | ----- |
 | subvl | ew  | ptyp | pred | vspec |
 
@@ -42,7 +44,7 @@ these are of the form res = op(src1, src2, ...)
 * pred - predicate mask selector and inversion
 * vspec - 2/3 bit src / dest scalar-vector extension
 
-For 2 op (dest/src1/src2) the tag may be 2 bits.  for 3 op (dest/src1/2/3) the vspec may be 2 bits per reg.
+For 2 op (dest/src1/src2) the tag may be 3 bits: total 9 bits.  for 3 op (dest/src1/2/3) the vspec may be 2 bits per reg: total 8 bits.
 
 # Notes about Swizzle
 
