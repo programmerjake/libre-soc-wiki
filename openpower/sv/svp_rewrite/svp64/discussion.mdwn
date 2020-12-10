@@ -15,7 +15,7 @@ http://lists.libre-soc.org/pipermail/libre-soc-dev/2020-December/001434.html
 
 ## twin predication
 
-twin predication and twin elwidth overrides is extremely important to have to be able to override both the src and dest elwidth yet keep the underlying scalar operation intact.  examples include mr with an elwidth=8, VL=8 on the src will take a byte at a time from one 64 bit reg and place it into 8x 64-bit regs, zero-extended.  more complex operations involve SUBVL and Audio/Video DSP operations.
+twin predication and twin elwidth overrides is extremely important to have to be able to override both the src and dest elwidth yet keep the underlying scalar operation intact.  examples include mr with an elwidth=8, VL=8 on the src will take a byte at a time from one 64 bit reg and place it into 8x 64-bit regs, zero-extended.  more complex operations involve SUBVL and Audio/Video DSP operations, see [[av_opcodes]]
 
 something like:
 
