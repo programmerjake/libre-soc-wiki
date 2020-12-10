@@ -40,34 +40,21 @@ TODO
 
 # VSX SIMD
 
-## vpkpx
+Useful parts of VSX, and how they might map.
 
-vpkpx is a 32-bit to 16-bit 8888 into 1555 conversion
+## vpks[\*][\*]s (vec_pack*)
 
-SV notes:
+signed and unsigned, these are N-to-M (N=64/32/16, M=32/16/8) chop/clamp/sign/zero-extend operations. May be implemented by a clamped move to a smaller elwidth.
 
-a single 32-bit to 16-bit operation should suffice, fitting cleanly into one single scalar op:
-
-    dest[0]     = src[7]
-    dest[1 : 5] = src[8 :12]
-    dest[6 :10] = src[16:20]
-    dest[11:15] = src[24:28]
-
-## vpks[\*][\*]s
-
-signed and unsigned, these are N-to-M (N=64/32/16, M=32/16/8) chop/clamp/sign/zero-extend operations
+The other direction, vec_unpack widening ops, may need some way to tell whether to sign-extend or zero-extend.
  
-## vupkhpx / vupklpx
-
-these are 16-bit to 32-bit 1555 to 8888 conversion
-
-## vavgs\*
+## vavgs\* (vec_avg)
 
 signed and unsigned, 8/16/32: these are all of the form:
 
     result = truncate((a + b + 1) >> 1))
 
-## vabsdu\*
+## vabsdu\* (vec_abs)
 
 unsigned 8/16/32: these are all of the form:
 
