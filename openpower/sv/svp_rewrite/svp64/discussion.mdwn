@@ -48,7 +48,7 @@ For 2 op (dest/src1/src2) the tag may be 3 bits: total 9 bits.  for 3 op (dest/s
 
 # Notes about rounding, clamp and saturate
 
-One of the issues with vector ops is that in integer DSP ops for example in Audio the operation must clamp or saturate rather than overflow or ignore the upper bits and become a modulo operation.  This for Audio is extremely important, also to provide an indicator as to whether saturation occurred.
+One of the issues with vector ops is that in integer DSP ops for example in Audio the operation must clamp or saturate rather than overflow or ignore the upper bits and become a modulo operation.  This for Audio is extremely important, also to provide an indicator as to whether saturation occurred.  see  [[av_opcodes]].
 
 If there are spare bits it would be very good to look at using some of thrm to specify the mide, because otherwise a SPR has to be used which will need to be set and unset.  This can get costly.
 
