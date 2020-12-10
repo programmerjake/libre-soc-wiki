@@ -87,9 +87,13 @@ with twin predication the elwidth can be overridden on both src and dest such th
 
 The spec says the max relative inaccuracy is 1/4096.
 
+*These could be done by assigning meaning to the "sat mode" SVP64 bits in a FP context. 0b00 is IEEE754 FP, 0b01 is 2^12 accuracy for FP32. These can be applied to standard scalar FP ops"
+
 ## vec_madd(s) - FMA, multiply-add, optionally saturated
 
     a * b + c
+
+*Standard scalar madd*
 
 ## vec_msum(s) - horizontal gather multiply-add, optionally saturated
 
@@ -97,6 +101,8 @@ This should be separated to a horizontal multiply and a horizontal add. How a ho
 
     a.x + a.y + a.z ...
     a.x * a.y * a.z ...
+
+*This would realistically need to be done with a loop doing a mapreduce.  I looked very early on at doing this type of operation and concluded it would be better done with a series of halvings each time, as separate instructions:  VL=16 then VL=8 then 4 then 2 and finally one scalar.  An OoO multi-issue engine woukd be more than capable of desling with the Dependencies.*
 
 ## vec_mul*
 
@@ -107,9 +113,13 @@ There should be both a same-width multiply and a widening multiply. Signed and u
 
 For 8,16,32,64, resulting in 8,16,32,64,128.
 
+*All of these can be done with SV elwidth overrides, as long as the dest is no greater than 128.  SV specifically does not do 128 bit arithmetic.  Specifying src elwidth=8 and dest elwidth=16 will give a widening multiply*
+
 ## vec_rl - rotate left
 
     (a << x) | (a >> (WIDTH - x))
+
+*Standard scalar rlwinm*
 
 ## vec_sel - bitwise select
 
