@@ -12,6 +12,44 @@ counting up as you move to the LSB end). All bit ranges are inclusive (so
 
 64-bit instructions are split into two 32-bit words, the prefix and the suffix. The prefix always comes before the suffix in PC order.
 
+## Remapped Encoding (`RM[0:23]`)
+
+To allow relatively easy remapping of which portions of the Prefix Opcode Map
+are used for SVP64 without needing to rewrite a large portion of the SVP64
+spec, a mapping is defined from the OpenPower v3.1 prefix bits to a new 24-bit
+Remapped Encoding denoted `RM[0]` at the MSB to `RM[23]` at the LSB.
+
+The mapping from the OpenPower v3.1 prefix bits to the Remapped Encoding is
+defined in the Prefix Fields section.
+
+## Remapped Encoding Fields
+
+| Remapped Encoding Field Name | Field bits | Description    |
+|------------------------------|------------|----------------|
+| MASK                         | `0:3`      | Execution Mask |
+| TBD                          | `4:23`     | TBD            |
+
+## MASK Encoding
+
+| Value | Mnemonic          | Description                                            |
+|-------|-------------------|--------------------------------------------------------|
+| 0000  | -                 | Reserved (causes an illegal instruction trap)          |
+| 0001  | ALWAYS (implicit) | Operation is not masked                                |
+| 0010  | R3                | Element `i` is enabled if `R3 & (1 << i)` is non-zero  |
+| 0011  | ~R3               | Element `i` is enabled if `R3 & (1 << i)` is zero      |
+| 0100  | R10               | Element `i` is enabled if `R10 & (1 << i)` is non-zero |
+| 0101  | ~R10              | Element `i` is enabled if `R10 & (1 << i)` is zero     |
+| 0110  | R30               | Element `i` is enabled if `R30 & (1 << i)` is non-zero |
+| 0111  | ~R30              | Element `i` is enabled if `R30 & (1 << i)` is zero     |
+| 1000  | lt                | Element `i` is enabled if `CR[6+i].LT` is set          |
+| 1001  | nl/ge             | Element `i` is enabled if `CR[6+i].LT` is clear        |
+| 1010  | gt                | Element `i` is enabled if `CR[6+i].GT` is set          |
+| 1011  | ng/le             | Element `i` is enabled if `CR[6+i].GT` is clear        |
+| 1100  | eq                | Element `i` is enabled if `CR[6+i].EQ` is set          |
+| 1101  | ne                | Element `i` is enabled if `CR[6+i].EQ` is clear        |
+| 1110  | so/un             | Element `i` is enabled if `CR[6+i].FU` is set          |
+| 1111  | ns/nu             | Element `i` is enabled if `CR[6+i].FU` is clear        |
+
 ## Prefix Opcode Map (64-bit instruction encoding) (prefix bits 6:11)
 
 (shows both PowerISA v3.1 instructions as well as new SVP instructions; empty spaces are yet-to-be-allocated Illegal Instructions)
@@ -29,14 +67,14 @@ counting up as you move to the LSB end). All bit ranges are inclusive (so
 
 ## Prefix Fields
 
-| Prefix Field Name   | Field bits | Constant Value | Description                            |
-|---------------------|------------|----------------|----------------------------------------|
-| PO (Primary Opcode) | `0:5`      | `1`            | Indicates this is a 64-bit instruction |
-| TBD                 | `6`        |                |                                        |
-| SVP64_7             | `7`        | `1`            | Indicates this is a SVP64 instruction  |
-| TBD                 | `8`        |                |                                        |
-| SVP64_9             | `9`        | `1`            | Indicates this is a SVP64 instruction  |
-| TBD                 | `10:31`    |                |                                        |
+| Prefix Field Name   | Field bits | Constant Value | Description                                |
+|---------------------|------------|----------------|--------------------------------------------|
+| PO (Primary Opcode) | `0:5`      | `1`            | Indicates this is a 64-bit instruction     |
+| `RM[0]`             | `6`        |                | Bit 0 of the Remapped Encoding             |
+| SVP64_7             | `7`        | `1`            | Indicates this is a SVP64 instruction      |
+| `RM[1]`             | `8`        |                | Bit 1 of the Remapped Encoding             |
+| SVP64_9             | `9`        | `1`            | Indicates this is a SVP64 instruction      |
+| `RM[2:23]`          | `10:31`    |                | Bits 2 through 23 of the Remapped Encoding |
 
 # Register Naming
 
@@ -167,21 +205,77 @@ few used CR fields readily accessible to standard CR instructions and branches.
 Additionally, CR6 is used as the implicit result of a OpenPower ISA v3.1
 standard vector instruction with Rc=1.
 
-# Forms
+# Register Profiles
 
-Auto-generated page containing instructions broken down by "register profile"
-
+Instructions are broken down by Register Profiles as listed in the following auto-generated page:
 [[opcode_regs_deduped]]
 
-## SVP64-A-FORM
-
-Suffix is an A-FORM Instruction.
-
-Prefix Fields:
-
-|  | PO (0:5) |  |  |  |
-|--|----------|--|--|--|
-|  | 1        |  |  |  |
-
+## LDST-1R-1W-imm
 TBD
+## LDST-1R-2W-imm
+TBD
+## LDST-2R-imm
+TBD
+## LDST-2R-1W
+TBD
+## LDST-2R-1W-imm
+TBD
+## LDST-2R-2W
+TBD
+## LDST-3R
+TBD
+## LDST-3R-CRo
+TBD
+## LDST-3R-1W
+TBD
+## CRi
+TBD
+## CRio
+TBD
+## CR=2R1W
+TBD
+## 1W
+TBD
+## 1W-CRi
+TBD
+## 1R
+TBD
+## 1R-imm
+TBD
+## 1R-CRo
+TBD
+## 1R-CRio
+TBD
+## 1R-1W
+TBD
+## 1R-1W-imm
+TBD
+## 1R-1W-CRo
+TBD
+## 1R-1W-CRo
+TBD
+## 1R-1W-CRio
+TBD
+## 2R
+TBD
+## 2R-CRo
+TBD
+## 2R-CRio
+TBD
+## 2R-1W
+TBD
+## 2R-1W-CRo
+TBD
+## 2R-1W-CRo
+TBD
+## 2R-1W-CRi
+TBD
+## 2R-1W-CRio
+TBD
+## 3R-1W-CRio
 
+Remapped Encoding Fields:
+
+|  |
+|--|
+|  |
