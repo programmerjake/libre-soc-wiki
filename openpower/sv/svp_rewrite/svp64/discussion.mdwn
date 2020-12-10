@@ -33,25 +33,29 @@ something like:
 * ptyp - predication INT / CR
 * psrc / pdst - predicate mask selector and inversion
 * vspec - 3 bit src / dest scalar-vector extension
-* sat: DEFAULT / 8bit / 16bit / 32bit (signed/unsigned)
+* sat: 0bSU - S=1 signed U=1 unsigned 0b11 reserved
 
 # standard arith ops (single predication)
 
 these are of the form res = op(src1, src2, ...)
 
-| 0   1 | 2 3 | 4    | 5  7 | 8  16 | 17 19 |
-| ----- | --- | ---- | ---- | ----- | ----- |
-| subvl | ew  | ptyp | pred | vspec | sat   |
-
+| 0   1 | 2 3 | 4 5 | 6    | 7  9 | 10 18 | 19 21 |
+| ----- | --- | --- | ---- | ---- | ----- | ----- |
+| subvl | sew | dew | ptyp | pred | vspec | sat   |
 
 * subvl - 1 to 4 scalar / vec2 / vec3 / vec4
-* ew - DEFAULT / 8 / 16 /32 element width
+* sew / dew - DEFAULT / 8 / 16 /32 element width
 * ptyp - predication INT / CR
 * pred - predicate mask selector and inversion
 * vspec - 2/3 bit src / dest scalar-vector extension
-* sat: DEFAULT / 8bit / 16bit / 32bit (signed/unsigned)
+* sat: 0bSU - S=1 signed U=1 unsigned 0b11 reserved
 
 For 2 op (dest/src1/src2) the tag may be 3 bits: total 9 bits.  for 3 op (dest/src1/2/3) the vspec may be 2 bits per reg: total 8 bits.
+
+Note:
+
+* saturation is done on the result at the **source** elwidth
+* signed-saturation causes sign-extension from source to dest elwidths **after** saturation
 
 # Notes about rounding, clamp and saturate
 
