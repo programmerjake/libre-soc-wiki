@@ -13,13 +13,17 @@ from glob import glob
 from collections import OrderedDict
 
 # Return absolute path (ie $PWD) + isatables + name
+
+
 def find_wiki_file(name):
     filedir = os.path.dirname(os.path.abspath(__file__))
     tabledir = join(filedir, 'isatables')
-    file_path = join(tabledir, name) 
+    file_path = join(tabledir, name)
     return file_path
 
 # Return an array of dictionaries from the CSV file name:
+
+
 def get_csv(name):
     file_path = find_wiki_file(name)
     with open(file_path, 'r') as csvfile:
@@ -28,10 +32,12 @@ def get_csv(name):
 
 # This will return True if all values are true.
 # Not sure what this is about
+
+
 def blank_key(row):
-    #for v in row.values():
-    #    if 'SPR' in v: # skip all SPRs
-    #        return True
+    # for v in row.values():
+    #     if 'SPR' in v: # skip all SPRs
+    #         return True
     for v in row.values():
         if v:
             return False
@@ -40,6 +46,8 @@ def blank_key(row):
 # General purpose registers have names like: RA, RT, R1, ...
 # Floating point registers names like: FRT, FRA, FR1, ..., FRTp, ...
 # Return True if field is a register
+
+
 def isreg(field):
     return field.startswith('R') or field.startswith('FR')
 
@@ -47,10 +55,11 @@ def isreg(field):
 # These are the attributes of the instructions,
 # register names
 keycolumns = ['unit', 'in1', 'in2', 'in3', 'out', 'CR in', 'CR out',
-                 ] # don't think we need these: 'ldst len', 'rc', 'lk']
+              ]  # don't think we need these: 'ldst len', 'rc', 'lk']
 
 tablecols = ['unit', 'in', 'outcnt', 'CR in', 'CR out', 'imm'
-                 ] # don't think we need these: 'ldst len', 'rc', 'lk']
+             ]  # don't think we need these: 'ldst len', 'rc', 'lk']
+
 
 def create_key(row):
     res = OrderedDict()
@@ -83,7 +92,7 @@ def create_key(row):
                 res['crop'] = '1'
         # unit
         if key == 'unit':
-            if row[key] == 'LDST': # we care about LDST units
+            if row[key] == 'LDST':  # we care about LDST units
                 res[key] = row[key]
             else:
                 res[key] = 'OTHER'
@@ -108,24 +117,27 @@ def create_key(row):
     res['in'] = str(res['in'])
     res['outcnt'] = str(res['outcnt'])
 
-
     # constants
     if row['in2'].startswith('CONST_'):
-        res['imm'] = "1" # row['in2'].split("_")[1]
+        res['imm'] = "1"  # row['in2'].split("_")[1]
     else:
         res['imm'] = ''
 
     return res
 
 #
+
+
 def dformat(d):
     res = []
     for k, v in d.items():
         res.append("%s: %s" % (k, v))
     return ' '.join(res)
 
+
 def tformat(d):
     return ' | '.join(d) + "|"
+
 
 def keyname(row):
     res = []
@@ -156,11 +168,11 @@ def process_csvs():
     dictkeys = OrderedDict()
     immediates = {}
 
-    print ("# OpenPOWER ISA register 'profile's")
-    print ('')
-    print ("this page is auto-generated, do not edit")
-    print ("created by http://libre-soc.org/openpower/sv_analysis.py")
-    print ('')
+    print("# OpenPOWER ISA register 'profile's")
+    print('')
+    print("this page is auto-generated, do not edit")
+    print("created by http://libre-soc.org/openpower/sv_analysis.py")
+    print('')
 
     # Expand that (all .csv files)
     pth = find_wiki_file("*.csv")
@@ -233,23 +245,23 @@ def process_csvs():
               'LDST-1R-1W-imm': 'I',
               'LDST-1R-2W-imm': 'I',
               'LDST-3R': 'R/TBD - st*x',     # these are st*x
-              'LDST-3R-CRo': 'R/TBD - st*x', # st*x
+              'LDST-3R-CRo': 'R/TBD - st*x',  # st*x
               'LDST-3R-1W': 'R/TBD - st*x',  # st*x
               }
-    print ("# map to old SV Prefix")
-    print ('')
-    print ('[[!table  data="""')
+    print("# map to old SV Prefix")
+    print('')
+    print('[[!table  data="""')
     for key in primarykeys:
         name = keyname(dictkeys[key])
         value = mapsto.get(name, "-")
-        print (tformat([name, value+ " "]))
-    print ('"""]]')
-    print ('')
+        print(tformat([name, value + " "]))
+    print('"""]]')
+    print('')
 
-    print ("# keys")
-    print ('')
-    print ('[[!table  data="""')
-    print (tformat(tablecols) + " imms | name |")
+    print("# keys")
+    print('')
+    print('[[!table  data="""')
+    print(tformat(tablecols) + " imms | name |")
 
     for key in primarykeys:
         name = keyname(dictkeys[key])
@@ -258,27 +270,28 @@ def process_csvs():
         imms.sort()
         row += " %s | " % ("/".join(imms))
         row += " %s |" % name
-        print (row)
-    print ('"""]]')
-    print ('')
+        print(row)
+    print('"""]]')
+    print('')
 
     for key in primarykeys:
         name = keyname(dictkeys[key])
         value = mapsto.get(name, "-")
-        print ("## %s (%s)" % (name, value))
-        print ('')
-        print ('[[!table  data="""')
-        print (tformat(['CSV', 'opcode', 'asm', 'form']))
+        print("## %s (%s)" % (name, value))
+        print('')
+        print('[[!table  data="""')
+        print(tformat(['CSV', 'opcode', 'asm', 'form']))
         rows = bykey[key]
         rows.sort()
         for row in rows:
-            print (tformat(row))
-        print ('"""]]')
-        print ('')
+            print(tformat(row))
+        print('"""]]')
+        print('')
 
     bykey = {}
     for fname, csv in csvs.items():
         key
+
 
 if __name__ == '__main__':
     process_csvs()
