@@ -46,6 +46,12 @@ these are of the form res = op(src1, src2, ...)
 
 For 2 op (dest/src1/src2) the tag may be 3 bits: total 9 bits.  for 3 op (dest/src1/2/3) the vspec may be 2 bits per reg: total 8 bits.
 
+# Notes about rounding, clamp and saturate
+
+One of the issues with vector ops is that in integer DSP ops for example in Audio the operation must clamp or saturate rather than overflow or ignore the upper bits and become a modulo operation.  This for Audio is extremely important, also to provide an indicator as to whether saturation occurred.
+
+If there are spare bits it would be very good to look at using some of thrm to specify the mide, because otherwise a SPR has to be used which will need to be set and unset.  This can get costly.
+
 # Notes about Swizzle
 
 Basically, there isn't enough room to try to fit two src src1/2 swizzle, and SV, even into 64 bit (actually 24) without severely compromising on the number of bits allocated to either swizzle, or SV, or both.
