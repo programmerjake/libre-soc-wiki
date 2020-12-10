@@ -70,8 +70,54 @@ signed and unsigned, 8/16/32: these are all of the form:
 
 ## vmerge operations
 
+Their main point was to work around the odd/even multiplies. SV swizzles and mv.x should handle all cases.
+
 these take two src vectors of various widths and splice them together.  the best technique to cover these is a simple straightforward predicated pair of mv operations, inverting the predicate in the second case, or, alternately, to use a pair of vec2 (SUBVL=2) swizzled operations.
 
 in the swizzle case the first instruction would be destvect2.X = srcvec2.X and the second would swizzle-select Y.  macro-op fusion in both the prefixated variant and the swizzle variant would interleave the two into the same SIMD backend ALUs.
 
 with twin predication the elwidth can be overridden on both src and dest such that either straight scalar mv or extsw/b/h can be used to provide the combinations of coverage needed, with only 2 actual instructions (plus vectir prefixing)
+
+## Float estimates
+
+vec_expte - float 2^x
+vec_loge - float log2(x)
+vec_re - float 1/x
+vec_rsqrte - float 1/sqrt(x)
+
+The spec says the max relative inaccuracy is 1/4096.
+
+## vec_madd(s) - FMA, multiply-add, optionally saturated
+
+a * b + c
+
+## vec_msum(s) - horizontal gather multiply-add, optionally saturated
+
+This should be separated to a horizontal multiply and a horizontal add. How a horizontal operation would work in SV is TBD, how wide is it, etc.
+
+a.x + a.y + a.z ...
+a.x * a.y * a.z ...
+
+## vec_mul*
+
+There should be both a same-width multiply and a widening multiply. Signed and unsigned versions. Optionally saturated.
+u8 * u8 = u8
+u8 * u8 = u16
+
+For 8,16,32,64, resulting in 8,16,32,64,128.
+
+## vec_rl - rotate left
+
+(a << x) | (a >> (WIDTH - x)
+
+## vec_sel - bitwise select
+
+(a ? b : c)
+
+## vec_splat - scatter
+
+Implemented using swizzle/predicate.
+
+## vec_perm - permute
+
+Implemented using swizzle, mv.x.
