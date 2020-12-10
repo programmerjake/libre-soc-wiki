@@ -56,6 +56,15 @@ One of the issues with vector ops is that in integer DSP ops for example in Audi
 
 If there are spare bits it would be very good to look at using some of them to specify the mode, because otherwise a SPR has to be used which will need to be set and unset.  This can get costly.
 
+Idea: 2 bits for clamping mode? similar to elwidth:
+
+* 0b00 default (no clamp)
+* 0b01 8 bit (sel: -128/127, us:0/255)
+* 0b10 16 bit
+* 0b11 32 bit
+
+not the same *as* elwidth.
+
 # Notes about Swizzle
 
 Basically, there isn't enough room to try to fit two src src1/2 swizzle, and SV, even into 64 bit (actually 24) without severely compromising on the number of bits allocated to either swizzle, or SV, or both.
