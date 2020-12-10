@@ -135,8 +135,13 @@ def dformat(d):
     return ' '.join(res)
 
 
-def tformat(d):
-    return ' | '.join(d) + "|"
+def print_table_row(*cols):
+    print(f"| {' | '.join(cols)} |")
+
+
+def print_table_header(*cols):
+    print_table_row(*cols)
+    print_table_row(*map(lambda v: '-'*max(1, len(v)), cols))
 
 
 def keyname(row):
@@ -169,10 +174,10 @@ def process_csvs():
     immediates = {}
 
     print("# OpenPOWER ISA register 'profile's")
-    print('')
+    print()
     print("this page is auto-generated, do not edit")
-    print("created by http://libre-soc.org/openpower/sv_analysis.py")
-    print('')
+    print("created by https://libre-soc.org/openpower/sv_analysis.py")
+    print()
 
     # Expand that (all .csv files)
     pth = find_wiki_file("*.csv")
@@ -249,48 +254,40 @@ def process_csvs():
               'LDST-3R-1W': 'R/TBD - st*x',  # st*x
               }
     print("# map to old SV Prefix")
-    print('')
-    print('[[!table  data="""')
+    print()
+    print_table_header("register profile", "old SV Prefix")
     for key in primarykeys:
         name = keyname(dictkeys[key])
         value = mapsto.get(name, "-")
-        print(tformat([name, value + " "]))
-    print('"""]]')
-    print('')
+        print_table_row(name, value)
+    print()
 
     print("# keys")
-    print('')
-    print('[[!table  data="""')
-    print(tformat(tablecols) + " imms | name |")
-
+    print()
+    print_table_header(*tablecols, "imms", "name")
     for key in primarykeys:
         name = keyname(dictkeys[key])
-        row = tformat(dictkeys[key].values())
         imms = list(immediates.get(key, ""))
         imms.sort()
-        row += " %s | " % ("/".join(imms))
-        row += " %s |" % name
-        print(row)
-    print('"""]]')
-    print('')
+        print_table_row(*dictkeys[key].values(), "/".join(imms), name)
+    print()
 
     for key in primarykeys:
         name = keyname(dictkeys[key])
         value = mapsto.get(name, "-")
         print("## %s (%s)" % (name, value))
-        print('')
-        print('[[!table  data="""')
-        print(tformat(['CSV', 'opcode', 'asm', 'form']))
+        print()
+        print_table_header('CSV', 'opcode', 'asm', 'form')
         rows = bykey[key]
         rows.sort()
         for row in rows:
-            print(tformat(row))
-        print('"""]]')
-        print('')
+            print_table_row(*row)
+        print()
 
-    bykey = {}
-    for fname, csv in csvs.items():
-        key
+    # TODO(lkcl): what did this do:
+    # bykey = {}
+    # for fname, csv in csvs.items():
+    #     key
 
 
 if __name__ == '__main__':
