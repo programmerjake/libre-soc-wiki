@@ -11,6 +11,11 @@ totals: 22 bits leaving 2 spare for further modes.
 
 http://lists.libre-soc.org/pipermail/libre-soc-dev/2020-December/001434.html
 
+## twin predication
+
+| 0   1 | 2 3 | 4 5 | 6    | 7  9 | 10 12 | 13 18 |
+| subvl | sew | dew | ptyp | psrc | pdst  | vspec |
+
 # Notes about Swizzle
 
 Basically, there isn't enough room to try to fit two src src1/2 swizzle, and SV, even into 64 bit (actually 24) without severely compromising on the number of bits allocated to either swizzle, or SV, or both.
