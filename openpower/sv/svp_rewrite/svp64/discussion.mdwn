@@ -77,6 +77,8 @@ If there are spare bits it would be very good to look at using some of them to s
 
 Idea: 2 bits for clamping mode? similar to elwidth:
 
+
+
 * 0b00 default (no clamp)
 * 0b01 8 bit (sel: -128/127, us:0/255)
 * 0b10 16 bit
@@ -98,3 +100,8 @@ with 2x12 this would mean no need to have complex encoding of swizzle.
 
 if we really do need 2 bits spare then the complex encoder of swizzle could be deployed.
 
+# note about INT predicate
+
+001	ALWAYS (implicit)	Operation is not masked
+
+this means by default that 001 will always be in nonpredicated ops, which seems anomalous.  would 000 be better to indicate "no predication"?
