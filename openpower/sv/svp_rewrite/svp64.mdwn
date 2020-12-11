@@ -32,7 +32,9 @@ defined in the Prefix Fields section.
 
 ## MASK Encoding
 
-TODO: split out (remove) bit 4 as separate so that twin predication can use the same encoding.
+TODO: split out (remove) bit 3 as separate so that twin predication can use the same encoding, and split thr table into 2 halves. The bit currently 3 becomes a separate (standalone) field (see [discussion])
+
+Integer based predication.  Twin predication uses the same encoding rhus allowing either the same register (r3 or r10) to be used for both srcand dest, or different regs (one for src, one for dest)
 
 | Value | Mnemonic          | Description                                            |
 |-------|-------------------|--------------------------------------------------------|
@@ -44,6 +46,11 @@ TODO: split out (remove) bit 4 as separate so that twin predication can use the 
 | 0101  | ~R10              | Element `i` is enabled if `R10 & (1 << i)` is zero     |
 | 0110  | R30               | Element `i` is enabled if `R30 & (1 << i)` is non-zero |
 | 0111  | ~R30              | Element `i` is enabled if `R30 & (1 << i)` is zero     |
+
+CR based predication.  TODO: select alternate CR for twin predication.  Overlap of the two CR based predicates must be taken into account, so the starting point for one of them must be suitably high, or accept that for twin predication VL must not exceed the range where overlap will occur, *or* that they use the same starting point but select different *bits* of the same CRs
+
+| Value | Mnemonic          | Description                                            |
+|-------|-------------------|--------------------------------------------------------|
 | 1000  | lt                | Element `i` is enabled if `CR[6+i].LT` is set          |
 | 1001  | nl/ge             | Element `i` is enabled if `CR[6+i].LT` is clear        |
 | 1010  | gt                | Element `i` is enabled if `CR[6+i].GT` is set          |
