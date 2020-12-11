@@ -82,7 +82,7 @@ Their main point was to work around the odd/even multiplies. SV swizzles and mv.
 
 these take two src vectors of various widths and splice them together.  the best technique to cover these is a simple straightforward predicated pair of mv operations, inverting the predicate in the second case, or, alternately, to use a pair of vec2 (SUBVL=2) swizzled operations.
 
-in the swizzle case the first instruction would be destvect2.X = srcvec2.X and the second would swizzle-select Y.  macro-op fusion in both the prefixated variant and the swizzle variant would interleave the two into the same SIMD backend ALUs.
+in the swizzle case the first instruction would be destvec2.X = srcvec2.X and the second would swizzle-select Y: destvec2.Y = srcvec2.Y.  macro-op fusion in both the prefixated variant and the swizzle variant would interleave the two into the same SIMD backend ALUs.
 
 with twin predication the elwidth can be overridden on both src and dest such that either straight scalar mv or extsw/b/h can be used to provide the combinations of coverage needed, with only 2 actual instructions (plus vectir prefixing)
 
@@ -95,7 +95,7 @@ with twin predication the elwidth can be overridden on both src and dest such th
 
 The spec says the max relative inaccuracy is 1/4096.
 
-*These could be done by assigning meaning to the "sat mode" SVP64 bits in a FP context. 0b00 is IEEE754 FP, 0b01 is 2^12 accuracy for FP32. These can be applied to standard scalar FP ops"
+*These could be done by assigning meaning to the "sat mode" SVP64 bits in a FP context. 0b00 is IEEE754 FP, 0b01 is 2^12 accuracy for FP32. These can be applied to standard scalar FP ops*
 
 ## vec_madd(s) - FMA, multiply-add, optionally saturated
 
@@ -110,7 +110,7 @@ This should be separated to a horizontal multiply and a horizontal add. How a ho
     a.x + a.y + a.z ...
     a.x * a.y * a.z ...
 
-*This would realistically need to be done with a loop doing a mapreduce sequrnce.  I looked very early on at doing this type of operation and concluded it would be better done with a series of halvings each time, as separate instructions:  VL=16 then VL=8 then 4 then 2 and finally one scalar.  An OoO multi-issue engine woukd be more than capable of desling with the Dependencies.*
+*This would realistically need to be done with a loop doing a mapreduce sequence.  I looked very early on at doing this type of operation and concluded it would be better done with a series of halvings each time, as separate instructions:  VL=16 then VL=8 then 4 then 2 and finally one scalar.  i.e. not an actual part of SV al all. An OoO multi-issue engine would be more than capable of desling with the Dependencies.*
 
 ## vec_mul*
 
