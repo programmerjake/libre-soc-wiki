@@ -110,7 +110,9 @@ This should be separated to a horizontal multiply and a horizontal add. How a ho
     a.x + a.y + a.z ...
     a.x * a.y * a.z ...
 
-*This would realistically need to be done with a loop doing a mapreduce sequence.  I looked very early on at doing this type of operation and concluded it would be better done with a series of halvings each time, as separate instructions:  VL=16 then VL=8 then 4 then 2 and finally one scalar.  i.e. not an actual part of SV al all. An OoO multi-issue engine would be more than capable of desling with the Dependencies.*
+*This would realistically need to be done with a loop doing a mapreduce sequence.  I looked very early on at doing this type of operation and concluded it would be better done with a series of halvings each time, as separate instructions:  VL=16 then VL=8 then 4 then 2 and finally one scalar.  i.e. not an actual part of SV al all. An OoO multi-issue engine would be more than capable of dealing with the Dependencies.*
+
+That has the issue that's it's a massive PITA to code, plus it's slow. Plus there's the "access to non-4-offset regs stalls". Even if there's no ready operation, it should be made easier and faster than a manual mapreduce loop.
 
 ## vec_mul*
 
