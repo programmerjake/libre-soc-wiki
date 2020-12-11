@@ -105,3 +105,5 @@ if we really do need 2 bits spare then the complex encoder of swizzle could be d
 001	ALWAYS (implicit)	Operation is not masked
 
 this means by default that 001 will always be in nonpredicated ops, which seems anomalous.  would 000 be better to indicate "no predication"?
+
+000 would indicate "the predicate is an immediate of all 1s" i.e. "no operation is masked out"
