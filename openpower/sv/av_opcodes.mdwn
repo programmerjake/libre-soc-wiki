@@ -82,9 +82,9 @@ Their main point was to work around the odd/even multiplies. SV swizzles and mv.
 
 these take two src vectors of various widths and splice them together.  the best technique to cover these is a simple straightforward predicated pair of mv operations, inverting the predicate in the second case, or, alternately, to use a pair of vec2 (SUBVL=2) swizzled operations.
 
-in the swizzle case the first instruction would be destvec2.X = srcvec2.X and the second would swizzle-select Y: destvec2.Y = srcvec2.Y.  macro-op fusion in both the prefixated variant and the swizzle variant would interleave the two into the same SIMD backend ALUs.
+in the swizzle case the first instruction would be destvec2.X = srcvec2.X and the second would swizzle-select Y: destvec2.Y = srcvec2.Y.  macro-op fusion in both the predicated variant and the swizzle variant would interleave the two into the same SIMD backend ALUs (or macro-op fusion identifies the patterns)
 
-with twin predication the elwidth can be overridden on both src and dest such that either straight scalar mv or extsw/b/h can be used to provide the combinations of coverage needed, with only 2 actual instructions (plus vectir prefixing)
+with twin predication the elwidth can be overridden on both src and dest such that either straight scalar mv or extsw/b/h can be used to provide the combinations of coverage needed, with only 2 actual instructions (plus vector prefixing)
 
 ## Float estimates
 
