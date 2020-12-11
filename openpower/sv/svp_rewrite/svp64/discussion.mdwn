@@ -12,9 +12,9 @@ do not try to jam VL or MAXVL in.  go with the flow of 24 bits spare.
 * 1: select INT or CR predication
 * 3: predicate selection and inversion (QTY 2 for tpred)
 * 4x2 or 3x3: src1/2/3/dest Vector/Scalar reg
-* 2: saturate mode
+* 3: saturate mode
 
-totals: 24 bits (dest elwidth shared)
+totals: 22 bits (dest elwidth shared)
 
 http://lists.libre-soc.org/pipermail/libre-soc-dev/2020-December/001434.html
 
@@ -24,7 +24,7 @@ twin predication and twin elwidth overrides is extremely important to have to be
 
 something like:
 
-| 0   1 | 2 3 | 4 5 | 6    | 7  9 | 10 12 | 13 18 | 19 20 |
+| 0   1 | 2 3 | 4 5 | 6    | 7  9 | 10 12 | 13 18 | 19 21 |
 | ----- | --- | --- | ---- | ---- | ----- | ----- | ----- |
 | subvl | sew | dew | ptyp | psrc | pdst  | vspec | sat   |
 
@@ -33,7 +33,7 @@ something like:
 * ptyp - predication INT / CR
 * psrc / pdst - predicate mask selector and inversion
 * vspec - 3 bit src / dest scalar-vector extension
-* sat: 0bSU - S=1 signed U=1 unsigned 0b11 reserved
+* sat: 3 bit s/u 8/16/32
 
 ## twin predication, CR based.
 
@@ -60,7 +60,8 @@ these are of the form res = op(src1, src2, ...)
 * ptyp - predication INT / CR
 * pred - predicate mask selector and inversion
 * vspec - 2/3 bit src / dest scalar-vector extension
-* sat: 0bSU - S=1 signed U=1 unsigned 0b11 reserved
+* sat: 3 bit s/u 8/16/32
+
 
 For 2 op (dest/src1/src2) the tag may be 3 bits: total 9 bits.  for 3 op (dest/src1/2/3) the vspec may be 2 bits per reg: total 8 bits.
 
@@ -75,14 +76,12 @@ One of the issues with vector ops is that in integer DSP ops for example in Audi
 
 If there are spare bits it would be very good to look at using some of them to specify the mode, because otherwise a SPR has to be used which will need to be set and unset.  This can get costly.
 
-Idea: 2 bits for clamping mode? similar to elwidth:
+Idea: 3 bits for clamping mode? similar to elwidth:
 
-
-
-* 0b00 default (no clamp)
-* 0b01 8 bit (sel: -128/127, us:0/255)
-* 0b10 16 bit
-* 0b11 32 bit
+* 0b000 default (no clamp)
+* 0b010 011 8 bit (sel: -128/127, us:0/255)
+* 0b100 101 16 bit
+* 0b110 111 32 bit
 
 not the same *as* elwidth.
 
