@@ -32,7 +32,7 @@ defined in the Prefix Fields section.
 
 ## MASK Encoding
 
-TODO: split out (remove) bit 3 as separate so that twin predication can use the same encoding, and split the table into 2 halves. The bit currently 3 becomes a separate (standalone) field (see [discussion]) that selects *both* src and dest predication as CR based or both as INT based.  This saves one bit and makes things less complex.
+TODO: split out (remove) bit 3 as separate so that twin predication can use the same encoding, and split the table into 2 halves. The bit currently 3 becomes a separate (standalone) field (see [discussion]) that selects *both* src and dest predication as CR based or both as INT based.  This saves one bit and makes things less complex to implement in hardware.
 
 Integer based predication.  Twin predication uses the same encoding thus allowing either the same register (r3 or r10) to be used for both src and dest, or different regs (one for src, one for dest)
 
