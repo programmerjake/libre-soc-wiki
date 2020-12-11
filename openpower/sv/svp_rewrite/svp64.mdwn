@@ -39,7 +39,7 @@ Integer based predication.  Twin predication uses the same encoding thus allowin
 | Value | Mnemonic          | Description                                            |
 |-------|-------------------|--------------------------------------------------------|
 | 0000  | -                 | Reserved (causes an illegal instruction trap)          |
-| 0001  | ALWAYS (implicit) | Operation is not masked                                |
+| 0001  | ALWAYS (implicit) | Operation is not masked  see [[discussion]]                              |
 | 0010  | R3                | Element `i` is enabled if `R3 & (1 << i)` is non-zero  |
 | 0011  | ~R3               | Element `i` is enabled if `R3 & (1 << i)` is zero      |
 | 0100  | R10               | Element `i` is enabled if `R10 & (1 << i)` is non-zero |
