@@ -35,6 +35,18 @@ something like:
 * vspec - 3 bit src / dest scalar-vector extension
 * sat: 0bSU - S=1 signed U=1 unsigned 0b11 reserved
 
+## twin predication, CR based.
+
+separate src and dest predicates are a critical part of SV for provision of VGATHER, VSCATTER, VREDUCE, VSPLAT and many more operations.
+
+Twin CR predication could be done in two ways:
+
+* start from different CRs for the src and dest
+* start from the same CR.
+
+With different bits being selectable (CR[0..3]) starting from the same CR makes some sense.
+
+
 # standard arith ops (single predication)
 
 these are of the form res = op(src1, src2, ...)
