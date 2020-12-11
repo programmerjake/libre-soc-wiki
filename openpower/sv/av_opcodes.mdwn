@@ -121,7 +121,7 @@ There should be both a same-width multiply and a widening multiply. Signed and u
 
 For 8,16,32,64, resulting in 8,16,32,64,128.
 
-*All of these can be done with SV elwidth overrides, as long as the dest is no greater than 128.  SV specifically does not do 128 bit arithmetic.  Specifying src elwidth=8 and dest elwidth=16 will give a widening multiply*
+*All of these can be done with SV elwidth overrides, as long as the dest is no greater than 128.  SV specifically does not do 128 bit arithmetic. Instead, vec2.X mul-lo followed by vec2.Y mul-hi can be macro-op fused to get at the full 128 bit internal result.  Specifying e.g. src elwidth=8 and dest elwidth=16 will give a widening multiply*
 
 ## vec_rl - rotate left
 
