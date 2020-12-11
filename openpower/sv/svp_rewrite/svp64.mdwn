@@ -47,7 +47,7 @@ Integer based predication.  Twin predication uses the same encoding thus allowin
 | 0110  | R30               | Element `i` is enabled if `R30 & (1 << i)` is non-zero |
 | 0111  | ~R30              | Element `i` is enabled if `R30 & (1 << i)` is zero     |
 
-CR based predication.  TODO: select alternate CR for twin predication.  Overlap of the two CR based predicates must be taken into account, so the starting point for one of them must be suitably high, or accept that for twin predication VL must not exceed the range where overlap will occur, *or* that they use the same starting point but select different *bits* of the same CRs
+CR based predication.  TODO: select alternate CR for twin predication? see [[discussion]]  Overlap of the two CR based predicates must be taken into account, so the starting point for one of them must be suitably high, or accept that for twin predication VL must not exceed the range where overlap will occur, *or* that they use the same starting point but select different *bits* of the same CRs
 
 | Value | Mnemonic          | Description                                            |
 |-------|-------------------|--------------------------------------------------------|
