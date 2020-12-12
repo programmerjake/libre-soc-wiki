@@ -35,12 +35,6 @@ something like:
 * vspec - 3 bit src / dest scalar-vector extension
 * mode: 5 bits
 
-mode:
-
-* zmode: 2 bit src pred zero mode, dest pred zero mode
-* ffirst: 3 bit.  EN (and CR index bit 0-3, applicable when Rc=1).
-   operations that do not have Rc or when Rc=0 may take bit 1 to mean " zero ir nonzero".
-
 ## twin predication, CR based.
 
 separate src and dest predicates are a critical part of SV for provision of VEXPAND, VREDUCE, VSPLAT, VINSERT and many more operations.
@@ -61,6 +55,8 @@ Data-dependent fail-on-first has two distinct variants: one for LD/ST, the other
 
 The CR-based data-driven fail-on-first is new and not found in ARM SVE or RVV. It is extremely useful for reducing instruction count, however requires speculative execution involving modifications of VL to get high performance implementations.
 
+Twin predication arithmetic operations 
+
 # standard arith ops (single predication)
 
 these are of the form res = op(src1, src2, ...)
@@ -75,16 +71,6 @@ these are of the form res = op(src1, src2, ...)
 * pred - predicate mask selector and inversion
 * vspec - 2/3 bit src / dest scalar-vector extension
 * mode - 5 bit
-
-Mode
-
-     0   1   2   3    4    description
-     ------------------
-     0   0   0   0    0    nothing
-     0   1   N        zero sat mode: N=0/1 u/s
-     1   0   inv CR bit    Rc=1: ffirst CR sel
-     1   0            zero Rc=0: pred zero mode
-
 
 For 2 op (dest/src1/src2) the tag may be 3 bits: total 9 bits.  for 3 op (dest/src1/2/3) the vspec may be 2 bits per reg: total 8 bits.
 
@@ -105,6 +91,16 @@ Some examples on different operation widths:
     u16 + u16 = u8
     256 + 2 = 2 # this is correct whether we use the larger or smaller width
                 # aka hw can optimize narrowing addition
+
+# Mode
+
+     0   1   2   3    4    description
+     ------------------
+     0   0   0   0    0    nothing
+     0   1   N        zero sat mode: N=0/1 u/s
+     1   0   inv CR bit    Rc=1: ffirst CR sel
+     1   0            zero Rc=0: pred zero mode
+
 
 # Notes about rounding, clamp and saturate
 
