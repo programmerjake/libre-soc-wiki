@@ -2,10 +2,11 @@
 
 # Format
 
-| 0..5 |6..10|11..15|16.20|21.....25|26.....30|31|  name   |
-|------|-----|------|-----|---------|---------|--|---------|
-| 19   | RT  | RA   |     | XO[0:4] | XO[5:9] |Rc| XL-Form |
-| 19   | RT  | RA   |imm  | imm     | iNNNN   |im| mv.swiz |
+| 0..5 |6..10|11..15|16.20|21.....25|26.....30|31|  name    |
+|------|-----|------|-----|---------|---------|--|----------|
+| 19   | RT  | RA   |     | XO[0:4] | XO[5:9] |Rc| XL-Form  |
+| 19   | RT  | RA   |imm  | imm     | iNNNN   |im| mv.swiz  |
+| 19   | RT  | RA   |imm  | imm     | iNNNN   |im| fmv.swiz |
 
 also f.mv
 
@@ -24,4 +25,4 @@ except that the options are:
 * 0b010 to indicate "constant 1" (or 1.0)
 * 0b011 is not needed.
 
-
+Evaluating efforts to encode 12 bit swizzle into less proved unsuccessful: 7^4 wcomes out to 2,400 which is larger than 11 bits
