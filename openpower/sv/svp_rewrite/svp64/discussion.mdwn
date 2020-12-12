@@ -89,6 +89,9 @@ Some examples on different operation widths:
     u8 * u8 = u16
     255 * 2 = 510 # if we used the smaller width, we'd get 254. Wrong
 
+    u16 + u16 = u8
+    256 + 2 = 2 # this is correct whether we use the larger or smaller width - hw can optimize addition
+
 # Notes about rounding, clamp and saturate
 
 One of the issues with vector ops is that in integer DSP ops for example in Audio the operation must clamp or saturate rather than overflow or ignore the upper bits and become a modulo operation.  This for Audio is extremely important, also to provide an indicator as to whether saturation occurred.  see  [[av_opcodes]].
