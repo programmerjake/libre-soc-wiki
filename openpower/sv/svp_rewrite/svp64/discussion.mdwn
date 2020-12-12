@@ -87,10 +87,10 @@ Some examples on different operation widths:
      ------------------
      0   0   0   0    0    nothing
      0   0   non-zero      reserved
-     0   1   inv CR bit    Rc=1: ffirst CR sel
+     0   1   inv CR-bit    Rc=1: ffirst CR sel
+     0   1   inv sz   dz   Rc=0: ffirst z/nonz
      1   0   N   sz   dz   sat mode: N=0/1 u/s
-     1   1   0   sz   dz   Rc=0: pred zero mode
-     1   1   1   rsvd      reserved
+     1   1      rsvd       reserved
 
 
 # Notes about rounding, clamp and saturate
