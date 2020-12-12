@@ -108,6 +108,7 @@ Data-dependent fail-on-first has two distinct variants: one for LD/ST, the other
 
 The CR-based data-driven fail-on-first is new and not found in ARM SVE or RVV. It is extremely useful for reducing instruction count, however requires speculative execution involving modifications of VL to get high performance implementations.
 
+Where the options provided by selecting from only one bit of the CR being tested (and optional inversion of the same) are insufficient, a vectorised crops (crand, cror) may be used and ffirst applied to that.
 
 # Notes about Swizzle
 
