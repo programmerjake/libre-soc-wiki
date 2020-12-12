@@ -46,15 +46,6 @@ Twin CR predication could be done in two ways:
 
 With different bits being selectable (CR[0..3]) starting from the same CR makes some sense.
 
-# Fail-on-first
-
-Data-dependent fail-on-first has two distinct variants: one for LD/ST, the other for arithmetic operations (actually, CR-driven)
-
-* LD/ST ffirst treats the first LD/ST in a vector as an ordinary one.  Exceptions occur "as normal".  However for elements 1 and above, if an exception would occur, then VL is **truncated** to the previous element.
-* Data-driven (CR-driven) fail-on-first activates when Rc=1 or other CR-creating operation produces a result (including cmp).  Similar to branch, an analysis of the CR is performed and if the test succeeds, the vector operation terminates all element operations at and above the current one, and VL is truncated to the *previous* element.
-
-The CR-based data-driven fail-on-first is new and not found in ARM SVE or RVV. It is extremely useful for reducing instruction count, however requires speculative execution involving modifications of VL to get high performance implementations.
-
 # standard arith ops (single predication)
 
 these are of the form res = op(src1, src2, ...)
@@ -105,6 +96,16 @@ Some examples on different operation widths:
 One of the issues with vector ops is that in integer DSP ops for example in Audio the operation must clamp or saturate rather than overflow or ignore the upper bits and become a modulo operation.  This for Audio is extremely important, also to provide an indicator as to whether saturation occurred.  see  [[av_opcodes]].
 
 If there are spare bits it would be very good to look at using some of them to specify the mode, because otherwise a SPR has to be used which will need to be set and unset.  This can get costly.
+
+# Fail-on-first
+
+Data-dependent fail-on-first has two distinct variants: one for LD/ST, the other for arithmetic operations (actually, CR-driven)
+
+* LD/ST ffirst treats the first LD/ST in a vector as an ordinary one.  Exceptions occur "as normal".  However for elements 1 and above, if an exception would occur, then VL is **truncated** to the previous element.
+* Data-driven (CR-driven) fail-on-first activates when Rc=1 or other CR-creating operation produces a result (including cmp).  Similar to branch, an analysis of the CR is performed and if the test succeeds, the vector operation terminates all element operations at and above the current one, and VL is truncated to the *previous* element.
+
+The CR-based data-driven fail-on-first is new and not found in ARM SVE or RVV. It is extremely useful for reducing instruction count, however requires speculative execution involving modifications of VL to get high performance implementations.
+
 
 # Notes about Swizzle
 
