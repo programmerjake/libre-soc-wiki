@@ -90,7 +90,8 @@ Some examples on different operation widths:
     255 * 2 = 510 # if we used the smaller width, we'd get 254. Wrong
 
     u16 + u16 = u8
-    256 + 2 = 2 # this is correct whether we use the larger or smaller width - hw can optimize narrowing addition
+    256 + 2 = 2 # this is correct whether we use the larger or smaller width
+                # aka hw can optimize narrowing addition
 
 # Notes about rounding, clamp and saturate
 
