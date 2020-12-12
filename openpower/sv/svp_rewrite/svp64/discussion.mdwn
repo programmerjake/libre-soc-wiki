@@ -102,9 +102,9 @@ If there are spare bits it would be very good to look at using some of them to s
 
 # Fail-on-first
 
-Data-dependent fail-on-first has two distinct variants: one for LD/ST, the other for arithmetic operations (actually, CR-driven)
+Data-dependent fail-on-first has two distinct variants: one for LD/ST, the other for arithmetic operations (actually, CR-driven).  Note in each case the assumption is that vector elements are required appear to be executed in sequential Program Order, element 0 being the first.
 
-* LD/ST ffirst treats the first LD/ST in a vector as an ordinary one.  Exceptions occur "as normal".  However for elements 1 and above, if an exception would occur, then VL is **truncated** to the previous element.
+* LD/ST ffirst treats the first LD/ST in a vector (element 0) as an ordinary one.  Exceptions occur "as normal".  However for elements 1 and above, if an exception would occur, then VL is **truncated** to the previous element.
 * Data-driven (CR-driven) fail-on-first activates when Rc=1 or other CR-creating operation produces a result (including cmp).  Similar to branch, an analysis of the CR is performed and if the test succeeds, the vector operation terminates all element operations at and above the current one, and VL is truncated to the *previous* element.
 
 The CR-based data-driven fail-on-first is new and not found in ARM SVE or RVV. It is extremely useful for reducing instruction count, however requires speculative execution involving modifications of VL to get high performance implementations.
