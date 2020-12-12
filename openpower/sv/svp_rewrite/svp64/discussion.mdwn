@@ -24,17 +24,21 @@ twin predication and twin elwidth overrides is extremely important to have to be
 
 something like:
 
-| 0   1 | 2 3 | 4 5 | 6    | 7  9 | 10 12 | 13 18 | 19  20 |
-| ----- | --- | --- | ---- | ---- | ----- | ----- | ------ |
-| subvl | sew | dew | ptyp | psrc | pdst  | vspec | zmode  |
+| 0   1 | 2 3 | 4 5 | 6    | 7  9 | 10 12 | 13 18 | 19 23 |
+| ----- | --- | --- | ---- | ---- | ----- | ----- | ----- |
+| subvl | sew | dew | ptyp | psrc | pdst  | vspec | mode  |
 
 * subvl - 1 to 4 scalar / vec2 / vec3 / vec4
 * sew / dew - DEFAULT / 8 / 16 /32 element width
 * ptyp - predication INT / CR
 * psrc / pdst - predicate mask selector and inversion
 * vspec - 3 bit src / dest scalar-vector extension
+* mode: 5 bits
+
+mode:
+
 * zmode: 2 bit src pred zero mode, dest pred zero mode
-* ffirst: 3 bit.  EN and CR index bit.
+* ffirst: 3 bit.  EN (and CR index bit 0-3, applicable when Rc=1)
 
 ## twin predication, CR based.
 
@@ -47,6 +51,14 @@ Twin CR predication could be done in two ways:
 
 With different bits being selectable (CR[0..3]) starting from the same CR makes some sense.
 
+# Fail-on-first
+
+Data-dependent fail-on-first has two distinct variants: one for LD/ST, the other for arithmetic operations (actually, CR-driven)
+
+* LD/ST ffirst treats the first LD/ST in a vector as an ordinary one.  Exceptions occur "as normal".  However for elements 1 and above, if an exception would occur, then VL is **truncated** to the previous element.
+* Data-driven (CR-driven) fail-on-first activates when Rc=1 or other CR-creating operation produces a result (including cmp).  Similar to branch, an analysis of the CR is performed and if the test succeeds, the vector operation terminates all element operations at and above the current one, and VL is truncated to the *previous* element.
+
+The CR-based data-driven fail-on-first is new and not found in ARM SVE or RVV. It is extremely useful for reducing instruction count, however requires speculative execution involving modifications of VL to get high performance implementations.
 
 # standard arith ops (single predication)
 
