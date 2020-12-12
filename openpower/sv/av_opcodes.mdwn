@@ -114,6 +114,27 @@ This should be separated to a horizontal multiply and a horizontal add. How a ho
 
 That has the issue that's it's a massive PITA to code, plus it's slow. Plus there's the "access to non-4-offset regs stalls". Even if there's no ready operation, it should be made easier and faster than a manual mapreduce loop.
 
+--
+
+As a mid-solution, 4-element gathers were discussed. 4 elements would also make them useful for pixel packing, not just the general vector gather. This is because OR and ADD are the same operation when bits don't overlap.
+
+    gather-add: d = a.x + a.y + a.z + a.w
+    gather-mul: d = a.x * a.y * a.z * a.w
+
+But can the SV loop increment the src reg # by 4? Hmm.
+
+The idea then leads to the opposite operation, a 1-to-4 bit scatter instruction. Like gather, it could be implemented with a normal loop, but it's faster for certain uses.
+
+    bit-scatter dest, src, bits
+
+    bit-scatter rd, rs, 8 # assuming source and dest are 32-bit wide
+    rd = (rs >> 0 * 8) & (2^8 - 1)
+    rd+1 = (rs >> 1 * 8) & (2^8 - 1)
+    rd+2 = (rs >> 2 * 8) & (2^8 - 1)
+    rd+3 = (rs >> 3 * 8) & (2^8 - 1)
+
+So at the start you have a RGBA packed pixel in one 32-bit register, at the end you have each channel separated into its own register, in the low bits, and ANDed so only the relevant bits are there.
+
 ## vec_mul*
 
 There should be both a same-width multiply and a widening multiply. Signed and unsigned versions. Optionally saturated.
