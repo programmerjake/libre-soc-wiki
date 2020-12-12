@@ -67,7 +67,10 @@ For 2 op (dest/src1/src2) the tag may be 3 bits: total 9 bits.  for 3 op (dest/s
 
 Note:
 
-* saturation is done on the result at the **source** elwidth
+* for saturation the operation is done at the **source** width
+  (this is different from normal elwidth overrides which
+   are done at the **dest** width)
+* saturation is done on the result at the **dest** elwidth
 * signed-saturation causes sign-extension from source to dest elwidths **after** saturation
 
 # Notes about rounding, clamp and saturate
