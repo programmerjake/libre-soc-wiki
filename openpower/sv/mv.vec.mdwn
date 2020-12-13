@@ -24,8 +24,21 @@ mv.destvec (leaving out elwidths and chop):
         regs[rd+i*SUBVL] = regs[rs+i]
 
 
-# Twin Predication, saturation, swizzle, and elwidth overrides
+## Twin Predication, saturation, swizzle, and elwidth overrides
 
 Note that mv is a twin-predicated operation, and is swizzlable.  This implies that from the vec2, vec3 or vec4, 1 to 8 bytes may be selected and re-ordered (XYZW), mixed with 0 and 1 constants, skipped by way of twin predicate pack and unpack, and a huge amount besides.
 
 Also saturation can be applied to individual elements, including the elements within a vec2/3/4.
+
+# mv.zip and unzip
+
+| 0.5 |6.10|11.15|16.20|21..25|26.....30|31|  name        |
+|-----|----|-----|-----|------|---------|--|--------------|
+| 19  | RT | RC  | RB  | RA/0 | XO[5:9] |Rc| mv.zip       |
+| 19  | RT | RC  | RS  | RA/0 | XO[5:9] |Rc| mv.unzip     |
+
+these are specialist operations that zip or unzip to/from multiple regs to/from one vector including vec2/3/4
+
+Certain combinations however are not legal, such as vec2 when RA!=0, becase RA nonzero is reserved for vec3.
+
+TBD
