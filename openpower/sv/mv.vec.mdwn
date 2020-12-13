@@ -37,8 +37,7 @@ Also saturation can be applied to individual elements, including the elements wi
 | 19  | RT | RC  | RB/0 | RA/0 | XO[5:9] |Rc| mv.zip       |
 | 19  | RT | RC  | RS/0 | RA/0 | XO[5:9] |Rc| mv.unzip     |
 
-these are specialist operations that zip or unzip to/from multiple regs to/from one vector including vec2/3/4
-
+these are specialist operations that zip or unzip to/from multiple regs to/from one vector including vec2/3/4. when SUBVL!=1 the vec2/3/4 is the contiguous unit that is copied (as if one register).  different elwidths result in zero-extension or truncation except if saturation is enabled, where signed/unsigned may be applied as usual.
 
 mv.zip, RA=0, RB=0
 
