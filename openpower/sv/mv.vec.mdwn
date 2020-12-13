@@ -7,4 +7,20 @@ Basic idea: mv operations where either the src or dest is specifically marked as
      mv.srcvec  r3, r4.vec2
      mv.destvec r2.vec4, r5
 
-TODO: evaluate whether this will fit with [[mv.swizzle]] involved as well.
+TODO: evaluate whether this will fit with [[mv.swizzle]] involved as well
+(yes it probably will)
+
+* when SUBVL=1 (disabled) the mv is a straight vector mv.
+* when SUBVL=2/3/4, mv.vec kicks in.  M=0 is mv.srcvec, M=1 is mv.destvec
+
+mv.srcvec (leaving out elwidths and chop):
+
+    for i in range(VL):
+        regs[rd+i] = regs[rs+i*SUBVL]
+
+mv.destvec (leaving out elwidths and chop):
+
+    for i in range(VL):
+        regs[rd+i*SUBVL] = regs[rs+i]
+
+
