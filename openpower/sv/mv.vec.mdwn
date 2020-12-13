@@ -32,13 +32,28 @@ Also saturation can be applied to individual elements, including the elements wi
 
 # mv.zip and unzip
 
-| 0.5 |6.10|11.15|16.20|21..25|26.....30|31|  name        |
-|-----|----|-----|-----|------|---------|--|--------------|
-| 19  | RT | RC  | RB  | RA/0 | XO[5:9] |Rc| mv.zip       |
-| 19  | RT | RC  | RS  | RA/0 | XO[5:9] |Rc| mv.unzip     |
+| 0.5 |6.10|11.15|16..20|21..25|26.....30|31|  name        |
+|-----|----|-----|------|------|---------|--|--------------|
+| 19  | RT | RC  | RB/0 | RA/0 | XO[5:9] |Rc| mv.zip       |
+| 19  | RT | RC  | RS/0 | RA/0 | XO[5:9] |Rc| mv.unzip     |
 
 these are specialist operations that zip or unzip to/from multiple regs to/from one vector including vec2/3/4
 
-Certain combinations however are not legal, such as vec2 when RA!=0, becase RA nonzero is reserved for vec3.
 
-TBD
+mv.zip, RA=0, RB=0
+
+    for i in range(VL):
+        regs[rt+i] = regs[rc+i]
+
+mv.zip, RA=0, RB!=0
+
+    for i in range(VL):
+        regs[rt+i*2  ] = regs[rb+i]
+        regs[rt+i*2+1] = regs[rc+i]
+
+mv.zip, RA!=0, RB!=0
+
+    for i in range(VL):
+        regs[rt+i*3  ] = regs[rb+i]
+        regs[rt+i*3+1] = regs[rc+i]
+        regs[rt+i*3+2] = regs[ra+i]
