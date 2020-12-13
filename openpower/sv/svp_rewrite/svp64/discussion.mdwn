@@ -138,3 +138,14 @@ if we really do need 2 bits spare then the complex encoder of swizzle could be d
 this means by default that 001 will always be in nonpredicated ops, which seems anomalous.  would 000 be better to indicate "no predication"?
 
 000 would indicate "the predicate is an immediate of all 1s" i.e. "no operation is masked out"
+
+# CR Vectorisation
+
+Some thoughts on this: the sensible (sane) number of CRs to have is 64.  A case could be made for having 128 but it is an awful lot.  64 CRs also has the advantage tgatvit is only 4x 64 bit registers on a context-switch.
+
+How to number them as vectors gets particularly interesting.  A case could be made for treating the 64 CRs as a square, and using CR numbering (CR0-7) to begin VL for-loop incrementing first by row and when rolling over to increment the column.  CR6 CR14 ... CR62 then CR7 CR15 ...
+
+When the SV prefix marks them with 2 bits, one of those could be used to indicate scalar, and the other to indicate whether the 3 bit CR number is to be treated as a horizontal vector (CR incrementing srraight by 1) or a vertical vector (incrementing by 8)
+
+When there are 3 bits it would be possible to indicate whether to begin from a position offset by 4 (middle of matrix, edge of matrix).
+
