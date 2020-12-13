@@ -1,8 +1,12 @@
-# move to/from vec2/3/4
+# Vector mv operations
+
+In the SIMD VSX set, section 6.8.1 and 6.8.2 p254 of v3.0B has a series of pack and unpack operations. This page covers those and more.  [[svp64]] privides the Vector Context to also add saturation as well as predication.
 
 See <https://bugs.libre-soc.org/show_bug.cgi?id=230#c30>
 
-Basic idea: mv operations where either the src or dest is specifically marked as having SUBVL apply to it, but, crucially, the *other* argument does *not*.
+# move to/from vec2/3/4
+
+Basic idea: mv operations where either the src or dest is specifically marked as having SUBVL apply to it, but, crucially, the *other* argument does *not*. Note that this is highly unusual in SimpleV, which normally only allows SUBVL to be applied uniformly across all dest and all src.
 
      mv.srcvec  r3, r4.vec2
      mv.destvec r2.vec4, r5
