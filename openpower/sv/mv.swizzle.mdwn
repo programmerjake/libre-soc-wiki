@@ -4,13 +4,13 @@ TODO: evaluate whether this will fit with [[mv.vec]]
 
 # Format
 
-| 0..5 |6..10|11..15|16.20|21.....25|26.....30|31|  name        |
-|------|-----|------|-----|---------|---------|--|--------------|
-| 19   | RT  | RA   |     | XO[0:4] | XO[5:9] |Rc| XL-Form      |
-| 19   | RT  | RA   |imm  | imm     | 01 M im |0 | mv.vec.swiz  |
-| 19   | RT  | RA   |imm  | imm     | 01 M im |1 | fmv.vec.swiz |
-| 19   | RT  | RA   |imm  | imm     | 11 0 im |0 | mv.swiz      |
-| 19   | RT  | RA   |imm  | imm     | 11 0 im |1 | fmv.swiz     |
+| 0.5 |6.10|11.15|16.20|21.....25|26.....30|31|  name        |
+|-----|----|-----|-----|---------|---------|--|--------------|
+| 19  | RT | RA  |     | XO[0:4] | XO[5:9] |Rc| XL-Form      |
+| 19  | RT | RA  |imm  | imm     | 01 M im |0 | mv.vec.swiz  |
+| 19  | RT | RA  |imm  | imm     | 01 M im |1 | fmv.vec.swiz |
+| 19  | RT | RA  |imm  | imm     | 11 0 im |0 | mv.swiz      |
+| 19  | RT | RA  |imm  | imm     | 11 0 im |1 | fmv.swiz     |
 
 this gives a 12 bit immediate across bits 16 to 25 and 29-30.
 
