@@ -22,4 +22,4 @@ See <https://bugs.libre-soc.org/show_bug.cgi?id=213#c83>
 Register allocation associated with this DM layout: Vectors may *only* be allocated to Vector FPs if RA%4 == RB%4
 == RT%4 and all reg numbers are over 32.  otherwise they are allocated
 to *scalar* FUs which has significantly less computational resources
-but far greater crossbar routing.
+but far greater crossbar routing.  This allows 4R1W regfiles to be used where normally ultra-costly 12R10W would be required.
