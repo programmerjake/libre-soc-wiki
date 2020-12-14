@@ -101,7 +101,7 @@ def same01(opcode, ops):
         return 0
 
 # Registers representable in a made-up 3-bit mapping.
-cregs2 = { 1, 2, 3, 4, 5, 6, 7, 31 }
+cregs2 = { 9, 1, 2, 3, 31, 10, 30, 4 }
 
 # Return true iff mop is a regular register present in cregs2
 def bin2regs3(mop):
