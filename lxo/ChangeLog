@@ -1,3 +1,14 @@
+2020-12-13
+
+	* 532: Questioned some bullets under 16-imm opcodes.  Implemented
+	condition register and system opcodes, 16-imm opcodes, extended
+	load and store to cover 16-imm modes, condition bit expression
+	parsing and finally bc 16-imm and bclr 10- and 16-bit opcodes.
+	Tested a bit by visual inspection, introduced logic to backtrack
+	into 32-bit and count such pairs as 10-bit nop + 16-imm insn,
+	followed by 32-bit.  Fixed size estimation: count[2] was still
+	counted as 16+16-imm, rather than a single 16-imm.  (5:30)
+
 2020-12-06
 
 	* 532: Adjusted the logic in comp16-v1-skel.py for 16-bit 16-imm

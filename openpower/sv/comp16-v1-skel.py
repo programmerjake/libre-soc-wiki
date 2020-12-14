@@ -80,9 +80,12 @@ xbrt = '(?P<branch>[0-9a-f]+)(?: <.*>)?'
 # offset is like immediate, but followed by a parenthesized basereg
 xoff = '(?P<offset>-?[0-9]+)\((?P<basereg>r[0-9]+)\)'
 
+# creg is the cr, cond names one of its bits
+crbit = '(?:4\*(?P<creg>cr[0-7])\+)?(?P<cond>gt|lt|eq|so)'
+
 # Combine the above into alternatives, to easily classify operands by
 # pattern matching.
-opkind = re.compile('|'.join([xreg, ximm, xbrt, xoff]))
+opkind = re.compile('|'.join([xreg, ximm, xbrt, xoff, crbit]))
 
 # Pre-parse and classify op into a mop, short for mapped op.
 def mapop(op):
@@ -99,7 +102,12 @@ def mapop(op):
                         - int (addr, 16)).bit_length (), op, addr)
     elif match['offset'] is not None:
         op = ('ofst', mapop(match['offset']), mapop(match['basereg']), op)
-    # FIXME: cr exprs not handled
+    elif match['cond'] is not None:
+        if match['creg'] is None:
+            creg = 'cr0'
+        else:
+            creg = match['creg']
+        op = ('crbit', mapop(creg), ('cond', match['cond']), op)
     else:
         raise "unrecognized operand kind"
 
@@ -117,6 +125,8 @@ def immp(mop):
     return opclass(mop) in { 'imm', 'pcoff' }
 def rofp(mop):
     return opclass(mop) is   'ofst'
+def crbt(mop):
+    return opclass(mop) is   'crbit'
 
 # Some more accessors.
 
@@ -150,6 +160,18 @@ def rofset(mop):
         return mop[1]
     raise "operand is not an offset"
 
+# Return the register sub-mop if mop fits crbit.
+def crbtreg(mop):
+    if crbt(mop):
+        return mop[1]
+    raise "operand is not a condition register bit"
+
+# Return the cond bit name if mop fits crbit.
+def crbtcnd(mop):
+    if crbt(mop):
+        return mop[2]
+    raise "operand is not a condition register bit"
+
 # Following are predicates to be used in copcond, to tell the mode in
 # which opcode with ops as operands is to be represented.
 
@@ -164,6 +186,7 @@ cregs2 = { 2, 3, 4, 5 }
 # Use the same sets for FP for now.
 cfregs3 = cregs3
 cfregs2 = cregs2
+ccregs2 = { 0, 1, 2, 3 }
 
 # Return true iff mop is a regular register present in cregs2
 def rcregs2(mop):
@@ -181,6 +204,9 @@ def rcfregs2(mop):
 def rcfregs3(mop):
     return opclass(mop) is 'fr' and regno(mop) in cfregs3
 
+# Return true iff mop is a condition register present in ccregs2
+def rccregs2(mop):
+    return opclass(mop) is 'cr' and regno(mop) in ccregs2
 
 # Return true iff mop is an immediate of at most 8 bits.
 def imm8(mop):
@@ -201,7 +227,7 @@ def bin2regs3imm8(opcode, ops):
 # Recognize do-nothing insns, particularly ori r0,r0,0.
 def maybenop(opcode, ops):
     if opcode in ['ori', 'addi'] and regno(ops[0]) is regno(ops[1]) \
-       and ops[0][0] is 'r' and regno(ops[0]) is 0 \
+       and opclass(ops[0]) is 'r' and regno(ops[0]) is 0 \
        and imm8(ops[2]) and immbits(ops[2]) is 0:
         return 3
     return 0
@@ -216,14 +242,28 @@ def uncondbranch(opcode, ops):
         return 1
     return 0
 
-# 2 bits for RT and RA.  RB is r0 in 10-bit, and 3 bits in 16-bit
-# ??? there's a general assumption that, if an insn can be represented
-# in 10-bits, then it can also be represented in 10 bits.
-# This will not be the case if cregs3 can't represent register 0.
+# 2 bits for RT and RA.  RB is r0 in 10-bit, and 3 bits in 16-bit ???
+# there's a general assumption that, if an insn can be represented in
+# 10-bits, then it can also be represented in 16 bits.  This will not
+# be the case if cregs3 can't represent register 0.  For
+# register+offset addresses, we support 16-imm stdi, fstdi, with 3-bit
+# immediates left-shifted by 3; stwi, fstsi, with 2-bit immediates
+# left-shifted by 2; stdspi for 6-bit immediate left-shifted by 3
+# biased by -256, and stwspi for 6-bit immediate left-shifted by 2
+# also biased by -256.  fstdi and fstsi store in memory a
+# floating-point register, the others do a general-purpose register.
 def storexaddr(opcode, ops):
     # Canonicalize offset in ops[1] to reg, imm
     if rofp(ops[1]):
         ops = (ops[0], rofreg(ops[1]), rofset(ops[1]))
+        shift = memshifts[opcode[-1]]
+        if immval(ops[2]) & ((1 << shift) - 1) is not 0:
+            return 0
+        if rcregs3(ops[1]) and immbits(ops[2]) <= shift + 3:
+            return 2
+        if regno(ops[1]) is 1 and opclass(ops[0]) is not 'fr' \
+           and (immval(ops[2]) - 256).bit_length() <= shift + 6:
+            return 2
         # Require offset 0 for compression of non-indexed form.
         if not regp(ops[2]):
             return 0
@@ -246,14 +286,30 @@ def frstorex(opcode, ops):
         return storexaddr(opcode, ops)
     return 0
 
+memshifts = { 'd': 3, 'w': 2, 'z': 2, 's': 2 }
+
 # 3 bits for RA, 3 bits for RB, 3 bits for RT for 16-bit.  for 10-bit,
 # RB and RT must match.  ??? It's not clear what that means WRT
 # register mapping of different kinds of registers, e.g. when RT is a
 # floating-point register..
+# For register+offset addresses, we support 16-imm ldi, fldi, with
+# 3-bit immediates left-shifted by 3; lwi, flsi, with 2-bit immediates
+# left-shifted by 2; ldspi for 6-bit immediate left-shifted by 3
+# biased by -256, and lwspi for 6-bit immediate left-shifted by 2 also
+# biased by -256.  fldi and flsi load to floating-point registers, the
+# others load to general-purpose registers.
 def loadxaddr(opcode, ops):
     if rofp(ops[1]):
         ops = (ops[0], rofreg(ops[1]), rofset(ops[1]))
-        # Require offset 0 for compression of non-indexed form.
+        shift = memshifts[opcode[-1]]
+        if immval(ops[2]) & ((1 << shift) - 1) is not 0:
+            return 0
+        if rcregs3(ops[1]) and immbits(ops[2]) <= shift + 3:
+            return 2
+        if regno(ops[1]) is 1 and opclass(ops[0]) is not 'fr' \
+           and (immval(ops[2]) - 256).bit_length() <= shift + 6:
+            return 2
+        # Otherwise require offset 0 for compression of non-indexed form.
         if not regp(ops[2]):
             return 0
     if rcregs3(ops[1]) and rcregs3(ops[2]):
@@ -389,16 +445,103 @@ def cnvfp16ops(opcode, ops):
         return 1
     return 0
 
+# Move between CRs.  3 bits for destination, 3 bits for source in
+# 16-bit mode.  That covers all possibilities.  For 10-bit mode, only
+# 2 bits for destination.
+def mcrfop(opcode, ops):
+    if rccregs2(ops[0]):
+        return 3
+    return 1
+# Logical ops between two CRs into one.  2 bits for destination, that
+# must coincide with one of the inputs, 3 bits for the other input.
+# 16-bit only.
+def crops(opcode, ops):
+    if rccregs2(ops[0]) and regno(ops[0]) is regno(ops[1]):
+        return 1
+    return 0
+
+# 3 bits for general-purpose register; immediate identifies the
+# special purpose register to move to: 8 for lr, 9 for ctr.  16-bit
+# only.  mtspr imm,rN moves from rN to the spr; mfspr rN,imm moves
+# from spr to rN.
+def mtsprops(opcode, ops):
+    if immval(ops[0]) in (8, 9) and rcregs3(ops[1]):
+        return 1
+    return 0
+def mfsprops(opcode, ops):
+    if immval(ops[1]) in (8, 9) and rcregs3(ops[0]):
+        return 1
+    return 0
+
+# 3 bits for nonzero general-purpose register; the immediate is a
+# per-CR mask (8-bits).  mtcr rN is mtcrf 0xFF, rN.  mfcr rN is a raw
+# opcode, not an alias.
+def mtcrfops(opcode, ops):
+    if immval(ops[0]) is 255 and rcregs3(ops[1]) and regno(ops[1]) is not 0:
+        return 1
+    return 0
+def mfcrops(opcode, ops):
+    if rcregs3(ops[0]) and regno(ops[0]) is not 0:
+        return 1
+    return 0
+
+# 3 bits for destination and source register, must be the same.  Full
+# shift range fits.  16-imm format.
+def shiftops(opcode, ops):
+    if rcregs3(ops[0]) and regno(ops[0]) is regno(ops[1]):
+        return 2
+    return 0
+
+# For 16-imm 'addis' and 'addi', we have 3 bits (nonzero) for the
+# destination register, source register is implied 0, the immediate
+# must either fit in signed 5-bit, left-shifted by 3, or in signed
+# 7-bit without shift.  ??? That seems backwards.
+def addiops(opcode, ops):
+    if rcregs3(ops[0]) and regno(ops[0]) is not 0 \
+       and regno(ops[1]) is 0 and imm8(ops[2]) \
+       and immbits(ops[2]) <= 8 \
+       and ((immval(ops[2]) & 7) is 0 or immbits(ops[2]) <= 7):
+        return 2
+    return maybenop(opcode, ops)
+
+# cmpdi and cmpwi are aliases to uncompressed cmp CR#, L, RA, imm16,
+# CR# being the target condition register, L being set for d rather
+# than w.  In 16-imm, CR# must be zero, RA must fit in 3 bits, and the
+# immediate must be 6 bits signed.
+def cmpiops(opcode, ops):
+    if regno(ops[0]) is 0 and immval(ops[1]) in (0,1) \
+       and rcregs3(ops[2]) and immbits(ops[3]) <= 6:
+        return 2
+    return 0
+
+# 16-imm bc, with or without LK, uses 3 bits for BI (CR0 and CR1 only),
+# and 1 bit for BO1 (to tell BO 12 from negated 4).
+def bcops(opcode, ops):
+    if immval(ops[0]) in (4,12) and regno(crbtreg(ops[1])) <= 1 \
+       and immbits(ops[2]) <= 8:
+        return 2
+    return 0
+
+# 2 bits for BI and 3 bits for BO in 10-bit encoding; one extra bit
+# for each in 16-bit.
+def bclrops(opcode, ops):
+    if immval(ops[0]) <= 15 and regno(crbtreg(ops[1])) <= 1 \
+       and immbits(ops[2]) is 0:
+        if immval(ops[0]) <= 7 and regno(crbtreg(ops[1])) is 0:
+            return 3
+        return 1
+    return 0
+
 # Map opcodes that might be compressed to a function that returns the
 # best potential encoding kind for the insn, per the numeric coding
 # below.
 copcond = {
-    'ori': maybenop, 'addi': maybenop,
+    'ori': maybenop,
     # 'attn': binutils won't ever print this
     'b': uncondbranch, 'bl': uncondbranch,
-    # 'bc', 'bcl': only in 16-imm mode, not implemented yet
-    # 'bclr', 'bclrl': available in 10- or 16-bit, not implemented yet
-    # 16-imm opcodes not implemented yet.
+    'bc': bcops, 'bcl': bcops,
+    'bclr': bclrops, 'bclrl': bclrops,
+    # Stores and loads, including 16-imm ones
     'stdx': rstorex, 'stwx': rstorex,
     'std': rstorex, 'stw': rstorex, # only offset zero
     'stfdx': frstorex, 'stfsx': frstorex,
@@ -433,25 +576,27 @@ copcond = {
     'fcfidu': cnvfp16ops, 'fctiduz': cnvfp16ops,
     'fcfids': cnvfp16ops, 'fctiwz': cnvfp16ops,
     'fcfidus': cnvfp16ops, 'fctiwuz': cnvfp16ops,
-    # Not implemented yet:
-    # 10- and 16-bit:
-    # 'mcrf':
-    # 'cbank':
-    # 16-bit only:
-    # 'crnor':
-    # 'crandc':
-    # 'crxor':
-    # 'crnand':
-    # 'crand':
-    # 'creqv':
-    # 'crorc':
-    # 'cror':
-    # 'mtlr':
-    # 'mtctr':
-    # 'mflr':
-    # 'mfctr':
-    # 'mtcr':
-    # 'mfcr':
+    # Condition register opcodes.
+    'mcrf': mcrfop,
+    'crnor': crops,
+    'crandc': crops,
+    'crxor': crops,
+    'crnand': crops,
+    'crand': crops,
+    'creqv': crops,
+    'crorc': crops,
+    'cror': crops,
+    # System opcodes.
+    # 'cbank' is not a ppc opcode, not handled
+    'mtspr': mtsprops, # raw opcode for 'mtlr', 'mtctr'
+    'mfspr': mfsprops, # raw opcode for 'mflr', 'mfctr'
+    'mtcrf': mtcrfops, # raw opcode for 'mtcr'
+    'mfcr': mfcrops,
+    # 16-imm opcodes.
+    'sradi.': shiftops, 'srawi.': shiftops,
+    'addi': addiops,
+    'cmpi': cmpiops, # raw opcode for 'cmpwi', 'cmpdi'
+    # 'setvli', 'setmvli' are not ppc opcodes, not handled.
 }
 
 # We have 4 kinds of insns:
@@ -468,7 +613,13 @@ copcond = {
 #   tentatively introduced before insns that can be 16-imm encoded.
 # count[6] counts extra 16-bit nop-switches back to uncompressed,
 #   introduced after a 16-imm insn.
-count = [0,0,0,0,0,0,0]
+# count[7] counts pairs of 10-bit nop-switches and 16-imm insns
+#   that turned out to be followed by 32-bit insns.  We assume
+#   a compressor would backtrack the pair into as a single 32-bit
+#   insn, so as to avoid a switch-back nop.  The nop and 16-imm
+#   insns remain counted as such, so we count these occurrences
+#   here.
+count = [0,0,0,0,0,0,0,0]
 # Default comments for the insn kinds above.
 comments = ['', '\t; 16-bit', '\t; 16-imm', '\t; 10-bit']
 
@@ -551,10 +702,15 @@ for line in sys.stdin:
         # After a 16-imm insn, we can only switch back to uncompressed
         # mode with a 16-bit nop.
         if nexti is 0:
-            print('\t\tc.nop\t\t; forced switch back to uncompressed mode')
-            count[6] += 1
-            previ = curi
-            curi = 1
+            if previ is 0:
+                print('\t\t\t\t; backtracking pair above to 32-bit')
+                count[7] += 1
+                curi = 0
+            else:
+                print('\t\tc.nop\t\t; forced switch back to uncompressed mode')
+                count[6] += 1
+                previ = curi
+                curi = 1
         elif nexti is 3:
             nexti = 1
     elif curi is 3:
@@ -580,8 +736,8 @@ for line in sys.stdin:
     curi = nexti
 
 transition_bytes = 2 * (count[4] + count[5] + count[6])
-compressed_bytes = 2 * (count[1] + count[3])
-uncompressed_bytes = 4 * (count[0] + count[2])
+compressed_bytes = 2 * (count[1] + count[2] + count[3])
+uncompressed_bytes = 4 * count[0]
 total_bytes = transition_bytes + compressed_bytes + uncompressed_bytes
 original_bytes = 2 * compressed_bytes + uncompressed_bytes
 
@@ -594,6 +750,7 @@ print('10-bit compressed instructions: %i' % count[3])
 print('10-bit mode-switching nops: %i' % count[4])
 print('10-bit mode-switching nops for imm-16: %i' % count[5])
 print('16-bit mode-switching nops after imm-16: %i' % count[6])
+print('10-bit nop+16-imm pairs above, backtracked to 32-bit: %i' % count[7])
 print('Compressed size estimate: %i' % total_bytes)
 print('Original size: %i' % original_bytes)
 print('Compressed/original ratio: %f' % (total_bytes / original_bytes))
