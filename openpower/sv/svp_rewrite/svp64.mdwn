@@ -208,6 +208,7 @@ Standard PowerISA floating-point and VSX registers are aliased to some of the SV
 When vectorized, the CR inputs/outputs are read/written to 4-bit CR fields
 starting from CR6 and incrementing from there. If CR63 is reached, the next CR
 field used wraps around to CR0, then incrementing from there.
+(see [[discussion]].  an alternative scheme is described there)
 
 CR6 was chosen to balance avoiding needing to save CR2-CR4 (which are
 callee-saved) just to use SV vectors with VL <= 61 as well as having the first
