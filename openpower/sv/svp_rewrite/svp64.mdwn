@@ -92,6 +92,23 @@ SV Registers are numbered using the notation `SV[F]R<N>_<M>` where `<N>` is a de
 
 ## Integer Registers
 
+setvli ..., VL=7
+add r20, r25, r30, elwidth=64, subvl=1
+
+where r20, r25, and r30 are standard OpenPower register names.
+Those names correspond to SVR20_00, SVR25_00, and SVR30_00.
+
+pseudocode:
+const STD_TO_SV_SHIFT = 2; // gets bigger as reg files expand to 256, 512,
+... registers
+
+VL=7 // setvli (omitting maxvl here)
+
+for(i=0;i<VL;i++) {
+    regs[(20 << STD_TO_SV_SHIFT) + i] = regs[(25 << STD_TO_SV_SHIFT) + i]
+        + regs[(30 << STD_TO_SV_SHIFT) + i];
+}
+
 Standard PowerISA Integer registers are aliased to some of the SV integer registers:
 
 | Integer<br/>Register | SV Integer<br/>Register | Integer<br/>Register | SV Integer<br/>Register | Integer<br/>Register | SV Integer<br/>Register | Integer<br/>Register | SV Integer<br/>Register |
