@@ -26,6 +26,13 @@ Side-effects:
 
 * mtcrweird when RA=0 is a means to set or clear arbitrary CR bits from immediates
 
+(Twin) Predication interactions:
+
+* INT twin predication with zeroing is a way to copy an integer into CRs without necessarily needing the INT register (RA).  if it is, it is effectively ANDed (or negate-and-ANDed) with the INT Predicate
+* CR twin predication with zeroing is likewise a way to interact with the incoming integer
+
+this gets particularly powerful if data-dependent predication is also enabled.
+
 # Instruction form and pseudocode
 
     | 0-5 | 6-10  | 11 | 12-15 | 16-18 | 19-20 | 21-30 | 31 |
