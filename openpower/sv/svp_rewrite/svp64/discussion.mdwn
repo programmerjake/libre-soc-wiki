@@ -174,3 +174,14 @@ When there are 3 bits it would be possible to indicate whether to begin from a p
 
 Note: considerable care needs to be taken when putting these horiz/vertical CRs through the Dependency Matrices
 
+     for i in range(VL)
+         y = i % 8
+         x = i // 8
+         if verticalmode:
+             CRINDEX = y*8 + x
+         else:
+             CRINDEX = i
+      CR[BA + CRINDEX] = ...
+
+
+ 
