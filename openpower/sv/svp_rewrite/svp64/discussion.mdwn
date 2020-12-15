@@ -178,10 +178,10 @@ Note: considerable care needs to be taken when putting these horiz/vertical CRs 
          y = i % 8
          x = i // 8
          if verticalmode:
-             CRINDEX = y*8 + x
+             CRINDEX = BA + y*8 + x
          else:
-             CRINDEX = i
-      CR[BA + CRINDEX] = ...
+             CRINDEX = BA*8 i
+         CR[CRINDEX] = ...
 
 
  
