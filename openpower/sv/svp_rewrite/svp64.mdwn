@@ -39,18 +39,13 @@ Integer based predication.  Twin predication uses the same encoding thus allowin
 | Value | Mnemonic          | Description                                            |
 |-------|-------------------|--------------------------------------------------------|
 | 0000  | -                 | Reserved (causes an illegal instruction trap)          |
-| 0001  | ALWAYS (implicit) | Operation is not masked  see [[discussion]]                              |
+| 0001  | ALWAYS (implicit) | Operation is not masked  see [[discussion]]            |
 | 0010  | R3                | Element `i` is enabled if `R3 & (1 << i)` is non-zero  |
 | 0011  | ~R3               | Element `i` is enabled if `R3 & (1 << i)` is zero      |
 | 0100  | R10               | Element `i` is enabled if `R10 & (1 << i)` is non-zero |
 | 0101  | ~R10              | Element `i` is enabled if `R10 & (1 << i)` is zero     |
 | 0110  | R30               | Element `i` is enabled if `R30 & (1 << i)` is non-zero |
 | 0111  | ~R30              | Element `i` is enabled if `R30 & (1 << i)` is zero     |
-
-CR based predication.  TODO: select alternate CR for twin predication? see [[discussion]]  Overlap of the two CR based predicates must be taken into account, so the starting point for one of them must be suitably high, or accept that for twin predication VL must not exceed the range where overlap will occur, *or* that they use the same starting point but select different *bits* of the same CRs
-
-| Value | Mnemonic          | Description                                            |
-|-------|-------------------|--------------------------------------------------------|
 | 1000  | lt                | Element `i` is enabled if `CR[6+i].LT` is set          |
 | 1001  | nl/ge             | Element `i` is enabled if `CR[6+i].LT` is clear        |
 | 1010  | gt                | Element `i` is enabled if `CR[6+i].GT` is set          |
@@ -59,6 +54,9 @@ CR based predication.  TODO: select alternate CR for twin predication? see [[dis
 | 1101  | ne                | Element `i` is enabled if `CR[6+i].EQ` is clear        |
 | 1110  | so/un             | Element `i` is enabled if `CR[6+i].FU` is set          |
 | 1111  | ns/nu             | Element `i` is enabled if `CR[6+i].FU` is clear        |
+
+CR based predication.  TODO: select alternate CR for twin predication? see [[discussion]]  Overlap of the two CR based predicates must be taken into account, so the starting point for one of them must be suitably high, or accept that for twin predication VL must not exceed the range where overlap will occur, *or* that they use the same starting point but select different *bits* of the same CRs
+
 
 ## Prefix Opcode Map (64-bit instruction encoding) (prefix bits 6:11)
 
@@ -92,22 +90,25 @@ SV Registers are numbered using the notation `SV[F]R<N>_<M>` where `<N>` is a de
 
 ## Integer Registers
 
+```
 setvli ..., VL=7
 add r20, r25, r30, elwidth=64, subvl=1
+```
 
-where r20, r25, and r30 are standard OpenPower register names.
-Those names correspond to SVR20_00, SVR25_00, and SVR30_00.
+where `r20`, `r25`, and `r30` are standard OpenPower register names.
+Those names correspond to `SVR20_00`, `SVR25_00`, and `SVR30_00`.
 
 pseudocode:
-const STD_TO_SV_SHIFT = 2; // gets bigger as reg files expand to 256, 512,
-... registers
+```C++
+const size_t STD_TO_SV_SHIFT = 2; // gets bigger as reg files expand to 256, 512, ... registers
 
-VL=7 // setvli (omitting maxvl here)
+VL = 7; // setvli (omitting maxvl here)
 
-for(i=0;i<VL;i++) {
+for(size_t i = 0; i < VL; i++) {
     regs[(20 << STD_TO_SV_SHIFT) + i] = regs[(25 << STD_TO_SV_SHIFT) + i]
         + regs[(30 << STD_TO_SV_SHIFT) + i];
 }
+```
 
 Standard PowerISA Integer registers are aliased to some of the SV integer registers:
 
@@ -232,6 +233,49 @@ callee-saved) just to use SV vectors with VL <= 61 as well as having the first
 few used CR fields readily accessible to standard CR instructions and branches.
 Additionally, CR6 is used as the implicit result of a OpenPower ISA v3.1
 standard vector instruction with Rc=1.
+
+## Alternative CR Vectorization Scheme
+
+There are 3 new SPRs for holding CRs: CR_EXT1, CR_EXT2, and CR_EXT3.
+
+Arrange the 64 SV CRs similarly to the way the 128 integer registers are arranged:
+
+| CR<br/>Register | SPR<br/>Field  | SV CR<br/>Register | CR<br/>Register | SPR<br/>Field  | SV CR<br/>Register |
+|-----------------|----------------|--------------------|-----------------|----------------|--------------------|
+| CR[0]           | CR[32:35]      | SVCR0_000          | CR[4]           | CR[48:51]      | SVCR4_000          |
+|                 | CR_EXT1[32:35] | SVCR0_001          |                 | CR_EXT1[48:51] | SVCR4_001          |
+|                 | CR_EXT2[32:35] | SVCR0_010          |                 | CR_EXT2[48:51] | SVCR4_010          |
+|                 | CR_EXT3[32:35] | SVCR0_011          |                 | CR_EXT3[48:51] | SVCR4_011          |
+| *CR[-8]*        | CR[0:3]        | SVCR0_100          | *CR[-4]*        | CR[16:19]      | SVCR4_100          |
+|                 | CR_EXT1[0:3]   | SVCR0_101          |                 | CR_EXT1[16:19] | SVCR4_101          |
+|                 | CR_EXT2[0:3]   | SVCR0_110          |                 | CR_EXT2[16:19] | SVCR4_110          |
+|                 | CR_EXT3[0:3]   | SVCR0_111          |                 | CR_EXT3[16:19] | SVCR4_111          |
+| CR[1]           | CR[36:39]      | SVCR1_000          | CR[5]           | CR[52:55]      | SVCR5_000          |
+|                 | CR_EXT1[36:39] | SVCR1_001          |                 | CR_EXT1[52:55] | SVCR5_001          |
+|                 | CR_EXT2[36:39] | SVCR1_010          |                 | CR_EXT2[52:55] | SVCR5_010          |
+|                 | CR_EXT3[36:39] | SVCR1_011          |                 | CR_EXT3[52:55] | SVCR5_011          |
+| *CR[-7]*        | CR[4:7]        | SVCR1_100          | *CR[-3]*        | CR[20:23]      | SVCR5_100          |
+|                 | CR_EXT1[4:7]   | SVCR1_101          |                 | CR_EXT1[20:23] | SVCR5_101          |
+|                 | CR_EXT2[4:7]   | SVCR1_110          |                 | CR_EXT2[20:23] | SVCR5_110          |
+|                 | CR_EXT3[4:7]   | SVCR1_111          |                 | CR_EXT3[20:23] | SVCR5_111          |
+| CR[2]           | CR[40:43]      | SVCR2_000          | CR[6]           | CR[56:59]      | SVCR6_000          |
+|                 | CR_EXT1[40:43] | SVCR2_001          |                 | CR_EXT1[56:59] | SVCR6_001          |
+|                 | CR_EXT2[40:43] | SVCR2_010          |                 | CR_EXT2[56:59] | SVCR6_010          |
+|                 | CR_EXT3[40:43] | SVCR2_011          |                 | CR_EXT3[56:59] | SVCR6_011          |
+| *CR[-6]*        | CR[8:11]       | SVCR2_100          | *CR[-2]*        | CR[24:27]      | SVCR6_100          |
+|                 | CR_EXT1[8:11]  | SVCR2_101          |                 | CR_EXT1[24:27] | SVCR6_101          |
+|                 | CR_EXT2[8:11]  | SVCR2_110          |                 | CR_EXT2[24:27] | SVCR6_110          |
+|                 | CR_EXT3[8:11]  | SVCR2_111          |                 | CR_EXT3[24:27] | SVCR6_111          |
+| CR[3]           | CR[44:47]      | SVCR3_000          | CR[7]           | CR[60:63]      | SVCR7_000          |
+|                 | CR_EXT1[44:47] | SVCR3_001          |                 | CR_EXT1[60:63] | SVCR7_001          |
+|                 | CR_EXT2[44:47] | SVCR3_010          |                 | CR_EXT2[60:63] | SVCR7_010          |
+|                 | CR_EXT3[44:47] | SVCR3_011          |                 | CR_EXT3[60:63] | SVCR7_011          |
+| *CR[-5]*        | CR[12:15]      | SVCR3_100          | *CR[-1]*        | CR[28:31]      | SVCR7_100          |
+|                 | CR_EXT1[12:15] | SVCR3_101          |                 | CR_EXT1[28:31] | SVCR7_101          |
+|                 | CR_EXT2[12:15] | SVCR3_110          |                 | CR_EXT2[28:31] | SVCR7_110          |
+|                 | CR_EXT3[12:15] | SVCR3_111          |                 | CR_EXT3[28:31] | SVCR7_111          |
+
+Note: CR[-8] through CR[-1] are not part of OpenPower v3.1, they are the MSB half of the 64-bit CR SPR.
 
 # Register Profiles
 
