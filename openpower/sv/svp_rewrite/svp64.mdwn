@@ -102,6 +102,30 @@ CR based predication.  TODO: select alternate CR for twin predication? see [[dis
 
 SV Registers are numbered using the notation `SV[F]R<N>_<M>` where `<N>` is a decimal integer and `<M>` is a binary integer. Two integers are used to enable future register expansions to add more registers by appending more LSB bits to `<M>`.
 
+for all SV[F|C]R<N>_<M> registers, the N is the
+upper bits in decimal and the M is the lower bits in binary, so SVR5_01 is
+SV int register (5 << 2) + 0b01, and SVCR6_011 is SV cond register (6 << 3)
++ 0b011
+
+example
+
+a vectorized 32-bit add:
+
+add SVR3_01, SVR6_10, SVR10_00, elwidth=32, subvl=1, mask=lt
+
+does the following:
+
+    const size_t start_cr = (6 << 3) + 0b000; // starting at SVCR6_000
+    // pretend for the moment that type-punning actually works in C/C++
+    uint32_t *rt = (uint32_t *)&regs[(3 << 2) + 0b01]; // SVR3_01
+    uint32_t *ra = (uint32_t *)&regs[(6 << 2) + 0b10]; // SVR6_10
+    uint32_t *rb = (uint32_t *)&regs[(10 << 2) + 0b00]; // SVR10_00
+    for(size_t i = 0; i < VL; i++) {
+    if(CRs[(start_cr + i) % 64].lt) {
+            rt[i] = ra[i] + rb[i];
+        }
+    }
+
 ## Integer Registers
 
 ```
