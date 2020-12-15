@@ -99,15 +99,16 @@ where `r20`, `r25`, and `r30` are standard OpenPower register names.
 Those names correspond to `SVR20_00`, `SVR25_00`, and `SVR30_00`.
 
 pseudocode:
+
 ```C++
-const size_t STD_TO_SV_SHIFT = 2; // gets bigger as reg files expand to 256, 512, ... registers
+    const size_t STD_TO_SV_SHIFT = 2; // gets bigger as reg files expand to 256, 512, ... registers
 
-VL = 7; // setvli (omitting maxvl here)
+    VL = 7; // setvli (omitting maxvl here)
 
-for(size_t i = 0; i < VL; i++) {
-    regs[(20 << STD_TO_SV_SHIFT) + i] = regs[(25 << STD_TO_SV_SHIFT) + i]
-        + regs[(30 << STD_TO_SV_SHIFT) + i];
-}
+    for(size_t i = 0; i < VL; i++) {
+        regs[(20 << STD_TO_SV_SHIFT) + i] = regs[(25 << STD_TO_SV_SHIFT) + i]
+            + regs[(30 << STD_TO_SV_SHIFT) + i];
+    }
 ```
 
 Standard PowerISA Integer registers are aliased to some of the SV integer registers:
