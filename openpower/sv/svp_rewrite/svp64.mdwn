@@ -275,6 +275,9 @@ standard vector instruction with Rc=1.
 
 ## Alternative CR Vectorization Scheme
 
+CR[i] is the notation used by the OpenPower spec to refer to CR field #i,
+so FP instructions with Rc=1 write to CR[1] aka SVCR1_000.
+
 There are 3 new SPRs for holding CRs: CR_EXT1, CR_EXT2, and CR_EXT3.
 
 Arrange the 64 SV CRs similarly to the way the 128 integer registers are arranged:
