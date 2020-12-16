@@ -176,14 +176,11 @@ Note: considerable care needs to be taken when putting these horiz/vertical CRs 
 
 Indexing algorithm illustrating how the H/V modes would work.  Note that BA is the 3 bit CR register field that normsll, in scalar ISA, would reference only CR0-7 as CR[BA].
 
-     for i in range(VL)
-         y = i % 8
-         x = i // 8
-         if verticalmode:
-             CRINDEX = BA + y*8 + x
-         else:
-             CRINDEX = BA*8 + i
-         CR[CRINDEX] = ...
-
-
- 
+    for i in range(VL)
+        y = i % 8
+        x = i // 8
+        if verticalmode:
+            CRINDEX = BA + y*8 + x
+        else:
+            CRINDEX = BA*8 + i
+        CR[CRINDEX] = ...
