@@ -28,11 +28,9 @@ Remapped Encoding denoted `RM[0]` at the MSB to `RM[23]` at the LSB.
 The mapping from the OpenPower v3.1 prefix bits to the Remapped Encoding is
 defined in the Prefix Fields section.
 
-## Twin Predication
-
-There are two different encodings: single-predication (typically arithmetic operations i.e. with more than one source register) and twin-predication (one source, one destination).  They require different encodings
-
 ## Remapped Encoding Fields
+
+Shows all fields in the Remapped Encoding `RM[0:23]` for all instruction variants.
 
 | Remapped Encoding Field Name | Field bits | Description                                                               |
 |------------------------------|------------|---------------------------------------------------------------------------|
@@ -166,6 +164,10 @@ Those patterns (and more) may be applied to:
 This is a huge list that creates extremely powerful combinations, particularly given that one of the predicate options is `(1<<r3)`
 
 Additional unusual capabilities of Twin Predication include a back-to-back version of VREDUCE-VEXPAND which is effectively the ability to do an ordered multiple VINSERT.
+
+## Twin Predication
+
+There are two different encodings: single-predication (typically arithmetic operations i.e. with more than one source register) and twin-predication (one source, one destination).  They require different encodings
 
 # Register Naming
 
