@@ -30,7 +30,10 @@ defined in the Prefix Fields section.
 
 ## Remapped Encoding Fields
 
-Shows all fields in the Remapped Encoding `RM[0:23]` for all instruction variants.
+Shows all fields in the Remapped Encoding `RM[0:23]` for all instruction variants.  There are two categories:  Single and Twin Predication.
+
+### Single Predication (N(src) > 1)
+
 
 | Remapped Encoding Field Name | Field bits | Description                                                               |
 |------------------------------|------------|---------------------------------------------------------------------------|
@@ -41,11 +44,24 @@ Shows all fields in the Remapped Encoding `RM[0:23]` for all instruction variant
 | Rdest_EXTRA                  | `8:10`     | extra bits for Rdest (Uses R\*_EXTRA Encoding)                            |
 | Rsrc1_EXTRA                  | `11:13`    | extra bits for Rsrc1 (Uses R\*_EXTRA Encoding)                            |
 | Rsrc2_EXTRA                  | `14:16`    | extra bits for Rsrc2 (Uses R\*_EXTRA Encoding)                            |
-| Rsrc3_EXTRA                  | `17:19`    | extra bits for Rsrc3 (Uses R\*_EXTRA Encoding)                            |
+| Rsrc3_EXTRA                  | `17:18`    | extra bits for Rsrc3 (Uses 2-bit R\*_EXTRA Encoding)                            |
+| MODE                          | `19:23`    | TBD                                                                       |
+
+### Twin Predication (src=1, dest=1)
+
+| Remapped Encoding Field Name | Field bits | Description                                                               |
+|------------------------------|------------|---------------------------------------------------------------------------|
+| MASK_KIND                    | `0`        | Execution Mask Kind                                                       |
+| MASK                         | `1:3`      | Execution Mask                                                            |
+| ELWIDTH                      | `4:5`      | Element Width                                                             |
+| SUBVL                        | `6:7`      | Sub-vector length                                                         |
+| Rdest_EXTRA                  | `8:10`     | extra bits for Rdest (Uses R\*_EXTRA Encoding)                            |
+| Rsrc1_EXTRA                  | `11:13`    | extra bits for Rsrc1 (Uses R\*_EXTRA Encoding)                            |
 | MASK_SRC                     | `14:16`    | Execution Mask for Source (only on instructions with twin-predication)    |
 | ELWIDTH_SRC                  | `17:18`    | Element Width for Source (only on instructions with twin-predication)     |
-| SUBVL_SRC                    | `19:20`    | Sub-vector length for Source (only on instructions with twin-predication) |
-| TBD                          | `21:23`    | TBD                                                                       |
+| MODE                          | `19:23`    | TBD                                                                       |
+
+note in [[discussion]]: TODO, evaluate if 2nd SUBVL should be added.
 
 ## R\*_EXTRA Encoding
 
