@@ -65,7 +65,11 @@ note in [[discussion]]: TODO, evaluate if 2nd SUBVL should be added.
 
 ## R\*_EXTRA Encoding
 
+(**TODO: 2-bit version of the table, just like in the original SVPrefix.  This is important, to save bits on 4-operand instructions such as fmadd**)
+
 In the following table, `<N>` denotes the value of the corresponding register field in the SVP64 suffix word. 
+
+(**Jacob: these tables are not in the slightest bit understandable due to the use of register names that are impossible to interpret clearly**)
 
 | R\*_EXTRA | Vector/Scalar<br/>Mode | CR Register   | Int/FP<br/>Register |
 |-----------|------------------------|---------------|---------------------|
@@ -250,6 +254,8 @@ pseudocode:
 
 Standard PowerISA Integer registers are aliased to some of the SV integer registers:
 
+(**Jacob these names are impossible to interpret due to them not being sequential numbering and there being no compact algorithm given that shows how they're created.  the original SVPrefix was dead easy to understand**)
+
 | Integer<br/>Register | SV Integer<br/>Register | Integer<br/>Register | SV Integer<br/>Register | Integer<br/>Register | SV Integer<br/>Register | Integer<br/>Register | SV Integer<br/>Register |
 |----------------------|-------------------------|----------------------|-------------------------|----------------------|-------------------------|----------------------|-------------------------|
 | R0                   | SVR0_00                 | R8                   | SVR8_00                 | R16                  | SVR16_00                | R24                  | SVR24_00                |
@@ -288,6 +294,8 @@ Standard PowerISA Integer registers are aliased to some of the SV integer regist
 ## Floating-Point Registers
 
 Standard PowerISA floating-point and VSX registers are aliased to some of the SV floating-point registers:
+
+(**Jacob these names are impossible to interpret due to them not being sequential numbering and there being no compact algorithm given that shows how they're created.  the original SVPrefix was dead easy to understand**)
 
 | FP<br/>Register | VSX Register          | SV FP<br/>Register | FP<br/>Register | VSX Register          | SV FP<br/>Register |
 |-----------------|-----------------------|--------------------|-----------------|-----------------------|--------------------|
@@ -379,6 +387,8 @@ so FP instructions with Rc=1 write to CR[1] aka SVCR1_000.
 There are 3 new SPRs for holding CRs: CR_EXT1, CR_EXT2, and CR_EXT3.
 
 The 64 SV CRs are arranged similarly to the way the 128 integer registers are arranged:
+
+(**Jacob these names are impossible to interpret due to them not being sequential numbering and there being no compact algorithm given that shows how they're created.  the original SVPrefix was dead easy to understand**)
 
 | CR<br/>Register | SPR<br/>Field  | SV CR<br/>Register | CR<br/>Register | SPR<br/>Field  | SV CR<br/>Register |
 |-----------------|----------------|--------------------|-----------------|----------------|--------------------|
