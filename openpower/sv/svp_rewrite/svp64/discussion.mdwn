@@ -139,7 +139,7 @@ if we really do need 2 bits spare then the complex encoder of swizzle could be d
 
 I expect swizzle to not be common enough to warrant 2 swizzles in a single instruction, therefor the above swizzle strategy is probably unnecessary.
 
-Also, if a swizzle supports up to subvl=4, then 11 bits is sufficient since each swizzle element needs to be able to select 1 of 6 different values: 0, 1, x, y, z, w. 6^4 = 1296 which easily fits in 11 bits.
+Also, if a swizzle supports up to subvl=4, then 11 bits is sufficient since each swizzle element needs to be able to select 1 of 6 different values: 0, 1, x, y, z, w. 6^4 = 1296 which easily fits in 11 bits (only by dropping "predicate mask" from the list of options, which makes 7 options not 6.  see [[mv.swizzle]])
 
 What about subvl=4 that skips one element?  src vec is 4 but one of the elements is to be left alone?  This is not 6 options, it is 7 options (including "skip" i.e combining with a predicate mask in effect).  note that this is not the same as a vec3-with-a-skip
 
