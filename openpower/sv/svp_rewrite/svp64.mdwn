@@ -71,6 +71,8 @@ In the following table, `<N>` denotes the value of the corresponding register fi
 
 (**Jacob: these tables are not in the slightest bit understandable due to the use of register names that are impossible to interpret clearly**)
 
+3 bit version
+
 | R\*_EXTRA | Vector/Scalar<br/>Mode | CR Register   | Int/FP<br/>Register |
 |-----------|------------------------|---------------|---------------------|
 | 000       | Scalar                 | `SVCR<N>_000` | `SV[F]R<N>_00`      |
@@ -81,6 +83,17 @@ In the following table, `<N>` denotes the value of the corresponding register fi
 | 101       | Vector                 | `SVCR<N>_010` | `SV[F]R<N>_01`      |
 | 110       | Vector                 | `SVCR<N>_100` | `SV[F]R<N>_10`      |
 | 111       | Vector                 | `SVCR<N>_110` | `SV[F]R<N>_11`      |
+
+2 bit version
+
+(**TODO, i simply cannot interpret the names, they have absolutely zero meaning to me so i have no idea how to fill in the table.  this is a bad sign, indicative that the names have to go, to be replaced by something xlear snd obvious**)
+
+| R\*_EXTRA | Vector/Scalar<br/>Mode | CR Register   | Int/FP<br/>Register |
+|-----------|------------------------|---------------|---------------------|
+| 00       | Scalar                 | `SVCR<N>_000` | `SV[F]R<N>_00`      |
+| 01       | Scalar                 | `SVCR<N>_100` | `SV[F]R<N>_10`      |
+| 10       | Vector                 | `SVCR<N>_000` | `SV[F]R<N>_00`      |
+| 11       | Vector                 | `SVCR<N>_100` | `SV[F]R<N>_10`      |
 
 ## ELWIDTH Encoding
 
