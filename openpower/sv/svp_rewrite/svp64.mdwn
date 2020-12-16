@@ -12,7 +12,7 @@ counting up as you move to the LSB end). All bit ranges are inclusive (so
 
 64-bit instructions are split into two 32-bit words, the prefix and the suffix. The prefix always comes before the suffix in PC order.
 
-SVP64 is designed so that when the prefix is all zeros, no effect or influence occurs (no augmentation) such that all standard OpenPOWER v3.B instructions may be active at that time, in full. The corollary is that when the SV prefix is nonzero, alternative meanings may be given to all and any instructions.
+SVP64 is designed so that when the prefix is all zeros, no effect or influence occurs (no augmentation) such that all standard OpenPOWER v3.B instructions may be active at that time, in full (and SV is quiescent). The corollary is that when the SV prefix is nonzero, alternative meanings may be given to all and any instructions.
 
 ## Definition of Reserved in this spec.
 
