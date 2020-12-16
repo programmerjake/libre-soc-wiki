@@ -30,7 +30,7 @@ defined in the Prefix Fields section.
 | MASK                         | `0:3`      | Execution Mask |
 | TBD                          | `4:23`     | TBD            |
 
-## MASK Encoding
+## Predicate MASK Encoding
 
 One bit indicates the mode: CR or Int predication.   The two types may not be mixed.
 
@@ -97,6 +97,28 @@ CR based predication.  TODO: select alternate CR for twin predication? see [[dis
 | `RM[1]`             | `8`        |                | Bit 1 of the Remapped Encoding             |
 | SVP64_9             | `9`        | `1`            | Indicates this is a SVP64 instruction      |
 | `RM[2:23]`          | `10:31`    |                | Bits 2 through 23 of the Remapped Encoding |
+
+# Twin Predication
+
+This is a novel concept that allows predication to be applied to a single source and a single dest register.  The following types of traditional Vector operations may be encoded with it, *without requiring explicit opcodes to do so*
+
+* VSPLAT
+* VEXTRACT
+* VINSERT
+* VREDUCE
+* VEXPAND
+* VCOMPRESS
+
+Those patterns (and more) may be applied to:
+
+* mv (the usual way that V\* operations are created)
+* exts\* sign-extension
+* rwlinm and other RS-RA shift operations
+* LD and ST (treating AGEN as one source)
+* FP fclass, fsgn, fneg, fabs, fcvt, frecip, fsqrt etc.
+* Condition Register ops mfcr, mtcr and other similar
+
+This is a huge list that creates extremely powerful combinations, particularly given that one of the predicate options is (1<<r3)
 
 # Register Naming
 
