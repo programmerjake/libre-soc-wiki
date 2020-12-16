@@ -184,3 +184,27 @@ Indexing algorithm illustrating how the H/V modes would work.  Note that BA is t
         else:
             CRINDEX = BA*8 + i
         CR[CRINDEX] = ...
+
+# Should twin-predication (src=1, dest=1) have DEST SUBVL?
+
+this is tricky: there isn't really enough space unless the reg scalar-vector extension (currently 3 bits per reg) is compacted to only 2 bits each, which would provide 2 extra bits.
+
+so before adding this, an evaluation is needed: *is it necessary*?
+
+what actual operations out of this list need - and work - with a separate SRC and DEST SUBVL?
+
+* mv (the usual way that V* operations are created)
+* exts* sign-extension
+* rwlinm and other RS-RA shift operations
+* LD and ST (treating AGEN as one source)
+* FP fclass, fsgn, fneg, fabs, fcvt, frecip, fsqrt etc.
+* Condition Register ops mfcr, mtcr and other similar
+
+* mv: yes
+* exts: no
+* rwlinm shift operations: no
+* LD and ST: no
+* FP ops: no
+* CR ops: no
+
+therefore it makes no sense to have DEST SUBVL, and instead to have special mv operations.  see [[mv.vec]]
