@@ -63,7 +63,7 @@ Shows all fields in the Remapped Encoding `RM[0:23]` for all instruction variant
 
 note in [[discussion]]: TODO, evaluate if 2nd SUBVL should be added.  conclusion: no.  2nd SUBVL makes no sense except for mv, and that is covered by [[mv.vec]]
 
-## R\*_EXTRA Encoding
+## R\*_EXTRA2 and R\*_EXTRA3 Encoding
 
 (**TODO: 2-bit version of the table, just like in the original SVPrefix.  This is important, to save bits on 4-operand instructions such as fmadd**)
 
@@ -73,7 +73,7 @@ In the following table, `<N>` denotes the value of the corresponding register fi
 
 3 bit version
 
-| R\*_EXTRA | Vector/Scalar<br/>Mode | CR Register   | Int/FP<br/>Register |
+| R\*_EXTRA3 | Vector/Scalar<br/>Mode | CR Register   | Int/FP<br/>Register |
 |-----------|------------------------|---------------|---------------------|
 | 000       | Scalar                 | `SVCR<N>_000` | `SV[F]R<N>_00`      |
 | 001       | Scalar                 | `SVCR<N>_010` | `SV[F]R<N>_01`      |
@@ -88,7 +88,7 @@ In the following table, `<N>` denotes the value of the corresponding register fi
 
 (**TODO, i simply cannot interpret the names, they have absolutely zero meaning to me so i have no idea how to fill in the table.  this is a bad sign, indicative that the names have to go, to be replaced by something xlear snd obvious**)
 
-| R\*_EXTRA | Vector/Scalar<br/>Mode | CR Register   | Int/FP<br/>Register |
+| R\*_EXTRA2 | Vector/Scalar<br/>Mode | CR Register   | Int/FP<br/>Register |
 |-----------|------------------------|---------------|---------------------|
 | 00       | Scalar                 | `SVCR<N>_000` | `SV[F]R<N>_00`      |
 | 01       | Scalar                 | `SVCR<N>_100` | `SV[F]R<N>_10`      |
