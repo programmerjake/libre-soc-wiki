@@ -43,31 +43,31 @@ Likewise CR based twin predication has a second set of 3 bits, allowing a differ
 When the predicate mode bit is zero the 3 bits are interpreted as below. 
 Twin predication has an identical 3 bit field similarly encoded.
 
-| Value | Mnemonic | Description                                            |
-|-------|----------|--------------------------------------------------------|
-| 000  | ALWAYS    | Operation is not masked  see [[discussion]]            |
-| 001  | 1 << R3   | Reserved (causes an illegal instruction trap)          |
-| 010  | R3        | Element `i` is enabled if `R3 & (1 << i)` is non-zero  |
-| 011  | ~R3       | Element `i` is enabled if `R3 & (1 << i)` is zero      |
-| 100  | R10       | Element `i` is enabled if `R10 & (1 << i)` is non-zero |
-| 101  | ~R10      | Element `i` is enabled if `R10 & (1 << i)` is zero     |
-| 110  | R30       | Element `i` is enabled if `R30 & (1 << i)` is non-zero |
-| 111  | ~R30      | Element `i` is enabled if `R30 & (1 << i)` is zero     |
+| Value | Mnemonic | Description                                         |
+|-------|----------|-----------------------------------------------------|
+| 000  | ALWAYS    | Operation is not masked (mask set to all 1s)        |
+| 001  | 1 << R3   | Reserved (causes an illegal instruction trap)       |
+| 010  | R3        | Element `i` enabled if `R3 & (1 << i)` is non-zero  |
+| 011  | ~R3       | Element `i` enabled if `R3 & (1 << i)` is zero      |
+| 100  | R10       | Element `i` enabled if `R10 & (1 << i)` is non-zero |
+| 101  | ~R10      | Element `i` enabled if `R10 & (1 << i)` is zero     |
+| 110  | R30       | Element `i` enabled if `R30 & (1 << i)` is non-zero |
+| 111  | ~R30      | Element `i` enabled if `R30 & (1 << i)` is zero     |
 
 ### CR based predication
 
 When the predicate mode bit is one the 3 bits are interpreted as below.  Twin predication has an identical 3 bit field similarly encoded
 
-| Value | Mnemonic | Description                                            |
-|-------|----------|--------------------------------------------------------|
-| 000  | lt        | Element `i` is enabled if `CR[6+i].LT` is set          |
-| 001  | nl/ge     | Element `i` is enabled if `CR[6+i].LT` is clear        |
-| 010  | gt        | Element `i` is enabled if `CR[6+i].GT` is set          |
-| 011  | ng/le     | Element `i` is enabled if `CR[6+i].GT` is clear        |
-| 100  | eq        | Element `i` is enabled if `CR[6+i].EQ` is set          |
-| 101  | ne        | Element `i` is enabled if `CR[6+i].EQ` is clear        |
-| 110  | so/un     | Element `i` is enabled if `CR[6+i].FU` is set          |
-| 111  | ns/nu     | Element `i` is enabled if `CR[6+i].FU` is clear        |
+| Value | Mnemonic | Description                                         |
+|-------|----------|-----------------------------------------------------|
+| 000  | lt        | Element `i` enabled if `CR[6+i].LT` is set          |
+| 001  | nl/ge     | Element `i` enabled if `CR[6+i].LT` is clear        |
+| 010  | gt        | Element `i` enabled if `CR[6+i].GT` is set          |
+| 011  | ng/le     | Element `i` enabled if `CR[6+i].GT` is clear        |
+| 100  | eq        | Element `i` enabled if `CR[6+i].EQ` is set          |
+| 101  | ne        | Element `i` enabled if `CR[6+i].EQ` is clear        |
+| 110  | so/un     | Element `i` enabled if `CR[6+i].FU` is set          |
+| 111  | ns/nu     | Element `i` enabled if `CR[6+i].FU` is clear        |
 
 CR based predication.  TODO: select alternate CR for twin predication? see [[discussion]]  Overlap of the two CR based predicates must be taken into account, so the starting point for one of them must be suitably high, or accept that for twin predication VL must not exceed the range where overlap will occur, *or* that they use the same starting point but select different *bits* of the same CRs
 
