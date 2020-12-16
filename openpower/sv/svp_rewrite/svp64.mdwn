@@ -25,11 +25,24 @@ defined in the Prefix Fields section.
 
 ## Remapped Encoding Fields
 
+There are two different encodings: single-predication (typically arithmetic operations i.e. with more than one source register) and twin-predication (one source, one destination).  They require different encodings
+
+Single Predication (2+ src ops):
+
 | Remapped Encoding Field Name | Field bits | Description    |
 |------------------------------|------------|----------------|
 | MASKMODE                     | `0`        | Predicate Mode |
 | MASK                         | `1:3`      | Execution Mask |
 | TBD                          | `4:23`     | TBD            |
+
+Twin Predication (1 src, 1 dest):
+
+| Remapped Encoding Field Name | Field bits | Description    |
+|------------------------------|------------|----------------|
+| MASKMODE                     | `0`        | Predicate Mode |
+| SRCMASK                      | `1:3`      | Source    Mask |
+| DSTMASK                      | `4:6`      | Dest      Mask |
+| TBD                          | `7:23`     | TBD            |
 
 ## Predicate MASK Encoding
 
