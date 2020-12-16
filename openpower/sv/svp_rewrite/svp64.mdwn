@@ -111,6 +111,13 @@ In the following table, `<N>` denotes the value of the corresponding register fi
 | 10       | Vector                 | `SVCR<N>_000` | `SV[F]R<N>_00`      |
 | 11       | Vector                 | `SVCR<N>_100` | `SV[F]R<N>_10`      |
 
+| R\*_EXTRA2 | Mode | CR Register   | Int/FP<br/>Register |
+|-----------|-------|---------------|---------------------|
+| 00       | Scalar | `` | `RA`                |
+| 01       | Scalar | `` | `RA || 0b00`      |
+| 10       | Vector | `` | `RA || 0b00`      |
+| 11       | Vector | `` | `RA || 0b10`   |
+
 ## ELWIDTH Encoding
 
 | Instruction Kind | ELWIDTH Value | Mnemonic                  | Description                                                                         |
