@@ -160,16 +160,22 @@ this means by default that 001 will always be in nonpredicated ops, which seems 
 programmerjake:
 I picked 0001 to indicate ALWAYS since that matches with the other semantics: the LSB bit is invert-the-mask, and you can think about the table as-if it is really:
 
+this is the opposite of what feels natural.  inversion should switch *off* something.  also 000 is the canonical "this feature is off by default" number.
+
+the constant should be an immediate of all 1s (not r0), which is the natural way to think of "predication is off".
+
+i get the idea "r0 to be used therefore it is all zeros" but that makes 001 the "default", not 000.
+
 | Value | Mnemonic    |
 |-------|-------------|
-| 0000  | R0 (zero)   |
-| 0001  | ~R0 (~zero) |
-| 0010  | R3          |
-| 0011  | ~R3         |
-| 0100  | R10         |
-| 0101  | ~R10        |
-| 0110  | R30         |
-| 0111  | ~R30        |
+| 000  | R0 (zero)   set to all 1s, naturally means "no predication" |
+| 001  | ~R0 (~zero) |
+| 010  | R3          |
+| 011  | ~R3         |
+| 100  | R10         |
+| 101  | ~R10        |
+| 110  | R30         |
+| 111  | ~R30        |
 
 
 # CR Vectorisation
