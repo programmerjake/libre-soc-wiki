@@ -116,12 +116,11 @@ CR based predication.  TODO: select alternate CR for twin predication? see [[dis
 
 This is a novel concept that allows predication to be applied to a single source and a single dest register.  The following types of traditional Vector operations may be encoded with it, *without requiring explicit opcodes to do so*
 
-* VSPLAT
-* VEXTRACT
-* VINSERT
-* VREDUCE
-* VEXPAND
-* VCOMPRESS
+* VSPLAT (a single scalar distributed across a vector)
+* VEXTRACT (a single scalar taken from a vector)
+* VINSERT (a scalar inserted into a vector)
+* VREDUCE (sequential selection of certain elements)
+* VEXPAND (insertion of a sequence of elements)
 
 Those patterns (and more) may be applied to:
 
@@ -133,6 +132,8 @@ Those patterns (and more) may be applied to:
 * Condition Register ops mfcr, mtcr and other similar
 
 This is a huge list that creates extremely powerful combinations, particularly given that one of the predicate options is `(1<<r3)`
+
+Additional unusual capabilities of Twin Predication include a back-to-back version of VREDUCE-VEXPAND which is effectively the ability to do an ordered multiple VINSERT.
 
 # Register Naming
 
