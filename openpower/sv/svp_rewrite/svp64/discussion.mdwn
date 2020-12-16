@@ -141,6 +141,14 @@ I expect swizzle to not be common enough to warrant 2 swizzles in a single instr
 
 Also, if a swizzle supports up to subvl=4, then 11 bits is sufficient since each swizzle element needs to be able to select 1 of 6 different values: 0, 1, x, y, z, w. 6^4 = 1296 which easily fits in 11 bits.
 
+What about subvl=4 that skips one element?  src vec is 4 but one of the elements is to be left alone?  This is not 6 options, it is 7 options (including "skip" i.e combining with a predicate mask in effect).  note that this is not the same as a vec3-with-a-skip
+
+What could hypothetically be done is: when SUBVL=3 a different encoding is used, one that allows the "skip" to be specified.  X Y skip W for example.  this would then be interpreted, "actually the vector is vec4 but one rlement is skipped"
+
+the problem with that is that now SUBVL has become critically dependent on the swizzle, worse than that the swizzle is embedded in the instruction, even worse than that it's encoded in a complex multi-gate fashion.
+
+all of which screams, "this is going in completely the wrong direction".  keep it simple.  7 options, 3 bits, 4x3, 12 bits for swizzle, ignore some if SUBVL is 1 2 or 3.
+
 # note about INT predicate
 
 001	ALWAYS (implicit)	Operation is not masked
