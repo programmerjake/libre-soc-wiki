@@ -65,6 +65,7 @@ Shows all fields in the Remapped Encoding `RM[0:23]` for all instruction variant
 * `RM-1P-2S1D` Single Predication dest/src1/2 applies to 3-operand instructions (src1 src2 dest)
 * `RM-2P-1S1D` Twin Predication (src=1, dest=1)
 * `RM-2P-2S1D` Twin Predication (src=2, dest=1) primarily for LDST (Indexed)
+* `RM-2P-1S2D` Twin Predication (src=1, dest=2) primarily for LDST Update
 
 ## RM-1P-3S1D
 
@@ -122,9 +123,11 @@ Otherwise the normal SV hardware for-loop applies.  The three registers each may
 
 note in [[discussion]]: TODO, evaluate if 2nd SUBVL should be added.  conclusion: no.  2nd SUBVL makes no sense except for mv, and that is covered by [[mv.vec]]
 
-## RM-2P-2S1D
+## RM-2P-2S1D/1S2D
 
 The primary purpose for this encoding is for Twin Predication on LOAD and STORE operations.  see [[sv/ldst]] for detailed anslysis.
+
+RM-2P-2S1D:
 
 | Field Name | Field bits | Description                                 |
 |------------|------------|----------------------------|
@@ -138,6 +141,8 @@ The primary purpose for this encoding is for Twin Predication on LOAD and STORE 
 | MASK_SRC     | `14:16`    | Execution Mask for Source     |
 | ELWIDTH_SRC  | `17:18`    | Element Width for Source      |
 | MODE         | `19:23`    | see [[discussion]]                        |
+
+Note that for 1S2P the EXTRA2 dest and src names are switched.
 
 ## R\*_EXTRA2 and R\*_EXTRA3 Encoding
 
