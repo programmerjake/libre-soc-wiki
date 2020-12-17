@@ -8,3 +8,8 @@ Vectorisation of Load and Store requires creation, from scalar operations, a num
 
 OpenPOWER Load/Store operations may be seen from [[isa/fixedload]] and [[isa/fixedstore]] pseudocode to be of the form:
 
+    lbux RT, RA, TB
+    EA <- (RA) + (RB)
+    RT <- MEM(EA)
+
+and for immediate variants:
