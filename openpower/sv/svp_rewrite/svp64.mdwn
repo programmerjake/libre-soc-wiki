@@ -128,6 +128,19 @@ In the following table, `<N>` denotes the value of the corresponding register fi
 | 110       | Vector                 | `SVCR<N>_100` | `SV[F]R<N>_10`      |
 | 111       | Vector                 | `SVCR<N>_110` | `SV[F]R<N>_11`      |
 
+alternative which is understandable and, if EXTRA3 is zero, maps to "no effect" (scalar OpenPOWER ISA field naming)
+
+| R\*_EXTRA3 | Mode | CR Register   | Int/FP<br/>Register |
+|-----------|-------|---------------|---------------------|
+| 000       | Scalar | `` | `0b00 RA`      |
+| 001       | Scalar | `` | `0b01 RA`      |
+| 010       | Scalar | `` | `0b10 RA`      |
+| 011       | Scalar | `` | `0b11 RA`      |
+| 100       | Vector | `` | `RA 0b00`      |
+| 101       | Vector | `` | `RA 0b01`      |
+| 110       | Vector | `` | `RA 0b10`      |
+| 111       | Vector | `` | `RA 0b11`      |
+
 2 bit version
 
 (**TODO, i simply cannot interpret the names, they have absolutely zero meaning to me so i have no idea how to fill in the table.  this is a bad sign, indicative that the names have to go, to be replaced by something xlear snd obvious**)
@@ -139,12 +152,12 @@ In the following table, `<N>` denotes the value of the corresponding register fi
 | 10       | Vector                 | `SVCR<N>_000` | `SV[F]R<N>_00`      |
 | 11       | Vector                 | `SVCR<N>_100` | `SV[F]R<N>_10`      |
 
-alternative:
+alternative which is understandable and, if EXTRA2 is zero will map to "no effect" i.e Scalar OpenPOWER register naming:
 
 | R\*_EXTRA2 | Mode | CR Register   | Int/FP<br/>Register |
 |-----------|-------|---------------|---------------------|
 | 00       | Scalar | `` | `0b00 RA`                |
-| 01       | Scalar | `` | `RA 0b00`      |
+| 01       | Scalar | `` | `0b01 RA`      |
 | 10       | Vector | `` | `RA 0b00`      |
 | 11       | Vector | `` | `RA 0b10`   |
 
