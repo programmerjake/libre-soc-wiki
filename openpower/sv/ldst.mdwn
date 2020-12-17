@@ -20,6 +20,27 @@ and for immediate variants:
 
 Thus in the first example, the source registers may each be independently marked as scalar or vector, and likewise the destination; in the second example only the one source and one dest may be marked as scalar or vector.
 
-Thus we can see that Vector Indexed may be covered, but there is not a convenient way to provide both fixed and element strided.  This is a known limitation of retro-fitting an existing scalar ISA with Vectorisation.
+Thus we can see that Vector Indexed may be covered, but there is not a convenient way to provide both fixed and element strided.  This is a known limitation of retro-fitting an existing scalar ISA with Vectorisation.  The solution requires an operation that has both RA, RB and an immediate.
 
-An inconvenient substitute for 
+At the minimum however it is possible to provide unit stride and vector mode, as follows:
+
+    function op_ld(rd, rs, immed) # LD not VLD!
+      rdv = map_dest_extra(rd);
+      rsv = map_src_extra(rs);
+      ps = get_pred_val(FALSE, rs); # predication on src
+      pd = get_pred_val(FALSE, rd); # ... AND on dest
+      for (int i = 0, int j = 0; i < VL && j < VL;):
+        if (rs.isvec) while (!(ps & 1<<i)) i++;
+        if (rd.isvec) while (!(pd & 1<<j)) j++;
+        if (rs.isvec)
+          # indirect mode (multi mode)
+          srcbase = ireg[rsv+i];
+        else
+          # unit stride mode
+          srcbase = ireg[rsv] + i * immed
+        ireg[rdv+j] <= MEM[srcbase + imm_offs];
+        if (!rs.isvec && !rd.isvec)
+            break # scalar-scalar
+        if (rs.isvec) i++;
+        if (rd.isvec) j++;
+
