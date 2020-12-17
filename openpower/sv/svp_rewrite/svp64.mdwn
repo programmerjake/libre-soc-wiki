@@ -60,9 +60,13 @@ defined in the Prefix Fields section.
 
 Shows all fields in the Remapped Encoding `RM[0:23]` for all instruction variants.  There are two categories:  Single and Twin Predication.  Due to space considerations further subdivision of Single Predication is based on whether the number of src operands is 2 or 3.
 
+* `RM-3S1D` Single Predication dest/src1/2/3, applies to 4-operand instructions (fmadd, isel, madd).
+* `RM-2S1D` Single Predication dest/src1/2 applies to 3-operand instructions (src1 src2 dest)
+* `RM-1S1D` Twin Predication (src=1, dest=1)
+
 ## RM-3S1D
 
-Single Predication dest/src1/2/3, applies to 4-operand instructions (fmadd, isel, madd).
+
 
 | Field Name | Field bits | Description                                     |
 |------------|------------|------------------------------------------------|
@@ -80,7 +84,7 @@ Single Predication dest/src1/2/3, applies to 4-operand instructions (fmadd, isel
 
 ## RM-2S1D
 
-Single Predication dest/src1/2 applies to 3-operand instructions (src1 src2 dest)
+
 
 | Field Name | Field bits | Description                                     |
 |------------|------------|------------------------------------------------|
@@ -95,7 +99,6 @@ Single Predication dest/src1/2 applies to 3-operand instructions (src1 src2 dest
 
 ## RM-1S1D
 
-Twin Predication (src=1, dest=1)
 
 | Field Name | Field bits | Description                                 |
 |------------|------------|----------------------------|
