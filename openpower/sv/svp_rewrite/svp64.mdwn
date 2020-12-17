@@ -60,11 +60,12 @@ defined in the Prefix Fields section.
 
 Shows all fields in the Remapped Encoding `RM[0:23]` for all instruction variants.  There are two categories:  Single and Twin Predication.  Due to space considerations further subdivision of Single Predication is based on whether the number of src operands is 2 or 3.
 
-* `RM-3S1D` Single Predication dest/src1/2/3, applies to 4-operand instructions (fmadd, isel, madd).
-* `RM-2S1D` Single Predication dest/src1/2 applies to 3-operand instructions (src1 src2 dest)
-* `RM-1S1D` Twin Predication (src=1, dest=1)
 
-## RM-3S1D
+* `RM-1P-3S1D` Single Predication dest/src1/2/3, applies to 4-operand instructions (fmadd, isel, madd).
+* `RM-1P-2S1D` Single Predication dest/src1/2 applies to 3-operand instructions (src1 src2 dest)
+* `RM-2P1S1D` Twin Predication (src=1, dest=1)
+
+## RM-1P-3S1D
 
 | Field Name | Field bits | Description                                     |
 |------------|------------|------------------------------------------------|
@@ -80,7 +81,7 @@ Shows all fields in the Remapped Encoding `RM[0:23]` for all instruction variant
 | MODE         | `19:23`    | see [[discussion]]                       |
 
 
-## RM-2S1D
+## RM-1P-2S1D
 
 | Field Name | Field bits | Description                                     |
 |------------|------------|------------------------------------------------|
@@ -104,7 +105,7 @@ Normally, the scalar v3.0B ISA would not have sufficient bits to allow an altern
 
 Otherwise the normal SV hardware for-loop applies.  The three registers each may be independently made vector or scalar, and may independently augmented to 7 bits in length.
 
-## RM-1S1D
+## RM-2P-1S1D
 
 
 | Field Name | Field bits | Description                                 |
