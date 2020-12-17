@@ -142,7 +142,9 @@ RM-2P-2S1D:
 | ELWIDTH_SRC  | `17:18`    | Element Width for Source      |
 | MODE         | `19:23`    | see [[discussion]]                        |
 
-Note that for 1S2P the EXTRA2 dest and src names are switched.
+Note that for 1S2P the EXTRA2 dest and src names are switched (Rsrc_EXTRA2 is in bits 8:9, Rdest1_EXTRA2 in 10:11)
+
+Note also that LD with update indexed, which takes 2 src and 2 dest (e.g. `lhaux RT,RA,RB`), does not have room for 4 registers and also Twin Prefication.  therefore these are treated as RM-2P-2S1D and the src spec for RA is also used for the same RA as a dest.
 
 ## R\*_EXTRA2 and R\*_EXTRA3 Encoding
 
