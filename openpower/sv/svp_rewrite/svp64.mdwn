@@ -95,17 +95,17 @@ applies to 3-operand instructions (src1 src2 dest)
 
 ## Twin Predication (src=1, dest=1)
 
-| Field Name | Field bits | Description                                                               |
-|------------------------------|------------|---------------------------------------------------------------------------|
-| MASK_KIND                    | `0`        | Execution Mask Kind                                                       |
-| MASK                         | `1:3`      | Execution Mask                                                            |
-| ELWIDTH                      | `4:5`      | Element Width                                                             |
-| SUBVL                        | `6:7`      | Sub-vector length                                                         |
-| Rdest_EXTRA3                 | `8:10`     | extra bits for Rdest (Uses R\*_EXTRA Encoding)                            |
-| Rsrc1_EXTRA3                 | `11:13`    | extra bits for Rsrc1 (Uses R\*_EXTRA Encoding)                            |
-| MASK_SRC                     | `14:16`    | Execution Mask for Source (only on instructions with twin-predication)    |
-| ELWIDTH_SRC                  | `17:18`    | Element Width for Source (only on instructions with twin-predication)     |
-| MODE                          | `19:23`    | see [[discussion]]                                                                       |
+| Field Name | Field bits | Description                                 |
+|------------|------------|----------------------------|
+| MASK_KIND  | `0`        | Execution Mask Kind                          |
+| MASK       | `1:3`      | Execution Mask                               |
+| ELWIDTH    | `4:5`      | Element Width                                |
+| SUBVL      | `6:7`      | Sub-vector length                           |
+| Rdest_EXTRA3 | `8:10`     | extra bits for Rdest                     |
+| Rsrc1_EXTRA3 | `11:13`    | extra bits for Rsrc1                      |
+| MASK_SRC     | `14:16`    | Execution Mask for Source     |
+| ELWIDTH_SRC  | `17:18`    | Element Width for Source      |
+| MODE         | `19:23`    | see [[discussion]]                                                                       |
 
 note in [[discussion]]: TODO, evaluate if 2nd SUBVL should be added.  conclusion: no.  2nd SUBVL makes no sense except for mv, and that is covered by [[mv.vec]]
 
