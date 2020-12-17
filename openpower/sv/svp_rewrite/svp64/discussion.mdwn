@@ -2,6 +2,13 @@
 
 * <http://lists.libre-soc.org/pipermail/libre-soc-dev/2020-December/001498.html>>
 
+# Note about naming
+
+the original assessment for SVP from 18 months ago concluded that it should be easy for scalar (non SV) instructions to get at the exact same scalar registers when in SVP mode.  otherwise scalar v3.0B code needs to restrict itself to a massively truncated subset of the scalar registers numbered 0-31 (only r0, r4, r8...) whuch hugely interferes with ABIs to such an extent that it would compromise SV.
+
+question: has anything changed about the assessment that was done, which concluded that for scalar SVP regs they should overlap completely with scalar ISA regs?
+
+
 # Notes on requirements for bit allocations
 
 do not try to jam VL or MAXVL in.  go with the flow of 24 bits spare.
