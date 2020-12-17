@@ -130,7 +130,7 @@ In the following table, `<N>` denotes the value of the corresponding register fi
 | 110       | Vector                 | `SVCR<N>_100` | `SV[F]R<N>_10`      |
 | 111       | Vector                 | `SVCR<N>_110` | `SV[F]R<N>_11`      |
 
-alternative which is understandable and, if EXTRA3 is zero, maps to "no effect" (scalar OpenPOWER ISA field naming)
+alternative which is understandable and, if EXTRA3 is zero, maps to "no effect" (scalar OpenPOWER ISA field naming).  also, these are the encodings used in the original SV Prefix scheme.  the reason why they were chosen is so that scalar registers in v3.0B and prefixed scalar registers have access to the same 32 registers.
 
 | R\*_EXTRA3 | Mode | CR Register   | Int/FP<br/>Register |
 |-----------|-------|---------------|---------------------|
