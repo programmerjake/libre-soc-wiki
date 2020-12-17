@@ -275,6 +275,9 @@ SV integer register `(5 << 2) + 0b01`, `SVCR6_011` is SV condition register
 `(6 << 3) + 0b011`, and `SVFR20_10` is SV floating-point register
 `(20 << 2) + 0b10`.
 
+(Jacob i finally after several days, nearly a week, begin to vaguely understand this encoding.  it is not at all the SV Prefix original one, which is what i W
+was expecting to see.  this encoding prevents and prohibits standard scalar v3.0B instructions from being able to interact.  the encoding only allows access to a limited subset when scalar mode is set, and also violates the design goal of allowing "all zeros" to be the way to "switch off" SV)
+
 ## Example Code
 
 a vectorized 32-bit add:
