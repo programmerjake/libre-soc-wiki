@@ -24,23 +24,24 @@ Thus we can see that Vector Indexed may be covered, but there is not a convenien
 
 At the minimum however it is possible to provide unit stride and vector mode, as follows:
 
-    function op_ld(rd, rs, immed) # LD not VLD!
-      rdv = map_dest_extra(rd);
-      rsv = map_src_extra(rs);
-      ps = get_pred_val(FALSE, rs); # predication on src
-      pd = get_pred_val(FALSE, rd); # ... AND on dest
+    function op_ld(RT, RA, immed) # LD not VLD!
+      rdv = map_dest_extra(RT);
+      rsv = map_src_extra(RA);
+      ps = get_pred_val(FALSE, RA); # predication on src
+      pd = get_pred_val(FALSE, RT); # ... AND on dest
       for (int i = 0, int j = 0; i < VL && j < VL;):
-        if (rs.isvec) while (!(ps & 1<<i)) i++;
-        if (rd.isvec) while (!(pd & 1<<j)) j++;
-        if (rs.isvec)
+        # skip nonpredicates elements
+        if (RA.isvec) while (!(ps & 1<<i)) i++;
+        if (RT.isvec) while (!(pd & 1<<j)) j++;
+        if (RA.isvec)
           # indirect mode (multi mode)
           srcbase = ireg[rsv+i];
         else
           # unit stride mode
           srcbase = ireg[rsv] + i * immed
         ireg[rdv+j] <= MEM[srcbase + imm_offs];
-        if (!rs.isvec && !rd.isvec)
+        if (!RA.isvec && !RT.isvec)
             break # scalar-scalar
-        if (rs.isvec) i++;
-        if (rd.isvec) j++;
+        if (RA.isvec) i++;
+        if (RT.isvec) j++;
 
