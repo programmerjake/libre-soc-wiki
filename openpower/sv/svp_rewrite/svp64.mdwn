@@ -62,7 +62,7 @@ Shows all fields in the Remapped Encoding `RM[0:23]` for all instruction variant
 
 ## Single Predication dest/src1/2/3
 
-applies to 4-operand instructions (fmadd, isel, madd)
+applies to 4-operand instructions (fmadd, isel, madd).
 
 | Field Name | Field bits | Description                                     |
 |------------|------------|------------------------------------------------|
@@ -75,7 +75,7 @@ applies to 4-operand instructions (fmadd, isel, madd)
 | Rsrc2_EXTRA2 | `12:13` | extra bits for Rsrc2 (R\*_EXTRA2 Encoding)   |
 | Rsrc3_EXTRA2 | `14:15` | extra bits for Rsrc3 (R\*_EXTRA2 Encoding|
 | reserved     | `16`    | reserved     |
-| MODE       | `19:23`    | see [[discussion]]                               |
+| MODE         | `19:23`    | see [[discussion]]                       |
 
 
 ## Single Predication dest/src1/2
@@ -105,7 +105,7 @@ applies to 3-operand instructions (src1 src2 dest)
 | Rsrc1_EXTRA3 | `11:13`    | extra bits for Rsrc1                      |
 | MASK_SRC     | `14:16`    | Execution Mask for Source     |
 | ELWIDTH_SRC  | `17:18`    | Element Width for Source      |
-| MODE         | `19:23`    | see [[discussion]]                                                                       |
+| MODE         | `19:23`    | see [[discussion]]                        |
 
 note in [[discussion]]: TODO, evaluate if 2nd SUBVL should be added.  conclusion: no.  2nd SUBVL makes no sense except for mv, and that is covered by [[mv.vec]]
 
@@ -147,12 +147,12 @@ alternative which is understandable and, if EXTRA3 is zero, maps to "no effect" 
 
 (**TODO, i simply cannot interpret the names, they have absolutely zero meaning to me so i have no idea how to fill in the table.  this is a bad sign, indicative that the names have to go, to be replaced by something xlear snd obvious**)
 
-| R\*_EXTRA2 | Vector/Scalar<br/>Mode | CR Register   | Int/FP<br/>Register |
-|-----------|------------------------|---------------|---------------------|
-| 00       | Scalar                 | `SVCR<N>_000` | `SV[F]R<N>_00`      |
-| 01       | Scalar                 | `SVCR<N>_100` | `SV[F]R<N>_10`      |
-| 10       | Vector                 | `SVCR<N>_000` | `SV[F]R<N>_00`      |
-| 11       | Vector                 | `SVCR<N>_100` | `SV[F]R<N>_10`      |
+| R\*_EXTRA2 |   Mode | CR Register   | Int/FP<br/>Register |
+|-----------|---------|---------------|---------------------|
+| 00       | Scalar   | `SVCR<N>_000` | `SV[F]R<N>_00`      |
+| 01       | Scalar   | `SVCR<N>_100` | `SV[F]R<N>_10`      |
+| 10       | Vector   | `SVCR<N>_000` | `SV[F]R<N>_00`      |
+| 11       | Vector   | `SVCR<N>_100` | `SV[F]R<N>_10`      |
 
 alternative which is understandable and, if EXTRA2 is zero will map to "no effect" i.e Scalar OpenPOWER register naming:
 
@@ -169,16 +169,16 @@ Default behaviour is set to 0b00 so that zeros follow the convention of "npt doi
 
 Only when elwidth is nonzero is the element width overridden to the explicitly required value.
 
-| Op Kind | Value | Mnemonic                  | Description                                                                         |
-|---------|-------|---------------------------|-------------------------------------------------------------------------------------|
+| Op Kind | Value | Mnemonic       | Description                        |
+|---------|-------|----------------|------------------------------------|
 | Integer | 00    | DEFAULT        | default behaviour for operation    |
-| Integer | 01    | `ELWIDTH=b`    | Byte: 8-bit integer                                                                 |
-| Integer | 10    | `ELWIDTH=h`    | Halfword: 16-bit integer                                                            |
-| Integer | 11    | `ELWIDTH=w`    | Word: 32-bit integer                                                                |
-| FP      | 00    | DEFAULT        | default behaviour                    |
+| Integer | 01    | `ELWIDTH=b`    | Byte: 8-bit integer                  |
+| Integer | 10    | `ELWIDTH=h`    | Halfword: 16-bit integer             |
+| Integer | 11    | `ELWIDTH=w`    | Word: 32-bit integer                 |
+| FP      | 00    | DEFAULT        | default behaviour for FP operation     |
 | FP      | 01    | `ELWIDTH=bf16` (rsvd) | Reserved for [`bf16`](https://en.wikipedia.org/wiki/Bfloat16_floating-point_format) |
-| FP      | 10    | `ELWIDTH=f16`             | 16-bit IEEE 754 Half floating-point                                                 |
-| FP      | 11    | `ELWIDTH=f32`             | 32-bit IEEE 754 Single floating-point                                               |
+| FP      | 10    | `ELWIDTH=f16`  | 16-bit IEEE 754 Half floating-point   |
+| FP      | 11    | `ELWIDTH=f32`  | 32-bit IEEE 754 Single floating-point  |
 
 ## SUBVL Encoding
 
