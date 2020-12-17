@@ -182,12 +182,14 @@ Only when elwidth is nonzero is the element width overridden to the explicitly r
 
 ## SUBVL Encoding
 
+the default for SUBVL is 1 and its encoding is 0b00 to indicate that SUBVL is effectively disabled (a SUBVL for-loop of only one element). this lines up in combination with all other "default is all zeros" behaviour.
+
 | SUBVL Value | Mnemonic            | Description            |
 |-------------|---------------------|------------------------|
-| 00          | `SUBVL=4`           | Sub-vector length of 4 |
-| 01          | `SUBVL=1` (default) | Sub-vector length of 1 |
-| 10          | `SUBVL=2`           | Sub-vector length of 2 |
-| 11          | `SUBVL=3`           | Sub-vector length of 3 |
+| 00          | `SUBVL=1` (default) | Sub-vector length of 1 |
+| 01          | `SUBVL=2`           | Sub-vector length of 2 |
+| 10          | `SUBVL=3`           | Sub-vector length of 3 |
+| 11          | `SUBVL=4`           | Sub-vector length of 4 |
 
 ## MASK/MASK_SRC & MASK_KIND Encoding
 
