@@ -35,13 +35,34 @@ At the minimum however it is possible to provide unit stride and vector mode, as
         if (RT.isvec) while (!(pd & 1<<j)) j++;
         if (RA.isvec)
           # indirect mode (multi mode)
-          srcbase = ireg[rsv+i];
+          EA = ireg[rsv+i] + immed;
         else
           # unit stride mode
-          srcbase = ireg[rsv] + i * immed
-        ireg[rdv+j] <= MEM[srcbase + imm_offs];
+          EA = ireg[rsv] + i * immed
+        ireg[rdv+j] <= MEM[EA];
         if (!RA.isvec && !RT.isvec)
             break # scalar-scalar
         if (RA.isvec) i++;
+        if (RT.isvec) j++;
+
+Indexed LD is:
+ 
+    function op_ld(RT, RA, RB) # LD not VLD!
+      rdv = map_dest_extra(RT);
+      rsv = map_src_extra(RA);
+      rso = map_src_extra(RB);
+      ps = get_pred_val(FALSE, RA); # predication on src
+      pd = get_pred_val(FALSE, RT); # ... AND on dest
+      for (i=0, j=0, k=0; i < VL && j < VL && k < VL):
+        # skip nonpredicates elements
+        if (RA.isvec) while (!(ps & 1<<i)) i++; 
+        if (RB.isvec) while (!(ps & 1<<k)) k++; 
+        if (RT.isvec) while (!(pd & 1<<j)) j++; 
+        EA = ireg[rsv] + ireg[rso] # indexed address
+        ireg[rdv+j] <= MEM[EA];
+        if (!RA.isvec && !RT.isvec && !RB.isvec)
+            break # scalar-scalar
+        if (RA.isvec) i++;
+        if (RB.isvec) i++;
         if (RT.isvec) j++;
 
