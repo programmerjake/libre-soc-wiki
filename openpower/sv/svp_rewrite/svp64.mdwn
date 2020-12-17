@@ -29,6 +29,32 @@ Remapped Encoding denoted `RM[0]` at the MSB to `RM[23]` at the LSB.
 
 The mapping from the OpenPower v3.1 prefix bits to the Remapped Encoding is
 defined in the Prefix Fields section.
+## Prefix Opcode Map (64-bit instruction encoding) (prefix bits 6:11)
+
+(shows both PowerISA v3.1 instructions as well as new SVP instructions; empty spaces are yet-to-be-allocated Illegal Instructions)
+
+| bits 6:11 | ---000   | ---001     | ---010   | ---011   | ---100   | ---101   | ---110   | ---111   |
+|-----------|----------|------------|----------|----------|----------|----------|----------|----------|
+| 000---    | 8LS-form | 8LS-form   | 8LS-form | 8LS-form | 8LS-form | 8LS-form | 8LS-form | 8LS-form |
+| 001---    |          |            |          |          |          |          |          |          |
+| 010---    | 8RR-form |            |          |          | SVP64    | SVP64    | SVP64    | SVP64    |
+| 011---    |          |            |          |          | SVP64    | SVP64    | SVP64    | SVP64    |
+| 100---    | MLS-form | MLS-form   | MLS-form | MLS-form | MLS-form | MLS-form | MLS-form | MLS-form |
+| 101---    |          |            |          |          |          |          |          |          |
+| 110---    | MRR-form |            |          |          | SVP64    | SVP64    | SVP64    | SVP64    |
+| 111---    |          | MMIRR-form |          |          | SVP64    | SVP64    | SVP64    | SVP64    |
+
+## Prefix Fields
+
+| Prefix Field Name   | Field bits | Constant Value | Description                                |
+|---------------------|------------|----------------|--------------------------------------------|
+| PO (Primary Opcode) | `0:5`      | `1`            | Indicates this is a 64-bit instruction     |
+| `RM[0]`             | `6`        |                | Bit 0 of the Remapped Encoding             |
+| SVP64_7             | `7`        | `1`            | Indicates this is a SVP64 instruction      |
+| `RM[1]`             | `8`        |                | Bit 1 of the Remapped Encoding             |
+| SVP64_9             | `9`        | `1`            | Indicates this is a SVP64 instruction      |
+| `RM[2:23]`          | `10:31`    |                | Bits 2 through 23 of the Remapped Encoding |
+
 
 ## Remapped Encoding Fields
 
@@ -194,32 +220,6 @@ When the predicate mode bit is one the 3 bits are interpreted as below.  Twin pr
 
 CR based predication.  TODO: select alternate CR for twin predication? see [[discussion]]  Overlap of the two CR based predicates must be taken into account, so the starting point for one of them must be suitably high, or accept that for twin predication VL must not exceed the range where overlap will occur, *or* that they use the same starting point but select different *bits* of the same CRs
 
-
-## Prefix Opcode Map (64-bit instruction encoding) (prefix bits 6:11)
-
-(shows both PowerISA v3.1 instructions as well as new SVP instructions; empty spaces are yet-to-be-allocated Illegal Instructions)
-
-| bits 6:11 | ---000   | ---001     | ---010   | ---011   | ---100   | ---101   | ---110   | ---111   |
-|-----------|----------|------------|----------|----------|----------|----------|----------|----------|
-| 000---    | 8LS-form | 8LS-form   | 8LS-form | 8LS-form | 8LS-form | 8LS-form | 8LS-form | 8LS-form |
-| 001---    |          |            |          |          |          |          |          |          |
-| 010---    | 8RR-form |            |          |          | SVP64    | SVP64    | SVP64    | SVP64    |
-| 011---    |          |            |          |          | SVP64    | SVP64    | SVP64    | SVP64    |
-| 100---    | MLS-form | MLS-form   | MLS-form | MLS-form | MLS-form | MLS-form | MLS-form | MLS-form |
-| 101---    |          |            |          |          |          |          |          |          |
-| 110---    | MRR-form |            |          |          | SVP64    | SVP64    | SVP64    | SVP64    |
-| 111---    |          | MMIRR-form |          |          | SVP64    | SVP64    | SVP64    | SVP64    |
-
-## Prefix Fields
-
-| Prefix Field Name   | Field bits | Constant Value | Description                                |
-|---------------------|------------|----------------|--------------------------------------------|
-| PO (Primary Opcode) | `0:5`      | `1`            | Indicates this is a 64-bit instruction     |
-| `RM[0]`             | `6`        |                | Bit 0 of the Remapped Encoding             |
-| SVP64_7             | `7`        | `1`            | Indicates this is a SVP64 instruction      |
-| `RM[1]`             | `8`        |                | Bit 1 of the Remapped Encoding             |
-| SVP64_9             | `9`        | `1`            | Indicates this is a SVP64 instruction      |
-| `RM[2:23]`          | `10:31`    |                | Bits 2 through 23 of the Remapped Encoding |
 
 # Twin Predication
 
