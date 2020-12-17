@@ -143,6 +143,14 @@ alternative which is understandable and, if EXTRA3 is zero, maps to "no effect" 
 | 110       | Vector | `` | `RA 0b10`      |
 | 111       | Vector | `` | `RA 0b11`      |
 
+algorithm for original version:
+
+    spec = EXTRA3
+    if spec[2]: # vector
+         return RA << 2 + spec[0:1]
+    else:         # scalar
+         return RA + spec[0:1] << 5
+
 2 bit version
 
 (**TODO, i simply cannot interpret the names, they have absolutely zero meaning to me so i have no idea how to fill in the table.  this is a bad sign, indicative that the names have to go, to be replaced by something xlear snd obvious**)
@@ -162,6 +170,14 @@ alternative which is understandable and, if EXTRA2 is zero will map to "no effec
 | 01       | Scalar | `` | `0b01 RA`      |
 | 10       | Vector | `` | `RA 0b00`      |
 | 11       | Vector | `` | `RA 0b10`   |
+
+algorithm for original version:
+
+    spec = EXTRA2 << 1
+    if spec[2]: # vector
+         return RA << 2 + spec[0:1]
+    else:         # scalar
+         return RA + spec[0:1] << 5
 
 ## ELWIDTH Encoding
 
