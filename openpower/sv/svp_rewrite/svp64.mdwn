@@ -212,13 +212,16 @@ FP Registers:
 | Value | Mnemonic       | Description                        |
 |-------|----------------|------------------------------------|
 | 00    | DEFAULT        | default behaviour for FP operation     |
-| 01    | `ELWIDTH=bf16` (rsvd) | Reserved for [`bf16`](https://en.wikipedia.org/wiki/Bfloat16_floating-point_format) |
+| 01    | `ELWIDTH=bf16` | Reserved for `bf16` |
 | 10    | `ELWIDTH=f16`  | 16-bit IEEE 754 Half floating-point   |
 | 11    | `ELWIDTH=f32`  | 32-bit IEEE 754 Single floating-point  |
 
+Note:  [`bf16`](https://en.wikipedia.org/wiki/Bfloat16_floating-point_format)
+is reserved for a future implementation of SV
+
 CR Registers:
 
-TODO
+TODO, important, particularly for crops, mfcr and mtcr, what elwidth even means.  instead it may be possible to use the bits as extra indices (EXTRA6) to access the full 64 CRs.  TBD, several ideas
 
 ## SUBVL Encoding
 
