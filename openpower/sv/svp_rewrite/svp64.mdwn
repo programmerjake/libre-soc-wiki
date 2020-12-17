@@ -60,40 +60,42 @@ defined in the Prefix Fields section.
 
 Shows all fields in the Remapped Encoding `RM[0:23]` for all instruction variants.  There are two categories:  Single and Twin Predication.  Due to space considerations further subdivision of Single Predication is based on whether the number of src operands is 2 or 3.
 
-## Single Predication (N(src) > 1)
+## Single Predication dest/src1/2/3
 
- 
+applies to 4-operand instructions (fmadd, isel, madd)
+
 | Field Name | Field bits | Description                                     |
 |------------|------------|------------------------------------------------|
 | MASK_KIND  | `0`        | Execution Mask Kind                             |
 | MASK       | `1:3`      | Execution Mask                                  |
 | ELWIDTH    | `4:5`      | Element Width                                    |
 | SUBVL      | `6:7`      | Sub-vector length                               |
-| EXTRA      | `8:16`     | Extra fields qualifying registers               |
-| MODE       | `19:23`    | see [[discussion]]                               |
-
-Extra2: applies to 4-operand instructions (fmadd)
-
-| Field Name | Field bits | Description                                    |
-|--------------|---------|--------------------------------------------------|
 | Rdest_EXTRA2 | `8:9`   | extra bits for Rdest (R\*_EXTRA2 Encoding)   |
 | Rsrc1_EXTRA2 | `10:11` | extra bits for Rsrc1 (R\*_EXTRA2 Encoding)   |
 | Rsrc2_EXTRA2 | `12:13` | extra bits for Rsrc2 (R\*_EXTRA2 Encoding)   |
 | Rsrc3_EXTRA2 | `14:15` | extra bits for Rsrc3 (R\*_EXTRA2 Encoding|
-| reserved     | `16`    | reserved |
+| reserved     | `16`    | reserved     |
+| MODE       | `19:23`    | see [[discussion]]                               |
 
-Extra3: applies to 3-operand instructions (src1 src2 dest)
 
+## Single Predication dest/src1/2
 
-| Field Name | Field bits | Description                                    |
-|--------------|---------|--------------------------------------------------|
+applies to 3-operand instructions (src1 src2 dest)
+
+| Field Name | Field bits | Description                                     |
+|------------|------------|------------------------------------------------|
+| MASK_KIND  | `0`        | Execution Mask Kind                             |
+| MASK       | `1:3`      | Execution Mask                                  |
+| ELWIDTH    | `4:5`      | Element Width                                    |
+| SUBVL      | `6:7`      | Sub-vector length                     |
 | Rdest_EXTRA3 | `8:10`  | extra bits for Rdest (Uses R\*_EXTRA3 Encoding) |
 | Rsrc1_EXTRA3 | `11:13` | extra bits for Rsrc1 (Uses R\*_EXTRA3 Encoding) |
 | Rsrc2_EXTRA3 | `14:16` | extra bits for Rsrc3 (Uses R\*_EXTRA3 Encoding) |
+| MODE       | `19:23`    | see [[discussion]]                               |
 
 ## Twin Predication (src=1, dest=1)
 
-| Remapped Encoding Field Name | Field bits | Description                                                               |
+| Field Name | Field bits | Description                                                               |
 |------------------------------|------------|---------------------------------------------------------------------------|
 | MASK_KIND                    | `0`        | Execution Mask Kind                                                       |
 | MASK                         | `1:3`      | Execution Mask                                                            |
