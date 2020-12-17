@@ -14,13 +14,13 @@ counting up as you move to the LSB end). All bit ranges are inclusive (so
 
 SVP64 is designed so that when the prefix is all zeros, no effect or influence occurs (no augmentation) such that all standard OpenPOWER v3.B instructions may be active at that time, in full (and SV is quiescent). The corollary is that when the SV prefix is nonzero, alternative meanings may be given to all and any instructions.
 
-## Definition of Reserved in this spec.
+# Definition of Reserved in this spec.
 
 For the new fields added in SVP64, instructions that have any of their fields set to a reserved value must cause an illegal instruction trap, to allow emulation of future instruction sets.
 
 This is unlike OpenPower ISA v3.1, which doesn't require a CPU to trap.
 
-## Remapped Encoding (`RM[0:23]`)
+# Remapped Encoding (`RM[0:23]`)
 
 To allow relatively easy remapping of which portions of the Prefix Opcode Map
 are used for SVP64 without needing to rewrite a large portion of the SVP64
@@ -56,11 +56,11 @@ defined in the Prefix Fields section.
 | `RM[2:23]`          | `10:31`    |                | Bits 2 through 23 of the Remapped Encoding |
 
 
-## Remapped Encoding Fields
+# Remapped Encoding Fields
 
 Shows all fields in the Remapped Encoding `RM[0:23]` for all instruction variants.  There are two categories:  Single and Twin Predication.  Due to space considerations further subdivision of Single Predication is based on whether the number of src operands is 2 or 3.
 
-### Single Predication (N(src) > 1)
+## Single Predication (N(src) > 1)
 
  
 | Field Name | Field bits | Description                                     |
@@ -91,7 +91,7 @@ Extra3: applies to 3-operand instructions (src1 src2 dest)
 | Rsrc1_EXTRA3 | `11:13` | extra bits for Rsrc1 (Uses R\*_EXTRA3 Encoding) |
 | Rsrc2_EXTRA3 | `14:16` | extra bits for Rsrc3 (Uses R\*_EXTRA3 Encoding) |
 
-### Twin Predication (src=1, dest=1)
+## Twin Predication (src=1, dest=1)
 
 | Remapped Encoding Field Name | Field bits | Description                                                               |
 |------------------------------|------------|---------------------------------------------------------------------------|
