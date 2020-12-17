@@ -195,6 +195,8 @@ the default for SUBVL is 1 and its encoding is 0b00 to indicate that SUBVL is ef
 
 One bit (`MASKMODE`) indicates the mode: CR or Int predication.   The two types may not be mixed.
 
+Special note: to get default behaviour (SV disabled) this field must be set to zero in combination with Integer Predication also being set to 0b000. this has the effect of enabling "all 1s" in the predicate mask, which is equivalent to "not having any predication at all" and consequently, in combination with all other default zeros, fully disables SV.
+
 | MASK_KIND Value | Description                                          |
 |-----------------|------------------------------------------------------|
 | 0               | MASK/MASK_SRC are encoded using Integer Predication  |
