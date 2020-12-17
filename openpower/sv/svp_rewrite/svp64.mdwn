@@ -254,7 +254,9 @@ Those patterns (and more) may be applied to:
 
 * mv (the usual way that V\* operations are created)
 * exts\* sign-extension
-* rwlinm and other RS-RA shift operations
+* rwlinm and other RS-RA shift operations (**note**: excluding
+  those that take RA as both a src and dest. These are not
+  1-src 1-dest, they are 2-src, 1-dest)
 * LD and ST (treating AGEN as one source)
 * FP fclass, fsgn, fneg, fabs, fcvt, frecip, fsqrt etc.
 * Condition Register ops mfcr, mtcr and other similar
