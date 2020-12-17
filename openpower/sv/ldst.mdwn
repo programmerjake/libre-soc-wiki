@@ -2,14 +2,24 @@
 
 Vectorisation of Load and Store requires creation, from scalar operations, a number of different types:
 
-* fixed stride
-* element strided
-* vector indexed
+* fixed stride (contiguous sequence with no gaps)
+* element strided (sequential but regularly offset, with gaps)
+* vector indexed (vector of base addresses and vector of offsets)
 
 OpenPOWER Load/Store operations may be seen from [[isa/fixedload]] and [[isa/fixedstore]] pseudocode to be of the form:
 
-    lbux RT, RA, TB
+    lbux RT, RA, RB
     EA <- (RA) + (RB)
     RT <- MEM(EA)
 
 and for immediate variants:
+
+    lb RT,D(RA)
+    EA <- RA + EXTS(D)
+    RT <- MEM(EA)
+
+Thus in the first example, the source registers may each be independently marked as scalar or vector, and likewise the destination; in the second example only the one source and one dest may be marked as scalar or vector.
+
+Thus we can see that Vector Indexed may be covered, but there is not a convenient way to provide both fixed and element strided.  This is a known limitation of retro-fitting an existing scalar ISA with Vectorisation.
+
+An inconvenient substitute for 
