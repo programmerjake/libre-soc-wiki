@@ -66,8 +66,6 @@ Shows all fields in the Remapped Encoding `RM[0:23]` for all instruction variant
 
 ## RM-3S1D
 
-
-
 | Field Name | Field bits | Description                                     |
 |------------|------------|------------------------------------------------|
 | MASK_KIND  | `0`        | Execution Mask Kind                             |
@@ -84,8 +82,6 @@ Shows all fields in the Remapped Encoding `RM[0:23]` for all instruction variant
 
 ## RM-2S1D
 
-
-
 | Field Name | Field bits | Description                                     |
 |------------|------------|------------------------------------------------|
 | MASK_KIND  | `0`        | Execution Mask Kind                             |
@@ -96,6 +92,17 @@ Shows all fields in the Remapped Encoding `RM[0:23]` for all instruction variant
 | Rsrc1_EXTRA3 | `11:13` | extra bits for Rsrc1 (Uses R\*_EXTRA3 Encoding) |
 | Rsrc2_EXTRA3 | `14:16` | extra bits for Rsrc3 (Uses R\*_EXTRA3 Encoding) |
 | MODE       | `19:23`    | see [[discussion]]                               |
+
+These are for 2 operand 1 dest instructions, such as `add RT, RA, RB`. However also included are unusual instructions with the same src and dest, such as `rlwinmi`.
+
+Normally, the scalar v3.0B ISA would not have sufficient bits to allow an alternative destination.  With SV however this becomes possible.  Therefore, the fact that the dest is implicitly also a src should not mislead: rhey are different SV regs.
+
+* `rlwimi RA, RS, ...` 
+* Rsrc1_EXTRA3 applies to RS as the first src
+* Rsrc2_EXTRA3 applies to RA as the secomd src
+* Rdest_EXTRA3 applies to RA to create an **independent** dest.
+
+Otherwise the normal SV hardware for-loop applies.  The three registers each may be independently made vector or scalar, and may independently augmented to 7 bits in length.
 
 ## RM-1S1D
 
