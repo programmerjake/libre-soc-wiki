@@ -211,16 +211,16 @@ Likewise CR based twin predication has a second set of 3 bits, allowing a differ
 When the predicate mode bit is zero the 3 bits are interpreted as below. 
 Twin predication has an identical 3 bit field similarly encoded.
 
-| MASK/MASK_SRC<br/>Value | Mnemonic | Description                                            |
-|-------------------------|----------|--------------------------------------------------------|
-| 000                     | ALWAYS   | Operation is not masked (mask set to all 1s)           |
-| 001                     | 1 << R3  | Element `i` is enabled if `i == R3`                    |
-| 010                     | R3       | Element `i` is enabled if `R3 & (1 << i)` is non-zero  |
-| 011                     | ~R3      | Element `i` is enabled if `R3 & (1 << i)` is zero      |
-| 100                     | R10      | Element `i` is enabled if `R10 & (1 << i)` is non-zero |
-| 101                     | ~R10     | Element `i` is enabled if `R10 & (1 << i)` is zero     |
-| 110                     | R30      | Element `i` is enabled if `R30 & (1 << i)` is non-zero |
-| 111                     | ~R30     | Element `i` is enabled if `R30 & (1 << i)` is zero     |
+| Value | Mnemonic | Element `i` enabled if:      |
+|-------|----------|------------------------------|
+| 000   | ALWAYS   | (Operation is not masked)    |
+| 001   | 1 << R3  | `i == R3`                    |
+| 010   | R3       | `R3 & (1 << i)` is non-zero  |
+| 011   | ~R3      | `R3 & (1 << i)` is zero      |
+| 100   | R10      | `R10 & (1 << i)` is non-zero |
+| 101   | ~R10     | `R10 & (1 << i)` is zero     |
+| 110   | R30      | `R30 & (1 << i)` is non-zero |
+| 111   | ~R30     | `R30 & (1 << i)` is zero     |
 
 ### CR-based Predication (MASK_KIND=1)
 
