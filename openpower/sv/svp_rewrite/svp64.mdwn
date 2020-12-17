@@ -252,7 +252,7 @@ This is a novel concept that allows predication to be applied to a single source
 
 Those patterns (and more) may be applied to:
 
-* mv (the usual way that V\* operations are created)
+* mv (the usual way that V\* ISA operations are created)
 * exts\* sign-extension
 * rwlinm and other RS-RA shift operations (**note**: excluding
   those that take RA as both a src and dest. These are not
@@ -264,10 +264,6 @@ Those patterns (and more) may be applied to:
 This is a huge list that creates extremely powerful combinations, particularly given that one of the predicate options is `(1<<r3)`
 
 Additional unusual capabilities of Twin Predication include a back-to-back version of VCOMPRESS-VEXPAND which is effectively the ability to do an ordered multiple VINSERT.
-
-## Twin Predication
-
-There are two different encodings: single-predication (typically arithmetic operations i.e. with more than one source register) and twin-predication (one source, one destination).  They require different encodings
 
 # Register Naming
 
