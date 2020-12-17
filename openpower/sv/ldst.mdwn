@@ -24,7 +24,7 @@ Thus we can see that Vector Indexed may be covered, and, as demonstrated with th
 
 At the minimum however it is possible to provide unit stride and vector mode, as follows:
 
-    function op_ld(RT, RA, immed) # LD not VLD!
+    function op_ld(RT, RA, immed, update=False) # LD not VLD!
       rdv = map_dest_extra(RT);
       rsv = map_src_extra(RA);
       ps = get_pred_val(FALSE, RA); # predication on src
@@ -35,22 +35,25 @@ At the minimum however it is possible to provide unit stride and vector mode, as
         if (RT.isvec) while (!(pd & 1<<j)) j++;
         if (RA.isvec)
           # indirect mode (multi mode)
-          EA = ireg[rsv+i] + immed;
+          EA = ireg[rsv+i] + immoed;
+          if update: ireg[rsv+i] = EA;
         elif (RT.isvec)
           # unit and element stride mode
           EA = ireg[rsv] + i * immed
+          if update: ireg[rsv] = EA; # note: overwrites repeatedly
         else
           # standard scalar mode (but predicated)
           EA = ireg[rsv] + immed
+          if update: ireg[rsv] = EA;
         ireg[rdv+j] <= MEM[EA];
-        if (!RA.isvec && !RT.isvec)
-            break # scalar-scalar
+        if (!RT.isvec)
+            break # destination scalar, end immediately
         if (RA.isvec) i++;
         if (RT.isvec) j++;
 
 Indexed LD is:
  
-    function op_ldx(RT, RA, RB) # LD not VLD!
+    function op_ldx(RT, RA, RB, update=False) # LD not VLD!
       rdv = map_dest_extra(RT);
       rsv = map_src_extra(RA);
       rso = map_src_extra(RB);
@@ -61,9 +64,12 @@ Indexed LD is:
         if (RA.isvec) while (!(ps & 1<<i)) i++; 
         if (RB.isvec) while (!(ps & 1<<k)) k++; 
         if (RT.isvec) while (!(pd & 1<<j)) j++; 
-        EA = ireg[rsv] + ireg[rso] # indexed address
+        EA = ireg[rsv+i] + ireg[rso+k] # indexed address
+        if update: ireg[rsv+i] = EA
         ireg[rdv+j] <= MEM[EA];
-        if (!RA.isvec && !RT.isvec && !RB.isvec)
+        if (!RT.isvec)
+            break # destination scalar, end immediately
+        if (!RA.isvec && !RB.isvec)
             break # scalar-scalar
         if (RA.isvec) i++;
         if (RB.isvec) i++;
