@@ -202,7 +202,7 @@ Default behaviour is set to 0b00 so that zeros follow the convention of "npt doi
 
 Only when elwidth is nonzero is the element width overridden to the explicitly required value.
 
-Integer Registers:
+### Elwidth for Integers:
 
 | Value | Mnemonic       | Description                        |
 |-------|----------------|------------------------------------|
@@ -211,7 +211,7 @@ Integer Registers:
 | 10    | `ELWIDTH=h`    | Halfword: 16-bit integer             |
 | 11    | `ELWIDTH=w`    | Word: 32-bit integer                 |
 
-FP Registers:
+### Elwidth for FP Registers:
 
 | Value | Mnemonic       | Description                        |
 |-------|----------------|------------------------------------|
@@ -223,7 +223,7 @@ FP Registers:
 Note:  [`bf16`](https://en.wikipedia.org/wiki/Bfloat16_floating-point_format)
 is reserved for a future implementation of SV
 
-CR Registers:
+### Elwidth for CRs:
 
 TODO, important, particularly for crops, mfcr and mtcr, what elwidth even means.  instead it may be possible to use the bits as extra indices (EXTRA6) to access the full 64 CRs.  TBD, several ideas
 
