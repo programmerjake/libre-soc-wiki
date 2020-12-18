@@ -152,33 +152,21 @@ Note also that LD with update indexed, which takes 2 src and 2 dest (e.g. `lhaux
 
 In the following table, `<N>` denotes the value of the corresponding register field in the SVP64 suffix word. 
 
-(**Jacob: these tables are not in the slightest bit understandable due to the use of register names that are impossible to interpret clearly**)
-
 3 bit version
 
-| R\*_EXTRA3 | Vector/Scalar<br/>Mode | CR Register   | Int/FP<br/>Register |
-|-----------|------------------------|---------------|---------------------|
-| 000       | Scalar                 | `SVCR<N>_000` | `SV[F]R<N>_00`      |
-| 001       | Scalar                 | `SVCR<N>_010` | `SV[F]R<N>_01`      |
-| 010       | Scalar                 | `SVCR<N>_100` | `SV[F]R<N>_10`      |
-| 011       | Scalar                 | `SVCR<N>_110` | `SV[F]R<N>_11`      |
-| 100       | Vector                 | `SVCR<N>_000` | `SV[F]R<N>_00`      |
-| 101       | Vector                 | `SVCR<N>_010` | `SV[F]R<N>_01`      |
-| 110       | Vector                 | `SVCR<N>_100` | `SV[F]R<N>_10`      |
-| 111       | Vector                 | `SVCR<N>_110` | `SV[F]R<N>_11`      |
 
 alternative which is understandable and, if EXTRA3 is zero, maps to "no effect" (scalar OpenPOWER ISA field naming).  also, these are the encodings used in the original SV Prefix scheme.  the reason why they were chosen is so that scalar registers in v3.0B and prefixed scalar registers have access to the same 32 registers.
 
-| R\*_EXTRA3 | Mode | CR Register   | Int/FP<br/>Register |
+| R\*_EXTRA3 | Mode | Range | Encoded as |
 |-----------|-------|---------------|---------------------|
-| 000       | Scalar | `` | `0b00 RA`      |
-| 001       | Scalar | `` | `0b01 RA`      |
-| 010       | Scalar | `` | `0b10 RA`      |
-| 011       | Scalar | `` | `0b11 RA`      |
-| 100       | Vector | `` | `RA 0b00`      |
-| 101       | Vector | `` | `RA 0b01`      |
-| 110       | Vector | `` | `RA 0b10`      |
-| 111       | Vector | `` | `RA 0b11`      |
+| 000       | Scalar | `r0-r31` | `0b00 RA`      |
+| 001       | Scalar | `r32-r63` | `0b01 RA`      |
+| 010       | Scalar | `r64-r95` | `0b10 RA`      |
+| 011       | Scalar | `r96-r127` | `0b11 RA`      |
+| 100       | Vector | `r0-r124` | `RA 0b00`      |
+| 101       | Vector | `r1-r125` | `RA 0b01`      |
+| 110       | Vector | `r2-r126` | `RA 0b10`      |
+| 111       | Vector | `r3-r127` | `RA 0b11`      |
 
 algorithm for original version:
 
@@ -190,23 +178,15 @@ algorithm for original version:
 
 2 bit version
 
-(**TODO, i simply cannot interpret the names, they have absolutely zero meaning to me so i have no idea how to fill in the table.  this is a bad sign, indicative that the names have to go, to be replaced by something clear and obvious**)
-
-| R\*_EXTRA2 |   Mode | CR Register   | Int/FP<br/>Register |
-|-----------|---------|---------------|---------------------|
-| 00       | Scalar   | `SVCR<N>_000` | `SV[F]R<N>_00`      |
-| 01       | Scalar   | `SVCR<N>_100` | `SV[F]R<N>_10`      |
-| 10       | Vector   | `SVCR<N>_000` | `SV[F]R<N>_00`      |
-| 11       | Vector   | `SVCR<N>_100` | `SV[F]R<N>_10`      |
-
 alternative which is understandable and, if EXTRA2 is zero will map to "no effect" i.e Scalar OpenPOWER register naming:
 
-| R\*_EXTRA2 | Mode | CR Register   | Int/FP<br/>Register |
+| R\*_EXTRA2 | Mode | Range | Encoded as |
 |-----------|-------|---------------|---------------------|
-| 00       | Scalar | `` | `0b00 RA`                |
-| 01       | Scalar | `` | `0b01 RA`      |
-| 10       | Vector | `` | `RA 0b00`      |
-| 11       | Vector | `` | `RA 0b10`   |
+| 00       | Scalar | `r0-r31` | `0b00 RA`                |
+| 01       | Scalar | `r32-r63` | `0b01 RA`      |
+| 10       | Vector | `r0-r124` | `RA 0b00`      |
+| 11       | Vector | `r2-r126` | `RA 0b10`   |
+
 
 algorithm for original version:
 
