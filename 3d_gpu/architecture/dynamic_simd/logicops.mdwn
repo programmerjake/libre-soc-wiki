@@ -35,7 +35,10 @@ and likewise by the time 8x8 is reached:
 
 now the question becomes: what to do when the Signal is dynamically partitionable? how do we merge all of the combinations, 1x64 2x32 4x16 8x8 into the same statically-allocated hardware?
 
-the first thing is to define some conventions, that the answer (result) will always be 8 bit (not 1 bit) and that, rather than just one bit being set if sone are set, all 8 bits are clear or all 8 bits are set.
+the first thing is to define some conventions, that the answer (result) will always be 8 bit (not 1 bit) and that, rather than just one bit being set if some are set, all 8 bits are clear or all 8 bits are set.
+
+     if result[0]:       # bit 0 true?
+         result[1:7] = 1 # then set the remaining 7
 
 likewise, when configured as 2x32 the result is subdivided into two 4 bit halves: the first half is all zero if all the first 32 bits are zero, and all ones if any one bit in the first 32 bits are set.
 
