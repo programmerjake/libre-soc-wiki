@@ -242,6 +242,8 @@ the default for SUBVL is 1 and its encoding is 0b00 to indicate that SUBVL is ef
 | 10          | `SUBVL=3`           | Sub-vector length of 3 |
 | 11          | `SUBVL=4`           | Sub-vector length of 4 |
 
+The SUBVL encoding value may be thought of as an inclusive range of a sub-vector.  SUBVL=2 represents a vec2, its encoding is 0b01, therefore this may be considered to be elements 0b00 to 0b01 inclusive.
+
 ## MASK/MASK_SRC & MASK_KIND Encoding
 
 One bit (`MASKMODE`) indicates the mode: CR or Int predication.   The two types may not be mixed.
