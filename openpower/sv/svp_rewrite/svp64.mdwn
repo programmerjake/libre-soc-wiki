@@ -320,166 +320,9 @@ Additional unusual capabilities of Twin Predication include a back-to-back versi
 
 # Register Naming
 
-SV Registers are numbered using the notation `SV[F|C]R<N>_<M>` where `<N>` is a decimal integer and `<M>` is a binary integer. Two integers are used to enable future register expansions to add more registers by appending more LSB bits to `<M>`.
+SV Registers are simply the INT, FP and CR register files extended linearly to larger sizes.  Thus, the integer regfile in standard scalar OpenPOWER v3.0B and v3.1B is r0 to r31: SV extends this as r0 to r127.  Likewise FP registers are extended to 128 (fp0 to fp127), and CRs are extended to 64 entries, CR0 thru CR63.
 
-For all `SV[F|C]R<N>_<M>` registers, the N is the
-upper bits in decimal and the M is the lower bits in binary, so `SVR5_01` is
-SV integer register `(5 << 2) + 0b01`, `SVCR6_011` is SV condition register
-`(6 << 3) + 0b011`, and `SVFR20_10` is SV floating-point register
-`(20 << 2) + 0b10`.
-
-(Jacob i finally after several days, nearly a week, begin to vaguely understand this encoding.  it is not at all the SV Prefix original one, which is what i W
-was expecting to see.  this encoding prevents and prohibits standard scalar v3.0B instructions from being able to interact.  the encoding only allows access to a limited subset when scalar mode is set, and also violates the design goal of allowing "all zeros" to be the way to "switch off" SV)
-
-## Example Code
-
-a vectorized 32-bit add:
-
-    add SVR3_01, SVR6_10, SVR10_00, elwidth=w, subvl=1, mask=lt
-
-does the following:
-
-    const size_t start_cr = (6 << 3) + 0b000; // starting at SVCR6_000
-    // pretend for the moment that type-punning actually works in C/C++
-    uint32_t *rt = (uint32_t *)&regs[(3 << 2) + 0b01]; // SVR3_01
-    uint32_t *ra = (uint32_t *)&regs[(6 << 2) + 0b10]; // SVR6_10
-    uint32_t *rb = (uint32_t *)&regs[(10 << 2) + 0b00]; // SVR10_00
-    for(size_t i = 0; i < VL; i++) {
-    if(CRs[(start_cr + i) % 64].lt) {
-            rt[i] = ra[i] + rb[i];
-        }
-    }
-
-## Integer Registers
-
-    setvli ..., VL=7
-    add r20, r25, r30, elwidth=64, subvl=1
-
-where `r20`, `r25`, and `r30` are standard OpenPower register names.
-Those names correspond to `SVR20_00`, `SVR25_00`, and `SVR30_00`.
-
-pseudocode:
-
-    const size_t STD_TO_SV_SHIFT = 2; // gets bigger as reg files expand to 256, 512, ... registers
-
-    VL = 7; // setvli (omitting maxvl here)
-
-    for(size_t i = 0; i < VL; i++) {
-        regs[(20 << STD_TO_SV_SHIFT) + i] = regs[(25 << STD_TO_SV_SHIFT) + i]
-            + regs[(30 << STD_TO_SV_SHIFT) + i];
-    }
-
-Standard PowerISA Integer registers are aliased to some of the SV integer registers:
-
-(**Jacob these names are impossible to interpret due to them not being sequential numbering and there being no compact algorithm given that shows how they're created.  the original SVPrefix was dead easy to understand**)
-
-| Integer<br/>Register | SV Integer<br/>Register | Integer<br/>Register | SV Integer<br/>Register | Integer<br/>Register | SV Integer<br/>Register | Integer<br/>Register | SV Integer<br/>Register |
-|----------------------|-------------------------|----------------------|-------------------------|----------------------|-------------------------|----------------------|-------------------------|
-| R0                   | SVR0_00                 | R8                   | SVR8_00                 | R16                  | SVR16_00                | R24                  | SVR24_00                |
-|                      | SVR0_01                 |                      | SVR8_01                 |                      | SVR16_01                |                      | SVR24_01                |
-|                      | SVR0_10                 |                      | SVR8_10                 |                      | SVR16_10                |                      | SVR24_10                |
-|                      | SVR0_11                 |                      | SVR8_11                 |                      | SVR16_11                |                      | SVR24_11                |
-| R1                   | SVR1_00                 | R9                   | SVR9_00                 | R17                  | SVR17_00                | R25                  | SVR25_00                |
-|                      | SVR1_01                 |                      | SVR9_01                 |                      | SVR17_01                |                      | SVR25_01                |
-|                      | SVR1_10                 |                      | SVR9_10                 |                      | SVR17_10                |                      | SVR25_10                |
-|                      | SVR1_11                 |                      | SVR9_11                 |                      | SVR17_11                |                      | SVR25_11                |
-| R2                   | SVR2_00                 | R10                  | SVR10_00                | R18                  | SVR18_00                | R26                  | SVR26_00                |
-|                      | SVR2_01                 |                      | SVR10_01                |                      | SVR18_01                |                      | SVR26_01                |
-|                      | SVR2_10                 |                      | SVR10_10                |                      | SVR18_10                |                      | SVR26_10                |
-|                      | SVR2_11                 |                      | SVR10_11                |                      | SVR18_11                |                      | SVR26_11                |
-| R3                   | SVR3_00                 | R11                  | SVR11_00                | R19                  | SVR19_00                | R27                  | SVR27_00                |
-|                      | SVR3_01                 |                      | SVR11_01                |                      | SVR19_01                |                      | SVR27_01                |
-|                      | SVR3_10                 |                      | SVR11_10                |                      | SVR19_10                |                      | SVR27_10                |
-|                      | SVR3_11                 |                      | SVR11_11                |                      | SVR19_11                |                      | SVR27_11                |
-| R4                   | SVR4_00                 | R12                  | SVR12_00                | R20                  | SVR20_00                | R28                  | SVR28_00                |
-|                      | SVR4_01                 |                      | SVR12_01                |                      | SVR20_01                |                      | SVR28_01                |
-|                      | SVR4_10                 |                      | SVR12_10                |                      | SVR20_10                |                      | SVR28_10                |
-|                      | SVR4_11                 |                      | SVR12_11                |                      | SVR20_11                |                      | SVR28_11                |
-| R5                   | SVR5_00                 | R13                  | SVR13_00                | R21                  | SVR21_00                | R29                  | SVR29_00                |
-|                      | SVR5_01                 |                      | SVR13_01                |                      | SVR21_01                |                      | SVR29_01                |
-|                      | SVR5_10                 |                      | SVR13_10                |                      | SVR21_10                |                      | SVR29_10                |
-|                      | SVR5_11                 |                      | SVR13_11                |                      | SVR21_11                |                      | SVR29_11                |
-| R6                   | SVR6_00                 | R14                  | SVR14_00                | R22                  | SVR22_00                | R30                  | SVR30_00                |
-|                      | SVR6_01                 |                      | SVR14_01                |                      | SVR22_01                |                      | SVR30_01                |
-|                      | SVR6_10                 |                      | SVR14_10                |                      | SVR22_10                |                      | SVR30_10                |
-|                      | SVR6_11                 |                      | SVR14_11                |                      | SVR22_11                |                      | SVR30_11                |
-| R7                   | SVR7_00                 | R15                  | SVR15_00                | R23                  | SVR23_00                | R31                  | SVR31_00                |
-|                      | SVR7_01                 |                      | SVR15_01                |                      | SVR23_01                |                      | SVR31_01                |
-|                      | SVR7_10                 |                      | SVR15_10                |                      | SVR23_10                |                      | SVR31_10                |
-|                      | SVR7_11                 |                      | SVR15_11                |                      | SVR23_11                |                      | SVR31_11                |
-
-## Floating-Point Registers
-
-Standard PowerISA floating-point and VSX registers are aliased to some of the SV floating-point registers:
-
-(**Jacob these names are impossible to interpret due to them not being sequential numbering and there being no compact algorithm given that shows how they're created.  the original SVPrefix was dead easy to understand**)
-
-| FP<br/>Register | VSX Register          | SV FP<br/>Register | FP<br/>Register | VSX Register          | SV FP<br/>Register |
-|-----------------|-----------------------|--------------------|-----------------|-----------------------|--------------------|
-| FPR\[0\]        | VSR\[0\]\.dword\[0\]  | SVFR0\_00          | FPR\[16\]       | VSR\[16\]\.dword\[0\] | SVFR16\_00         |
-|                 | VSR\[0\]\.dword\[1\]  | SVFR0\_01          |                 | VSR\[16\]\.dword\[1\] | SVFR16\_01         |
-|                 | VSR\[32\]\.dword\[0\] | SVFR0\_10          |                 | VSR\[48\]\.dword\[0\] | SVFR16\_10         |
-|                 | VSR\[32\]\.dword\[1\] | SVFR0\_11          |                 | VSR\[48\]\.dword\[1\] | SVFR16\_11         |
-| FPR\[1\]        | VSR\[1\]\.dword\[0\]  | SVFR1\_00          | FPR\[17\]       | VSR\[17\]\.dword\[0\] | SVFR17\_00         |
-|                 | VSR\[1\]\.dword\[1\]  | SVFR1\_01          |                 | VSR\[17\]\.dword\[1\] | SVFR17\_01         |
-|                 | VSR\[33\]\.dword\[0\] | SVFR1\_10          |                 | VSR\[49\]\.dword\[0\] | SVFR17\_10         |
-|                 | VSR\[33\]\.dword\[1\] | SVFR1\_11          |                 | VSR\[49\]\.dword\[1\] | SVFR17\_11         |
-| FPR\[2\]        | VSR\[2\]\.dword\[0\]  | SVFR2\_00          | FPR\[18\]       | VSR\[18\]\.dword\[0\] | SVFR18\_00         |
-|                 | VSR\[2\]\.dword\[1\]  | SVFR2\_01          |                 | VSR\[18\]\.dword\[1\] | SVFR18\_01         |
-|                 | VSR\[34\]\.dword\[0\] | SVFR2\_10          |                 | VSR\[50\]\.dword\[0\] | SVFR18\_10         |
-|                 | VSR\[34\]\.dword\[1\] | SVFR2\_11          |                 | VSR\[50\]\.dword\[1\] | SVFR18\_11         |
-| FPR\[3\]        | VSR\[3\]\.dword\[0\]  | SVFR3\_00          | FPR\[19\]       | VSR\[19\]\.dword\[0\] | SVFR19\_00         |
-|                 | VSR\[3\]\.dword\[1\]  | SVFR3\_01          |                 | VSR\[19\]\.dword\[1\] | SVFR19\_01         |
-|                 | VSR\[35\]\.dword\[0\] | SVFR3\_10          |                 | VSR\[51\]\.dword\[0\] | SVFR19\_10         |
-|                 | VSR\[35\]\.dword\[1\] | SVFR3\_11          |                 | VSR\[51\]\.dword\[1\] | SVFR19\_11         |
-| FPR\[4\]        | VSR\[4\]\.dword\[0\]  | SVFR4\_00          | FPR\[20\]       | VSR\[20\]\.dword\[0\] | SVFR20\_00         |
-|                 | VSR\[4\]\.dword\[1\]  | SVFR4\_01          |                 | VSR\[20\]\.dword\[1\] | SVFR20\_01         |
-|                 | VSR\[36\]\.dword\[0\] | SVFR4\_10          |                 | VSR\[52\]\.dword\[0\] | SVFR20\_10         |
-|                 | VSR\[36\]\.dword\[1\] | SVFR4\_11          |                 | VSR\[52\]\.dword\[1\] | SVFR20\_11         |
-| FPR\[5\]        | VSR\[5\]\.dword\[0\]  | SVFR5\_00          | FPR\[21\]       | VSR\[21\]\.dword\[0\] | SVFR21\_00         |
-|                 | VSR\[5\]\.dword\[1\]  | SVFR5\_01          |                 | VSR\[21\]\.dword\[1\] | SVFR21\_01         |
-|                 | VSR\[37\]\.dword\[0\] | SVFR5\_10          |                 | VSR\[53\]\.dword\[0\] | SVFR21\_10         |
-|                 | VSR\[37\]\.dword\[1\] | SVFR5\_11          |                 | VSR\[53\]\.dword\[1\] | SVFR21\_11         |
-| FPR\[6\]        | VSR\[6\]\.dword\[0\]  | SVFR6\_00          | FPR\[22\]       | VSR\[22\]\.dword\[0\] | SVFR22\_00         |
-|                 | VSR\[6\]\.dword\[1\]  | SVFR6\_01          |                 | VSR\[22\]\.dword\[1\] | SVFR22\_01         |
-|                 | VSR\[38\]\.dword\[0\] | SVFR6\_10          |                 | VSR\[54\]\.dword\[0\] | SVFR22\_10         |
-|                 | VSR\[38\]\.dword\[1\] | SVFR6\_11          |                 | VSR\[54\]\.dword\[1\] | SVFR22\_11         |
-| FPR\[7\]        | VSR\[7\]\.dword\[0\]  | SVFR7\_00          | FPR\[23\]       | VSR\[23\]\.dword\[0\] | SVFR23\_00         |
-|                 | VSR\[7\]\.dword\[1\]  | SVFR7\_01          |                 | VSR\[23\]\.dword\[1\] | SVFR23\_01         |
-|                 | VSR\[39\]\.dword\[0\] | SVFR7\_10          |                 | VSR\[55\]\.dword\[0\] | SVFR23\_10         |
-|                 | VSR\[39\]\.dword\[1\] | SVFR7\_11          |                 | VSR\[55\]\.dword\[1\] | SVFR23\_11         |
-| FPR\[8\]        | VSR\[8\]\.dword\[0\]  | SVFR8\_00          | FPR\[24\]       | VSR\[24\]\.dword\[0\] | SVFR24\_00         |
-|                 | VSR\[8\]\.dword\[1\]  | SVFR8\_01          |                 | VSR\[24\]\.dword\[1\] | SVFR24\_01         |
-|                 | VSR\[40\]\.dword\[0\] | SVFR8\_10          |                 | VSR\[56\]\.dword\[0\] | SVFR24\_10         |
-|                 | VSR\[40\]\.dword\[1\] | SVFR8\_11          |                 | VSR\[56\]\.dword\[1\] | SVFR24\_11         |
-| FPR\[9\]        | VSR\[9\]\.dword\[0\]  | SVFR9\_00          | FPR\[25\]       | VSR\[25\]\.dword\[0\] | SVFR25\_00         |
-|                 | VSR\[9\]\.dword\[1\]  | SVFR9\_01          |                 | VSR\[25\]\.dword\[1\] | SVFR25\_01         |
-|                 | VSR\[41\]\.dword\[0\] | SVFR9\_10          |                 | VSR\[57\]\.dword\[0\] | SVFR25\_10         |
-|                 | VSR\[41\]\.dword\[1\] | SVFR9\_11          |                 | VSR\[57\]\.dword\[1\] | SVFR25\_11         |
-| FPR\[10\]       | VSR\[10\]\.dword\[0\] | SVFR10\_00         | FPR\[26\]       | VSR\[26\]\.dword\[0\] | SVFR26\_00         |
-|                 | VSR\[10\]\.dword\[1\] | SVFR10\_01         |                 | VSR\[26\]\.dword\[1\] | SVFR26\_01         |
-|                 | VSR\[42\]\.dword\[0\] | SVFR10\_10         |                 | VSR\[58\]\.dword\[0\] | SVFR26\_10         |
-|                 | VSR\[42\]\.dword\[1\] | SVFR10\_11         |                 | VSR\[58\]\.dword\[1\] | SVFR26\_11         |
-| FPR\[11\]       | VSR\[11\]\.dword\[0\] | SVFR11\_00         | FPR\[27\]       | VSR\[27\]\.dword\[0\] | SVFR27\_00         |
-|                 | VSR\[11\]\.dword\[1\] | SVFR11\_01         |                 | VSR\[27\]\.dword\[1\] | SVFR27\_01         |
-|                 | VSR\[43\]\.dword\[0\] | SVFR11\_10         |                 | VSR\[59\]\.dword\[0\] | SVFR27\_10         |
-|                 | VSR\[43\]\.dword\[1\] | SVFR11\_11         |                 | VSR\[59\]\.dword\[1\] | SVFR27\_11         |
-| FPR\[12\]       | VSR\[12\]\.dword\[0\] | SVFR12\_00         | FPR\[28\]       | VSR\[28\]\.dword\[0\] | SVFR28\_00         |
-|                 | VSR\[12\]\.dword\[1\] | SVFR12\_01         |                 | VSR\[28\]\.dword\[1\] | SVFR28\_01         |
-|                 | VSR\[44\]\.dword\[0\] | SVFR12\_10         |                 | VSR\[60\]\.dword\[0\] | SVFR28\_10         |
-|                 | VSR\[44\]\.dword\[1\] | SVFR12\_11         |                 | VSR\[60\]\.dword\[1\] | SVFR28\_11         |
-| FPR\[13\]       | VSR\[13\]\.dword\[0\] | SVFR13\_00         | FPR\[29\]       | VSR\[29\]\.dword\[0\] | SVFR29\_00         |
-|                 | VSR\[13\]\.dword\[1\] | SVFR13\_01         |                 | VSR\[29\]\.dword\[1\] | SVFR29\_01         |
-|                 | VSR\[45\]\.dword\[0\] | SVFR13\_10         |                 | VSR\[61\]\.dword\[0\] | SVFR29\_10         |
-|                 | VSR\[45\]\.dword\[1\] | SVFR13\_11         |                 | VSR\[61\]\.dword\[1\] | SVFR29\_11         |
-| FPR\[14\]       | VSR\[14\]\.dword\[0\] | SVFR14\_00         | FPR\[30\]       | VSR\[30\]\.dword\[0\] | SVFR30\_00         |
-|                 | VSR\[14\]\.dword\[1\] | SVFR14\_01         |                 | VSR\[30\]\.dword\[1\] | SVFR30\_01         |
-|                 | VSR\[46\]\.dword\[0\] | SVFR14\_10         |                 | VSR\[62\]\.dword\[0\] | SVFR30\_10         |
-|                 | VSR\[46\]\.dword\[1\] | SVFR14\_11         |                 | VSR\[62\]\.dword\[1\] | SVFR30\_11         |
-| FPR\[15\]       | VSR\[15\]\.dword\[0\] | SVFR15\_00         | FPR\[31\]       | VSR\[31\]\.dword\[0\] | SVFR31\_00         |
-|                 | VSR\[15\]\.dword\[1\] | SVFR15\_01         |                 | VSR\[31\]\.dword\[1\] | SVFR31\_01         |
-|                 | VSR\[47\]\.dword\[0\] | SVFR15\_10         |                 | VSR\[63\]\.dword\[0\] | SVFR31\_10         |
-|                 | VSR\[47\]\.dword\[1\] | SVFR15\_11         |                 | VSR\[63\]\.dword\[1\] | SVFR31\_11         |
+The names of the registers therefore reflects a simple linear extension of the OpenPOWER v3.0B / v3.1B register naming.
 
 # Operation
 
@@ -503,50 +346,13 @@ so FP instructions with Rc=1 write to CR[1] aka SVCR1_000.
 
 There are 3 new SPRs for holding CRs: CR_EXT1, CR_EXT2, and CR_EXT3.
 
-The 64 SV CRs are arranged similarly to the way the 128 integer registers are arranged:
+The 64 SV CRs are arranged similarly to the way the 128 integer registers are arranged.  TODO a python program that auto-generates a CSV file which can be included in a table, which is in a new page (so as not to overwhelm this one). [[svp64/cr_names]]
 
-(**Jacob these names are impossible to interpret due to them not being sequential numbering and there being no compact algorithm given that shows how they're created.  the original SVPrefix was dead easy to understand**)
 
-| CR<br/>Register | SPR<br/>Field  | SV CR<br/>Register | CR<br/>Register | SPR<br/>Field  | SV CR<br/>Register |
-|-----------------|----------------|--------------------|-----------------|----------------|--------------------|
-| CR[0]           | CR[32:35]      | SVCR0_000          | CR[4]           | CR[48:51]      | SVCR4_000          |
-|                 | CR_EXT1[32:35] | SVCR0_001          |                 | CR_EXT1[48:51] | SVCR4_001          |
-|                 | CR_EXT2[32:35] | SVCR0_010          |                 | CR_EXT2[48:51] | SVCR4_010          |
-|                 | CR_EXT3[32:35] | SVCR0_011          |                 | CR_EXT3[48:51] | SVCR4_011          |
-| *CR[-8]*        | CR[0:3]        | SVCR0_100          | *CR[-4]*        | CR[16:19]      | SVCR4_100          |
-|                 | CR_EXT1[0:3]   | SVCR0_101          |                 | CR_EXT1[16:19] | SVCR4_101          |
-|                 | CR_EXT2[0:3]   | SVCR0_110          |                 | CR_EXT2[16:19] | SVCR4_110          |
-|                 | CR_EXT3[0:3]   | SVCR0_111          |                 | CR_EXT3[16:19] | SVCR4_111          |
-| CR[1]           | CR[36:39]      | SVCR1_000          | CR[5]           | CR[52:55]      | SVCR5_000          |
-|                 | CR_EXT1[36:39] | SVCR1_001          |                 | CR_EXT1[52:55] | SVCR5_001          |
-|                 | CR_EXT2[36:39] | SVCR1_010          |                 | CR_EXT2[52:55] | SVCR5_010          |
-|                 | CR_EXT3[36:39] | SVCR1_011          |                 | CR_EXT3[52:55] | SVCR5_011          |
-| *CR[-7]*        | CR[4:7]        | SVCR1_100          | *CR[-3]*        | CR[20:23]      | SVCR5_100          |
-|                 | CR_EXT1[4:7]   | SVCR1_101          |                 | CR_EXT1[20:23] | SVCR5_101          |
-|                 | CR_EXT2[4:7]   | SVCR1_110          |                 | CR_EXT2[20:23] | SVCR5_110          |
-|                 | CR_EXT3[4:7]   | SVCR1_111          |                 | CR_EXT3[20:23] | SVCR5_111          |
-| CR[2]           | CR[40:43]      | SVCR2_000          | CR[6]           | CR[56:59]      | SVCR6_000          |
-|                 | CR_EXT1[40:43] | SVCR2_001          |                 | CR_EXT1[56:59] | SVCR6_001          |
-|                 | CR_EXT2[40:43] | SVCR2_010          |                 | CR_EXT2[56:59] | SVCR6_010          |
-|                 | CR_EXT3[40:43] | SVCR2_011          |                 | CR_EXT3[56:59] | SVCR6_011          |
-| *CR[-6]*        | CR[8:11]       | SVCR2_100          | *CR[-2]*        | CR[24:27]      | SVCR6_100          |
-|                 | CR_EXT1[8:11]  | SVCR2_101          |                 | CR_EXT1[24:27] | SVCR6_101          |
-|                 | CR_EXT2[8:11]  | SVCR2_110          |                 | CR_EXT2[24:27] | SVCR6_110          |
-|                 | CR_EXT3[8:11]  | SVCR2_111          |                 | CR_EXT3[24:27] | SVCR6_111          |
-| CR[3]           | CR[44:47]      | SVCR3_000          | CR[7]           | CR[60:63]      | SVCR7_000          |
-|                 | CR_EXT1[44:47] | SVCR3_001          |                 | CR_EXT1[60:63] | SVCR7_001          |
-|                 | CR_EXT2[44:47] | SVCR3_010          |                 | CR_EXT2[60:63] | SVCR7_010          |
-|                 | CR_EXT3[44:47] | SVCR3_011          |                 | CR_EXT3[60:63] | SVCR7_011          |
-| *CR[-5]*        | CR[12:15]      | SVCR3_100          | *CR[-1]*        | CR[28:31]      | SVCR7_100          |
-|                 | CR_EXT1[12:15] | SVCR3_101          |                 | CR_EXT1[28:31] | SVCR7_101          |
-|                 | CR_EXT2[12:15] | SVCR3_110          |                 | CR_EXT2[28:31] | SVCR7_110          |
-|                 | CR_EXT3[12:15] | SVCR3_111          |                 | CR_EXT3[28:31] | SVCR7_111          |
-
-Note: CR[-8] through CR[-1] are not part of OpenPower v3.1, they are the MSB half of the 64-bit CR SPR.
 
 # Register Profiles
 
-**NOTE THIS TABKE SHOULD NO LONGER BE HAND EDITED** see <https://bugs.libre-soc.org/show_bug.cgi?id=548> for details.
+**NOTE THIS TABLE SHOULD NO LONGER BE HAND EDITED** see <https://bugs.libre-soc.org/show_bug.cgi?id=548> for details.
 
 Instructions are broken down by Register Profiles as listed in the following auto-generated page:
 [[opcode_regs_deduped]].  "Non-SV" indicates that the operations with this Register Profile cannot be Vectorised (mtspr, bc, dcbz, twi)
