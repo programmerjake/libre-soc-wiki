@@ -235,12 +235,12 @@ As mentioned TBD, this leaves crops etc. to have a meaming defined for elwidth, 
 
 the default for SUBVL is 1 and its encoding is 0b00 to indicate that SUBVL is effectively disabled (a SUBVL for-loop of only one element). this lines up in combination with all other "default is all zeros" behaviour.
 
-| SUBVL Value | Mnemonic            | Description            |
-|-------------|---------------------|------------------------|
-| 00          | `SUBVL=1` (default) | Sub-vector length of 1 |
-| 01          | `SUBVL=2`           | Sub-vector length of 2 |
-| 10          | `SUBVL=3`           | Sub-vector length of 3 |
-| 11          | `SUBVL=4`           | Sub-vector length of 4 |
+| Value | Mnemonic            | Description            |
+|-------|---------------------|------------------------|
+| 00    | `SUBVL=1` (default) | Sub-vector length of 1 |
+| 01    | `SUBVL=2`           | Sub-vector length of 2 |
+| 10    | `SUBVL=3`           | Sub-vector length of 3 |
+| 11    | `SUBVL=4`           | Sub-vector length of 4 |
 
 The SUBVL encoding value may be thought of as an inclusive range of a sub-vector.  SUBVL=2 represents a vec2, its encoding is 0b01, therefore this may be considered to be elements 0b00 to 0b01 inclusive.
 
@@ -279,16 +279,16 @@ Twin predication has an identical 3 bit field similarly encoded.
 
 When the predicate mode bit is one the 3 bits are interpreted as below.  Twin predication has an identical 3 bit field similarly encoded
 
-| MASK/MASK_SRC<br/>Value | Mnemonic | Description                                     |
-|-------------------------|----------|-------------------------------------------------|
-| 000                     | lt       | Element `i` is enabled if `CR[6+i].LT` is set   |
-| 001                     | nl/ge    | Element `i` is enabled if `CR[6+i].LT` is clear |
-| 010                     | gt       | Element `i` is enabled if `CR[6+i].GT` is set   |
-| 011                     | ng/le    | Element `i` is enabled if `CR[6+i].GT` is clear |
-| 100                     | eq       | Element `i` is enabled if `CR[6+i].EQ` is set   |
-| 101                     | ne       | Element `i` is enabled if `CR[6+i].EQ` is clear |
-| 110                     | so/un    | Element `i` is enabled if `CR[6+i].FU` is set   |
-| 111                     | ns/nu    | Element `i` is enabled if `CR[6+i].FU` is clear |
+| Value | Mnemonic | Description                                     |
+|-------|----------|-------------------------------------------------|
+| 000   | lt       | Element `i` is enabled if `CR[6+i].LT` is set   |
+| 001   | nl/ge    | Element `i` is enabled if `CR[6+i].LT` is clear |
+| 010   | gt       | Element `i` is enabled if `CR[6+i].GT` is set   |
+| 011   | ng/le    | Element `i` is enabled if `CR[6+i].GT` is clear |
+| 100   | eq       | Element `i` is enabled if `CR[6+i].EQ` is set   |
+| 101   | ne       | Element `i` is enabled if `CR[6+i].EQ` is clear |
+| 110   | so/un    | Element `i` is enabled if `CR[6+i].FU` is set   |
+| 111   | ns/nu    | Element `i` is enabled if `CR[6+i].FU` is clear |
 
 CR based predication.  TODO: select alternate CR for twin predication? see [[discussion]]  Overlap of the two CR based predicates must be taken into account, so the starting point for one of them must be suitably high, or accept that for twin predication VL must not exceed the range where overlap will occur, *or* that they use the same starting point but select different *bits* of the same CRs
 
