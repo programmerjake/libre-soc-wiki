@@ -247,6 +247,10 @@ CR Registers:
 
 TODO, important, particularly for crops, mfcr and mtcr, what elwidth even means.  instead it may be possible to use the bits as extra indices (EXTRA6) to access the full 64 CRs.  TBD, several ideas
 
+The actual width of the CRs cannot be altered: they are 4 bit.  Thus, for Rc=1 operations that produce a result and corresponding CR, it is the result to which the elwidth override applies, not the CR.
+
+As mentioned TBD, this leaves crops etc. to have a meaming defined for elwidth, because these ops are pure explicit CR based.
+
 ## SUBVL Encoding
 
 the default for SUBVL is 1 and its encoding is 0b00 to indicate that SUBVL is effectively disabled (a SUBVL for-loop of only one element). this lines up in combination with all other "default is all zeros" behaviour.
