@@ -1,0 +1,14 @@
+# Logic boolean operations
+
+These are not the same as bitwise operations equivslent to:
+
+     for i in range(64):
+         result[i] = a[i] or b[i]
+
+they are instead SIMD versions of:
+
+     result = 0 # initial value
+     for i in range(64):
+         result = result or a[i]
+
+
