@@ -6,23 +6,17 @@ There are five CSRs, available in any privilege level:
 * VL (which has different characteristics from standard CSRs)
 * SUBVL (effectively a kind of SIMD)
 * STATE (containing copies of MVL, VL and SUBVL as well as context information)
-* PCVBLK (the current operation being executed within a VBLOCK Group)
 
 For Privilege Levels (trap handling) there are the following CSRs,
-where x may be u, m, s or h for User, Machine, Supervisor or Hypervisor
+where x may be u, s or h for User, Supervisor or Hypervisor
 Modes respectively:
 
-* (x)ePCVBLK (a copy of the sub-execution Program Counter, that is relative
-  to the start of the current VBLOCK Group, set on a trap).
 * (x)eSTATE (useful for saving and restoring during context switch,
   and for providing fast transitions)
 
-The u/m/s CSRs are treated and handled exactly like their (x)epc
+The u/s CSRs are treated and handled exactly like their (x)epc
 equivalents.  On entry to or exit from a privilege level, the contents
 of its (x)eSTATE are swapped with STATE.
-
-(x)EPCVBLK CSRs must be treated exactly like their corresponding (x)epc
-equivalents. See VBLOCK section for details.
 
 ## MAXVECTORLENGTH (MVL) <a name="mvl" />
 
@@ -67,9 +61,15 @@ full context save/restore.  It contains (and permits setting of):
 
 The format of the STATE CSR is as follows:
 
-| (31..28) | (27..26) | (25..24) | (23..18) | (17..12) | (11..6) | (5...0) |
-| -------- | -------- | -------- | -------- | -------- | ------- | ------- |
-| rsvd     | dsvoffs  | subvl    | destoffs | srcoffs  | vl      | maxvl   |
+| Field | Name     | Description           |
+| ----- | -------- | --------------------- |
+| 0:6   | maxvl    | |
+| 7:13  |    vl    | |
+| 14:20 | srcoffs  | |
+| 21:27 | dstoffs  | |
+| 28:29 | subvl    | |
+| 30:31 | dsvoffs  | |
+
 
 The relationship between SUBVL and the subvl field is:
 
