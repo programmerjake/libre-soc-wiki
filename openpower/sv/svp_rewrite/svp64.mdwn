@@ -451,7 +451,7 @@ CR[i] is the notation used by the OpenPower spec to refer to CR field #i,
 so FP instructions with Rc=1 write to CR[1] aka SVCR1_000.
 
 CRs are not stored in SPRs: they are registers in their own right.
-Theregore context-switching the full set of CRs involves a Vectorised
+Therefore context-switching the full set of CRs involves a Vectorised
 mfcr or mtcr, using VL=64, elwidth=8 to do so.  This is exactly as how scalar OpenPOWER context-switches CRs: it is just that there are now more of them.
 
 The 64 SV CRs are arranged similarly to the way the 128 integer registers
