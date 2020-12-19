@@ -33,16 +33,16 @@ defined in the Prefix Fields section.
 
 (shows both PowerISA v3.1 instructions as well as new SVP instructions; empty spaces are yet-to-be-allocated Illegal Instructions)
 
-| bits 6:11 | ---000   | ---001     | ---010   | ---011   | ---100   | ---101   | ---110   | ---111   |
-|-----------|----------|------------|----------|----------|----------|----------|----------|----------|
-| 000---    | 8LS-form | 8LS-form   | 8LS-form | 8LS-form | 8LS-form | 8LS-form | 8LS-form | 8LS-form |
-| 001---    |          |            |          |          |          |          |          |          |
-| 010---    | 8RR-form |            |          |          | SVP64    | SVP64    | SVP64    | SVP64    |
-| 011---    |          |            |          |          | SVP64    | SVP64    | SVP64    | SVP64    |
-| 100---    | MLS-form | MLS-form   | MLS-form | MLS-form | MLS-form | MLS-form | MLS-form | MLS-form |
-| 101---    |          |            |          |          |          |          |          |          |
-| 110---    | MRR-form |            |          |          | SVP64    | SVP64    | SVP64    | SVP64    |
-| 111---    |          | MMIRR-form |          |          | SVP64    | SVP64    | SVP64    | SVP64    |
+| 6:11 | ---000 | ---001 | ---010 | ---011 | ---100 | ---101 | ---110 | ---111 |
+| ---- | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ |
+|000---| 8LS    | 8LS    | 8LS    | 8LS    | 8LS    | 8LS    | 8LS    | 8LS    |
+|001---|        |        |        |        |        |        |        |        |
+|010---| 8RR    |        |        |        | `SVP64`| `SVP64`| `SVP64`| `SVP64`|
+|011---|        |        |        |        | `SVP64`| `SVP64`| `SVP64`| `SVP64`|
+|100---| MLS    | MLS    | MLS    | MLS    | MLS    | MLS    | MLS    | MLS    |
+|101---|        |        |        |        |        |        |        |        |
+|110---| MRR    |        |        |        | `SVP64`| `SVP64`| `SVP64`| `SVP64`|
+|111---|        | MMIRR  |        |        | `SVP64`| `SVP64`| `SVP64`| `SVP64`|
 
 ## Prefix Fields
 
