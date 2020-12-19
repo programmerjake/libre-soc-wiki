@@ -45,7 +45,8 @@ Note that setmvli is a pseudo-op, based on RA/RT=0, and setvli likewise
            VL = vlimmed
        }
     } else {
-       // VL not to change, source from SPR
+       // VL not to change (except if MVL is reduced)
+       // read from SPRs
        VL = SPR[SV_VL]
     }
 
@@ -54,6 +55,7 @@ Note that setmvli is a pseudo-op, based on RA/RT=0, and setvli likewise
     if ms {
        MVL = vlimmed
     } else {
+       // MVL not to change, read from SPRs
        MVL = SPR[SV_MVL]
     }
 
@@ -72,7 +74,9 @@ Note that setmvli is a pseudo-op, based on RA/RT=0, and setvli likewise
     // write CR?
     if Rc {
         // update CR from VL (not rt)
-        CR0 = ....
+        CR0.eq = (VL == 0)
+        ...
+        ...
     }
 
 # Examples
