@@ -15,7 +15,9 @@ Use of setvl results in changes to the MVL, VL and STATE SPRs. see [[sv/sprs]]â™
 | 19   | RT  | RA   |     | XO[0:4]       | XO[5:9] |Rc| XL-Form |
 | 19   | RT  | RA   |imm  | imm //  vs ms | NNNNN   |Rc| setvl   |
 
-Note that imm spans 7 bits (16 to 22)
+Note that imm spans 7 bits (16 to 22), and that bit 22 is reserved abd must be zero.  Setting bit 22 causes an illegal exception.
+
+Note that VL and MVL start from **one** i.e. that an immediate value of zero will result in VL/MVL being set to 1.  0b111111 results in VL/MVL being set to 64. This is because setting VL/MVL to 1 results in "scalar identity" behaviour, where setting VL/MVL to 0 would result in all Vector operations becoming nop.  If this is truly desired (nop behaviour) then setting VL and MVL must be done via the [[SV SPRs|sv/sprs]]
 
 Note that setmvli is a pseudo-op, based on RA/RT=0, and setvli likewise
 
@@ -27,7 +29,8 @@ Note that setmvli is a pseudo-op, based on RA/RT=0, and setvli likewise
     // instruction fields:
     rd = get_rt_field();         // bits 6..10
     ra = get_ra_field();         // bits 11..15
-    vlimmed = get_immed_field(); // bits 16..22
+    // add one. MVL/VL=1..64 not 0..63
+    vlimmed = get_immed_field()+1; //  16..22
     vs = get_vs_field();         // bit 24
     ms = get_ms_field();         // bit 25
     Rc = get_Rc_field();         // bit 31
