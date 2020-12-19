@@ -439,6 +439,7 @@ CR element*.  Greatly simplified pseudocode:
          CRs[8+i].gt = iregs[RT+i] > 0
          ...
 
+If a "cumulated" CR based analysis of results is desired, then a followup instruction must be performed, setting "reduce" mode on the Vector of CRs, using cr ops to do so.  This provides far more flexibility in analysing vectors than standard Vector ISAs.  Normal Vector ISAs are typically restricted to "were all results nonzero" and "were some results nonzero". The application of mapreduce to Vectorised cr operations allows far more sophisticated analysis.
 
 (see [[discussion]].  some alternative schemes are described there)
 
