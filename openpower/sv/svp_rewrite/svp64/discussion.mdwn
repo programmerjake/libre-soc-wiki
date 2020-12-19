@@ -99,68 +99,6 @@ Some examples on different operation widths:
     256 + 2 = 2 # this is correct whether we use the larger or smaller width
                 # aka hw can optimize narrowing addition
 
-# Mode
-
-     0   1   2   3    4    description
-     ------------------
-     0   0   M   sz   CRM  reduce mode (M=1).
-     0   1   inv CR-bit    Rc=1: ffirst CR sel
-     0   1   inv sz   dz   Rc=0: ffirst z/nonz
-     1   0   N   sz   dz   sat mode: N=0/1 u/s
-     1   1   inv CR-bit    Rc=1: pred-result CR sel
-     1   1   inv sz   dz   Rc=0: pred-result z/nonz
-
-Mode types:
-
-* **sz dz predicate zeroing**  if predication is enabled will put zeros into the dest (or as src in the case of twin pred) when the predicate bit is zero.  otherwise the element is ignored or skipped, depending on context.
-* **ffirst** or data-dependent fail-on-first: see separate section.
-* **sat mode** or saturation: clamps the result to a min/max rather than overflows / wraps.  allows signed and unsigned clamping.
-* **reduce mode**.  when M=1 a mapreduce is performed.  the result is a scalar.  a vector however is required, as it may be used to store intermediary computations.  the result is in the first element with a nonzero predicate bit.
-  note that reduce mode only applies to 2 src operations.
-* **pred-result** will test the result (CR testing selects a bit of CR and inverts it, just like branch testing) and if the test fails it is as if the predicate bit was zero.  When Rc=1 the CR element (CR0) however is still stored in the CR regfile.  This scheme does not apply to crops (crand, cror).
-
-# Notes about rounding, clamp and saturate
-
-One of the issues with vector ops is that in integer DSP ops for example in Audio the operation must clamp or saturate rather than overflow or ignore the upper bits and become a modulo operation.  This for Audio is extremely important, also to provide an indicator as to whether saturation occurred.  see  [[av_opcodes]].
-
-If there are spare bits it would be very good to look at using some of them to specify the mode, because otherwise a SPR has to be used which will need to be set and unset.  This can get costly.
-
-# Notes about reduce mode
-
-1. limited to single predicated dual src operations (add RT, RA, RB) and to triple source operations where one of the inputs is set to a scalar (these are rare)
-2. limited to operations that make sense.  divide is excluded, as is subtract.  sane operations: multiply, add, logical bitwise OR, CR operations.  operations that do not return the same register type are also excluded (isel, cmp)
-3. the destination is a vector but the result is stored, ultimately, in the first nonzero predicated element.  all other nonzero predicated elements are undefined. *this includes the CR vector* when Rc=1
-4. implementations may use any ordering and any algorithm to reduce down to a single result.  However it must be equivalent to a straight application of mapreduce.  The destination vector (except masked out elements) may be used for storing any intermediate results. these may be left in the vector (undefined).
-5. CRM applies when Rc=1.  When CRM is zero, the CR associated with the result is regarded as a "some results met standard CR result criteria". When CRM is one, this changes to "all results met standard CR criteria".
-6. implementations MAY use destoffs as well as srcoffs (see [[sv/sprs]]) in order to store sufficient state to resume operation should an interrupt occur. this is also why implementations are permitted to use the destination vector to store intermediary computations 
-
-TODO: Rc=1 on Scalar Logical Operations? is this possible? was space reserved in Logical Ops?
-
-Pseudocode for the case where RA==RB:
-
-    result = op(iregs[RA], iregs[RA+1])
-    CR = analyse(result)
-    for i in range(2, VL):
-        result = op(result, iregs[RA+i])
-        CRnew = analyse(result)
-        if Rc=1
-            if CRM:
-                 CR = CR bitwise or CRnew
-            else:
-                 CR = CR bitwise AND CRnew
-
-TODO: case where RA!=RB which involves first a vector of 2-operand results followed by a mapreduce on the intermediates.
-
-# Fail-on-first
-
-Data-dependent fail-on-first has two distinct variants: one for LD/ST, the other for arithmetic operations (actually, CR-driven).  Note in each case the assumption is that vector elements are required appear to be executed in sequential Program Order, element 0 being the first.
-
-* LD/ST ffirst treats the first LD/ST in a vector (element 0) as an ordinary one.  Exceptions occur "as normal".  However for elements 1 and above, if an exception would occur, then VL is **truncated** to the previous element.
-* Data-driven (CR-driven) fail-on-first activates when Rc=1 or other CR-creating operation produces a result (including cmp).  Similar to branch, an analysis of the CR is performed and if the test fails, the vector operation terminates and discards all element operations at and above the current one, and VL is truncated to the *previous* element.  Thus the new VL comprises a contiguous vector of results, all of which pass the testing criteria (equal to zero, less than zero).
-
-The CR-based data-driven fail-on-first is new and not found in ARM SVE or RVV. It is extremely useful for reducing instruction count, however requires speculative execution involving modifications of VL to get high performance implementations.
-
-Where the options provided by selecting from only one bit of the CR being tested (and optional inversion of the same) are insufficient, a vectorised crops (crand, cror) may be used and ffirst applied to that.
 
 # Notes about Swizzle
 
