@@ -485,8 +485,8 @@ RB etc. are interpreted as v3.0B / v3.1B scalar registers.  This is termed
 
 When vectorized, the CR inputs/outputs are sequentially read/written
 to 4-bit CR fields.  Vectorised Integer results, when Rc=1, will begin
-writing to CR[8] and increase sequentially from there.  Vectorised FP
-results, when Rc=1, start from CR[32] (TBD evaluate).  This is so that:
+writing to CR8 (TBD evaluate) and increase sequentially from there.  Vectorised FP
+results, when Rc=1, start from CR32 (TBD evaluate).  This is so that:
 
 * scalar Rc=1 operation (CR0, CR1) and callee-saved CRs (CR2-4) are not overwritten by vector Rc=1 operations except for very large VL
 * Vector FP and Integer Rc=1 operations do not overwrite each other except for large VL.
@@ -508,7 +508,7 @@ CR element*.  Greatly simplified pseudocode:
          # now calculate CR bits
          CRs[8+i].eq = iregs[RT+i] == 0
          CRs[8+i].gt = iregs[RT+i] > 0
-         ...
+         ... etc
 
 If a "cumulated" CR based analysis of results is desired (a la VSX CR6) then a followup instruction must be performed, setting "reduce" mode on the Vector of CRs, using cr ops to do so.  This provides far more flexibility in analysing vectors than standard Vector ISAs.  Normal Vector ISAs are typically restricted to "were all results nonzero" and "were some results nonzero". The application of mapreduce to Vectorised cr operations allows far more sophisticated analysis, particularly in conjunction with the new crweird operations see [[sv/cr_int_predication]].
 
