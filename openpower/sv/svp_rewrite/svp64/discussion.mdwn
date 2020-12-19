@@ -127,13 +127,16 @@ If there are spare bits it would be very good to look at using some of them to s
 
 # Notes about reduce mode
 
-1. limited to single predicated dual src operations (add RT, RA, RB) and to triple source operations where one of the inputs is set to a scalar (e.g. isel)
-2. limited to operations that make sense.  divide is excluded, as is subtract.  sane operations: multiply, add, logical bitwise OR, CR operations.
+1. limited to single predicated dual src operations (add RT, RA, RB) and to triple source operations where one of the inputs is set to a scalar (these are rare)
+2. limited to operations that make sense.  divide is excluded, as is subtract.  sane operations: multiply, add, logical bitwise OR, CR operations.  operations that do not return the same register type are also excluded (isel, cmp)
 3. the destination is a vector but the result is stored, ultimately, in the first nonzero predicated element.  all other nonzero predicated elements are undefined. 
 4. implementations may use any ordering and any algorithm to reduce down to a single result.  However it must be equivalent to a straight application of mapreduce.  The destination vector (except masked out elements) may be used for storing any intermediate results. these may be left in the vector (undefined).
 5. CRM applies when Rc=1.  When CRM is zero, the CR associated with the result is regarded as a "some results met standard CR result criteria". When CRM is one, this changes to "all results met standard CR criteria".
+6. implementations MAY use destoffs as well as srcoffs (see [[sv/sprs]]) in order to store sufficient state to resume operation should an interrupt occur. this is also why implementations are permitted to use the destination vector to store intermediary computations 
 
 TODO: Rc=1 on Scalar Logical Operations? is this possible? was space reserved in Logical Ops?
+
+Pseudocode for the case where RA==RB:
 
     result = op(iregs[RA], iregs[RA+1])
     CR = analyse(result)
@@ -145,6 +148,8 @@ TODO: Rc=1 on Scalar Logical Operations? is this possible? was space reserved in
                  CR = CR bitwise or CRnew
             else:
                  CR = CR bitwise AND CRnew
+
+TODO: case where RA!=RB which involves first a vector of 2-operand results followed by a mapreduce on the intermediates.
 
 # Fail-on-first
 
