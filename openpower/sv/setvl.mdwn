@@ -29,11 +29,11 @@ Note that setmvli is a pseudo-op, based on RA/RT=0, and setvli likewise
     // instruction fields:
     rd = get_rt_field();         // bits 6..10
     ra = get_ra_field();         // bits 11..15
-    // add one. MVL/VL=1..64 not 0..63
-    vlimmed = get_immed_field()+1; //  16..22
     vs = get_vs_field();         // bit 24
     ms = get_ms_field();         // bit 25
     Rc = get_Rc_field();         // bit 31
+    // add one. MVL/VL=1..64 not 0..63
+    vlimmed = get_immed_field()+1; //  16..22
 
     // set VL (or not).
     // 3 options: from SPR, from immed, from ra
