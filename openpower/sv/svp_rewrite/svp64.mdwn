@@ -148,10 +148,9 @@ Note also that LD with update indexed, which takes 2 src and 2 dest (e.g. `lhaux
 
 ## R\*_EXTRA2 and R\*_EXTRA3 Encoding
 
-In the following tables register numbers are constructed from the standard v3.0B / v3.1B 32 bit register field (RA, FRA) and the EXTRA2 or EXTRA3 firld from the SV Prefix.  The prefixing is arranged so that interoperability between prefixing and nonprefixing of scalar registers is direct and convenient (when the EXTRA field is all zeros).
+In the following tables register numbers are constructed from the standard v3.0B / v3.1B 32 bit register field (RA, FRA) and the EXTRA2 or EXTRA3 field from the SV Prefix.  The prefixing is arranged so that interoperability between prefixing and nonprefixing of scalar registers is direct and convenient (when the EXTRA field is all zeros).
 
 3 bit version
-
 
 alternative which is understandable and, if EXTRA3 is zero, maps to "no effect" (scalar OpenPOWER ISA field naming).  also, these are the encodings used in the original SV Prefix scheme.  the reason why they were chosen is so that scalar registers in v3.0B and prefixed scalar registers have access to the same 32 registers.
 
@@ -185,8 +184,7 @@ alternative which is understandable and, if EXTRA2 is zero will map to "no effec
 | 10       | Vector | `r0-r124` | `RA 0b00`      |
 | 11       | Vector | `r2-r126` | `RA 0b10`   |
 
-
-algorithm for original version is identical to the 3 bit version except that the dpec is shifted up by one bit
+algorithm for original version is identical to the 3 bit version except that the spec is shifted up by one bit
 
     spec = EXTRA2 << 1 # same as EXTRA3, shifted
     if spec[2]: # vector
@@ -292,7 +290,6 @@ When the predicate mode bit is one the 3 bits are interpreted as below.  Twin pr
 
 CR based predication.  TODO: select alternate CR for twin predication? see [[discussion]]  Overlap of the two CR based predicates must be taken into account, so the starting point for one of them must be suitably high, or accept that for twin predication VL must not exceed the range where overlap will occur, *or* that they use the same starting point but select different *bits* of the same CRs
 
-
 # Twin Predication
 
 This is a novel concept that allows predication to be applied to a single source and a single dest register.  The following types of traditional Vector operations may be encoded with it, *without requiring explicit opcodes to do so*
@@ -322,22 +319,31 @@ Additional unusual capabilities of Twin Predication include a back-to-back versi
 
 SV Registers are simply the INT, FP and CR register files extended linearly to larger sizes.  Thus, the integer regfile in standard scalar OpenPOWER v3.0B and v3.1B is r0 to r31: SV extends this as r0 to r127.  Likewise FP registers are extended to 128 (fp0 to fp127), and CRs are extended to 64 entries, CR0 thru CR63.
 
-The names of the registers therefore reflects a simple linear extension of the OpenPOWER v3.0B / v3.1B register naming.
+The names of the registers therefore reflects a simple linear extension of the OpenPOWER v3.0B / v3.1B register naming, and in hardware this would be reflected by a linear increase in the size of the underlying SRAM used for the regfiles.
 
 # Operation
 
 ## CR fields as inputs/outputs of vector operations
 
-When vectorized, the CR inputs/outputs are read/written to 4-bit CR fields
-starting from SVCR6_000 and incrementing from there. If SVCR7_111 is reached, the next CR
-field used wraps around to SVCR0_000, then incrementing from there.
-(see [[discussion]].  some alternative schemes are described there)
+When vectorized, the CR inputs/outputs are sequentially read/written to 4-bit CR fields.  Vectorised Integer results, when Rc=1, will begin writing to CR[8] and increase sequentially from there.  Vectorised FP results, when Rc=1, start from CR[32] (TBD evaluate).  This is so that:
 
-SVCR6_000 was chosen to balance avoiding needing to save CR2-CR4 (which are
-callee-saved) just to use SV vectors with VL <= 61 as well as having the first
-vector CR field readily accessible to standard CR instructions and branches.
-Additionally, SVCR6_000 is used as the implicit result of a OpenPower ISA v3.1
-standard vector (SIMD) instruction with Rc=1.
+* scalar Rc=1 operation (CR0, CR1) and callee-saved CRs (CR2-4) are not overwritten by vector Rc=1 operations except for very large VL
+* Vector FP and Integer Rc=1 operations do not overwrite each other except for large VL.
+
+However when the SV result (destination) is marked as a scalar by the EXTRA field the *standard* v3.0B behaviour applies: the accompanying CR when Rc=1 is written to.  This is CR0 for integer operations and CR1 for FP operations.
+
+Note that yes, the CRs are genuinely Vectorised.  Unlike in SIMD VSX which has a single CR (CR6) for a given SIMD result, SV Vectorised OpenPOWER v3.0B scalar operations produce a **tuple** of element results: the result of the operation as one part of that element *and a corresponding CR element*.  Greatly simplified pseudocode:
+
+    for i in range(VL):
+         # calculate the vector result of an add
+         iregs[RT+i] = iregs[RA+i] + iregs[RB+i]
+         # now calculate CR bits
+         CRs[8+i].eq = iregs[RT+i] == 0
+         CRs[8+i].gt = iregs[RT+i] > 0
+         ...
+
+
+(see [[discussion]].  some alternative schemes are described there)
 
 ## Table of CR fields
 
