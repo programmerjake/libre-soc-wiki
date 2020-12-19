@@ -133,7 +133,18 @@ If there are spare bits it would be very good to look at using some of them to s
 4. implementations may use any ordering and any algorithm to reduce down to a single result.  However it must be equivalent to a straight application of mapreduce.  The destination vector (except masked out elements) may be used for storing any intermediate results. these may be left in the vector (undefined).
 5. CRM applies when Rc=1.  When CRM is zero, the CR associated with the result is regarded as a "some results met standard CR result criteria". When CRM is one, this changes to "all results met standard CR criteria".
 
-TODO: Rc=1 on Logical Operations? is this possible?
+TODO: Rc=1 on Scalar Logical Operations? is this possible? was space reserved in Logical Ops?
+
+    result = op(iregs[RA], iregs[RA+1])
+    CR = analyse(result)
+    for i in range(2, VL):
+        result = op(result, iregs[RA+i])
+        CRnew = analyse(result)
+        if Rc=1
+            if CRM:
+                 CR = CR bitwise or CRnew
+            else:
+                 CR = CR bitwise AND CRnew
 
 # Fail-on-first
 
