@@ -1,6 +1,6 @@
 # Vector mv operations
 
-In the SIMD VSX set, section 6.8.1 and 6.8.2 p254 of v3.0B has a series of pack and unpack operations. This page covers those and more.  [[svp64]] privides the Vector Context to also add saturation as well as predication.
+In the SIMD VSX set, section 6.8.1 and 6.8.2 p254 of v3.0B has a series of pack and unpack operations. This page covers those and more.  [[svp64]] provides the Vector Context to also add saturation as well as predication.
 
 See <https://bugs.libre-soc.org/show_bug.cgi?id=230#c30>
 
@@ -27,6 +27,7 @@ mv.destvec (leaving out elwidths and chop):
     for i in range(VL):
         regs[rd+i*SUBVL] = regs[rs+i]
 
+Note that these mv operations only become significant when elwidth is set on the vector to a small value.  SUBVL=4, src elwidth=8, dest elwidth=32 for example.
 
 ## Twin Predication, saturation, swizzle, and elwidth overrides
 
