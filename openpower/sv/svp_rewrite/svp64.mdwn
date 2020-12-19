@@ -97,7 +97,6 @@ is based on whether the number of src operands is 2 or 3.
 | reserved     | `16`    | reserved     |
 | MODE         | `19:23`    | see [[discussion]]                       |
 
-
 ## RM-1P-2S1D
 
 | Field Name | Field bits | Description                                     |
@@ -118,7 +117,7 @@ and dest, such as `rlwinmi`.
 Normally, the scalar v3.0B ISA would not have sufficient bits to allow
 an alternative destination.  With SV however this becomes possible.
 Therefore, the fact that the dest is implicitly also a src should not
-mislead: rhey are different SV regs.
+mislead: due to the *prefix* they are different SV regs.
 
 * `rlwimi RA, RS, ...` 
 * Rsrc1_EXTRA3 applies to RS as the first src
