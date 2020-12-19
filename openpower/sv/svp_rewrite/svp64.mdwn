@@ -255,9 +255,12 @@ Mode types:
 
 ### Notes about rounding, clamp and saturate
 
+When N=0 the result is saturated to within the maximum range of an unsigned value.  For integer ops this will be 0 to 2^elwidth-1. Similar logic applies to FP operations, with the result being saturated to maximum rather than returning INF.
+
+When N=1 the same occurs except that the result is saturated to the min or max of a signed result.
+
 One of the issues with vector ops is that in integer DSP ops for example in Audio the operation must clamp or saturate rather than overflow or ignore the upper bits and become a modulo operation.  This for Audio is extremely important, also to provide an indicator as to whether saturation occurred.  see  [[av_opcodes]].
 
-If there are spare bits it would be very good to look at using some of them to specify the mode, because otherwise a SPR has to be used which will need to be set and unset.  This can get costly.
 
 ### Notes about reduce mode
 
