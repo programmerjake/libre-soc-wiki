@@ -231,7 +231,8 @@ that the spec is shifted up by one bit
     else:         # scalar
          return RA + spec[0:1] << 5
 
-## Mode
+#
+# Mode
 
 Mode is an augmentation of SV behaviour.  Some of these alterations are element-based (saturation), others involve post-analysis (predicate result) and others are Vector-based (mapreduce, fail-on-first).
 
@@ -253,7 +254,7 @@ Mode types:
   note that reduce mode only applies to 2 src operations.
 * **pred-result** will test the result (CR testing selects a bit of CR and inverts it, just like branch testing) and if the test fails it is as if the predicate bit was zero.  When Rc=1 the CR element (CR0) however is still stored in the CR regfile.  This scheme does not apply to crops (crand, cror).
 
-### Notes about rounding, clamp and saturate
+## Notes about rounding, clamp and saturate
 
 When N=0 the result is saturated to within the maximum range of an unsigned value.  For integer ops this will be 0 to 2^elwidth-1. Similar logic applies to FP operations, with the result being saturated to maximum rather than returning INF.
 
@@ -262,7 +263,7 @@ When N=1 the same occurs except that the result is saturated to the min or max o
 One of the issues with vector ops is that in integer DSP ops for example in Audio the operation must clamp or saturate rather than overflow or ignore the upper bits and become a modulo operation.  This for Audio is extremely important, also to provide an indicator as to whether saturation occurred.  see  [[av_opcodes]].
 
 
-### Notes about reduce mode
+## Notes about reduce mode
 
 1. limited to single predicated dual src operations (add RT, RA, RB) and to triple source operations where one of the inputs is set to a scalar (these are rare)
 2. limited to operations that make sense.  divide is excluded, as is subtract.  sane operations: multiply, add, logical bitwise OR, CR operations.  operations that do not return the same register type are also excluded (isel, cmp)
@@ -288,7 +289,7 @@ Pseudocode for the case where RA==RB:
 
 TODO: case where RA!=RB which involves first a vector of 2-operand results followed by a mapreduce on the intermediates.
 
-### Fail-on-first
+## Fail-on-first
 
 Data-dependent fail-on-first has two distinct variants: one for LD/ST, the other for arithmetic operations (actually, CR-driven).  Note in each case the assumption is that vector elements are required appear to be executed in sequential Program Order, element 0 being the first.
 
@@ -299,7 +300,7 @@ The CR-based data-driven fail-on-first is new and not found in ARM SVE or RVV. I
 
 Where the options provided by selecting from only one bit of the CR being tested (and optional inversion of the same) are insufficient, a vectorised crops (crand, cror) may be used and ffirst applied to that.
 
-## ELWIDTH Encoding
+# ELWIDTH Encoding
 
 Default behaviour is set to 0b00 so that zeros follow the convention of
 "npt doing anything".  In this case it means that elwidth overrides
@@ -311,7 +312,7 @@ states that, again, the behaviour is not to be modified.
 Only when elwidth is nonzero is the element width overridden to the
 explicitly required value.
 
-### Elwidth for Integers:
+## Elwidth for Integers:
 
 | Value | Mnemonic       | Description                        |
 |-------|----------------|------------------------------------|
@@ -320,7 +321,7 @@ explicitly required value.
 | 10    | `ELWIDTH=h`    | Halfword: 16-bit integer             |
 | 11    | `ELWIDTH=w`    | Word: 32-bit integer                 |
 
-### Elwidth for FP Registers:
+## Elwidth for FP Registers:
 
 | Value | Mnemonic       | Description                        |
 |-------|----------------|------------------------------------|
@@ -333,7 +334,7 @@ Note:
 [`bf16`](https://en.wikipedia.org/wiki/Bfloat16_floating-point_format)
 is reserved for a future implementation of SV
 
-### Elwidth for CRs:
+## Elwidth for CRs:
 
 TODO, important, particularly for crops, mfcr and mtcr, what elwidth
 even means.  instead it may be possible to use the bits as extra indices
@@ -348,7 +349,7 @@ elwidth, because these ops are pure explicit CR based.
 
 Examples: mfxm may take the extra bits and use them as extra mask bits.
 
-## SUBVL Encoding
+# SUBVL Encoding
 
 the default for SUBVL is 1 and its encoding is 0b00 to indicate that
 SUBVL is effectively disabled (a SUBVL for-loop of only one element). this
@@ -365,7 +366,7 @@ The SUBVL encoding value may be thought of as an inclusive range of a
 sub-vector.  SUBVL=2 represents a vec2, its encoding is 0b01, therefore
 this may be considered to be elements 0b00 to 0b01 inclusive.
 
-## MASK/MASK_SRC & MASK_KIND Encoding
+# MASK/MASK_SRC & MASK_KIND Encoding
 
 One bit (`MASKMODE`) indicates the mode: CR or Int predication.   The two
 types may not be mixed.
@@ -389,7 +390,7 @@ for both src and dest, or different regs (one for src, one for dest).
 Likewise CR based twin predication has a second set of 3 bits, allowing
 a different test to be applied.
 
-### Integer Predication (MASK_KIND=0)
+## Integer Predication (MASK_KIND=0)
 
 When the predicate mode bit is zero the 3 bits are interpreted as below. 
 Twin predication has an identical 3 bit field similarly encoded.
@@ -405,7 +406,7 @@ Twin predication has an identical 3 bit field similarly encoded.
 | 110   | R30      | `R30 & (1 << i)` is non-zero |
 | 111   | ~R30     | `R30 & (1 << i)` is zero     |
 
-### CR-based Predication (MASK_KIND=1)
+## CR-based Predication (MASK_KIND=1)
 
 When the predicate mode bit is one the 3 bits are interpreted as below.
 Twin predication has an identical 3 bit field similarly encoded
