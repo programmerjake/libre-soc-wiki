@@ -402,6 +402,12 @@ of the OpenPOWER v3.0B / v3.1B register naming, and in hardware this
 would be reflected by a linear increase in the size of the underlying
 SRAM used for the regfiles.
 
+Note: when the EXTRA fields are all zero, SV is deliberately designed
+so that the register fields are identical to as if SV was not in effect
+i.e. under these circumstances (EXTRA=0) the register field names RA,
+RB etc. are interpreted as v3.0B / v3.1B scalar registers.  This is termed
+`scalar identity behaviour`
+
 # Operation
 
 ## CR fields as inputs/outputs of vector operations
