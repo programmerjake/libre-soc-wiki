@@ -29,6 +29,15 @@ mv.destvec (leaving out elwidths and chop):
 
 Note that these mv operations only become significant when elwidth is set on the vector to a small value.  SUBVL=4, src elwidth=8, dest elwidth=32 for example.
 
+intended to cover:
+
+    rd = (rs >> 0 * 8) & (2^8 - 1)
+    rd+1 = (rs >> 1 * 8) & (2^8 - 1)
+    rd+2 = (rs >> 2 * 8) & (2^8 - 1)
+    rd+3 = (rs >> 3 * 8) & (2^8 - 1)
+
+and variants involving vec3 into 32 bit (4th byte set to zero)
+
 ## Twin Predication, saturation, swizzle, and elwidth overrides
 
 Note that mv is a twin-predicated operation, and is swizzlable.  This implies that from the vec2, vec3 or vec4, 1 to 8 bytes may be selected and re-ordered (XYZW), mixed with 0 and 1 constants, skipped by way of twin predicate pack and unpack, and a huge amount besides.
