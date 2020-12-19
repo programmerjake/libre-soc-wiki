@@ -148,9 +148,7 @@ Note also that LD with update indexed, which takes 2 src and 2 dest (e.g. `lhaux
 
 ## R\*_EXTRA2 and R\*_EXTRA3 Encoding
 
-(**TODO: 2-bit version of the table, just like in the original SVPrefix.  This is important, to save bits on 4-operand instructions such as fmadd**)
-
-In the following table, `<N>` denotes the value of the corresponding register field in the SVP64 suffix word. 
+In the following tables register numbers are constructed from the standard v3.0B / v3.1B 32 bit register field (RA, FRA) and the EXTRA2 or EXTRA3 firld from the SV Prefix.  The prefixing is arranged so that interoperability between prefixing and nonprefixing of scalar registers is direct and convenient (when the EXTRA field is all zeros).
 
 3 bit version
 
@@ -188,9 +186,9 @@ alternative which is understandable and, if EXTRA2 is zero will map to "no effec
 | 11       | Vector | `r2-r126` | `RA 0b10`   |
 
 
-algorithm for original version:
+algorithm for original version is identical to the 3 bit version except that the dpec is shifted up by one bit
 
-    spec = EXTRA2 << 1
+    spec = EXTRA2 << 1 # same as EXTRA3, shifted
     if spec[2]: # vector
          return RA << 2 + spec[0:1]
     else:         # scalar
@@ -229,7 +227,9 @@ TODO, important, particularly for crops, mfcr and mtcr, what elwidth even means.
 
 The actual width of the CRs cannot be altered: they are 4 bit.  Thus, for Rc=1 operations that produce a result and corresponding CR, it is the result to which the elwidth override applies, not the CR.
 
-As mentioned TBD, this leaves crops etc. to have a meaming defined for elwidth, because these ops are pure explicit CR based.
+As mentioned TBD, this leaves crops etc. to have a meaning defined for elwidth, because these ops are pure explicit CR based.
+
+Examples: mfxm may take the extra bits and use them as extra mask bits.
 
 ## SUBVL Encoding
 
@@ -250,12 +250,12 @@ One bit (`MASKMODE`) indicates the mode: CR or Int predication.   The two types 
 
 Special note: to get default behaviour (SV disabled) this field must be set to zero in combination with Integer Predication also being set to 0b000. this has the effect of enabling "all 1s" in the predicate mask, which is equivalent to "not having any predication at all" and consequently, in combination with all other default zeros, fully disables SV.
 
-| MASK_KIND Value | Description                                          |
-|-----------------|------------------------------------------------------|
-| 0               | MASK/MASK_SRC are encoded using Integer Predication  |
-| 1               | MASK/MASK_SRC are encoded using CR-based Predication |
+| Value | Description                                          |
+|-------|------------------------------------------------------|
+| 0     | MASK/MASK_SRC are encoded using Integer Predication  |
+| 1     | MASK/MASK_SRC are encoded using CR-based Predication |
 
-Integer Twin predication has a second set if 3 bits that uses the same encoding thus allowing either the same register (r3 or r10) to be used for both src and dest, or different regs (one for src, one for dest).
+Integer Twin predication has a second set of 3 bits that uses the same encoding thus allowing either the same register (r3 or r10) to be used for both src and dest, or different regs (one for src, one for dest).
 
 Likewise CR based twin predication has a second set of 3 bits, allowing a different test to be applied.
 
@@ -344,7 +344,7 @@ standard vector (SIMD) instruction with Rc=1.
 CR[i] is the notation used by the OpenPower spec to refer to CR field #i,
 so FP instructions with Rc=1 write to CR[1] aka SVCR1_000.
 
-There are 3 new SPRs for holding CRs: CR_EXT1, CR_EXT2, and CR_EXT3.
+CRs are not stored in SPRs: they are registers in their own right.  Theregore context-switching the full set of CRs involves a Vectorised mfcr or mtcr, using VL=64, elwidth=8 to do so.
 
 The 64 SV CRs are arranged similarly to the way the 128 integer registers are arranged.  TODO a python program that auto-generates a CSV file which can be included in a table, which is in a new page (so as not to overwhelm this one). [[svp64/cr_names]]
 
