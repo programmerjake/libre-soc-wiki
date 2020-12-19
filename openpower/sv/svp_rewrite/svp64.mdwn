@@ -175,63 +175,7 @@ Note also that LD with update indexed, which takes 2 src and 2 dest
 Twin Predication.  therefore these are treated as RM-2P-2S1D and the
 src spec for RA is also used for the same RA as a dest.
 
-## R\*_EXTRA2 and R\*_EXTRA3 Encoding
 
-In the following tables register numbers are constructed from the
-standard v3.0B / v3.1B 32 bit register field (RA, FRA) and the EXTRA2
-or EXTRA3 field from the SV Prefix.  The prefixing is arranged so that
-interoperability between prefixing and nonprefixing of scalar registers
-is direct and convenient (when the EXTRA field is all zeros).
-
-3 bit version
-
-alternative which is understandable and, if EXTRA3 is zero, maps to
-"no effect" (scalar OpenPOWER ISA field naming).  also, these are the
-encodings used in the original SV Prefix scheme.  the reason why they
-were chosen is so that scalar registers in v3.0B and prefixed scalar
-registers have access to the same 32 registers.
-
-| R\*\_EXTRA3 | Mode | Range | Encoded as |
-|-----------|-------|---------------|---------------------|
-| 000       | Scalar | `r0-r31` | `0b00 RA`      |
-| 001       | Scalar | `r32-r63` | `0b01 RA`      |
-| 010       | Scalar | `r64-r95` | `0b10 RA`      |
-| 011       | Scalar | `r96-r127` | `0b11 RA`      |
-| 100       | Vector | `r0-r124` | `RA 0b00`      |
-| 101       | Vector | `r1-r125` | `RA 0b01`      |
-| 110       | Vector | `r2-r126` | `RA 0b10`      |
-| 111       | Vector | `r3-r127` | `RA 0b11`      |
-
-algorithm for original version:
-
-    spec = EXTRA3
-    if spec[2]: # vector
-         return RA << 2 + spec[0:1]
-    else:         # scalar
-         return RA + spec[0:1] << 5
-
-2 bit version
-
-alternative which is understandable and, if EXTRA2 is zero will map to
-"no effect" i.e Scalar OpenPOWER register naming:
-
-| R\*\_EXTRA2 | Mode | Range | Encoded as |
-|-----------|-------|---------------|---------------------|
-| 00       | Scalar | `r0-r31` | `0b00 RA`                |
-| 01       | Scalar | `r32-r63` | `0b01 RA`      |
-| 10       | Vector | `r0-r124` | `RA 0b00`      |
-| 11       | Vector | `r2-r126` | `RA 0b10`   |
-
-algorithm for original version is identical to the 3 bit version except
-that the spec is shifted up by one bit
-
-    spec = EXTRA2 << 1 # same as EXTRA3, shifted
-    if spec[2]: # vector
-         return RA << 2 + spec[0:1]
-    else:         # scalar
-         return RA + spec[0:1] << 5
-
-#
 # Mode
 
 Mode is an augmentation of SV behaviour.  Some of these alterations are element-based (saturation), others involve post-analysis (predicate result) and others are Vector-based (mapreduce, fail-on-first).
@@ -299,6 +243,62 @@ Data-dependent fail-on-first has two distinct variants: one for LD/ST, the other
 The CR-based data-driven fail-on-first is new and not found in ARM SVE or RVV. It is extremely useful for reducing instruction count, however requires speculative execution involving modifications of VL to get high performance implementations.
 
 Where the options provided by selecting from only one bit of the CR being tested (and optional inversion of the same) are insufficient, a vectorised crops (crand, cror) may be used and ffirst applied to that.
+
+# R\*_EXTRA2 and R\*_EXTRA3 Encoding
+
+In the following tables register numbers are constructed from the
+standard v3.0B / v3.1B 32 bit register field (RA, FRA) and the EXTRA2
+or EXTRA3 field from the SV Prefix.  The prefixing is arranged so that
+interoperability between prefixing and nonprefixing of scalar registers
+is direct and convenient (when the EXTRA field is all zeros).
+
+3 bit version
+
+alternative which is understandable and, if EXTRA3 is zero, maps to
+"no effect" (scalar OpenPOWER ISA field naming).  also, these are the
+encodings used in the original SV Prefix scheme.  the reason why they
+were chosen is so that scalar registers in v3.0B and prefixed scalar
+registers have access to the same 32 registers.
+
+| R\*\_EXTRA3 | Mode | Range | Encoded as |
+|-----------|-------|---------------|---------------------|
+| 000       | Scalar | `r0-r31` | `0b00 RA`      |
+| 001       | Scalar | `r32-r63` | `0b01 RA`      |
+| 010       | Scalar | `r64-r95` | `0b10 RA`      |
+| 011       | Scalar | `r96-r127` | `0b11 RA`      |
+| 100       | Vector | `r0-r124` | `RA 0b00`      |
+| 101       | Vector | `r1-r125` | `RA 0b01`      |
+| 110       | Vector | `r2-r126` | `RA 0b10`      |
+| 111       | Vector | `r3-r127` | `RA 0b11`      |
+
+algorithm for original version:
+
+    spec = EXTRA3
+    if spec[2]: # vector
+         return RA << 2 + spec[0:1]
+    else:         # scalar
+         return RA + spec[0:1] << 5
+
+2 bit version
+
+alternative which is understandable and, if EXTRA2 is zero will map to
+"no effect" i.e Scalar OpenPOWER register naming:
+
+| R\*\_EXTRA2 | Mode | Range | Encoded as |
+|-----------|-------|---------------|---------------------|
+| 00       | Scalar | `r0-r31` | `0b00 RA`                |
+| 01       | Scalar | `r32-r63` | `0b01 RA`      |
+| 10       | Vector | `r0-r124` | `RA 0b00`      |
+| 11       | Vector | `r2-r126` | `RA 0b10`   |
+
+algorithm for original version is identical to the 3 bit version except
+that the spec is shifted up by one bit
+
+    spec = EXTRA2 << 1 # same as EXTRA3, shifted
+    if spec[2]: # vector
+         return RA << 2 + spec[0:1]
+    else:         # scalar
+         return RA + spec[0:1] << 5
 
 # ELWIDTH Encoding
 
