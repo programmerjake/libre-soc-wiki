@@ -1,0 +1,89 @@
+# CSRs <a name="csrs"></a>
+
+There are five CSRs, available in any privilege level:
+
+* MVL (the Maximum Vector Length)
+* VL (which has different characteristics from standard CSRs)
+* SUBVL (effectively a kind of SIMD)
+* STATE (containing copies of MVL, VL and SUBVL as well as context information)
+* PCVBLK (the current operation being executed within a VBLOCK Group)
+
+For Privilege Levels (trap handling) there are the following CSRs,
+where x may be u, m, s or h for User, Machine, Supervisor or Hypervisor
+Modes respectively:
+
+* (x)ePCVBLK (a copy of the sub-execution Program Counter, that is relative
+  to the start of the current VBLOCK Group, set on a trap).
+* (x)eSTATE (useful for saving and restoring during context switch,
+  and for providing fast transitions)
+
+The u/m/s CSRs are treated and handled exactly like their (x)epc
+equivalents.  On entry to or exit from a privilege level, the contents
+of its (x)eSTATE are swapped with STATE.
+
+(x)EPCVBLK CSRs must be treated exactly like their corresponding (x)epc
+equivalents. See VBLOCK section for details.
+
+## MAXVECTORLENGTH (MVL) <a name="mvl" />
+
+MAXVECTORLENGTH is the same concept as MVL in RVV, except that it
+is variable length and may be dynamically set.  MVL is
+however limited to the regfile bitwidth XLEN (1-32 for RV32,
+1-64 for RV64 and so on).
+
+## Vector Length (VL) <a name="vl" />
+
+VSETVL is slightly different from RVV.  Similar to RVV, VL is set to be within
+the range 1 <= VL <= MVL (where MVL in turn is limited to 1 <= MVL <= XLEN)
+
+    VL = rd = MIN(vlen, MVL)
+
+where 1 <= MVL <= XLEN
+
+## SUBVL - Sub Vector Length
+
+This is a "group by quantity" that effectively asks each iteration
+of the hardware loop to load SUBVL elements of width elwidth at a
+time. Effectively, SUBVL is like a SIMD multiplier: instead of just 1
+operation issued, SUBVL operations are issued.
+
+The main effect of SUBVL is that predication bits are applied per
+**group**, rather than by individual element.  Legal values are 1 to 4.
+Illegal values raise an exception.
+
+## STATE
+
+This is a standard CSR that contains sufficient information for a
+full context save/restore.  It contains (and permits setting of):
+
+* MVL
+* VL
+* destoffs - the destination element offset of the current parallel
+  instruction being executed
+* srcoffs - for twin-predication, the source element offset as well.
+* SUBVL
+* dsvoffs - the subvector destination element offset of the current
+  parallel instruction being executed
+
+The format of the STATE CSR is as follows:
+
+| (31..28) | (27..26) | (25..24) | (23..18) | (17..12) | (11..6) | (5...0) |
+| -------- | -------- | -------- | -------- | -------- | ------- | ------- |
+| rsvd     | dsvoffs  | subvl    | destoffs | srcoffs  | vl      | maxvl   |
+
+The relationship between SUBVL and the subvl field is:
+
+| SUBVL | (25..24) |
+| ----- | -------- |
+| 1     | 0b00     |
+| 2     | 0b01     |
+| 3     | 0b10     |
+| 4     | 0b11     |
+
+Notes:
+
+* The entries are truncated to be within range.  Attempts to set VL to
+  greater than MAXVL will truncate VL.
+* Both VL and MAXVL are stored offset by one.  0b000000 represents VL=1,
+  0b000001 represents VL=2.  This allows the full range 1 to XLEN instead
+  of 0 to only 63.
