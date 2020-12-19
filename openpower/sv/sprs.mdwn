@@ -52,24 +52,23 @@ full context save/restore.  It contains (and permits setting of):
 
 * MVL
 * VL
-* destoffs - the destination element offset of the current parallel
+* dsttoffs - the destination element offset of the current parallel
   instruction being executed
 * srcoffs - for twin-predication, the source element offset as well.
 * SUBVL
-* dsvoffs - the subvector destination element offset of the current
+* svoffs - the subvector element offset of the current
   parallel instruction being executed
 
 The format of the STATE CSR is as follows:
 
 | Field | Name     | Description           |
 | ----- | -------- | --------------------- |
-| 0:6   | maxvl    | |
-| 7:13  |    vl    | |
+| 0:6   | maxvl    | Max Vector Length |
+| 7:13  |    vl    | Vector Length |
 | 14:20 | srcoffs  | |
 | 21:27 | dstoffs  | |
 | 28:29 | subvl    | |
-| 30:31 | dsvoffs  | |
-
+| 30:31 | svoffs   | |
 
 The relationship between SUBVL and the subvl field is:
 
@@ -84,6 +83,5 @@ Notes:
 
 * The entries are truncated to be within range.  Attempts to set VL to
   greater than MAXVL will truncate VL.
-* Both VL and MAXVL are stored offset by one.  0b000000 represents VL=1,
-  0b000001 represents VL=2.  This allows the full range 1 to XLEN instead
-  of 0 to only 63.
+* Setting srcoffs, dstoffs to 64 or greater, or VL or MVL to greater than 64 is reserved and will cause an illegal instruction trap.
+
