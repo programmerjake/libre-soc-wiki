@@ -465,14 +465,14 @@ Twin predication has an identical 3 bit field similarly encoded
 
 | Value | Mnemonic | Element `i` is enabled if     |
 |-------|----------|--------------------------|
-| 000   | lt       | `CR[6+i].LT` is set   |
-| 001   | nl/ge    | `CR[6+i].LT` is clear |
-| 010   | gt       | `CR[6+i].GT` is set   |
-| 011   | ng/le    | `CR[6+i].GT` is clear |
-| 100   | eq       | `CR[6+i].EQ` is set   |
-| 101   | ne       | `CR[6+i].EQ` is clear |
-| 110   | so/un    | `CR[6+i].FU` is set   |
-| 111   | ns/nu    | `CR[6+i].FU` is clear |
+| 000   | lt       | `CR[offs+i].LT` is set   |
+| 001   | nl/ge    | `CR[offs+i].LT` is clear |
+| 010   | gt       | `CR[offs+i].GT` is set   |
+| 011   | ng/le    | `CR[offs+i].GT` is clear |
+| 100   | eq       | `CR[offs+i].EQ` is set   |
+| 101   | ne       | `CR[offs+i].EQ` is clear |
+| 110   | so/un    | `CR[offs+i].FU` is set   |
+| 111   | ns/nu    | `CR[offs+i].FU` is clear |
 
 CR based predication.  TODO: select alternate CR for twin predication? see
 [[discussion]]  Overlap of the two CR based predicates must be taken
@@ -480,6 +480,8 @@ into account, so the starting point for one of them must be suitably
 high, or accept that for twin predication VL must not exceed the range
 where overlap will occur, *or* that they use the same starting point
 but select different *bits* of the same CRs
+
+`offs` is defined as CR48 (6x8) so as to mesh cleanly with Vectorised Rc=1 operations (see below).  Arithmetic Rc=1 operations start from CR16 (TBD); FP Rc=1 from CR32 (TBD).
 
 # Twin Predication
 
@@ -600,9 +602,12 @@ do not start on a 32-bit aligned boundary, performance may be affected.
 
 ## CR fields as inputs/outputs of vector operations
 
+CRs (or, the arithmetic operations associated with them)
+may be marked as Vectorised or Scalar.  When Rc=1 in arithmetic operations that have no explicit EXTRA to cover the CR, the CR is Vectorised if the destination is Vectorised.  Likewise if the destination is scalar then so is the CR.
+
 When vectorized, the CR inputs/outputs are sequentially read/written
 to 4-bit CR fields.  Vectorised Integer results, when Rc=1, will begin
-writing to CR8 (TBD evaluate) and increase sequentially from there.
+writing to CR16 (TBD evaluate) and increase sequentially from there.
 Vectorised FP results, when Rc=1, start from CR32 (TBD evaluate).
 This is so that:
 
@@ -613,6 +618,8 @@ This is so that:
   overwritten by vector Rc=1 operations except for very large VL
 * Vector FP and Integer Rc=1 operations do not overwrite each other
   except for large VL.
+* CR-based predication, from CR48, is also not interfered with
+  (except by large VL).
 
 However when the SV result (destination) is marked as a scalar by the
 EXTRA field the *standard* v3.0B behaviour applies: the accompanying
