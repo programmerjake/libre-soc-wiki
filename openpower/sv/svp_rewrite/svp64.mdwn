@@ -217,7 +217,7 @@ One of the issues with vector ops is that in integer DSP ops for example in Audi
 ## Notes about reduce mode
 
 1. limited to single predicated dual src operations (add RT, RA, RB) and to triple source operations where one of the inputs is set to a scalar (these are rare)
-2. limited to operations that make sense.  divide is excluded, as is subtract.  sane operations: multiply, add, logical bitwise OR, CR operations.  operations that do not return the same register type are also excluded (isel, cmp)
+2. limited to operations that make sense.  divide is excluded, as is subtract (X - Y - Z produces different answers depending on the order).  sane operations: multiply, add, logical bitwise OR, CR operations.  operations that do not return the same register type are also excluded (isel, cmp)
 3. the destination is a vector but the result is stored, ultimately, in the first nonzero predicated element.  all other nonzero predicated elements are undefined. *this includes the CR vector* when Rc=1
 4. implementations may use any ordering and any algorithm to reduce down to a single result.  However it must be equivalent to a straight application of mapreduce.  The destination vector (except masked out elements) may be used for storing any intermediate results. these may be left in the vector (undefined).
 5. CRM applies when Rc=1.  When CRM is zero, the CR associated with the result is regarded as a "some results met standard CR result criteria". When CRM is one, this changes to "all results met standard CR criteria".
@@ -249,7 +249,7 @@ Data-dependent fail-on-first has two distinct variants: one for LD/ST, the other
 
 The CR-based data-driven fail-on-first is new and not found in ARM SVE or RVV. It is extremely useful for reducing instruction count, however requires speculative execution involving modifications of VL to get high performance implementations.
 
-Where the options provided by selecting from only one bit of the CR being tested (and optional inversion of the same) are insufficient, a vectorised crops (crand, cror) may be used and ffirst applied to that.
+In CR-based data-driven fail-on-first there is only the option to select and test one bit of each CR (just as with branch BO).  For more complex tests this may be insufficient.  If that is the case, a vectorised crops (crand, cror) may be used, and ffirst applied to the crop instead of to the arithmetic vector.
 
 # R\*_EXTRA2 and R\*_EXTRA3 Encoding
 
