@@ -184,7 +184,7 @@ These are the modes:
 
 
 * **normal** mode is straight vectorisation.  no augmentations: the vector comprises an array of independently created results.
-* **ffirst** or data-dependent fail-on-first: see separate section.  the vector may be truncated depending on certain criterial.
+* **ffirst** or data-dependent fail-on-first: see separate section.  the vector may be truncated depending on certain criteria.
 * **sat mode** or saturation: clamps each elemrnt result to a min/max rather than overflows / wraps.  allows signed and unsigned clamping.
 * **reduce mode**.  when M=1 a mapreduce is performed.  the result is a scalar.  a vector however is required, as it may be used to store intermediary computations.  the result is in the first element with a nonzero predicate bit.
   note that reduce mode only applies to 2 src operations.
@@ -250,6 +250,11 @@ Data-dependent fail-on-first has two distinct variants: one for LD/ST, the other
 The CR-based data-driven fail-on-first is new and not found in ARM SVE or RVV. It is extremely useful for reducing instruction count, however requires speculative execution involving modifications of VL to get high performance implementations.
 
 In CR-based data-driven fail-on-first there is only the option to select and test one bit of each CR (just as with branch BO).  For more complex tests this may be insufficient.  If that is the case, a vectorised crops (crand, cror) may be used, and ffirst applied to the crop instead of to the arithmetic vector.
+
+One extremely important aspect of ffirst is:
+
+* LDST ffirst may never set VL equal to zero.  This because on the first element an exception must be raised "as normal".
+* CR-based data-dependent ffirst **can** set VL equal to zero. This is the only means in the entirety of SV that VL may be set to zero (with the exception of via the SV.STATE SPR).  When VL is set zero due to the first element failing the CR bit-test, all subsequent vectorised operations are effectively `nops` which is *precisely the desired and intended behaviour*.
 
 # R\*_EXTRA2 and R\*_EXTRA3 Encoding
 
