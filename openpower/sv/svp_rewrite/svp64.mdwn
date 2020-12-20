@@ -269,6 +269,14 @@ Pseudocode for the case where RA==RB:
 
 TODO: case where RA!=RB which involves first a vector of 2-operand results followed by a mapreduce on the intermediates.
 
+Note that when SUBVL!=1, the sub-elements are *independent*, i.e. they are mapreduced per *sub-element* as a result.  illustration with a vec2:
+
+    result.x = op(iregs[RA].x, iregs[RA+1].x)
+    result.y = op(iregs[RA].y, iregs[RA+1].y)
+    for i in range(2, VL):
+        result.x = op(result.x, iregs[RA+i].x)
+        result.y = op(result.y, iregs[RA+i].y)
+
 ## Fail-on-first
 
 Data-dependent fail-on-first has two distinct variants: one for LD/ST, the other for arithmetic operations (actually, CR-driven).  Note in each case the assumption is that vector elements are required appear to be executed in sequential Program Order, element 0 being the first.
