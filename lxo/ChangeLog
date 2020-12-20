@@ -1,3 +1,17 @@
+2020-12-20
+
+	* 532: Implemented logic for mode-switching 32-bit insns with 6
+	bits for the opcode, a 16-bit embedded compressed insn, and 10
+	bits corresponding to subsequent insns, to tell whether or not
+	each of them is compressed.  This nearly doubled the compression
+	rate, using one such mode-switching insn per 3 compressed insns.
+	(1:48)
+
+2020-12-14
+
+	* 532: Reported on compression ratio findings and analyses.
+	(1:06)
+
 2020-12-13
 
 	* 532: Questioned some bullets under 16-imm opcodes.  Implemented
