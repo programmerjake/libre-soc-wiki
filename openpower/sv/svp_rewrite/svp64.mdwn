@@ -215,7 +215,7 @@ Fields:
 
 One of the issues with vector ops is that in integer DSP ops for example in Audio the operation must clamp or saturate rather than overflow or ignore the upper bits and become a modulo operation.  This for Audio is extremely important, also to provide an indicator as to whether saturation occurred.  see  [[av_opcodes]].
 
-To help ensure that audio quality is not compromised by overflow, "saturation" is provided, as well as a way to detect when saturation occurred.
+To help ensure that audio quality is not compromised by overflow, "saturation" is provided, as well as a way to detect when saturation occurred (Rc=1). When Rc=1 there will be a *vector* of CRs, one CR per element in the result (Note: this is different from VSX which has a single CR per block).
 
 When N=0 the result is saturated to within the maximum range of an unsigned value.  For integer ops this will be 0 to 2^elwidth-1. Similar logic applies to FP operations, with the result being saturated to maximum rather than returning INF.
 
