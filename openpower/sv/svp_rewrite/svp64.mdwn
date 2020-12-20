@@ -213,11 +213,19 @@ Fields:
 
 ## Notes about rounding, clamp and saturate
 
+One of the issues with vector ops is that in integer DSP ops for example in Audio the operation must clamp or saturate rather than overflow or ignore the upper bits and become a modulo operation.  This for Audio is extremely important, also to provide an indicator as to whether saturation occurred.  see  [[av_opcodes]].
+
+To help ensure that audio quality is not compromised by overflow, "saturation" is provided, as well as a way to detect when saturation occurred.
+
 When N=0 the result is saturated to within the maximum range of an unsigned value.  For integer ops this will be 0 to 2^elwidth-1. Similar logic applies to FP operations, with the result being saturated to maximum rather than returning INF.
 
 When N=1 the same occurs except that the result is saturated to the min or max of a signed result.
 
-One of the issues with vector ops is that in integer DSP ops for example in Audio the operation must clamp or saturate rather than overflow or ignore the upper bits and become a modulo operation.  This for Audio is extremely important, also to provide an indicator as to whether saturation occurred.  see  [[av_opcodes]].
+When Rc=1, the CR "overflow" bit is set on the CR associated with the element, to indicate whether saturation occurred.  Note that due to the hugely detrimental effect it has on parallel processing, XER.SO is **ignored** completely and is **not** brought into play here.  The CR overflow bit is therefore simply set to zero if saturation did not occur, and to one if it did.
+
+Post-analysis of the Vector of CRs to find out if any given element hit saturation may be done using a mapreduced CR op (cror), or by using the new crweird instruction, transferring the relevant CR bits to a scalar integer and testing it for nonzero.  see [[sv/cr_int_predication]]
+
+
 
 
 ## Notes about reduce mode
