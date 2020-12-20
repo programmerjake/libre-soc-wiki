@@ -286,7 +286,7 @@ encodings used in the original SV Prefix scheme.  the reason why they
 were chosen is so that scalar registers in v3.0B and prefixed scalar
 registers have access to the same 32 registers.
 
-| R\*\_EXTRA3 | Mode | Range | Encoded as |
+| R\*\_EXTRA3 | Mode | Range | MSB downto LSB |
 |-----------|-------|---------------|---------------------|
 | 000       | Scalar | `r0-r31` | `0b00 RA`      |
 | 001       | Scalar | `r32-r63` | `0b01 RA`      |
@@ -310,7 +310,7 @@ algorithm for original version:
 alternative which is understandable and, if EXTRA2 is zero will map to
 "no effect" i.e Scalar OpenPOWER register naming:
 
-| R\*\_EXTRA2 | Mode | Range | Encoded as |
+| R\*\_EXTRA2 | Mode | Range | MSB down to LSB |
 |-----------|-------|---------------|---------------------|
 | 00       | Scalar | `r0-r31` | `0b00 RA`                |
 | 01       | Scalar | `r32-r63` | `0b01 RA`      |
@@ -325,6 +325,36 @@ that the spec is shifted up by one bit
          return RA << 2 + spec[0:1]
     else:         # scalar
          return RA + spec[0:1] << 5
+
+## CR EXTRA3
+
+CR encoding is essentially the same but made more complex due to CRs being bit-based.  See separate section for explanation and pseudocode.
+
+ Encoding shown MSB down to LSB
+
+| R\*\_EXTRA3 | Mode | 6..5    | 4..2    | 1..0    |
+|-------------|------|---------| --------|---------|
+| 000       | Scalar | 0b00    | BA[4:2] | BA[1:0] |
+| 001       | Scalar | 0b01    | BA[4:2] | BA[1:0] |
+| 010       | Scalar | 0b10    | BA[4:2] | BA[1:0] |
+| 011       | Scalar | 0b11    | BA[4:2] | BA[1:0] |
+| 100       | Vector | BA[4:2] | 0b00    | BA[1:0] |
+| 101       | Vector | BA[4:2] | 0b01    | BA[1:0] |
+| 110       | Vector | BA[4:2] | 0b10    | BA[1:0] |
+| 111       | Vector | BA[4:2] | 0b11    | BA[1:0] |
+
+## CR EXTRA2
+
+CR encoding is essentially the same but made more complex due to CRs being bit-based.  See separate section for explanation and pseudocode.
+
+Encoding shown MSB down to LSB
+
+| R\*\_EXTRA2 | Mode   | 6..5    | 4..2    | 1..0    |
+|-------------|--------|---------|---------|---------|
+| 00          | Scalar | 0b00    | BA[4:2] | BA[1:0] |
+| 01          | Scalar | 0b01    | BA[4:2] | BA[1:0] |
+| 10          | Vector | BA[4:2] | 0b00    | BA[1:0] |
+| 11          | Vector | BA[4:2] | 0b10    | BA[1:0] |
 
 # ELWIDTH Encoding
 
@@ -572,31 +602,6 @@ batches of aligned 32-bit chunks (CR0-7, CR7-15).  This is to greatly
 simplify internal design.  If instructions are issued where CR Vectors
 do not start on a 32-bit aligned boundary, performance may be affected.
 
-### CR EXTRA3
-
-In table form.  Encoding shown MSB down to LSB
-
-| R\*\_EXTRA3 | Mode | 6..5    | 4..2    | 1..0    |
-|-------------|------|---------| --------|---------|
-| 000       | Scalar | 0b00    | BA[4:2] | BA[1:0] |
-| 001       | Scalar | 0b01    | BA[4:2] | BA[1:0] |
-| 010       | Scalar | 0b10    | BA[4:2] | BA[1:0] |
-| 011       | Scalar | 0b11    | BA[4:2] | BA[1:0] |
-| 100       | Vector | BA[4:2] | 0b00    | BA[1:0] |
-| 101       | Vector | BA[4:2] | 0b01    | BA[1:0] |
-| 110       | Vector | BA[4:2] | 0b10    | BA[1:0] |
-| 111       | Vector | BA[4:2] | 0b11    | BA[1:0] |
-
-### CR EXTRA2
-
-In table form.  Encoding shown MSB down to LSB
-
-| R\*\_EXTRA2 | Mode   | 6..5    | 4..2    | 1..0    |
-|-------------|--------|---------|---------|---------|
-| 00          | Scalar | 0b00    | BA[4:2] | BA[1:0] |
-| 01          | Scalar | 0b01    | BA[4:2] | BA[1:0] |
-| 10          | Vector | BA[4:2] | 0b00    | BA[1:0] |
-| 11          | Vector | BA[4:2] | 0b10    | BA[1:0] |
 
 ## CR fields as inputs/outputs of vector operations
 
