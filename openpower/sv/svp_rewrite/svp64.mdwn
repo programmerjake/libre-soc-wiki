@@ -494,49 +494,98 @@ RB etc. are interpreted as v3.0B / v3.1B scalar registers.  This is termed
 
 # CR Operations
 
-## EXTRA mapping algorithm
+## CR EXTRA mapping table and algorithm
 
-Numbering relationships for CR fields are already complex due to bring in BE format.  In OpenPOWER v3.0/1, BFA is 5 bits in order to select one of 4 bits from one of the 8 CRs.  The numbering was determined - after 4 months - to be as follows:
+Numbering relationships for CR fields are already complex due to bring
+in BE format.  However with some care and consideration the exact same
+mapping used for INT and FP regfiles may be applied, just to the upper bits,
+as explained below.
 
-    CR_index = 7-BFA>>2        # top 3 bits but BE
-    bit_index = 3-(BFA & 0b11) # low 2 bits but BE
+In OpenPOWER v3.0/1, BF/BT/BA/BB are all 5 bits.  The top 3 bits (2:4)
+select one of the 8 CRs; the bottom 2 bits (0:1) select one of 4 bits
+in that CR.  The numbering was determined (after 4 months of
+analysis and research) to be as follows:
+
+    CR_index = 7-(BA>>2)      # top 3 bits but BE
+    bit_index = 3-(BA & 0b11) # low 2 bits but BE
     CR_reg = CR[CR_index]      # get the CR
-    # finally get the bit from the CR
+    # finally get the bit from the CR.
     CR_bit = (CR_reg & (1<<bit_index)) != 0
 
-When it comes to applying SV, it is the CR_reg number to which SV EXTRA2/3 applies, **not** the CR_bit portion.
+When it comes to applying SV, it is the CR\_reg number to which SV EXTRA2/3
+applies, **not** the CR\_bit portion (bits 0:1):
 
-    spec = EXTRA3
-    if spec[2]: # vector
-       return ((BFA >> 2)<<4) | # hi 3 bits shifted up
+    if extra3_mode:
+        spec = EXTRA3
+    else:
+        spec = EXTRA2<<1 | 0b0
+    if spec[2]:
+       # vector constructs "BA[2:4] spec[0:1] BA[0:1]"
+       return ((BA >> 2)<<4) | # hi 3 bits shifted up
               (spec[0:1]<<2) |  # to make room for these
-              (BFA & 0b11)      # CR_bit on the end
-    else:         # scalar
-       return BFA + spec[0:1] << 7
+              (BA & 0b11)      # CR_bit on the end
+    else:
+       # scalar constructs "spec[0:1] BA[0:4]"
+       return BA + spec[0:1] << 5
+
+Thus, for example, to access a given bit for a CR in SV mode:
+
+    CR_index = 7-(BA>>2)      # top 3 bits but BE
+    if spec[2]:
+        # vector mode
+        CR_index = (CR_index<<2) | (spec[0:1])
+    else:
+        # scalar mode
+        CR_index = CR_index | (spec[0:1]<<3)
+    # same as for v3.0/v3.1 from this point onwards
+    bit_index = 3-(BA & 0b11) # low 2 bits but BE
+    CR_reg = CR[CR_index]      # get the CR
+    # finally get the bit from the CR.
+    CR_bit = (CR_reg & (1<<bit_index)) != 0
 
 In table form:
 
-| R\*\_EXTRA3 | Mode | Encoded as |
-|-----------|-------|---------------|---------------------|
-| 000       | Scalar | `0b00  BFA[0:4]`      |
-| 001       | Scalar | `0b01  BFA[0:4]`      |
-| 010       | Scalar | `0b10  BFA[0:4]`      |
-| 011       | Scalar | `0b11  BFA[0:4]`      |
-| 100       | Vector | `BFA[2:4] 0b00 BFA[0:1]`      |
-| 101       | Vector | `BFA[2:4] 0b01 BFA[0:1]`      |
-| 110       | Vector | `BFA[2:4] 0b10 BFA[0:1]`      |
-| 111       | Vector | `BFA[2:4] 0b11 BFA[0:1]`      |
+| R\*\_EXTRA3 | Mode | Encoded MSB downto LSB |
+|-------------|------|------------------------|
+| 000       | Scalar | `0b00  BA[4:0]`        |
+| 001       | Scalar | `0b01  BA[4:0]`        |
+| 010       | Scalar | `0b10  BA[4:0]`        |
+| 011       | Scalar | `0b11  BA[4:0]`        |
+| 100       | Vector | `BA[4:2] 0b00 BA[1:0]` |
+| 101       | Vector | `BA[4:2] 0b01 BA[1:0]` |
+| 110       | Vector | `BA[4:2] 0b10 BA[1:0]` |
+| 111       | Vector | `BA[4:2] 0b11 BA[1:0]` |
+
+For EXTRA2, spec = (EXTRA2<<1) just as is the case for INT and FP registers.
+The table shows the relationship:
+
+| R\*\_EXTRA2 | Mode | Encoded MSB downto LSB |
+|-------------|------|------------------------|
+| 00        | Scalar | `0b00  BA[4:0]`        |
+| 01        | Scalar | `0b01  BA[4:0]`        |
+| 10        | Vector | `BA[4:0] 0b00 BA[1:0]` |
+| 11        | Vector | `BA[4:0] 0b10 BA[1:0]` |
+
+Note: high-performance implementations may read/write Vectors of CRs in
+batches of aligned 32-bit chunks (CR0-7, CR7-15).  This is to greatly
+simplify internal design.  If instructions are issued where CR Vectors
+do not start on a 32-bit aligned boundary, performance may be affected.
 
 ## CR fields as inputs/outputs of vector operations
 
 When vectorized, the CR inputs/outputs are sequentially read/written
 to 4-bit CR fields.  Vectorised Integer results, when Rc=1, will begin
-writing to CR8 (TBD evaluate) and increase sequentially from there.  Vectorised FP
-results, when Rc=1, start from CR32 (TBD evaluate).  This is so that:
+writing to CR8 (TBD evaluate) and increase sequentially from there.
+Vectorised FP results, when Rc=1, start from CR32 (TBD evaluate).
+This is so that:
 
-* implementations may rely on the Vector CRs being aligned to 8. This means that CRs may be read or written in aligned batches of 32 bits (8 CRs per batch), for high performance implementations.
-* scalar Rc=1 operation (CR0, CR1) and callee-saved CRs (CR2-4) are not overwritten by vector Rc=1 operations except for very large VL
-* Vector FP and Integer Rc=1 operations do not overwrite each other except for large VL.
+* implementations may rely on the Vector CRs being aligned to 8. This
+  means that CRs may be read or written in aligned batches of 32 bits
+  (8 CRs per batch), for high performance implementations.
+* scalar Rc=1 operation (CR0, CR1) and callee-saved CRs (CR2-4) are not
+  overwritten by vector Rc=1 operations except for very large VL
+* Vector FP and Integer Rc=1 operations do not overwrite each other
+  except for large VL.
 
 However when the SV result (destination) is marked as a scalar by the
 EXTRA field the *standard* v3.0B behaviour applies: the accompanying
@@ -557,9 +606,19 @@ CR element*.  Greatly simplified pseudocode:
          CRs[8+i].gt = iregs[RT+i] > 0
          ... etc
 
-If a "cumulated" CR based analysis of results is desired (a la VSX CR6) then a followup instruction must be performed, setting "reduce" mode on the Vector of CRs, using cr ops (crand, crnor)to do so.  This provides far more flexibility in analysing vectors than standard Vector ISAs.  Normal Vector ISAs are typically restricted to "were all results nonzero" and "were some results nonzero". The application of mapreduce to Vectorised cr operations allows far more sophisticated analysis, particularly in conjunction with the new crweird operations see [[sv/cr_int_predication]].
+If a "cumulated" CR based analysis of results is desired (a la VSX CR6)
+then a followup instruction must be performed, setting "reduce" mode on
+the Vector of CRs, using cr ops (crand, crnor)to do so.  This provides far
+more flexibility in analysing vectors than standard Vector ISAs.  Normal
+Vector ISAs are typically restricted to "were all results nonzero" and
+"were some results nonzero". The application of mapreduce to Vectorised
+cr operations allows far more sophisticated analysis, particularly in
+conjunction with the new crweird operations see [[sv/cr_int_predication]].
 
-Note in particular that the use of a separate instruction in this way ensures that high performance multi-issue OoO inplementations do not have the computation of the cumulative analysis CR as a bottleneck and hindrance, regardless of the length of VL.
+Note in particular that the use of a separate instruction in this way
+ensures that high performance multi-issue OoO inplementations do not
+have the computation of the cumulative analysis CR as a bottleneck and
+hindrance, regardless of the length of VL.
 
 (see [[discussion]].  some alternative schemes are described there)
 
