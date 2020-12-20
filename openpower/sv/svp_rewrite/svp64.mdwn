@@ -492,7 +492,27 @@ i.e. under these circumstances (EXTRA=0) the register field names RA,
 RB etc. are interpreted as v3.0B / v3.1B scalar registers.  This is termed
 `scalar identity behaviour`
 
-# Operation
+# CR Operations
+
+## EXTRA mapping algorithm
+
+Numbering relationships for CR fields are already complex due to bring in BE format.  In OpenPOWER v3.0/1, BFA is 5 bits in order to select one of 4 bits from one of the 8 CRs.  The numbering was determined - after 4 months - to be as follows:
+
+    CR_index = 7-BFA>>2        # top 3 bits but BE
+    bit_index = 3-(BFA & 0b11) # low 2 bits but BE
+    CR_reg = CR[CR_index]      # get the CR
+    # finally get the bit from the CR
+    CR_bit = (CR_reg & (1<<bit_index)) != 0
+
+When it comes to applying SV, it is the CR_reg number to which SV EXTRA2/3 applies, **not** the CR_bit portion.
+
+    spec = EXTRA3
+    if spec[2]: # vector
+       return ((BFA >> 2)<<4) | # hi 3 bits shifted up
+              (spec[0:1]<<2) |  # to make room for these
+              (BFA & 0b11)      # CR_bit on the end
+    else:         # scalar
+       return BFA + spec[0:1] << 7
 
 ## CR fields as inputs/outputs of vector operations
 
