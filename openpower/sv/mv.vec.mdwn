@@ -36,7 +36,15 @@ intended to cover:
     rd+2 = (rs >> 2 * 8) & (2^8 - 1)
     rd+3 = (rs >> 3 * 8) & (2^8 - 1)
 
-and variants involving vec3 into 32 bit (4th byte set to zero)
+and variants involving vec3 into 32 bit (4th byte set to zero).
+TODO: include this pseudocode which shows how the vecN can do that.
+in this example RA elwidth=32 and RB elwidth=8, RB is a vec4.
+
+    for i in range(VL):
+         if predicate_bit_not_set(i) continue
+         uint8_t *start_point = (uint8_t*)(int_regfile[RA].i[i])
+         for j in range(SUBVL): # vec4
+              start_point[j] = some_op(int_regfile[RB].b[i*SUBVL + j])
 
 ## Twin Predication, saturation, swizzle, and elwidth overrides
 
