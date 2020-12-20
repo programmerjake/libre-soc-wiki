@@ -463,16 +463,16 @@ Twin predication has an identical 3 bit field similarly encoded.
 When the predicate mode bit is one the 3 bits are interpreted as below.
 Twin predication has an identical 3 bit field similarly encoded
 
-| Value | Mnemonic | Description                                     |
-|-------|----------|-------------------------------------------------|
-| 000   | lt       | Element `i` is enabled if `CR[6+i].LT` is set   |
-| 001   | nl/ge    | Element `i` is enabled if `CR[6+i].LT` is clear |
-| 010   | gt       | Element `i` is enabled if `CR[6+i].GT` is set   |
-| 011   | ng/le    | Element `i` is enabled if `CR[6+i].GT` is clear |
-| 100   | eq       | Element `i` is enabled if `CR[6+i].EQ` is set   |
-| 101   | ne       | Element `i` is enabled if `CR[6+i].EQ` is clear |
-| 110   | so/un    | Element `i` is enabled if `CR[6+i].FU` is set   |
-| 111   | ns/nu    | Element `i` is enabled if `CR[6+i].FU` is clear |
+| Value | Mnemonic | Element `i` is enabled if     |
+|-------|----------|--------------------------|
+| 000   | lt       | `CR[6+i].LT` is set   |
+| 001   | nl/ge    | `CR[6+i].LT` is clear |
+| 010   | gt       | `CR[6+i].GT` is set   |
+| 011   | ng/le    | `CR[6+i].GT` is clear |
+| 100   | eq       | `CR[6+i].EQ` is set   |
+| 101   | ne       | `CR[6+i].EQ` is clear |
+| 110   | so/un    | `CR[6+i].FU` is set   |
+| 111   | ns/nu    | `CR[6+i].FU` is clear |
 
 CR based predication.  TODO: select alternate CR for twin predication? see
 [[discussion]]  Overlap of the two CR based predicates must be taken
