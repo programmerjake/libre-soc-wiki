@@ -327,16 +327,16 @@ CR encoding is essentially the same but made more complex due to CRs being bit-b
 
  Encoding shown MSB down to LSB
 
-| R\*\_EXTRA3 | Mode | 6..5    | 4..2    | 1..0    |
+| R\*\_EXTRA3 | Mode | 7..5    | 4..2    | 1..0    |
 |-------------|------|---------| --------|---------|
-| 000       | Scalar | 0b00    | BA[4:2] | BA[1:0] |
-| 001       | Scalar | 0b01    | BA[4:2] | BA[1:0] |
-| 010       | Scalar | 0b10    | BA[4:2] | BA[1:0] |
-| 011       | Scalar | 0b11    | BA[4:2] | BA[1:0] |
-| 100       | Vector | BA[4:2] | 0b00    | BA[1:0] |
-| 101       | Vector | BA[4:2] | 0b01    | BA[1:0] |
-| 110       | Vector | BA[4:2] | 0b10    | BA[1:0] |
-| 111       | Vector | BA[4:2] | 0b11    | BA[1:0] |
+| 000       | Scalar | 0b000   | BA[4:2] | BA[1:0] |
+| 001       | Scalar | 0b001   | BA[4:2] | BA[1:0] |
+| 010       | Scalar | 0b010   | BA[4:2] | BA[1:0] |
+| 011       | Scalar | 0b011   | BA[4:2] | BA[1:0] |
+| 100       | Vector | BA[4:2] | 0b000   | BA[1:0] |
+| 101       | Vector | BA[4:2] | 0b010   | BA[1:0] |
+| 110       | Vector | BA[4:2] | 0b100   | BA[1:0] |
+| 111       | Vector | BA[4:2] | 0b110   | BA[1:0] |
 
 ## CR EXTRA2
 
@@ -344,12 +344,12 @@ CR encoding is essentially the same but made more complex due to CRs being bit-b
 
 Encoding shown MSB down to LSB
 
-| R\*\_EXTRA2 | Mode   | 6..5    | 4..2    | 1..0    |
+| R\*\_EXTRA2 | Mode   | 7..5    | 4..2    | 1..0    |
 |-------------|--------|---------|---------|---------|
-| 00          | Scalar | 0b00    | BA[4:2] | BA[1:0] |
-| 01          | Scalar | 0b01    | BA[4:2] | BA[1:0] |
-| 10          | Vector | BA[4:2] | 0b00    | BA[1:0] |
-| 11          | Vector | BA[4:2] | 0b10    | BA[1:0] |
+| 00          | Scalar | 0b000   | BA[4:2] | BA[1:0] |
+| 01          | Scalar | 0b001   | BA[4:2] | BA[1:0] |
+| 10          | Vector | BA[4:2] | 0b000   | BA[1:0] |
+| 11          | Vector | BA[4:2] | 0b100   | BA[1:0] |
 
 # ELWIDTH Encoding
 
@@ -568,12 +568,12 @@ applies, **not** the CR\_bit portion (bits 0:1):
     else:
         spec = EXTRA2<<1 | 0b0
     if spec[2]:
-       # vector constructs "BA[2:4] spec[0:1] BA[0:1]"
-       return ((BA >> 2)<<4) | # hi 3 bits shifted up
-              (spec[0:1]<<2) |  # to make room for these
+       # vector constructs "BA[2:4] spec[0:1] 0 BA[0:1]"
+       return ((BA >> 2)<<5) | # hi 3 bits shifted up
+              (spec[0:1]<<3) |  # to make room for these
               (BA & 0b11)      # CR_bit on the end
     else:
-       # scalar constructs "spec[0:1] BA[0:4]"
+       # scalar constructs "0 spec[0:1] BA[0:4]"
        return (spec[0:1] << 5) | BA
 
 Thus, for example, to access a given bit for a CR in SV mode, the v3.0B
@@ -582,10 +582,10 @@ algorithm to determin CR\_reg is modified to as follows:
     CR_index = 7-(BA>>2)      # top 3 bits but BE
     if spec[2]:
         # vector mode
-        CR_index = (CR_index<<2) | (spec[0:1])
+        CR_index = (CR_index<<3) | (spec[0:1] << 1)
     else:
         # scalar mode
-        CR_index = CR_index | (spec[0:1]<<3)
+        CR_index = (spec[0:1]<<3) | CR_index
     # same as for v3.0/v3.1 from this point onwards
     bit_index = 3-(BA & 0b11) # low 2 bits but BE
     CR_reg = CR[CR_index]      # get the CR
@@ -598,7 +598,6 @@ Note: high-performance implementations may read/write Vectors of CRs in
 batches of aligned 32-bit chunks (CR0-7, CR7-15).  This is to greatly
 simplify internal design.  If instructions are issued where CR Vectors
 do not start on a 32-bit aligned boundary, performance may be affected.
-
 
 ## CR fields as inputs/outputs of vector operations
 
