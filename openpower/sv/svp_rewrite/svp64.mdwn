@@ -278,7 +278,7 @@ or EXTRA3 field from the SV Prefix.  The prefixing is arranged so that
 interoperability between prefixing and nonprefixing of scalar registers
 is direct and convenient (when the EXTRA field is all zeros).
 
-3 bit version
+## EXTRA3
 
 alternative which is understandable and, if EXTRA3 is zero, maps to
 "no effect" (scalar OpenPOWER ISA field naming).  also, these are the
@@ -297,15 +297,7 @@ registers have access to the same 32 registers.
 | 110       | Vector | `r2-r126` | `RA 0b10`      |
 | 111       | Vector | `r3-r127` | `RA 0b11`      |
 
-algorithm for original version:
-
-    spec = EXTRA3
-    if spec[2]: # vector
-         return RA << 2 + spec[0:1]
-    else:         # scalar
-         return RA + spec[0:1] << 5
-
-2 bit version
+# EXTRA2
 
 alternative which is understandable and, if EXTRA2 is zero will map to
 "no effect" i.e Scalar OpenPOWER register naming:
@@ -317,14 +309,19 @@ alternative which is understandable and, if EXTRA2 is zero will map to
 | 10       | Vector | `r0-r124` | `RA 0b00`      |
 | 11       | Vector | `r2-r126` | `RA 0b10`   |
 
+## Pseudocode
+
 algorithm for original version is identical to the 3 bit version except
 that the spec is shifted up by one bit
 
-    spec = EXTRA2 << 1 # same as EXTRA3, shifted
+    if extra3_mode:
+        spec = EXTRA3
+    else:
+        spec = EXTRA2 << 1 # same as EXTRA3, shifted
     if spec[2]: # vector
-         return RA << 2 + spec[0:1]
+         return RA << 2 | spec[0:1]
     else:         # scalar
-         return RA + spec[0:1] << 5
+         return RA | spec[0:1] << 5
 
 ## CR EXTRA3
 
