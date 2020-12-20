@@ -133,7 +133,7 @@ These are for 2 operand 1 dest instructions, such as `add RT, RA,
 RB`. However also included are unusual instructions with the same src
 and dest, such as `rlwinmi`.
 
-Normally, the scalar v3.0B ISA would not have sufficient bits to allow
+Normally, with instructions such as `rlwinmi`, the scalar v3.0B ISA would not have sufficient bits to allow
 an alternative destination.  With SV however this becomes possible.
 Therefore, the fact that the dest is implicitly also a src should not
 mislead: due to the *prefix* they are different SV regs.
@@ -143,8 +143,8 @@ mislead: due to the *prefix* they are different SV regs.
 * Rsrc2_EXTRA3 applies to RA as the secomd src
 * Rdest_EXTRA3 applies to RA to create an **independent** dest.
 
-Otherwise the normal SV hardware for-loop applies.  The three registers
-each may be independently made vector or scalar, and may independently
+With the addition of the EXTRA bits, the three registers
+each may be *independently* made vector or scalar, and be independently
 augmented to 7 bits in length.
 
 ## RM-2P-1S1D
