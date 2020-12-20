@@ -208,6 +208,8 @@ Fields:
 
 * **sz / dz**  if predication is enabled will put zeros into the dest (or as src in the case of twin pred) when the predicate bit is zero.  otherwise the element is ignored or skipped, depending on context.
 * **inv CR bit** just as in branches (BO) these bits allow testing of a CR bit and whether it is set (inv=0) or unset (inv=1)
+* **CRM** affects the CR on reduce mode when Rc=1
+* **N** sets signed/unsigned saturation.
 
 ## Notes about rounding, clamp and saturate
 
