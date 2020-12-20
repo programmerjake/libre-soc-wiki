@@ -56,3 +56,24 @@ thus we have a convention where the result is *also a partitioned signal*, and c
 
 the second observation then is that, actually, just like the other partitioned operations, it may be possible to "construct" the longer results from the 8x8 ones, based on whether the partition gates are open or closed.
 
+# Boolean truth table
+
+Exactly the same as for eq, instead the "xor" operator for example is the amalgamation of 4 partial results, x0 to x3.
+
+     x0 = input[0:7].xor()
+     x1 = input[8:15].xor()
+     x2 = input[16:23].xor()
+     x3 = input[24:31].xor()
+
+[[!table  data="""
+p2p1p0 | o0       | o1 | o2 | o3
+++++++ | ++++++++ | ++++++++ | ++++++++ | ++
+0 0 0  | ^(x0-3)  | 0        | 0        | 0
+0 0 1  | eq0      | &(eq1-3) | 0        | 0
+0 1 0  | &(eq0-1) | 0        | &(eq2-3) | 0
+0 1 1  | eq0      | eq1      | &(eq2-3) | 0
+1 0 0  | &(eq0-2) | 0        | 0        | eq3
+1 0 1  | eq0      | &(eq1-2) | 0        | eq3
+1 1 0  | &(eq0-1) | 0        | eq2      | eq3
+1 1 1  | eq0      | eq1      | eq2      | eq3
+"""]]
