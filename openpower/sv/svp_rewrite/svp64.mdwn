@@ -181,8 +181,6 @@ Mode is an augmentation of SV behaviour.  Some of these alterations are element-
 
 These are the modes:
 
-
-
 * **normal** mode is straight vectorisation.  no augmentations: the vector comprises an array of independently created results.
 * **ffirst** or data-dependent fail-on-first: see separate section.  the vector may be truncated depending on certain criteria.
 * **sat mode** or saturation: clamps each elemrnt result to a min/max rather than overflows / wraps.  allows signed and unsigned clamping.
@@ -211,7 +209,7 @@ Fields:
 * **CRM** affects the CR on reduce mode when Rc=1
 * **N** sets signed/unsigned saturation.
 
-## Notes about rounding, clamp and saturate
+## Rounding, clamp and saturate
 
 One of the issues with vector ops is that in integer DSP ops for example in Audio the operation must clamp or saturate rather than overflow or ignore the upper bits and become a modulo operation.  This for Audio is extremely important, also to provide an indicator as to whether saturation occurred.  see  [[av_opcodes]].
 
@@ -226,9 +224,7 @@ When Rc=1, the CR "overflow" bit is set on the CR associated with the element, t
 Post-analysis of the Vector of CRs to find out if any given element hit saturation may be done using a mapreduced CR op (cror), or by using the new crweird instruction, transferring the relevant CR bits to a scalar integer and testing it for nonzero.  see [[sv/cr_int_predication]]
 
 
-
-
-## Notes about reduce mode
+## Reduce mode
 
 1. limited to single predicated dual src operations (add RT, RA, RB) and to triple source operations where one of the inputs is set to a scalar (these are rare)
 2. limited to operations that make sense.  divide is excluded, as is subtract (X - Y - Z produces different answers depending on the order).  sane operations: multiply, add, logical bitwise OR, CR operations.  operations that do not return the same register type are also excluded (isel, cmp)
@@ -268,9 +264,15 @@ In CR-based data-driven fail-on-first there is only the option to select and tes
 One extremely important aspect of ffirst is:
 
 * LDST ffirst may never set VL equal to zero.  This because on the first element an exception must be raised "as normal".
-* CR-based data-dependent ffirst **can** set VL equal to zero. This is the only means in the entirety of SV that VL may be set to zero (with the exception of via the SV.STATE SPR).  When VL is set zero due to the first element failing the CR bit-test, all subsequent vectorised operations are effectively `nops` which is *precisely the desired and intended behaviour*.
+* CR-based data-dependent ffirst on the other hand **can** set VL equal to zero. This is the only means in the entirety of SV that VL may be set to zero (with the exception of via the SV.STATE SPR).  When VL is set zero due to the first element failing the CR bit-test, all subsequent vectorised operations are effectively `nops` which is *precisely the desired and intended behaviour*.
 
 # R\*_EXTRA2 and R\*_EXTRA3 Encoding
+
+EXTRA is the means by which two things are achieved:
+
+1. Registers are marked as either Vector *or Scalar*
+2. Register field numbers (limited typically to 5 bit)
+   are extended in range, both for Scalar and Vector.
 
 In the following tables register numbers are constructed from the
 standard v3.0B / v3.1B 32 bit register field (RA, FRA) and the EXTRA2
@@ -278,17 +280,16 @@ or EXTRA3 field from the SV Prefix.  The prefixing is arranged so that
 interoperability between prefixing and nonprefixing of scalar registers
 is direct and convenient (when the EXTRA field is all zeros).
 
-pseudocode algorithm for original version is identical to the 3 bit version except
-that the spec is shifted up by one bit
+A pseudocode algorithm explains the relationship, for INT/FP (see separate section for CRs)
 
     if extra3_mode:
         spec = EXTRA3
     else:
         spec = EXTRA2 << 1 # same as EXTRA3, shifted
     if spec[2]: # vector
-         return RA << 2 | spec[0:1]
+         return (RA << 2) | spec[0:1]
     else:         # scalar
-         return RA | spec[0:1] << 5
+         return (spec[0:1] << 5) | RA
 
 ## INT/FP EXTRA3
 
