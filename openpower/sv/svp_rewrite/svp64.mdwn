@@ -119,7 +119,7 @@ an alternative destination.  With SV however this becomes possible.
 Therefore, the fact that the dest is implicitly also a src should not
 mislead: due to the *prefix* they are different SV regs.
 
-* `rlwimi RA, RS, ...` 
+* `rlwimi RA, RS, ...`
 * Rsrc1_EXTRA3 applies to RS as the first src
 * Rsrc2_EXTRA3 applies to RA as the secomd src
 * Rdest_EXTRA3 applies to RA to create an **independent** dest.
@@ -221,7 +221,7 @@ One of the issues with vector ops is that in integer DSP ops for example in Audi
 3. the destination is a vector but the result is stored, ultimately, in the first nonzero predicated element.  all other nonzero predicated elements are undefined. *this includes the CR vector* when Rc=1
 4. implementations may use any ordering and any algorithm to reduce down to a single result.  However it must be equivalent to a straight application of mapreduce.  The destination vector (except masked out elements) may be used for storing any intermediate results. these may be left in the vector (undefined).
 5. CRM applies when Rc=1.  When CRM is zero, the CR associated with the result is regarded as a "some results met standard CR result criteria". When CRM is one, this changes to "all results met standard CR criteria".
-6. implementations MAY use destoffs as well as srcoffs (see [[sv/sprs]]) in order to store sufficient state to resume operation should an interrupt occur. this is also why implementations are permitted to use the destination vector to store intermediary computations 
+6. implementations MAY use destoffs as well as srcoffs (see [[sv/sprs]]) in order to store sufficient state to resume operation should an interrupt occur. this is also why implementations are permitted to use the destination vector to store intermediary computations
 
 TODO: Rc=1 on Scalar Logical Operations? is this possible? was space reserved in Logical Ops?
 
@@ -405,7 +405,7 @@ a different test to be applied.
 
 ## Integer Predication (MASK_KIND=0)
 
-When the predicate mode bit is zero the 3 bits are interpreted as below. 
+When the predicate mode bit is zero the 3 bits are interpreted as below.
 Twin predication has an identical 3 bit field similarly encoded.
 
 | Value | Mnemonic | Element `i` enabled if:      |
@@ -494,16 +494,23 @@ RB etc. are interpreted as v3.0B / v3.1B scalar registers.  This is termed
 
 # CR Operations
 
+CRs are slightly more involved than INT or FP registers due to the
+possibility for indexing individual bits (crops BA/BB/BT).  Again however
+the access pattern needs to be understandable in relation to v3.0B / v3.1B
+numbering, with a clear linear relationship and mapping existing when
+SV is applied.
+
 ## CR EXTRA mapping table and algorithm
 
-Numbering relationships for CR fields are already complex due to bring
-in BE format.  However with some care and consideration the exact same
-mapping used for INT and FP regfiles may be applied, just to the upper bits,
-as explained below.
+Numbering relationships for CR fields are already complex due to being
+in BE format (*the relationship is not clearly explained in the v3.0B
+or v3.1B specification*).  However with some care and consideration
+the exact same mapping used for INT and FP regfiles may be applied,
+just to the upper bits, as explained below.
 
 In OpenPOWER v3.0/1, BF/BT/BA/BB are all 5 bits.  The top 3 bits (2:4)
 select one of the 8 CRs; the bottom 2 bits (0:1) select one of 4 bits
-in that CR.  The numbering was determined (after 4 months of
+*in* that CR.  The numbering was determined (after 4 months of
 analysis and research) to be as follows:
 
     CR_index = 7-(BA>>2)      # top 3 bits but BE
@@ -526,9 +533,10 @@ applies, **not** the CR\_bit portion (bits 0:1):
               (BA & 0b11)      # CR_bit on the end
     else:
        # scalar constructs "spec[0:1] BA[0:4]"
-       return BA + spec[0:1] << 5
+       return (spec[0:1] << 5) | BA
 
-Thus, for example, to access a given bit for a CR in SV mode:
+Thus, for example, to access a given bit for a CR in SV mode, the v3.0B
+algorithm to determin CR\_reg is modified to as follows:
 
     CR_index = 7-(BA>>2)      # top 3 bits but BE
     if spec[2]:
@@ -543,33 +551,38 @@ Thus, for example, to access a given bit for a CR in SV mode:
     # finally get the bit from the CR.
     CR_bit = (CR_reg & (1<<bit_index)) != 0
 
-In table form:
-
-| R\*\_EXTRA3 | Mode | Encoded MSB downto LSB |
-|-------------|------|------------------------|
-| 000       | Scalar | `0b00  BA[4:0]`        |
-| 001       | Scalar | `0b01  BA[4:0]`        |
-| 010       | Scalar | `0b10  BA[4:0]`        |
-| 011       | Scalar | `0b11  BA[4:0]`        |
-| 100       | Vector | `BA[4:2] 0b00 BA[1:0]` |
-| 101       | Vector | `BA[4:2] 0b01 BA[1:0]` |
-| 110       | Vector | `BA[4:2] 0b10 BA[1:0]` |
-| 111       | Vector | `BA[4:2] 0b11 BA[1:0]` |
-
-For EXTRA2, spec = (EXTRA2<<1) just as is the case for INT and FP registers.
-The table shows the relationship:
-
-| R\*\_EXTRA2 | Mode | Encoded MSB downto LSB |
-|-------------|------|------------------------|
-| 00        | Scalar | `0b00  BA[4:0]`        |
-| 01        | Scalar | `0b01  BA[4:0]`        |
-| 10        | Vector | `BA[4:0] 0b00 BA[1:0]` |
-| 11        | Vector | `BA[4:0] 0b10 BA[1:0]` |
+Note here that the decoding pattern to determine CR\_bit does not change.
 
 Note: high-performance implementations may read/write Vectors of CRs in
 batches of aligned 32-bit chunks (CR0-7, CR7-15).  This is to greatly
 simplify internal design.  If instructions are issued where CR Vectors
 do not start on a 32-bit aligned boundary, performance may be affected.
+
+### CR EXTRA3
+
+In table form.  Encoding shown MSB down to LSB
+
+| R\*\_EXTRA3 | Mode | 6..5    | 4..2    | 1..0    |
+|-------------|------|---------| --------|---------|
+| 000       | Scalar | 0b00    | BA[4:2] | BA[1:0] |
+| 001       | Scalar | 0b01    | BA[4:2] | BA[1:0] |
+| 010       | Scalar | 0b10    | BA[4:2] | BA[1:0] |
+| 011       | Scalar | 0b11    | BA[4:2] | BA[1:0] |
+| 100       | Vector | BA[4:2] | 0b00    | BA[1:0] |
+| 101       | Vector | BA[4:2] | 0b01    | BA[1:0] |
+| 110       | Vector | BA[4:2] | 0b10    | BA[1:0] |
+| 111       | Vector | BA[4:2] | 0b11    | BA[1:0] |
+
+### CR EXTRA2
+
+In table form.  Encoding shown MSB down to LSB
+
+| R\*\_EXTRA2 | Mode   | 6..5    | 4..2    | 1..0    |
+|-------------|--------|---------|---------|---------|
+| 00          | Scalar | 0b00    | BA[4:2] | BA[1:0] |
+| 01          | Scalar | 0b01    | BA[4:2] | BA[1:0] |
+| 10          | Vector | BA[4:2] | 0b00    | BA[1:0] |
+| 11          | Vector | BA[4:2] | 0b10    | BA[1:0] |
 
 ## CR fields as inputs/outputs of vector operations
 
