@@ -407,9 +407,9 @@ the default for SUBVL is 1 and its encoding is 0b00 to indicate that
 SUBVL is effectively disabled (a SUBVL for-loop of only one element). this
 lines up in combination with all other "default is all zeros" behaviour.
 
-| Value | Mnemonic  | xxx     | Description            |
+| Value | Mnemonic  | Subvec  | Description            |
 |-------|-----------|---------|------------------------|
-| 00    | `SUBVL=1` | default | Sub-vector length of 1 |
+| 00    | `SUBVL=1` | single  | Sub-vector length of 1 |
 | 01    | `SUBVL=2` | vec2    | Sub-vector length of 2 |
 | 10    | `SUBVL=3` | vec3    | Sub-vector length of 3 |
 | 11    | `SUBVL=4` | vec4    | Sub-vector length of 4 |
@@ -449,7 +449,7 @@ Twin predication has an identical 3 bit field similarly encoded.
 
 | Value | Mnemonic | Element `i` enabled if:      |
 |-------|----------|------------------------------|
-| 000   | ALWAYS   | (Operation is not masked)    |
+| 000   | ALWAYS   | predicate effectively all 1s |
 | 001   | 1 << R3  | `i == R3`                    |
 | 010   | R3       | `R3 & (1 << i)` is non-zero  |
 | 011   | ~R3      | `R3 & (1 << i)` is zero      |
