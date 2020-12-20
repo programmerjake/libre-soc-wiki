@@ -95,7 +95,7 @@ is based on whether the number of src operands is 2 or 3.
 | Rsrc2\_EXTRA2 | `12:13` | extra bits for Rsrc2 (R\*\_EXTRA2 Encoding)   |
 | Rsrc3\_EXTRA2 | `14:15` | extra bits for Rsrc3 (R\*\_EXTRA2 Encoding|
 | reserved     | `16`    | reserved     |
-| MODE         | `19:23`    | see [[discussion]]                       |
+| MODE         | `19:23`    | changes Vector behaviour                       |
 
 ## RM-1P-2S1D
 
@@ -108,7 +108,7 @@ is based on whether the number of src operands is 2 or 3.
 | Rdest\_EXTRA3 | `8:10`  | extra bits for Rdest (Uses R\*\_EXTRA3 Encoding) |
 | Rsrc1\_EXTRA3 | `11:13` | extra bits for Rsrc1 (Uses R\*\_EXTRA3 Encoding) |
 | Rsrc2\_EXTRA3 | `14:16` | extra bits for Rsrc3 (Uses R\*\_EXTRA3 Encoding) |
-| MODE       | `19:23`    | see [[discussion]]                               |
+| MODE         | `19:23`    | changes Vector behaviour                       |
 
 These are for 2 operand 1 dest instructions, such as `add RT, RA,
 RB`. However also included are unusual instructions with the same src
@@ -140,7 +140,7 @@ augmented to 7 bits in length.
 | Rsrc1_EXTRA3 | `11:13`    | extra bits for Rsrc1                      |
 | MASK_SRC     | `14:16`    | Execution Mask for Source     |
 | ELWIDTH_SRC  | `17:18`    | Element Width for Source      |
-| MODE         | `19:23`    | see [[discussion]]                        |
+| MODE         | `19:23`    | changes Vector behaviour                       |
 
 note in [[discussion]]: TODO, evaluate if 2nd SUBVL should be added.
 conclusion: no.  2nd SUBVL makes no sense except for mv, and that is
@@ -164,7 +164,7 @@ RM-2P-2S1D:
 | Rsrc2_EXTRA2 | `12:13` | extra bits for Rsrc2 (R\*\_EXTRA2 Encoding)   |
 | MASK_SRC     | `14:16`    | Execution Mask for Source     |
 | ELWIDTH_SRC  | `17:18`    | Element Width for Source      |
-| MODE         | `19:23`    | see [[discussion]]                        |
+| MODE         | `19:23`    | changes Vector behaviour                       |
 
 Note that for 1S2P the EXTRA2 dest and src names are switched (Rsrc_EXTRA2
 is in bits 8:9, Rdest1_EXTRA2 in 10:11)
