@@ -514,6 +514,19 @@ When it comes to applying SV, it is the CR_reg number to which SV EXTRA2/3 appli
     else:         # scalar
        return BFA + spec[0:1] << 7
 
+In table form:
+
+| R\*\_EXTRA3 | Mode | Encoded as |
+|-----------|-------|---------------|---------------------|
+| 000       | Scalar | `0b00  BFA[0:4]`      |
+| 001       | Scalar | `0b01  BFA[0:4]`      |
+| 010       | Scalar | `0b10  BFA[0:4]`      |
+| 011       | Scalar | `0b11  BFA[0:4]`      |
+| 100       | Vector | `BFA[2:4] 0b00 BFA[0:1]`      |
+| 101       | Vector | `BFA[2:4] 0b01 BFA[0:1]`      |
+| 110       | Vector | `BFA[2:4] 0b10 BFA[0:1]`      |
+| 111       | Vector | `BFA[2:4] 0b11 BFA[0:1]`      |
+
 ## CR fields as inputs/outputs of vector operations
 
 When vectorized, the CR inputs/outputs are sequentially read/written
