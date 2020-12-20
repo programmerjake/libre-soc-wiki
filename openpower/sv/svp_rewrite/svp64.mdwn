@@ -347,9 +347,10 @@ TODO, important, particularly for crops, mfcr and mtcr, what elwidth
 even means.  instead it may be possible to use the bits as extra indices
 (EXTRA6) to access the full 64 CRs.  TBD, several ideas
 
-The actual width of the CRs cannot be altered: they are 4 bit.  Thus,
-for Rc=1 operations that produce a result and corresponding CR, it is
-the result to which the elwidth override applies, not the CR.
+The actual width of the CRs cannot be altered: they are 4 bit.  Also,
+for Rc=1 operations that produce a result (in RT or FRT) and corresponding CR, it is
+the INT/FP result to which the elwidth override applies, *not* the CR.
+This therefore inherently places Rc=1 operations firmly out of scope as far as a "meaning" for elwidth on CRs is concerned.
 
 As mentioned TBD, this leaves crops etc. to have a meaning defined for
 elwidth, because these ops are pure explicit CR based.
