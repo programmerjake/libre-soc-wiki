@@ -134,10 +134,10 @@ is based on whether the number of src operands is 2 or 3.
 | MODE          | `19:23` | changes Vector behaviour                  |
 
 These are for 2 operand 1 dest instructions, such as `add RT, RA,
-RB`. However also included are unusual instructions with the same src
-and dest, such as `rlwinmi`.
+RB`. However also included are unusual instructions with an implicit dest
+that is identical to its src reg, such as `rlwinmi`.
 
-Normally, with instructions such as `rlwinmi`, the scalar v3.0B ISA would not have sufficient bits to allow
+Normally, with instructions such as `rlwinmi`, the scalar v3.0B ISA would not have sufficient bit fields to allow
 an alternative destination.  With SV however this becomes possible.
 Therefore, the fact that the dest is implicitly also a src should not
 mislead: due to the *prefix* they are different SV regs.
