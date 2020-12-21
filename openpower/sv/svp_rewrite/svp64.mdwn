@@ -100,7 +100,9 @@ is defined in the Prefix Fields section.
 
 ## Prefix Opcode Map (64-bit instruction encoding) (prefix bits 6:11)
 
-(shows both PowerISA v3.1 instructions as well as new SVP instructions; empty spaces are yet-to-be-allocated Illegal Instructions)
+shows both PowerISA v3.1 instructions as well as new SVP instructions;
+empty spaces are yet-to-be-allocated Illegal Instructions.  The original
+table in the v3.1B OpenPOWER ISA Spec is on p1350, Table 12.
 
 | 6:11 | ---000 | ---001 | ---010 | ---011 | ---100 | ---101 | ---110 | ---111 |
 |------|--------|--------|--------|--------|--------|--------|--------|--------|
@@ -115,6 +117,9 @@ is defined in the Prefix Fields section.
 
 ## Prefix Fields
 
+To "activate" svp64, fields within the v3.1B Prefix Opcode Map are set
+(see Prefix Opcode Map, above), leaving 24 bits "free" for use by SV.
+
 | Name       | Bits    | Value | Description                    |
 |------------|---------|-------|--------------------------------|
 | EXT01      | `0:5`   | `1`   | Indicates Prefixed 64-bit      |
@@ -124,6 +129,17 @@ is defined in the Prefix Fields section.
 | SVP64_9    | `9`     | `1`   | Indicates this is SVP64        |
 | `RM[2:23]` | `10:31` |       | Bits 2-23 of Remapped Encoding |
 
+Laid out bitwise, this is as follows, showing how the 32-bits of the prefix
+are constructed:
+
+| 0:5    | 6     | 7 | 8     | 9 | 10:31    |
+|--------|-------|---|-------|---|----------|
+| EXT01  | RM    | 1 | RM    | 1 | RM       |
+| 000001 | RM[0] | 1 | RM[1] | 1 | RM]2:23] |
+
+Following the prefix will be the suffix: this is simply a 32-bit v3.0B / v3.1B
+instruction.  That instruction is "prefixed" with the SV context: the
+Remapped Encoding field (RM).
 
 # Remapped Encoding Fields
 
