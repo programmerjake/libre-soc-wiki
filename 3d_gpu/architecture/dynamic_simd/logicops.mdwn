@@ -69,11 +69,17 @@ Exactly the same as for eq, instead the "xor" operator for example is the amalga
 p2p1p0 | o0       | o1 | o2 | o3
 ++++++ | ++++++++ | ++++++++ | ++++++++ | ++
 0 0 0  | ^(x0-3)  | 0        | 0        | 0
-0 0 1  | eq0      | &(eq1-3) | 0        | 0
-0 1 0  | &(eq0-1) | 0        | &(eq2-3) | 0
-0 1 1  | eq0      | eq1      | &(eq2-3) | 0
-1 0 0  | &(eq0-2) | 0        | 0        | eq3
-1 0 1  | eq0      | &(eq1-2) | 0        | eq3
-1 1 0  | &(eq0-1) | 0        | eq2      | eq3
-1 1 1  | eq0      | eq1      | eq2      | eq3
+0 0 1  | x0       | ^(x1-3)  | 0        | 0
+0 1 0  | ^(x0-1)  | 0        | ^(x2-3)  | 0
+0 1 1  | x0       | x1       | ^(x2-3)  | 0
+1 0 0  | ^(x0-2)  | 0        | 0        | eq3
+1 0 1  | x0       | ^(x1-2)  | 0        | eq3
+1 1 0  | ^(x0-1)  | 0        | x2       | eq3
+1 1 1  | x0       | x1       | x2       | eq3
 """]]
+
+Example:
+
+* when p2p1p0 == 101 this indicates that the output is to contain an XOR of the top 8 bits, the middle 16 bits, and a the low 8 bits. this in a 4 bit result.
+* the top bit of the 4-bit answer contains x3, the middle 2 bits contain the XOR or x1 and x2, the first bit contains x0.
+* therefore, the final result: the top bit contains the XOR of the input bits 24 to 31, the middle 2 bits contains the XOR of bits 8 to 15, the lowest bit contains the XOR of bits 0 to 7.
