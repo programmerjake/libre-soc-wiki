@@ -43,7 +43,7 @@ detrimental adverse effect.
 Consequently in SV, XER.SO and CR.OV behaviour is disregarded.  XER is
 simply neither read nor written.  This includes when `scalar identity behaviour` occurs.  If OpenPOWER v3.0/1 scalar behaviour is desired then OpenPOWER v3.0/1 instructions should be used, not SV Prefixed ones.
 
-# Register Naming
+# Register Naming and size
 
 SV Registers are simply the INT, FP and CR register files extended
 linearly to larger sizes; SV Vectorisation iterates sequentially through these registers.
@@ -63,6 +63,11 @@ so that the register fields are identical to as if SV was not in effect
 i.e. under these circumstances (EXTRA=0) the register field names RA,
 RB etc. are interpreted and treated as v3.0B / v3.1B scalar registers.  This is part of
 `scalar identity behaviour` described above.
+
+## Future expansion.
+
+With the way that EXTRA fields are defined and applied to register fields,
+future versions of SV may involve 256 or greater registers.  To accommodate 256 registers, numbering of Vectors will simply shift up by one bit.  Backwards bibary compatibility may be achieved with a PCR bit.  Beyond this, further discussion is out of scope for this version of svp64.
 
 # Remapped Encoding (`RM[0:23]`)
 
