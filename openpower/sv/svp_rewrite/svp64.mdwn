@@ -45,13 +45,21 @@ simply neither read nor written.  This includes when `scalar identity behaviour`
 
 An interesting side-effect of this decision is that the OE flag is now free for other uses when SV Prefixing is used.
 
+# Additional instructions: v3.0B/v3.1B overrides
+
+SV is primarily designed for use as an efficient hybrid 3D GPU / VPU / CPU ISA.
+
+As mentioned above, OE=1 is not applicable in SV, freeing this bit for alternative uses.  Additionally, Vectorisation of the VSX SIMD system likewise makes no sense whatsoever: SV replaces VSX and provides, at the very minimum, predication (which VSX was not designed to incorporate).  Thus all VSX Major Opcodes - all of them - are "unused" and raise illegal instruction exceptions in SV Prefix Mode.
+
+This leaves several Major Opcodes free for use by SV to fit alternative instructions: Vector Product, Vector Normalise, [[sv/mv.swizzle]], Texture LD/ST operations, and others critical to an efficient, effective 3D GPU and VPU ISA, and included as standard in other commercially-successful GPU ISAs.
+
 # Register Naming and size
 
 SV Registers are simply the INT, FP and CR register files extended
 linearly to larger sizes; SV Vectorisation iterates sequentially through these registers.
 
 Where the integer regfile in standard scalar
-OpenPOWER v3.0B and v3.1B is r0 to r31, SV extends this as r0 to r127.
+OpenPOWER v3.0B/v3.1B is r0 to r31, SV extends this as r0 to r127.
 Likewise FP registers are extended to 128 (fp0 to fp127), and CRs are
 extended to 64 entries, CR0 thru CR63.
 
