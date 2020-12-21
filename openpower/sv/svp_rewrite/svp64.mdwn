@@ -593,7 +593,9 @@ but select different *bits* of the same CRs
 
 `offs` is defined as CR48 (6x8) so as to mesh cleanly with Vectorised Rc=1 operations (see below).  Arithmetic Rc=1 operations start from CR16 (TBD); FP Rc=1 from CR32 (TBD).
 
-# Twin Predication
+# Appendix
+
+## Twin Predication
 
 This is a novel concept that allows predication to be applied to a single
 source and a single dest register.  The following types of traditional
@@ -623,8 +625,6 @@ particularly given that one of the predicate options is `(1<<r3)`
 Additional unusual capabilities of Twin Predication include a back-to-back
 version of VCOMPRESS-VEXPAND which is effectively the ability to do an
 ordered multiple VINSERT.
-
-# Appendix
 
 ## CR Operations
 
