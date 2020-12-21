@@ -139,9 +139,9 @@ is based on whether the number of src operands is 2 or 3.
 | MASK          | `1:3`   | Execution Mask                            |
 | ELWIDTH       | `4:5`   | Element Width                             |
 | SUBVL         | `6:7`   | Sub-vector length                         |
-| Rdest\_EXTRA3 | `8:10`  | extends Rdest (Uses R\*\_EXTRA3 Encoding) |
-| Rsrc1\_EXTRA3 | `11:13` | extends Rsrc1 (Uses R\*\_EXTRA3 Encoding) |
-| Rsrc2\_EXTRA3 | `14:16` | extends Rsrc3 (Uses R\*\_EXTRA3 Encoding) |
+| Rdest\_EXTRA3 | `8:10`  | extends Rdest  |
+| Rsrc1\_EXTRA3 | `11:13` | extends Rsrc1  |
+| Rsrc2\_EXTRA3 | `14:16` | extends Rsrc3    |
 | ELWIDTH_SRC   | `17:18` | Element Width for Source      |
 | MODE          | `19:23` | changes Vector behaviour                  |
 
@@ -163,6 +163,8 @@ With the addition of the EXTRA bits, the three registers
 each may be *independently* made vector or scalar, and be independently
 augmented to 7 bits in length.
 
+Note that if ELWIDTH != ELWIDTH_SRC this may result in reduced performance or increased latency in some implementations due to lane-crossing. 
+
 ## RM-2P-1S1D
 
 | Field Name | Field bits | Description                                 |
@@ -177,9 +179,7 @@ augmented to 7 bits in length.
 | ELWIDTH_SRC  | `17:18`    | Element Width for Source      |
 | MODE         | `19:23`    | changes Vector behaviour                       |
 
-note in [[discussion]]: TODO, evaluate if 2nd SUBVL should be added.
-conclusion: no.  2nd SUBVL makes no sense except for mv, and that is
-covered by [[mv.vec]]
+Note that if ELWIDTH != ELWIDTH_SRC this may result in reduced performance or increased latency in some implementations due to lane-crossing. 
 
 ## RM-2P-2S1D/1S2D
 
@@ -209,6 +209,7 @@ Note also that LD with update indexed, which takes 2 src and 2 dest
 Twin Predication.  therefore these are treated as RM-2P-2S1D and the
 src spec for RA is also used for the same RA as a dest.
 
+Note that if ELWIDTH != ELWIDTH_SRC this may result in reduced performance or increased latency in some implementations due to lane-crossing. 
 
 # Mode
 
