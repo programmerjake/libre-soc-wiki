@@ -861,3 +861,21 @@ Vectorised (mtspr, bc, dcbz, twi)
 
 TODO generate table which will be here [[svp64/reg_profiles]]
 
+## Assembly Annotation
+
+Assembly code annotation is required for SV to be able to successfully
+mark instructions as "prefixed".
+
+A reasonable (prototype) starting point:
+
+    svp64 [field=value]*
+
+Fields:
+
+* ew=8/16/32 - element width
+* sew=8/16/32 - source element width
+* vec=2/3/4 - SUBVL
+* mode=reduce/satu/sats/crpred
+* pred=1\<\<3/r3/~r3/r10/~r10/r30/~r30/lt/gt/le/ge/eq/ne
+* spred={reg spec}
+
