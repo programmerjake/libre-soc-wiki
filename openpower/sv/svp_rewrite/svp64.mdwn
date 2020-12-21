@@ -32,6 +32,17 @@ v3.0/1B instructions covered by the prefix are "unaltered". This is termed `scal
 Note that this is completely different from when VL=0.  VL=0 turns all operations under its influence into `nops` (regardless of the prefix)
  whereas when VL=1 and the SV prefix is all zeros, the operation simply acts as if SV had not been applied at all to the instruction  (an "identity operation").
 
+# XER, SO and other global flags
+
+Vector systems are expected to be high performance.  This is achieved
+through parallelism, which requires that elements in the vector be
+independent.  XER SO and other global "accumulation" flags (CR.OV) cause
+Read-Write Hazards on single-bit global resources, having a significant
+detrimental adverse effect.
+
+Consequently in SV, XER.SO and CR.OV behaviour is disregarded.  XER is
+simply neither read nor written.  
+
 # Register Naming
 
 SV Registers are simply the INT, FP and CR register files extended
