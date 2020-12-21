@@ -41,7 +41,7 @@ Read-Write Hazards on single-bit global resources, having a significant
 detrimental adverse effect.
 
 Consequently in SV, XER.SO and CR.OV behaviour is disregarded.  XER is
-simply neither read nor written.  This includes when `scalar identity behaviour` occurs.  If OpenPOWER v3.0/1 scalar behaviour is desired then OpenPOWER v3.0/1 instructions should be used, not SV Prefixed ones.
+simply neither read nor written.  This includes when `scalar identity behaviour` occurs.  If precise OpenPOWER v3.0/1 scalar behaviour is desired then OpenPOWER v3.0/1 instructions should be used without an SV Prefix.
 
 An interesting side-effect of this decision is that the OE flag is now free for other uses when SV Prefixing is used.
 
