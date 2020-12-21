@@ -624,7 +624,9 @@ Additional unusual capabilities of Twin Predication include a back-to-back
 version of VCOMPRESS-VEXPAND which is effectively the ability to do an
 ordered multiple VINSERT.
 
-# CR Operations
+# Appendix
+
+## CR Operations
 
 CRs are slightly more involved than INT or FP registers due to the
 possibility for indexing individual bits (crops BA/BB/BT).  Again however
@@ -632,7 +634,7 @@ the access pattern needs to be understandable in relation to v3.0B / v3.1B
 numbering, with a clear linear relationship and mapping existing when
 SV is applied.
 
-## CR EXTRA mapping table and algorithm
+### CR EXTRA mapping table and algorithm
 
 Numbering relationships for CR fields are already complex due to being
 in BE format (*the relationship is not clearly explained in the v3.0B
@@ -690,7 +692,7 @@ batches of aligned 32-bit chunks (CR0-7, CR7-15).  This is to greatly
 simplify internal design.  If instructions are issued where CR Vectors
 do not start on a 32-bit aligned boundary, performance may be affected.
 
-## CR fields as inputs/outputs of vector operations
+### CR fields as inputs/outputs of vector operations
 
 CRs (or, the arithmetic operations associated with them)
 may be marked as Vectorised or Scalar.  When Rc=1 in arithmetic operations that have no explicit EXTRA to cover the CR, the CR is Vectorised if the destination is Vectorised.  Likewise if the destination is scalar then so is the CR.
@@ -746,7 +748,7 @@ hindrance, regardless of the length of VL.
 
 (see [[discussion]].  some alternative schemes are described there)
 
-## Table of CR fields
+### Table of CR fields
 
 CR[i] is the notation used by the OpenPower spec to refer to CR field #i,
 so FP instructions with Rc=1 write to CR[1] aka SVCR1_000.
@@ -762,7 +764,7 @@ overwhelm this one). [[svp64/cr_names]]
 
 
 
-# Register Profiles
+## Register Profiles
 
 **NOTE THIS TABLE SHOULD NO LONGER BE HAND EDITED** see
 <https://bugs.libre-soc.org/show_bug.cgi?id=548> for details.
