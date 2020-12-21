@@ -470,7 +470,7 @@ high, or accept that for twin predication VL must not exceed the range
 where overlap will occur, *or* that they use the same starting point
 but select different *bits* of the same CRs
 
-`offs` is defined as CR48 (6x8) so as to mesh cleanly with Vectorised Rc=1 operations (see below).  Arithmetic Rc=1 operations start from CR16 (TBD); FP Rc=1 from CR32 (TBD).
+`offs` is defined as CR32 (4x8) so as to mesh cleanly with Vectorised Rc=1 operations (see below).  Rc=1 operations start from CR8 (TBD).
 
 # Appendix
 
@@ -747,8 +747,7 @@ may be marked as Vectorised or Scalar.  When Rc=1 in arithmetic operations that 
 
 When vectorized, the CR inputs/outputs are sequentially read/written
 to 4-bit CR fields.  Vectorised Integer results, when Rc=1, will begin
-writing to CR16 (TBD evaluate) and increase sequentially from there.
-Vectorised FP results, when Rc=1, start from CR32 (TBD evaluate).
+writing to CR8 (TBD evaluate) and increase sequentially from there.
 This is so that:
 
 * implementations may rely on the Vector CRs being aligned to 8. This
@@ -756,9 +755,7 @@ This is so that:
   (8 CRs per batch), for high performance implementations.
 * scalar Rc=1 operation (CR0, CR1) and callee-saved CRs (CR2-4) are not
   overwritten by vector Rc=1 operations except for very large VL
-* Vector FP and Integer Rc=1 operations do not overwrite each other
-  except for large VL.
-* CR-based predication, from CR48, is also not interfered with
+* CR-based predication, from CR32, is also not interfered with
   (except by large VL).
 
 However when the SV result (destination) is marked as a scalar by the
