@@ -544,9 +544,8 @@ Note that the operation takes place at the maximum bitwidth (max of src and dest
 
 ## Reduce mode
 
-1. limited to single predicated dual src operations (add RT, RA, RB) and
-   to triple source operations where one of the inputs is set to a scalar
-   (these are rare)
+1. limited to single predicated dual src operations (add RT, RA, RB).
+   triple source operations are prohibited (fma).
 2. limited to operations that make sense.  divide is excluded, as is
    subtract (X - Y - Z produces different answers depending on the order)
    and asymmetric CRops (crandc, crorc). sane  operations:
@@ -593,7 +592,7 @@ Pseudocode for the case where RA==RB:
 TODO: case where RA!=RB which involves first a vector of 2-operand
 results followed by a mapreduce on the intermediates.
 
-Note that when SUBVL!=1 the sub-elements are *independent*, i.e. they
+Note that when SVM is clear and SUBVL!=1 the sub-elements are *independent*, i.e. they
 are mapreduced per *sub-element* as a result.  illustration with a vec2:
 
     result.x = op(iregs[RA].x, iregs[RA+1].x)
@@ -602,9 +601,7 @@ are mapreduced per *sub-element* as a result.  illustration with a vec2:
         result.x = op(result.x, iregs[RA+i].x)
         result.y = op(result.y, iregs[RA+i].y)
 
-When SVM is set and SUBVL!=1, another variant is enabled, which switches
-to `RM-2P-2S1D` such that different elwidths may be applied to src
-and dest.
+When SVM is set and SUBVL!=1, another variant is enabled.
 
     for i in range(VL):
         result = op(iregs[RA+i].x, iregs[RA+i].x)
