@@ -180,10 +180,11 @@ def crbtcnd(mop):
 # (remember to exclude nop - ori r0,r0,0 as this skews numbers)
 # Registers representable in a made-up 3-bit mapping.
 # It must contain 0 for proper working of at least storex.
-cregs3 = { 0, 31, 1, 2, 3, 4, 5, 6, 7 }
+#cregs3 = { 0, 31, 1, 2, 3, 4, 5, 6, 7 }
+cregs3 = { 0, 9, 3, 1, 2, 31, 10, 30, 4 }
 # Ditto in a 2-bit mapping.  It needs not contain 0, but it must be a
 # subset of cregs3 for proper working of at least storex.
-cregs2 = { 2, 3, 4, 5 }
+cregs2 = { 9, 3, 1, 2 }
 # Use the same sets for FP for now.
 cfregs3 = cregs3
 cfregs2 = cregs2
