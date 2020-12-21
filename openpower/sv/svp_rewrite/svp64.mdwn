@@ -525,10 +525,11 @@ integer and testing it for nonzero.  see [[sv/cr_int_predication]]
    to triple source operations where one of the inputs is set to a scalar
    (these are rare)
 2. limited to operations that make sense.  divide is excluded, as is
-   subtract (X - Y - Z produces different answers depending on the order).
-   sane operations: multiply, add, logical bitwise OR, CR operations.
-   operations that do not return the same register type are also excluded
-   (isel, cmp)
+   subtract (X - Y - Z produces different answers depending on the order)
+   and asymmetric CRops (crandc, crorc). sane  operations:
+   multiply, min/max, add, logical bitwise OR, most other CR ops.
+   operations that do have the same source and dest register type are
+   also excluded (isel, cmp)
 3. the destination is a vector but the result is stored, ultimately,
    in the first nonzero predicated element.  all other nonzero predicated
    elements are undefined. *this includes the CR vector* when Rc=1
