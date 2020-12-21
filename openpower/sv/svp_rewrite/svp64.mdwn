@@ -655,9 +655,10 @@ One extremely important aspect of ffirst is:
 
 ## pred-result mode
 
-This mode merges common CR testing with predication, saving on instruction count
+This mode merges common CR testing with predication, saving on instruction count. Below is the pseudocode excluding predicate zeroing and elwidth overrides.
 
     for i in range(VL):
+        # predication test, skip all masked out elements.
         if predicate_masked_out(i):
              continue
         result = op(iregs[RA+i], iregs[RB+i])
@@ -673,6 +674,8 @@ This mode merges common CR testing with predication, saving on instruction count
 
 The reason for allowing the CR element to be stored is so that post-analysis
 of the CR Vector may be carried out.  For example: Saturation may have occurred (and been prevented from updating, by the test) but it is desirable to know *which* elements fail saturation.
+
+Note that predication is still respected: predicate zeroing is slightly different: elements that fail the CR test *or* are masked out are zero'd.
 
 ## CR Operations
 
