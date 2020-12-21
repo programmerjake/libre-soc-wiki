@@ -55,11 +55,11 @@ An interesting side-effect of this decision is that the OE flag is now free for 
 
 Regarding XER.CA: this does not fit either: it was designed for a sxalar ISA. Instead, both carry-in and carry-out go into the CR.so bit of a given Vector element.
 
-# Additional instructions: v3.0B/v3.1B alternatives
+# v3.0B/v3.1B alternatives
 
 SV is primarily designed for use as an efficient hybrid 3D GPU / VPU / CPU ISA.
 
-As mentioned above, OE=1 is not applicable in SV, freeing this bit for alternative uses.  Additionally, Vectorisation of the VSX SIMD system likewise makes no sense whatsoever: SV replaces VSX and provides, at the very minimum, predication (which VSX was designed without).  Thus all VSX Major Opcodes - all of them - are "unused" and must raise illegal instruction exceptions in SV Prefix Mode.
+As mentioned above, OE=1 is not applicable in SV, freeing this bit for alternative uses.  Additionally, Vectorisation of the VSX SIMD system likewise makes no sense whatsoever. SV *replaces* VSX and provides, at the very minimum, predication (which VSX was designed without).  Thus all VSX Major Opcodes - all of them - are "unused" and must raise illegal instruction exceptions in SV Prefix Mode.
 
 Likewise, `lq` (Load Quad), and Load/Store Multiple make no sense to have because they are not only provided by SV, the SV alternatives may be predicated as well, making them far better suited to use in function calls and context-switching.
 
