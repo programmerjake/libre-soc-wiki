@@ -204,6 +204,7 @@ These are the modes:
 
 * **normal** mode is straight vectorisation.  no augmentations: the vector comprises an array of independently created results.
 * **ffirst** or data-dependent fail-on-first: see separate section.  the vector may be truncated depending on certain criteria.
+  *VL is altered as a result*.
 * **sat mode** or saturation: clamps each elemrnt result to a min/max rather than overflows / wraps.  allows signed and unsigned clamping.
 * **reduce mode**. a mapreduce is performed.  the result is a scalar.  a result vector however is required, as the upper elements may be used to store intermediary computations.  the result of the mapreduce is in the first element with a nonzero predicate bit.  see separate section below.
   note that there are comprehensive caveats when using this mode.
