@@ -481,8 +481,9 @@ This is a huge list that creates extremely powerful combinations,
 particularly given that one of the predicate options is `(1<<r3)`
 
 Additional unusual capabilities of Twin Predication include a back-to-back
-version of VCOMPRESS-VEXPAND which is effectively the ability to do an
-ordered multiple VINSERT.
+version of VCOMPRESS-VEXPAND which is effectively the ability to do 
+sequentially ordered multiple VINSERTs.  The source predicate selects a 
+sequentially ordered subset of elements to be inserted; the destination predicate specifies the sequentially ordered recipient locations.
 
 ## Rounding, clamp and saturate
 
@@ -588,8 +589,6 @@ and dest.
         result = op(result, iregs[RA+i].z)
         result = op(result, iregs[RA+i].z)
         iregs[RT+i] = result
-
-
 
 ## Fail-on-first
 
