@@ -53,6 +53,8 @@ simply neither read nor written.  This includes when `scalar identity behaviour`
 
 An interesting side-effect of this decision is that the OE flag is now free for other uses when SV Prefixing is used.
 
+Regarding XER.CA: this does not fit either: it was designed for a sxalar ISA. Instead, both carry-in and carry-out go into the CR.so bit of a given Vector element.
+
 # Additional instructions: v3.0B/v3.1B alternatives
 
 SV is primarily designed for use as an efficient hybrid 3D GPU / VPU / CPU ISA.
@@ -575,6 +577,8 @@ the hugely detrimental effect it has on parallel processing, XER.SO is
 overflow bit is therefore simply set to zero if saturation did not occur,
 and to one if it did.
 
+Note also that saturate on operations that produce a carry output are prohibited due to the conflicting use of the CR.so bit for storing if saturation occurred.
+
 Post-analysis of the Vector of CRs to find out if any given element hit
 saturation may be done using a mapreduced CR op (cror), or by using the
 new crweird instruction, transferring the relevant CR bits to a scalar
@@ -591,7 +595,8 @@ Note that the operation takes place at the maximum bitwidth (max of src and dest
    and asymmetric CRops (crandc, crorc). sane  operations:
    multiply, min/max, add, logical bitwise OR, most other CR ops.
    operations that do have the same source and dest register type are
-   also excluded (isel, cmp)
+   also excluded (isel, cmp). operations involving carry or overflow
+   (XER.CA / OV) are also prohibited.
 3. the destination is a vector but the result is stored, ultimately,
    in the first nonzero predicated element.  all other nonzero predicated
    elements are undefined. *this includes the CR vector* when Rc=1
