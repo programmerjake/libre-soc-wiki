@@ -546,6 +546,10 @@ integer and testing it for nonzero.  see [[sv/cr_int_predication]]
    in order to store sufficient state to resume operation should an
    interrupt occur. this is also why implementations are permitted to use
    the destination vector to store intermediary computations
+7. *Predication may be applied*.  zeroing mode is not an option.  masked-out
+   inputs are ignored; masked-out elements in the destination vector are
+   unaltered (not used for the purposes of intermediary storage); the
+   scalar result is placed in the first available unmasked element.
 
 TODO: Rc=1 on Scalar Logical Operations? is this possible? was space
 reserved in Logical Ops?
