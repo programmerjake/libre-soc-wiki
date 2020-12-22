@@ -196,11 +196,12 @@ Note that if ELWIDTH != ELWIDTH_SRC this may result in reduced performance or in
 
 ## RM-2P-1S1D
 
-| Field Name | Field bits | Description                                 |
-| Rdest_EXTRA3 | `8:10`     | extends Rdest                     |
-| Rsrc1_EXTRA3 | `11:13`    | extends Rsrc1                      |
-| MASK_SRC     | `14:16`    | Execution Mask for Source     |
-| ELWIDTH_SRC  | `17:18`    | Element Width for Source      |
+| Field Name | Field bits | Description                 |
+|------------|------------|----------------------------|
+| Rdest_EXTRA3 | `8:10`     | extends Rdest             |
+| Rsrc1_EXTRA3 | `11:13`    | extends Rsrc1             |
+| MASK_SRC     | `14:16`    | Execution Mask for Source |
+| ELWIDTH_SRC  | `17:18`    | Element Width for Source  |
 
 Note that if ELWIDTH != ELWIDTH_SRC this may result in reduced performance or increased latency in some implementations due to lane-crossing. 
 
@@ -211,7 +212,7 @@ and STORE operations.  see [[sv/ldst]] for detailed anslysis.
 
 RM-2P-2S1D:
 
-| Field Name | Field bits | Description                                 |
+| Field Name | Field bits | Description                     |
 |------------|------------|----------------------------|
 | Rdest_EXTRA2 | `8:9`   | extends Rdest (R\*\_EXTRA2 Encoding)   |
 | Rsrc1_EXTRA2 | `10:11` | extends Rsrc1 (R\*\_EXTRA2 Encoding)   |
