@@ -493,14 +493,14 @@ Vector systems are expected to be high performance.  This is achieved
 through parallelism, which requires that elements in the vector be
 independent.  XER SO and other global "accumulation" flags (CR.OV) cause
 Read-Write Hazards on single-bit global resources, having a significant
-detrimental adverse effect.
+detrimental effect.
 
 Consequently in SV, XER.SO and CR.OV behaviour is disregarded.  XER is
 simply neither read nor written.  This includes when `scalar identity behaviour` occurs.  If precise OpenPOWER v3.0/1 scalar behaviour is desired then OpenPOWER v3.0/1 instructions should be used without an SV Prefix.
 
 An interesting side-effect of this decision is that the OE flag is now free for other uses when SV Prefixing is used.
 
-Regarding XER.CA: this does not fit either: it was designed for a scalar ISA. Instead, both carry-in and carry-out go into the CR.so bit of a given Vector element.  This provides a means to perform large parallel batches of Vectorised carry-capable additions.
+Regarding XER.CA: this does not fit either: it was designed for a scalar ISA. Instead, both carry-in and carry-out go into the CR.so bit of a given Vector element.  This provides a means to perform large parallel batches of Vectorised carry-capable additions.  crweird instructions can be used to transfer the CRs in and out of an integer, where bitmanipulation may be performed to analyse the carry bits (including carry lookahead propagation) before continuing with further parallel additions.
 
 ## v3.0B/v3.1B relevant instructions
 
