@@ -55,19 +55,7 @@ An interesting side-effect of this decision is that the OE flag is now free for 
 
 Regarding XER.CA: this does not fit either: it was designed for a sxalar ISA. Instead, both carry-in and carry-out go into the CR.so bit of a given Vector element.
 
-# v3.0B/v3.1B alternatives
 
-SV is primarily designed for use as an efficient hybrid 3D GPU / VPU / CPU ISA.
-
-As mentioned above, OE=1 is not applicable in SV, freeing this bit for alternative uses.  Additionally, Vectorisation of the VSX SIMD system likewise makes no sense whatsoever. SV *replaces* VSX and provides, at the very minimum, predication (which VSX was designed without).  Thus all VSX Major Opcodes - all of them - are "unused" and must raise illegal instruction exceptions in SV Prefix Mode.
-
-Likewise, `lq` (Load Quad), and Load/Store Multiple make no sense to have because they are not only provided by SV, the SV alternatives may be predicated as well, making them far better suited to use in function calls and context-switching.
-
-This leaves several Major Opcodes free for use by SV to fit alternative instructions: Vector Product, Vector Normalise, [[sv/mv.swizzle]], Texture LD/ST operations, and others critical to an efficient, effective 3D GPU and VPU ISA. With such instructions being included as standard in other commercially-successful GPU ISAs it is likewise critical that a 3D GPU/VPU based on svp64 also have such instructions.
-
-Note however that svp64 is stand-alone and is in no way critically dependent on the existence or provision of 3D GPU or VPU instructions. These should be considered extensions, and their discussion and specification is out of scope for this document.
-
-Note, again: this is *only* under svp64 prefixing.  Standard v3.0B / v3.1B is *not* altered by svp64.
 
 # Register Naming and size
 
@@ -516,6 +504,19 @@ but select different *bits* of the same CRs
 
 # Appendix
 
+## v3.0B/v3.1B relevant instructions
+
+SV is primarily designed for use as an efficient hybrid 3D GPU / VPU / CPU ISA.
+
+As mentioned above, OE=1 is not applicable in SV, freeing this bit for alternative uses.  Additionally, Vectorisation of the VSX SIMD system likewise makes no sense whatsoever. SV *replaces* VSX and provides, at the very minimum, predication (which VSX was designed without).  Thus all VSX Major Opcodes - all of them - are "unused" and must raise illegal instruction exceptions in SV Prefix Mode.
+
+Likewise, `lq` (Load Quad), and Load/Store Multiple make no sense to have because they are not only provided by SV, the SV alternatives may be predicated as well, making them far better suited to use in function calls and context-switching.
+
+This leaves several Major Opcodes free for use by SV to fit alternative instructions: Vector Product, Vector Normalise, [[sv/mv.swizzle]], Texture LD/ST operations, and others critical to an efficient, effective 3D GPU and VPU ISA. With such instructions being included as standard in other commercially-successful GPU ISAs it is likewise critical that a 3D GPU/VPU based on svp64 also have such instructions.
+
+Note however that svp64 is stand-alone and is in no way critically dependent on the existence or provision of 3D GPU or VPU instructions. These should be considered extensions, and their discussion and specification is out of scope for this document.
+
+Note, again: this is *only* under svp64 prefixing.  Standard v3.0B / v3.1B is *not* altered by svp64.
 ## Twin Predication
 
 This is a novel concept that allows predication to be applied to a single
@@ -858,8 +859,6 @@ The 64 SV CRs are arranged similarly to the way the 128 integer registers
 are arranged.  TODO a python program that auto-generates a CSV file
 which can be included in a table, which is in a new page (so as not to
 overwhelm this one). [[svp64/cr_names]]
-
-
 
 ## Register Profiles
 
