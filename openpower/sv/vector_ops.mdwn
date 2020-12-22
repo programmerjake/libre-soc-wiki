@@ -20,7 +20,7 @@ Links:
 
 ## conflictd
 
-This is based on the AVX512 conflict detection instruction.  Internally the logic is used to detect address conflicts in multi-issue LD/ST operations.  Two arrays of values are given: the indices are compared and duplicates reported in a triangular fashion
+This is based on the AVX512 conflict detection instruction.  Internally the logic is used to detect address conflicts in multi-issue LD/ST operations.  Two arrays of values are given: the indices are compared and duplicates reported in a triangular fashion.  the instruction may be used for histograms (computed in parallel)
 
     input = [100, 100,   3, 100,   5, 100, 100,   3]
     conflict result = [
