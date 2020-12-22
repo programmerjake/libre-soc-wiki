@@ -2,6 +2,28 @@
 
 The core OpenPOWER ISA was designed as scalar: SV provides a level of abstraction to add variable-length element-independent parallelism. However, certain classes of instructions only make sense in a Vector context: AVC512 conflictd for example.  This section includes such examples.  Many of them are from the RISC-V Vector ISA (with thanks to the efforts of RVV's contributors)
 
+However some of these actually could be added to a scalar ISA as bitmanipulation instructions.  These are separated out into their own section.
 Links:
 
 * <https://github.com/riscv/riscv-v-spec/blob/master/v-spec.adoc#vector-register-gather-instructions>
+
+# Vector
+
+## conflictd
+
+This is based on the AVX512 conflict detection instruction.  Internally the logic is used to detect address conflicts in LD/ST operations.  Two arrays of indices are given.
+
+## iota
+
+Based on RVV vmiota.  vmiota may be viewed as a cumulative variant of cntlz, where instead of stopping at the first zero with a count to produce a single scalar result, the process continues on, producing another element at the next encounter of a 1.
+
+# Scalar
+
+These may all be viewed as suitable for fitting into a scalar bitmanip extension.
+
+## vmsbf
+
+## vmsif
+
+## vmsof
+
