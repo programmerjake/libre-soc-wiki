@@ -18,7 +18,7 @@ Links:
 
 ## conflictd
 
-This is based on the AVX512 conflict detection instruction.  Internally the logic is used to detect address conflicts in LD/ST operations.  Two arrays of indices are given.
+This is based on the AVX512 conflict detection instruction.  Internally the logic is used to detect address conflicts in multi-issue LD/ST operations.  Two arrays of values are given: the indices are compared and duplicates reported in a triangular fashion
 
     input = [100, 100,   3, 100,   5, 100, 100,   3]
     conflict result = [
@@ -31,6 +31,13 @@ This is based on the AVX512 conflict detection instruction.  Internally the logi
          0b00011011,    // .. and #4
          0b00000100     // 3 is present on #2
     ]
+
+Pseudocode:
+
+    for i in range(VL):
+        for j in range(1, i):
+            if src1[i] == src2[j]:
+                result[j] |= 1<<i
 
 ## iota
 
