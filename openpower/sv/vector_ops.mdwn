@@ -43,11 +43,9 @@ Pseudocode:
 
 ## iota
 
-Based on RVV vmiota.  vmiota may be viewed as a cumulative variant of cntlz, where instead of stopping at the first zero with a count to produce a single scalar result, the process continues on, producing another element at the next encounter of a 1.
+Based on RVV vmiota.  vmiota may be viewed as a cumulative variant of popcount, generating multiple results.  successive iterations include more and more bits of the bitstream being tested.
 
-The viota.m instruction reads a source vector mask register and writes to each element of the destination vector register group the sum of all the bits of elements in the mask register whose index is less than the element, e.g., a parallel prefix sum of the mask values.
-
-This instruction can be masked, in which case only the enabled elements contribute to the sum and only the enabled elements are written.
+When masked, only the bits not masked out are included in the count process.
 
     viota.m vd, vs2, vm
 
@@ -65,11 +63,14 @@ Example
                        viota.m v4, v2, v0.t # Masked
      1 1 1 5 1 7 1 0   v4 results
 
-The result value is zero-extended to fill the destination element if SEW is wider than the result. If the result value would overflow the destination SEW, the least-significant SEW bits are retained.
+     def iota(RT, RA, RB): 
+        mask = iregs[RB] # or if zero, all 1s.
+        for i in range(VL):
+            testmask = (1<<i)-1 # only count below
+            to_test = iregs[RA] & testmask & mask
+            iregs[RT+i] = popcount(to_test)
 
-Traps on viota.m are always reported with a vstart of 0, and execution is always restarted from the beginning when resuming after a trap handler. An illegal instruction exception is raised if vstart is non-zero.
-
-
+TODO: a Vector CR-based version of the same, due to CRs being used for predication.
 
 # Scalar
 
