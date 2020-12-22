@@ -510,9 +510,9 @@ As mentioned above, OE=1 is not applicable in SV, freeing this bit for alternati
 
 Likewise, `lq` (Load Quad), and Load/Store Multiple make no sense to have because they are not only provided by SV, the SV alternatives may be predicated as well, making them far better suited to use in function calls and context-switching.
 
-Additionally, some v3.0/1 instructions simply make no sense at all in a Vector context: `twi` and `tdi` fall into this category, as do branch operations.  Here there is simply no point trying to Vectorise them: the standard OpenPOWER v3.0/1 instructions should be called instead.
+Additionally, some v3.0/1 instructions simply make no sense at all in a Vector context: `twi` and `tdi` fall into this category, as do branch operations as well as `sc` and `scv`.  Here there is simply no point trying to Vectorise them: the standard OpenPOWER v3.0/1 instructions should be called instead.
 
-Fortuitously this leaves several Major Opcodes free for use by SV to fit alternative instructions: Vector Product, Vector Normalise, [[sv/mv.swizzle]], Texture LD/ST operations, and others critical to an efficient, effective 3D GPU and VPU ISA. With such instructions being included as standard in other commercially-successful GPU ISAs it is likewise critical that a 3D GPU/VPU based on svp64 also have such instructions.
+Fortuitously this leaves several Major Opcodes free for use by SV to fit alternative future instructions.  In a 3D context this means Vector Product, Vector Normalise, [[sv/mv.swizzle]], Texture LD/ST operations, and others critical to an efficient, effective 3D GPU and VPU ISA. With such instructions being included as standard in other commercially-successful GPU ISAs it is likewise critical that a 3D GPU/VPU based on svp64 also have such instructions.
 
 Note however that svp64 is stand-alone and is in no way critically dependent on the existence or provision of 3D GPU or VPU instructions. These should be considered extensions, and their discussion and specification is out of scope for this document.
 
