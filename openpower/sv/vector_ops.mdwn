@@ -73,6 +73,10 @@ Example
 TODO: a Vector CR-based version of the same, due to CRs being used for predication. This would use the same testing mechanism as branch: BO[0:2]
 where bit 2 is inv, bits 0:1 select the bit of the CR.
 
+
+     def test_CR_bit(CR, BO):
+         return CR[BO[0:1]] == BO[2]
+
      def iotacr(RT, BA, BO): 
         mask = get_src_predicate()
         count = 0
