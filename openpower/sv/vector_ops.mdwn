@@ -47,7 +47,9 @@ Based on RVV vmiota.  vmiota may be viewed as a cumulative variant of popcount, 
 
 When masked, only the bits not masked out are included in the count process.
 
-    viota.m vd, vs2, vm
+    viota RT/v, RA, RB
+
+Note that when RA=0 this indicates to test against all 1s, resulting in the instruction generating a vector sequence [0, 1, 2... VL-1]. This will be equivalent to RVV vid.m which is a pseudo-op, here (RA=0).
 
 Example
 
@@ -64,15 +66,16 @@ Example
      1 1 1 5 1 7 1 0   v4 results
 
      def iota(RT, RA, RB): 
-        mask = iregs[RB] # or if zero, all 1s.
+        mask = RB ? iregs[RB] : 0b111111...1
+        val = RA ? iregs[RA] : 0b111111...1
         for i in range(VL):
+            if RA.scalar:
             testmask = (1<<i)-1 # only count below
-            to_test = iregs[RA] & testmask & mask
+            to_test = val & testmask & mask
             iregs[RT+i] = popcount(to_test)
 
-TODO: a Vector CR-based version of the same, due to CRs being used for predication. This would use the same testing mechanism as branch: BO[0:2]
+a Vector CR-based version of the same, due to CRs being used for predication. This would use the same testing mechanism as branch: BO[0:2]
 where bit 2 is inv, bits 0:1 select the bit of the CR.
-
 
      def test_CR_bit(CR, BO):
          return CR[BO[0:1]] == BO[2]
@@ -85,6 +88,8 @@ where bit 2 is inv, bits 0:1 select the bit of the CR.
             iregs[RT+i] = count
             if test_CR_bit(CR[i+BA], BO):
                  count += 1
+
+the variant of iotacr which is vidcr, this is not appropriate to have BA=0, plus, it is pointless to have it anyway.  The integer version covers it, by not reading the int regfile at all.
 
 # Scalar
 
