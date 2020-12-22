@@ -72,6 +72,15 @@ Example
 
 TODO: a Vector CR-based version of the same, due to CRs being used for predication.
 
+     def iotacr(RT, BA): 
+        mask = get_src_predicate()
+        count = 0
+        for i in range(VL):
+            if mask & (1<<i) == 0: continue
+            iregs[RT+i] = count
+            if test_CR_bit(CR[i+BA]):
+                 count += 1
+
 # Scalar
 
 These may all be viewed as suitable for fitting into a scalar bitmanip extension.
