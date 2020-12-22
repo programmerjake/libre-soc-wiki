@@ -579,6 +579,10 @@ Additional unusual capabilities of Twin Predication include a back-to-back
 version of VCOMPRESS-VEXPAND which is effectively the ability to do 
 sequentially ordered multiple VINSERTs.  The source predicate selects a 
 sequentially ordered subset of elements to be inserted; the destination predicate specifies the sequentially ordered recipient locations.
+This is equivalent to
+`llvm.masked.compressstore.*`
+followed by
+`llvm.masked.expandload.*`
 
 ## Rounding, clamp and saturate
 
