@@ -9,6 +9,7 @@ Instructions suited to 3D GPU workloads (dotproduct, crossproduct, normalise) ar
 Links:
 
 * <https://github.com/riscv/riscv-v-spec/blob/master/v-spec.adoc#vector-register-gather-instructions>
+* <http://0x80.pl/notesen/2016-10-23-avx512-conflict-detection.html> conflictd example
 * <https://bugs.libre-soc.org/show_bug.cgi?id=213>
 * <https://bugs.libre-soc.org/show_bug.cgi?id=142> specialist vector ops
  out of scope for this document
@@ -19,9 +20,47 @@ Links:
 
 This is based on the AVX512 conflict detection instruction.  Internally the logic is used to detect address conflicts in LD/ST operations.  Two arrays of indices are given.
 
+    input = [100, 100,   3, 100,   5, 100, 100,   3]
+    conflict result = [
+         0b00000000,    // Note: first element always zero
+         0b00000001,    // 100 is present on #0
+         0b00000000,
+         0b00000011,    // 100 is present on #0 and #1
+         0b00000000,
+         0b00001011,    // 100 is present on #0, #1, #3
+         0b00011011,    // .. and #4
+         0b00000100     // 3 is present on #2
+    ]
+
 ## iota
 
 Based on RVV vmiota.  vmiota may be viewed as a cumulative variant of cntlz, where instead of stopping at the first zero with a count to produce a single scalar result, the process continues on, producing another element at the next encounter of a 1.
+
+The viota.m instruction reads a source vector mask register and writes to each element of the destination vector register group the sum of all the bits of elements in the mask register whose index is less than the element, e.g., a parallel prefix sum of the mask values.
+
+This instruction can be masked, in which case only the enabled elements contribute to the sum and only the enabled elements are written.
+
+    viota.m vd, vs2, vm
+
+Example
+
+     7 6 5 4 3 2 1 0   Element number
+
+     1 0 0 1 0 0 0 1   v2 contents
+                       viota.m v4, v2 # Unmasked
+     2 2 2 1 1 1 1 0   v4 result
+
+     1 1 1 0 1 0 1 1   v0 contents
+     1 0 0 1 0 0 0 1   v2 contents
+     2 3 4 5 6 7 8 9   v4 contents
+                       viota.m v4, v2, v0.t # Masked
+     1 1 1 5 1 7 1 0   v4 results
+
+The result value is zero-extended to fill the destination element if SEW is wider than the result. If the result value would overflow the destination SEW, the least-significant SEW bits are retained.
+
+Traps on viota.m are always reported with a vstart of 0, and execution is always restarted from the beginning when resuming after a trap handler. An illegal instruction exception is raised if vstart is non-zero.
+
+
 
 # Scalar
 
