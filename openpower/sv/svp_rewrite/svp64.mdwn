@@ -207,7 +207,7 @@ Note that if ELWIDTH != ELWIDTH_SRC this may result in reduced performance or in
 
 `RM-2P-2S` is for `stw` etc. and is Rsrc1 Rsrc2.
 
-## RM-2P-2S1D/1S2D
+## RM-2P-2S1D/1S2D/3S
 
 The primary purpose for this encoding is for Twin Predication on LOAD
 and STORE operations.  see [[sv/ldst]] for detailed anslysis.
@@ -224,6 +224,8 @@ RM-2P-2S1D:
 
 Note that for 1S2P the EXTRA2 dest and src names are switched (Rsrc_EXTRA2
 is in bits 8:9, Rdest1_EXTRA2 in 10:11)
+
+Also that for 3S (to cover `stdx` etc.) the names are switched to 3 src: Rsrc1_EXTRA2, Rsrc2_EXTRA2, Rsrc3_EXTRA2.
 
 Note also that LD with update indexed, which takes 2 src and 2 dest
 (e.g. `lhaux RT,RA,RB`), does not have room for 4 registers and also
