@@ -294,11 +294,11 @@ def process_csvs():
         print ('"""]]')
         print ('')
 
-    for fname, csv in csvs.items():
-        print (fname)
+    #for fname, csv in csvs.items():
+    #    print (fname)
 
-    for insn, row in insns.items():
-        print (insn, row)
+    #for insn, row in insns.items():
+    #    print (insn, row)
 
     print ("# svp64 remaps")
     # create a CSV file, per category, with SV "augmentation" info
