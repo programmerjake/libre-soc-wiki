@@ -139,7 +139,7 @@ def dformat(d):
     return ' '.join(res)
 
 def tformat(d):
-    return ' | '.join(d) + "|"
+    return ' | '.join(d) + " |"
 
 def keyname(row):
     res = []
@@ -169,6 +169,7 @@ def process_csvs():
     primarykeys = set()
     dictkeys = OrderedDict()
     immediates = {}
+    insns = {} # dictionary of CSV row, by instruction
 
     print ("# OpenPOWER ISA register 'profile's")
     print ('')
@@ -196,6 +197,7 @@ def process_csvs():
         for row in csv:
             if blank_key(row):
                 continue
+            insns[row['comment']] = row # accumulate csv data by instruction
             dkey = create_key(row)
             key = tuple(dkey.values())
             # print("key=", key)
@@ -292,9 +294,43 @@ def process_csvs():
         print ('"""]]')
         print ('')
 
-    bykey = {}
     for fname, csv in csvs.items():
-        key
+        print (fname)
+
+    for insn, row in insns.items():
+        print (insn, row)
+
+    print ("# svp64 remaps")
+    # create a CSV file, per category, with SV "augmentation" info
+    csvcols = ['insn', 'Ptype', 'in1', 'in2', 'in3', 'out', 'CR in', 'CR out']
+    for key in primarykeys:
+        name = keyname(dictkeys[key])
+        value = mapsto.get(name, "-")
+        if value == 'non-SV':
+            continue
+        print ("## %s (%s)" % (name, value))
+        print ('')
+        print ('[[!table  data="""')
+        print (tformat(csvcols))
+        rows = bykey[key]
+        rows.sort()
+        for row in rows:
+            # get the instruction
+            insn_name = row[2]
+            insn = insns[insn_name]
+            # start constructing svp64 CSV row
+            res = OrderedDict()
+            res['insn'] = insn_name
+            res['Ptype'] = value.split('-')[1] # predication type (RM-xN-xxx)
+            # go through each register matching to Rxxxx_EXTRAx
+            for k in ['in1', 'in2', 'in3', 'out', 'CR in', 'CR out']:
+                if insn[k].startswith('CONST'):
+                    res[k] = ''
+                else:
+                    res[k] = insn[k]
+            print (tformat(res.values()))
+        print ('"""]]')
+        print ('')
 
 if __name__ == '__main__':
     process_csvs()
