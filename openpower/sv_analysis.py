@@ -364,24 +364,24 @@ def process_csvs():
                 res['1'] = 's:RA' # RA: Rsrc1_EXTRA2
 
             elif value == 'LDSTRM-2P-2S1D':
-                if 'st' in insn and 'x' not in insn: # stwu/stbu etc
+                if 'st' in insn_name and 'x' not in insn_name: # stwu/stbu etc
                     res['Etype'] = 'EXTRA2' # RM EXTRA2 type
                     res['0'] = 'd:RS' # RS: Rdest1_EXTRA2
                     res['1'] = 'd:RA' # RA: Rdest2_EXTRA2
                     res['2'] = 's:RA' # RA: Rsrc1_EXTRA2
-                if 'st' in insn and 'x' in insn: # stwux
+                if 'st' in insn_name and 'x' in insn_name: # stwux
                     res['Etype'] = 'EXTRA2' # RM EXTRA2 type
                     res['0'] = 'd:RS' # RS: Rdest1_EXTRA2
                     res['1'] = 'd:RA' # RA: Rdest2_EXTRA2, RA: Rsrc1_EXTRA2
                     res['2'] = 's:RB' # RB: Rsrc2_EXTRA2
-                elif 'u' in insn: # ldux etc.
+                elif 'u' in insn_name: # ldux etc.
                     res['Etype'] = 'EXTRA2' # RM EXTRA2 type
                     res['0'] = 'd:RT' # RT: Rdest1_EXTRA2
                     res['1'] = 'd:RA' # RA: Rdest2_EXTRA2
                     res['2'] = 's:RB' # RB: Rsrc1_EXTRA2
                 else:
                     res['Etype'] = 'EXTRA2' # RM EXTRA2 type
-                    res['d0'] = 'd:RT' # RT: Rdest1_EXTRA2
+                    res['0'] = 'd:RT' # RT: Rdest1_EXTRA2
                     res['1'] = 's:RA' # RA: Rsrc1_EXTRA2
                     res['2'] = 's:RB' # RB: Rsrc2_EXTRA2
 
@@ -393,10 +393,10 @@ def process_csvs():
 
             elif value == 'RM-2P-1S1D':
                 res['Etype'] = 'EXTRA3' # RM EXTRA3 type
-                if name == 'CRio' and insn == 'mcrf':
+                if name == 'CRio' and insn_name == 'mcrf':
                     res['0'] = 'd:BF' # BFA: Rdest1_EXTRA3
                     res['1'] = 's:BFA' # BFA: Rsrc1_EXTRA3
-                elif insn == 'setb':
+                elif insn_name == 'setb':
                     res['0'] = 'd:RT' # RT: Rdest1_EXTRA3
                     res['1'] = 's:BFA' # BFA: Rsrc1_EXTRA3
                 elif insn_name.startswith('cmp'): # cmpi

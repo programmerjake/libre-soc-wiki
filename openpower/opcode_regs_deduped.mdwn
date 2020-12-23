@@ -647,45 +647,45 @@ std | 2P | EXTRA3 | d:RS | s:RA |  |  | RA_OR_ZERO |  | RS | NONE | NONE | NONE 
 
 [[!table  data="""
 insn | Ptype | Etype | 0 | 1 | 2 | 3 |
-lwarx | 2P | EXTRA2 |  | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | d:RT |
-ldx | 2P | EXTRA2 |  | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | d:RT |
-lwzx | 2P | EXTRA2 |  | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | d:RT |
-lbarx | 2P | EXTRA2 |  | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | d:RT |
-ldarx | 2P | EXTRA2 |  | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | d:RT |
-lbzx | 2P | EXTRA2 |  | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | d:RT |
-lharx | 2P | EXTRA2 |  | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | d:RT |
-lhzx | 2P | EXTRA2 |  | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | d:RT |
-lwax | 2P | EXTRA2 |  | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | d:RT |
-lhax | 2P | EXTRA2 |  | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | d:RT |
-ldbrx | 2P | EXTRA2 |  | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | d:RT |
-lwbrx | 2P | EXTRA2 |  | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | d:RT |
-lwzcix | 2P | EXTRA2 |  | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | d:RT |
-lhbrx | 2P | EXTRA2 |  | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | d:RT |
-lhzcix | 2P | EXTRA2 |  | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | d:RT |
-lbzcix | 2P | EXTRA2 |  | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | d:RT |
-ldcix | 2P | EXTRA2 |  | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | d:RT |
+lwarx | 2P | EXTRA2 | d:RT | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
+ldx | 2P | EXTRA2 | d:RT | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
+lwzx | 2P | EXTRA2 | d:RT | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
+lbarx | 2P | EXTRA2 | d:RT | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
+ldarx | 2P | EXTRA2 | d:RT | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
+lbzx | 2P | EXTRA2 | d:RT | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
+lharx | 2P | EXTRA2 | d:RT | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
+lhzx | 2P | EXTRA2 | d:RT | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
+lwax | 2P | EXTRA2 | d:RT | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
+lhax | 2P | EXTRA2 | d:RT | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
+ldbrx | 2P | EXTRA2 | d:RT | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
+lwbrx | 2P | EXTRA2 | d:RT | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
+lwzcix | 2P | EXTRA2 | d:RT | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
+lhbrx | 2P | EXTRA2 | d:RT | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
+lhzcix | 2P | EXTRA2 | d:RT | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
+lbzcix | 2P | EXTRA2 | d:RT | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
+ldcix | 2P | EXTRA2 | d:RT | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
 """]]
 
 ## LDST-2R-1W-imm (LDSTRM-2P-2S1D)
 
 [[!table  data="""
 insn | Ptype | Etype | 0 | 1 | 2 | 3 |
-stwu | 2P | EXTRA2 |  | s:RA | s:RB |  | RA_OR_ZERO |  | RS | NONE | NONE | NONE | d:RT |
-stbu | 2P | EXTRA2 |  | s:RA | s:RB |  | RA_OR_ZERO |  | RS | NONE | NONE | NONE | d:RT |
-sthu | 2P | EXTRA2 |  | s:RA | s:RB |  | RA_OR_ZERO |  | RS | NONE | NONE | NONE | d:RT |
-stdu | 2P | EXTRA2 |  | s:RA | s:RB |  | RA_OR_ZERO |  | RS | NONE | NONE | NONE | d:RT |
+stwu | 2P | EXTRA2 | d:RT | d:RA | s:RB |  | RA_OR_ZERO |  | RS | NONE | NONE | NONE |
+stbu | 2P | EXTRA2 | d:RT | d:RA | s:RB |  | RA_OR_ZERO |  | RS | NONE | NONE | NONE |
+sthu | 2P | EXTRA2 | d:RT | d:RA | s:RB |  | RA_OR_ZERO |  | RS | NONE | NONE | NONE |
+stdu | 2P | EXTRA2 | d:RT | d:RA | s:RB |  | RA_OR_ZERO |  | RS | NONE | NONE | NONE |
 """]]
 
 ## LDST-2R-2W (LDSTRM-2P-2S1D)
 
 [[!table  data="""
 insn | Ptype | Etype | 0 | 1 | 2 | 3 |
-ldux | 2P | EXTRA2 |  | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | d:RT |
-lwzux | 2P | EXTRA2 |  | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | d:RT |
-lbzux | 2P | EXTRA2 |  | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | d:RT |
-lhzux | 2P | EXTRA2 |  | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | d:RT |
-lwaux | 2P | EXTRA2 |  | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | d:RT |
-lhaux | 2P | EXTRA2 |  | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | d:RT |
+ldux | 2P | EXTRA2 | d:RT | d:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
+lwzux | 2P | EXTRA2 | d:RT | d:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
+lbzux | 2P | EXTRA2 | d:RT | d:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
+lhzux | 2P | EXTRA2 | d:RT | d:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
+lwaux | 2P | EXTRA2 | d:RT | d:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
+lhaux | 2P | EXTRA2 | d:RT | d:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
 """]]
 
 ## LDST-3R (LDSTRM-2P-3S)
@@ -719,17 +719,17 @@ sthcx | 2P | EXTRA2 | s:RS,d:CR0 | s:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE 
 
 [[!table  data="""
 insn | Ptype | Etype | 0 | 1 | 2 | 3 |
-stdux | 2P | EXTRA2 |  | s:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | NONE | d:RT |
-stwux | 2P | EXTRA2 |  | s:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | NONE | d:RT |
-stbux | 2P | EXTRA2 |  | s:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | NONE | d:RT |
-sthux | 2P | EXTRA2 |  | s:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | NONE | d:RT |
+stdux | 2P | EXTRA2 | d:RS | d:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | NONE |
+stwux | 2P | EXTRA2 | d:RS | d:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | NONE |
+stbux | 2P | EXTRA2 | d:RS | d:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | NONE |
+sthux | 2P | EXTRA2 | d:RS | d:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | NONE |
 """]]
 
 ## CRio (RM-2P-1S1D)
 
 [[!table  data="""
 insn | Ptype | Etype | 0 | 1 | 2 | 3 |
-mcrf | 2P | EXTRA3 | TODO |  |  |  | NONE | NONE | NONE | NONE | BFA | BF |
+mcrf | 2P | EXTRA3 | d:BF | s:BFA |  |  | NONE | NONE | NONE | NONE | BFA | BF |
 mcrxr | 2P | EXTRA3 | TODO |  |  |  |  |  |  |  |  |  |
 mcrxrx | 2P | EXTRA3 | TODO |  |  |  |  |  |  |  |  |  |
 2/0=mcrfs | 2P | EXTRA3 | TODO |  |  |  | NONE | NONE | NONE | NONE | 0 | 1 |
@@ -757,7 +757,7 @@ cror | 1P | EXTRA3 | d:BT | s:BA | s:BB |  | NONE | NONE | NONE | NONE | BA_BB |
 [[!table  data="""
 insn | Ptype | Etype | 0 | 1 | 2 | 3 |
 mfcr/mfocrf | 2P | EXTRA3 | TODO |  |  |  | NONE | NONE | NONE | RT | WHOLE_REG | NONE |
-setb | 2P | EXTRA3 | TODO |  |  |  | NONE | NONE | NONE | RT | BFA | NONE |
+setb | 2P | EXTRA3 | d:RT | s:BFA |  |  | NONE | NONE | NONE | RT | BFA | NONE |
 """]]
 
 ## 1R-CRo (RM-2P-1S1D)
