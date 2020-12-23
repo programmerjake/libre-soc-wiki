@@ -435,6 +435,20 @@ def process_csvs():
                 else:
                     res['0'] = 'TODO'
 
+            elif value == 'RM-1P-3S1D':
+                res['Etype'] = 'EXTRA2' # RM EXTRA2 type
+                if insn_name == 'isel':
+                    res['0'] = 'd:RT' # RT: Rdest1_EXTRA2
+                    res['1'] = 's:RA' # RA: Rsrc1_EXTRA2
+                    res['2'] = 's:RB' # RT: Rsrc2_EXTRA2
+                    res['3'] = 's:BC' # BC: Rsrc3_EXTRA2
+                else:
+                    res['0'] = 'd:FRT,d:CR1' # FRT, CR1: Rdest1_EXTRA2
+                    res['1'] = 's:FRA' # FRA: Rsrc1_EXTRA2
+                    res['2'] = 's:FRB' # FRB: Rsrc2_EXTRA2
+                    res['3'] = 's:FRC' # FRC: Rsrc3_EXTRA2
+
+
             # print out the row
             print (tformat(res.values()))
             # add to svp64 csvs
