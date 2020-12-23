@@ -764,18 +764,18 @@ setb | 2P | EXTRA3 | TODO |  |  |  | NONE | NONE | NONE | RT | BFA | NONE |
 
 [[!table  data="""
 insn | Ptype | Etype | 0 | 1 | 2 | 3 |
-cmpli | 2P | EXTRA3 | TODO |  |  |  | RA |  | NONE | NONE | NONE | BF |
-cmpi | 2P | EXTRA3 | TODO |  |  |  | RA |  | NONE | NONE | NONE | BF |
+cmpli | 2P | EXTRA3 | d:BF | s:RA |  |  | RA |  | NONE | NONE | NONE | BF |
+cmpi | 2P | EXTRA3 | d:BF | s:RA |  |  | RA |  | NONE | NONE | NONE | BF |
 """]]
 
 ## 1R-CRio (RM-2P-2S1D)
 
 [[!table  data="""
 insn | Ptype | Etype | 0 | 1 | 2 | 3 |
-mtcrf/mtocrf | 2P | EXTRA2 |  |  |  |  | RS | NONE | NONE | NONE | WHOLE_REG | WHOLE_REG |
-darn | 2P | EXTRA2 |  |  |  |  |  |  | RT |  |  |  |
-5/0=ftsqrt | 2P | EXTRA2 |  |  |  |  | NONE | FRB | NONE | NONE | 0 | 1 |
-22/7=mtfsf | 2P | EXTRA2 |  |  |  |  | NONE | FRB | NONE | NONE | 0 | 0 |
+mtcrf/mtocrf | 2P | EXTRA2 | d:CR | s:RS | s:CR |  | RS | NONE | NONE | NONE | WHOLE_REG | WHOLE_REG |
+darn | 2P | EXTRA2 | TODO |  |  |  |  |  | RT |  |  |  |
+5/0=ftsqrt | 2P | EXTRA2 | TODO |  |  |  | NONE | FRB | NONE | NONE | 0 | 1 |
+22/7=mtfsf | 2P | EXTRA2 | TODO |  |  |  | NONE | FRB | NONE | NONE | 0 | 0 |
 """]]
 
 ## 1R-1W (RM-2P-1S1D)
@@ -885,10 +885,10 @@ frsqrte | 2P | EXTRA3 | TODO |  |  |  | NONE | FRB | NONE | FRT | 0 | 0 |
 
 [[!table  data="""
 insn | Ptype | Etype | 0 | 1 | 2 | 3 |
-cmp | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | NONE | NONE | BF |
-cmpl | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | NONE | NONE | BF |
-cmprb | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | NONE | NONE | BF |
-cmpeqb | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | NONE | NONE | BF |
+cmp | 1P | EXTRA3 | d:BF | s:RA | s:RB |  | RA | RB | NONE | NONE | NONE | BF |
+cmpl | 1P | EXTRA3 | d:BF | s:RA | s:RB |  | RA | RB | NONE | NONE | NONE | BF |
+cmprb | 1P | EXTRA3 | d:BF | s:RA | s:RB |  | RA | RB | NONE | NONE | NONE | BF |
+cmpeqb | 1P | EXTRA3 | d:BF | s:RA | s:RB |  | RA | RB | NONE | NONE | NONE | BF |
 """]]
 
 ## 2R-CRio (RM-1P-2S1D)
@@ -907,7 +907,7 @@ insn | Ptype | Etype | 0 | 1 | 2 | 3 |
 bpermd | 1P | EXTRA3 | TODO |  |  |  | RS | RB | NONE | RA | NONE | NONE |
 modud | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | NONE |
 moduw | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | NONE |
-cmpb | 1P | EXTRA3 | TODO |  |  |  | RS | RB | NONE | RA | NONE | NONE |
+cmpb | 1P | EXTRA3 | d:BF | s:RA | s:RB |  | RS | RB | NONE | RA | NONE | NONE |
 modsd | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | NONE |
 modsw | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | NONE |
 """]]

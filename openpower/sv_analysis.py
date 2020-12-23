@@ -396,6 +396,12 @@ def process_csvs():
                 if key == 'CRio' and insn == 'mcrf':
                     res['0'] = 'd:BF' # BFA: Rdest1_EXTRA3
                     res['1'] = 's:BFA' # BFA: Rsrc1_EXTRA3
+                elif insn == 'setb':
+                    res['0'] = 'd:RT' # RT: Rdest1_EXTRA3
+                    res['1'] = 's:BFA' # BFA: Rsrc1_EXTRA3
+                elif insn_name.startswith('cmp'): # cmpi
+                    res['0'] = 'd:BF' # BF: Rdest1_EXTRA3
+                    res['1'] = 's:RA' # RA: Rsrc1_EXTRA3
                 else:
                     res['0'] = 'TODO'
 
@@ -405,6 +411,19 @@ def process_csvs():
                     res['0'] = 'd:BT' # BT: Rdest1_EXTRA3
                     res['1'] = 's:BA' # BA: Rsrc1_EXTRA3
                     res['2'] = 's:BB' # BB: Rsrc2_EXTRA3
+                elif insn_name.startswith('cmp'): # cmp
+                    res['0'] = 'd:BF' # BF: Rdest1_EXTRA3
+                    res['1'] = 's:RA' # RA: Rsrc1_EXTRA3
+                    res['2'] = 's:RB' # RB: Rsrc1_EXTRA3
+                else:
+                    res['0'] = 'TODO'
+
+            elif value == 'RM-2P-2S1D':
+                res['Etype'] = 'EXTRA2' # RM EXTRA2 type
+                if insn_name.startswith('mt'): # mtcrf
+                    res['0'] = 'd:CR' # CR: Rdest1_EXTRA2
+                    res['1'] = 's:RS' # RS: Rsrc1_EXTRA2
+                    res['2'] = 's:CR' # CR: Rsrc2_EXTRA2
                 else:
                     res['0'] = 'TODO'
 
