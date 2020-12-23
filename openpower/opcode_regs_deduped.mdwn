@@ -6,15 +6,15 @@ created by http://libre-soc.org/openpower/sv_analysis.py
 # map to old SV Prefix
 
 [[!table  data="""
-LDST-1R-1W-imm | RM-2P-1S1D  |
-LDST-1R-2W-imm | RM-2P-1S2D  |
-LDST-2R-imm | RM-2P-2S  |
-LDST-2R-1W | RM-2P-2S1D  |
-LDST-2R-1W-imm | RM-2P-2S1D  |
-LDST-2R-2W | RM-2P-2S1D  |
-LDST-3R | RM-2P-3S  |
-LDST-3R-CRo | RM-2P-3S  |
-LDST-3R-1W | RM-2P-2S1D  |
+LDST-1R-1W-imm | LDSTRM-2P-1S1D  |
+LDST-1R-2W-imm | LDSTRM-2P-1S2D  |
+LDST-2R-imm | LDSTRM-2P-2S  |
+LDST-2R-1W | LDSTRM-2P-2S1D  |
+LDST-2R-1W-imm | LDSTRM-2P-2S1D  |
+LDST-2R-2W | LDSTRM-2P-2S1D  |
+LDST-3R | LDSTRM-2P-3S  |
+LDST-3R-CRo | LDSTRM-2P-3S  |
+LDST-3R-1W | LDSTRM-2P-2S1D  |
  | non-SV  |
 imm | non-SV  |
 CRi | non-SV  |
@@ -84,7 +84,7 @@ OTHER | 2 | 1 | 1 | 1 |  |  |  2R-1W-CRio |
 OTHER | 3 | 1 | 1 | 1 |  |  |  3R-1W-CRio |
 """]]
 
-## LDST-1R-1W-imm (RM-2P-1S1D)
+## LDST-1R-1W-imm (LDSTRM-2P-1S1D)
 
 [[!table  data="""
 CSV | opcode | asm | form |
@@ -96,7 +96,7 @@ minor_58.csv | 0 | ld | DS-Form |
 minor_58.csv | 2 | lwa | DS-Form |
 """]]
 
-## LDST-1R-2W-imm (RM-2P-1S2D)
+## LDST-1R-2W-imm (LDSTRM-2P-1S2D)
 
 [[!table  data="""
 CSV | opcode | asm | form |
@@ -107,7 +107,7 @@ major.csv | 43 | lhau | D-Form |
 minor_58.csv | 1 | ldu | DS-Form |
 """]]
 
-## LDST-2R-imm (RM-2P-2S)
+## LDST-2R-imm (LDSTRM-2P-2S)
 
 [[!table  data="""
 CSV | opcode | asm | form |
@@ -117,7 +117,7 @@ major.csv | 44 | sth | D-Form |
 minor_62.csv | 0 | std | DS-Form |
 """]]
 
-## LDST-2R-1W (RM-2P-2S1D)
+## LDST-2R-1W (LDSTRM-2P-2S1D)
 
 [[!table  data="""
 CSV | opcode | asm | form |
@@ -140,7 +140,7 @@ minor_31.csv | 0b1101010101 | lbzcix | X-Form |
 minor_31.csv | 0b1101110101 | ldcix | X-Form |
 """]]
 
-## LDST-2R-1W-imm (RM-2P-2S1D)
+## LDST-2R-1W-imm (LDSTRM-2P-2S1D)
 
 [[!table  data="""
 CSV | opcode | asm | form |
@@ -150,7 +150,7 @@ major.csv | 45 | sthu | D-Form |
 minor_62.csv | 1 | stdu | DS-Form |
 """]]
 
-## LDST-2R-2W (RM-2P-2S1D)
+## LDST-2R-2W (LDSTRM-2P-2S1D)
 
 [[!table  data="""
 CSV | opcode | asm | form |
@@ -162,7 +162,7 @@ minor_31.csv | 0b0101110101 | lwaux | X-Form |
 minor_31.csv | 0b0101110111 | lhaux | X-Form |
 """]]
 
-## LDST-3R (RM-2P-3S)
+## LDST-3R (LDSTRM-2P-3S)
 
 [[!table  data="""
 CSV | opcode | asm | form |
@@ -179,7 +179,7 @@ minor_31.csv | 0b1111010101 | stbcix | X-Form |
 minor_31.csv | 0b1111110101 | stdcix | X-Form |
 """]]
 
-## LDST-3R-CRo (RM-2P-3S)
+## LDST-3R-CRo (LDSTRM-2P-3S)
 
 [[!table  data="""
 CSV | opcode | asm | form |
@@ -189,7 +189,7 @@ minor_31.csv | 0b1010110110 | stbcx | X-Form |
 minor_31.csv | 0b1011010110 | sthcx | X-Form |
 """]]
 
-## LDST-3R-1W (RM-2P-2S1D)
+## LDST-3R-1W (LDSTRM-2P-2S1D)
 
 [[!table  data="""
 CSV | opcode | asm | form |
@@ -610,447 +610,447 @@ minor_63h.csv | 0b1111 | fnmadd | -Form |
 """]]
 
 # svp64 remaps
-## LDST-1R-1W-imm (RM-2P-1S1D)
+## LDST-1R-1W-imm (LDSTRM-2P-1S1D)
 
 [[!table  data="""
-insn | Ptype | in1 | in2 | in3 | out | CR in | CR out |
-lwz | 2P | RA_OR_ZERO |  | NONE | RT | NONE | NONE |
-lbz | 2P | RA_OR_ZERO |  | NONE | RT | NONE | NONE |
-lhz | 2P | RA_OR_ZERO |  | NONE | RT | NONE | NONE |
-lha | 2P | RA_OR_ZERO |  | NONE | RT | NONE | NONE |
-ld | 2P | RA_OR_ZERO |  | NONE | RT | NONE | NONE |
-lwa | 2P | RA_OR_ZERO |  | NONE | RT | NONE | NONE |
+insn | Ptype | Etype | 0 | 1 | 2 | 3 |
+lwz | 2P | EXTRA3 | d:RT | s:RA |  |  | RA_OR_ZERO |  | NONE | RT | NONE | NONE |
+lbz | 2P | EXTRA3 | d:RT | s:RA |  |  | RA_OR_ZERO |  | NONE | RT | NONE | NONE |
+lhz | 2P | EXTRA3 | d:RT | s:RA |  |  | RA_OR_ZERO |  | NONE | RT | NONE | NONE |
+lha | 2P | EXTRA3 | d:RT | s:RA |  |  | RA_OR_ZERO |  | NONE | RT | NONE | NONE |
+ld | 2P | EXTRA3 | d:RT | s:RA |  |  | RA_OR_ZERO |  | NONE | RT | NONE | NONE |
+lwa | 2P | EXTRA3 | d:RT | s:RA |  |  | RA_OR_ZERO |  | NONE | RT | NONE | NONE |
 """]]
 
-## LDST-1R-2W-imm (RM-2P-1S2D)
+## LDST-1R-2W-imm (LDSTRM-2P-1S2D)
 
 [[!table  data="""
-insn | Ptype | in1 | in2 | in3 | out | CR in | CR out |
-lwzu | 2P | RA_OR_ZERO |  | NONE | RT | NONE | NONE |
-lbzu | 2P | RA_OR_ZERO |  | NONE | RT | NONE | NONE |
-lhzu | 2P | RA_OR_ZERO |  | NONE | RT | NONE | NONE |
-lhau | 2P | RA_OR_ZERO |  | NONE | RT | NONE | NONE |
-ldu | 2P | RA_OR_ZERO |  | NONE | RT | NONE | NONE |
+insn | Ptype | Etype | 0 | 1 | 2 | 3 |
+lwzu | 2P | EXTRA2 | d:RT | s:RA | d:RA |  | RA_OR_ZERO |  | NONE | RT | NONE | NONE |
+lbzu | 2P | EXTRA2 | d:RT | s:RA | d:RA |  | RA_OR_ZERO |  | NONE | RT | NONE | NONE |
+lhzu | 2P | EXTRA2 | d:RT | s:RA | d:RA |  | RA_OR_ZERO |  | NONE | RT | NONE | NONE |
+lhau | 2P | EXTRA2 | d:RT | s:RA | d:RA |  | RA_OR_ZERO |  | NONE | RT | NONE | NONE |
+ldu | 2P | EXTRA2 | d:RT | s:RA | d:RA |  | RA_OR_ZERO |  | NONE | RT | NONE | NONE |
 """]]
 
-## LDST-2R-imm (RM-2P-2S)
+## LDST-2R-imm (LDSTRM-2P-2S)
 
 [[!table  data="""
-insn | Ptype | in1 | in2 | in3 | out | CR in | CR out |
-stw | 2P | RA_OR_ZERO |  | RS | NONE | NONE | NONE |
-stb | 2P | RA_OR_ZERO |  | RS | NONE | NONE | NONE |
-sth | 2P | RA_OR_ZERO |  | RS | NONE | NONE | NONE |
-std | 2P | RA_OR_ZERO |  | RS | NONE | NONE | NONE |
+insn | Ptype | Etype | 0 | 1 | 2 | 3 |
+stw | 2P | EXTRA3 | d:RS | s:RA |  |  | RA_OR_ZERO |  | RS | NONE | NONE | NONE |
+stb | 2P | EXTRA3 | d:RS | s:RA |  |  | RA_OR_ZERO |  | RS | NONE | NONE | NONE |
+sth | 2P | EXTRA3 | d:RS | s:RA |  |  | RA_OR_ZERO |  | RS | NONE | NONE | NONE |
+std | 2P | EXTRA3 | d:RS | s:RA |  |  | RA_OR_ZERO |  | RS | NONE | NONE | NONE |
 """]]
 
-## LDST-2R-1W (RM-2P-2S1D)
+## LDST-2R-1W (LDSTRM-2P-2S1D)
 
 [[!table  data="""
-insn | Ptype | in1 | in2 | in3 | out | CR in | CR out |
-lwarx | 2P | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
-ldx | 2P | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
-lwzx | 2P | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
-lbarx | 2P | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
-ldarx | 2P | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
-lbzx | 2P | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
-lharx | 2P | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
-lhzx | 2P | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
-lwax | 2P | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
-lhax | 2P | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
-ldbrx | 2P | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
-lwbrx | 2P | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
-lwzcix | 2P | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
-lhbrx | 2P | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
-lhzcix | 2P | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
-lbzcix | 2P | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
-ldcix | 2P | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
+insn | Ptype | Etype | 0 | 1 | 2 | 3 |
+lwarx | 2P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | RT | RA | RB |
+ldx | 2P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | RT | RA | RB |
+lwzx | 2P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | RT | RA | RB |
+lbarx | 2P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | RT | RA | RB |
+ldarx | 2P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | RT | RA | RB |
+lbzx | 2P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | RT | RA | RB |
+lharx | 2P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | RT | RA | RB |
+lhzx | 2P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | RT | RA | RB |
+lwax | 2P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | RT | RA | RB |
+lhax | 2P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | RT | RA | RB |
+ldbrx | 2P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | RT | RA | RB |
+lwbrx | 2P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | RT | RA | RB |
+lwzcix | 2P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | RT | RA | RB |
+lhbrx | 2P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | RT | RA | RB |
+lhzcix | 2P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | RT | RA | RB |
+lbzcix | 2P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | RT | RA | RB |
+ldcix | 2P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | RT | RA | RB |
 """]]
 
-## LDST-2R-1W-imm (RM-2P-2S1D)
+## LDST-2R-1W-imm (LDSTRM-2P-2S1D)
 
 [[!table  data="""
-insn | Ptype | in1 | in2 | in3 | out | CR in | CR out |
-stwu | 2P | RA_OR_ZERO |  | RS | NONE | NONE | NONE |
-stbu | 2P | RA_OR_ZERO |  | RS | NONE | NONE | NONE |
-sthu | 2P | RA_OR_ZERO |  | RS | NONE | NONE | NONE |
-stdu | 2P | RA_OR_ZERO |  | RS | NONE | NONE | NONE |
+insn | Ptype | Etype | 0 | 1 | 2 | 3 |
+stwu | 2P | EXTRA2 |  |  |  |  | RA_OR_ZERO |  | RS | NONE | NONE | NONE | RT | RA | RB |
+stbu | 2P | EXTRA2 |  |  |  |  | RA_OR_ZERO |  | RS | NONE | NONE | NONE | RT | RA | RB |
+sthu | 2P | EXTRA2 |  |  |  |  | RA_OR_ZERO |  | RS | NONE | NONE | NONE | RT | RA | RB |
+stdu | 2P | EXTRA2 |  |  |  |  | RA_OR_ZERO |  | RS | NONE | NONE | NONE | RT | RA | RB |
 """]]
 
-## LDST-2R-2W (RM-2P-2S1D)
+## LDST-2R-2W (LDSTRM-2P-2S1D)
 
 [[!table  data="""
-insn | Ptype | in1 | in2 | in3 | out | CR in | CR out |
-ldux | 2P | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
-lwzux | 2P | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
-lbzux | 2P | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
-lhzux | 2P | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
-lwaux | 2P | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
-lhaux | 2P | RA_OR_ZERO | RB | NONE | RT | NONE | NONE |
+insn | Ptype | Etype | 0 | 1 | 2 | 3 |
+ldux | 2P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | RT | RA | RB |
+lwzux | 2P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | RT | RA | RB |
+lbzux | 2P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | RT | RA | RB |
+lhzux | 2P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | RT | RA | RB |
+lwaux | 2P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | RT | RA | RB |
+lhaux | 2P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | NONE | NONE | RT | RA | RB |
 """]]
 
-## LDST-3R (RM-2P-3S)
+## LDST-3R (LDSTRM-2P-3S)
 
 [[!table  data="""
-insn | Ptype | in1 | in2 | in3 | out | CR in | CR out |
-stdx | 2P | RA_OR_ZERO | RB | RS | NONE | NONE | NONE |
-stwx | 2P | RA_OR_ZERO | RB | RS | NONE | NONE | NONE |
-stbx | 2P | RA_OR_ZERO | RB | RS | NONE | NONE | NONE |
-sthx | 2P | RA_OR_ZERO | RB | RS | NONE | NONE | NONE |
-stdbrx | 2P | RA_OR_ZERO | RB | RS | NONE | NONE | NONE |
-stwbrx | 2P | RA_OR_ZERO | RB | RS | NONE | NONE | NONE |
-stwcix | 2P | RA_OR_ZERO | RB | RS | NONE | NONE | NONE |
-sthbrx | 2P | RA_OR_ZERO | RB | RS | NONE | NONE | NONE |
-sthcix | 2P | RA_OR_ZERO | RB | RS | NONE | NONE | NONE |
-stbcix | 2P | RA_OR_ZERO | RB | RS | NONE | NONE | NONE |
-stdcix | 2P | RA_OR_ZERO | RB | RS | NONE | NONE | NONE |
+insn | Ptype | Etype | 0 | 1 | 2 | 3 |
+stdx | 2P | EXTRA2 | s:RS,d:CR0 | s:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | NONE |
+stwx | 2P | EXTRA2 | s:RS,d:CR0 | s:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | NONE |
+stbx | 2P | EXTRA2 | s:RS,d:CR0 | s:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | NONE |
+sthx | 2P | EXTRA2 | s:RS,d:CR0 | s:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | NONE |
+stdbrx | 2P | EXTRA2 | s:RS,d:CR0 | s:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | NONE |
+stwbrx | 2P | EXTRA2 | s:RS,d:CR0 | s:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | NONE |
+stwcix | 2P | EXTRA2 | s:RS,d:CR0 | s:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | NONE |
+sthbrx | 2P | EXTRA2 | s:RS,d:CR0 | s:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | NONE |
+sthcix | 2P | EXTRA2 | s:RS,d:CR0 | s:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | NONE |
+stbcix | 2P | EXTRA2 | s:RS,d:CR0 | s:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | NONE |
+stdcix | 2P | EXTRA2 | s:RS,d:CR0 | s:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | NONE |
 """]]
 
-## LDST-3R-CRo (RM-2P-3S)
+## LDST-3R-CRo (LDSTRM-2P-3S)
 
 [[!table  data="""
-insn | Ptype | in1 | in2 | in3 | out | CR in | CR out |
-stwcx | 2P | RA_OR_ZERO | RB | RS | NONE | NONE | CR0 |
-stdcx | 2P | RA_OR_ZERO | RB | RS | NONE | NONE | CR0 |
-stbcx | 2P | RA_OR_ZERO | RB | RS | NONE | NONE | CR0 |
-sthcx | 2P | RA_OR_ZERO | RB | RS | NONE | NONE | CR0 |
+insn | Ptype | Etype | 0 | 1 | 2 | 3 |
+stwcx | 2P | EXTRA2 | s:RS,d:CR0 | s:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | CR0 |
+stdcx | 2P | EXTRA2 | s:RS,d:CR0 | s:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | CR0 |
+stbcx | 2P | EXTRA2 | s:RS,d:CR0 | s:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | CR0 |
+sthcx | 2P | EXTRA2 | s:RS,d:CR0 | s:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | CR0 |
 """]]
 
-## LDST-3R-1W (RM-2P-2S1D)
+## LDST-3R-1W (LDSTRM-2P-2S1D)
 
 [[!table  data="""
-insn | Ptype | in1 | in2 | in3 | out | CR in | CR out |
-stdux | 2P | RA_OR_ZERO | RB | RS | NONE | NONE | NONE |
-stwux | 2P | RA_OR_ZERO | RB | RS | NONE | NONE | NONE |
-stbux | 2P | RA_OR_ZERO | RB | RS | NONE | NONE | NONE |
-sthux | 2P | RA_OR_ZERO | RB | RS | NONE | NONE | NONE |
+insn | Ptype | Etype | 0 | 1 | 2 | 3 |
+stdux | 2P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | RS | NONE | NONE | NONE | RT | RA | RB |
+stwux | 2P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | RS | NONE | NONE | NONE | RT | RA | RB |
+stbux | 2P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | RS | NONE | NONE | NONE | RT | RA | RB |
+sthux | 2P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | RS | NONE | NONE | NONE | RT | RA | RB |
 """]]
 
 ## CRio (RM-2P-1S1D)
 
 [[!table  data="""
-insn | Ptype | in1 | in2 | in3 | out | CR in | CR out |
-mcrf | 2P | NONE | NONE | NONE | NONE | BFA | BF |
-mcrxr | 2P |  |  |  |  |  |  |
-mcrxrx | 2P |  |  |  |  |  |  |
-2/0=mcrfs | 2P | NONE | NONE | NONE | NONE | 0 | 1 |
-1/6=mtfsb1 | 2P | NONE | NONE | NONE | NONE | 0 | 0 |
-2/6=mtfsb0 | 2P | NONE | NONE | NONE | NONE | 0 | 0 |
-4/6=mtfsfi | 2P | NONE | NONE | NONE | NONE | 0 | 0 |
+insn | Ptype | Etype | 0 | 1 | 2 | 3 |
+mcrf | 2P | EXTRA3 | TODO |  |  |  | NONE | NONE | NONE | NONE | BFA | BF |
+mcrxr | 2P | EXTRA3 | TODO |  |  |  |  |  |  |  |  |  |
+mcrxrx | 2P | EXTRA3 | TODO |  |  |  |  |  |  |  |  |  |
+2/0=mcrfs | 2P | EXTRA3 | TODO |  |  |  | NONE | NONE | NONE | NONE | 0 | 1 |
+1/6=mtfsb1 | 2P | EXTRA3 | TODO |  |  |  | NONE | NONE | NONE | NONE | 0 | 0 |
+2/6=mtfsb0 | 2P | EXTRA3 | TODO |  |  |  | NONE | NONE | NONE | NONE | 0 | 0 |
+4/6=mtfsfi | 2P | EXTRA3 | TODO |  |  |  | NONE | NONE | NONE | NONE | 0 | 0 |
 """]]
 
 ## CR=2R1W (RM-1P-2S1D)
 
 [[!table  data="""
-insn | Ptype | in1 | in2 | in3 | out | CR in | CR out |
-crnor | 1P | NONE | NONE | NONE | NONE | BA_BB | BT |
-crandc | 1P | NONE | NONE | NONE | NONE | BA_BB | BT |
-crxor | 1P | NONE | NONE | NONE | NONE | BA_BB | BT |
-crnand | 1P | NONE | NONE | NONE | NONE | BA_BB | BT |
-crand | 1P | NONE | NONE | NONE | NONE | BA_BB | BT |
-creqv | 1P | NONE | NONE | NONE | NONE | BA_BB | BT |
-crorc | 1P | NONE | NONE | NONE | NONE | BA_BB | BT |
-cror | 1P | NONE | NONE | NONE | NONE | BA_BB | BT |
+insn | Ptype | Etype | 0 | 1 | 2 | 3 |
+crnor | 1P | EXTRA3 | d:BT | s:BA | s:BB |  | NONE | NONE | NONE | NONE | BA_BB | BT |
+crandc | 1P | EXTRA3 | d:BT | s:BA | s:BB |  | NONE | NONE | NONE | NONE | BA_BB | BT |
+crxor | 1P | EXTRA3 | d:BT | s:BA | s:BB |  | NONE | NONE | NONE | NONE | BA_BB | BT |
+crnand | 1P | EXTRA3 | d:BT | s:BA | s:BB |  | NONE | NONE | NONE | NONE | BA_BB | BT |
+crand | 1P | EXTRA3 | d:BT | s:BA | s:BB |  | NONE | NONE | NONE | NONE | BA_BB | BT |
+creqv | 1P | EXTRA3 | d:BT | s:BA | s:BB |  | NONE | NONE | NONE | NONE | BA_BB | BT |
+crorc | 1P | EXTRA3 | d:BT | s:BA | s:BB |  | NONE | NONE | NONE | NONE | BA_BB | BT |
+cror | 1P | EXTRA3 | d:BT | s:BA | s:BB |  | NONE | NONE | NONE | NONE | BA_BB | BT |
 """]]
 
 ## 1W-CRi (RM-2P-1S1D)
 
 [[!table  data="""
-insn | Ptype | in1 | in2 | in3 | out | CR in | CR out |
-mfcr/mfocrf | 2P | NONE | NONE | NONE | RT | WHOLE_REG | NONE |
-setb | 2P | NONE | NONE | NONE | RT | BFA | NONE |
+insn | Ptype | Etype | 0 | 1 | 2 | 3 |
+mfcr/mfocrf | 2P | EXTRA3 | TODO |  |  |  | NONE | NONE | NONE | RT | WHOLE_REG | NONE |
+setb | 2P | EXTRA3 | TODO |  |  |  | NONE | NONE | NONE | RT | BFA | NONE |
 """]]
 
 ## 1R-CRo (RM-2P-1S1D)
 
 [[!table  data="""
-insn | Ptype | in1 | in2 | in3 | out | CR in | CR out |
-cmpli | 2P | RA |  | NONE | NONE | NONE | BF |
-cmpi | 2P | RA |  | NONE | NONE | NONE | BF |
+insn | Ptype | Etype | 0 | 1 | 2 | 3 |
+cmpli | 2P | EXTRA3 | TODO |  |  |  | RA |  | NONE | NONE | NONE | BF |
+cmpi | 2P | EXTRA3 | TODO |  |  |  | RA |  | NONE | NONE | NONE | BF |
 """]]
 
 ## 1R-CRio (RM-2P-2S1D)
 
 [[!table  data="""
-insn | Ptype | in1 | in2 | in3 | out | CR in | CR out |
-mtcrf/mtocrf | 2P | RS | NONE | NONE | NONE | WHOLE_REG | WHOLE_REG |
-darn | 2P |  |  | RT |  |  |  |
-5/0=ftsqrt | 2P | NONE | FRB | NONE | NONE | 0 | 1 |
-22/7=mtfsf | 2P | NONE | FRB | NONE | NONE | 0 | 0 |
+insn | Ptype | Etype | 0 | 1 | 2 | 3 |
+mtcrf/mtocrf | 2P | EXTRA2 |  |  |  |  | RS | NONE | NONE | NONE | WHOLE_REG | WHOLE_REG |
+darn | 2P | EXTRA2 |  |  |  |  |  |  | RT |  |  |  |
+5/0=ftsqrt | 2P | EXTRA2 |  |  |  |  | NONE | FRB | NONE | NONE | 0 | 1 |
+22/7=mtfsf | 2P | EXTRA2 |  |  |  |  | NONE | FRB | NONE | NONE | 0 | 0 |
 """]]
 
 ## 1R-1W (RM-2P-1S1D)
 
 [[!table  data="""
-insn | Ptype | in1 | in2 | in3 | out | CR in | CR out |
-neg | 2P | RA | NONE | NONE | RT | NONE | NONE |
-popcntb | 2P | RS | NONE | NONE | RA | NONE | NONE |
-prtyw | 2P | RS | NONE | NONE | RA | NONE | NONE |
-prtyd | 2P | RS | NONE | NONE | RA | NONE | NONE |
-popcntw | 2P | RS | NONE | NONE | RA | NONE | NONE |
-popcntd | 2P | RS | NONE | NONE | RA | NONE | NONE |
-nego | 2P | RA | NONE | NONE | RT | NONE | NONE |
+insn | Ptype | Etype | 0 | 1 | 2 | 3 |
+neg | 2P | EXTRA3 | TODO |  |  |  | RA | NONE | NONE | RT | NONE | NONE |
+popcntb | 2P | EXTRA3 | TODO |  |  |  | RS | NONE | NONE | RA | NONE | NONE |
+prtyw | 2P | EXTRA3 | TODO |  |  |  | RS | NONE | NONE | RA | NONE | NONE |
+prtyd | 2P | EXTRA3 | TODO |  |  |  | RS | NONE | NONE | RA | NONE | NONE |
+popcntw | 2P | EXTRA3 | TODO |  |  |  | RS | NONE | NONE | RA | NONE | NONE |
+popcntd | 2P | EXTRA3 | TODO |  |  |  | RS | NONE | NONE | RA | NONE | NONE |
+nego | 2P | EXTRA3 | TODO |  |  |  | RA | NONE | NONE | RT | NONE | NONE |
 """]]
 
 ## 1R-1W-imm (RM-2P-1S1D)
 
 [[!table  data="""
-insn | Ptype | in1 | in2 | in3 | out | CR in | CR out |
-addic | 2P | RA |  | NONE | RT | NONE | NONE |
-addi | 2P | RA_OR_ZERO |  | NONE | RT | NONE | NONE |
-addis | 2P | RA_OR_ZERO |  | NONE | RT | NONE | NONE |
-ori | 2P | RS |  | NONE | RA | NONE | NONE |
-oris | 2P | RS |  | NONE | RA | NONE | NONE |
-xori | 2P | RS |  | NONE | RA | NONE | NONE |
-xoris | 2P | RS |  | NONE | RA | NONE | NONE |
-subfic | 2P | RA |  | NONE | RT | NONE | NONE |
+insn | Ptype | Etype | 0 | 1 | 2 | 3 |
+addic | 2P | EXTRA3 | TODO |  |  |  | RA |  | NONE | RT | NONE | NONE |
+addi | 2P | EXTRA3 | TODO |  |  |  | RA_OR_ZERO |  | NONE | RT | NONE | NONE |
+addis | 2P | EXTRA3 | TODO |  |  |  | RA_OR_ZERO |  | NONE | RT | NONE | NONE |
+ori | 2P | EXTRA3 | TODO |  |  |  | RS |  | NONE | RA | NONE | NONE |
+oris | 2P | EXTRA3 | TODO |  |  |  | RS |  | NONE | RA | NONE | NONE |
+xori | 2P | EXTRA3 | TODO |  |  |  | RS |  | NONE | RA | NONE | NONE |
+xoris | 2P | EXTRA3 | TODO |  |  |  | RS |  | NONE | RA | NONE | NONE |
+subfic | 2P | EXTRA3 | TODO |  |  |  | RA |  | NONE | RT | NONE | NONE |
 """]]
 
 ## 1R-1W-CRo (RM-2P-1S1D)
 
 [[!table  data="""
-insn | Ptype | in1 | in2 | in3 | out | CR in | CR out |
-cntlzw | 2P | RS | NONE | NONE | RA | NONE | CR0 |
-cntlzd | 2P | RS | NONE | NONE | RA | NONE | CR0 |
-subfze | 2P | RA | NONE | NONE | RT | NONE | CR0 |
-addze | 2P | RA | NONE | NONE | RT | NONE | CR0 |
-cnttzw | 2P | RS | NONE | NONE | RA | NONE | CR0 |
-cnttzd | 2P | RS | NONE | NONE | RA | NONE | CR0 |
-subfzeo | 2P | RA | NONE | NONE | RT | NONE | CR0 |
-addzeo | 2P | RA | NONE | NONE | RT | NONE | CR0 |
-extsh | 2P | RS | NONE | NONE | RA | NONE | CR0 |
-extsb | 2P | RS | NONE | NONE | RA | NONE | CR0 |
-extsw | 2P | RS | NONE | NONE | RA | NONE | CR0 |
+insn | Ptype | Etype | 0 | 1 | 2 | 3 |
+cntlzw | 2P | EXTRA3 | TODO |  |  |  | RS | NONE | NONE | RA | NONE | CR0 |
+cntlzd | 2P | EXTRA3 | TODO |  |  |  | RS | NONE | NONE | RA | NONE | CR0 |
+subfze | 2P | EXTRA3 | TODO |  |  |  | RA | NONE | NONE | RT | NONE | CR0 |
+addze | 2P | EXTRA3 | TODO |  |  |  | RA | NONE | NONE | RT | NONE | CR0 |
+cnttzw | 2P | EXTRA3 | TODO |  |  |  | RS | NONE | NONE | RA | NONE | CR0 |
+cnttzd | 2P | EXTRA3 | TODO |  |  |  | RS | NONE | NONE | RA | NONE | CR0 |
+subfzeo | 2P | EXTRA3 | TODO |  |  |  | RA | NONE | NONE | RT | NONE | CR0 |
+addzeo | 2P | EXTRA3 | TODO |  |  |  | RA | NONE | NONE | RT | NONE | CR0 |
+extsh | 2P | EXTRA3 | TODO |  |  |  | RS | NONE | NONE | RA | NONE | CR0 |
+extsb | 2P | EXTRA3 | TODO |  |  |  | RS | NONE | NONE | RA | NONE | CR0 |
+extsw | 2P | EXTRA3 | TODO |  |  |  | RS | NONE | NONE | RA | NONE | CR0 |
 """]]
 
 ## 1R-1W-CRo (RM-2P-1S1D)
 
 [[!table  data="""
-insn | Ptype | in1 | in2 | in3 | out | CR in | CR out |
-addic. | 2P | RA |  | NONE | RT | NONE | CR0 |
-rlwinm | 2P | NONE |  | RS | RA | NONE | CR0 |
-andi. | 2P | RS |  | NONE | RA | NONE | CR0 |
-andis. | 2P | RS |  | NONE | RA | NONE | CR0 |
-mulli | 2P | RA |  | NONE | RT | NONE | CR0 |
-rldicl | 2P | NONE |  | RS | RA | NONE | CR0 |
-rldicl | 2P | NONE |  | RS | RA | NONE | CR0 |
-rldicr | 2P | NONE |  | RS | RA | NONE | CR0 |
-rldicr | 2P | NONE |  | RS | RA | NONE | CR0 |
-rldic | 2P | NONE |  | RS | RA | NONE | CR0 |
-rldic | 2P | NONE |  | RS | RA | NONE | CR0 |
-subfme | 2P | RA |  | NONE | RT | NONE | CR0 |
-addme | 2P | RA |  | NONE | RT | NONE | CR0 |
-subfmeo | 2P | RA |  | NONE | RT | NONE | CR0 |
-addmeo | 2P | RA |  | NONE | RT | NONE | CR0 |
-srawi | 2P | NONE |  | RS | RA | NONE | CR0 |
-sradi | 2P | NONE |  | RS | RA | NONE | CR0 |
-sradi | 2P | NONE |  | RS | RA | NONE | CR0 |
-extswsli | 2P | NONE |  | RS | RA | NONE | CR0 |
-extswsli | 2P | NONE |  | RS | RA | NONE | CR0 |
+insn | Ptype | Etype | 0 | 1 | 2 | 3 |
+addic. | 2P | EXTRA3 | TODO |  |  |  | RA |  | NONE | RT | NONE | CR0 |
+rlwinm | 2P | EXTRA3 | TODO |  |  |  | NONE |  | RS | RA | NONE | CR0 |
+andi. | 2P | EXTRA3 | TODO |  |  |  | RS |  | NONE | RA | NONE | CR0 |
+andis. | 2P | EXTRA3 | TODO |  |  |  | RS |  | NONE | RA | NONE | CR0 |
+mulli | 2P | EXTRA3 | TODO |  |  |  | RA |  | NONE | RT | NONE | CR0 |
+rldicl | 2P | EXTRA3 | TODO |  |  |  | NONE |  | RS | RA | NONE | CR0 |
+rldicl | 2P | EXTRA3 | TODO |  |  |  | NONE |  | RS | RA | NONE | CR0 |
+rldicr | 2P | EXTRA3 | TODO |  |  |  | NONE |  | RS | RA | NONE | CR0 |
+rldicr | 2P | EXTRA3 | TODO |  |  |  | NONE |  | RS | RA | NONE | CR0 |
+rldic | 2P | EXTRA3 | TODO |  |  |  | NONE |  | RS | RA | NONE | CR0 |
+rldic | 2P | EXTRA3 | TODO |  |  |  | NONE |  | RS | RA | NONE | CR0 |
+subfme | 2P | EXTRA3 | TODO |  |  |  | RA |  | NONE | RT | NONE | CR0 |
+addme | 2P | EXTRA3 | TODO |  |  |  | RA |  | NONE | RT | NONE | CR0 |
+subfmeo | 2P | EXTRA3 | TODO |  |  |  | RA |  | NONE | RT | NONE | CR0 |
+addmeo | 2P | EXTRA3 | TODO |  |  |  | RA |  | NONE | RT | NONE | CR0 |
+srawi | 2P | EXTRA3 | TODO |  |  |  | NONE |  | RS | RA | NONE | CR0 |
+sradi | 2P | EXTRA3 | TODO |  |  |  | NONE |  | RS | RA | NONE | CR0 |
+sradi | 2P | EXTRA3 | TODO |  |  |  | NONE |  | RS | RA | NONE | CR0 |
+extswsli | 2P | EXTRA3 | TODO |  |  |  | NONE |  | RS | RA | NONE | CR0 |
+extswsli | 2P | EXTRA3 | TODO |  |  |  | NONE |  | RS | RA | NONE | CR0 |
 """]]
 
 ## 1R-1W-CRio (RM-2P-1S1D)
 
 [[!table  data="""
-insn | Ptype | in1 | in2 | in3 | out | CR in | CR out |
-fcfid[u]s | 2P | NONE | FRB | NONE | FRT | 0 | 0 |
-fsqrts | 2P | NONE | FRB | NONE | FRT | 0 | 0 |
-fres | 2P | NONE | FRB | NONE | FRT | 0 | 0 |
-frsqrtes | 2P | NONE | FRB | NONE | FRT | 0 | 0 |
-fsqrt | 2P | NONE | FRB | NONE | FRT | 0 | 0 |
-fre | 2P | NONE | FRB | NONE | FRT | 0 | 0 |
-frsqrte | 2P | NONE | FRB | NONE | FRT | 0 | 0 |
-18/7=mffsfamily | 2P | NONE | FRB | NONE | FRT | 0 | 0 |
-1/8=fneg | 2P | NONE | FRB | NONE | FRT | 0 | 0 |
-2/8=fmr | 2P | NONE | FRB | NONE | FRT | 0 | 0 |
-4/8=fnabs | 2P | NONE | FRB | NONE | FRT | 0 | 0 |
-8/8=fabs | 2P | NONE | FRB | NONE | FRT | 0 | 0 |
-12/8=frin | 2P | NONE | FRB | NONE | FRT | 0 | 0 |
-13/8=friz | 2P | NONE | FRB | NONE | FRT | 0 | 0 |
-14/8=frip | 2P | NONE | FRB | NONE | FRT | 0 | 0 |
-15/8=frim | 2P | NONE | FRB | NONE | FRT | 0 | 0 |
-0/12=frsp | 2P | NONE | FRB | NONE | FRT | 0 | 0 |
-0/14=fctiw | 2P | NONE | FRB | NONE | FRT | 0 | 0 |
-4/14=fctiwu | 2P | NONE | FRB | NONE | FRT | 0 | 0 |
-25/14=fctid | 2P | NONE | FRB | NONE | FRT | 0 | 0 |
-26/14=fcfid | 2P | NONE | FRB | NONE | FRT | 0 | 0 |
-29/14=fctidu | 2P | NONE | FRB | NONE | FRT | 0 | 0 |
-30/14=fcfidu | 2P | NONE | FRB | NONE | FRT | 0 | 0 |
-0/15=fctiwz | 2P | NONE | FRB | NONE | FRT | 0 | 0 |
-4/15=fctiwuz | 2P | NONE | FRB | NONE | FRT | 0 | 0 |
-25/15=fctidz | 2P | NONE | FRB | NONE | FRT | 0 | 0 |
-29/15=fctiduz | 2P | NONE | FRB | NONE | FRT | 0 | 0 |
+insn | Ptype | Etype | 0 | 1 | 2 | 3 |
+fcfid[u]s | 2P | EXTRA3 | TODO |  |  |  | NONE | FRB | NONE | FRT | 0 | 0 |
+fsqrts | 2P | EXTRA3 | TODO |  |  |  | NONE | FRB | NONE | FRT | 0 | 0 |
+fres | 2P | EXTRA3 | TODO |  |  |  | NONE | FRB | NONE | FRT | 0 | 0 |
+frsqrtes | 2P | EXTRA3 | TODO |  |  |  | NONE | FRB | NONE | FRT | 0 | 0 |
+fsqrt | 2P | EXTRA3 | TODO |  |  |  | NONE | FRB | NONE | FRT | 0 | 0 |
+fre | 2P | EXTRA3 | TODO |  |  |  | NONE | FRB | NONE | FRT | 0 | 0 |
+frsqrte | 2P | EXTRA3 | TODO |  |  |  | NONE | FRB | NONE | FRT | 0 | 0 |
+18/7=mffsfamily | 2P | EXTRA3 | TODO |  |  |  | NONE | FRB | NONE | FRT | 0 | 0 |
+1/8=fneg | 2P | EXTRA3 | TODO |  |  |  | NONE | FRB | NONE | FRT | 0 | 0 |
+2/8=fmr | 2P | EXTRA3 | TODO |  |  |  | NONE | FRB | NONE | FRT | 0 | 0 |
+4/8=fnabs | 2P | EXTRA3 | TODO |  |  |  | NONE | FRB | NONE | FRT | 0 | 0 |
+8/8=fabs | 2P | EXTRA3 | TODO |  |  |  | NONE | FRB | NONE | FRT | 0 | 0 |
+12/8=frin | 2P | EXTRA3 | TODO |  |  |  | NONE | FRB | NONE | FRT | 0 | 0 |
+13/8=friz | 2P | EXTRA3 | TODO |  |  |  | NONE | FRB | NONE | FRT | 0 | 0 |
+14/8=frip | 2P | EXTRA3 | TODO |  |  |  | NONE | FRB | NONE | FRT | 0 | 0 |
+15/8=frim | 2P | EXTRA3 | TODO |  |  |  | NONE | FRB | NONE | FRT | 0 | 0 |
+0/12=frsp | 2P | EXTRA3 | TODO |  |  |  | NONE | FRB | NONE | FRT | 0 | 0 |
+0/14=fctiw | 2P | EXTRA3 | TODO |  |  |  | NONE | FRB | NONE | FRT | 0 | 0 |
+4/14=fctiwu | 2P | EXTRA3 | TODO |  |  |  | NONE | FRB | NONE | FRT | 0 | 0 |
+25/14=fctid | 2P | EXTRA3 | TODO |  |  |  | NONE | FRB | NONE | FRT | 0 | 0 |
+26/14=fcfid | 2P | EXTRA3 | TODO |  |  |  | NONE | FRB | NONE | FRT | 0 | 0 |
+29/14=fctidu | 2P | EXTRA3 | TODO |  |  |  | NONE | FRB | NONE | FRT | 0 | 0 |
+30/14=fcfidu | 2P | EXTRA3 | TODO |  |  |  | NONE | FRB | NONE | FRT | 0 | 0 |
+0/15=fctiwz | 2P | EXTRA3 | TODO |  |  |  | NONE | FRB | NONE | FRT | 0 | 0 |
+4/15=fctiwuz | 2P | EXTRA3 | TODO |  |  |  | NONE | FRB | NONE | FRT | 0 | 0 |
+25/15=fctidz | 2P | EXTRA3 | TODO |  |  |  | NONE | FRB | NONE | FRT | 0 | 0 |
+29/15=fctiduz | 2P | EXTRA3 | TODO |  |  |  | NONE | FRB | NONE | FRT | 0 | 0 |
 """]]
 
 ## 2R-CRo (RM-1P-2S1D)
 
 [[!table  data="""
-insn | Ptype | in1 | in2 | in3 | out | CR in | CR out |
-cmp | 1P | RA | RB | NONE | NONE | NONE | BF |
-cmpl | 1P | RA | RB | NONE | NONE | NONE | BF |
-cmprb | 1P | RA | RB | NONE | NONE | NONE | BF |
-cmpeqb | 1P | RA | RB | NONE | NONE | NONE | BF |
+insn | Ptype | Etype | 0 | 1 | 2 | 3 |
+cmp | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | NONE | NONE | BF |
+cmpl | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | NONE | NONE | BF |
+cmprb | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | NONE | NONE | BF |
+cmpeqb | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | NONE | NONE | BF |
 """]]
 
 ## 2R-CRio (RM-1P-2S1D)
 
 [[!table  data="""
-insn | Ptype | in1 | in2 | in3 | out | CR in | CR out |
-0/0=fcmpu | 1P | FRA | FRB | NONE | NONE | 0 | 1 |
-1/0=fcmpo | 1P | FRA | FRB | NONE | NONE | 0 | 1 |
-4/0=ftdiv | 1P | FRA | FRB | NONE | NONE | 0 | 1 |
+insn | Ptype | Etype | 0 | 1 | 2 | 3 |
+0/0=fcmpu | 1P | EXTRA3 | TODO |  |  |  | FRA | FRB | NONE | NONE | 0 | 1 |
+1/0=fcmpo | 1P | EXTRA3 | TODO |  |  |  | FRA | FRB | NONE | NONE | 0 | 1 |
+4/0=ftdiv | 1P | EXTRA3 | TODO |  |  |  | FRA | FRB | NONE | NONE | 0 | 1 |
 """]]
 
 ## 2R-1W (RM-1P-2S1D)
 
 [[!table  data="""
-insn | Ptype | in1 | in2 | in3 | out | CR in | CR out |
-bpermd | 1P | RS | RB | NONE | RA | NONE | NONE |
-modud | 1P | RA | RB | NONE | RT | NONE | NONE |
-moduw | 1P | RA | RB | NONE | RT | NONE | NONE |
-cmpb | 1P | RS | RB | NONE | RA | NONE | NONE |
-modsd | 1P | RA | RB | NONE | RT | NONE | NONE |
-modsw | 1P | RA | RB | NONE | RT | NONE | NONE |
+insn | Ptype | Etype | 0 | 1 | 2 | 3 |
+bpermd | 1P | EXTRA3 | TODO |  |  |  | RS | RB | NONE | RA | NONE | NONE |
+modud | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | NONE |
+moduw | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | NONE |
+cmpb | 1P | EXTRA3 | TODO |  |  |  | RS | RB | NONE | RA | NONE | NONE |
+modsd | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | NONE |
+modsw | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | NONE |
 """]]
 
 ## 2R-1W-CRo (RM-1P-2S1D)
 
 [[!table  data="""
-insn | Ptype | in1 | in2 | in3 | out | CR in | CR out |
-rlwnm | 1P | NONE | RB | RS | RA | NONE | CR0 |
-rldcl | 1P | NONE | RB | RS | RA | NONE | CR0 |
-rldcr | 1P | NONE | RB | RS | RA | NONE | CR0 |
-subfc | 1P | RA | RB | NONE | RT | NONE | CR0 |
-mulhdu | 1P | RA | RB | NONE | RT | NONE | CR0 |
-addc | 1P | RA | RB | NONE | RT | NONE | CR0 |
-mulhwu | 1P | RA | RB | NONE | RT | NONE | CR0 |
-slw | 1P | NONE | RB | RS | RA | NONE | CR0 |
-sld | 1P | NONE | RB | RS | RA | NONE | CR0 |
-and | 1P | RS | RB | NONE | RA | NONE | CR0 |
-subf | 1P | RA | RB | NONE | RT | NONE | CR0 |
-andc | 1P | RS | RB | NONE | RA | NONE | CR0 |
-mulhd | 1P | RA | RB | NONE | RT | NONE | CR0 |
-mulhw | 1P | RA | RB | NONE | RT | NONE | CR0 |
-nor | 1P | RS | RB | NONE | RA | NONE | CR0 |
-subfe | 1P | RA | RB | NONE | RT | NONE | CR0 |
-adde | 1P | RA | RB | NONE | RT | NONE | CR0 |
-mulld | 1P | RA | RB | NONE | RT | NONE | CR0 |
-mullw | 1P | RA | RB | NONE | RT | NONE | CR0 |
-add | 1P | RA | RB | NONE | RT | NONE | CR0 |
-eqv | 1P | RS | RB | NONE | RA | NONE | CR0 |
-xor | 1P | RS | RB | NONE | RA | NONE | CR0 |
-divdeu | 1P | RA | RB | NONE | RT | NONE | CR0 |
-divweu | 1P | RA | RB | NONE | RT | NONE | CR0 |
-orc | 1P | RS | RB | NONE | RA | NONE | CR0 |
-divde | 1P | RA | RB | NONE | RT | NONE | CR0 |
-divwe | 1P | RA | RB | NONE | RT | NONE | CR0 |
-or | 1P | RS | RB | NONE | RA | NONE | CR0 |
-divdu | 1P | RA | RB | NONE | RT | NONE | CR0 |
-divwu | 1P | RA | RB | NONE | RT | NONE | CR0 |
-nand | 1P | RS | RB | NONE | RA | NONE | CR0 |
-divd | 1P | RA | RB | NONE | RT | NONE | CR0 |
-divw | 1P | RA | RB | NONE | RT | NONE | CR0 |
-subfco | 1P | RA | RB | NONE | RT | NONE | CR0 |
-mulhdu | 1P | RA | RB | NONE | RT | NONE | CR0 |
-addco | 1P | RA | RB | NONE | RT | NONE | CR0 |
-mulhwu | 1P | RA | RB | NONE | RT | NONE | CR0 |
-srw | 1P | NONE | RB | RS | RA | NONE | CR0 |
-srd | 1P | NONE | RB | RS | RA | NONE | CR0 |
-subfo | 1P | RA | RB | NONE | RT | NONE | CR0 |
-mulhd | 1P | RA | RB | NONE | RT | NONE | CR0 |
-mulhw | 1P | RA | RB | NONE | RT | NONE | CR0 |
-subfeo | 1P | RA | RB | NONE | RT | NONE | CR0 |
-addeo | 1P | RA | RB | NONE | RT | NONE | CR0 |
-mulldo | 1P | RA | RB | NONE | RT | NONE | CR0 |
-mullwo | 1P | RA | RB | NONE | RT | NONE | CR0 |
-addo | 1P | RA | RB | NONE | RT | NONE | CR0 |
-sraw | 1P | NONE | RB | RS | RA | NONE | CR0 |
-srad | 1P | NONE | RB | RS | RA | NONE | CR0 |
-divdeuo | 1P | RA | RB | NONE | RT | NONE | CR0 |
-divweuo | 1P | RA | RB | NONE | RT | NONE | CR0 |
-divdeo | 1P | RA | RB | NONE | RT | NONE | CR0 |
-divweo | 1P | RA | RB | NONE | RT | NONE | CR0 |
-divduo | 1P | RA | RB | NONE | RT | NONE | CR0 |
-divwuo | 1P | RA | RB | NONE | RT | NONE | CR0 |
-divdo | 1P | RA | RB | NONE | RT | NONE | CR0 |
-divwo | 1P | RA | RB | NONE | RT | NONE | CR0 |
+insn | Ptype | Etype | 0 | 1 | 2 | 3 |
+rlwnm | 1P | EXTRA3 | TODO |  |  |  | NONE | RB | RS | RA | NONE | CR0 |
+rldcl | 1P | EXTRA3 | TODO |  |  |  | NONE | RB | RS | RA | NONE | CR0 |
+rldcr | 1P | EXTRA3 | TODO |  |  |  | NONE | RB | RS | RA | NONE | CR0 |
+subfc | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+mulhdu | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+addc | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+mulhwu | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+slw | 1P | EXTRA3 | TODO |  |  |  | NONE | RB | RS | RA | NONE | CR0 |
+sld | 1P | EXTRA3 | TODO |  |  |  | NONE | RB | RS | RA | NONE | CR0 |
+and | 1P | EXTRA3 | TODO |  |  |  | RS | RB | NONE | RA | NONE | CR0 |
+subf | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+andc | 1P | EXTRA3 | TODO |  |  |  | RS | RB | NONE | RA | NONE | CR0 |
+mulhd | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+mulhw | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+nor | 1P | EXTRA3 | TODO |  |  |  | RS | RB | NONE | RA | NONE | CR0 |
+subfe | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+adde | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+mulld | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+mullw | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+add | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+eqv | 1P | EXTRA3 | TODO |  |  |  | RS | RB | NONE | RA | NONE | CR0 |
+xor | 1P | EXTRA3 | TODO |  |  |  | RS | RB | NONE | RA | NONE | CR0 |
+divdeu | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+divweu | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+orc | 1P | EXTRA3 | TODO |  |  |  | RS | RB | NONE | RA | NONE | CR0 |
+divde | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+divwe | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+or | 1P | EXTRA3 | TODO |  |  |  | RS | RB | NONE | RA | NONE | CR0 |
+divdu | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+divwu | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+nand | 1P | EXTRA3 | TODO |  |  |  | RS | RB | NONE | RA | NONE | CR0 |
+divd | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+divw | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+subfco | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+mulhdu | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+addco | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+mulhwu | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+srw | 1P | EXTRA3 | TODO |  |  |  | NONE | RB | RS | RA | NONE | CR0 |
+srd | 1P | EXTRA3 | TODO |  |  |  | NONE | RB | RS | RA | NONE | CR0 |
+subfo | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+mulhd | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+mulhw | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+subfeo | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+addeo | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+mulldo | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+mullwo | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+addo | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+sraw | 1P | EXTRA3 | TODO |  |  |  | NONE | RB | RS | RA | NONE | CR0 |
+srad | 1P | EXTRA3 | TODO |  |  |  | NONE | RB | RS | RA | NONE | CR0 |
+divdeuo | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+divweuo | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+divdeo | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+divweo | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+divduo | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+divwuo | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+divdo | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
+divwo | 1P | EXTRA3 | TODO |  |  |  | RA | RB | NONE | RT | NONE | CR0 |
 """]]
 
 ## 2R-1W-CRo (RM-1P-2S1D)
 
 [[!table  data="""
-insn | Ptype | in1 | in2 | in3 | out | CR in | CR out |
-rlwimi | 1P | RA |  | RS | RA | NONE | CR0 |
-rldimi | 1P | RA |  | RS | RA | NONE | CR0 |
-rldimi | 1P | RA |  | RS | RA | NONE | CR0 |
+insn | Ptype | Etype | 0 | 1 | 2 | 3 |
+rlwimi | 1P | EXTRA3 | TODO |  |  |  | RA |  | RS | RA | NONE | CR0 |
+rldimi | 1P | EXTRA3 | TODO |  |  |  | RA |  | RS | RA | NONE | CR0 |
+rldimi | 1P | EXTRA3 | TODO |  |  |  | RA |  | RS | RA | NONE | CR0 |
 """]]
 
 ## 2R-1W-CRi (RM-1P-3S1D)
 
 [[!table  data="""
-insn | Ptype | in1 | in2 | in3 | out | CR in | CR out |
-isel | 1P | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
-isel | 1P | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
-isel | 1P | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
-isel | 1P | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
-isel | 1P | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
-isel | 1P | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
-isel | 1P | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
-isel | 1P | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
-isel | 1P | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
-isel | 1P | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
-isel | 1P | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
-isel | 1P | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
-isel | 1P | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
-isel | 1P | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
-isel | 1P | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
-isel | 1P | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
-isel | 1P | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
-isel | 1P | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
-isel | 1P | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
-isel | 1P | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
-isel | 1P | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
-isel | 1P | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
-isel | 1P | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
-isel | 1P | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
-isel | 1P | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
-isel | 1P | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
-isel | 1P | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
-isel | 1P | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
-isel | 1P | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
-isel | 1P | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
-isel | 1P | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
-isel | 1P | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
+insn | Ptype | Etype | 0 | 1 | 2 | 3 |
+isel | 1P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
+isel | 1P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
+isel | 1P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
+isel | 1P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
+isel | 1P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
+isel | 1P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
+isel | 1P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
+isel | 1P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
+isel | 1P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
+isel | 1P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
+isel | 1P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
+isel | 1P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
+isel | 1P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
+isel | 1P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
+isel | 1P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
+isel | 1P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
+isel | 1P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
+isel | 1P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
+isel | 1P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
+isel | 1P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
+isel | 1P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
+isel | 1P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
+isel | 1P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
+isel | 1P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
+isel | 1P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
+isel | 1P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
+isel | 1P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
+isel | 1P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
+isel | 1P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
+isel | 1P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
+isel | 1P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
+isel | 1P | EXTRA2 |  |  |  |  | RA_OR_ZERO | RB | NONE | RT | BC | NONE |
 """]]
 
 ## 2R-1W-CRio (RM-1P-2S1D)
 
 [[!table  data="""
-insn | Ptype | in1 | in2 | in3 | out | CR in | CR out |
-fdivs | 1P | FRA | FRB | NONE | FRT | 0 | 0 |
-fsubs | 1P | FRA | FRB | NONE | FRT | 0 | 0 |
-fadds | 1P | FRA | FRB | NONE | FRT | 0 | 0 |
-fmuls | 1P | FRA | NONE | FRC | FRT | 0 | 0 |
-fdiv | 1P | FRA | FRB | NONE | FRT | 0 | 0 |
-fsub | 1P | FRA | FRB | NONE | FRT | 0 | 0 |
-fadd | 1P | FRA | FRB | NONE | FRT | 0 | 0 |
-fmul | 1P | FRA | NONE | FRC | FRT | 0 | 0 |
-26/6=fmrgow | 1P | FRA | FRB | NONE | FRT | 0 | 0 |
-30/6=fmrgew | 1P | FRA | FRB | NONE | FRT | 0 | 0 |
-0/8=fcpsgn | 1P | FRA | FRB | NONE | FRT | 0 | 0 |
+insn | Ptype | Etype | 0 | 1 | 2 | 3 |
+fdivs | 1P | EXTRA3 | TODO |  |  |  | FRA | FRB | NONE | FRT | 0 | 0 |
+fsubs | 1P | EXTRA3 | TODO |  |  |  | FRA | FRB | NONE | FRT | 0 | 0 |
+fadds | 1P | EXTRA3 | TODO |  |  |  | FRA | FRB | NONE | FRT | 0 | 0 |
+fmuls | 1P | EXTRA3 | TODO |  |  |  | FRA | NONE | FRC | FRT | 0 | 0 |
+fdiv | 1P | EXTRA3 | TODO |  |  |  | FRA | FRB | NONE | FRT | 0 | 0 |
+fsub | 1P | EXTRA3 | TODO |  |  |  | FRA | FRB | NONE | FRT | 0 | 0 |
+fadd | 1P | EXTRA3 | TODO |  |  |  | FRA | FRB | NONE | FRT | 0 | 0 |
+fmul | 1P | EXTRA3 | TODO |  |  |  | FRA | NONE | FRC | FRT | 0 | 0 |
+26/6=fmrgow | 1P | EXTRA3 | TODO |  |  |  | FRA | FRB | NONE | FRT | 0 | 0 |
+30/6=fmrgew | 1P | EXTRA3 | TODO |  |  |  | FRA | FRB | NONE | FRT | 0 | 0 |
+0/8=fcpsgn | 1P | EXTRA3 | TODO |  |  |  | FRA | FRB | NONE | FRT | 0 | 0 |
 """]]
 
 ## 3R-1W-CRio (RM-1P-3S1D)
 
 [[!table  data="""
-insn | Ptype | in1 | in2 | in3 | out | CR in | CR out |
-fmsubs | 1P | FRA | FRB | FRC | FRT | 0 | 0 |
-fmadds | 1P | FRA | FRB | FRC | FRT | 0 | 0 |
-fnmsubs | 1P | FRA | FRB | FRC | FRT | 0 | 0 |
-fnmadds | 1P | FRA | FRB | FRC | FRT | 0 | 0 |
-fsel | 1P | FRA | FRB | FRC | FRT | 0 | 0 |
-fmsub | 1P | FRA | FRB | FRC | FRT | 0 | 0 |
-fmadd | 1P | FRA | FRB | FRC | FRT | 0 | 0 |
-fnmsub | 1P | FRA | FRB | FRC | FRT | 0 | 0 |
-fnmadd | 1P | FRA | FRB | FRC | FRT | 0 | 0 |
+insn | Ptype | Etype | 0 | 1 | 2 | 3 |
+fmsubs | 1P | EXTRA2 |  |  |  |  | FRA | FRB | FRC | FRT | 0 | 0 |
+fmadds | 1P | EXTRA2 |  |  |  |  | FRA | FRB | FRC | FRT | 0 | 0 |
+fnmsubs | 1P | EXTRA2 |  |  |  |  | FRA | FRB | FRC | FRT | 0 | 0 |
+fnmadds | 1P | EXTRA2 |  |  |  |  | FRA | FRB | FRC | FRT | 0 | 0 |
+fsel | 1P | EXTRA2 |  |  |  |  | FRA | FRB | FRC | FRT | 0 | 0 |
+fmsub | 1P | EXTRA2 |  |  |  |  | FRA | FRB | FRC | FRT | 0 | 0 |
+fmadd | 1P | EXTRA2 |  |  |  |  | FRA | FRB | FRC | FRT | 0 | 0 |
+fnmsub | 1P | EXTRA2 |  |  |  |  | FRA | FRB | FRC | FRT | 0 | 0 |
+fnmadd | 1P | EXTRA2 |  |  |  |  | FRA | FRB | FRC | FRT | 0 | 0 |
 """]]
 

@@ -242,15 +242,15 @@ def process_csvs():
               'CRi': 'non-SV',
               'imm': 'non-SV',
               '': 'non-SV',
-              'LDST-2R-imm': 'RM-2P-2S',
-              'LDST-2R-1W-imm': 'RM-2P-2S1D',
-              'LDST-2R-1W': 'RM-2P-2S1D',
-              'LDST-2R-2W': 'RM-2P-2S1D',
-              'LDST-1R-1W-imm': 'RM-2P-1S1D',
-              'LDST-1R-2W-imm': 'RM-2P-1S2D',
-              'LDST-3R': 'RM-2P-3S',
-              'LDST-3R-CRo': 'RM-2P-3S',  # st*x
-              'LDST-3R-1W': 'RM-2P-2S1D',  # st*x
+              'LDST-2R-imm': 'LDSTRM-2P-2S',
+              'LDST-2R-1W-imm': 'LDSTRM-2P-2S1D',
+              'LDST-2R-1W': 'LDSTRM-2P-2S1D',
+              'LDST-2R-2W': 'LDSTRM-2P-2S1D',
+              'LDST-1R-1W-imm': 'LDSTRM-2P-1S1D',
+              'LDST-1R-2W-imm': 'LDSTRM-2P-1S2D',
+              'LDST-3R': 'LDSTRM-2P-3S',
+              'LDST-3R-CRo': 'LDSTRM-2P-3S',  # st*x
+              'LDST-3R-1W': 'LDSTRM-2P-2S1D',  # st*x
               }
     print ("# map to old SV Prefix")
     print ('')
@@ -301,19 +301,29 @@ def process_csvs():
     #    print (insn, row)
 
     print ("# svp64 remaps")
+    svp64 = OrderedDict()
     # create a CSV file, per category, with SV "augmentation" info
-    csvcols = ['insn', 'Ptype', 'in1', 'in2', 'in3', 'out', 'CR in', 'CR out']
+    csvcols = ['insn', 'Ptype', 'Etype', '0', '1', '2', '3']
     for key in primarykeys:
-        name = keyname(dictkeys[key])
+        # get the decoded key containing row-analysis, and name/value
+        dkey = dictkeys[key]
+        name = keyname(dkey)
         value = mapsto.get(name, "-")
         if value == 'non-SV':
             continue
+
+        # store csv entries by svp64 RM category
+        if value not in svp64:
+            svp64[value] = []
+
+        # print out svp64 tables by category
         print ("## %s (%s)" % (name, value))
         print ('')
         print ('[[!table  data="""')
         print (tformat(csvcols))
         rows = bykey[key]
         rows.sort()
+
         for row in rows:
             # get the instruction
             insn_name = row[2]
@@ -322,13 +332,87 @@ def process_csvs():
             res = OrderedDict()
             res['insn'] = insn_name
             res['Ptype'] = value.split('-')[1] # predication type (RM-xN-xxx)
+            # get whether R_xxx_EXTRAn fields are 2-bit or 3-bit
+            res['Etype'] = 'EXTRA2'
             # go through each register matching to Rxxxx_EXTRAx
+            for k in ['0', '1', '2', '3']:
+                res[k] = ''
+    
+            # temporary useful info
             for k in ['in1', 'in2', 'in3', 'out', 'CR in', 'CR out']:
                 if insn[k].startswith('CONST'):
                     res[k] = ''
                 else:
                     res[k] = insn[k]
+
+            # sigh now the fun begins.  this isn't the sanest way to do it
+            # but the patterns are pretty regular.
+            if value == 'LDSTRM-2P-1S1D':
+                res['Etype'] = 'EXTRA3' # RM EXTRA3 type
+                res['0'] = 'd:RT' # RT: Rdest_EXTRA3
+                res['1'] = 's:RA' # RA: Rsrc1_EXTRA3
+
+            elif value == 'LDSTRM-2P-1S2D':
+                res['Etype'] = 'EXTRA2' # RM EXTRA2 type
+                res['0'] = 'd:RT' # RT: Rdest1_EXTRA2
+                res['1'] = 's:RA' # RA: Rsrc1_EXTRA2
+                res['2'] = 'd:RA' # RA: Rdest2_EXTRA2
+
+            elif value == 'LDSTRM-2P-2S':
+                res['Etype'] = 'EXTRA3' # RM EXTRA2 type
+                res['0'] = 'd:RS' # RT: Rdest1_EXTRA2
+                res['1'] = 's:RA' # RA: Rsrc1_EXTRA2
+
+            elif value == 'LDSTRM-2P-2S1D':
+                if 'st' in insn and 'x' not in insn: # stwu/stbu etc
+                    res['Etype'] = 'EXTRA2' # RM EXTRA2 type
+                    res['0'] = 'd:RS' # RS: Rdest1_EXTRA2
+                    res['1'] = 'd:RA' # RA: Rdest2_EXTRA2
+                    res['2'] = 's:RA' # RA: Rsrc1_EXTRA2
+                if 'st' in insn and 'x' in insn: # stwux
+                    res['Etype'] = 'EXTRA2' # RM EXTRA2 type
+                    res['0'] = 'd:RS' # RS: Rdest1_EXTRA2
+                    res['1'] = 'd:RA' # RA: Rdest2_EXTRA2, RA: Rsrc1_EXTRA2
+                    res['2'] = 's:RB' # RB: Rsrc2_EXTRA2
+                elif 'u' in insn: # ldux etc.
+                    res['Etype'] = 'EXTRA2' # RM EXTRA2 type
+                    res['0'] = 'd:RT' # RT: Rdest1_EXTRA2
+                    res['1'] = 'd:RA' # RA: Rdest2_EXTRA2
+                    res['2'] = 's:RB' # RB: Rsrc1_EXTRA2
+                else:
+                    res['Etype'] = 'EXTRA2' # RM EXTRA2 type
+                    res['d0'] = 'RT' # RT: Rdest1_EXTRA2
+                    res['s1'] = 'RA' # RA: Rsrc1_EXTRA2
+                    res['s2'] = 'RB' # RB: Rsrc2_EXTRA2
+
+            elif value == 'LDSTRM-2P-3S':
+                res['Etype'] = 'EXTRA2' # RM EXTRA2 type
+                res['0'] = 's:RS,d:CR0' # RS: Rsrc1_EXTRA2 CR0: dest
+                res['1'] = 's:RA' # RA: Rsrc2_EXTRA2
+                res['2'] = 's:RB' # RA: Rsrc3_EXTRA2
+
+            elif value == 'RM-2P-1S1D':
+                res['Etype'] = 'EXTRA3' # RM EXTRA3 type
+                if key == 'CRio' and insn == 'mcrf':
+                    res['0'] = 'd:BF' # BFA: Rdest1_EXTRA3
+                    res['1'] = 's:BFA' # BFA: Rsrc1_EXTRA3
+                else:
+                    res['0'] = 'TODO'
+
+            elif value == 'RM-1P-2S1D':
+                res['Etype'] = 'EXTRA3' # RM EXTRA3 type
+                if insn_name.startswith('cr'):
+                    res['0'] = 'd:BT' # BT: Rdest1_EXTRA3
+                    res['1'] = 's:BA' # BA: Rsrc1_EXTRA3
+                    res['2'] = 's:BB' # BB: Rsrc2_EXTRA3
+                else:
+                    res['0'] = 'TODO'
+
+            # print out the row
             print (tformat(res.values()))
+            # add to svp64 csvs
+            svp64[value].append(res)
+
         print ('"""]]')
         print ('')
 
