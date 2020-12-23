@@ -919,6 +919,47 @@ Vectorised (mtspr, bc, dcbz, twi)
 
 TODO generate table which will be here [[svp64/reg_profiles]]
 
+## SV pseudocode illilustration
+
+### Single-predicated Instruction
+
+illustration of normal mode add operation: zeroing nit included, elwidth overrides not included.
+
+    function op_add(rd, rs1, rs2) # add not VADD!
+      int i, id=0, irs1=0, irs2=0;
+      predval = get_pred_val(FALSE, rd);
+      rd  = int_vec[rd ].isvector ? int_vec[rd ].regidx : rd;
+      rs1 = int_vec[rs1].isvector ? int_vec[rs1].regidx : rs1;
+      rs2 = int_vec[rs2].isvector ? int_vec[rs2].regidx : rs2;
+      for (i = 0; i < VL; i++)
+        STATE.srcoffs = i # save context
+        if (predval & 1<<i) # predication uses intregs
+           ireg[rd+id] <= ireg[rs1+irs1] + ireg[rs2+irs2];
+           if (!int_vec[rd ].isvector) break;
+        if (int_vec[rd ].isvector)  { id += 1; }
+        if (int_vec[rs1].isvector)  { irs1 += 1; }
+        if (int_vec[rs2].isvector)  { irs2 += 1; }
+        if (id == VL or irs1 == VL or irs2 == VL) {
+          # end VL hardware loop
+          STATE.srcoffs = 0; # reset
+          return;
+        }
+
+This has several modes:
+
+* RT.v = RA.v RB.v
+* RT.v = RA.v RB.s (and RA.s RB.v)
+* RT.v = RA.s RB.s
+* RT.s = RA.v RB.v
+* RT.s = RA.v RB.s (and RA.s RB.v)
+* RT.s = RA.s RB.s
+
+All of these may be predicated.  Vector-Vector is straightfoward.  When one of source is a Vector and the other a Scalar, it is clear that each element of the Vector source should be added to the Scalar source, each result placed into the Vector (or, if the destination is a scalar, only the first nonpredicated result). 
+
+The one that is not obvious is RT=vector but both RA/RB=scalar.  Here this acts as a "splat scalar result", copying the same result into all nonpredicated result elements.  If a fixed destination scalar was intended, then an all-Scalar operation should be used.
+
+See <https://bugs.libre-soc.org/show_bug.cgi?id=552>
+
 ## Assembly Annotation
 
 Assembly code annotation is required for SV to be able to successfully
