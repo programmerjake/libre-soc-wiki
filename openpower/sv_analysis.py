@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 #
-# NOTE THAT THIS PROGRAM IS PYTHON2 COMPATIBLE, PLEASE DO NOT STOP IT
-# FROM WORKING BY ADDING SYNTAX THAT PREVENTS THAT.
+# NOTE that this program is python2 compatible, please do not stop it
+# from working by adding syntax that prevents that.
 #
 # Initial version written by lkcl Oct 2020
 # This program analyses the Power 9 op codes and looks at in/out register uses
@@ -9,6 +9,8 @@
 #	https://libre-soc.org/openpower/opcode_regs_deduped/
 #
 # It finds .csv files in the directory isatables/
+# then goes through the categories and creates svp64 CSV augmentation
+# tables on a per-opcode basis
 
 import csv
 import os
