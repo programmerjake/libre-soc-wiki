@@ -928,17 +928,14 @@ illustration of normal mode add operation: zeroing not included, elwidth overrid
     function op_add(rd, rs1, rs2) # add not VADD!
       int i, id=0, irs1=0, irs2=0;
       predval = get_pred_val(FALSE, rd);
-      rd  = int_vec[rd ].isvec ? int_vec[rd ].regidx : rd
-      rs1 = int_vec[rs1].isvec ? int_vec[rs1].regidx : rs1
-      rs2 = int_vec[rs2].isvec ? int_vec[rs2].regidx : rs2
       for (i = 0; i < VL; i++)
         STATE.srcoffs = i # save context
         if (predval & 1<<i) # predication uses intregs
            ireg[rd+id] <= ireg[rs1+irs1] + ireg[rs2+irs2];
            if (!int_vec[rd ].isvec) break;
-        if (int_vec[rd ].isvec)  { id += 1; }
-        if (int_vec[rs1].isvec)  { irs1 += 1; }
-        if (int_vec[rs2].isvec)  { irs2 += 1; }
+        if (rd.isvec)  { id += 1; }
+        if (rs1.isvec)  { irs1 += 1; }
+        if (rs2.isvec)  { irs2 += 1; }
         if (id == VL or irs1 == VL or irs2 == VL) {
           # end VL hardware loop
           STATE.srcoffs = 0; # reset
