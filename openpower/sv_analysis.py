@@ -409,10 +409,13 @@ def process_csvs():
                 elif insn_name.startswith('cmp'): # cmpi
                     res['0'] = 'd:BF' # BF: Rdest1_EXTRA3
                     res['1'] = 's:RA' # RA: Rsrc1_EXTRA3
-                elif insn_name.startswith('neg'): # neg*
+                elif (insn_name.startswith('neg') or # neg*
+                      insn_name in ['addic', 'addi', 'addis', 'subfuc']):
                     res['0'] = 'd:RT' # RT: Rdest1_EXTRA3
                     res['1'] = 's:RA' # RA: Rsrc1_EXTRA3
                 elif (insn_name.startswith('prty') or # prty*
+                      insn_name.startswith('ori') or # ori*
+                      insn_name.startswith('xori') or # xori*
                       insn_name.startswith('popcnt')): # popcnt*
                     res['0'] = 'd:RS' # RS: Rdest1_EXTRA3
                     res['1'] = 's:RA' # RA: Rsrc1_EXTRA3
