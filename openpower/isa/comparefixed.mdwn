@@ -6,7 +6,7 @@ D-Form
 
 Pseudo-code:
 
-    if L = 0 then a <-  EXTS((RA)[32:63])
+    if L = 0 then a <- EXTS((RA)[32:63])
     else a <-  (RA)
     if      a < EXTS(SI) then c <- 0b100
     else if a > EXTS(SI) then c <- 0b010
@@ -26,7 +26,7 @@ X-Form
 Pseudo-code:
 
     if L = 0 then
-        a <-  EXTS((RA)[32:63] )
+        a <- EXTS((RA)[32:63])
         b <- EXTS((RB)[32:63])
     else
         a <- (RA)
@@ -50,9 +50,9 @@ Pseudo-code:
 
     if L = 0 then a <- [0]*32 || (RA)[32:63]
     else a <- (RA)
-    if      a <u ( [0]*48 || UI) then c <- 0b100
-    else if a >u ( [0]*48 || UI) then c <- 0b010
-    else                         c <- 0b001
+    if      a <u ([0]*48 || UI) then c <- 0b100
+    else if a >u ([0]*48 || UI) then c <- 0b010
+    else                             c <- 0b001
     CR[4*BF+32:4*BF+35] <- c || XER[SO]
 
 Special Registers Altered:
