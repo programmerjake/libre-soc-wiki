@@ -3,9 +3,10 @@
 The core OpenPOWER ISA was designed as scalar: SV provides a level of abstraction to add variable-length element-independent parallelism. However, certain classes of instructions only make sense in a Vector context: AVX512 conflictd for example.  This section includes such examples.  Many of them are from the RISC-V Vector ISA (with thanks to the efforts of RVV's contributors)
 
 However some of these actually could be added to a scalar ISA as bitmanipulation instructions.  These are separated out into their own section.
-Instructions suited to 3D GPU workloads (dotproduct, crossproduct, normalise) are out of scope: this document is for more general-purpose instructions that underpin and are critical to general-purpose Vector workloads (including GPU and VPU)
 
-.
+* Instructions suited to 3D GPU workloads (dotproduct, crossproduct, normalise) are out of scope: this document is for more general-purpose instructions that underpin and are critical to general-purpose Vector workloads (including GPU and VPU)
+* Instructions related to the adaptation of CRs for use as predicate masks are covered separately, by crweird operations.  See [[sv/cr_int_predication]].
+
 Links:
 
 * <https://github.com/riscv/riscv-v-spec/blob/master/v-spec.adoc#vector-register-gather-instructions>
