@@ -30,6 +30,14 @@ def get_csv(name):
         reader = csv.DictReader(csvfile)
         return list(reader)
 
+# Write an array of dictionaries to the CSV file name:
+def write_csv(name, items, headers):
+    file_path = find_wiki_file(name)
+    with open(file_path, 'w') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames)
+        writer.writeheader()
+        writer.writerows(items)
+
 # This will return True if all values are true.
 # Not sure what this is about
 def blank_key(row):
@@ -207,26 +215,26 @@ def process_csvs():
     primarykeys.sort()
 
     # mapping to old SVPrefix "Forms"
-    mapsto = {'3R-1W-CRio': 'FR4',
-              '2R-1W-CRio': 'R',
-              '2R-1W-CRi': 'R',
-              '2R-1W-CRo': 'R',
+    mapsto = {'3R-1W-CRio': 'RM-1P-3S1D',
+              '2R-1W-CRio': 'RM-1P-2S1D',
+              '2R-1W-CRi': 'RM-1P-3S1D',
+              '2R-1W-CRo': 'RM-1P-2S1D',
               '2R': 'non-SV',
-              '2R-1W': 'R',
-              '1R-CRio': 'TBD - need close inspection',
-              '2R-CRio': 'R',
-              '2R-CRo': 'R',
+              '2R-1W': 'RM-1P-2S1D',
+              '1R-CRio': 'RM-2P-2S1D',
+              '2R-CRio': 'RM-1P-2S1D',
+              '2R-CRo': 'RM-1P-2S1D',
               '1R': 'non-SV',
-              '1R-1W-CRio': 'R',
-              '1R-1W-CRo': 'R',
-              '1R-1W': 'R',
-              '1R-1W-imm': 'I',
-              '1R-CRo': 'I',
+              '1R-1W-CRio': 'RM-2P-1S1D',
+              '1R-1W-CRo': 'RM-2P-1S1D',
+              '1R-1W': 'RM-2P-1S1D',
+              '1R-1W-imm': 'RM-2P-1S1D',
+              '1R-CRo': 'RM-2P-1S1D',
               '1R-imm': 'non-SV',
               '1W': 'non-SV',
-              '1W-CRi': 'TBD - needs close inspection',
-              'CRio': 'R',
-              'CR=2R1W': 'R',
+              '1W-CRi': 'RM-2P-1S1D',
+              'CRio': 'RM-2P-1S1D',
+              'CR=2R1W': 'RM-1P-2S1D',
               'CRi': 'non-SV',
               'imm': 'non-SV',
               '': 'non-SV',
