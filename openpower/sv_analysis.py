@@ -197,7 +197,11 @@ def process_csvs():
         for row in csv:
             if blank_key(row):
                 continue
-            insns[row['comment']] = row # accumulate csv data by instruction
+            insn_name = row['comment']
+            # skip instructions that are not suitable
+            if insn_name in ['mcrxr', 'mcrxrx']:
+                continue
+            insns[insn_name] = row # accumulate csv data by instruction
             dkey = create_key(row)
             key = tuple(dkey.values())
             # print("key=", key)
@@ -205,7 +209,7 @@ def process_csvs():
             primarykeys.add(key)
             if key not in bykey:
                 bykey[key] = []
-            bykey[key].append((csvname, row['opcode'], row['comment'],
+            bykey[key].append((csvname, row['opcode'], insn_name,
                                row['form'].upper() + '-Form'))
 
             # detect immediates, collate them (useful info)
