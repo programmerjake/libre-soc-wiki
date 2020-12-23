@@ -400,11 +400,21 @@ def process_csvs():
                 if name == 'CRio' and insn_name == 'mcrf':
                     res['0'] = 'd:BF' # BFA: Rdest1_EXTRA3
                     res['1'] = 's:BFA' # BFA: Rsrc1_EXTRA3
+                elif 'mfcr' in insn_name or 'mfocrf' in insn_name:
+                    res['0'] = 'd:RT' # RT: Rdest1_EXTRA3
+                    res['1'] = 's:CR' # CR: Rsrc1_EXTRA3
                 elif insn_name == 'setb':
                     res['0'] = 'd:RT' # RT: Rdest1_EXTRA3
                     res['1'] = 's:BFA' # BFA: Rsrc1_EXTRA3
                 elif insn_name.startswith('cmp'): # cmpi
                     res['0'] = 'd:BF' # BF: Rdest1_EXTRA3
+                    res['1'] = 's:RA' # RA: Rsrc1_EXTRA3
+                elif insn_name.startswith('neg'): # neg*
+                    res['0'] = 'd:RT' # RT: Rdest1_EXTRA3
+                    res['1'] = 's:RA' # RA: Rsrc1_EXTRA3
+                elif (insn_name.startswith('prty') or # prty*
+                      insn_name.startswith('popcnt')): # popcnt*
+                    res['0'] = 'd:RS' # RS: Rdest1_EXTRA3
                     res['1'] = 's:RA' # RA: Rsrc1_EXTRA3
                 else:
                     res['0'] = 'TODO'

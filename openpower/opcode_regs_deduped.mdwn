@@ -752,7 +752,7 @@ cror | 1P | EXTRA3 | d:BT | s:BA | s:BB |  | NONE | NONE | NONE | NONE | BA_BB |
 
 [[!table  data="""
 insn | Ptype | Etype | 0 | 1 | 2 | 3 |
-mfcr/mfocrf | 2P | EXTRA3 | TODO |  |  |  | NONE | NONE | NONE | RT | WHOLE_REG | NONE |
+mfcr/mfocrf | 2P | EXTRA3 | d:RT | s:CR |  |  | NONE | NONE | NONE | RT | WHOLE_REG | NONE |
 setb | 2P | EXTRA3 | d:RT | s:BFA |  |  | NONE | NONE | NONE | RT | BFA | NONE |
 """]]
 
@@ -778,13 +778,13 @@ darn | 2P | EXTRA2 | TODO |  |  |  |  |  | RT |  |  |  |
 
 [[!table  data="""
 insn | Ptype | Etype | 0 | 1 | 2 | 3 |
-neg | 2P | EXTRA3 | TODO |  |  |  | RA | NONE | NONE | RT | NONE | NONE |
-popcntb | 2P | EXTRA3 | TODO |  |  |  | RS | NONE | NONE | RA | NONE | NONE |
-prtyw | 2P | EXTRA3 | TODO |  |  |  | RS | NONE | NONE | RA | NONE | NONE |
-prtyd | 2P | EXTRA3 | TODO |  |  |  | RS | NONE | NONE | RA | NONE | NONE |
-popcntw | 2P | EXTRA3 | TODO |  |  |  | RS | NONE | NONE | RA | NONE | NONE |
-popcntd | 2P | EXTRA3 | TODO |  |  |  | RS | NONE | NONE | RA | NONE | NONE |
-nego | 2P | EXTRA3 | TODO |  |  |  | RA | NONE | NONE | RT | NONE | NONE |
+neg | 2P | EXTRA3 | d:RT | s:RA |  |  | RA | NONE | NONE | RT | NONE | NONE |
+popcntb | 2P | EXTRA3 | d:RS | s:RA |  |  | RS | NONE | NONE | RA | NONE | NONE |
+prtyw | 2P | EXTRA3 | d:RS | s:RA |  |  | RS | NONE | NONE | RA | NONE | NONE |
+prtyd | 2P | EXTRA3 | d:RS | s:RA |  |  | RS | NONE | NONE | RA | NONE | NONE |
+popcntw | 2P | EXTRA3 | d:RS | s:RA |  |  | RS | NONE | NONE | RA | NONE | NONE |
+popcntd | 2P | EXTRA3 | d:RS | s:RA |  |  | RS | NONE | NONE | RA | NONE | NONE |
+nego | 2P | EXTRA3 | d:RT | s:RA |  |  | RA | NONE | NONE | RT | NONE | NONE |
 """]]
 
 ## 1R-1W-imm (RM-2P-1S1D)
