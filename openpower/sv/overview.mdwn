@@ -133,3 +133,14 @@ This presents a particularly intriguing conundrum given that the OpenPOWER Scala
 
 The solution comes in terms of rethinking the definition of a Register File.  Rhe typical regfile may be considered to be a multi-ported SRAM block, 64 bits wide and usually 32 entries deep, to give 32 64 bit registers.  Conceptually, to get our variable element width vectors, we may think of the regfile as being the following c-based data structure:
 
+    typedef union {
+        uint8_t  actual_bytes[8];
+        uint8_t  b[0]; // array of type uint8_t
+        uint16_t s[0];
+        uint32_t i[0];
+        uint64_t l[0]; // default OpenPOWER ISA uses this
+    } reg_t;
+
+    reg_t int_regfile[128]; // SV extends to 128 regs
+
+Then, our simple loop, instead of accessing the array of 64 bits with a computed index, would access the appropriate element of the appropriate type.  Thus we have a series of overlapping conceptual arrays that each start at what is traditionally thought of as "a register".
