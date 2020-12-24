@@ -120,3 +120,6 @@ Sometimes with predication it is ok to leave the masked-out element alone (not m
         if (rs2.isvec)  { irs2 += 1; }
         if (id == VL or irs1 == VL or irs2 == VL)
            break
+
+Many Vector systems either have zeroing or they have nonzeroing, they do not have both.  This is because they usually have separate Vector register files. However SV sits on top of standard register files and consequently there are advantages to both, so both are provided.
+
