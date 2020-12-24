@@ -19,6 +19,8 @@ The fundamentals are:
 * Some registers may be "tagged" as Vectors
 * During the loop, "Vector"-tagged register are incrememted by
   one with each iteration.
+* Once the loop is completed *only then* is the Program Counter
+  allowed to move to the next instruction.
 
 In OpenPOWER ISA v3.0B pseudo-code form, an ADD operation, assuming both source and destination have been "tagged" as Vectors, is simply:
 
