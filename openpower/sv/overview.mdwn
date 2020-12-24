@@ -145,7 +145,6 @@ The solution comes in terms of rethinking the definition of a Register File.  Rh
 
 Then, our simple loop, instead of accessing the array of 64 bits with a computed index, would access the appropriate element of the appropriate type.  Thus we have a series of overlapping conceptual arrays that each start at what is traditionally thought of as "a register".  It then helps if we have a couple of routines:
 
-
     get_polymorphed_reg(reg, bitwidth, offset):
         reg_t res = 0;
         if bitwidth == 8:
@@ -169,3 +168,16 @@ Then, our simple loop, instead of accessing the array of 64 bits with a computed
             int_regfile[reg].i[offset] = val
         elif bitwidth == default: # 64
             int_regfile[reg].l[offset] = val
+
+These basically provide a convenient parameterised way to access the register file, at an arbitrary vector element offset and an arbitrary element width.  Our first simple loop thus becomes:
+
+    for i = 0 to VL-1:
+       src1 = get_polymorphed_reg(rs1, srcwid, i)
+       src2 = get_polymorphed_reg(rs2, srcwid, i)
+       result = src1 + src2 # actual add here
+       set_polymorphed_reg(rd, destwid, i, result)
+
+Note that things such as zero/sign-extension have been left out: also note that it turns out to be important to perform the operation at the maximum bitwidth - `max(srcwid, destwid)` - such that any truncation, rounding errors or other artefacts may all be ironed out.  This turns out to be important when applying Saturation for Audio DSP workloads.
+
+Other than that, element width overrides, which can be applied to *either* source or destination or both, are pretty straightforward, conceptually.  The details, for hardware engineers, involve byte-level write-enable lines, which is exactly what is used on SRAMs anyway.  Compiler writers have to alter Register Allocation Tables to byte-level granularity.
+
