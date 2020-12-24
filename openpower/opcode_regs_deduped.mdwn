@@ -706,10 +706,10 @@ stdcix | 2P | EXTRA2 | s:RS | s:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NON
 
 [[!table  data="""
 insn | Ptype | Etype | 0 | 1 | 2 | 3 |
-stwcx | 2P | EXTRA2 | s:RS | s:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | CR0 |
-stdcx | 2P | EXTRA2 | s:RS | s:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | CR0 |
-stbcx | 2P | EXTRA2 | s:RS | s:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | CR0 |
-sthcx | 2P | EXTRA2 | s:RS | s:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | CR0 |
+stwcx | 2P | EXTRA2 | s:RS,d:CR0 | s:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | CR0 |
+stdcx | 2P | EXTRA2 | s:RS,d:CR0 | s:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | CR0 |
+stbcx | 2P | EXTRA2 | s:RS,d:CR0 | s:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | CR0 |
+sthcx | 2P | EXTRA2 | s:RS,d:CR0 | s:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | CR0 |
 """]]
 
 ## LDST-3R-1W (LDSTRM-2P-2S1D)
