@@ -1,0 +1,32 @@
+# SV Overview
+
+This document provides a crash-course overview as to why SV exists, and how it works.
+
+SIMD is known to be harmful: a seductive simplicity that is easy to implement in hardware.  Without predication, which is common only in 3D GPUs, realistically,  at the time of writing (AVX512 came from Larrabee), SIMD widths only become more and more problematic.
+
+Cray-style variable-length Vectors on the other hand result in stunningly elegant and small loops where at the hardware level the microarchitecture may execute from one element right the way through to tens of thousands at a time, yet the executable remains exactly the same.  Unluke in SIMD powers of two limitations are not involved in either the hardware nor in the assembly code.
+
+SimpleV takes the Cray style Vector principle and applies it to a scaalar architecture, in the process allowing register file size increases using "tagging" (similar to how x86 originally extended registers from 32 to 64 bit).
+
+The fundamentals are:
+
+* The Program Counter gains a "Sub Counter" context.
+* Vectorisation pauses the PC and runs a loop from 0 to VL-1
+ (where VL is Vector Length)
+* During the loop the instruction at the PC is executed *multiple* 
+  times.
+* Some registers may be "tagged" as Vectors
+* During the loop, "Vector"-tagged register are incrememted by
+  one with each iteration.
+
+In OpenPOWER ISA v3.0B pseudo-code form, an ADD operation, assuming both source and destination have been "tagged" as Vectors, is simply:
+
+    for i = 0 to VL-1:
+         GPR(RT+i) = GPR(RA+i) + GPR(RB+i))
+
+At its heart, SimpleV really is this simple.  On top of this fundamental basis further subtle refinements can be added which build up towards an extremrly powerful Vector augmentation system, with very little in the way of additional opcodes required.  RISC-V RVV as of version 0.9 is over 180 instructions: over 95% of rhat functionality is added to OpenPOWER v3 0B, by SimpleV augmentation, with around 5 to 8 instructions.
+
+
+
+
+
