@@ -3,7 +3,7 @@
 This document provides a crash-course overview as to why SV exists, and how it works.
 
 [SIMD is known to be harmful](https://www.sigarch.org/simd-instructions-considered-harmful/):
-a seductive simplicity that is easy to implement in hardware.  Even with predication added, SIMD only become more and more problematic with each power of two SIMD width increase introduced through an ISA revision.
+a seductive simplicity that is easy to implement in hardware.  Even with predication added, SIMD only becomes more and more problematic with each power of two SIMD width increase introduced through an ISA revision.
 
 Cray-style variable-length Vectors on the other hand result in stunningly elegant and small loops, with no alarmingly high setup and cleanup code, where at the hardware level the microarchitecture may execute from one element right the way through to tens of thousands at a time, yet the executable remains exactly the same.  Unlike in SIMD, powers of two limitations are not involved in either the hardware nor in the assembly code.
 
@@ -122,4 +122,14 @@ Sometimes with predication it is ok to leave the masked-out element alone (not m
            break
 
 Many Vector systems either have zeroing or they have nonzeroing, they do not have both.  This is because they usually have separate Vector register files. However SV sits on top of standard register files and consequently there are advantages to both, so both are provided.
+
+# Element Width overrides
+
+All good Vector ISAs have the usual bitwidths for operations: 8/16/32/64 bit integer operations, and IEEE754 FP32 and 64.  Often also included is FP16 and more recently BF16.  The *really* good Vector ISAs have variable-width vectors right down to bitlevel, and as high as 1024 bit arithmetic, as well as IEEE754 FP128.
+
+SV has an "override" system that *changes* the bitwidth of operations that were intended by the original scalar ISA designers to have (for example) 64 bit operations.  The override widths are 8, 16 and 32 for integer, and FP16 and FP32 for IEEE754 (with BF16 to be added in the future).
+
+This presents a particularly intriguing conundrum given that the OpenPOWER Scalar ISA was never designed with for example 8 bit operations in mind, let alone Vectors of 8 bit.
+
+The solution comes in terms of rethinking the definition of a Register File.  Rhe typical regfile may be considered to be a multi-ported SRAM block, 64 bits wide and usually 32 entries deep, to give 32 64 bit registers.  Conceptually, to get our variable element width vectors, we may think of the regfile as being the following c-based data structure:
 
