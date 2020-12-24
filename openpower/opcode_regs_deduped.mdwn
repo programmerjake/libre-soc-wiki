@@ -317,7 +317,6 @@ major.csv | 11 | cmpi | D-Form |
 [[!table  data="""
 CSV | opcode | asm | form |
 minor_31.csv | 0b0010010000 | mtcrf/mtocrf | XFX-Form |
-minor_31.csv | 0b1011110011 | darn | X-Form |
 minor_63l.csv | 0b000000101 | 5/0=ftsqrt | -Form |
 minor_63l.csv | 0b011110110 | 22/7=mtfsf | -Form |
 """]]
@@ -668,10 +667,10 @@ ldcix | 2P | EXTRA2 | d:RT | s:RA | s:RB |  | RA_OR_ZERO | RB | NONE | RT | NONE
 
 [[!table  data="""
 insn | Ptype | Etype | 0 | 1 | 2 | 3 |
-stwu | 2P | EXTRA2 | d:RT | d:RA | s:RB |  | RA_OR_ZERO |  | RS | NONE | NONE | NONE |
-stbu | 2P | EXTRA2 | d:RT | d:RA | s:RB |  | RA_OR_ZERO |  | RS | NONE | NONE | NONE |
-sthu | 2P | EXTRA2 | d:RT | d:RA | s:RB |  | RA_OR_ZERO |  | RS | NONE | NONE | NONE |
-stdu | 2P | EXTRA2 | d:RT | d:RA | s:RB |  | RA_OR_ZERO |  | RS | NONE | NONE | NONE |
+stwu | 2P | EXTRA2 | d:RA | s:RS | s:RA |  | RA_OR_ZERO |  | RS | NONE | NONE | NONE |
+stbu | 2P | EXTRA2 | d:RA | s:RS | s:RA |  | RA_OR_ZERO |  | RS | NONE | NONE | NONE |
+sthu | 2P | EXTRA2 | d:RA | s:RS | s:RA |  | RA_OR_ZERO |  | RS | NONE | NONE | NONE |
+stdu | 2P | EXTRA2 | d:RA | s:RS | s:RA |  | RA_OR_ZERO |  | RS | NONE | NONE | NONE |
 """]]
 
 ## LDST-2R-2W (LDSTRM-2P-2S1D)
@@ -717,10 +716,10 @@ sthcx | 2P | EXTRA2 | s:RS,d:CR0 | s:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE 
 
 [[!table  data="""
 insn | Ptype | Etype | 0 | 1 | 2 | 3 |
-stdux | 2P | EXTRA2 | d:RS | d:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | NONE |
-stwux | 2P | EXTRA2 | d:RS | d:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | NONE |
-stbux | 2P | EXTRA2 | d:RS | d:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | NONE |
-sthux | 2P | EXTRA2 | d:RS | d:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | NONE |
+stdux | 2P | EXTRA2 | d:RA | s:RS,s:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | NONE |
+stwux | 2P | EXTRA2 | d:RA | s:RS,s:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | NONE |
+stbux | 2P | EXTRA2 | d:RA | s:RS,s:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | NONE |
+sthux | 2P | EXTRA2 | d:RA | s:RS,s:RA | s:RB |  | RA_OR_ZERO | RB | RS | NONE | NONE | NONE |
 """]]
 
 ## CRio (RM-2P-1S1D)
@@ -769,7 +768,6 @@ cmpi | 2P | EXTRA3 | d:BF | s:RA |  |  | RA |  | NONE | NONE | NONE | BF |
 [[!table  data="""
 insn | Ptype | Etype | 0 | 1 | 2 | 3 |
 mtcrf/mtocrf | 2P | EXTRA2 | d:CR | s:RS | s:CR |  | RS | NONE | NONE | NONE | WHOLE_REG | WHOLE_REG |
-darn | 2P | EXTRA2 | TODO |  |  |  |  |  | RT |  |  |  |
 5/0=ftsqrt | 2P | EXTRA2 | TODO |  |  |  | NONE | FRB | NONE | NONE | 0 | 1 |
 22/7=mtfsf | 2P | EXTRA2 | TODO |  |  |  | NONE | FRB | NONE | NONE | 0 | 0 |
 """]]

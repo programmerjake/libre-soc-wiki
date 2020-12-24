@@ -382,13 +382,13 @@ def process_csvs():
             elif value == 'LDSTRM-2P-2S1D':
                 if 'st' in insn_name and 'x' not in insn_name: # stwu/stbu etc
                     res['Etype'] = 'EXTRA2' # RM EXTRA2 type
-                    res['0'] = 'd:RS' # RS: Rdest1_EXTRA2
-                    res['1'] = 'd:RA' # RA: Rdest2_EXTRA2
-                    res['2'] = 's:RA' # RA: Rsrc1_EXTRA2
-                if 'st' in insn_name and 'x' in insn_name: # stwux
+                    res['0'] = 'd:RA' # RA: Rdest1_EXTRA2
+                    res['1'] = 's:RS' # RS: Rdsrc1_EXTRA2
+                    res['2'] = 's:RA' # RA: Rsrc2_EXTRA2
+                elif 'st' in insn_name and 'x' in insn_name: # stwux
                     res['Etype'] = 'EXTRA2' # RM EXTRA2 type
-                    res['0'] = 'd:RS' # RS: Rdest1_EXTRA2
-                    res['1'] = 'd:RA' # RA: Rdest2_EXTRA2, RA: Rsrc1_EXTRA2
+                    res['0'] = 'd:RA' # RA: Rdest1_EXTRA2
+                    res['1'] = 's:RS,s:RA' # RS: Rdest2_EXTRA2, RA: Rsrc1_EXTRA2
                     res['2'] = 's:RB' # RB: Rsrc2_EXTRA2
                 elif 'u' in insn_name: # ldux etc.
                     res['Etype'] = 'EXTRA2' # RM EXTRA2 type
