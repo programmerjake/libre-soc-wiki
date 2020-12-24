@@ -3,7 +3,7 @@
 This document provides a crash-course overview as to why SV exists, and how it works.
 
 [SIMD is known to be harmful](https://www.sigarch.org/simd-instructions-considered-harmful/):
-a seductive simplicity that is easy to implement in hardware.  Without predication, which is common only in 3D GPUs, SIMD only become more and more problematic with each power of two SIMD width increase.
+a seductive simplicity that is easy to implement in hardware.  Even with predication added, SIMD only become more and more problematic with each power of two SIMD width increase introduced through an ISA revision.
 
 Cray-style variable-length Vectors on the other hand result in stunningly elegant and small loops, with no alarmingly high setup and cleanup code, where at the hardware level the microarchitecture may execute from one element right the way through to tens of thousands at a time, yet the executable remains exactly the same.  Unlike in SIMD, powers of two limitations are not involved in either the hardware nor in the assembly code.
 
