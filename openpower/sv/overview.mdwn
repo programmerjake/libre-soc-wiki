@@ -188,14 +188,11 @@ The above functionality pretty much covers around 85% of Vector ISA needs.  Pred
 Experienced Vector ISA readers will however have noted that VCOMPRESS and VEXPAND are missing, as is Vector "reduce" (mapreduce) capability.  Compress and Expand are covered by Twin Predication, and yet to also be covered is fail-on-first, CR-based result predication, and Subvectors and Swizzle.
 
 
-## SUBVL Pseudocode <a name="subvl-pseudocode"></a>
+## SUBVL <a name="subvl"></a>
 
 Adding in support for SUBVL is a matter of adding in an extra inner
 for-loop, where register src and dest are still incremented inside the
-inner part. Note that the predication is still taken from the VL index.
-
-So whilst elements are indexed by "(i * SUBVL + s)", predicate bits are
-indexed by "(i)"
+inner part.  Predication is still taken from the VL index, however it is applied to the whole subvector:
 
     function op_add(rd, rs1, rs2) # add not VADD!
       int id=0, irs1=0, irs2=0;
