@@ -98,7 +98,12 @@ A particularly interesting case is if the destination is scalar, and the first f
 
 If all three registers are marked as Vector then the "traditional" predicated Vector behaviour is provided.  Yet, just as before, all other options are still provided, right the way back to the pure-scalar case, as if this were a straight OpenPOWER v3.0B non-augmented instruction.
 
-Predication therefore provides several modes traditionally seen in Vector ISAs, particularly if the predicate may be set conveniently as a single bit: this gives VINSERT (VINDEX) behaviour.  VSPLAT (result broadcasting) is provided by making the sources scalar and the destination a vector.
+Predication therefore provides several modes traditionally seen in Vector ISAs, particularly if the predicate may be set conveniently as a single bit *(In Simple-V, setting only one bit of the predicate is assisted by a special mode: `1<<r3`)*.
+
+* When (at least one of) the sources is a Vector, the destination is scalar and the predicate contains one bit, this gives VSELECT behaviour.
+* When the destination is a Vector, sources are scalar and the predicate contains one bit, this gives VINSERT (VINDEX) behaviour.
+* VSPLAT (result broadcasting) is provided by making the sources scalar, the destination a vector, and the predicate set to either all 1s or at least several 1s.
+
 
 # Predicate "zeroing" mode
 
