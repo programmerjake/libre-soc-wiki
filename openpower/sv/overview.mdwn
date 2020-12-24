@@ -79,7 +79,7 @@ Note in particular: there is no separate Scalar add instruction and separate Vec
 
 # Adding single predication
 
-The next step is to add a single predicate mask.  This is where it gets interesting.  Predicate masks are a bitvector, each bit specifying, in order, whether the element operation is to be skipped ("masked out") or allowed If there is no predicate, it is set to all 1s
+The next step is to add a single predicate mask.  This is where it gets interesting.  Predicate masks are a bitvector, each bit specifying, in order, whether the element operation is to be skipped ("masked out") or allowed. If there is no predicate, it is set to all 1s, which is effectively the same as "no predicate".
 
     function op_add(rd, rs1, rs2) # add not VADD!
       int id=0, irs1=0, irs2=0;
