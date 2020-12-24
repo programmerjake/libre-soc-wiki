@@ -403,7 +403,7 @@ def process_csvs():
 
             elif value == 'LDSTRM-2P-3S':
                 res['Etype'] = 'EXTRA2' # RM EXTRA2 type
-                res['0'] = 's:RS,d:CR0' # RS: Rsrc1_EXTRA2 CR0: dest
+                res['0'] = 's:RS' # RS: Rsrc1_EXTRA2 CR0: dest
                 res['1'] = 's:RA' # RA: Rsrc2_EXTRA2
                 res['2'] = 's:RB' # RA: Rsrc3_EXTRA2
 
