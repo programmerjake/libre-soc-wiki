@@ -371,8 +371,8 @@ def process_csvs():
             elif value == 'LDSTRM-2P-1S2D':
                 res['Etype'] = 'EXTRA2' # RM EXTRA2 type
                 res['0'] = 'd:RT' # RT: Rdest1_EXTRA2
-                res['1'] = 's:RA' # RA: Rsrc1_EXTRA2
-                res['2'] = 'd:RA' # RA: Rdest2_EXTRA2
+                res['1'] = 'd:RA' # RA: Rdest2_EXTRA2
+                res['2'] = 's:RA' # RA: Rsrc1_EXTRA2
 
             elif value == 'LDSTRM-2P-2S':
                 res['Etype'] = 'EXTRA3' # RM EXTRA2 type
