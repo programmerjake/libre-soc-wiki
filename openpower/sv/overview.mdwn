@@ -2,7 +2,8 @@
 
 This document provides a crash-course overview as to why SV exists, and how it works.
 
-SIMD is known to be harmful: a seductive simplicity that is easy to implement in hardware.  Without predication, which is common only in 3D GPUs, realistically,  at the time of writing (AVX512 came from Larrabee), SIMD widths only become more and more problematic.
+[SIMD is known to be harmful](https://www.sigarch.org/simd-instructions-considered-harmful/):
+a seductive simplicity that is easy to implement in hardware.  Without predication, which is common only in 3D GPUs, realistically,  at the time of writing (AVX512 came from Larrabee), SIMD widths only become more and more problematic.
 
 Cray-style variable-length Vectors on the other hand result in stunningly elegant and small loops where at the hardware level the microarchitecture may execute from one element right the way through to tens of thousands at a time, yet the executable remains exactly the same.  Unluke in SIMD powers of two limitations are not involved in either the hardware nor in the assembly code.
 
