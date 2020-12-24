@@ -31,6 +31,19 @@ RISC-V RVV as of version 0.9 is over 180 instructions (more than the rest of RV6
 
 Even in OpenPOWER v3.0B, the Scalar Integer ISA is around 150 instructions, with IEEE754 FP adding approximately 80 more. VSX, being based on SIMD design principles, adds somewhere in the region of 600 more.
 
+The rest of this document builds on the above simple loop to add:
+
+* Vector-Scalar, Scalar-Vector and Scalar-Scalar operation
+* Traditional Vector operations (VSPLAT, VINSERT, VCOMPRESS etc)
+* Predication masks (essential for parallel if/else constructs)
+* 8, 16 and 32 bit integer operations, and both FP16 and BF16.
+* Fail-on-first (introduced in ARM SVE2)
+* A new concept known as "Twin Predication"
+
+All of this is *without modifying the OpenPOWER v3.0B ISA*, except to add "wrapping context", similar to how v3.1B 64 Prefixes work.
+
+
+
 
 
 
