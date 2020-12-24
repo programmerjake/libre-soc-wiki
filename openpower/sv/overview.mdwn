@@ -211,7 +211,7 @@ inner part.  Predication is still taken from the VL index, however it is applied
 
 # Swizzle
 
-Swizzle is particularly important for 3D work.  It allows in-place reordering of XYZW, ARGB etc. and access of sub-portions of the same in arbitrary order *without* requiring additional complex scalar mv instructions.  With somewhere around 10% of operations in 3D Shaders involving swizzle this is a huge saving and reduces pressure on register files.
+Swizzle is particularly important for 3D work.  It allows in-place reordering of XYZW, ARGB etc. and access of sub-portions of the same in arbitrary order *without* requiring timeconsuming scalar mv instructions (scalar due to the convoluted offsets).  With somewhere around 10% of operations in 3D Shaders involving swizzle this is a huge saving and reduces pressure on register files.
 
 In SV given the percentage of operations that also involve initislisation to 0.0 or 1.0 into subvector elements the decision was made to include those:
 
