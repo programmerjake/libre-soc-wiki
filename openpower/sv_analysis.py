@@ -308,6 +308,7 @@ def process_csvs():
     svp64 = OrderedDict()
     # create a CSV file, per category, with SV "augmentation" info
     csvcols = ['insn', 'Ptype', 'Etype', '0', '1', '2', '3']
+    csvcols += ['in1', 'in2', 'in3', 'out', 'CR in', 'CR out'] # temporary
     for key in primarykeys:
         # get the decoded key containing row-analysis, and name/value
         dkey = dictkeys[key]
