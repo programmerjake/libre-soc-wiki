@@ -5,7 +5,7 @@ This document provides a crash-course overview as to why SV exists, and how it w
 SIMD, the primary method for easy parallelism of the past 30 years in Computer Architectures, is [known to be harmful](https://www.sigarch.org/simd-instructions-considered-harmful/). SIMD provides
 a seductive simplicity that is easy to implement in hardware.  Even with predication added, SIMD only becomes more and more problematic with each power of two SIMD width increase introduced through an ISA revision.  The opcode proliferation, at O(N^6), inexorably spirals out of control in the ISA, the hardware, the software and the compilers.
 
-Cray-style variable-length Vectors on the other hand result in stunningly elegant and small loops, with no alarmingly high setup and cleanup code, where at the hardware level the microarchitecture may execute from one element right the way through to tens of thousands at a time, yet the executable remains exactly the same.  Unlike in SIMD, powers of two limitations are not involved in either the hardware nor in the assembly code.
+Cray-style variable-length Vectors on the other hand result in stunningly elegant and small loops, with no alarmingly high setup and cleanup code, where at the hardware level the microarchitecture may execute from one element right the way through to tens of thousands at a time, yet the executable remains exactly the same and the ISA remains clear, true to the RISC paradigm, and clean.  Unlike in SIMD, powers of two limitations are not involved in either the hardware nor in the assembly code.
 
 SimpleV takes the Cray style Vector principle and applies it to a Scalar ISA, in the process allowing register file size increases using "tagging" (similar to how x86 originally extended registers from 32 to 64 bit).
 
