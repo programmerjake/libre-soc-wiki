@@ -329,6 +329,9 @@ def process_csvs():
         rows.sort()
 
         for row in rows:
+            #for idx in range(len(row)):
+            #    if row[idx] == 'NONE':
+            #        row[idx] = ''
             # get the instruction
             insn_name = row[2]
             insn = insns[insn_name]
@@ -343,11 +346,20 @@ def process_csvs():
                 res[k] = ''
     
             # temporary useful info
+            regs = []
             for k in ['in1', 'in2', 'in3', 'out', 'CR in', 'CR out']:
                 if insn[k].startswith('CONST'):
                     res[k] = ''
+                    regs.append('')
                 else:
                     res[k] = insn[k]
+                    if insn[k] == 'RA_OR_ZERO':
+                        regs.append('RA')
+                    elif insn[k] != 'NONE':
+                        regs.append(insn[k])
+                    else:
+                        regs.append('')
+
 
             # sigh now the fun begins.  this isn't the sanest way to do it
             # but the patterns are pretty regular.
@@ -409,14 +421,16 @@ def process_csvs():
                 elif insn_name.startswith('cmp'): # cmpi
                     res['0'] = 'd:BF' # BF: Rdest1_EXTRA3
                     res['1'] = 's:RA' # RA: Rsrc1_EXTRA3
-                elif (insn_name.startswith('neg') or # neg*
-                      insn_name in ['addic', 'addi', 'addis', 'subfuc']):
+                elif regs == ['RA','','','RT','','']:
                     res['0'] = 'd:RT' # RT: Rdest1_EXTRA3
                     res['1'] = 's:RA' # RA: Rsrc1_EXTRA3
-                elif (insn_name.startswith('prty') or # prty*
-                      insn_name.startswith('ori') or # ori*
-                      insn_name.startswith('xori') or # xori*
-                      insn_name.startswith('popcnt')): # popcnt*
+                elif regs == ['RA','','','RT','','CR0']:
+                    res['0'] = 'd:RT,d:CR0' # RT,CR0: Rdest1_EXTRA3
+                    res['1'] = 's:RA' # RA: Rsrc1_EXTRA3
+                elif regs == ['RS','','','RA','','CR0']:
+                    res['0'] = 'd:RS,d:CR0' # RS,CR0: Rdest1_EXTRA3
+                    res['1'] = 's:RA' # RA: Rsrc1_EXTRA3
+                elif regs == ['RS','','','RA','','']:
                     res['0'] = 'd:RS' # RS: Rdest1_EXTRA3
                     res['1'] = 's:RA' # RA: Rsrc1_EXTRA3
                 else:

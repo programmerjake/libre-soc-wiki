@@ -798,45 +798,45 @@ ori | 2P | EXTRA3 | d:RS | s:RA |  |  | RS |  | NONE | RA | NONE | NONE |
 oris | 2P | EXTRA3 | d:RS | s:RA |  |  | RS |  | NONE | RA | NONE | NONE |
 xori | 2P | EXTRA3 | d:RS | s:RA |  |  | RS |  | NONE | RA | NONE | NONE |
 xoris | 2P | EXTRA3 | d:RS | s:RA |  |  | RS |  | NONE | RA | NONE | NONE |
-subfic | 2P | EXTRA3 | TODO |  |  |  | RA |  | NONE | RT | NONE | NONE |
+subfic | 2P | EXTRA3 | d:RT | s:RA |  |  | RA |  | NONE | RT | NONE | NONE |
 """]]
 
 ## 1R-1W-CRo (RM-2P-1S1D)
 
 [[!table  data="""
 insn | Ptype | Etype | 0 | 1 | 2 | 3 |
-cntlzw | 2P | EXTRA3 | TODO |  |  |  | RS | NONE | NONE | RA | NONE | CR0 |
-cntlzd | 2P | EXTRA3 | TODO |  |  |  | RS | NONE | NONE | RA | NONE | CR0 |
-subfze | 2P | EXTRA3 | TODO |  |  |  | RA | NONE | NONE | RT | NONE | CR0 |
-addze | 2P | EXTRA3 | TODO |  |  |  | RA | NONE | NONE | RT | NONE | CR0 |
-cnttzw | 2P | EXTRA3 | TODO |  |  |  | RS | NONE | NONE | RA | NONE | CR0 |
-cnttzd | 2P | EXTRA3 | TODO |  |  |  | RS | NONE | NONE | RA | NONE | CR0 |
-subfzeo | 2P | EXTRA3 | TODO |  |  |  | RA | NONE | NONE | RT | NONE | CR0 |
-addzeo | 2P | EXTRA3 | TODO |  |  |  | RA | NONE | NONE | RT | NONE | CR0 |
-extsh | 2P | EXTRA3 | TODO |  |  |  | RS | NONE | NONE | RA | NONE | CR0 |
-extsb | 2P | EXTRA3 | TODO |  |  |  | RS | NONE | NONE | RA | NONE | CR0 |
-extsw | 2P | EXTRA3 | TODO |  |  |  | RS | NONE | NONE | RA | NONE | CR0 |
+cntlzw | 2P | EXTRA3 | d:RS,d:CR0 | s:RA |  |  | RS | NONE | NONE | RA | NONE | CR0 |
+cntlzd | 2P | EXTRA3 | d:RS,d:CR0 | s:RA |  |  | RS | NONE | NONE | RA | NONE | CR0 |
+subfze | 2P | EXTRA3 | d:RT,d:CR0 | s:RA |  |  | RA | NONE | NONE | RT | NONE | CR0 |
+addze | 2P | EXTRA3 | d:RT,d:CR0 | s:RA |  |  | RA | NONE | NONE | RT | NONE | CR0 |
+cnttzw | 2P | EXTRA3 | d:RS,d:CR0 | s:RA |  |  | RS | NONE | NONE | RA | NONE | CR0 |
+cnttzd | 2P | EXTRA3 | d:RS,d:CR0 | s:RA |  |  | RS | NONE | NONE | RA | NONE | CR0 |
+subfzeo | 2P | EXTRA3 | d:RT,d:CR0 | s:RA |  |  | RA | NONE | NONE | RT | NONE | CR0 |
+addzeo | 2P | EXTRA3 | d:RT,d:CR0 | s:RA |  |  | RA | NONE | NONE | RT | NONE | CR0 |
+extsh | 2P | EXTRA3 | d:RS,d:CR0 | s:RA |  |  | RS | NONE | NONE | RA | NONE | CR0 |
+extsb | 2P | EXTRA3 | d:RS,d:CR0 | s:RA |  |  | RS | NONE | NONE | RA | NONE | CR0 |
+extsw | 2P | EXTRA3 | d:RS,d:CR0 | s:RA |  |  | RS | NONE | NONE | RA | NONE | CR0 |
 """]]
 
 ## 1R-1W-CRo (RM-2P-1S1D)
 
 [[!table  data="""
 insn | Ptype | Etype | 0 | 1 | 2 | 3 |
-addic. | 2P | EXTRA3 | TODO |  |  |  | RA |  | NONE | RT | NONE | CR0 |
+addic. | 2P | EXTRA3 | d:RT,d:CR0 | s:RA |  |  | RA |  | NONE | RT | NONE | CR0 |
 rlwinm | 2P | EXTRA3 | TODO |  |  |  | NONE |  | RS | RA | NONE | CR0 |
-andi. | 2P | EXTRA3 | TODO |  |  |  | RS |  | NONE | RA | NONE | CR0 |
-andis. | 2P | EXTRA3 | TODO |  |  |  | RS |  | NONE | RA | NONE | CR0 |
-mulli | 2P | EXTRA3 | TODO |  |  |  | RA |  | NONE | RT | NONE | CR0 |
+andi. | 2P | EXTRA3 | d:RS,d:CR0 | s:RA |  |  | RS |  | NONE | RA | NONE | CR0 |
+andis. | 2P | EXTRA3 | d:RS,d:CR0 | s:RA |  |  | RS |  | NONE | RA | NONE | CR0 |
+mulli | 2P | EXTRA3 | d:RT,d:CR0 | s:RA |  |  | RA |  | NONE | RT | NONE | CR0 |
 rldicl | 2P | EXTRA3 | TODO |  |  |  | NONE |  | RS | RA | NONE | CR0 |
 rldicl | 2P | EXTRA3 | TODO |  |  |  | NONE |  | RS | RA | NONE | CR0 |
 rldicr | 2P | EXTRA3 | TODO |  |  |  | NONE |  | RS | RA | NONE | CR0 |
 rldicr | 2P | EXTRA3 | TODO |  |  |  | NONE |  | RS | RA | NONE | CR0 |
 rldic | 2P | EXTRA3 | TODO |  |  |  | NONE |  | RS | RA | NONE | CR0 |
 rldic | 2P | EXTRA3 | TODO |  |  |  | NONE |  | RS | RA | NONE | CR0 |
-subfme | 2P | EXTRA3 | TODO |  |  |  | RA |  | NONE | RT | NONE | CR0 |
-addme | 2P | EXTRA3 | TODO |  |  |  | RA |  | NONE | RT | NONE | CR0 |
-subfmeo | 2P | EXTRA3 | TODO |  |  |  | RA |  | NONE | RT | NONE | CR0 |
-addmeo | 2P | EXTRA3 | TODO |  |  |  | RA |  | NONE | RT | NONE | CR0 |
+subfme | 2P | EXTRA3 | d:RT,d:CR0 | s:RA |  |  | RA |  | NONE | RT | NONE | CR0 |
+addme | 2P | EXTRA3 | d:RT,d:CR0 | s:RA |  |  | RA |  | NONE | RT | NONE | CR0 |
+subfmeo | 2P | EXTRA3 | d:RT,d:CR0 | s:RA |  |  | RA |  | NONE | RT | NONE | CR0 |
+addmeo | 2P | EXTRA3 | d:RT,d:CR0 | s:RA |  |  | RA |  | NONE | RT | NONE | CR0 |
 srawi | 2P | EXTRA3 | TODO |  |  |  | NONE |  | RS | RA | NONE | CR0 |
 sradi | 2P | EXTRA3 | TODO |  |  |  | NONE |  | RS | RA | NONE | CR0 |
 sradi | 2P | EXTRA3 | TODO |  |  |  | NONE |  | RS | RA | NONE | CR0 |
