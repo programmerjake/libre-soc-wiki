@@ -22,7 +22,7 @@ The fundamentals are:
 In OpenPOWER ISA v3.0B pseudo-code form, an ADD operation, assuming both source and destination have been "tagged" as Vectors, is simply:
 
     for i = 0 to VL-1:
-         GPR(RT+i) = GPR(RA+i) + GPR(RB+i))
+         GPR(RT+i) = GPR(RA+i) + GPR(RB+i)
 
 At its heart, SimpleV really is this simple.  On top of this fundamental basis further subtle refinements can be added which build up towards an extremrly powerful Vector augmentation system, with very little in the way of additional opcodes required.  RISC-V RVV as of version 0.9 is over 180 instructions: over 95% of rhat functionality is added to OpenPOWER v3 0B, by SimpleV augmentation, with around 5 to 8 instructions.
 
