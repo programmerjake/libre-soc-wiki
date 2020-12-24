@@ -70,8 +70,6 @@ The first augmentation to the simple loop is to add the option for all source an
         if (rd.isvec)  { id += 1; }
         if (rs1.isvec)  { irs1 += 1; }
         if (rs2.isvec)  { irs2 += 1; }
-        if (id == VL or irs1 == VL or irs2 == VL)
-          break
 
 With some walkthroughs it is clear that the loop exits immediately after the first scalar destination result is written, and that when the destination is a Vector the loop proceeds to fill up the register file, sequentially, starting at `rd` and ending at `rd+VL-1`. The two source registers will, independently, either remain pointing at `rs1` or `rs2` respectively, or, if marked as Vectors, will march incrementally in lockstep, producing element results along the way, as the destination also progresses through elements.
 
@@ -93,8 +91,6 @@ The next step is to add a single predicate mask.  This is where it gets interest
         if (rd.isvec)  { id += 1; }
         if (rs1.isvec)  { irs1 += 1; }
         if (rs2.isvec)  { irs2 += 1; }
-        if (id == VL or irs1 == VL or irs2 == VL)
-           break
 
 The key modification is to skip the creation and storage of the result if the relevant predicate mask bit is clear, but *not the progression through the registers*.
 
@@ -118,8 +114,6 @@ Sometimes with predication it is ok to leave the masked-out element alone (not m
         if (rd.isvec)  { id += 1; }
         if (rs1.isvec)  { irs1 += 1; }
         if (rs2.isvec)  { irs2 += 1; }
-        if (id == VL or irs1 == VL or irs2 == VL)
-           break
 
 Many Vector systems either have zeroing or they have nonzeroing, they do not have both.  This is because they usually have separate Vector register files. However SV sits on top of standard register files and consequently there are advantages to both, so both are provided.
 
