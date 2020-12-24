@@ -455,7 +455,8 @@ def process_csvs():
                     res['0'] = 'd:BF' # BF: Rdest1_EXTRA3
                     res['1'] = 's:RA' # RA: Rsrc1_EXTRA3
                     res['2'] = 's:RB' # RB: Rsrc1_EXTRA3
-                elif regs == ['','RB','RS','RA','','CR0']:
+                elif (regs == ['','RB','RS','RA','','CR0'] or
+                      regs == ['','RB','RS','RA','','CR0']):
                     res['0'] = 'd:RA,d:CR0' # RA,CR0: Rdest1_EXTRA3
                     res['1'] = 's:RB' # RB: Rsrc1_EXTRA3
                     res['2'] = 's:RS' # RS: Rsrc1_EXTRA3
@@ -463,6 +464,10 @@ def process_csvs():
                     res['0'] = 'd:RT,d:CR0' # RT,CR0: Rdest1_EXTRA3
                     res['1'] = 's:RA' # RA: Rsrc1_EXTRA3
                     res['2'] = 's:RB' # RB: Rsrc1_EXTRA3
+                elif regs == ['RA','','RS','RA','','CR0']:
+                    res['0'] = 'd:RA,d:CR0' # RA,CR0: Rdest1_EXTRA3
+                    res['1'] = 's:RA' # RA: Rsrc1_EXTRA3
+                    res['2'] = 's:RS' # RS: Rsrc1_EXTRA3
                 else:
                     res['0'] = 'TODO'
 
