@@ -209,3 +209,20 @@ inner part.  Predication is still taken from the VL index, however it is applied
         if (rs1.isvec)  { irs1 += 1; }
         if (rs2.isvec)  { irs2 += 1; }
 
+# Swizzle
+
+Swizzle is particularly important for 3D work.  It allows in-place reordering of XYZW, ARGB etc. and access of sub-portions of the same in arbitrary order *without* requiring additional complex scalar mv instructions.  With somewhere around 10% of operations in 3D Shaders involving swizzle this is a huge saving and reduces pressure on register files.
+
+In SV given the percentage of operations that also involve initislisation to 0.0 or 1.0 into subvector elements the decision was made to include those:
+
+    swizzle = get_swizzle_immed() # 12 bits
+    remap = (swizzle >> 3*s) & 0b111
+    if remap < 4:
+       sm = id*SUBVL + remap
+       ireg[rd+s] <= ireg[rs1+sm]
+    elif remap == 4:
+          ireg[rd+s] <= 0.0
+    elif remap == 5:
+          ireg[rd+s] <= 1.0
+
+Note that a value of 6 (and 7) will leave the target subvector element untouched. This is equivalent to a predicate mask which is built-in, in immediate form, into the [[sv/mv.swizzle]] operation.  mv.swizzle is rare in that it is one of the few instructions needed to be added that are never going to be part of a Scalar ISA.  Even in High Performance Compute workloads it is unusual: it is only because SV is targetted at 3D and Video that it is being considered.    
