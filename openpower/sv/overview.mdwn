@@ -177,7 +177,7 @@ These basically provide a convenient parameterised way to access the register fi
        result = src1 + src2 # actual add here
        set_polymorphed_reg(rd, destwid, i, result)
 
-Note that things such as zero/sign-extension have been left out: also note that it turns out to be important to perform the operation at the maximum bitwidth - `max(srcwid, destwid)` - such that any truncation, rounding errors or other artefacts may all be ironed out.  This turns out to be important when applying Saturation for Audio DSP workloads.
+Note that things such as zero/sign-extension (and predication) have been left out to illustrate the elwidth concept. Also note that it turns out to be important to perform the operation at the maximum bitwidth - `max(srcwid, destwid)` - such that any truncation, rounding errors or other artefacts may all be ironed out.  This turns out to be important when applying Saturation for Audio DSP workloads.
 
 Other than that, element width overrides, which can be applied to *either* source or destination or both, are pretty straightforward, conceptually.  The details, for hardware engineers, involve byte-level write-enable lines, which is exactly what is used on SRAMs anyway.  Compiler writers have to alter Register Allocation Tables to byte-level granularity.
 
