@@ -40,7 +40,9 @@ The rest of this document builds on the above simple loop to add:
 * Predication masks (essential for parallel if/else constructs)
 * 8, 16 and 32 bit integer operations, and both FP16 and BF16.
 * Fail-on-first (introduced in ARM SVE2)
-* A new concept known as "Twin Predication"
+* A new concept: Data-dependent fail-first
+* Condition-Register based *post-result* predication (also new)
+* A completely new concept: "Twin Predication"
 
 All of this is *without modifying the OpenPOWER v3.0B ISA*, except to add "wrapping context", similar to how v3.1B 64 Prefixes work.
 
@@ -100,3 +102,21 @@ A particularly interesting case is if the destination is scalar, and the first f
 
 If all three registers are marked as Vector then the "traditional" predicated Vector behaviour is provided.  Yet, just as before, all other options are still provided, right the way back to the pure-scalar case, as if this were a straight OpenPOWER v3.0B non-augmented instruction.
 
+# Predicate "zeroing" mode
+
+Sometimes with predication it is ok to leave the masked-out element alone (not modify the result) however sometimes it is better to zero the masked-out elrments.  This can be combined with bit-wise ORing to build up vectors from multiple predicate patterns.  Our pseudocode therefore ends up as follows, to take that into account:
+
+    function op_add(rd, rs1, rs2) # add not VADD!
+      int id=0, irs1=0, irs2=0;
+      predval = get_pred_val(FALSE, rd);
+      for i = 0 to VL-1:
+        if (predval & 1<<i) # predication bit test
+           ireg[rd+id] <= ireg[rs1+irs1] + ireg[rs2+irs2];
+           if (!rd.isvec) break;
+        else if zeroing:
+           ireg[rd+id] = 0
+        if (rd.isvec)  { id += 1; }
+        if (rs1.isvec)  { irs1 += 1; }
+        if (rs2.isvec)  { irs2 += 1; }
+        if (id == VL or irs1 == VL or irs2 == VL)
+           break
