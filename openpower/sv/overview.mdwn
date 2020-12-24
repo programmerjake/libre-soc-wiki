@@ -143,4 +143,29 @@ The solution comes in terms of rethinking the definition of a Register File.  Rh
 
     reg_t int_regfile[128]; // SV extends to 128 regs
 
-Then, our simple loop, instead of accessing the array of 64 bits with a computed index, would access the appropriate element of the appropriate type.  Thus we have a series of overlapping conceptual arrays that each start at what is traditionally thought of as "a register".
+Then, our simple loop, instead of accessing the array of 64 bits with a computed index, would access the appropriate element of the appropriate type.  Thus we have a series of overlapping conceptual arrays that each start at what is traditionally thought of as "a register".  It then helps if we have a couple of routines:
+
+
+    get_polymorphed_reg(reg, bitwidth, offset):
+        reg_t res = 0;
+        if bitwidth == 8:
+            reg.b = int_regfile[reg].b[offset]
+        elif bitwidth == 16:
+            reg.s = int_regfile[reg].s[offset]
+        elif bitwidth == 32:
+            reg.i = int_regfile[reg].i[offset]
+        elif bitwidth == default: # 64
+            reg.l = int_regfile[reg].l[offset]
+        return res
+
+    set_polymorphed_reg(reg, bitwidth, offset, val):
+        if (!int_csr[reg].isvec): # scalar
+            int_regfile[reg].l[0] = val
+        elif bitwidth == 8:
+            int_regfile[reg].b[offset] = val
+        elif bitwidth == 16:
+            int_regfile[reg].s[offset] = val
+        elif bitwidth == 32:
+            int_regfile[reg].i[offset] = val
+        elif bitwidth == default: # 64
+            int_regfile[reg].l[offset] = val
