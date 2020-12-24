@@ -158,7 +158,7 @@ Then, our simple loop, instead of accessing the array of 64 bits with a computed
         return res
 
     set_polymorphed_reg(reg, bitwidth, offset, val):
-        if (!int_csr[reg].isvec): # scalar
+        if (!reg.isvec): # scalar
             int_regfile[reg].l[0] = val
         elif bitwidth == 8:
             int_regfile[reg].b[offset] = val
@@ -181,3 +181,4 @@ Note that things such as zero/sign-extension have been left out: also note that 
 
 Other than that, element width overrides, which can be applied to *either* source or destination or both, are pretty straightforward, conceptually.  The details, for hardware engineers, involve byte-level write-enable lines, which is exactly what is used on SRAMs anyway.  Compiler writers have to alter Register Allocation Tables to byte-level granularity.
 
+One critical thing to note: upper parts of the underlying 64 bit register are *not zero'd out* by a write involving a non-aligned Vector Length. An 8 bit operation with VL=7 will *not* overwrite the 8th byte of the destination.  This is extremely important to consider the register file as a byte-level store, not a 64-bit-level store.
