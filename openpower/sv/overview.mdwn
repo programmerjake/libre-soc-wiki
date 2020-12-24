@@ -98,12 +98,7 @@ A particularly interesting case is if the destination is scalar, and the first f
 
 If all three registers are marked as Vector then the "traditional" predicated Vector behaviour is provided.  Yet, just as before, all other options are still provided, right the way back to the pure-scalar case, as if this were a straight OpenPOWER v3.0B non-augmented instruction.
 
-Predication therefore provides several modes traditionally seen in Vector ISAs, particularly if the predicate may be set conveniently as a single bit *(In Simple-V, setting only one bit of the predicate is assisted by a special mode: `1<<r3`)*.
-
-* When (at least one of) the sources is a Vector, the destination is scalar and the predicate contains one bit, this gives VSELECT behaviour.
-* When the destination is a Vector, sources are scalar and the predicate contains one bit, this gives VINSERT (VINDEX) behaviour.
-* VSPLAT (result broadcasting) is provided by making the sources scalar, the destination a vector, and the predicate set to either all 1s or at least several 1s.
-
+Predication therefore provides several modes traditionally seen in Vector ISAs, particularly if the predicate may be set conveniently as a single bit: this gives VINSERT (VINDEX) behaviour.  VSPLAT (result broadcasting) is provided by making the sources scalar and the destination a vector.
 
 # Predicate "zeroing" mode
 
@@ -188,8 +183,32 @@ One critical thing to note: upper parts of the underlying 64 bit register are *n
 
 # Quick recap so far
 
-The above functionality pretty much covers around 85% of Vector ISA needs.  Predication is provided so that parallel if/then/else constructs can be performed: critical given that sequential if/then statements and branches simply do not translate successfully to Vector workloads.  VSELECT and VINSERT are possible.  VSPLAT capability is also provided, which is approximately 20% of all GPU workload operations.  Also covered, with elwidth overriding, is the smaller arithmetic operations that caused ISAs developed from the late 80s onwards to get themselves into a tiz when adding "Multimedia" acceleration aka "SIMD" instructions.
+The above functionality pretty much covers around 85% of Vector ISA needs.  Predication is provided so that parallel if/then/else constructs can be performed: critical given that sequential if/then statements and branches simply do not translate successfully to Vector workloads.  VSPLAT capability is provided which is approximately 20% of all GPU workload operations.  Also covered, with elwidth overriding, is the smaller arithmetic operations that caused ISAs developed from the late 80s onwards to get themselves into a tiz when adding "Multimedia" acceleration aka "SIMD" instructions.
 
 Experienced Vector ISA readers will however have noted that VCOMPRESS and VEXPAND are missing, as is Vector "reduce" (mapreduce) capability.  Compress and Expand are covered by Twin Predication, and yet to also be covered is fail-on-first, CR-based result predication, and Subvectors and Swizzle.
 
+
+## SUBVL Pseudocode <a name="subvl-pseudocode"></a>
+
+Adding in support for SUBVL is a matter of adding in an extra inner
+for-loop, where register src and dest are still incremented inside the
+inner part. Note that the predication is still taken from the VL index.
+
+So whilst elements are indexed by "(i * SUBVL + s)", predicate bits are
+indexed by "(i)"
+
+    function op_add(rd, rs1, rs2) # add not VADD!
+      int id=0, irs1=0, irs2=0;
+      predval = get_pred_val(FALSE, rd);
+      for i = 0 to VL-1:
+        if (predval & 1<<i) # predication uses intregs
+          for (s = 0; s < SUBVL; s++)
+            sd = id*SUBVL + s
+            srs1 = irs1*SUBVL + s
+            srs2 = irs2*SUBVL + s
+            ireg[rd+sd] <= ireg[rs1+srs1] + ireg[rs2+srs2];
+          if (!rd.isvec) break;
+        if (rd.isvec)  { id += 1; }
+        if (rs1.isvec)  { irs1 += 1; }
+        if (rs2.isvec)  { irs2 += 1; }
 
