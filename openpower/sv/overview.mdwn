@@ -75,7 +75,7 @@ With some walkthroughs it is clear that the loop exits immediately after the fir
 
 In this way all the eight permutations of Scalar and Vector behaviour are covered, although without predication the scalar-destination ones are reduced in usefulness.  It does however clearly illustrate the principle.
 
-Note in particular: there is no separate Scalar add instruction and separate Vector instruction and separate Scalar-Vector instruction: it's all the same instruction, just with a loop.  Scalar happens to set that loop size to one.
+Note in particular: there is no separate Scalar add instruction and separate Vector instruction and separate Scalar-Vector instruction, *and there is no separate Vector register file*: it's all the same instruction, on the standard register file, just with a loop.  Scalar happens to set that loop size to one.
 
 # Adding single predication
 
