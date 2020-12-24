@@ -71,7 +71,7 @@ The first augmentation to the simple loop is to add the option for all source an
         if (id == VL or irs1 == VL or irs2 == VL)
           break
 
-With some walkthroughs it is clear that the loop exits immediately after the first scalar destination result is written, and that when the destination is a Vector the loop proceeds to fill up the register file, sequentially, starting at `rd` and ending at `rd+VL-1`. The two source registers will, independently, either remain pointing at `rs1` or `rs2` respectively, or, if marked as Vectors, will march incrementally in lockstep as the destination also progresses through elements.
+With some walkthroughs it is clear that the loop exits immediately after the first scalar destination result is written, and that when the destination is a Vector the loop proceeds to fill up the register file, sequentially, starting at `rd` and ending at `rd+VL-1`. The two source registers will, independently, either remain pointing at `rs1` or `rs2` respectively, or, if marked as Vectors, will march incrementally in lockstep, producing element results along the way, as the destination also progresses through elements.
 
 In this way all the eight permutations of Scalar and Vector behaviour are covered, although without predication the scalar-destination ones are reduced in usefulness.  It does however clearly illustrate the principle.
 
