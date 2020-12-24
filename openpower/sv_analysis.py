@@ -199,7 +199,7 @@ def process_csvs():
                 continue
             insn_name = row['comment']
             # skip instructions that are not suitable
-            if insn_name in ['mcrxr', 'mcrxrx']:
+            if insn_name in ['mcrxr', 'mcrxrx', 'darn']:
                 continue
             insns[insn_name] = row # accumulate csv data by instruction
             dkey = create_key(row)
