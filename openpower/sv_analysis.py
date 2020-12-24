@@ -456,7 +456,7 @@ def process_csvs():
                     res['1'] = 's:RA' # RA: Rsrc1_EXTRA3
                     res['2'] = 's:RB' # RB: Rsrc1_EXTRA3
                 elif (regs == ['','RB','RS','RA','','CR0'] or
-                      regs == ['','RB','RS','RA','','CR0']):
+                      regs == ['RS','RB','','RA','','CR0']):
                     res['0'] = 'd:RA,d:CR0' # RA,CR0: Rdest1_EXTRA3
                     res['1'] = 's:RB' # RB: Rsrc1_EXTRA3
                     res['2'] = 's:RS' # RS: Rsrc1_EXTRA3
