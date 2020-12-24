@@ -56,9 +56,47 @@ In fairness to both VSX and RVV, there are things that are not provided by Simpl
 
 These are not insurmountable limitations, that, over time, may well be added in future revisions of SV. 
 
+# Adding Scalar / Vector
 
+The first augmentation to the simple loop is to add the option for all source and destinations to all be either scalar or vector.  As a FSM this is where our "simple" loop gets its first complexity.  
 
+    function op_add(rd, rs1, rs2) # add not VADD!
+      int id=0, irs1=0, irs2=0;
+      for i = 0 to VL-1:
+        ireg[rd+id] <= ireg[rs1+irs1] + ireg[rs2+irs2];
+        if (!rd.isvec) break;
+        if (rd.isvec)  { id += 1; }
+        if (rs1.isvec)  { irs1 += 1; }
+        if (rs2.isvec)  { irs2 += 1; }
+        if (id == VL or irs1 == VL or irs2 == VL)
+          break
 
+With some walkthroughs it is clear that the loop exits immediately after the first scalar destination result is written, and that when the destination is a Vector the loop proceeds to fill up the register file, sequentially, starting at `rd` and ending at `rd+VL-1`. The two source registers will, independently, either remain pointing at `rs1` or `rs2` respectively, or, if marked as Vectors, will march incrementally in lockstep as the destination also progresses through elements.
 
+In this way all the eight permutations of Scalar and Vector behaviour are covered, although without predication the scalar-destination ones are reduced in usefulness.  It does however clearly illustrate the principle.
 
+Note in particular: there is no separate Scalar add instruction and separate Vector instruction and separate Scalar-Vector instruction: it's all the same instruction, just with a loop.  Scalar happens to set that loop size to one.
+
+# Adding single predication
+
+The next step is to add a single predicate mask.  This is where it gets interesting.  Predicate masks are a bitvector, each bit specifying, in order, whether the element operation is to be skipped ("masked out") or allowed If there is no predicate, it is set to all 1s
+
+    function op_add(rd, rs1, rs2) # add not VADD!
+      int id=0, irs1=0, irs2=0;
+      predval = get_pred_val(FALSE, rd);
+      for i = 0 to VL-1:
+        if (predval & 1<<i) # predication bit test
+           ireg[rd+id] <= ireg[rs1+irs1] + ireg[rs2+irs2];
+           if (!rd.isvec) break;
+        if (rd.isvec)  { id += 1; }
+        if (rs1.isvec)  { irs1 += 1; }
+        if (rs2.isvec)  { irs2 += 1; }
+        if (id == VL or irs1 == VL or irs2 == VL)
+           break
+
+The key modification is to skip the creation and storage of the result if the relevant predicate mask bit is clear, but *not the progression through the registers*.
+
+A particularly interesting case is if the destination is scalar, and the first few bits of the predicate are zero.  The loop proceeds to increment the Svalar *source* registers until the first nonzero predicate bit is found, whereupon a single result is computed, and *then* the loop exits.  This therefore uses the predicate to perform Vector source indexing.  This case was not possible without the predicate mask.
+
+If all three registers are marked as Vector then the "traditional" predicated Vector behaviour is provided.  Yet, just as before, all other options are still provided, right the way back to the pure-scalar case, as if this were a straight OpenPOWER v3.0B non-augmented instruction.
 
