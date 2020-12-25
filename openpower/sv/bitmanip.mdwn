@@ -42,6 +42,7 @@ return 1 & (rs1 >> shamt);
 # shuffle / unshuffle
 
 based on RV bitmanip
+
 ```
 uint64_t shuffle64_stage(uint64_t src, uint64_t maskL, uint64_t maskR, int N) { uint64_t x = src & ~(maskL | maskR);
 }
