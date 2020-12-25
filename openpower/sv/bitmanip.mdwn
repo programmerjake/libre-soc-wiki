@@ -94,3 +94,10 @@ if (shamt & 1) x |= ((x & 0x5555555555555555LL) << 1) |
 return x;
 ((x & 0xFFFFFFFF00000000LL) >> 32);
 ```
+
+# cmix
+
+```
+uint_xlen_t cmix(uint_xlen_t rs1, uint_xlen_t rs2, uint_xlen_t rs3) { return (rs1 & rs2) | (rs3 & ~rs2);
+}
+```
