@@ -2,7 +2,7 @@
 
 [[!toc]]
 
-This document provides a crash-course overview as to why SV exists, and how it works.
+This document provides an overview and introduction as to why SV exists, and how it works.
 
 SIMD, the primary method for easy parallelism of the past 30 years in Computer Architectures, is [known to be harmful](https://www.sigarch.org/simd-instructions-considered-harmful/). SIMD provides
 a seductive simplicity that is easy to implement in hardware.  Even with predication added, SIMD only becomes more and more problematic with each power of two SIMD width increase introduced through an ISA revision.  The opcode proliferation, at O(N^6), inexorably spirals out of control in the ISA, the hardware, the software and the compilers.
