@@ -445,7 +445,8 @@ into the predication system?
         result = op(iregs[RA+i], iregs[RB+i])
         CRnew = analyse(result) # calculates eq/lt/gt
         # Rc=1 always stores the CR
-        if Rc=1: crregs[offs+i] = CRnew
+        if RC1 or Rc=1: crregs[offs+i] = CRnew
+        if RC1: continue # RC1 mode skips result store
         # now test CR, similar to branch
         if CRnew[BO[0:1]] == BO[2]:
             # result optionally stored but CR always is
@@ -453,7 +454,7 @@ into the predication system?
 
 Note that whilst the Vector of CRs is always written to the CR regfile,
 only those result elements that pass the BO test get written to the
-integer regfile.
+integer regfile (when RC1 mode is not set).  In RC1 mode the CR is always stored, but the result never is. This effectively turns every arithmetic operation into a type of `cmp` instruction.
 
 Here for example if FP overflow occurred, and the CR testing was carried
 out for that, all valid results would be stored but invalid ones would
