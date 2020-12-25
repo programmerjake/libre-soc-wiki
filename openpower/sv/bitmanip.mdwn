@@ -22,6 +22,8 @@ other way round
 
 # single bit set
 
+based on RV bitmanip
+
 ```
 uint_xlen_t sbset(uint_xlen_t rs1, uint_xlen_t rs2) { int shamt = rs2 & (XLEN - 1);
 }
@@ -39,6 +41,7 @@ return 1 & (rs1 >> shamt);
 
 # shuffle / unshuffle
 
+based on RV bitmanip
 ```
 uint64_t shuffle64_stage(uint64_t src, uint64_t maskL, uint64_t maskR, int N) { uint64_t x = src & ~(maskL | maskR);
 }
@@ -67,6 +70,7 @@ return x;
 
 # xperm
 
+based on RV bitmanip
 ```
 uint_xlen_t xperm(uint_xlen_t rs1, uint_xlen_t rs2, int sz_log2) { uint_xlen_t r = 0;
 }
@@ -77,6 +81,7 @@ uint_xlen_t xperm_n (uint_xlen_t rs1, uint_xlen_t rs2) { return xperm(rs1, rs2, 
 
 # gorc
 
+based on RV bitmanip
 ```
 uint32_t gorc32(uint32_t rs1, uint32_t rs2) { uint32_t x = rs1;
 }
@@ -96,6 +101,8 @@ return x;
 ```
 
 # cmix
+
+based on RV bitmanip
 
 ```
 uint_xlen_t cmix(uint_xlen_t rs1, uint_xlen_t rs2, uint_xlen_t rs3) { return (rs1 & rs2) | (rs3 & ~rs2);
