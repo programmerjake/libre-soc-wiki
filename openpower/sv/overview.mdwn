@@ -97,7 +97,7 @@ The next step is to add a single predicate mask.  This is where it gets interest
 
 The key modification is to skip the creation and storage of the result if the relevant predicate mask bit is clear, but *not the progression through the registers*.
 
-A particularly interesting case is if the destination is scalar, and the first few bits of the predicate are zero.  The loop proceeds to increment the Svalar *source* registers until the first nonzero predicate bit is found, whereupon a single result is computed, and *then* the loop exits.  This therefore uses the predicate to perform Vector source indexing.  This case was not possible without the predicate mask.
+A particularly interesting case is if the destination is scalar, and the first few bits of the predicate are zero.  The loop proceeds to increment the Scalar *source* registers until the first nonzero predicate bit is found, whereupon a single result is computed, and *then* the loop exits.  This therefore uses the predicate to perform Vector source indexing.  This case was not possible without the predicate mask.
 
 If all three registers are marked as Vector then the "traditional" predicated Vector behaviour is provided.  Yet, just as before, all other options are still provided, right the way back to the pure-scalar case, as if this were a straight OpenPOWER v3.0B non-augmented instruction.
 
@@ -105,7 +105,7 @@ Predication therefore provides several modes traditionally seen in Vector ISAs, 
 
 # Predicate "zeroing" mode
 
-Sometimes with predication it is ok to leave the masked-out element alone (not modify the result) however sometimes it is better to zero the masked-out elrments.  This can be combined with bit-wise ORing to build up vectors from multiple predicate patterns.  Our pseudocode therefore ends up as follows, to take that into account:
+Sometimes with predication it is ok to leave the masked-out element alone (not modify the result) however sometimes it is better to zero the masked-out elements.  This can be combined with bit-wise ORing to build up vectors from multiple predicate patterns.  Our pseudocode therefore ends up as follows, to take that into account:
 
     function op_add(rd, rs1, rs2) # add not VADD!
       int id=0, irs1=0, irs2=0;
