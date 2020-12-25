@@ -240,7 +240,7 @@ Some 3D GPU ISAs also allow for two-operand subvector swizzles.  These are suffi
 
 # Twin Predication
 
-Twin Predication is cool.  Essentially it is a back-to-back VCOMPRESS-VEXPAND (a multiple sequentially ordered VINSERT).  The compress part is covered by the source predicate and the expand part by the destination predicate.  Of course, if either of those is all 1s then the ooeration degenerates *to* VCOMPRESS or VEXPAND, respectively.
+Twin Predication is cool.  Essentially it is a back-to-back VCOMPRESS-VEXPAND (a multiple sequentially ordered VINSERT).  The compress part is covered by the source predicate and the expand part by the destination predicate.  Of course, if either of those is all 1s then the operation degenerates *to* VCOMPRESS or VEXPAND, respectively.
 
     function op(rd, rs):
       ps = get_pred_val(FALSE, rs); # predication on src
@@ -258,3 +258,21 @@ It also turns out that by using a single bit set in the source or destination, *
 
 The only one missing from the list here, because it is non-sequential, is VGATHER: moving registers by specifying a vector of register indices (`regs[rd] = regs[regs[rs]]` in a loop).  This one is tricky because it typically does not exist in standard scalar ISAs.  If it did it would be called [[sv/mv.x]]
 
+# CR predicate result analysis
+
+OpenPOWER has Condition Registers.  These store an analysis of the result of an operation to test it for being greater, less than or equal to zero.  What if a test could be done, similar to branch BO testing, which hooked into the predication system?
+
+    for i in range(VL):
+        # predication test, skip all masked out elements.
+        if predicate_masked_out(i):
+             continue
+        result = op(iregs[RA+i], iregs[RB+i])
+        CRnew = analyse(result) # calculates eq/lt/gt
+        # Rc=1 always stores the CR
+        if Rc=1:
+            crregs[offs+i] = CRnew
+        # now test CR, similar to branch
+        if CRnew[BO[0:1]] != BO[2]:
+            continue # test failed: cancel store
+        # result optionally stored but CR always is
+        iregs[RT+i] = result
