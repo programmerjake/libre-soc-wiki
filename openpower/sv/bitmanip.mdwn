@@ -4,3 +4,18 @@
       do k = 0 to 7
          b = VSR[VRB+32].dword[i].byte[k].bit[j]
          VSR[VRT+32].dword[i].byte[j].bit[k] = b
+
+# vector bit deposit
+
+vpdepd VRT,VRA,VRB
+
+    do while(m < 64)
+       if VSR[VRB+32].dword[i].bit[63-m]=1 then do
+          result = VSR[VRA+32].dword[i].bit[63-k]
+          VSR[VRT+32].dword[i].bit[63-m] = result
+          k = k + 1
+       m = m + 1
+
+# vector bit extract
+
+other way round
