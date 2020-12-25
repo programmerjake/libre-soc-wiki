@@ -100,6 +100,7 @@ added in future revisions of SV.
 The rest of this document builds on the above simple loop to add:
 
 * Vector-Scalar, Scalar-Vector and Scalar-Scalar operation
+ (of all register files: Integer, FP *and CRs*)
 * Traditional Vector operations (VSPLAT, VINSERT, VCOMPRESS etc)
 * Predication masks (essential for parallel if/else constructs)
 * 8, 16 and 32 bit integer operations, and both FP16 and BF16.
@@ -466,7 +467,7 @@ that there would be savings to be had in some types of operations where
 the post-result analysis, if not included in SV, would need a second
 predicate calculation followed by a predicate mask AND operation.
 
-Note, hilariously, that Condition Register Operations (crand, cror) may
+Note, hilariously, that Vectorised Condition Register Operations (crand, cror) may
 also have post-result analysis applied to them.  With Vectors of CRs being
 utilised *for* predication, possibilities for compact and elegant code
 begin to emerge from this innocuous-looking addition to SV.
