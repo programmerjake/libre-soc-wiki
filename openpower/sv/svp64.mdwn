@@ -263,7 +263,7 @@ The Mode table is laid out as follows:
 | 01  | inv | sz   dz |  Rc=0: ffirst z/nonz |
 | 10  |   N | sz   dz |  sat mode: N=0/1 u/s |
 | 11  | inv | CR-bit  |  Rc=1: pred-result CR sel |
-| 11  | inv | sz   dz |  Rc=0: pred-result z/nonz |
+| 11  | inv | sz  RC1 |  Rc=0: pred-result z/nonz |
 
 Fields:
 
@@ -272,6 +272,7 @@ Fields:
 * **CRM** affects the CR on reduce mode when Rc=1
 * **SVM** sets "subvector" reduce mode
 * **N** sets signed/unsigned saturation.
+**RC1** as if Rc=1, stores CRs *but not the result*
 
 # R\*\_EXTRA2 and R\*\_EXTRA3 Encoding
 
@@ -686,7 +687,6 @@ are mapreduced per *sub-element* as a result.  illustration with a vec2:
 
 Note here that Rc=1 does not make sense when SVM is clear and SUBVL!=1.
 
-
 When SVM is set and SUBVL!=1, another variant is enabled: horizontal subvector mode.  Example for a vec3:
 
     for i in range(VL):
@@ -753,16 +753,18 @@ This mode merges common CR testing with predication, saving on instruction count
         result = op(iregs[RA+i], iregs[RB+i])
         CRnew = analyse(result) # calculates eq/lt/gt
         # Rc=1 always stores the CR
-        if Rc=1:
+        if Rc=1 or RC1:
             crregs[offs+i] = CRnew
         # now test CR, similar to branch
-        if CRnew[BO[0:1]] != BO[2]:
+        if RC1 or CRnew[BO[0:1]] != BO[2]:
             continue # test failed: cancel store
         # result optionally stored but CR always is
         iregs[RT+i] = result
 
 The reason for allowing the CR element to be stored is so that post-analysis
 of the CR Vector may be carried out.  For example: Saturation may have occurred (and been prevented from updating, by the test) but it is desirable to know *which* elements fail saturation.
+
+Note that RC1 Mode basically turns all operations into `cmp`.  The calculation is performed but it is only the CR that is written. The element result is *always* discarded, never written (just like `cmp`).
 
 Note that predication is still respected: predicate zeroing is slightly different: elements that fail the CR test *or* are masked out are zero'd.
 
