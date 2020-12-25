@@ -478,5 +478,30 @@ One of the major issues with Vectorised LD/ST operations is when a batch of LDs 
 
 What if, then, rather than cancel an entire Vector LD because the last operation would cause a page fault, instead truncate the Vector to the last successful element?
 
-This is called "fail-on-first".  Here is strncpy, illustrated:
+This is called "fail-on-first".  Here is strncpy, illustrated from RVV:
+
+    strncpy:
+        c.mv a3, a0               # Copy dst
+    loop:
+        setvli x0, a2, vint8    # Vectors of bytes.
+        vlbff.v v1, (a1)        # Get src bytes
+        vseq.vi v0, v1, 0       # Flag zero bytes
+        vmfirst a4, v0          # Zero found?
+        vmsif.v v0, v0          # Set mask up to and including zero byte.
+        vsb.v v1, (a3), v0.t    # Write out bytes
+        c.bgez a4, exit           # Done
+        csrr t1, vl             # Get number of bytes fetched
+        c.add a1, a1, t1          # Bump src pointer
+        c.sub a2, a2, t1          # Decrement count.
+        c.add a3, a3, t1          # Bump dst pointer
+        c.bnez a2, loop           # Anymore?
+
+    exit:
+        c.ret
+
+Vector Length VL is truncated inherently at the first page faulting byte-level LD.  Otherwise, with more powerful hardware the number of elements LOADed from memory could be dozens to hundreds or greater (memory bandwidth permitting).
+
+With VL truncated the analysis looking for the zero byte and the subsequent STORE (a straight ST, not a ffirst ST) can proceed, safe in the knowledge that every byte loaded in the Vector is valid.  Implementors are even permitted to "adapt" VL, truncating it early so that, for example, subsequent iterations of loops will have LD/STs on aligned boundaries.
+
+SIMD strncpy hand-written assembly routines are, to be blunt about it, a total nightmare.  240 instructions is not uncommon, and the worst thing about them is that they are unable to cope with detection of a page fault condition.
 
