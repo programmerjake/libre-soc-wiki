@@ -19,3 +19,20 @@ vpdepd VRT,VRA,VRB
 # vector bit extract
 
 other way round
+
+# single bit set
+
+```
+uint_xlen_t sbset(uint_xlen_t rs1, uint_xlen_t rs2) { int shamt = rs2 & (XLEN - 1);
+}
+return rs1 | (uint_xlen_t(1) << shamt);
+uint_xlen_t sbclr(uint_xlen_t rs1, uint_xlen_t rs2) { int shamt = rs2 & (XLEN - 1);
+}
+return rs1 & ~(uint_xlen_t(1) << shamt);
+uint_xlen_t sbinv(uint_xlen_t rs1, uint_xlen_t rs2) { int shamt = rs2 & (XLEN - 1);
+}
+return rs1 ^ (uint_xlen_t(1) << shamt);
+uint_xlen_t sbext(uint_xlen_t rs1, uint_xlen_t rs2) { int shamt = rs2 & (XLEN - 1);
+}
+return 1 & (rs1 >> shamt);
+```
