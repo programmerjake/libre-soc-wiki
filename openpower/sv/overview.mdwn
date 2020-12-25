@@ -11,11 +11,13 @@ SIMD, the primary method for easy parallelism of the
 past 30 years in Computer Architectures, is [known to be
 harmful](https://www.sigarch.org/simd-instructions-considered-harmful/).
 SIMD provides a seductive simplicity that is easy to implement in
-hardware.  Even with predication added, SIMD only becomes more and
+hardware.  With each doubling in width it promises increases in raw performance without the complexity of either multi-issue or out-of-order execution.
+
+Unfortunately, even with predication added, SIMD only becomes more and
 more problematic with each power of two SIMD width increase introduced
 through an ISA revision.  The opcode proliferation, at O(N^6), inexorably
 spirals out of control in the ISA, detrimentally impacting the hardware,
-the software and the compilers.
+the software, the compilers and the testing and compliance.
 
 Cray-style variable-length Vectors on the other hand result in
 stunningly elegant and small loops, exceptionally high data throughput
