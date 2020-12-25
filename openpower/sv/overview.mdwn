@@ -189,7 +189,6 @@ The above functionality pretty much covers around 85% of Vector ISA needs.  Pred
 
 Experienced Vector ISA readers will however have noted that VCOMPRESS and VEXPAND are missing, as is Vector "reduce" (mapreduce) capability.  Compress and Expand are covered by Twin Predication, and yet to also be covered is fail-on-first, CR-based result predication, and Subvectors and Swizzle.
 
-
 ## SUBVL <a name="subvl"></a>
 
 Adding in support for SUBVL is a matter of adding in an extra inner
@@ -215,7 +214,7 @@ inner part.  Predication is still taken from the VL index, however it is applied
 
 Swizzle is particularly important for 3D work.  It allows in-place reordering of XYZW, ARGB etc. and access of sub-portions of the same in arbitrary order *without* requiring timeconsuming scalar mv instructions (scalar due to the convoluted offsets).  With somewhere around 10% of operations in 3D Shaders involving swizzle this is a huge saving and reduces pressure on register files.
 
-In SV given the percentage of operations that also involve initislisation to 0.0 or 1.0 into subvector elements the decision was made to include those:
+In SV given the percentage of operations that also involve initialisation to 0.0 or 1.0 into subvector elements the decision was made to include those:
 
     swizzle = get_swizzle_immed() # 12 bits
     for (s = 0; s < SUBVL; s++)
@@ -231,3 +230,23 @@ In SV given the percentage of operations that also involve initislisation to 0.0
 Note that a value of 6 (and 7) will leave the target subvector element untouched. This is equivalent to a predicate mask which is built-in, in immediate form, into the [[sv/mv.swizzle]] operation.  mv.swizzle is rare in that it is one of the few instructions needed to be added that are never going to be part of a Scalar ISA.  Even in High Performance Compute workloads it is unusual: it is only because SV is targetted at 3D and Video that it is being considered.
 
 Some 3D GPU ISAs also allow for two-operand subvector swizzles.  These are sufficiently unusual, and the immediate opcode space required so large, that the tradeoff balance was decided in SV to only add mv.swizzle.
+
+# Twin Predication
+
+Twin Predication is cool.  Essentially it is a back-to-back VCOMPRESS-VEXPAND (a multiple sequentially ordered VINSERT).  The compress part is covered by the source predicate and the expand part by the destination predicate.  Of course, if either of those is all 1s then the ooeration degenerates *to* VCOMPRESS or VEXPAND, respectively.
+
+    function op(rd, rs):
+      ps = get_pred_val(FALSE, rs); # predication on src
+      pd = get_pred_val(FALSE, rd); # ... AND on dest
+      for (int i = 0, int j = 0; i < VL && j < VL;):
+        if (rs.isvec) while (!(ps & 1<<i)) i++;
+        if (rd.isvec) while (!(pd & 1<<j)) j++;
+        reg[rd+j] = SCALAR_OPERATION_ON(reg[rs+i])
+        if (int_csr[rs].isvec) i++;
+        if (int_csr[rd].isvec) j++; else break
+
+Here's the interesting part: given the fact that SV is a "context" extension, the above pattern can be applied to a lot more than just MV, which is normally only what VCOMPRESS and VEXPAND do in traditional Vector ISAs: move registers.  Twin Predication can be applied to `extsw` or `fcvt`, LD/ST operations and even `rlwinmi`.  All of tgese are termed single-source, single-destination (LDST Address-generation, or AGEN, is a single source).
+
+It also turns out that by using a single bit set in the source or destination, *all* the sequential ordered standard patterns of Vector ISAs are provided: VSPLAT, VSELECT, VINSERT, VCOMPRESS, VEXPAND.
+
+The only one missing from the list here, because it is non-sequential, is VGATHER: moving registers by specifying a vector of register indices (`regs[rd] = regs[regs[rs]]` in a loop).
