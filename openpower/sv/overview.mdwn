@@ -245,7 +245,7 @@ Twin Predication is cool.  Essentially it is a back-to-back VCOMPRESS-VEXPAND (a
         if (int_csr[rs].isvec) i++;
         if (int_csr[rd].isvec) j++; else break
 
-Here's the interesting part: given the fact that SV is a "context" extension, the above pattern can be applied to a lot more than just MV, which is normally only what VCOMPRESS and VEXPAND do in traditional Vector ISAs: move registers.  Twin Predication can be applied to `extsw` or `fcvt`, LD/ST operations and even `rlwinmi`.  All of tgese are termed single-source, single-destination (LDST Address-generation, or AGEN, is a single source).
+Here's the interesting part: given the fact that SV is a "context" extension, the above pattern can be applied to a lot more than just MV, which is normally only what VCOMPRESS and VEXPAND do in traditional Vector ISAs: move registers.  Twin Predication can be applied to `extsw` or `fcvt`, LD/ST operations and even `rlwinmi`.  All of these are termed single-source, single-destination (LDST Address-generation, or AGEN, is a single source).
 
 It also turns out that by using a single bit set in the source or destination, *all* the sequential ordered standard patterns of Vector ISAs are provided: VSPLAT, VSELECT, VINSERT, VCOMPRESS, VEXPAND.
 
