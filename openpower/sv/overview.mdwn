@@ -264,15 +264,18 @@ OpenPOWER has Condition Registers.  These store an analysis of the result of an 
 
     for i in range(VL):
         # predication test, skip all masked out elements.
-        if predicate_masked_out(i):
-             continue
+        if predicate_masked_out(i): continue # skip
         result = op(iregs[RA+i], iregs[RB+i])
         CRnew = analyse(result) # calculates eq/lt/gt
         # Rc=1 always stores the CR
-        if Rc=1:
-            crregs[offs+i] = CRnew
+        if Rc=1: crregs[offs+i] = CRnew
         # now test CR, similar to branch
-        if CRnew[BO[0:1]] != BO[2]:
-            continue # test failed: cancel store
-        # result optionally stored but CR always is
-        iregs[RT+i] = result
+        if CRnew[BO[0:1]] == BO[2]:
+            # result optionally stored but CR always is
+            iregs[RT+i] = result
+
+Note that whilst the Vector of CRs is always written to the CR regfile, only those result elements that pass the BO test get written to the integer regfile.
+
+Here for example if FP overflow occurred, and the CR testing was carried out for that, all valid results would be stored but invalid ones would not, but in addition the Vector of CRs would contain the indicators of which ones failed.  With the invalid results being simply not written this could save resources (save on register file writes).
+
+
