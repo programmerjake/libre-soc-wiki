@@ -72,16 +72,16 @@ All of this is *without modifying the OpenPOWER v3.0B ISA*, except to add "wrapp
 
 The first augmentation to the simple loop is to add the option for all source and destinations to all be either scalar or vector.  As a FSM this is where our "simple" loop gets its first complexity.  
 
-    function op_add(rd, rs1, rs2) # add not VADD!
+    function op_add(RT, RA, RB) # add not VADD!
       int id=0, irs1=0, irs2=0;
       for i = 0 to VL-1:
-        ireg[rd+id] <= ireg[rs1+irs1] + ireg[rs2+irs2];
-        if (!rd.isvec) break;
-        if (rd.isvec)  { id += 1; }
-        if (rs1.isvec)  { irs1 += 1; }
-        if (rs2.isvec)  { irs2 += 1; }
+        ireg[RT+id] <= ireg[RA+irs1] + ireg[RB+irs2];
+        if (!RT.isvec) break;
+        if (RT.isvec)  { id += 1; }
+        if (RA.isvec)  { irs1 += 1; }
+        if (RB.isvec)  { irs2 += 1; }
 
-With some walkthroughs it is clear that the loop exits immediately after the first scalar destination result is written, and that when the destination is a Vector the loop proceeds to fill up the register file, sequentially, starting at `rd` and ending at `rd+VL-1`. The two source registers will, independently, either remain pointing at `rs1` or `rs2` respectively, or, if marked as Vectors, will march incrementally in lockstep, producing element results along the way, as the destination also progresses through elements.
+With some walkthroughs it is clear that the loop exits immediately after the first scalar destination result is written, and that when the destination is a Vector the loop proceeds to fill up the register file, sequentially, starting at `rd` and ending at `rd+VL-1`. The two source registers will, independently, either remain pointing at `RB` or `RA` respectively, or, if marked as Vectors, will march incrementally in lockstep, producing element results along the way, as the destination also progresses through elements.
 
 In this way all the eight permutations of Scalar and Vector behaviour are covered, although without predication the scalar-destination ones are reduced in usefulness.  It does however clearly illustrate the principle.
 
@@ -91,16 +91,16 @@ Note in particular: there is no separate Scalar add instruction and separate Vec
 
 The next step is to add a single predicate mask.  This is where it gets interesting.  Predicate masks are a bitvector, each bit specifying, in order, whether the element operation is to be skipped ("masked out") or allowed. If there is no predicate, it is set to all 1s, which is effectively the same as "no predicate".
 
-    function op_add(rd, rs1, rs2) # add not VADD!
+    function op_add(RT, RA, RB) # add not VADD!
       int id=0, irs1=0, irs2=0;
       predval = get_pred_val(FALSE, rd);
       for i = 0 to VL-1:
         if (predval & 1<<i) # predication bit test
-           ireg[rd+id] <= ireg[rs1+irs1] + ireg[rs2+irs2];
-           if (!rd.isvec) break;
-        if (rd.isvec)  { id += 1; }
-        if (rs1.isvec)  { irs1 += 1; }
-        if (rs2.isvec)  { irs2 += 1; }
+           ireg[RT+id] <= ireg[RA+irs1] + ireg[RB+irs2];
+           if (!RT.isvec) break;
+        if (RT.isvec)  { id += 1; }
+        if (RA.isvec)  { irs1 += 1; }
+        if (RB.isvec)  { irs2 += 1; }
 
 The key modification is to skip the creation and storage of the result if the relevant predicate mask bit is clear, but *not the progression through the registers*.
 
@@ -118,18 +118,18 @@ Single Predication therefore provides several modes traditionally seen in Vector
 
 Sometimes with predication it is ok to leave the masked-out element alone (not modify the result) however sometimes it is better to zero the masked-out elements.  Zeroing can be combined with bit-wise ORing to build up vectors from multiple predicate patterns: the same combining with nonzeroing involves more mv operations and predicate mask operations.  Our pseudocode therefore ends up as follows, to take the enhancement into account:
 
-    function op_add(rd, rs1, rs2) # add not VADD!
+    function op_add(RT, RA, RB) # add not VADD!
       int id=0, irs1=0, irs2=0;
       predval = get_pred_val(FALSE, rd);
       for i = 0 to VL-1:
         if (predval & 1<<i) # predication bit test
-           ireg[rd+id] <= ireg[rs1+irs1] + ireg[rs2+irs2];
-           if (!rd.isvec) break;
+           ireg[RT+id] <= ireg[RA+irs1] + ireg[RB+irs2];
+           if (!RT.isvec) break;
         else if zeroing:   # predicate failed
-           ireg[rd+id] = 0 # set element  to zero
-        if (rd.isvec)  { id += 1; }
-        if (rs1.isvec)  { irs1 += 1; }
-        if (rs2.isvec)  { irs2 += 1; }
+           ireg[RT+id] = 0 # set element  to zero
+        if (RT.isvec)  { id += 1; }
+        if (RA.isvec)  { irs1 += 1; }
+        if (RB.isvec)  { irs2 += 1; }
 
 Many Vector systems either have zeroing or they have nonzeroing, they do not have both.  This is because they usually have separate Vector register files. However SV sits on top of standard register files and consequently there are advantages to both, so both are provided.
 
@@ -184,8 +184,8 @@ Then, our simple loop, instead of accessing the array of regfile entries with a 
 These basically provide a convenient parameterised way to access the register file, at an arbitrary vector element offset and an arbitrary element width.  Our first simple loop thus becomes:
 
     for i = 0 to VL-1:
-       src1 = get_polymorphed_reg(rs1, srcwid, i)
-       src2 = get_polymorphed_reg(rs2, srcwid, i)
+       src1 = get_polymorphed_reg(RA, srcwid, i)
+       src2 = get_polymorphed_reg(RB, srcwid, i)
        result = src1 + src2 # actual add here
        set_polymorphed_reg(rd, destwid, i, result)
 
@@ -209,7 +209,7 @@ Adding in support for SUBVL is a matter of adding in an extra inner
 for-loop, where register src and dest are still incremented inside the
 inner part.  Predication is still taken from the VL index, however it is applied to the whole subvector:
 
-    function op_add(rd, rs1, rs2) # add not VADD!
+    function op_add(RT, RA, RB) # add not VADD!
       int id=0, irs1=0, irs2=0;
       predval = get_pred_val(FALSE, rd);
       for i = 0 to VL-1:
@@ -218,11 +218,11 @@ inner part.  Predication is still taken from the VL index, however it is applied
             sd = id*SUBVL + s
             srs1 = irs1*SUBVL + s
             srs2 = irs2*SUBVL + s
-            ireg[rd+sd] <= ireg[rs1+srs1] + ireg[rs2+srs2];
-          if (!rd.isvec) break;
-        if (rd.isvec)  { id += 1; }
-        if (rs1.isvec)  { irs1 += 1; }
-        if (rs2.isvec)  { irs2 += 1; }
+            ireg[RT+sd] <= ireg[RA+srs1] + ireg[RB+srs2];
+          if (!RT.isvec) break;
+        if (RT.isvec)  { id += 1; }
+        if (RA.isvec)  { irs1 += 1; }
+        if (RB.isvec)  { irs2 += 1; }
 
 # Swizzle <a name="subvl"></a>
 
@@ -235,7 +235,7 @@ In SV given the percentage of operations that also involve initialisation to 0.0
         remap = (swizzle >> 3*s) & 0b111
         if remap < 4:
            sm = id*SUBVL + remap
-           ireg[rd+s] <= ireg[rs1+sm]
+           ireg[rd+s] <= ireg[RA+sm]
         elif remap == 4:
               ireg[rd+s] <= 0.0
         elif remap == 5:
@@ -249,15 +249,15 @@ Some 3D GPU ISAs also allow for two-operand subvector swizzles.  These are suffi
 
 Twin Predication is cool.  Essentially it is a back-to-back VCOMPRESS-VEXPAND (a multiple sequentially ordered VINSERT).  The compress part is covered by the source predicate and the expand part by the destination predicate.  Of course, if either of those is all 1s then the operation degenerates *to* VCOMPRESS or VEXPAND, respectively.
 
-    function op(rd, rs):
-      ps = get_pred_val(FALSE, rs); # predication on src
-      pd = get_pred_val(FALSE, rd); # ... AND on dest
+    function op(RT, RS):
+      ps = get_pred_val(FALSE, RS); # predication on src
+      pd = get_pred_val(FALSE, RT); # ... AND on dest
       for (int i = 0, int j = 0; i < VL && j < VL;):
-        if (rs.isvec) while (!(ps & 1<<i)) i++;
-        if (rd.isvec) while (!(pd & 1<<j)) j++;
-        reg[rd+j] = SCALAR_OPERATION_ON(reg[rs+i])
-        if (int_csr[rs].isvec) i++;
-        if (int_csr[rd].isvec) j++; else break
+        if (RS.isvec) while (!(ps & 1<<i)) i++;
+        if (RT.isvec) while (!(pd & 1<<j)) j++;
+        reg[RT+j] = SCALAR_OPERATION_ON(reg[RS+i])
+        if (int_csr[RS].isvec) i++;
+        if (int_csr[RT].isvec) j++; else break
 
 Here's the interesting part: given the fact that SV is a "context" extension, the above pattern can be applied to a lot more than just MV, which is normally only what VCOMPRESS and VEXPAND do in traditional Vector ISAs: move registers.  Twin Predication can be applied to `extsw` or `fcvt`, LD/ST operations and even `rlwinmi` and other operations taking a single source and immediate(s) such as `addi`.  All of these are termed single-source, single-destination (LDST Address-generation, or AGEN, is a single source).
 
