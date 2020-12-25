@@ -1,0 +1,6 @@
+# bit to byte permute
+
+    do j = 0 to 7
+      do k = 0 to 7
+         b = VSR[VRB+32].dword[i].byte[k].bit[j]
+         VSR[VRT+32].dword[i].byte[j].bit[k] = b
