@@ -37,11 +37,13 @@ RISC-V RVV as of version 0.9 is over 180 instructions (more than the rest of RV6
 
 Even in OpenPOWER v3.0B, the Scalar Integer ISA is around 150 instructions, with IEEE754 FP adding approximately 80 more. VSX, being based on SIMD design principles, adds somewhere in the region of 600 more.  SimpleV again provides over 95% of VSX functionality, simply by augmenting the *Scalar* OpenPOWER ISA, and in the process providing features such as predication, which VSX is entirely missing.
 
+AVX512, SVE2, VSX, RVV, all of these systems have to provide different types of register files: Scalar and Vector is the minimum. AVX512 even provides a mini mask regfile, followed by explicit instructions that handle operations on each of them *and map between all of them*.  SV simply not only uses the existing scalar regfiles (including CRs), but because operations exist within OpenPOWER to cover interactions between the scalar regfiles (`mfcr`, `fcvt`) there is very little that needs to be added.
+
 In fairness to both VSX and RVV, there are things that are not provided by SimpleV:
 
 * 128 bit or above arithmetic and other operations
   (VSX Rijndael and SHA primitives; VSX shuffle and bitpermute operations)
-* register files above 128
+* register files above 128 entries
 * Vector lengths over 64
 * Unit-strided LD/ST and other comprehensive memory operations
   (struct-based LD/ST from RVV for example)
