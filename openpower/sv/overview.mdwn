@@ -130,7 +130,7 @@ SV has an "override" system that *changes* the bitwidth of operations that were 
 
 This presents a particularly intriguing conundrum given that the OpenPOWER Scalar ISA was never designed with for example 8 bit operations in mind, let alone Vectors of 8 bit.
 
-The solution comes in terms of rethinking the definition of a Register File.  Rhe typical regfile may be considered to be a multi-ported SRAM block, 64 bits wide and usually 32 entries deep, to give 32 64 bit registers.  Conceptually, to get our variable element width vectors, we may think of the regfile as being the following c-based data structure:
+The solution comes in terms of rethinking the definition of a Register File.  The typical regfile may be considered to be a multi-ported SRAM block, 64 bits wide and usually 32 entries deep, to give 32 64 bit registers.  Conceptually, to get our variable element width vectors, we may think of the regfile as insead being the following c-based data structure:
 
     typedef union {
         uint8_t  actual_bytes[8];
@@ -142,10 +142,12 @@ The solution comes in terms of rethinking the definition of a Register File.  Rh
 
     reg_t int_regfile[128]; // SV extends to 128 regs
 
-Then, our simple loop, instead of accessing the array of 64 bits with a computed index, would access the appropriate element of the appropriate type.  Thus we have a series of overlapping conceptual arrays that each start at what is traditionally thought of as "a register".  It then helps if we have a couple of routines:
+Then, our simple loop, instead of accessing the array of regfile entries with a computed index, would access the appropriate element of the appropriate type.  Thus we have a series of overlapping conceptual arrays that each start at what is traditionally thought of as "a register".  It then helps if we have a couple of routines:
 
     get_polymorphed_reg(reg, bitwidth, offset):
         reg_t res = 0;
+        if (!reg.isvec): # scalar
+            offset = 0
         if bitwidth == 8:
             reg.b = int_regfile[reg].b[offset]
         elif bitwidth == 16:
@@ -158,8 +160,8 @@ Then, our simple loop, instead of accessing the array of 64 bits with a computed
 
     set_polymorphed_reg(reg, bitwidth, offset, val):
         if (!reg.isvec): # scalar
-            int_regfile[reg].l[0] = val
-        elif bitwidth == 8:
+            offset = 0
+        if bitwidth == 8:
             int_regfile[reg].b[offset] = val
         elif bitwidth == 16:
             int_regfile[reg].s[offset] = val
@@ -182,7 +184,7 @@ Note that things such as zero/sign-extension (and predication) have been left ou
 
 Other than that, element width overrides, which can be applied to *either* source or destination or both, are pretty straightforward, conceptually.  The details, for hardware engineers, involve byte-level write-enable lines, which is exactly what is used on SRAMs anyway.  Compiler writers have to alter Register Allocation Tables to byte-level granularity.
 
-One critical thing to note: upper parts of the underlying 64 bit register are *not zero'd out* by a write involving a non-aligned Vector Length. An 8 bit operation with VL=7 will *not* overwrite the 8th byte of the destination.  This is extremely important to consider the register file as a byte-level store, not a 64-bit-level store.
+One critical thing to note: upper parts of the underlying 64 bit register are *not zero'd out* by a write involving a non-aligned Vector Length. An 8 bit operation with VL=7 will *not* overwrite the 8th byte of the destination.  The only situation where a full overwrite occurs is on "default" behaviour.  This is extremely important to consider the register file as a byte-level store, not a 64-bit-level store.
 
 # Quick recap so far
 
