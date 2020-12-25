@@ -4,14 +4,32 @@
 
 [[!toc]]
 
-This document provides an overview and introduction as to why SV (a Cray-style Vector augmentation to OpenPOWER) exists, and how it works.
+This document provides an overview and introduction as to why SV (a
+Cray-style Vector augmentation to OpenPOWER) exists, and how it works.
 
-SIMD, the primary method for easy parallelism of the past 30 years in Computer Architectures, is [known to be harmful](https://www.sigarch.org/simd-instructions-considered-harmful/). SIMD provides
-a seductive simplicity that is easy to implement in hardware.  Even with predication added, SIMD only becomes more and more problematic with each power of two SIMD width increase introduced through an ISA revision.  The opcode proliferation, at O(N^6), inexorably spirals out of control in the ISA, detrimentally impacting the hardware, the software and the compilers.
+SIMD, the primary method for easy parallelism of the
+past 30 years in Computer Architectures, is [known to be
+harmful](https://www.sigarch.org/simd-instructions-considered-harmful/).
+SIMD provides a seductive simplicity that is easy to implement in
+hardware.  Even with predication added, SIMD only becomes more and
+more problematic with each power of two SIMD width increase introduced
+through an ISA revision.  The opcode proliferation, at O(N^6), inexorably
+spirals out of control in the ISA, detrimentally impacting the hardware,
+the software and the compilers.
 
-Cray-style variable-length Vectors on the other hand result in stunningly elegant and small loops, exceptionally high data throughput per instruction, with no alarmingly high setup and cleanup code, where at the hardware level the microarchitecture may execute from one element right the way through to tens of thousands at a time, yet the executable remains exactly the same and the ISA remains clear, true to the RISC paradigm, and clean.  Unlike in SIMD, powers of two limitations are not involved in either the hardware or in the assembly code.
+Cray-style variable-length Vectors on the other hand result in
+stunningly elegant and small loops, exceptionally high data throughput
+per instruction, with no alarmingly high setup and cleanup code, where
+at the hardware level the microarchitecture may execute from one element
+right the way through to tens of thousands at a time, yet the executable
+remains exactly the same and the ISA remains clear, true to the RISC
+paradigm, and clean.  Unlike in SIMD, powers of two limitations are not
+involved in either the hardware or in the assembly code.
 
-SimpleV takes the Cray style Vector principle and applies it in the abstract to a Scalar ISA, in the process allowing register file size increases using "tagging" (similar to how x86 originally extended registers from 32 to 64 bit).
+SimpleV takes the Cray style Vector principle and applies it in the
+abstract to a Scalar ISA, in the process allowing register file size
+increases using "tagging" (similar to how x86 originally extended
+registers from 32 to 64 bit).
 
 The fundamentals are:
 
@@ -26,22 +44,45 @@ The fundamentals are:
 * Once the loop is completed *only then* is the Program Counter
   allowed to move to the next instruction.
 
-Hardware (and simulator) implementors are free and clear to implement this as literally a for-loop, sitting in between instruction decode and issue.  Higher performance systems may deploy SIMD backends, multi-issue and out-of-order execution, although it is strongly recommended to add predication capability into all SIMD backend units.
+Hardware (and simulator) implementors are free and clear to implement this
+as literally a for-loop, sitting in between instruction decode and issue.
+Higher performance systems may deploy SIMD backends, multi-issue and
+out-of-order execution, although it is strongly recommended to add
+predication capability into all SIMD backend units.
 
-In OpenPOWER ISA v3.0B pseudo-code form, an ADD operation, assuming both source and destination have been "tagged" as Vectors, is simply:
+In OpenPOWER ISA v3.0B pseudo-code form, an ADD operation, assuming both
+source and destination have been "tagged" as Vectors, is simply:
 
     for i = 0 to VL-1:
          GPR(RT+i) = GPR(RA+i) + GPR(RB+i)
 
-At its heart, SimpleV really is this simple.  On top of this fundamental basis further refinements can be added which build up towards an extremely powerful Vector augmentation system, with very little in the way of additional opcodes required: simply external "context".
+At its heart, SimpleV really is this simple.  On top of this fundamental
+basis further refinements can be added which build up towards an extremely
+powerful Vector augmentation system, with very little in the way of
+additional opcodes required: simply external "context".
 
-RISC-V RVV as of version 0.9 is over 180 instructions (more than the rest of RV64G combined). Over 95% of that functionality is added to OpenPOWER v3 0B, by SimpleV augmentation, with around 5 to 8 instructions.
+RISC-V RVV as of version 0.9 is over 180 instructions (more than the
+rest of RV64G combined). Over 95% of that functionality is added to
+OpenPOWER v3 0B, by SimpleV augmentation, with around 5 to 8 instructions.
 
-Even in OpenPOWER v3.0B, the Scalar Integer ISA is around 150 instructions, with IEEE754 FP adding approximately 80 more. VSX, being based on SIMD design principles, adds somewhere in the region of 600 more.  SimpleV again provides over 95% of VSX functionality, simply by augmenting the *Scalar* OpenPOWER ISA, and in the process providing features such as predication, which VSX is entirely missing.
+Even in OpenPOWER v3.0B, the Scalar Integer ISA is around 150
+instructions, with IEEE754 FP adding approximately 80 more. VSX, being
+based on SIMD design principles, adds somewhere in the region of 600 more.
+SimpleV again provides over 95% of VSX functionality, simply by augmenting
+the *Scalar* OpenPOWER ISA, and in the process providing features such
+as predication, which VSX is entirely missing.
 
-AVX512, SVE2, VSX, RVV, all of these systems have to provide different types of register files: Scalar and Vector is the minimum. AVX512 even provides a mini mask regfile, followed by explicit instructions that handle operations on each of them *and map between all of them*.  SV simply not only uses the existing scalar regfiles (including CRs), but because operations exist within OpenPOWER to cover interactions between the scalar regfiles (`mfcr`, `fcvt`) there is very little that needs to be added.
+AVX512, SVE2, VSX, RVV, all of these systems have to provide different
+types of register files: Scalar and Vector is the minimum. AVX512
+even provides a mini mask regfile, followed by explicit instructions
+that handle operations on each of them *and map between all of them*.
+SV simply not only uses the existing scalar regfiles (including CRs),
+but because operations exist within OpenPOWER to cover interactions
+between the scalar regfiles (`mfcr`, `fcvt`) there is very little that
+needs to be added.
 
-In fairness to both VSX and RVV, there are things that are not provided by SimpleV:
+In fairness to both VSX and RVV, there are things that are not provided
+by SimpleV:
 
 * 128 bit or above arithmetic and other operations
   (VSX Rijndael and SHA primitives; VSX shuffle and bitpermute operations)
@@ -51,7 +92,8 @@ In fairness to both VSX and RVV, there are things that are not provided by Simpl
   (struct-based LD/ST from RVV for example)
 * 32-bit instruction lengths. [[svp64]] had to be added as 64 bit.
 
-These are not insurmountable limitations, that, over time, may well be added in future revisions of SV. 
+These are not insurmountable limitations, that, over time, may well be
+added in future revisions of SV.
 
 The rest of this document builds on the above simple loop to add:
 
@@ -66,11 +108,14 @@ The rest of this document builds on the above simple loop to add:
 * A completely new concept: "Twin Predication"
 * vec2/3/4 "Subvectors" and Swizzling (standard fare for 3D)
 
-All of this is *without modifying the OpenPOWER v3.0B ISA*, except to add "wrapping context", similar to how v3.1B 64 Prefixes work.
+All of this is *without modifying the OpenPOWER v3.0B ISA*, except to add
+"wrapping context", similar to how v3.1B 64 Prefixes work.
 
 # Adding Scalar / Vector
 
-The first augmentation to the simple loop is to add the option for all source and destinations to all be either scalar or vector.  As a FSM this is where our "simple" loop gets its first complexity.  
+The first augmentation to the simple loop is to add the option for all
+source and destinations to all be either scalar or vector.  As a FSM
+this is where our "simple" loop gets its first complexity.
 
     function op_add(RT, RA, RB) # add not VADD!
       int id=0, irs1=0, irs2=0;
@@ -81,15 +126,32 @@ The first augmentation to the simple loop is to add the option for all source an
         if (RA.isvec)  { irs1 += 1; }
         if (RB.isvec)  { irs2 += 1; }
 
-With some walkthroughs it is clear that the loop exits immediately after the first scalar destination result is written, and that when the destination is a Vector the loop proceeds to fill up the register file, sequentially, starting at `rd` and ending at `rd+VL-1`. The two source registers will, independently, either remain pointing at `RB` or `RA` respectively, or, if marked as Vectors, will march incrementally in lockstep, producing element results along the way, as the destination also progresses through elements.
+With some walkthroughs it is clear that the loop exits immediately
+after the first scalar destination result is written, and that when the
+destination is a Vector the loop proceeds to fill up the register file,
+sequentially, starting at `rd` and ending at `rd+VL-1`. The two source
+registers will, independently, either remain pointing at `RB` or `RA`
+respectively, or, if marked as Vectors, will march incrementally in
+lockstep, producing element results along the way, as the destination
+also progresses through elements.
 
-In this way all the eight permutations of Scalar and Vector behaviour are covered, although without predication the scalar-destination ones are reduced in usefulness.  It does however clearly illustrate the principle.
+In this way all the eight permutations of Scalar and Vector behaviour
+are covered, although without predication the scalar-destination ones are
+reduced in usefulness.  It does however clearly illustrate the principle.
 
-Note in particular: there is no separate Scalar add instruction and separate Vector instruction and separate Scalar-Vector instruction, *and there is no separate Vector register file*: it's all the same instruction, on the standard register file, just with a loop.  Scalar happens to set that loop size to one.
+Note in particular: there is no separate Scalar add instruction and
+separate Vector instruction and separate Scalar-Vector instruction, *and
+there is no separate Vector register file*: it's all the same instruction,
+on the standard register file, just with a loop.  Scalar happens to set
+that loop size to one.
 
 # Adding single predication
 
-The next step is to add a single predicate mask.  This is where it gets interesting.  Predicate masks are a bitvector, each bit specifying, in order, whether the element operation is to be skipped ("masked out") or allowed. If there is no predicate, it is set to all 1s, which is effectively the same as "no predicate".
+The next step is to add a single predicate mask.  This is where it gets
+interesting.  Predicate masks are a bitvector, each bit specifying, in
+order, whether the element operation is to be skipped ("masked out")
+or allowed. If there is no predicate, it is set to all 1s, which is
+effectively the same as "no predicate".
 
     function op_add(RT, RA, RB) # add not VADD!
       int id=0, irs1=0, irs2=0;
@@ -102,13 +164,24 @@ The next step is to add a single predicate mask.  This is where it gets interest
         if (RA.isvec)  { irs1 += 1; }
         if (RB.isvec)  { irs2 += 1; }
 
-The key modification is to skip the creation and storage of the result if the relevant predicate mask bit is clear, but *not the progression through the registers*.
+The key modification is to skip the creation and storage of the result
+if the relevant predicate mask bit is clear, but *not the progression
+through the registers*.
 
-A particularly interesting case is if the destination is scalar, and the first few bits of the predicate are zero.  The loop proceeds to increment the Scalar *source* registers until the first nonzero predicate bit is found, whereupon a single result is computed, and *then* the loop exits.  This therefore uses the predicate to perform Vector source indexing.  This case was not possible without the predicate mask.
+A particularly interesting case is if the destination is scalar, and the
+first few bits of the predicate are zero.  The loop proceeds to increment
+the Scalar *source* registers until the first nonzero predicate bit is
+found, whereupon a single result is computed, and *then* the loop exits.
+This therefore uses the predicate to perform Vector source indexing.
+This case was not possible without the predicate mask.
 
-If all three registers are marked as Vector then the "traditional" predicated Vector behaviour is provided.  Yet, just as before, all other options are still provided, right the way back to the pure-scalar case, as if this were a straight OpenPOWER v3.0B non-augmented instruction.
+If all three registers are marked as Vector then the "traditional"
+predicated Vector behaviour is provided.  Yet, just as before, all other
+options are still provided, right the way back to the pure-scalar case,
+as if this were a straight OpenPOWER v3.0B non-augmented instruction.
 
-Single Predication therefore provides several modes traditionally seen in Vector ISAs:
+Single Predication therefore provides several modes traditionally seen
+in Vector ISAs:
 
 * the predicate may be set as a single bit, the sources are scalar and the destination a vector: this gives VINSERT (VINDEX) behaviour.
 * VSPLAT (result broadcasting) is provided by making the sources scalar and the destination a vector, and having no predicate set or having multiple bits set.
@@ -116,7 +189,13 @@ Single Predication therefore provides several modes traditionally seen in Vector
 
 # Predicate "zeroing" mode
 
-Sometimes with predication it is ok to leave the masked-out element alone (not modify the result) however sometimes it is better to zero the masked-out elements.  Zeroing can be combined with bit-wise ORing to build up vectors from multiple predicate patterns: the same combining with nonzeroing involves more mv operations and predicate mask operations.  Our pseudocode therefore ends up as follows, to take the enhancement into account:
+Sometimes with predication it is ok to leave the masked-out element
+alone (not modify the result) however sometimes it is better to zero the
+masked-out elements.  Zeroing can be combined with bit-wise ORing to build
+up vectors from multiple predicate patterns: the same combining with
+nonzeroing involves more mv operations and predicate mask operations.
+Our pseudocode therefore ends up as follows, to take the enhancement
+into account:
 
     function op_add(RT, RA, RB) # add not VADD!
       int id=0, irs1=0, irs2=0;
@@ -131,17 +210,35 @@ Sometimes with predication it is ok to leave the masked-out element alone (not m
         if (RA.isvec)  { irs1 += 1; }
         if (RB.isvec)  { irs2 += 1; }
 
-Many Vector systems either have zeroing or they have nonzeroing, they do not have both.  This is because they usually have separate Vector register files. However SV sits on top of standard register files and consequently there are advantages to both, so both are provided.
+Many Vector systems either have zeroing or they have nonzeroing, they
+do not have both.  This is because they usually have separate Vector
+register files. However SV sits on top of standard register files and
+consequently there are advantages to both, so both are provided.
 
 # Element Width overrides
 
-All good Vector ISAs have the usual bitwidths for operations: 8/16/32/64 bit integer operations, and IEEE754 FP32 and 64.  Often also included is FP16 and more recently BF16.  The *really* good Vector ISAs have variable-width vectors right down to bitlevel, and as high as 1024 bit arithmetic per element, as well as IEEE754 FP128.
+All good Vector ISAs have the usual bitwidths for operations: 8/16/32/64
+bit integer operations, and IEEE754 FP32 and 64.  Often also included
+is FP16 and more recently BF16.  The *really* good Vector ISAs have
+variable-width vectors right down to bitlevel, and as high as 1024 bit
+arithmetic per element, as well as IEEE754 FP128.
 
-SV has an "override" system that *changes* the bitwidth of operations that were intended by the original scalar ISA designers to have (for example) 64 bit operations (only).  The override widths are 8, 16 and 32 for integer, and FP16 and FP32 for IEEE754 (with BF16 to be added in the future).
+SV has an "override" system that *changes* the bitwidth of operations
+that were intended by the original scalar ISA designers to have (for
+example) 64 bit operations (only).  The override widths are 8, 16 and
+32 for integer, and FP16 and FP32 for IEEE754 (with BF16 to be added in
+the future).
 
-This presents a particularly intriguing conundrum given that the OpenPOWER Scalar ISA was never designed with for example 8 bit operations in mind, let alone Vectors of 8 bit.
+This presents a particularly intriguing conundrum given that the OpenPOWER
+Scalar ISA was never designed with for example 8 bit operations in mind,
+let alone Vectors of 8 bit.
 
-The solution comes in terms of rethinking the definition of a Register File.  The typical regfile may be considered to be a multi-ported SRAM block, 64 bits wide and usually 32 entries deep, to give 32 64 bit registers.  Conceptually, to get our variable element width vectors, we may think of the regfile as insead being the following c-based data structure:
+The solution comes in terms of rethinking the definition of a Register
+File.  The typical regfile may be considered to be a multi-ported SRAM
+block, 64 bits wide and usually 32 entries deep, to give 32 64 bit
+registers.  Conceptually, to get our variable element width vectors,
+we may think of the regfile as insead being the following c-based data
+structure:
 
     typedef union {
         uint8_t  actual_bytes[8];
@@ -153,7 +250,11 @@ The solution comes in terms of rethinking the definition of a Register File.  Th
 
     reg_t int_regfile[128]; // SV extends to 128 regs
 
-Then, our simple loop, instead of accessing the array of regfile entries with a computed index, would access the appropriate element of the appropriate type.  Thus we have a series of overlapping conceptual arrays that each start at what is traditionally thought of as "a register".  It then helps if we have a couple of routines:
+Then, our simple loop, instead of accessing the array of regfile entries
+with a computed index, would access the appropriate element of the
+appropriate type.  Thus we have a series of overlapping conceptual arrays
+that each start at what is traditionally thought of as "a register".
+It then helps if we have a couple of routines:
 
     get_polymorphed_reg(reg, bitwidth, offset):
         reg_t res = 0;
@@ -181,7 +282,9 @@ Then, our simple loop, instead of accessing the array of regfile entries with a 
         elif bitwidth == default: # 64
             int_regfile[reg].l[offset] = val
 
-These basically provide a convenient parameterised way to access the register file, at an arbitrary vector element offset and an arbitrary element width.  Our first simple loop thus becomes:
+These basically provide a convenient parameterised way to access the
+register file, at an arbitrary vector element offset and an arbitrary
+element width.  Our first simple loop thus becomes:
 
     for i = 0 to VL-1:
        src1 = get_polymorphed_reg(RA, srcwid, i)
@@ -189,25 +292,54 @@ These basically provide a convenient parameterised way to access the register fi
        result = src1 + src2 # actual add here
        set_polymorphed_reg(rd, destwid, i, result)
 
-With this loop, if elwidth=16 and VL=3 the first 48 bits of the target register will contain three 16 bit addition results, and the upper 16 bits will be *unaltered*.
+With this loop, if elwidth=16 and VL=3 the first 48 bits of the target
+register will contain three 16 bit addition results, and the upper 16
+bits will be *unaltered*.
 
-Note that things such as zero/sign-extension (and predication) have been left out to illustrate the elwidth concept. Also note that it turns out to be important to perform the operation at the maximum bitwidth - `max(srcwid, destwid)` - such that any truncation, rounding errors or other artefacts may all be ironed out.  This turns out to be important when applying Saturation for Audio DSP workloads.
+Note that things such as zero/sign-extension (and predication) have
+been left out to illustrate the elwidth concept. Also note that it turns
+out to be important to perform the operation at the maximum bitwidth -
+`max(srcwid, destwid)` - such that any truncation, rounding errors or
+other artefacts may all be ironed out.  This turns out to be important
+when applying Saturation for Audio DSP workloads.
 
-Other than that, element width overrides, which can be applied to *either* source or destination or both, are pretty straightforward, conceptually.  The details, for hardware engineers, involve byte-level write-enable lines, which is exactly what is used on SRAMs anyway.  Compiler writers have to alter Register Allocation Tables to byte-level granularity.
+Other than that, element width overrides, which can be applied to *either*
+source or destination or both, are pretty straightforward, conceptually.
+The details, for hardware engineers, involve byte-level write-enable
+lines, which is exactly what is used on SRAMs anyway.  Compiler writers
+have to alter Register Allocation Tables to byte-level granularity.
 
-One critical thing to note: upper parts of the underlying 64 bit register are *not zero'd out* by a write involving a non-aligned Vector Length. An 8 bit operation with VL=7 will *not* overwrite the 8th byte of the destination.  The only situation where a full overwrite occurs is on "default" behaviour.  This is extremely important to consider the register file as a byte-level store, not a 64-bit-level store.
+One critical thing to note: upper parts of the underlying 64 bit
+register are *not zero'd out* by a write involving a non-aligned Vector
+Length. An 8 bit operation with VL=7 will *not* overwrite the 8th byte
+of the destination.  The only situation where a full overwrite occurs
+is on "default" behaviour.  This is extremely important to consider the
+register file as a byte-level store, not a 64-bit-level store.
 
 # Quick recap so far
 
-The above functionality pretty much covers around 85% of Vector ISA needs.  Predication is provided so that parallel if/then/else constructs can be performed: critical given that sequential if/then statements and branches simply do not translate successfully to Vector workloads.  VSPLAT capability is provided which is approximately 20% of all GPU workload operations.  Also covered, with elwidth overriding, is the smaller arithmetic operations that caused ISAs developed from the late 80s onwards to get themselves into a tiz when adding "Multimedia" acceleration aka "SIMD" instructions.
+The above functionality pretty much covers around 85% of Vector ISA needs.
+Predication is provided so that parallel if/then/else constructs can
+be performed: critical given that sequential if/then statements and
+branches simply do not translate successfully to Vector workloads.
+VSPLAT capability is provided which is approximately 20% of all GPU
+workload operations.  Also covered, with elwidth overriding, is the
+smaller arithmetic operations that caused ISAs developed from the
+late 80s onwards to get themselves into a tiz when adding "Multimedia"
+acceleration aka "SIMD" instructions.
 
-Experienced Vector ISA readers will however have noted that VCOMPRESS and VEXPAND are missing, as is Vector "reduce" (mapreduce) capability.  Compress and Expand are covered by Twin Predication, and yet to also be covered is fail-on-first, CR-based result predication, and Subvectors and Swizzle.
+Experienced Vector ISA readers will however have noted that VCOMPRESS
+and VEXPAND are missing, as is Vector "reduce" (mapreduce) capability
+and VGATHER and VSCATTER.  Compress and Expand are covered by Twin
+Predication, and yet to also be covered is fail-on-first, CR-based result
+predication, and Subvectors and Swizzle.
 
 ## SUBVL <a name="subvl"></a>
 
 Adding in support for SUBVL is a matter of adding in an extra inner
 for-loop, where register src and dest are still incremented inside the
-inner part.  Predication is still taken from the VL index, however it is applied to the whole subvector:
+inner part.  Predication is still taken from the VL index, however it
+is applied to the whole subvector:
 
     function op_add(RT, RA, RB) # add not VADD!
       int id=0, irs1=0, irs2=0;
@@ -226,9 +358,16 @@ inner part.  Predication is still taken from the VL index, however it is applied
 
 # Swizzle <a name="subvl"></a>
 
-Swizzle is particularly important for 3D work.  It allows in-place reordering of XYZW, ARGB etc. and access of sub-portions of the same in arbitrary order *without* requiring timeconsuming scalar mv instructions (scalar due to the convoluted offsets).  With somewhere around 10% of operations in 3D Shaders involving swizzle this is a huge saving and reduces pressure on register files.
+Swizzle is particularly important for 3D work.  It allows in-place
+reordering of XYZW, ARGB etc. and access of sub-portions of the same in
+arbitrary order *without* requiring timeconsuming scalar mv instructions
+(scalar due to the convoluted offsets).  With somewhere around 10% of
+operations in 3D Shaders involving swizzle this is a huge saving and
+reduces pressure on register files.
 
-In SV given the percentage of operations that also involve initialisation to 0.0 or 1.0 into subvector elements the decision was made to include those:
+In SV given the percentage of operations that also involve initialisation
+to 0.0 or 1.0 into subvector elements the decision was made to include
+those:
 
     swizzle = get_swizzle_immed() # 12 bits
     for (s = 0; s < SUBVL; s++)
@@ -241,13 +380,25 @@ In SV given the percentage of operations that also involve initialisation to 0.0
         elif remap == 5:
               ireg[rd+s] <= 1.0
 
-Note that a value of 6 (and 7) will leave the target subvector element untouched. This is equivalent to a predicate mask which is built-in, in immediate form, into the [[sv/mv.swizzle]] operation.  mv.swizzle is rare in that it is one of the few instructions needed to be added that are never going to be part of a Scalar ISA.  Even in High Performance Compute workloads it is unusual: it is only because SV is targetted at 3D and Video that it is being considered.
+Note that a value of 6 (and 7) will leave the target subvector element
+untouched. This is equivalent to a predicate mask which is built-in,
+in immediate form, into the [[sv/mv.swizzle]] operation.  mv.swizzle is
+rare in that it is one of the few instructions needed to be added that
+are never going to be part of a Scalar ISA.  Even in High Performance
+Compute workloads it is unusual: it is only because SV is targetted at
+3D and Video that it is being considered.
 
-Some 3D GPU ISAs also allow for two-operand subvector swizzles.  These are sufficiently unusual, and the immediate opcode space required so large, that the tradeoff balance was decided in SV to only add mv.swizzle.
+Some 3D GPU ISAs also allow for two-operand subvector swizzles.  These are
+sufficiently unusual, and the immediate opcode space required so large,
+that the tradeoff balance was decided in SV to only add mv.swizzle.
 
 # Twin Predication
 
-Twin Predication is cool.  Essentially it is a back-to-back VCOMPRESS-VEXPAND (a multiple sequentially ordered VINSERT).  The compress part is covered by the source predicate and the expand part by the destination predicate.  Of course, if either of those is all 1s then the operation degenerates *to* VCOMPRESS or VEXPAND, respectively.
+Twin Predication is cool.  Essentially it is a back-to-back
+VCOMPRESS-VEXPAND (a multiple sequentially ordered VINSERT).  The compress
+part is covered by the source predicate and the expand part by the
+destination predicate.  Of course, if either of those is all 1s then
+the operation degenerates *to* VCOMPRESS or VEXPAND, respectively.
 
     function op(RT, RS):
       ps = get_pred_val(FALSE, RS); # predication on src
@@ -259,15 +410,31 @@ Twin Predication is cool.  Essentially it is a back-to-back VCOMPRESS-VEXPAND (a
         if (int_csr[RS].isvec) i++;
         if (int_csr[RT].isvec) j++; else break
 
-Here's the interesting part: given the fact that SV is a "context" extension, the above pattern can be applied to a lot more than just MV, which is normally only what VCOMPRESS and VEXPAND do in traditional Vector ISAs: move registers.  Twin Predication can be applied to `extsw` or `fcvt`, LD/ST operations and even `rlwinmi` and other operations taking a single source and immediate(s) such as `addi`.  All of these are termed single-source, single-destination (LDST Address-generation, or AGEN, is a single source).
+Here's the interesting part: given the fact that SV is a "context"
+extension, the above pattern can be applied to a lot more than just MV,
+which is normally only what VCOMPRESS and VEXPAND do in traditional
+Vector ISAs: move registers.  Twin Predication can be applied to `extsw`
+or `fcvt`, LD/ST operations and even `rlwinmi` and other operations
+taking a single source and immediate(s) such as `addi`.  All of these
+are termed single-source, single-destination (LDST Address-generation,
+or AGEN, is a single source).
 
-It also turns out that by using a single bit set in the source or destination, *all* the sequential ordered standard patterns of Vector ISAs are provided: VSPLAT, VSELECT, VINSERT, VCOMPRESS, VEXPAND.
+It also turns out that by using a single bit set in the source or
+destination, *all* the sequential ordered standard patterns of Vector
+ISAs are provided: VSPLAT, VSELECT, VINSERT, VCOMPRESS, VEXPAND.
 
-The only one missing from the list here, because it is non-sequential, is VGATHER: moving registers by specifying a vector of register indices (`regs[rd] = regs[regs[rs]]` in a loop).  This one is tricky because it typically does not exist in standard scalar ISAs.  If it did it would be called [[sv/mv.x]]
+The only one missing from the list here, because it is non-sequential,
+is VGATHER: moving registers by specifying a vector of register indices
+(`regs[rd] = regs[regs[rs]]` in a loop).  This one is tricky because it
+typically does not exist in standard scalar ISAs.  If it did it would
+be called [[sv/mv.x]]
 
 # CR predicate result analysis
 
-OpenPOWER has Condition Registers.  These store an analysis of the result of an operation to test it for being greater, less than or equal to zero.  What if a test could be done, similar to branch BO testing, which hooked into the predication system?
+OpenPOWER has Condition Registers.  These store an analysis of the result
+of an operation to test it for being greater, less than or equal to zero.
+What if a test could be done, similar to branch BO testing, which hooked
+into the predication system?
 
     for i in range(VL):
         # predication test, skip all masked out elements.
@@ -281,8 +448,24 @@ OpenPOWER has Condition Registers.  These store an analysis of the result of an 
             # result optionally stored but CR always is
             iregs[RT+i] = result
 
-Note that whilst the Vector of CRs is always written to the CR regfile, only those result elements that pass the BO test get written to the integer regfile.
+Note that whilst the Vector of CRs is always written to the CR regfile,
+only those result elements that pass the BO test get written to the
+integer regfile.
 
-Here for example if FP overflow occurred, and the CR testing was carried out for that, all valid results would be stored but invalid ones would not, but in addition the Vector of CRs would contain the indicators of which ones failed.  With the invalid results being simply not written this could save resources (save on register file writes).
+Here for example if FP overflow occurred, and the CR testing was carried
+out for that, all valid results would be stored but invalid ones would
+not, but in addition the Vector of CRs would contain the indicators of
+which ones failed.  With the invalid results being simply not written
+this could save resources (save on register file writes).
 
+Also expected is, due to the fact that the predicate mask is effectively
+ANDed with the post-result analysis as a secondary type of predication,
+that there would be savings to be had in some types of operations where
+the post-result analysis, if not included in SV, would need a second
+predicate calculation followed by a predicate mask AND operation.
+
+Note, hilariously, that Condition Register Operations (crand, cror) may
+also have post-result analysis applied to them.  With CRs being utilised
+*for* predication, possibilities for compact and elegant code begin to
+emerge from this innocuous-looking addition to SV.
 
