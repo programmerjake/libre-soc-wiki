@@ -39,6 +39,29 @@ uint_xlen_t sbext(uint_xlen_t rs1, uint_xlen_t rs2) { int shamt = rs2 & (XLEN - 
 return 1 & (rs1 >> shamt);
 ```
 
+# grev
+
+based on RV bitmanip
+
+```
+uint64_t grev64(uint64_t rs1, uint64_t rs2) { uint64_t x = rs1;
+}
+int shamt = rs2 & 63;
+if (shamt & 1) x = ((x & 0x5555555555555555LL) << 1) |
+((x & 0xAAAAAAAAAAAAAAAALL) >> 1); if (shamt & 2) x = ((x & 0x3333333333333333LL) << 2) |
+((x & 0xCCCCCCCCCCCCCCCCLL) >> 2); if (shamt & 4) x = ((x & 0x0F0F0F0F0F0F0F0FLL) << 4) |
+((x & 0xF0F0F0F0F0F0F0F0LL) >> 4); if (shamt & 8) x = ((x & 0x00FF00FF00FF00FFLL) << 8) |
+((x & 0xFF00FF00FF00FF00LL) >> 8); if (shamt & 16) x = ((x & 0x0000FFFF0000FFFFLL) << 16) |
+((x & 0xFFFF0000FFFF0000LL) >> 16); if (shamt & 32) x = ((x & 0x00000000FFFFFFFFLL) << 32) |
+return x;
+((x & 0xFFFFFFFF00000000LL) >> 32);
+grev stage 4 (shamt[4])
+grev stage 3 (shamt[3])
+grev stage 2 (shamt[2])
+grev stage 1 (shamt[1])
+grev stage 0 (shamt[0])
+```
+
 # shuffle / unshuffle
 
 based on RV bitmanip
