@@ -260,7 +260,7 @@ The Mode table is laid out as follows:
 | 00  |   1 | sz CRM  | reduce mode (mapreduce), SUBVL=1 |
 | 00  |   1 | SVM CRM | subvector reduce mode, SUBVL>1   |
 | 01  | inv | CR-bit  | Rc=1: ffirst CR sel              |
-| 01  | inv | sz   dz |  Rc=0: ffirst z/nonz |
+| 01  | inv | sz  RC1 |  Rc=0: ffirst z/nonz |
 | 10  |   N | sz   dz |  sat mode: N=0/1 u/s |
 | 11  | inv | CR-bit  |  Rc=1: pred-result CR sel |
 | 11  | inv | sz  RC1 |  Rc=0: pred-result z/nonz |
@@ -719,7 +719,7 @@ executed in sequential Program Order, element 0 being the first.
 The CR-based data-driven fail-on-first is new and not found in ARM SVE
 or RVV. It is extremely useful for reducing instruction count, however
 requires speculative execution involving modifications of VL to get high
-performance implementations.
+performance implementations.  An additional mode (RC1=1) effectively turns what would otherwise be an arithmetic operation into a type of `cmp`.  The CR is stored (and the CR.eq bit tested).  If the CR.eq bit fails then the Vector is truncated and the loop ends.  Note that when RC1=1 the result elements arw never stored, only the CRs.
 
 In CR-based data-driven fail-on-first there is only the option to select
 and test one bit of each CR (just as with branch BO).  For more complex
