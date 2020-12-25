@@ -15,7 +15,8 @@ The fundamentals are:
 
 * The Program Counter gains a "Sub Counter" context.
 * Vectorisation pauses the PC and runs a loop from 0 to VL-1
- (where VL is Vector Length)
+ (where VL is Vector Length). This may be thought of as a
+   "Sub-PC"
 * Some registers may be "tagged" as Vectors
 * During the loop, "Vector"-tagged register are incremented by
   one with each iteration, executing the *same instruction*
