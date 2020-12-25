@@ -509,6 +509,7 @@ SIMD strncpy hand-written assembly routines are, to be blunt about it, a total n
 
 This is a minor variant on the CR-based predicate-result mode.  Where ored-result continues with independent element testing, data-dependent fail-first *stops* at the first failure:
 
+    if Rc=0: BO = inv<<2 | 0b00 # test CR.eq bit z/nz
     for i in range(VL):
         # predication test, skip all masked out elements.
         if predicate_masked_out(i): continue # skip
@@ -519,8 +520,8 @@ This is a minor variant on the CR-based predicate-result mode.  Where ored-resul
             VL = i # truncate: only successes allowed
             break
         # test passed: store result (and CR?)
-        iregs[RT+i] = result
-        if Rc=1: crregs[offs+i] = CRnew
+        if not RC1: iregs[RT+i] = result
+        if RC1 or Rc=1: crregs[offs+i] = CRnew
 
 This is particularly useful, again, for FP operations that might overflow, where it is desirable to end the loop early, but also desirable to complete at least those operations that were okay (passed the test) without also having to sllow down execution by adding extra instructions that tested for the possibility of that failure, in advance of doing the actual calculation.
 
