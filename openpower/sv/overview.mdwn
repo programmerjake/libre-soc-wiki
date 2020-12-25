@@ -109,7 +109,7 @@ Single Predication therefore provides several modes traditionally seen in Vector
 
 # Predicate "zeroing" mode
 
-Sometimes with predication it is ok to leave the masked-out element alone (not modify the result) however sometimes it is better to zero the masked-out elements.  This can be combined with bit-wise ORing to build up vectors from multiple predicate patterns.  Our pseudocode therefore ends up as follows, to take that into account:
+Sometimes with predication it is ok to leave the masked-out element alone (not modify the result) however sometimes it is better to zero the masked-out elements.  Zeroing can be combined with bit-wise ORing to build up vectors from multiple predicate patterns: the same combining with nonzeroing involves more mv operations and predicate mask operations.  Our pseudocode therefore ends up as follows, to take the enhancement into account:
 
     function op_add(rd, rs1, rs2) # add not VADD!
       int id=0, irs1=0, irs2=0;
@@ -118,8 +118,8 @@ Sometimes with predication it is ok to leave the masked-out element alone (not m
         if (predval & 1<<i) # predication bit test
            ireg[rd+id] <= ireg[rs1+irs1] + ireg[rs2+irs2];
            if (!rd.isvec) break;
-        else if zeroing:
-           ireg[rd+id] = 0
+        else if zeroing:   # predicate failed
+           ireg[rd+id] = 0 # set element  to zero
         if (rd.isvec)  { id += 1; }
         if (rs1.isvec)  { irs1 += 1; }
         if (rs2.isvec)  { irs2 += 1; }
