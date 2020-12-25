@@ -472,3 +472,11 @@ also have post-result analysis applied to them.  With Vectors of CRs being
 utilised *for* predication, possibilities for compact and elegant code
 begin to emerge from this innocuous-looking addition to SV.
 
+# Exception-based Fail-on-first
+
+One of the major issues with Vectorised LD/ST operations is when a batch of LDs cross a page-fault boundary.  With considerable resources being taken up with in-flight data, a large Vector LD being cancelled or unable to roll back is either a detriment to performance or can cause data corruption.
+
+What if, then, rather than cancel an entire Vector LD because the last operation would cause a page fault, instead truncate the Vector to the last successful element?
+
+This is called "fail-on-first".  Here is strncpy, illustrated:
+
