@@ -24,7 +24,7 @@ The fundamentals are:
 * Once the loop is completed *only then* is the Program Counter
   allowed to move to the next instruction.
 
-Hardware implementors are free and clear to implement this as literally a for-loop in hardware (and simulators), sitting in between instruction decode and issue.  Higher performance systems may deploy SIMD backends and multi-issue, although it is strongly recommended to add predication capability into all SIMD backend units.
+Hardware (and simulator)implementors are free and clear to implement this as literally a for-loop, sitting in between instruction decode and issue.  Higher performance systems may deploy SIMD backends and multi-issue, although it is strongly recommended to add predication capability into all SIMD backend units.
 
 In OpenPOWER ISA v3.0B pseudo-code form, an ADD operation, assuming both source and destination have been "tagged" as Vectors, is simply:
 
