@@ -768,6 +768,12 @@ Note that RC1 Mode basically turns all operations into `cmp`.  The calculation i
 
 Note that predication is still respected: predicate zeroing is slightly different: elements that fail the CR test *or* are masked out are zero'd.
 
+### pred-result mode on CR ops
+
+Yes, really: CR operations (mtcr, crand, cror) may be Vectorised, predicated, and also pred-result mode applied to it.  In this case, the Vectorisation applies to the batch of 4 bits, i.e. it is not the CR individual bits that are treated as the Vector, but the CRs themselves (CR0, CR8, CR9...)
+
+Thus after each Vectorised operation (crand) a test of the CR result can in fact be performed.
+
 ## CR Operations
 
 CRs are slightly more involved than INT or FP registers due to the
