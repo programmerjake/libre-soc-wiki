@@ -153,6 +153,25 @@ there is no separate Vector register file*: it's all the same instruction,
 on the standard register file, just with a loop.  Scalar happens to set
 that loop size to one.
 
+## Register "tagging"
+
+As an aside: in [[sv/svp64]] the encoding which allows SV to both extend the range beyond r0-r31 and to determine whether it is a scalar or vector is encoded in two to three bits, depending on the instruction.  The reason for using so few bits is because there are up to *four* registers to mark in this way (`fma`, `isel`) which starts to be of concern when there are only 24 available bits to specify the entire SV Vectorisation Context.
+
+Below is the pseudocode which expresses the relationship:
+
+    if extra3_mode:
+        spec = EXTRA3 # bit 2 s/v, 0-1 extends range
+    else:
+        spec = EXTRA2 << 1 # same as EXTRA3, shifted
+    if spec[2]: # vector
+         RA.isvec = True
+         return (RA << 2) | spec[0:1]
+    else:         # scalar
+         RA.isvec = False
+         return (spec[0:1] << 5) | RA
+
+Here we can see that the scalar registers are extended in the top bits, whilst vectors are shifted up by 2 bits, and then extended in the LSBs.  Condition Registers have a slightly different scheme, along the same principle, which takes into account the fact that each CR may be bit-level addressed by Condition Register operations.
+
 # Adding single predication
 
 The next step is to add a single predicate mask.  This is where it gets
