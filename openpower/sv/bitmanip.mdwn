@@ -41,16 +41,20 @@ another mode selection would be CRs not Ints.
 based on RV bitmanip
 
 ```
-uint_xlen_t sbset(uint_xlen_t rs1, uint_xlen_t rs2) { int shamt = rs2 & (XLEN - 1);
+uint_xlen_t sbset(uint_xlen_t rs1, uint_xlen_t rs2) {
+    int shamt = rs2 & (XLEN - 1);
+    return rs1 | (uint_xlen_t(1) << shamt);
 }
-return rs1 | (uint_xlen_t(1) << shamt);
-uint_xlen_t sbclr(uint_xlen_t rs1, uint_xlen_t rs2) { int shamt = rs2 & (XLEN - 1);
+uint_xlen_t sbclr(uint_xlen_t rs1, uint_xlen_t rs2) {
+    int shamt = rs2 & (XLEN - 1);
 }
 return rs1 & ~(uint_xlen_t(1) << shamt);
-uint_xlen_t sbinv(uint_xlen_t rs1, uint_xlen_t rs2) { int shamt = rs2 & (XLEN - 1);
+uint_xlen_t sbinv(uint_xlen_t rs1, uint_xlen_t rs2) {
+    int shamt = rs2 & (XLEN - 1);
 }
 return rs1 ^ (uint_xlen_t(1) << shamt);
-uint_xlen_t sbext(uint_xlen_t rs1, uint_xlen_t rs2) { int shamt = rs2 & (XLEN - 1);
+uint_xlen_t sbext(uint_xlen_t rs1, uint_xlen_t rs2) {
+    int shamt = rs2 & (XLEN - 1);
 }
 return 1 & (rs1 >> shamt);
 ```
@@ -64,11 +68,16 @@ uint64_t grev64(uint64_t rs1, uint64_t rs2) { uint64_t x = rs1;
 }
 int shamt = rs2 & 63;
 if (shamt & 1) x = ((x & 0x5555555555555555LL) << 1) |
-((x & 0xAAAAAAAAAAAAAAAALL) >> 1); if (shamt & 2) x = ((x & 0x3333333333333333LL) << 2) |
-((x & 0xCCCCCCCCCCCCCCCCLL) >> 2); if (shamt & 4) x = ((x & 0x0F0F0F0F0F0F0F0FLL) << 4) |
-((x & 0xF0F0F0F0F0F0F0F0LL) >> 4); if (shamt & 8) x = ((x & 0x00FF00FF00FF00FFLL) << 8) |
-((x & 0xFF00FF00FF00FF00LL) >> 8); if (shamt & 16) x = ((x & 0x0000FFFF0000FFFFLL) << 16) |
-((x & 0xFFFF0000FFFF0000LL) >> 16); if (shamt & 32) x = ((x & 0x00000000FFFFFFFFLL) << 32) |
+((x & 0xAAAAAAAAAAAAAAAALL) >> 1);
+if (shamt & 2) x = ((x & 0x3333333333333333LL) << 2) |
+((x & 0xCCCCCCCCCCCCCCCCLL) >> 2);
+if (shamt & 4) x = ((x & 0x0F0F0F0F0F0F0F0FLL) << 4) |
+((x & 0xF0F0F0F0F0F0F0F0LL) >> 4);
+if (shamt & 8) x = ((x & 0x00FF00FF00FF00FFLL) << 8) |
+((x & 0xFF00FF00FF00FF00LL) >> 8);
+if (shamt & 16) x = ((x & 0x0000FFFF0000FFFFLL) << 16) |
+((x & 0xFFFF0000FFFF0000LL) >> 16);
+if (shamt & 32) x = ((x & 0x00000000FFFFFFFFLL) << 32) |
 return x;
 ((x & 0xFFFFFFFF00000000LL) >> 32);
 grev stage 4 (shamt[4])
@@ -90,20 +99,29 @@ uint64_t shfl64(uint64_t rs1, uint64_t rs2) { uint64_t x = rs1;
 }
 int shamt = rs2 & 31;
 if (shamt & 16) x = shuffle64_stage(x, 0x0000ffff00000000LL,
-0x00000000ffff0000LL, 16); if (shamt & 8) x = shuffle64_stage(x, 0x00ff000000ff0000LL,
-0x0000ff000000ff00LL, 8); if (shamt & 4) x = shuffle64_stage(x, 0x0f000f000f000f00LL,
-0x00f000f000f000f0LL, 4); if (shamt & 2) x = shuffle64_stage(x, 0x3030303030303030LL,
-0x0c0c0c0c0c0c0c0cLL, 2); if (shamt & 1) x = shuffle64_stage(x, 0x4444444444444444LL,
+0x00000000ffff0000LL, 16);
+if (shamt & 8) x = shuffle64_stage(x, 0x00ff000000ff0000LL,
+0x0000ff000000ff00LL, 8);
+if (shamt & 4) x = shuffle64_stage(x, 0x0f000f000f000f00LL,
+0x00f000f000f000f0LL, 4);
+if (shamt & 2) x = shuffle64_stage(x, 0x3030303030303030LL,
+0x0c0c0c0c0c0c0c0cLL, 2);
+if (shamt & 1) x = shuffle64_stage(x, 0x4444444444444444LL,
 return x;
 0x2222222222222222LL, 1);
-uint64_t unshfl64(uint64_t rs1, uint64_t rs2) { uint64_t x = rs1;
+uint64_t unshfl64(uint64_t rs1, uint64_t rs2) {
+uint64_t x = rs1;
 }
 int shamt = rs2 & 31;
 if (shamt & 1) x = shuffle64_stage(x, 0x4444444444444444LL,
-0x2222222222222222LL, 1); if (shamt & 2) x = shuffle64_stage(x, 0x3030303030303030LL,
-0x0c0c0c0c0c0c0c0cLL, 2); if (shamt & 4) x = shuffle64_stage(x, 0x0f000f000f000f00LL,
-0x00f000f000f000f0LL, 4); if (shamt & 8) x = shuffle64_stage(x, 0x00ff000000ff0000LL,
-0x0000ff000000ff00LL, 8); if (shamt & 16) x = shuffle64_stage(x, 0x0000ffff00000000LL,
+0x2222222222222222LL, 1); 
+if (shamt & 2) x = shuffle64_stage(x, 0x3030303030303030LL,
+0x0c0c0c0c0c0c0c0cLL, 2);
+if (shamt & 4) x = shuffle64_stage(x, 0x0f000f000f000f00LL,
+0x00f000f000f000f0LL, 4);
+if (shamt & 8) x = shuffle64_stage(x, 0x00ff000000ff0000LL,
+0x0000ff000000ff00LL, 8);
+if (shamt & 16) x = shuffle64_stage(x, 0x0000ffff00000000LL,
 return x;
 0x00000000ffff0000LL, 16);
 ```
@@ -113,11 +131,24 @@ return x;
 based on RV bitmanip
 
 ```
-uint_xlen_t xperm(uint_xlen_t rs1, uint_xlen_t rs2, int sz_log2) { uint_xlen_t r = 0;
+uint_xlen_t xperm(uint_xlen_t rs1, uint_xlen_t rs2, int sz_log2) {
+uint_xlen_t r = 0;
 }
-uint_xlen_t sz = 1LL << sz_log2; uint_xlen_t mask = (1LL << sz) - 1; for (int i = 0; i < XLEN; i += sz) { uint_xlen_t pos = ((rs2 >> i) & mask) << sz_log2; if (pos < XLEN)
-r |= ((rs1 >> pos) & mask) << i; }return r;
-uint_xlen_t xperm_n (uint_xlen_t rs1, uint_xlen_t rs2) { return xperm(rs1, rs2, 2); } uint_xlen_t xperm_b (uint_xlen_t rs1, uint_xlen_t rs2) { return xperm(rs1, rs2, 3); } uint_xlen_t xperm_h (uint_xlen_t rs1, uint_xlen_t rs2) { return xperm(rs1, rs2, 4); } uint_xlen_t xperm_w (uint_xlen_t rs1, uint_xlen_t rs2) { return xperm(rs1, rs2, 5); }
+uint_xlen_t sz = 1LL << sz_log2;
+uint_xlen_t mask = (1LL << sz) - 1;
+for (int i = 0; i < XLEN; i += sz) {
+uint_xlen_t pos = ((rs2 >> i) & mask) << sz_log2;
+if (pos < XLEN)
+r |= ((rs1 >> pos) & mask) << i; }
+return r;
+uint_xlen_t xperm_n (uint_xlen_t rs1, uint_xlen_t rs2) { 
+return xperm(rs1, rs2, 2); }
+uint_xlen_t xperm_b (uint_xlen_t rs1, uint_xlen_t rs2) {
+return xperm(rs1, rs2, 3); }
+uint_xlen_t xperm_h (uint_xlen_t rs1, uint_xlen_t rs2) {
+return xperm(rs1, rs2, 4); }
+uint_xlen_t xperm_w (uint_xlen_t rs1, uint_xlen_t rs2) {
+return xperm(rs1, rs2, 5); }
 ```
 
 # gorc
@@ -125,19 +156,31 @@ uint_xlen_t xperm_n (uint_xlen_t rs1, uint_xlen_t rs2) { return xperm(rs1, rs2, 
 based on RV bitmanip
 
 ```
-uint32_t gorc32(uint32_t rs1, uint32_t rs2) { uint32_t x = rs1;
+uint32_t gorc32(uint32_t rs1, uint32_t rs2) { 
+
+uint32_t x = rs1;
 }
 int shamt = rs2 & 31;
-if (shamt & 1) x |= ((x & 0x55555555) << 1) | ((x & 0xAAAAAAAA) >> 1); if (shamt & 2) x |= ((x & 0x33333333) << 2) | ((x & 0xCCCCCCCC) >> 2); if (shamt & 4) x |= ((x & 0x0F0F0F0F) << 4) | ((x & 0xF0F0F0F0) >> 4); if (shamt & 8) x |= ((x & 0x00FF00FF) << 8) | ((x & 0xFF00FF00) >> 8); if (shamt & 16) x |= ((x & 0x0000FFFF) << 16) | ((x & 0xFFFF0000) >> 16); return x;
-uint64_t gorc64(uint64_t rs1, uint64_t rs2) { uint64_t x = rs1;
+if (shamt & 1) x |= ((x & 0x55555555) << 1) | ((x & 0xAAAAAAAA) >> 1); 
+if (shamt & 2) x |= ((x & 0x33333333) << 2) | ((x & 0xCCCCCCCC) >> 2);
+if (shamt & 4) x |= ((x & 0x0F0F0F0F) << 4) | ((x & 0xF0F0F0F0) >> 4);
+if (shamt & 8) x |= ((x & 0x00FF00FF) << 8) | ((x & 0xFF00FF00) >> 8); 
+if (shamt & 16) x |= ((x & 0x0000FFFF) << 16) | ((x & 0xFFFF0000) >> 16); return x;
+uint64_t gorc64(uint64_t rs1, uint64_t rs2) { 
+uint64_t x = rs1;
 }
 int shamt = rs2 & 63;
 if (shamt & 1) x |= ((x & 0x5555555555555555LL) << 1) |
-((x & 0xAAAAAAAAAAAAAAAALL) >> 1); if (shamt & 2) x |= ((x & 0x3333333333333333LL) << 2) |
-((x & 0xCCCCCCCCCCCCCCCCLL) >> 2); if (shamt & 4) x |= ((x & 0x0F0F0F0F0F0F0F0FLL) << 4) |
-((x & 0xF0F0F0F0F0F0F0F0LL) >> 4); if (shamt & 8) x |= ((x & 0x00FF00FF00FF00FFLL) << 8) |
-((x & 0xFF00FF00FF00FF00LL) >> 8); if (shamt & 16) x |= ((x & 0x0000FFFF0000FFFFLL) << 16) |
-((x & 0xFFFF0000FFFF0000LL) >> 16); if (shamt & 32) x |= ((x & 0x00000000FFFFFFFFLL) << 32) |
+((x & 0xAAAAAAAAAAAAAAAALL) >> 1);
+if (shamt & 2) x |= ((x & 0x3333333333333333LL) << 2) |
+((x & 0xCCCCCCCCCCCCCCCCLL) >> 2);
+if (shamt & 4) x |= ((x & 0x0F0F0F0F0F0F0F0FLL) << 4) |
+((x & 0xF0F0F0F0F0F0F0F0LL) >> 4);
+if (shamt & 8) x |= ((x & 0x00FF00FF00FF00FFLL) << 8) |
+((x & 0xFF00FF00FF00FF00LL) >> 8);
+if (shamt & 16) x |= ((x & 0x0000FFFF0000FFFFLL) << 16) |
+((x & 0xFFFF0000FFFF0000LL) >> 16);
+if (shamt & 32) x |= ((x & 0x00000000FFFFFFFFLL) << 32) |
 return x;
 ((x & 0xFFFFFFFF00000000LL) >> 32);
 ```
@@ -147,7 +190,8 @@ return x;
 based on RV bitmanip
 
 ```
-uint_xlen_t cmix(uint_xlen_t rs1, uint_xlen_t rs2, uint_xlen_t rs3) { return (rs1 & rs2) | (rs3 & ~rs2);
+uint_xlen_t cmix(uint_xlen_t rs1, uint_xlen_t rs2, uint_xlen_t rs3) {
+    return (rs1 & rs2) | (rs3 & ~rs2);
 }
 ```
 
@@ -156,16 +200,22 @@ uint_xlen_t cmix(uint_xlen_t rs1, uint_xlen_t rs2, uint_xlen_t rs3) { return (rs
 based on RV bitmanip
 
 ```
-uint_xlen_t clmul(uint_xlen_t rs1, uint_xlen_t rs2) { uint_xlen_t x = 0;
+uint_xlen_t clmul(uint_xlen_t rs1, uint_xlen_t rs2)
+{ uint_xlen_t x = 0;
 }
-for (int i = 0; i < XLEN; i++) if ((rs2 >> i) & 1)
+for (int i = 0; i < XLEN; i++)
+if ((rs2 >> i) & 1)
 x ^= rs1 << i; return x;
-uint_xlen_t clmulh(uint_xlen_t rs1, uint_xlen_t rs2) { uint_xlen_t x = 0;
+uint_xlen_t clmulh(uint_xlen_t rs1, uint_xlen_t rs2) {
+uint_xlen_t x = 0;
 }
-for (int i = 1; i < XLEN; i++) if ((rs2 >> i) & 1)
+for (int i = 1; i < XLEN; i++)
+ if ((rs2 >> i) & 1)
 x ^= rs1 >> (XLEN-i); return x;
-uint_xlen_t clmulr(uint_xlen_t rs1, uint_xlen_t rs2) { uint_xlen_t x = 0;
+uint_xlen_t clmulr(uint_xlen_t rs1, uint_xlen_t rs2) {
+uint_xlen_t x = 0;
 }
-for (int i = 0; i < XLEN; i++) if ((rs2 >> i) & 1)
+for (int i = 0; i < XLEN; i++)
+if ((rs2 >> i) & 1)
 x ^= rs1 >> (XLEN-i-1); return x;
 ```
