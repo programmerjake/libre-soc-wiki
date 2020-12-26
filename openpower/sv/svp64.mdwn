@@ -35,6 +35,18 @@ suffix. The prefix always comes before the suffix in PC order.
 
 svp64 fits into the "reserved" portions of the v3.1B prefix, making it possible for svp64, v3.0B (or v3.1B including 64 bit prefixed) instructions  to co-exist in the same binary without conflict.
 
+## SV features
+
+A number of features need to be compacted into a very small space:
+
+* Scalar/Vector tagging and range extension on every register
+* Element width overrides on both source and destination
+* Predication on both source and destination
+* Two different *types* of predication: INT and CR
+* SV Modes including saturation (for A/V DSP), mapreduce, fail-first and more.
+
+This document focusses specifically on how that fits into available space.  Rhe [[svp64/appendix]] explains more of the details, whilst the [[sv/overview]] gives the basics.
+
 # Definition of Reserved in this spec.
 
 For the new fields added in SVP64, instructions that have any of their
