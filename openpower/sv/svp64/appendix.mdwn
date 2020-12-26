@@ -1,6 +1,8 @@
 # Appendix
 
-## XER, SO and other global flags
+[[!toc]]
+
+# XER, SO and other global flags
 
 Vector systems are expected to be high performance.  This is achieved
 through parallelism, which requires that elements in the vector be
@@ -8,14 +10,14 @@ independent.  XER SO and other global "accumulation" flags (CR.OV) cause
 Read-Write Hazards on single-bit global resources, having a significant
 detrimental effect.
 
-Consequently in SV, XER.SO and CR.OV behaviour is disregarded (including in cmp ibstructions) .  XER is
+Consequently in SV, XER.SO and CR.OV behaviour is disregarded (including in cmp instructions) .  XER is
 simply neither read nor written.  This includes when `scalar identity behaviour` occurs.  If precise OpenPOWER v3.0/1 scalar behaviour is desired then OpenPOWER v3.0/1 instructions should be used without an SV Prefix.
 
 An interesting side-effect of this decision is that the OE flag is now free for other uses when SV Prefixing is used.
 
 Regarding XER.CA: this does not fit either: it was designed for a scalar ISA. Instead, both carry-in and carry-out go into the CR.so bit of a given Vector element.  This provides a means to perform large parallel batches of Vectorised carry-capable additions.  crweird instructions can be used to transfer the CRs in and out of an integer, where bitmanipulation may be performed to analyse the carry bits (including carry lookahead propagation) before continuing with further parallel additions.
 
-## v3.0B/v3.1B relevant instructions
+# v3.0B/v3.1B relevant instructions
 
 SV is primarily designed for use as an efficient hybrid 3D GPU / VPU / CPU ISA.
 
@@ -31,7 +33,7 @@ Note however that svp64 is stand-alone and is in no way critically dependent on 
 
 Note, again: this is *only* under svp64 prefixing.  Standard v3.0B / v3.1B is *not* altered by svp64 in any way.
 
-### Major opcode map (v3.0B)
+## Major opcode map (v3.0B)
 
 This table is taken from v3.0B.
 Table 9: Primary Opcode Map (opcode bits 0:5)
@@ -47,7 +49,7 @@ Table 9: Primary Opcode Map (opcode bits 0:5)
     111 |  lq    | EXT57 | EXT58 | EXT59 | EXT60 | EXT61  | EXT62 | EXT63 | 111
         |  000   |   001 |   010 |  011  |   100 |   101  | 110   |  111
 
-### Suitable for svp64
+## Suitable for svp64
 
 This is the same table containing v3.0B Primary Opcodes except those that make mo sense in a Vectorisation Context have been removed.  These removed POs can, *in the SV Vector Context only*, be assigned to alternative (Vectorised-only) instructions, including future extensions.
 
@@ -64,7 +66,7 @@ Note, again, to emphasise: outside of svp64 these opcodes **do not** change.  Wh
     111 |        |       | EXT58 | EXT59 |       | EXT61  |       | EXT63 | 111
         |  000   |   001 |   010 |  011  |   100 |   101  | 110   |  111
 
-## Twin Predication
+# Twin Predication
 
 This is a novel concept that allows predication to be applied to a single
 source and a single dest register.  The following types of traditional
@@ -100,7 +102,7 @@ This is equivalent to
 followed by
 `llvm.masked.expandload.*`
 
-## Rounding, clamp and saturate
+# Rounding, clamp and saturate
 
 see  [[av_opcodes]].
 
@@ -134,7 +136,7 @@ integer and testing it for nonzero.  see [[sv/cr_int_predication]]
 
 Note that the operation takes place at the maximum bitwidth (max of src and dest elwidth) and that truncation occurs to the range of the dest elwidth.
 
-## Reduce mode
+# Reduce mode
 
 1. limited to single predicated dual src operations (add RT, RA, RB).
    triple source operations are prohibited (fma).
@@ -203,7 +205,7 @@ When SVM is set and SUBVL!=1, another variant is enabled: horizontal subvector m
 
 In this mode, when Rc=1 the Vector of CRs is as normal: each result element creates a corresponding CR element.
 
-## Fail-on-first
+# Fail-on-first
 
 Data-dependent fail-on-first has two distinct variants: one for LD/ST,
 the other for arithmetic operations (actually, CR-driven).  Note in each
@@ -248,7 +250,7 @@ Another aspect is that for ffirst LD/STs, VL may be truncated arbitrarily to a n
 
 CR-based data-dependent first on the other hand MUST not truncate VL arbitrarily.  This because it is a precise test on which algorithms will rely.
 
-## pred-result mode
+# pred-result mode
 
 This mode merges common CR testing with predication, saving on instruction count. Below is the pseudocode excluding predicate zeroing and elwidth overrides.
 
@@ -274,13 +276,13 @@ Note that RC1 Mode basically turns all operations into `cmp`.  The calculation i
 
 Note that predication is still respected: predicate zeroing is slightly different: elements that fail the CR test *or* are masked out are zero'd.
 
-### pred-result mode on CR ops
+## pred-result mode on CR ops
 
 Yes, really: CR operations (mtcr, crand, cror) may be Vectorised, predicated, and also pred-result mode applied to it.  In this case, the Vectorisation applies to the batch of 4 bits, i.e. it is not the CR individual bits that are treated as the Vector, but the CRs themselves (CR0, CR8, CR9...)
 
 Thus after each Vectorised operation (crand) a test of the CR result can in fact be performed.
 
-## CR Operations
+# CR Operations
 
 CRs are slightly more involved than INT or FP registers due to the
 possibility for indexing individual bits (crops BA/BB/BT).  Again however
@@ -288,7 +290,7 @@ the access pattern needs to be understandable in relation to v3.0B / v3.1B
 numbering, with a clear linear relationship and mapping existing when
 SV is applied.
 
-### CR EXTRA mapping table and algorithm
+## CR EXTRA mapping table and algorithm
 
 Numbering relationships for CR fields are already complex due to being
 in BE format (*the relationship is not clearly explained in the v3.0B
@@ -346,7 +348,7 @@ batches of aligned 32-bit chunks (CR0-7, CR7-15).  This is to greatly
 simplify internal design.  If instructions are issued where CR Vectors
 do not start on a 32-bit aligned boundary, performance may be affected.
 
-### CR fields as inputs/outputs of vector operations
+## CR fields as inputs/outputs of vector operations
 
 CRs (or, the arithmetic operations associated with them)
 may be marked as Vectorised or Scalar.  When Rc=1 in arithmetic operations that have no explicit EXTRA to cover the CR, the CR is Vectorised if the destination is Vectorised.  Likewise if the destination is scalar then so is the CR.
@@ -399,7 +401,7 @@ hindrance, regardless of the length of VL.
 
 (see [[discussion]].  some alternative schemes are described there)
 
-### Rc=1 when SUBVL!=1
+## Rc=1 when SUBVL!=1
 
 sub-vectors are effectively a form of SIMD (length 2 to 4). Only 1 bit of predicate is allocated per subvector; likewise only one CR is allocated
 per subvector.
@@ -420,7 +422,7 @@ are arranged.  TODO a python program that auto-generates a CSV file
 which can be included in a table, which is in a new page (so as not to
 overwhelm this one). [[svp64/cr_names]]
 
-## Register Profiles
+# Register Profiles
 
 **NOTE THIS TABLE SHOULD NO LONGER BE HAND EDITED** see
 <https://bugs.libre-soc.org/show_bug.cgi?id=548> for details.
@@ -432,9 +434,9 @@ Vectorised (mtspr, bc, dcbz, twi)
 
 TODO generate table which will be here [[svp64/reg_profiles]]
 
-## SV pseudocode illilustration
+# SV pseudocode illilustration
 
-### Single-predicated Instruction
+## Single-predicated Instruction
 
 illustration of normal mode add operation: zeroing not included, elwidth overrides not included.  if there is no predicate, it is set to all 1s
 
@@ -470,7 +472,7 @@ The one that is not obvious is RT=vector but both RA/RB=scalar.  Here this acts 
 
 See <https://bugs.libre-soc.org/show_bug.cgi?id=552>
 
-## Assembly Annotation
+# Assembly Annotation
 
 Assembly code annotation is required for SV to be able to successfully
 mark instructions as "prefixed".
