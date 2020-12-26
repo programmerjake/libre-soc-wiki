@@ -155,9 +155,11 @@ that loop size to one.
 
 ## Register "tagging"
 
-As an aside: in [[sv/svp64]] the encoding which allows SV to both extend the range beyond r0-r31 and to determine whether it is a scalar or vector is encoded in two to three bits, depending on the instruction.  The reason for using so few bits is because there are up to *four* registers to mark in this way (`fma`, `isel`) which starts to be of concern when there are only 24 available bits to specify the entire SV Vectorisation Context.
+As an aside: in [[sv/svp64]] the encoding which allows SV to both extend the range beyond r0-r31 and to determine whether it is a scalar or vector is encoded in two to three bits, depending on the instruction.
 
-Below is the pseudocode which expresses the relationship:
+The reason for using so few bits is because there are up to *four* registers to mark in this way (`fma`, `isel`) which starts to be of concern when there are only 24 available bits to specify the entire SV Vectorisation Context.  In fact, for a small subset of instructions it is just not possible to tag every single register.  Under these rare circumstances a tag has to be shared between two registers.
+
+Below is the pseudocode which expresses the relationship which is usually applied to *every* register:
 
     if extra3_mode:
         spec = EXTRA3 # bit 2 s/v, 0-1 extends range
@@ -171,6 +173,8 @@ Below is the pseudocode which expresses the relationship:
          return (spec[0:1] << 5) | RA
 
 Here we can see that the scalar registers are extended in the top bits, whilst vectors are shifted up by 2 bits, and then extended in the LSBs.  Condition Registers have a slightly different scheme, along the same principle, which takes into account the fact that each CR may be bit-level addressed by Condition Register operations.
+
+Readers familiar with OpenPOWER will know of Rc=1 operations that create an associated post-result "test", placing this test into an implicit Condition Register.  The original researchers who created the POWER ISA chose CR0 for Integer, and CR1 for Floating Point.  These *also become Vectorised* - implicitly - if the associated destination register is also Vectorised.  This allows for some very interesting savings on instruction count due to the very same CR Vectors being predication masks.
 
 # Adding single predication
 
