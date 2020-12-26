@@ -531,6 +531,16 @@ This is particularly useful, again, for FP operations that might overflow, where
 
 The only minor downside here though is the change to VL, which in some implementations may cause pipeline stalls.  This was one of the reasons why CR-based pred-result analysis was added, because that at least is entirely paralleliseable.
 
+# Putting it all together.
+
+Whilst this overview shows the internals, it does not go into detail on the actual instruction format itself.  There are a couple of reasons for this: firstly, it's under development, and secondly, it needs to be proposed to the OpenPOWER Foundation ISA WG for consideration and review.
+
+That said: draft pages for [[sv/setvl]] and [[sv/svp64]] are written up.  The `setvl` instruction is pretty much as would be expected from a Cray style VL  instruction: the only differences being that, firstly, the MAXVL (Macimum Vector Length) has to be spwcified, because it says how many of the *scalar* registers are to be used for a given Vector.  Secondly: within the limit of MAXVL, VL is required to be set to the requested value (by contrast, RVV systems permit the hardware to set arbitrary values of VL).
+
+The other key question is of course: what's the actual instruction format, and what's in it? Bearing in mind that this requires OPF review, the current draft is at the [[sv/svp64]] page, and includes space for all the different modes, the predicates, element width overrides, SUBVL and the register extensions, in 24 bits.  This just about fits into an OoenPOWER v3.1B 64 bit Pregix by birrowing some of the Reserved Encoding space.
+
+Further reading is at the main [[SV|sv]] page.
+
 # Conclusion
 
 Starting from a scalar ISA - OpenPOWER v3.0B - it was shown above that, with conceptual sub-loops, a Scalar ISA can be turned into a Vector one, by embedding Scalar instructions - unmodified - into a Vector "context" using "Prefixing".  With careful thought, this technique reaches 90% par with good Vector ISAs, and the addition of a mere handful of additional scalar instructions ([[sv/mv.x]] amongst them) that may also be Vectorised brings that up to 95%.
