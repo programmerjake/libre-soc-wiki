@@ -527,7 +527,7 @@ This is a minor variant on the CR-based predicate-result mode.  Where pred-resul
         if not RC1: iregs[RT+i] = result
         if RC1 or Rc=1: crregs[offs+i] = CRnew
 
-This is particularly useful, again, for FP operations that might overflow, where it is desirable to end the loop early, but also desirable to complete at least those operations that were okay (passed the test) without also having to sllow down execution by adding extra instructions that tested for the possibility of that failure, in advance of doing the actual calculation.
+This is particularly useful, again, for FP operations that might overflow, where it is desirable to end the loop early, but also desirable to complete at least those operations that were okay (passed the test) without also having to slow down execution by adding extra instructions that tested for the possibility of that failure, in advance of doing the actual calculation.
 
 The only minor downside here though is the change to VL, which in some implementations may cause pipeline stalls.  This was one of the reasons why CR-based pred-result analysis was added, because that at least is entirely paralleliseable.
 
