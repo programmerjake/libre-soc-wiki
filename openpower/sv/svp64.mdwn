@@ -53,6 +53,8 @@ v3.0/1B instructions covered by the prefix are "unaltered". This is termed `scal
 Note that this is completely different from when VL=0.  VL=0 turns all operations under its influence into `nops` (regardless of the prefix)
  whereas when VL=1 and the SV prefix is all zeros, the operation simply acts as if SV had not been applied at all to the instruction  (an "identity operation").
 
+The significance of identity behaviour is that instructions added under svp64 to the 32 bit suffix are not only accessible to svp64: as long as implementors conform to identity behaviour (set the prefix to all zeros) they may use the instructions without needing to actually implement SV itself.
+
 # Register Naming and size
 
 SV Registers are simply the INT, FP and CR register files extended
