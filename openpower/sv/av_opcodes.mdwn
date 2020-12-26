@@ -11,6 +11,7 @@ The fundamental principle for these instructions is:
 * identify the scalar primitive
 * assume that longer runs of scalars will have Simple-V vectorisatin applied
 * assume that "swizzle" may be applied at the (vec2 - SUBVL=2) Vector level,
+ (even if that involves a mv.swizxle which may be macro-op fused)
   in order to perform the necessary HI/LO selection normally hard-coded
   into SIMD ISAs.
 
