@@ -530,3 +530,10 @@ This is a minor variant on the CR-based predicate-result mode.  Where ored-resul
 This is particularly useful, again, for FP operations that might overflow, where it is desirable to end the loop early, but also desirable to complete at least those operations that were okay (passed the test) without also having to sllow down execution by adding extra instructions that tested for the possibility of that failure, in advance of doing the actual calculation.
 
 The only minor downside here though is the change to VL, which in some implementations may cause pipeline stalls.  This was one of the reasons why CR-based pred-result analysis was added, because that at least is entirely paralleliseable.
+
+# Conclusion
+
+Starting from a scalar ISA - OpenPOWER v3.0B - it was shown above that, with conceptual sub-loops, a Scalar ISA can be turned into a Vector one, by embedding Scalar instructions - unmodified - into a Vector "context" using "Prefixing".  With careful thought, this technique reaches 90% par with good Vector ISAs, and the addition of a mere handful of additional scalar instructions ([[sv/mv.x]] amongst them) that may also be Vectorised brings that up to 95%.
+
+What is particularly cool about the SV concept is that custom extensions and research need not be concerned about inventing new Vector instructions and how to get them to interact with the Scalar ISA: they are effectively one and the same.  Any new instruction added at the Scalar level is inherently and automatically Vectorised, following some simple rules.
+
