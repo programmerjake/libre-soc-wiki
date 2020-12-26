@@ -511,7 +511,7 @@ SIMD strncpy hand-written assembly routines are, to be blunt about it, a total n
 
 # Data-dependent fail-first
 
-This is a minor variant on the CR-based predicate-result mode.  Where ored-result continues with independent element testing, data-dependent fail-first *stops* at the first failure:
+This is a minor variant on the CR-based predicate-result mode.  Where pred-result continues with independent element testing (any of which may be parallelised), data-dependent fail-first *stops* at the first failure:
 
     if Rc=0: BO = inv<<2 | 0b00 # test CR.eq bit z/nz
     for i in range(VL):
