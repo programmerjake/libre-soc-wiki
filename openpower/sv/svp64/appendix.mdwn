@@ -1,0 +1,491 @@
+# Appendix
+
+## XER, SO and other global flags
+
+Vector systems are expected to be high performance.  This is achieved
+through parallelism, which requires that elements in the vector be
+independent.  XER SO and other global "accumulation" flags (CR.OV) cause
+Read-Write Hazards on single-bit global resources, having a significant
+detrimental effect.
+
+Consequently in SV, XER.SO and CR.OV behaviour is disregarded (including in cmp ibstructions) .  XER is
+simply neither read nor written.  This includes when `scalar identity behaviour` occurs.  If precise OpenPOWER v3.0/1 scalar behaviour is desired then OpenPOWER v3.0/1 instructions should be used without an SV Prefix.
+
+An interesting side-effect of this decision is that the OE flag is now free for other uses when SV Prefixing is used.
+
+Regarding XER.CA: this does not fit either: it was designed for a scalar ISA. Instead, both carry-in and carry-out go into the CR.so bit of a given Vector element.  This provides a means to perform large parallel batches of Vectorised carry-capable additions.  crweird instructions can be used to transfer the CRs in and out of an integer, where bitmanipulation may be performed to analyse the carry bits (including carry lookahead propagation) before continuing with further parallel additions.
+
+## v3.0B/v3.1B relevant instructions
+
+SV is primarily designed for use as an efficient hybrid 3D GPU / VPU / CPU ISA.
+
+As mentioned above, OE=1 is not applicable in SV, freeing this bit for alternative uses.  Additionally, Vectorisation of the VSX SIMD system likewise makes no sense whatsoever. SV *replaces* VSX and provides, at the very minimum, predication (which VSX was designed without).  Thus all VSX Major Opcodes - all of them - are "unused" and must raise illegal instruction exceptions in SV Prefix Mode.
+
+Likewise, `lq` (Load Quad), and Load/Store Multiple make no sense to have because they are not only provided by SV, the SV alternatives may be predicated as well, making them far better suited to use in function calls and context-switching.
+
+Additionally, some v3.0/1 instructions simply make no sense at all in a Vector context: `twi` and `tdi` fall into this category, as do branch operations as well as `sc` and `scv`.  Here there is simply no point trying to Vectorise them: the standard OpenPOWER v3.0/1 instructions should be called instead.
+
+Fortuitously this leaves several Major Opcodes free for use by SV to fit alternative future instructions.  In a 3D context this means Vector Product, Vector Normalise, [[sv/mv.swizzle]], Texture LD/ST operations, and others critical to an efficient, effective 3D GPU and VPU ISA. With such instructions being included as standard in other commercially-successful GPU ISAs it is likewise critical that a 3D GPU/VPU based on svp64 also have such instructions.
+
+Note however that svp64 is stand-alone and is in no way critically dependent on the existence or provision of 3D GPU or VPU instructions. These should be considered extensions, and their discussion and specification is out of scope for this document.
+
+Note, again: this is *only* under svp64 prefixing.  Standard v3.0B / v3.1B is *not* altered by svp64 in any way.
+
+### Major opcode map (v3.0B)
+
+This table is taken from v3.0B.
+Table 9: Primary Opcode Map (opcode bits 0:5)
+
+        |  000   |   001 |  010  | 011   |  100  |    101 |  110  |  111
+    000 |        |       |  tdi  | twi   | EXT04 |        |       | mulli | 000
+    001 | subfic |       | cmpli | cmpi  | addic | addic. | addi  | addis | 001
+    010 | bc/l/a | EXT17 | b/l/a | EXT19 | rlwimi| rlwinm |       | rlwnm | 010
+    011 |  ori   | oris  | xori  | xoris | andi. | andis. | EXT30 | EXT31 | 011
+    100 |  lwz   | lwzu  | lbz   | lbzu  | stw   | stwu   | stb   | stbu  | 100
+    101 |  lhz   | lhzu  | lha   | lhau  | sth   | sthu   | lmw   | stmw  | 101
+    110 |  lfs   | lfsu  | lfd   | lfdu  | stfs  | stfsu  | stfd  | stfdu | 110
+    111 |  lq    | EXT57 | EXT58 | EXT59 | EXT60 | EXT61  | EXT62 | EXT63 | 111
+        |  000   |   001 |   010 |  011  |   100 |   101  | 110   |  111
+
+### Suitable for svp64
+
+This is the same table containing v3.0B Primary Opcodes except those that make mo sense in a Vectorisation Context have been removed.  These removed POs can, *in the SV Vector Context only*, be assigned to alternative (Vectorised-only) instructions, including future extensions.
+
+Note, again, to emphasise: outside of svp64 these opcodes **do not** change.  When not prefixed with svp64 these opcodes **specifically** retain their v3.0B / v3.1B OpenPOWER Standard compliant meaning.
+
+        |  000   |   001 |  010  | 011   |  100  |    101 |  110  |  111
+    000 |        |       |       |       |       |        |       | mulli | 000
+    001 | subfic |       | cmpli | cmpi  | addic | addic. | addi  | addis | 001
+    010 |        |       |       | EXT19 | rlwimi| rlwinm |       | rlwnm | 010
+    011 |  ori   | oris  | xori  | xoris | andi. | andis. | EXT30 | EXT31 | 011
+    100 |  lwz   | lwzu  | lbz   | lbzu  | stw   | stwu   | stb   | stbu  | 100
+    101 |  lhz   | lhzu  | lha   | lhau  | sth   | sthu   |       |       | 101
+    110 |  lfs   | lfsu  | lfd   | lfdu  | stfs  | stfsu  | stfd  | stfdu | 110
+    111 |        |       | EXT58 | EXT59 |       | EXT61  |       | EXT63 | 111
+        |  000   |   001 |   010 |  011  |   100 |   101  | 110   |  111
+
+## Twin Predication
+
+This is a novel concept that allows predication to be applied to a single
+source and a single dest register.  The following types of traditional
+Vector operations may be encoded with it, *without requiring explicit
+opcodes to do so*
+
+* VSPLAT (a single scalar distributed across a vector)
+* VEXTRACT (like LLVM IR [`extractelement`](https://releases.llvm.org/11.0.0/docs/LangRef.html#extractelement-instruction))
+* VINSERT (like LLVM IR [`insertelement`](https://releases.llvm.org/11.0.0/docs/LangRef.html#insertelement-instruction))
+* VCOMPRESS (like LLVM IR [`llvm.masked.compressstore.*`](https://releases.llvm.org/11.0.0/docs/LangRef.html#llvm-masked-compressstore-intrinsics))
+* VEXPAND (like LLVM IR [`llvm.masked.expandload.*`](https://releases.llvm.org/11.0.0/docs/LangRef.html#llvm-masked-expandload-intrinsics))
+
+Those patterns (and more) may be applied to:
+
+* mv (the usual way that V\* ISA operations are created)
+* exts\* sign-extension
+* rwlinm and other RS-RA shift operations (**note**: excluding
+  those that take RA as both a src and dest. These are not
+  1-src 1-dest, they are 2-src, 1-dest)
+* LD and ST (treating AGEN as one source)
+* FP fclass, fsgn, fneg, fabs, fcvt, frecip, fsqrt etc.
+* Condition Register ops mfcr, mtcr and other similar
+
+This is a huge list that creates extremely powerful combinations,
+particularly given that one of the predicate options is `(1<<r3)`
+
+Additional unusual capabilities of Twin Predication include a back-to-back
+version of VCOMPRESS-VEXPAND which is effectively the ability to do 
+sequentially ordered multiple VINSERTs.  The source predicate selects a 
+sequentially ordered subset of elements to be inserted; the destination predicate specifies the sequentially ordered recipient locations.
+This is equivalent to
+`llvm.masked.compressstore.*`
+followed by
+`llvm.masked.expandload.*`
+
+## Rounding, clamp and saturate
+
+see  [[av_opcodes]].
+
+To help ensure that audio quality is not compromised by overflow,
+"saturation" is provided, as well as a way to detect when saturation
+occurred if desired (Rc=1). When Rc=1 there will be a *vector* of CRs, one CR per
+element in the result (Note: this is different from VSX which has a
+single CR per block).
+
+When N=0 the result is saturated to within the maximum range of an
+unsigned value.  For integer ops this will be 0 to 2^elwidth-1. Similar
+logic applies to FP operations, with the result being saturated to
+maximum rather than returning INF, and the minimum to +0.0
+
+When N=1 the same occurs except that the result is saturated to the min
+or max of a signed result, and for FP to the min and max value rather than returning +/- INF.
+
+When Rc=1, the CR "overflow" bit is set on the CR associated with the
+element, to indicate whether saturation occurred.  Note that due to
+the hugely detrimental effect it has on parallel processing, XER.SO is
+**ignored** completely and is **not** brought into play here.  The CR
+overflow bit is therefore simply set to zero if saturation did not occur,
+and to one if it did.
+
+Note also that saturate on operations that produce a carry output are prohibited due to the conflicting use of the CR.so bit for storing if saturation occurred.
+
+Post-analysis of the Vector of CRs to find out if any given element hit
+saturation may be done using a mapreduced CR op (cror), or by using the
+new crweird instruction, transferring the relevant CR bits to a scalar
+integer and testing it for nonzero.  see [[sv/cr_int_predication]]
+
+Note that the operation takes place at the maximum bitwidth (max of src and dest elwidth) and that truncation occurs to the range of the dest elwidth.
+
+## Reduce mode
+
+1. limited to single predicated dual src operations (add RT, RA, RB).
+   triple source operations are prohibited (fma).
+2. limited to operations that make sense.  divide is excluded, as is
+   subtract (X - Y - Z produces different answers depending on the order)
+   and asymmetric CRops (crandc, crorc). sane  operations:
+   multiply, min/max, add, logical bitwise OR, most other CR ops.
+   operations that do have the same source and dest register type are
+   also excluded (isel, cmp). operations involving carry or overflow
+   (XER.CA / OV) are also prohibited.
+3. the destination is a vector but the result is stored, ultimately,
+   in the first nonzero predicated element.  all other nonzero predicated
+   elements are undefined. *this includes the CR vector* when Rc=1
+4. implementations may use any ordering and any algorithm to reduce
+   down to a single result.  However it must be equivalent to a straight
+   application of mapreduce.  The destination vector (except masked out
+   elements) may be used for storing any intermediate results. these may
+   be left in the vector (undefined).
+5. CRM applies when Rc=1.  When CRM is zero, the CR associated with
+   the result is regarded as a "some results met standard CR result
+   criteria". When CRM is one, this changes to "all results met standard
+   CR criteria".
+6. implementations MAY use destoffs as well as srcoffs (see [[sv/sprs]])
+   in order to store sufficient state to resume operation should an
+   interrupt occur. this is also why implementations are permitted to use
+   the destination vector to store intermediary computations
+7. *Predication may be applied*.  zeroing mode is not an option.  masked-out
+   inputs are ignored; masked-out elements in the destination vector are
+   unaltered (not used for the purposes of intermediary storage); the
+   scalar result is placed in the first available unmasked element.
+
+Pseudocode for the case where RA==RB:
+
+    result = op(iregs[RA], iregs[RA+1])
+    CR = analyse(result)
+    for i in range(2, VL):
+        result = op(result, iregs[RA+i])
+        CRnew = analyse(result)
+        if Rc=1
+            if CRM:
+                 CR = CR bitwise or CRnew
+            else:
+                 CR = CR bitwise AND CRnew
+
+TODO: case where RA!=RB which involves first a vector of 2-operand
+results followed by a mapreduce on the intermediates.
+
+Note that when SVM is clear and SUBVL!=1 the sub-elements are *independent*, i.e. they
+are mapreduced per *sub-element* as a result.  illustration with a vec2:
+
+    result.x = op(iregs[RA].x, iregs[RA+1].x)
+    result.y = op(iregs[RA].y, iregs[RA+1].y)
+    for i in range(2, VL):
+        result.x = op(result.x, iregs[RA+i].x)
+        result.y = op(result.y, iregs[RA+i].y)
+
+Note here that Rc=1 does not make sense when SVM is clear and SUBVL!=1.
+
+When SVM is set and SUBVL!=1, another variant is enabled: horizontal subvector mode.  Example for a vec3:
+
+    for i in range(VL):
+        result = op(iregs[RA+i].x, iregs[RA+i].x)
+        result = op(result, iregs[RA+i].y)
+        result = op(result, iregs[RA+i].z)
+        iregs[RT+i] = result
+
+In this mode, when Rc=1 the Vector of CRs is as normal: each result element creates a corresponding CR element.
+
+## Fail-on-first
+
+Data-dependent fail-on-first has two distinct variants: one for LD/ST,
+the other for arithmetic operations (actually, CR-driven).  Note in each
+case the assumption is that vector elements are required appear to be
+executed in sequential Program Order, element 0 being the first.
+
+* LD/ST ffirst treats the first LD/ST in a vector (element 0) as an
+  ordinary one.  Exceptions occur "as normal".  However for elements 1
+  and above, if an exception would occur, then VL is **truncated** to the
+  previous element.
+* Data-driven (CR-driven) fail-on-first activates when Rc=1 or other
+  CR-creating operation produces a result (including cmp).  Similar to
+  branch, an analysis of the CR is performed and if the test fails, the
+  vector operation terminates and discards all element operations at and
+  above the current one, and VL is truncated to the *previous* element.
+  Thus the new VL comprises a contiguous vector of results, all of which
+  pass the testing criteria (equal to zero, less than zero).
+
+The CR-based data-driven fail-on-first is new and not found in ARM SVE
+or RVV. It is extremely useful for reducing instruction count, however
+requires speculative execution involving modifications of VL to get high
+performance implementations.  An additional mode (RC1=1) effectively turns what would otherwise be an arithmetic operation into a type of `cmp`.  The CR is stored (and the CR.eq bit tested).  If the CR.eq bit fails then the Vector is truncated and the loop ends.  Note that when RC1=1 the result elements arw never stored, only the CRs.
+
+In CR-based data-driven fail-on-first there is only the option to select
+and test one bit of each CR (just as with branch BO).  For more complex
+tests this may be insufficient.  If that is the case, a vectorised crops
+(crand, cror) may be used, and ffirst applied to the crop instead of to
+the arithmetic vector.
+
+One extremely important aspect of ffirst is:
+
+* LDST ffirst may never set VL equal to zero.  This because on the first
+  element an exception must be raised "as normal".
+* CR-based data-dependent ffirst on the other hand **can** set VL equal
+  to zero. This is the only means in the entirety of SV that VL may be set
+  to zero (with the exception of via the SV.STATE SPR).  When VL is set
+  zero due to the first element failing the CR bit-test, all subsequent
+  vectorised operations are effectively `nops` which is
+  *precisely the desired and intended behaviour*.
+
+Another aspect is that for ffirst LD/STs, VL may be truncated arbitrarily to a nonzero value for any implementation-specific reason.  For example: it is perfectly reasonable for implementations to alter VL when ffirst LD or ST operations are initiated on a nonaligned boundary, such that within a loop the subsequent iteration of that loop begins subsequent ffirst LD/ST operations on an aligned boundary.  Likewise, to reduce workloads or balance resources.
+
+CR-based data-dependent first on the other hand MUST not truncate VL arbitrarily.  This because it is a precise test on which algorithms will rely.
+
+## pred-result mode
+
+This mode merges common CR testing with predication, saving on instruction count. Below is the pseudocode excluding predicate zeroing and elwidth overrides.
+
+    for i in range(VL):
+        # predication test, skip all masked out elements.
+        if predicate_masked_out(i):
+             continue
+        result = op(iregs[RA+i], iregs[RB+i])
+        CRnew = analyse(result) # calculates eq/lt/gt
+        # Rc=1 always stores the CR
+        if Rc=1 or RC1:
+            crregs[offs+i] = CRnew
+        # now test CR, similar to branch
+        if RC1 or CRnew[BO[0:1]] != BO[2]:
+            continue # test failed: cancel store
+        # result optionally stored but CR always is
+        iregs[RT+i] = result
+
+The reason for allowing the CR element to be stored is so that post-analysis
+of the CR Vector may be carried out.  For example: Saturation may have occurred (and been prevented from updating, by the test) but it is desirable to know *which* elements fail saturation.
+
+Note that RC1 Mode basically turns all operations into `cmp`.  The calculation is performed but it is only the CR that is written. The element result is *always* discarded, never written (just like `cmp`).
+
+Note that predication is still respected: predicate zeroing is slightly different: elements that fail the CR test *or* are masked out are zero'd.
+
+### pred-result mode on CR ops
+
+Yes, really: CR operations (mtcr, crand, cror) may be Vectorised, predicated, and also pred-result mode applied to it.  In this case, the Vectorisation applies to the batch of 4 bits, i.e. it is not the CR individual bits that are treated as the Vector, but the CRs themselves (CR0, CR8, CR9...)
+
+Thus after each Vectorised operation (crand) a test of the CR result can in fact be performed.
+
+## CR Operations
+
+CRs are slightly more involved than INT or FP registers due to the
+possibility for indexing individual bits (crops BA/BB/BT).  Again however
+the access pattern needs to be understandable in relation to v3.0B / v3.1B
+numbering, with a clear linear relationship and mapping existing when
+SV is applied.
+
+### CR EXTRA mapping table and algorithm
+
+Numbering relationships for CR fields are already complex due to being
+in BE format (*the relationship is not clearly explained in the v3.0B
+or v3.1B specification*).  However with some care and consideration
+the exact same mapping used for INT and FP regfiles may be applied,
+just to the upper bits, as explained below.
+
+In OpenPOWER v3.0/1, BF/BT/BA/BB are all 5 bits.  The top 3 bits (2:4)
+select one of the 8 CRs; the bottom 2 bits (0:1) select one of 4 bits
+*in* that CR.  The numbering was determined (after 4 months of
+analysis and research) to be as follows:
+
+    CR_index = 7-(BA>>2)      # top 3 bits but BE
+    bit_index = 3-(BA & 0b11) # low 2 bits but BE
+    CR_reg = CR[CR_index]      # get the CR
+    # finally get the bit from the CR.
+    CR_bit = (CR_reg & (1<<bit_index)) != 0
+
+When it comes to applying SV, it is the CR\_reg number to which SV EXTRA2/3
+applies, **not** the CR\_bit portion (bits 0:1):
+
+    if extra3_mode:
+        spec = EXTRA3
+    else:
+        spec = EXTRA2<<1 | 0b0
+    if spec[2]:
+       # vector constructs "BA[2:4] spec[0:1] 0 BA[0:1]"
+       return ((BA >> 2)<<5) | # hi 3 bits shifted up
+              (spec[0:1]<<3) |  # to make room for these
+              (BA & 0b11)      # CR_bit on the end
+    else:
+       # scalar constructs "0 spec[0:1] BA[0:4]"
+       return (spec[0:1] << 5) | BA
+
+Thus, for example, to access a given bit for a CR in SV mode, the v3.0B
+algorithm to determin CR\_reg is modified to as follows:
+
+    CR_index = 7-(BA>>2)      # top 3 bits but BE
+    if spec[2]:
+        # vector mode
+        CR_index = (CR_index<<3) | (spec[0:1] << 1)
+    else:
+        # scalar mode
+        CR_index = (spec[0:1]<<3) | CR_index
+    # same as for v3.0/v3.1 from this point onwards
+    bit_index = 3-(BA & 0b11) # low 2 bits but BE
+    CR_reg = CR[CR_index]      # get the CR
+    # finally get the bit from the CR.
+    CR_bit = (CR_reg & (1<<bit_index)) != 0
+
+Note here that the decoding pattern to determine CR\_bit does not change.
+
+Note: high-performance implementations may read/write Vectors of CRs in
+batches of aligned 32-bit chunks (CR0-7, CR7-15).  This is to greatly
+simplify internal design.  If instructions are issued where CR Vectors
+do not start on a 32-bit aligned boundary, performance may be affected.
+
+### CR fields as inputs/outputs of vector operations
+
+CRs (or, the arithmetic operations associated with them)
+may be marked as Vectorised or Scalar.  When Rc=1 in arithmetic operations that have no explicit EXTRA to cover the CR, the CR is Vectorised if the destination is Vectorised.  Likewise if the destination is scalar then so is the CR.
+
+When vectorized, the CR inputs/outputs are sequentially read/written
+to 4-bit CR fields.  Vectorised Integer results, when Rc=1, will begin
+writing to CR8 (TBD evaluate) and increase sequentially from there.
+This is so that:
+
+* implementations may rely on the Vector CRs being aligned to 8. This
+  means that CRs may be read or written in aligned batches of 32 bits
+  (8 CRs per batch), for high performance implementations.
+* scalar Rc=1 operation (CR0, CR1) and callee-saved CRs (CR2-4) are not
+  overwritten by vector Rc=1 operations except for very large VL
+* CR-based predication, from CR32, is also not interfered with
+  (except by large VL).
+
+However when the SV result (destination) is marked as a scalar by the
+EXTRA field the *standard* v3.0B behaviour applies: the accompanying
+CR when Rc=1 is written to.  This is CR0 for integer operations and CR1
+for FP operations.
+
+Note that yes, the CRs are genuinely Vectorised.  Unlike in SIMD VSX which
+has a single CR (CR6) for a given SIMD result, SV Vectorised OpenPOWER
+v3.0B scalar operations produce a **tuple** of element results: the
+result of the operation as one part of that element *and a corresponding
+CR element*.  Greatly simplified pseudocode:
+
+    for i in range(VL):
+         # calculate the vector result of an add
+         iregs[RT+i] = iregs[RA+i] + iregs[RB+i]
+         # now calculate CR bits
+         CRs[8+i].eq = iregs[RT+i] == 0
+         CRs[8+i].gt = iregs[RT+i] > 0
+         ... etc
+
+If a "cumulated" CR based analysis of results is desired (a la VSX CR6)
+then a followup instruction must be performed, setting "reduce" mode on
+the Vector of CRs, using cr ops (crand, crnor)to do so.  This provides far
+more flexibility in analysing vectors than standard Vector ISAs.  Normal
+Vector ISAs are typically restricted to "were all results nonzero" and
+"were some results nonzero". The application of mapreduce to Vectorised
+cr operations allows far more sophisticated analysis, particularly in
+conjunction with the new crweird operations see [[sv/cr_int_predication]].
+
+Note in particular that the use of a separate instruction in this way
+ensures that high performance multi-issue OoO inplementations do not
+have the computation of the cumulative analysis CR as a bottleneck and
+hindrance, regardless of the length of VL.
+
+(see [[discussion]].  some alternative schemes are described there)
+
+### Rc=1 when SUBVL!=1
+
+sub-vectors are effectively a form of SIMD (length 2 to 4). Only 1 bit of predicate is allocated per subvector; likewise only one CR is allocated
+per subvector.
+
+This leaves a conundrum as to how to apply CR computation per subvector, when normally Rc=1 is exclusively applied to scalar elements.  A solution is to perform a bitwise OR or AND of the subvector tests.  Given that OE is ignored, rhis field may (when available) be used to select OR or AND behavior.
+
+### Table of CR fields
+
+CR[i] is the notation used by the OpenPower spec to refer to CR field #i,
+so FP instructions with Rc=1 write to CR[1] aka SVCR1_000.
+
+CRs are not stored in SPRs: they are registers in their own right.
+Therefore context-switching the full set of CRs involves a Vectorised
+mfcr or mtcr, using VL=64, elwidth=8 to do so.  This is exactly as how scalar OpenPOWER context-switches CRs: it is just that there are now more of them.
+
+The 64 SV CRs are arranged similarly to the way the 128 integer registers
+are arranged.  TODO a python program that auto-generates a CSV file
+which can be included in a table, which is in a new page (so as not to
+overwhelm this one). [[svp64/cr_names]]
+
+## Register Profiles
+
+**NOTE THIS TABLE SHOULD NO LONGER BE HAND EDITED** see
+<https://bugs.libre-soc.org/show_bug.cgi?id=548> for details.
+
+Instructions are broken down by Register Profiles as listed in the
+following auto-generated page: [[opcode_regs_deduped]].  "Non-SV"
+indicates that the operations with this Register Profile cannot be
+Vectorised (mtspr, bc, dcbz, twi)
+
+TODO generate table which will be here [[svp64/reg_profiles]]
+
+## SV pseudocode illilustration
+
+### Single-predicated Instruction
+
+illustration of normal mode add operation: zeroing not included, elwidth overrides not included.  if there is no predicate, it is set to all 1s
+
+    function op_add(rd, rs1, rs2) # add not VADD!
+      int i, id=0, irs1=0, irs2=0;
+      predval = get_pred_val(FALSE, rd);
+      for (i = 0; i < VL; i++)
+        STATE.srcoffs = i # save context
+        if (predval & 1<<i) # predication uses intregs
+           ireg[rd+id] <= ireg[rs1+irs1] + ireg[rs2+irs2];
+           if (!int_vec[rd ].isvec) break;
+        if (rd.isvec)  { id += 1; }
+        if (rs1.isvec)  { irs1 += 1; }
+        if (rs2.isvec)  { irs2 += 1; }
+        if (id == VL or irs1 == VL or irs2 == VL) {
+          # end VL hardware loop
+          STATE.srcoffs = 0; # reset
+          return;
+        }
+
+This has several modes:
+
+* RT.v = RA.v RB.v
+* RT.v = RA.v RB.s (and RA.s RB.v)
+* RT.v = RA.s RB.s
+* RT.s = RA.v RB.v
+* RT.s = RA.v RB.s (and RA.s RB.v)
+* RT.s = RA.s RB.s
+
+All of these may be predicated.  Vector-Vector is straightfoward.  When one of source is a Vector and the other a Scalar, it is clear that each element of the Vector source should be added to the Scalar source, each result placed into the Vector (or, if the destination is a scalar, only the first nonpredicated result). 
+
+The one that is not obvious is RT=vector but both RA/RB=scalar.  Here this acts as a "splat scalar result", copying the same result into all nonpredicated result elements.  If a fixed destination scalar was intended, then an all-Scalar operation should be used.
+
+See <https://bugs.libre-soc.org/show_bug.cgi?id=552>
+
+## Assembly Annotation
+
+Assembly code annotation is required for SV to be able to successfully
+mark instructions as "prefixed".
+
+A reasonable (prototype) starting point:
+
+    svp64 [field=value]*
+
+Fields:
+
+* ew=8/16/32 - element width
+* sew=8/16/32 - source element width
+* vec=2/3/4 - SUBVL
+* mode=reduce/satu/sats/crpred
+* pred=1\<\<3/r3/~r3/r10/~r10/r30/~r30/lt/gt/le/ge/eq/ne
+* spred={reg spec}
+
+similar to x86 "rex" prefix.
