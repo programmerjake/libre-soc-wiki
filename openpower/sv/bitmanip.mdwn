@@ -20,6 +20,22 @@ vpdepd VRT,VRA,VRB
 
 other way round
 
+# ternary bitops
+
+for every bit perform a lookup into a table using an 8bit immediate
+
+| 0.5|6.10|11.15|16.20| 21..22 | 23...30 |31|  name   |
+| -- | -- | --- | --- | ------ | ------- |--| ------- |
+| NN | RT | RA  | RB  | ??     | im[0:7] |Rc| XL-Form |
+
+    for i in range(64):
+        idx = RT[i] << 2 | RA[i] << 1 | RB[i]
+        RT[i] = (imm & (1<<idx)) != 0
+
+bits 21..22 may be used to specify a mode, such as treating the whole integer zero/nonzero and putting 1/0 in the result, rather than bitwise test.
+
+another mode selection would be CRs not Ints. 
+
 # single bit set
 
 based on RV bitmanip
