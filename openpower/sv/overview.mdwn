@@ -414,8 +414,8 @@ the operation degenerates *to* VCOMPRESS or VEXPAND, respectively.
         if (RS.isvec) while (!(ps & 1<<i)) i++;
         if (RT.isvec) while (!(pd & 1<<j)) j++;
         reg[RT+j] = SCALAR_OPERATION_ON(reg[RS+i])
-        if (int_csr[RS].isvec) i++;
-        if (int_csr[RT].isvec) j++; else break
+        if (RS.isvec) i++;
+        if (RT.isvec) j++; else break
 
 Here's the interesting part: given the fact that SV is a "context"
 extension, the above pattern can be applied to a lot more than just MV,
