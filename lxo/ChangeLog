@@ -1,3 +1,18 @@
+2020-12-25
+
+	* 550: Implemented the first cut at svp64 prefix in the assembler,
+	namely, a 32-bit pseudo-insn that takes a 24-bit immediate
+	operand, encoding it as an insn with EXT01 as the major opcode,
+	MSB0 bits 7 and 9 also set, and the top two bits of the immediate
+	shuffled into bits 6 and 8.  Added patch to bugzill and to the
+	wiki.  Updated status.  (1:41)
+
+2020-12-23
+
+	* SVP64: Review meeting.
+	* 555: Reduce flag/s for fma.  Commented on the possibilities.
+	(1:26)
+
 2020-12-20
 
 	* 532: Implemented logic for mode-switching 32-bit insns with 6

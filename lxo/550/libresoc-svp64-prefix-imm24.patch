@@ -1,0 +1,158 @@
+Libre-SOC: introduce svp64 prefix
+
+From: Alexandre Oliva <oliva@gnu.org>
+
+This patch introduces a first cut at an "svp64" prefix for Libre-SOC
+PPC, in which all of its non-contiguous 24 bits of operands are
+specified as a single 24-bit immediate.
+
+
+for  opcodes/ChangeLog
+
+	* ppc-opc.c (insert_svp64imm24, extract_svp64imm24): New.
+	(SVP64IMM24): Define.
+	(powerpc_operands): Add it.
+	(LIBRESOC): Add dummy definition.
+	(powerpc_opcodes): Add svp64 prefix, as a pseudo-insn.
+
+for  gas/ChangeLog
+
+	* testsuite/gas/ppc/svp64.s: New.
+	* testsuite/gas/ppc/svp64.d: New.
+	* testsuite/gas/ppc/ppc.exp: Add it.
+---
+ gas/testsuite/gas/ppc/ppc.exp |    3 +++
+ gas/testsuite/gas/ppc/svp64.d |   20 ++++++++++++++++++++
+ gas/testsuite/gas/ppc/svp64.s |   10 ++++++++++
+ opcodes/ppc-opc.c             |   41 +++++++++++++++++++++++++++++++++++++++--
+ 4 files changed, 72 insertions(+), 2 deletions(-)
+ create mode 100644 gas/testsuite/gas/ppc/svp64.d
+ create mode 100644 gas/testsuite/gas/ppc/svp64.s
+
+diff --git a/gas/testsuite/gas/ppc/ppc.exp b/gas/testsuite/gas/ppc/ppc.exp
+index 561b2b4ed3098..84f9daff6e813 100644
+--- a/gas/testsuite/gas/ppc/ppc.exp
++++ b/gas/testsuite/gas/ppc/ppc.exp
+@@ -148,3 +148,6 @@ run_dump_test "rightmost"
+ run_dump_test "scalarquad"
+ 
+ run_dump_test "dcbt"
++
++# Libre-SOC
++run_dump_test "svp64"
+diff --git a/gas/testsuite/gas/ppc/svp64.d b/gas/testsuite/gas/ppc/svp64.d
+new file mode 100644
+index 0000000000000..ceddabd0e2beb
+--- /dev/null
++++ b/gas/testsuite/gas/ppc/svp64.d
+@@ -0,0 +1,20 @@
++#as:
++#objdump: -dr
++#name: LibreSOC SVP64 test
++
++.*
++
++
++Disassembly of section \.text:
++
++0+00 <svp64>:
++
++.*:	(05 40 00 00|00 00 40 05) 	svp64   0
++.*:	(60 00 00 00|00 00 00 60) 	nop
++.*:	(07 ff ff ff|ff ff ff 07) 	svp64   16777215
++.*:	(60 00 00 00|00 00 00 60) 	nop
++.*:	(07 55 c3 6a|6a c3 55 07) 	svp64   9814890
++.*:	(60 00 00 00|00 00 00 60) 	nop
++.*:	(05 ea 3c 95|95 3c ea 05) 	svp64   6962325
++.*:	(60 00 00 00|00 00 00 60) 	nop
++#pass
+diff --git a/gas/testsuite/gas/ppc/svp64.s b/gas/testsuite/gas/ppc/svp64.s
+new file mode 100644
+index 0000000000000..c935f1e0b5487
+--- /dev/null
++++ b/gas/testsuite/gas/ppc/svp64.s
+@@ -0,0 +1,10 @@
++	.text
++svp64:
++	svp64 0
++	nop
++	svp64 0xffffff
++	nop
++	svp64 0x95c36a
++	nop
++	svp64 0x6a3c95
++	nop
+diff --git a/opcodes/ppc-opc.c b/opcodes/ppc-opc.c
+index f23d142c0e147..86ae3c8d577b6 100644
+--- a/opcodes/ppc-opc.c
++++ b/opcodes/ppc-opc.c
+@@ -643,6 +643,33 @@ extract_nsi34 (uint64_t insn,
+   return -value;
+ }
+ 
++/* The non-contiguous 24-bits of operands in a svp64 prefix.  */
++static uint64_t
++insert_svp64imm24 (uint64_t insn,
++		   int64_t value,
++		   ppc_cpu_t dialect ATTRIBUTE_UNUSED,
++		   const char **errmsg ATTRIBUTE_UNUSED)
++{
++  if (value & ~(int64_t)0xffffff)
++    *errmsg = _("illegal immediate value");
++
++  return insn
++    | ((value & 0x800000) << 2)
++    | ((value & 0x400000) << 1)
++    |  (value & 0x3fffff);
++}
++
++static int64_t
++extract_svp64imm24 (uint64_t insn,
++		    ppc_cpu_t dialect ATTRIBUTE_UNUSED,
++		    int *invalid ATTRIBUTE_UNUSED)
++{
++  return 0
++    | ((insn & 0x2000000) >> 2)
++    | ((insn & 0x0800000) >> 1)
++    | ((insn & 0x03fffff));
++}
++
+ /* The split IMM32 field in a vector splat insn.  */
+ 
+ static uint64_t
+@@ -2451,8 +2478,15 @@ const struct powerpc_operand powerpc_operands[] =
+   { UINT64_C(0x3ffffffff), PPC_OPSHIFT_INV, insert_nsi34, extract_nsi34,
+     PPC_OPERAND_NEGATIVE | PPC_OPERAND_SIGNED },
+ 
++  /* The 24 non-contiguous bits that encode the operands for an SVP64
++     prefix.  */
++#define SVP64IMM24 NSI34 + 1
++  /*0x2bfffff is the actual mask, but some pieces of the assembler
++    require a contiguous bit pattern.  */
++  { 0x3ffffff, PPC_OPSHIFT_INV, insert_svp64imm24, extract_svp64imm24, 0},
++
+   /* The IMM32 field in a vector splat immediate prefix instruction.  */
+-#define IMM32 NSI34 + 1
++#define IMM32 SVP64IMM24 + 1
+   { 0xffffffff, PPC_OPSHIFT_INV, insert_imm32, extract_imm32, 0},
+ 
+   /* The UIM field in a vector permute extended prefix instruction.  */
+@@ -4215,7 +4249,7 @@ const unsigned int num_powerpc_operands = (sizeof (powerpc_operands)
+    for the 3 operand dcbt and dcbtst instructions.  */
+ #define DCBT_EO	(PPC_OPCODE_E500 | PPC_OPCODE_E500MC | PPC_OPCODE_476 \
+ 		 | PPC_OPCODE_A2)
+-
++#define LIBRESOC PPC /* FIXME */
+ 
+ 
+ /* The opcode table.
+@@ -4242,6 +4276,9 @@ const unsigned int num_powerpc_operands = (sizeof (powerpc_operands)
+ 
+ const struct powerpc_opcode powerpc_opcodes[] = {
+ {"attn",	X(0,256),	X_MASK,	  POWER4|PPCA2,	PPC476|PPCVLE,	{0}},
++
++{"svp64",	0x05400000,	0xfd400000,  LIBRESOC,  PPCVLE,		{SVP64IMM24}},
++
+ {"tdlgti",	OPTO(2,TOLGT),	OPTO_MASK,   PPC64,	PPCVLE,		{RA, SI}},
+ {"tdllti",	OPTO(2,TOLLT),	OPTO_MASK,   PPC64,	PPCVLE,		{RA, SI}},
+ {"tdeqi",	OPTO(2,TOEQ),	OPTO_MASK,   PPC64,	PPCVLE,		{RA, SI}},
