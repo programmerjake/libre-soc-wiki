@@ -37,13 +37,14 @@ svp64 fits into the "reserved" portions of the v3.1B prefix, making it possible 
 
 ## SVP64 encoding features
 
-A number of features need to be compacted into a very small space:
+A number of features need to be compacted into a very small space of only 24 bits:
 
-* Scalar/Vector tagging and range extension on every register
+* Independent per-register Scalar/Vector tagging and range extension on every register
 * Element width overrides on both source and destination
 * Predication on both source and destination
 * Two different *types* of predication: INT and CR
-* SV Modes including saturation (for A/V DSP), mapreduce, fail-first and more.
+* SV Modes including saturation (for A/V DSP), mapreduce, fail-first and
+  predicate-result mode.
 
 This document focusses specifically on how that fits into available space.  The [[svp64/appendix]] explains more of the details, whilst the [[sv/overview]] gives the basics.
 
