@@ -543,7 +543,7 @@ Further reading is at the main [[SV|sv]] page.
 
 # Conclusion
 
-Starting from a scalar ISA - OpenPOWER v3.0B - it was shown above that, with conceptual sub-loops, a Scalar ISA can be turned into a Vector one, by embedding Scalar instructions - unmodified - into a Vector "context" using "Prefixing".  With careful thought, this technique reaches 90% par with good Vector ISAs, and the addition of a mere handful of additional scalar instructions ([[sv/mv.x]] amongst them) that may also be Vectorised brings that up to 95%.
+Starting from a scalar ISA - OpenPOWER v3.0B - it was shown above that, with conceptual sub-loops, a Scalar ISA can be turned into a Vector one, by embedding Scalar instructions - unmodified - into a Vector "context" using "Prefixing".  With careful thought, this technique reaches 90% par with good Vector ISAs, increasing to 95% with the addition of a mere handful of additional context-vectoriseable scalar instructions ([[sv/mv.x]] amongst them).
 
 What is particularly cool about the SV concept is that custom extensions and research need not be concerned about inventing new Vector instructions and how to get them to interact with the Scalar ISA: they are effectively one and the same.  Any new instruction added at the Scalar level is inherently and automatically Vectorised, following some simple rules.
 
