@@ -128,7 +128,7 @@ Note that by taking up a block of 16, where in every case bits 7 and 9 are set, 
 
 ## Prefix Fields
 
-To "activate" svp64 (in a way that does not conflict with v3.1B 64 bit Pregix mode), fields within the v3.1B Prefix Opcode Map are set
+To "activate" svp64 (in a way that does not conflict with v3.1B 64 bit Prefix mode), fields within the v3.1B Prefix Opcode Map are set
 (see Prefix Opcode Map, above), leaving 24 bits "free" for use by SV.
 This is achieved by setting bits 7 and 9 to 1:  
 
@@ -147,7 +147,7 @@ are constructed:
 | 0:5    | 6     | 7 | 8     | 9 | 10:31    |
 |--------|-------|---|-------|---|----------|
 | EXT01  | RM    | 1 | RM    | 1 | RM       |
-| 000001 | RM[0] | 1 | RM[1] | 1 | RM]2:23] |
+| 000001 | RM[0] | 1 | RM[1] | 1 | RM[2:23] |
 
 Following the prefix will be the suffix: this is simply a 32-bit v3.0B / v3.1B
 instruction.  That instruction becomes "prefixed" with the SVP context: the
