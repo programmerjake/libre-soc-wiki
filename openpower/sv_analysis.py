@@ -35,8 +35,8 @@ def get_csv(name):
 # Write an array of dictionaries to the CSV file name:
 def write_csv(name, items, headers):
     file_path = find_wiki_file(name)
-    with open(file_path, 'w') as csvfile:
-        writer = csv.DictWriter(csvfile, headers)
+    with open(file_path, 'wb') as csvfile:
+        writer = csv.DictWriter(csvfile, headers, lineterminator="\n")
         writer.writeheader()
         writer.writerows(items)
 
