@@ -16,6 +16,14 @@ they are instead SIMD versions of:
      for i in range(64):
          result = result or a[i]
 
+# Requirements
+
+Given a signal width (typically 64) and given an array of "Partition Points" (typically 7) that break the signal down into an arbitrary permutaion of 8 bit to 64 bit independent results, compute the following: 
+
+* xor of all bits in each partitioned group, regardless of the oartitioning
+* "are some bits set" in each partitioned group
+* "are all bits set" in each partitioned group
+
 # bool (some operator) as an example
 
 instead of the above single 64 bit bool result, dynamic partitioned SIMD must return a batch of results.   if the subdivision is 2x32 it is:
