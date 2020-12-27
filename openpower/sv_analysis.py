@@ -500,14 +500,14 @@ def process_csvs():
                     res['3'] = 's:FRC' # FRC: Rsrc3_EXTRA2
 
             # add to svp64 csvs
-            for k in ['in1', 'in2', 'in3', 'out', 'CR in', 'CR out']:
-                del res[k]
+            #for k in ['in1', 'in2', 'in3', 'out', 'CR in', 'CR out']:
+            #    del res[k]
             #if res['0'] != 'TODO':
             svp64[value].append(res)
 
     # now write out the csv files
     for value, csv in svp64.items():
-        csvcols = ['insn', 'Ptype', 'Etype', '0', '1', '2', '3']
+        #csvcols = ['insn', 'Ptype', 'Etype', '0', '1', '2', '3']
         write_csv("%s.csv" % value, csv, csvcols)
 
 if __name__ == '__main__':
