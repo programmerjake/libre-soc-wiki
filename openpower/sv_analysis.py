@@ -503,7 +503,7 @@ def process_csvs():
             for k in ['in1', 'in2', 'in3', 'out', 'CR in', 'CR out']:
                 del res[k]
             #if res['0'] != 'TODO':
-            #    svp64[value].append(res)
+            svp64[value].append(res)
 
     # now write out the csv files
     for value, csv in svp64.items():
