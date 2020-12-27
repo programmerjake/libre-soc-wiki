@@ -99,7 +99,7 @@ firmly a priority focus.
 
 ## Common Peripherals to majority of target markets
 
-* SPI or 8080 or RGB/TTL or LVDS LCD display.  SPI: 320x240.  LVDS: 1440x900.
+* SPI or 8080 or [RGB/TTL](RGBTTL) or LVDS LCD display.  SPI: 320x240.  LVDS: 1440x900.
 * LCD Backlight, requires GPIO power-control plus PWM for brightness control
 * USB-OTG Port (OTG-Host, OTG Client, Charging capability)
 * Baseband Modem (GSM / GPRS / 3G / LTE) requiring USB, UART, and PCM audio
@@ -120,6 +120,7 @@ firmly a priority focus.
 * [[PCIe]] via PXPIPE
 * [[LPC]] from Raptor Engineering
 * [[USB3]]
+* [[RGMII]] Gigabit Ethernet
 
 ## Peripherals unique to laptop market
 
@@ -133,8 +134,8 @@ firmly a priority focus.
 ## Augmentation by an embedded MCU
 
 Some functions, particularly analog, are particularly tricky to implement
-in an early SoC.  In addition, CAN is still patented.  For unusual, patented
-or analog functionality such as CAN, RTC, ADC, DAC, SPDIF, One-wire Bus
+in an early SoC.  In addition, CAN is still patented (not any more).  For unusual, patented
+or analog functionality such as RTC, ADC, DAC, SPDIF, One-wire Bus
 and so on it is easier and simpler to deploy an ultra-low-cost low-speed
 companion Micro-Controller such as the crystal-less STMS8003 ($0.24) or
 the crystal-less STM32F072 or other suitable MCU, depending on requirements.
