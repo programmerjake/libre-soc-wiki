@@ -254,7 +254,7 @@ do not have both.  This is because they usually have separate Vector
 register files. However SV sits on top of standard register files and
 consequently there are advantages to both, so both are provided.
 
-# Element Width overrides
+# Element Width overrides <a name="elwidths"></a>
 
 All good Vector ISAs have the usual bitwidths for operations: 8/16/32/64
 bit integer operations, and IEEE754 FP32 and 64.  Often also included
@@ -395,7 +395,7 @@ is applied to the whole subvector:
         if (RA.isvec)  { irs1 += 1; }
         if (RB.isvec)  { irs2 += 1; }
 
-# Swizzle <a name="subvl"></a>
+# Swizzle <a name="swizzle"></a>
 
 Swizzle is particularly important for 3D work.  It allows in-place
 reordering of XYZW, ARGB etc. and access of sub-portions of the same in
