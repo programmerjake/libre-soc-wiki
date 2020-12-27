@@ -36,7 +36,7 @@ def get_csv(name):
 def write_csv(name, items, headers):
     file_path = find_wiki_file(name)
     with open(file_path, 'w') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames)
+        writer = csv.DictWriter(csvfile, headers)
         writer.writeheader()
         writer.writerows(items)
 
@@ -188,7 +188,8 @@ def process_csvs():
             continue
         if 'sprs' in fname:
             continue
-
+        if 'RM' in fname:
+            continue
         #print (fname)
         csvname = os.path.split(fname)[1]
         # csvname is something like: minor_59.csv, fname the whole path
@@ -324,8 +325,10 @@ def process_csvs():
         # print out svp64 tables by category
         print ("## %s (%s)" % (name, value))
         print ('')
-        print ('[[!table  data="""')
-        print (tformat(csvcols))
+        print ('[[!table format=csv file="openpower/isatables/%s.csv"]]' % \
+                    value)
+        print ('')
+
         rows = bykey[key]
         rows.sort()
 
@@ -345,7 +348,7 @@ def process_csvs():
             # go through each register matching to Rxxxx_EXTRAx
             for k in ['0', '1', '2', '3']:
                 res[k] = ''
-    
+
             # temporary useful info
             regs = []
             for k in ['in1', 'in2', 'in3', 'out', 'CR in', 'CR out']:
@@ -360,7 +363,6 @@ def process_csvs():
                         regs.append(insn[k])
                     else:
                         regs.append('')
-
 
             # sigh now the fun begins.  this isn't the sanest way to do it
             # but the patterns are pretty regular.
@@ -497,14 +499,16 @@ def process_csvs():
                     res['2'] = 's:FRB' # FRB: Rsrc2_EXTRA2
                     res['3'] = 's:FRC' # FRC: Rsrc3_EXTRA2
 
-
-            # print out the row
-            print (tformat(res.values()))
             # add to svp64 csvs
-            svp64[value].append(res)
+            for k in ['in1', 'in2', 'in3', 'out', 'CR in', 'CR out']:
+                del res[k]
+            #if res['0'] != 'TODO':
+            #    svp64[value].append(res)
 
-        print ('"""]]')
-        print ('')
+    # now write out the csv files
+    for value, csv in svp64.items():
+        csvcols = ['insn', 'Ptype', 'Etype', '0', '1', '2', '3']
+        write_csv("%s.csv" % value, csv, csvcols)
 
 if __name__ == '__main__':
     process_csvs()
