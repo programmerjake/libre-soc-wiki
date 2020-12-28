@@ -512,7 +512,7 @@ def process_csvs():
             #if res['0'] != 'TODO':
             for k in res:
                 if res[k] == 'NONE':
-                    res[k] = ''
+                    res[k] = '0'
             svp64[value].append(res)
 
     print ('')
