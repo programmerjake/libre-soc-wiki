@@ -244,8 +244,5 @@ uint_xlen_t crc32_b(uint_xlen_t rs1) { return crc32(rs1, 8); } uint_xlen_t crc32
 uint_xlen_t crc32c_b(uint_xlen_t rs1) { return crc32c(rs1, 8); } uint_xlen_t crc32c_h(uint_xlen_t rs1) { return crc32c(rs1, 16); } uint_xlen_t crc32c_w(uint_xlen_t rs1) { return crc32c(rs1, 32); }
 #if XLEN > 32
 uint_xlen_t crc32_d (uint_xlen_t rs1) { return crc32 (rs1, 64); } uint_xlen_t crc32c_d(uint_xlen_t rs1) { return crc32c(rs1, 64); } #endif
-Payload data must be XOR’ed into the LSB end of the state before executing the CRC instruction. The following code demonstrates the use of crc32.b:
-uint32_t crc32_demo(const uint8_t *p, int len) { uint32_t x = 0xffffffff;
-for (int i = 0; i < len; i++) { x = x ^ p[i];
-x = crc32_b(x); } }return ~x;
+
 ```
