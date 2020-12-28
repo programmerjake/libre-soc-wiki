@@ -55,7 +55,8 @@ def blank_key(row):
 # Floating point registers names like: FRT, FRA, FR1, ..., FRTp, ...
 # Return True if field is a register
 def isreg(field):
-    return field.startswith('R') or field.startswith('FR')
+    return (field.startswith('R') or field.startswith('FR') or
+            field == 'SPR')
 
 
 # These are the attributes of the instructions,
@@ -186,7 +187,9 @@ def process_csvs():
             continue
         if 'test' in fname:
             continue
-        if 'sprs' in fname:
+        if fname.endswith('sprs.csv'):
+            continue
+        if fname.endswith('minor_19_valid.csv'):
             continue
         if 'RM' in fname:
             continue
@@ -201,6 +204,8 @@ def process_csvs():
             insn_name = row['comment']
             # skip instructions that are not suitable
             if insn_name in ['mcrxr', 'mcrxrx', 'darn']:
+                continue
+            if insn_name.startswith('bc') or 'rfid' in insn_name:
                 continue
             insns[insn_name] = row # accumulate csv data by instruction
             dkey = create_key(row)

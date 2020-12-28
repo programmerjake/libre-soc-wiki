@@ -17,8 +17,6 @@ LDST-3R-CRo | LDSTRM-2P-3S  |
 LDST-3R-1W | LDSTRM-2P-2S1D  |
  | non-SV  |
 imm | non-SV  |
-CRi | non-SV  |
-CRi | non-SV  |
 CRio | RM-2P-1S1D  |
 CR=2R1W | RM-1P-2S1D  |
 1W | non-SV  |
@@ -58,8 +56,6 @@ LDST | 3 | 0 | 0 | 1 |  |  |  LDST-3R-CRo |
 LDST | 3 | 1 | 0 | 0 |  |  |  LDST-3R-1W |
 OTHER | 0 | 0 | 0 | 0 |  |  |   |
 OTHER | 0 | 0 | 0 | 0 | 1 | LI |  imm |
-OTHER | 0 | 0 | 1 | 0 |  |  |  CRi |
-OTHER | 0 | 0 | 1 | 0 | 1 | BD |  CRi |
 OTHER | 0 | 0 | 1 | 1 |  |  |  CRio |
 OTHER | 0 | 0 | 1 | 1 | 1 |  |  |  CR=2R1W |
 OTHER | 0 | 1 | 0 | 0 |  |  |  1W |
@@ -206,9 +202,7 @@ CSV | opcode | asm | form |
 extra.csv | 000000---------------0100000000- | attn | NONE-Form |
 extra.csv | 01100000000000000000000000000000 | nop | D-Form |
 major.csv | 17 | sc | SC-Form |
-minor_19.csv | 0b0000010010 | rfid | XL-Form |
 minor_19.csv | 0b0010010110 | isync | XL-Form |
-minor_19.csv | 0b0100010010 | hrfid | XL-Form |
 minor_19_00000.csv | 0b00010 | add pcis not implemented yet | DX-Form |
 minor_31.csv | 0b0000010110 | icbt | X-Form |
 minor_31.csv | 0b0000110110 | dcbst | X-Form |
@@ -225,22 +219,6 @@ minor_31.csv | 0b1111010110 | icbi | X-Form |
 [[!table  data="""
 CSV | opcode | asm | form |
 major.csv | 18 | b | I-Form |
-"""]]
-
-## CRi (non-SV)
-
-[[!table  data="""
-CSV | opcode | asm | form |
-minor_19.csv | 0b0000010000 | bclr | XL-Form |
-minor_19.csv | 0b1000010000 | bcctr | XL-Form |
-minor_19.csv | 0b1000110000 | bctar | XL-Form |
-"""]]
-
-## CRi (non-SV)
-
-[[!table  data="""
-CSV | opcode | asm | form |
-major.csv | 16 | bc | B-Form |
 """]]
 
 ## CRio (RM-2P-1S1D)
@@ -274,7 +252,6 @@ minor_19.csv | 0b0111000001 | cror | XL-Form |
 CSV | opcode | asm | form |
 extra.csv | 000001---------------0000000011- | sim_cfg | NONE-Form |
 minor_31.csv | 0b0001010011 | mfmsr | X-Form |
-minor_31.csv | 0b0101010011 | mfspr | XFX-Form |
 """]]
 
 ## 1W-CRi (RM-2P-1S1D)
@@ -293,7 +270,6 @@ minor_31.csv | 0b0010010010 | mtmsr | X-Form |
 minor_31.csv | 0b0010110010 | mtmsrd | X-Form |
 minor_31.csv | 0b0100010010 | tlbiel | X-Form |
 minor_31.csv | 0b0100110010 | tlbie | X-Form |
-minor_31.csv | 0b0111010011 | mtspr | XFX-Form |
 """]]
 
 ## 1R-imm (non-SV)
@@ -329,7 +305,9 @@ minor_31.csv | 0b0001101000 | neg | XO-Form |
 minor_31.csv | 0b0001111010 | popcntb | X-Form |
 minor_31.csv | 0b0010011010 | prtyw | X-Form |
 minor_31.csv | 0b0010111010 | prtyd | X-Form |
+minor_31.csv | 0b0101010011 | mfspr | XFX-Form |
 minor_31.csv | 0b0101111010 | popcntw | X-Form |
+minor_31.csv | 0b0111010011 | mtspr | XFX-Form |
 minor_31.csv | 0b0111111010 | popcntd | X-Form |
 minor_31.csv | 0b1001101000 | nego | XO-Form |
 """]]
@@ -634,6 +612,7 @@ minor_63h.csv | 0b1111 | fnmadd | -Form |
 * **2R-1W-CRi**: RM-1P-3S1D
 * **2R-1W-CRio**: RM-1P-2S1D
 * **3R-1W-CRio**: RM-1P-3S1D
+
 ## LDSTRM-2P-1S1D
 
 [[!table format=csv file="openpower/isatables/LDSTRM-2P-1S1D.csv"]]
