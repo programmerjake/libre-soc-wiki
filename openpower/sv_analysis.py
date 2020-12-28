@@ -447,6 +447,9 @@ def process_csvs():
                 elif regs == ['RS','','','RA','','']:
                     res['0'] = 'd:RA' # RA: Rdest1_EXTRA3
                     res['1'] = 's:RS' # RS: Rsrc1_EXTRA3
+                elif regs == ['','FRB','','FRT','0','CR1']:
+                    res['0'] = 'd:FRT,d:CR1' # FRT,CR1: Rdest1_EXTRA3
+                    res['1'] = 's:FRA' # FRA: Rsrc1_EXTRA3
                 else:
                     res['0'] = 'TODO'
 
@@ -456,6 +459,10 @@ def process_csvs():
                     res['0'] = 'd:BT' # BT: Rdest1_EXTRA3
                     res['1'] = 's:BA' # BA: Rsrc1_EXTRA3
                     res['2'] = 's:BB' # BB: Rsrc2_EXTRA3
+                elif regs == ['FRA','FRB','','FRT','0','CR1']:
+                    res['0'] = 'd:FRT,d:CR1' # FRT,CR1: Rdest1_EXTRA3
+                    res['1'] = 's:FRA' # FRA: Rsrc1_EXTRA3
+                    res['2'] = 's:FRB' # FRB: Rsrc1_EXTRA3
                 elif name == '2R-1W' or insn_name == 'cmpb': # cmpb
                     if insn_name in ['bpermd', 'cmpb']:
                         res['0'] = 'd:RA' # RA: Rdest1_EXTRA3
