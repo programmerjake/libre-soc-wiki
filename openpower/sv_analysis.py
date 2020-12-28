@@ -318,16 +318,12 @@ def process_csvs():
         if value == 'non-SV':
             continue
 
+        # print out svp64 tables by category
+        print ("* **%s**: %s" % (name, value))
+
         # store csv entries by svp64 RM category
         if value not in svp64:
             svp64[value] = []
-
-        # print out svp64 tables by category
-        print ("## %s (%s)" % (name, value))
-        print ('')
-        print ('[[!table format=csv file="openpower/isatables/%s.csv"]]' % \
-                    value)
-        print ('')
 
         rows = bykey[key]
         rows.sort()
@@ -505,8 +501,17 @@ def process_csvs():
             #if res['0'] != 'TODO':
             svp64[value].append(res)
 
+    print ('')
+
     # now write out the csv files
     for value, csv in svp64.items():
+        # print out svp64 tables by category
+        print ("## %s" % value)
+        print ('')
+        print ('[[!table format=csv file="openpower/isatables/%s.csv"]]' % \
+                    value)
+        print ('')
+
         #csvcols = ['insn', 'Ptype', 'Etype', '0', '1', '2', '3']
         write_csv("%s.csv" % value, csv, csvcols)
 
