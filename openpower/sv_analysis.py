@@ -416,7 +416,13 @@ def process_csvs():
 
             elif value == 'RM-2P-1S1D':
                 res['Etype'] = 'EXTRA3' # RM EXTRA3 type
-                if name == 'CRio' and insn_name == 'mcrf':
+                if insn_name == 'mtspr':
+                    res['0'] = 'd:SPR' # SPR: Rdest1_EXTRA3
+                    res['1'] = 's:RS' # RS: Rsrc1_EXTRA3
+                elif insn_name == 'mfspr':
+                    res['0'] = 'd:RS' # RS: Rdest1_EXTRA3
+                    res['1'] = 's:SPR' # SPR: Rsrc1_EXTRA3
+                elif name == 'CRio' and insn_name == 'mcrf':
                     res['0'] = 'd:BF' # BFA: Rdest1_EXTRA3
                     res['1'] = 's:BFA' # BFA: Rsrc1_EXTRA3
                 elif 'mfcr' in insn_name or 'mfocrf' in insn_name:
