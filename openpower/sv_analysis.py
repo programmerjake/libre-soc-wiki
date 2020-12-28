@@ -463,6 +463,11 @@ def process_csvs():
                     res['0'] = 'd:FRT,d:CR1' # FRT,CR1: Rdest1_EXTRA3
                     res['1'] = 's:FRA' # FRA: Rsrc1_EXTRA3
                     res['2'] = 's:FRC' # FRC: Rsrc1_EXTRA3
+                # should be for fcmp
+                elif regs == ['FRA','FRB','','','0','1']:
+                    res['0'] = 'd:BF' # BF: Rdest1_EXTRA3
+                    res['1'] = 's:FRA' # FRA: Rsrc1_EXTRA3
+                    res['2'] = 's:FRB' # FRB: Rsrc1_EXTRA3
                 elif regs == ['FRA','FRB','','FRT','0','CR1']:
                     res['0'] = 'd:FRT,d:CR1' # FRT,CR1: Rdest1_EXTRA3
                     res['1'] = 's:FRA' # FRA: Rsrc1_EXTRA3
