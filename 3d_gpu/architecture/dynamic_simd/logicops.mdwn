@@ -70,10 +70,14 @@ the second observation then is that, actually, just like the other partitioned o
 
 Exactly the same as for eq, instead the "xor" operator for example is the amalgamation of 4 partial results, x0 to x3.
 
-     x0 = input[0:7].xor()
-     x1 = input[8:15].xor()
-     x2 = input[16:23].xor()
-     x3 = input[24:31].xor()
+    partition:     P    P    P     (3 bits)
+    a        : .... .... .... .... (32 bits)
+    xor-a    : x0  P x1 P x2 P x3  (4+3 bits, P=1 if no partition)
+    
+    x0 = input[0:7].xor()
+    x1 = input[8:15].xor()
+    x2 = input[16:23].xor()
+    x3 = input[24:31].xor()
 
 table showing how to combine x0-3 based on partitions p0-2 to produce result o0-3
 
@@ -84,10 +88,10 @@ p2p1p0 | o0       | o1       | o2       | o3
 0 0 1  | x0       | ^(x1-3)  | 0        | 0
 0 1 0  | ^(x0-1)  | 0        | ^(x2-3)  | 0
 0 1 1  | x0       | x1       | ^(x2-3)  | 0
-1 0 0  | ^(x0-2)  | 0        | 0        | eq3
-1 0 1  | x0       | ^(x1-2)  | 0        | eq3
-1 1 0  | ^(x0-1)  | 0        | x2       | eq3
-1 1 1  | x0       | x1       | x2       | eq3
+1 0 0  | ^(x0-2)  | 0        | 0        | x3
+1 0 1  | x0       | ^(x1-2)  | 0        | x3
+1 1 0  | ^(x0-1)  | 0        | x2       | x3
+1 1 1  | x0       | x1       | x2       | x3
 """]]
 
 Example:
