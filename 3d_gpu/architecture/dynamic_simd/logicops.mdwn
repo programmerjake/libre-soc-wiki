@@ -8,13 +8,13 @@ Links
 These are not the same as bitwise operations equivalent to:
 
      for i in range(64):
-         result[i] = a[i] or b[i]
+         result[i] = a[i] xor b[i]
 
 they are instead SIMD versions of:
 
      result = 0 # initial value (single bit)
      for i in range(64):
-         result = result or a[i]
+         result = result xor a[i]
 
 # Requirements
 
@@ -24,22 +24,24 @@ Given a signal width (typically 64) and given an array of "Partition Points" (ty
 * "are some bits set" in each partitioned group
 * "are all bits set" in each partitioned group
 
-# bool (some operator) as an example
+note that "are some bits set" is equivalent to "is a != 0" whilst "are all bitw set" is equivalent to "is a == all 1s" or "is (~a) == 0"
 
-instead of the above single 64 bit bool result, dynamic partitioned SIMD must return a batch of results.   if the subdivision is 2x32 it is:
+# xor operator as an example
+
+instead of the above single 64 bit xor result, dynamic partitioned SIMD must return a batch of results.   if the subdivision is 2x32 it is:
 
      result[0] = 0 # initial value for low word
      result[1] = 0 # initial value for hi word
      for i in range(32):
-         result[0] = result[0] or a[i]
-         result[1] = result[1] or a[i+32]
+         result[0] = result[0] xor a[i]
+         result[1] = result[1] xor a[i+32]
 
 and likewise by the time 8x8 is reached:
 
      for j in range(8):
          result[j] = 0 # initial value for each byte
          for i in range(8):
-             result[j] = result[j] or a[i+j*8]
+             result[j] = result[j] xor a[i+j*8]
 
 now the question becomes: what to do when the Signal is dynamically partitionable? how do we merge all of the combinations, 1x64 2x32 4x16 8x8 into the same statically-allocated hardware?
 
@@ -53,14 +55,14 @@ likewise, when configured as 2x32 the result is subdivided into two 4 bit halves
      result[0] = 0 # initial value for low word
      result[4] = 0 # initial value for hi word
      for i in range(32):
-         result[0] = result[0] or a[i]
-         result[4] = result[4] or a[i+32]
+         result[0] = result[0] xor a[i]
+         result[4] = result[4] xor a[i+32]
      if result[0]:
          result[1:3] = 1
      if result[4]:
          result[5:7] = 1
 
-thus we have a convention where the result is *also a partitioned signal*, and can be reconfigured to return 1x boolean yes/no, 2x boolean yes/no, 4x boolean yes/no or up to 8 independent yes/no boolean values.
+thus we have a convention where the result is *also a partitioned signal*, and can be reconfigured to return 1x xor yes/no, 2x xor yes/no, 4x xor yes/no or up to 8 independent yes/no boolean values.
 
 the second observation then is that, actually, just like the other partitioned operations, it may be possible to "construct" the longer results from the 8x8 ones, based on whether the partition gates are open or closed.
 
