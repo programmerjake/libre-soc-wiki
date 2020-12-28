@@ -510,6 +510,9 @@ def process_csvs():
             #for k in ['in1', 'in2', 'in3', 'out', 'CR in', 'CR out']:
             #    del res[k]
             #if res['0'] != 'TODO':
+            for k in res:
+                if res[k] == 'NONE':
+                    res[k] = ''
             svp64[value].append(res)
 
     print ('')
