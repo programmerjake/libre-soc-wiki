@@ -6,21 +6,25 @@
 
 ```What does it do and what makes it different?```
 
-Luke Original:
+Our products are hybrid 3D CPU-GPU-VPU Systems-on-Chips (SoCs) that are
+designed to be more efficient, use less power and be easier and less cost
+to integrate into products such as smartphones, netbooks, chromebooks,
+tablets, Industrial IoT, routers, IPTV and many more.
 
-Our products are hybrid 3D and Video processors (SoCs) that are designed to be more efficient, use less power and be easier and less cost to integrate into products such as smartphones, netbooks, chromebooks, tablets, Industrial IoT, routers, IPTV and many more.
+We accomplish this at the hardware level by extending the OpenPOWER
+Instruction Set Architecture (ISA) with an innovative Vector ISA that
+merges 3D, Video and CPU into one single hybrid processor, where normal
+systems would have two or three separate processors.  At the software
+level we engage closely with community resources and partners to ensure
+upstream collaboration.  Complexity is reduced, time to market is reduced,
+power consumption is reduced.
 
-At the hardware level we achieve this by extending OpenPOWER with an innovative Vector ISA that merges 3D, Video and CPU into one single hybrid processor.  At the software level we engage closely with community resources and partners to ensure upstream collaboration.  Complexity is reduced, time to market is reduced, power consumption is reduced.
-
-A typical SoC licenses separate closed-source CPU and closed-source GPU, introducing huge complexity in the drivers and limiting innovation opportunities for the customer.  We provide the full source code even for the processor HDL, and full firmware source.  This allows customers to audit it in full (a critical requirement for secure environments).
-
-Cole edits:
-
-Our products are Systems on Chips (SoCs) that excel at providing the functionality consumers expect from their smartphones, laptops, chromebooks, tablets, Industrial IoT devices, routers, IPTVs, and more. Our SoCs have superior power efficiency, cost less, and are significantly easier to integrate into new and existing designs than existing solutions.
-
-We accomplish this at the hardware level we achieve this by extending the OpenPOWER Instruction Set Architecture (ISA) with an innovative Vector system that merges 3D graphics, video and general purpose processing normal provided by a separate CPU into a single Hybrid Processing Unit (HPU). We engage closely with  partners and other organizations to ensure upstream software compatibility, collaborating with the libre software community to ensure our libre hardware works at least as well as proprietary hardware. 
-
-A typical SoC will license a closed-source CPU and a separate closed-source GPU. This results in incredibly complex drivers, limiting innovation opportunities for the customer, and substantially increasing development cost and duration. We provide the full source code our processor, including the RTL, as well as the full firmware source which allows customers to audit it in full – a critical requirement for secure environments. This approach combined with the hardware innovations results in a dramatic reduction in complexity, power consumption and time to market.
+A typical SoC licenses separate closed-source CPU and closed-source GPU,
+introducing huge complexity in the drivers, making the ODM critically
+reliant on the GPU supplier, and limiting both ODM and end-user innovation
+opportunities.  We provide the full source code even for the processor
+HDL, and full firmware source.  This allows end-users to audit the
+product in full (a critical requirement for secure environments).
 
 # Goals.
 
@@ -30,47 +34,88 @@ A typical SoC will license a closed-source CPU and a separate closed-source GPU.
      Keep it simple – three big goals supported by clear
      targeted actions to get you there
 
-Luke Original:
+Our very early goals are to develop a low-cost 180/130nm Gigabit router
+product with built-in cryptographic primitives and direct packet routing.
+Timescale is end of Q4 2021 and using Google Skywater 130nm "Libre"
+MPW for a test ASIC Q2 2021.
 
-Our very early goals are to develop a low-cost 180/130nm Gigabit router product with built-in cryptographic primitives and direct packet routing.  Timescale is end of Q4 2021 and using Google Skywater 130nm "Libre" MPW for a test ASIC. 
+The second product is a 28nm (or lower) Quad-Core competitor to the ASpeed
+2600, a Baseboard Management Controller (BMC) SoC capable of acting as a
+PCIe-based Graphics Card after its primary "boot" job is done.  BMCs are
+present on almost every server motherboard: they are used to boot and
+manage Servers in Cloud Computing Data Centres world-wide.  The product
+will also be suitable as a SBC (Single Board Computer) with "Raspberry Pi"
+style interfaces and, with both USB-C, PCIe host and client, can act as
+an independent low-power affordable Graphics Card (a 3D version of the
+Volari X11) with modest 3D and Video capabilities for use typically in
+Data Centres and Embedded Industrial PCs, as well as a USB-C Graphics
+Adapter (similar to DisplayLink products). Timescale is end of Q2 2022.
 
-The second product is a 28nm (or lower) Quad-Core competitor to the ASpeed 2600, a Boot Management Console SoC used to manage Servers in Cloud Computing Data Centres world-wide.  The product will also be suitable as a SBC (Single Board Computer) with "Raspberry Pi" style interfaces and, with both USB-C, PCIe host and client, can act as an independent low-power affordable Graphics Card (a 3D version of the Volari X11) with modest 3D and Video capabilities for use typically in Data Centres and Embedded Industrial PCs, as well as a USB-C Graphics Adapter (similar to DisplayLink products). Timescale is end of Q2 2022.
+The long-term products are intended to reach mass-volume adoption of
+100 to 500 million units, using the latest geometries to gain high
+performance as well as power savings, primarily in the smartphone
+netbooks chromebooks tablets IoT and IPTV markets.  These to be planned
+and developed in overlap with the 28nm product, for delivery Q2 2023.
 
-The long-term products are intended to reach mass-volume adoption of 100 to 500 million units, using the latest geometries to gain high performance as well as power savings, primarily in the smartphone netbooks chromebooks tablets IoT and IPTV markets.  These to be planned and developed in overlap with the 28nm product, for delivery Q2 2023.
+Additionally we seek to establish ourselves as a "Solutions Provider",
+developing custom-targetted high performance, high efficiency processors
+as part of full product design and delivery.  This through leveraging and
+engaging professional community and partner resources with the highest
+level of exertise in the customer's market.
 
-Additionally we seek to establish ourselves as a "Solutions Provider", developing custom-targetted high performance, high efficiency processors as part of full product design and delivery.  This through leveraging abd engaging professional community and partner resources with the highest level of exertise in the customer's market.
-
-Cole (incomplete) edits:
-
-The first product in development is a low-cost Gigabit ethernet router, with built-in cryptographic primitives and direct packet routing. We plan on manufacturing it on the 180nm/130nm silicon process. Long established silicon giants like AMD, Intel, Nvidia, Qualcomm, and Apple frequently need to ‘tape out’ their designs multiple times before getting working chips. By using an older and much cheaper process like 180nm/130nm we are able us to bring our first commercial product to market while minimizing the risk to our investors. This product is projected to begin production at the end of Q4 2021 using Google Skywater 130nm "Libre" Multi Project Wafer (MPW) for a test ASIC in Q2 2021.
-
-The second product in development is a 28nm/20nm Quad-Core Baseboard Management Controller (BMC) SoC. BMCs are present on almost every server motherboard – they are used to manage servers in Cloud Computing Data Centres world-wide. The current market leader in this niche is the ASpeed 2600, a 28nm dual core ARM CPU with an embedded microcontroller, capable of 1080p60 video over PCIe VGA. Our product will provide over twice the…
 
 # Your audience and the market.
 
-```Who will your business supply and how will it reach them? How big is the market and who are your key competitors?```
+```Who will your business supply and how will it reach them? How big is
+the market and who are your key competitors?```
 
-Our initial target market for the router product is small "Libre" sales channels such as Thinkpenguin.  Launch will be through Crowdsupply, which places the router directly onto Mouser's website and fulfilment channel.
+Our initial target market for the router product is small "Libre" sales
+channels such as Thinkpenguin.  Launch will be through Crowdsupply, which
+places the router directly onto Mouser's website and fulfilment channel.
 
-The Quad Core intermediate product is intended for targetted supply to select customers (unique branded), and a generic branded variant to SBC community-focussed ODMs such as Pine64, Purism, Orange Pi etc. These typically have sales volumes (each) of 20 to 100k units per year.  The worldwide "Commumity" SBC market, which overlaps with Industrial IoT and Education, is in the 400k and above range.
+The Quad Core intermediate product is intended for targetted supply to
+select customers (unique branded), and a generic branded variant to SBC
+community-focussed ODMs such as Pine64, Purism, Orange Pi etc. These
+typically have sales volumes (each) of 20 to 100k units per year.
+The worldwide "Commumity" SBC market, which overlaps with Industrial
+IoT and Education, is in the 400k and above range.
 
-The overall SoC market is massive (hundreds of millions per year when including smartphone, netbook and chromebook products).  Competitors for the intermediate product include Samsung, Texas Instruments, Rockchip, Allwinner, AMLogic, ST Micro, Atmel, Freescale/NXP, and dozens more.  The key distinguisher is the "niche targetting" (peripherals, built-in capabilities) abd yet with not one single one of them providing full source and firmware for CPU, GPU and VPU due to licensing of closed solutions they are all effectively not competitors.
+The overall SoC market is massive (hundreds of millions per year when
+including smartphone, netbook and chromebook products).  Competitors for
+the intermediate product include Samsung, Texas Instruments, Rockchip,
+Allwinner, AMLogic, ST Micro, Atmel, Freescale/NXP, and dozens more.
+The key distinguisher is the "niche targetting" (peripherals, built-in
+capabilities) abd yet with not one single one of them providing full
+source and firmware for CPU, GPU and VPU due to licensing of closed
+solutions they are all effectively not competitors.
 
-The long-term competitors include Apple, AMD, NVidia and Intel, providing high performance power-efficient Hybrid CPU-GPU-VPU processors.
+The long-term competitors include Apple, AMD, NVidia and Intel, providing
+high performance power-efficient Hybrid CPU-GPU-VPU processors.
 
 # Products and pricing.
 
-```What will you be selling and how will your prices be set? How does this compare with your competitors?```
+```What will you be selling and how will your prices be set? How does
+this compare with your competitors?```
 
-For the first phase we will manufacture and sell a completed 5 port Gigabit Ethernet Libre/Open router product using our SoC that is similar to Linksys products.  Full source code and CAD designs will be provided, immediately.  Retail pricing for a 2xUSB2 5xGbeE router product is around the USD $45 mark, with the SoC alone in 180nm QFP retailing around the $4 mark ($2.50 in high volume)
+For the first phase we will manufacture and sell a completed 5 port
+Gigabit Ethernet Libre/Open router product using our SoC that is similar
+to Linksys products.  Full source code and CAD designs will be provided,
+immediately.  Retail pricing for a 2xUSB2 5xGbeE router product is around
+the USD $45 mark, with the SoC alone in 180nm QFP retailing around the
+$4 mark ($2.50 in high volume)
 
-For the second phase we will provide the BMC and SBC style Quad Core SoC to select customers, with the target price in volumes of 50k units being around the USD $23 mark (ASpeed 2600 is $35 and is not very good).
+For the second phase we will provide the BMC and SBC style Quad Core
+SoC to select customers, with the target price in volumes of 50k units
+being around the USD $23 mark (ASpeed 2600 is $35 and is not very good).
 
-The third phase which involves MOQ 250k units will be targetting sub $7 for mid-range SoCs and $15 for high-end ones.
+The third phase which involves MOQ 250k units will be targetting sub $7
+for mid-range SoCs and $15 for high-end ones.
 
 # Who is involved.
 
-```Many investors say they invest as much in the people as they do in the business. Share some information about people’s roles, experience and passions.```
+```Many investors say they invest as much in the people as they do in
+the business. Share some information about people’s roles, experience
+and passions.```
 
 Luke: TODO.
 
@@ -78,7 +123,13 @@ Jacob: TODO.
 
 Cole: TODO.
 
+Lauri: TODO.
+
 # Financials.
 
-```Provide details about sales, costs, break-even points and where investment will come from. If you’re looking for people to invest, you should include information about likely returns. If you’re looking for ways to finance your business, crowdfunding, alternative finance and government funding are a good place to start.```
+```Provide details about sales, costs, break-even points and where
+investment will come from. If you’re looking for people to invest,
+you should include information about likely returns. If you’re looking
+for ways to finance your business, crowdfunding, alternative finance
+and government funding are a good place to start.```
 
