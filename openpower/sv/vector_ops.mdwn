@@ -254,9 +254,21 @@ Pseudo-code:
 
 # Carry-lookahead
 
+used not just for carry lookahead, also a special type of predication mask operation.
+
 * <https://www.geeksforgeeks.org/carry-look-ahead-adder/>
 * <https://media.geeksforgeeks.org/wp-content/uploads/digital_Logic6.png>
 * <https://electronics.stackexchange.com/questions/20085/whats-the-difference-with-carry-look-ahead-generator-block-carry-look-ahead-ge>
 * <https://i.stack.imgur.com/QSLKY.png>
 * <https://stackoverflow.com/questions/27971757/big-integer-addition-code>
   `((P|G)+G)^P`
+
+two versions: scalar int version and CR based version.
+
+scalar int version acts as a scalar carry-propagate, reading XER.CA as input, P and G as regs, and taking a radix argument.  the end bits go into XER.CA and CR0.ge
+
+vector version takes CR0.so as carry in, stores in CR0.so and CR.ge end bits.
+
+if zero (no propagation) then CR0.eq is zero
+
+CR based version, TODO.
