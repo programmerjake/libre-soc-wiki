@@ -31,7 +31,6 @@ CR=2R1W | RM-1P-2S1D  |
 1R-1W-imm | RM-2P-1S1D  |
 1R-1W-CRo | RM-2P-1S1D  |
 1R-1W-CRo | RM-2P-1S1D  |
-1R-1W-CRio | RM-2P-1S1D  |
 2R | non-SV  |
 2R-CRo | RM-1P-2S1D  |
 2R-1W | RM-1P-2S1D  |
@@ -72,7 +71,6 @@ OTHER | 1 | 1 | 0 | 0 |  |  |  1R-1W |
 OTHER | 1 | 1 | 0 | 0 | 1 | SI/UI |  1R-1W-imm |
 OTHER | 1 | 1 | 0 | 1 |  |  |  1R-1W-CRo |
 OTHER | 1 | 1 | 0 | 1 | 1 | M1/SH/SH32/SI/UI |  1R-1W-CRo |
-OTHER | 1 | 1 | 1 | 1 |  |  |  1R-1W-CRio |
 OTHER | 2 | 0 | 0 | 0 |  |  |  2R |
 OTHER | 2 | 0 | 0 | 1 |  |  |  2R-CRo |
 OTHER | 2 | 1 | 0 | 0 |  |  |  2R-1W |
@@ -357,6 +355,7 @@ minor_31.csv | 0b1011001010 | addzeo | XO-Form |
 minor_31.csv | 0b1110011010 | extsh | X-Form |
 minor_31.csv | 0b1110111010 | extsb | X-Form |
 minor_31.csv | 0b1111011010 | extsw | X-Form |
+minor_59.csv | 0b01110 | fcfid[u]s | -Form |
 minor_59.csv | 0b10110 | fsqrts | -Form |
 minor_59.csv | 0b11000 | fres | -Form |
 minor_59.csv | 0b11010 | frsqrtes | -Form |
@@ -409,13 +408,6 @@ minor_31.csv | 0b1100111010 | sradi | XS-Form |
 minor_31.csv | 0b1100111011 | sradi | XS-Form |
 minor_31.csv | 0b1101111010 | extswsli | XS-Form |
 minor_31.csv | 0b1101111011 | extswsli | XS-Form |
-"""]]
-
-## 1R-1W-CRio (RM-2P-1S1D)
-
-[[!table  data="""
-CSV | opcode | asm | form |
-minor_59.csv | 0b01110 | fcfid[u]s | -Form |
 """]]
 
 ## 2R (non-SV)
@@ -516,6 +508,7 @@ minor_31.csv | 0b1111101011 | divwo | XO-Form |
 minor_59.csv | 0b10010 | fdivs | -Form |
 minor_59.csv | 0b10100 | fsubs | -Form |
 minor_59.csv | 0b10101 | fadds | -Form |
+minor_59.csv | 0b11001 | fmuls | -Form |
 minor_63h.csv | 0b0010 | fdiv | -Form |
 minor_63h.csv | 0b0100 | fsub | -Form |
 minor_63h.csv | 0b0101 | fadd | -Form |
@@ -574,7 +567,6 @@ minor_31.csv | 0b1111101111 | isel | A-Form |
 
 [[!table  data="""
 CSV | opcode | asm | form |
-minor_59.csv | 0b11001 | fmuls | -Form |
 minor_63l.csv | 0b011011010 | 26/6=fmrgow | -Form |
 minor_63l.csv | 0b011011110 | 30/6=fmrgew | -Form |
 """]]
@@ -621,7 +613,6 @@ minor_59.csv | 0b11111 | fnmadds | -Form |
 * **1R-1W-imm**: RM-2P-1S1D
 * **1R-1W-CRo**: RM-2P-1S1D
 * **1R-1W-CRo**: RM-2P-1S1D
-* **1R-1W-CRio**: RM-2P-1S1D
 * **2R-CRo**: RM-1P-2S1D
 * **2R-1W**: RM-1P-2S1D
 * **2R-1W-CRo**: RM-1P-2S1D
