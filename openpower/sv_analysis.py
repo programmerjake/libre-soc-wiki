@@ -452,7 +452,7 @@ def process_csvs():
                 elif regs == ['','FRB','','FRT','0','CR1']:
                     res['0'] = 'd:FRT,d:CR1' # FRT,CR1: Rdest1_EXTRA3
                     res['1'] = 's:FRA' # FRA: Rsrc1_EXTRA3
-                elif regs == ['','FRB','','','','CR1']:
+                elif regs == ['','FRB','','','','BF']:
                     res['0'] = 'd:BF' # BF: Rdest1_EXTRA3
                     res['1'] = 's:FRB' # FRA: Rsrc1_EXTRA3
                 elif regs == ['','FRB','','FRT','','CR1']:
