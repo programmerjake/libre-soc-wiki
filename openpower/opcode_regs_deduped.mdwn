@@ -37,7 +37,6 @@ CR=2R1W | RM-1P-2S1D  |
 2R-1W-CRo | RM-1P-2S1D  |
 2R-1W-CRo | RM-1P-2S1D  |
 2R-1W-CRi | RM-1P-3S1D  |
-2R-1W-CRio | RM-1P-2S1D  |
 3R-1W-CRo | -  |
 3R-1W-CRio | RM-1P-3S1D  |
 """]]
@@ -77,7 +76,6 @@ OTHER | 2 | 1 | 0 | 0 |  |  |  2R-1W |
 OTHER | 2 | 1 | 0 | 1 |  |  |  2R-1W-CRo |
 OTHER | 2 | 1 | 0 | 1 | 1 | SH/SH32 |  2R-1W-CRo |
 OTHER | 2 | 1 | 1 | 0 |  |  |  2R-1W-CRi |
-OTHER | 2 | 1 | 1 | 1 |  |  |  2R-1W-CRio |
 OTHER | 3 | 1 | 0 | 1 |  |  |  3R-1W-CRo |
 OTHER | 3 | 1 | 1 | 1 |  |  |  3R-1W-CRio |
 """]]
@@ -442,6 +440,8 @@ minor_31.csv | 0b0100001011 | moduw | X-Form |
 minor_31.csv | 0b0111111100 | cmpb | X-Form |
 minor_31.csv | 0b1100001001 | modsd | X-Form |
 minor_31.csv | 0b1100001011 | modsw | X-Form |
+minor_63l.csv | 0b011011010 | 26/6=fmrgow | -Form |
+minor_63l.csv | 0b011011110 | 30/6=fmrgew | -Form |
 """]]
 
 ## 2R-1W-CRo (RM-1P-2S1D)
@@ -563,14 +563,6 @@ minor_31.csv | 0b1111001111 | isel | A-Form |
 minor_31.csv | 0b1111101111 | isel | A-Form |
 """]]
 
-## 2R-1W-CRio (RM-1P-2S1D)
-
-[[!table  data="""
-CSV | opcode | asm | form |
-minor_63l.csv | 0b011011010 | 26/6=fmrgow | -Form |
-minor_63l.csv | 0b011011110 | 30/6=fmrgew | -Form |
-"""]]
-
 ## 3R-1W-CRo (-)
 
 [[!table  data="""
@@ -618,7 +610,6 @@ minor_59.csv | 0b11111 | fnmadds | -Form |
 * **2R-1W-CRo**: RM-1P-2S1D
 * **2R-1W-CRo**: RM-1P-2S1D
 * **2R-1W-CRi**: RM-1P-3S1D
-* **2R-1W-CRio**: RM-1P-2S1D
 * **3R-1W-CRo**: -
 * **3R-1W-CRio**: RM-1P-3S1D
 
