@@ -17,12 +17,14 @@ LDST-3R-CRo | LDSTRM-2P-3S  |
 LDST-3R-1W | LDSTRM-2P-2S1D  |
  | non-SV  |
 imm | non-SV  |
+CRo | -  |
 CRio | RM-2P-1S1D  |
 CR=2R1W | RM-1P-2S1D  |
 1W | non-SV  |
 1W-CRi | RM-2P-1S1D  |
 1R | non-SV  |
 1R-imm | non-SV  |
+1R-CRo | RM-2P-1S1D  |
 1R-CRo | RM-2P-1S1D  |
 1R-CRio | RM-2P-2S1D  |
 1R-1W | RM-2P-1S1D  |
@@ -32,12 +34,12 @@ CR=2R1W | RM-1P-2S1D  |
 1R-1W-CRio | RM-2P-1S1D  |
 2R | non-SV  |
 2R-CRo | RM-1P-2S1D  |
-2R-CRio | RM-1P-2S1D  |
 2R-1W | RM-1P-2S1D  |
 2R-1W-CRo | RM-1P-2S1D  |
 2R-1W-CRo | RM-1P-2S1D  |
 2R-1W-CRi | RM-1P-3S1D  |
 2R-1W-CRio | RM-1P-2S1D  |
+3R-1W-CRo | -  |
 3R-1W-CRio | RM-1P-3S1D  |
 """]]
 
@@ -56,12 +58,14 @@ LDST | 3 | 0 | 0 | 1 |  |  |  LDST-3R-CRo |
 LDST | 3 | 1 | 0 | 0 |  |  |  LDST-3R-1W |
 OTHER | 0 | 0 | 0 | 0 |  |  |   |
 OTHER | 0 | 0 | 0 | 0 | 1 | LI |  imm |
+OTHER | 0 | 0 | 0 | 1 |  |  |  CRo |
 OTHER | 0 | 0 | 1 | 1 |  |  |  CRio |
 OTHER | 0 | 0 | 1 | 1 | 1 |  |  |  CR=2R1W |
 OTHER | 0 | 1 | 0 | 0 |  |  |  1W |
 OTHER | 0 | 1 | 1 | 0 |  |  |  1W-CRi |
 OTHER | 1 | 0 | 0 | 0 |  |  |  1R |
 OTHER | 1 | 0 | 0 | 0 | 1 | SI |  1R-imm |
+OTHER | 1 | 0 | 0 | 1 |  |  |  1R-CRo |
 OTHER | 1 | 0 | 0 | 1 | 1 | SI/UI |  1R-CRo |
 OTHER | 1 | 0 | 1 | 1 |  |  |  1R-CRio |
 OTHER | 1 | 1 | 0 | 0 |  |  |  1R-1W |
@@ -71,12 +75,12 @@ OTHER | 1 | 1 | 0 | 1 | 1 | M1/SH/SH32/SI/UI |  1R-1W-CRo |
 OTHER | 1 | 1 | 1 | 1 |  |  |  1R-1W-CRio |
 OTHER | 2 | 0 | 0 | 0 |  |  |  2R |
 OTHER | 2 | 0 | 0 | 1 |  |  |  2R-CRo |
-OTHER | 2 | 0 | 1 | 1 |  |  |  2R-CRio |
 OTHER | 2 | 1 | 0 | 0 |  |  |  2R-1W |
 OTHER | 2 | 1 | 0 | 1 |  |  |  2R-1W-CRo |
 OTHER | 2 | 1 | 0 | 1 | 1 | SH/SH32 |  2R-1W-CRo |
 OTHER | 2 | 1 | 1 | 0 |  |  |  2R-1W-CRi |
 OTHER | 2 | 1 | 1 | 1 |  |  |  2R-1W-CRio |
+OTHER | 3 | 1 | 0 | 1 |  |  |  3R-1W-CRo |
 OTHER | 3 | 1 | 1 | 1 |  |  |  3R-1W-CRio |
 """]]
 
@@ -221,15 +225,21 @@ CSV | opcode | asm | form |
 major.csv | 18 | b | I-Form |
 """]]
 
+## CRo (-)
+
+[[!table  data="""
+CSV | opcode | asm | form |
+minor_63l.csv | 0b000000010 | 2/0=mcrfs | -Form |
+minor_63l.csv | 0b011000001 | 1/6=mtfsb1 | -Form |
+minor_63l.csv | 0b011000010 | 2/6=mtfsb0 | -Form |
+minor_63l.csv | 0b011000100 | 4/6=mtfsfi | -Form |
+"""]]
+
 ## CRio (RM-2P-1S1D)
 
 [[!table  data="""
 CSV | opcode | asm | form |
 minor_19.csv | 0b0000000000 | mcrf | XL-Form |
-minor_63l.csv | 0b000000010 | 2/0=mcrfs | -Form |
-minor_63l.csv | 0b011000001 | 1/6=mtfsb1 | -Form |
-minor_63l.csv | 0b011000010 | 2/6=mtfsb0 | -Form |
-minor_63l.csv | 0b011000100 | 4/6=mtfsfi | -Form |
 """]]
 
 ## CR=2R1W (RM-1P-2S1D)
@@ -284,6 +294,14 @@ major.csv | 3 | twi | D-Form |
 
 [[!table  data="""
 CSV | opcode | asm | form |
+minor_63l.csv | 0b000000101 | 5/0=ftsqrt | -Form |
+minor_63l.csv | 0b011110110 | 22/7=mtfsf | -Form |
+"""]]
+
+## 1R-CRo (RM-2P-1S1D)
+
+[[!table  data="""
+CSV | opcode | asm | form |
 major.csv | 10 | cmpli | D-Form |
 major.csv | 11 | cmpi | D-Form |
 """]]
@@ -293,8 +311,6 @@ major.csv | 11 | cmpi | D-Form |
 [[!table  data="""
 CSV | opcode | asm | form |
 minor_31.csv | 0b0010010000 | mtcrf/mtocrf | XFX-Form |
-minor_63l.csv | 0b000000101 | 5/0=ftsqrt | -Form |
-minor_63l.csv | 0b011110110 | 22/7=mtfsf | -Form |
 """]]
 
 ## 1R-1W (RM-2P-1S1D)
@@ -341,6 +357,29 @@ minor_31.csv | 0b1011001010 | addzeo | XO-Form |
 minor_31.csv | 0b1110011010 | extsh | X-Form |
 minor_31.csv | 0b1110111010 | extsb | X-Form |
 minor_31.csv | 0b1111011010 | extsw | X-Form |
+minor_63h.csv | 0b0110 | fsqrt | -Form |
+minor_63h.csv | 0b1000 | fre | -Form |
+minor_63h.csv | 0b1010 | frsqrte | -Form |
+minor_63l.csv | 0b011110010 | 18/7=mffsfamily | -Form |
+minor_63l.csv | 0b100000001 | 1/8=fneg | -Form |
+minor_63l.csv | 0b100000010 | 2/8=fmr | -Form |
+minor_63l.csv | 0b100000100 | 4/8=fnabs | -Form |
+minor_63l.csv | 0b100001000 | 8/8=fabs | -Form |
+minor_63l.csv | 0b100001100 | 12/8=frin | -Form |
+minor_63l.csv | 0b100001101 | 13/8=friz | -Form |
+minor_63l.csv | 0b100001110 | 14/8=frip | -Form |
+minor_63l.csv | 0b100001111 | 15/8=frim | -Form |
+minor_63l.csv | 0b110000000 | 0/12=frsp | -Form |
+minor_63l.csv | 0b111000000 | 0/14=fctiw | -Form |
+minor_63l.csv | 0b111000100 | 4/14=fctiwu | -Form |
+minor_63l.csv | 0b111011001 | 25/14=fctid | -Form |
+minor_63l.csv | 0b111011010 | 26/14=fcfid | -Form |
+minor_63l.csv | 0b111011101 | 29/14=fctidu | -Form |
+minor_63l.csv | 0b111011110 | 30/14=fcfidu | -Form |
+minor_63l.csv | 0b111100000 | 0/15=fctiwz | -Form |
+minor_63l.csv | 0b111100100 | 4/15=fctiwuz | -Form |
+minor_63l.csv | 0b111111001 | 25/15=fctidz | -Form |
+minor_63l.csv | 0b111111101 | 29/15=fctiduz | -Form |
 """]]
 
 ## 1R-1W-CRo (RM-2P-1S1D)
@@ -377,29 +416,6 @@ minor_59.csv | 0b01110 | fcfid[u]s | -Form |
 minor_59.csv | 0b10110 | fsqrts | -Form |
 minor_59.csv | 0b11000 | fres | -Form |
 minor_59.csv | 0b11010 | frsqrtes | -Form |
-minor_63h.csv | 0b0110 | fsqrt | -Form |
-minor_63h.csv | 0b1000 | fre | -Form |
-minor_63h.csv | 0b1010 | frsqrte | -Form |
-minor_63l.csv | 0b011110010 | 18/7=mffsfamily | -Form |
-minor_63l.csv | 0b100000001 | 1/8=fneg | -Form |
-minor_63l.csv | 0b100000010 | 2/8=fmr | -Form |
-minor_63l.csv | 0b100000100 | 4/8=fnabs | -Form |
-minor_63l.csv | 0b100001000 | 8/8=fabs | -Form |
-minor_63l.csv | 0b100001100 | 12/8=frin | -Form |
-minor_63l.csv | 0b100001101 | 13/8=friz | -Form |
-minor_63l.csv | 0b100001110 | 14/8=frip | -Form |
-minor_63l.csv | 0b100001111 | 15/8=frim | -Form |
-minor_63l.csv | 0b110000000 | 0/12=frsp | -Form |
-minor_63l.csv | 0b111000000 | 0/14=fctiw | -Form |
-minor_63l.csv | 0b111000100 | 4/14=fctiwu | -Form |
-minor_63l.csv | 0b111011001 | 25/14=fctid | -Form |
-minor_63l.csv | 0b111011010 | 26/14=fcfid | -Form |
-minor_63l.csv | 0b111011101 | 29/14=fctidu | -Form |
-minor_63l.csv | 0b111011110 | 30/14=fcfidu | -Form |
-minor_63l.csv | 0b111100000 | 0/15=fctiwz | -Form |
-minor_63l.csv | 0b111100100 | 4/15=fctiwuz | -Form |
-minor_63l.csv | 0b111111001 | 25/15=fctidz | -Form |
-minor_63l.csv | 0b111111101 | 29/15=fctiduz | -Form |
 """]]
 
 ## 2R (non-SV)
@@ -419,12 +435,6 @@ minor_31.csv | 0b0000000000 | cmp | X-Form |
 minor_31.csv | 0b0000100000 | cmpl | X-Form |
 minor_31.csv | 0b0011000000 | cmprb | X-Form |
 minor_31.csv | 0b0011100000 | cmpeqb | X-Form |
-"""]]
-
-## 2R-CRio (RM-1P-2S1D)
-
-[[!table  data="""
-CSV | opcode | asm | form |
 minor_63l.csv | 0b000000000 | 0/0=fcmpu | -Form |
 minor_63l.csv | 0b000000001 | 1/0=fcmpo | -Form |
 minor_63l.csv | 0b000000100 | 4/0=ftdiv | -Form |
@@ -503,6 +513,11 @@ minor_31.csv | 0b1111001001 | divduo | XO-Form |
 minor_31.csv | 0b1111001011 | divwuo | XO-Form |
 minor_31.csv | 0b1111101001 | divdo | XO-Form |
 minor_31.csv | 0b1111101011 | divwo | XO-Form |
+minor_63h.csv | 0b0010 | fdiv | -Form |
+minor_63h.csv | 0b0100 | fsub | -Form |
+minor_63h.csv | 0b0101 | fadd | -Form |
+minor_63h.csv | 0b1001 | fmul | -Form |
+minor_63l.csv | 0b100000000 | 0/8=fcpsgn | -Form |
 """]]
 
 ## 2R-1W-CRo (RM-1P-2S1D)
@@ -560,13 +575,19 @@ minor_59.csv | 0b10010 | fdivs | -Form |
 minor_59.csv | 0b10100 | fsubs | -Form |
 minor_59.csv | 0b10101 | fadds | -Form |
 minor_59.csv | 0b11001 | fmuls | -Form |
-minor_63h.csv | 0b0010 | fdiv | -Form |
-minor_63h.csv | 0b0100 | fsub | -Form |
-minor_63h.csv | 0b0101 | fadd | -Form |
-minor_63h.csv | 0b1001 | fmul | -Form |
 minor_63l.csv | 0b011011010 | 26/6=fmrgow | -Form |
 minor_63l.csv | 0b011011110 | 30/6=fmrgew | -Form |
-minor_63l.csv | 0b100000000 | 0/8=fcpsgn | -Form |
+"""]]
+
+## 3R-1W-CRo (-)
+
+[[!table  data="""
+CSV | opcode | asm | form |
+minor_63h.csv | 0b0111 | fsel | -Form |
+minor_63h.csv | 0b1100 | fmsub | -Form |
+minor_63h.csv | 0b1101 | fmadd | -Form |
+minor_63h.csv | 0b1110 | fnmsub | -Form |
+minor_63h.csv | 0b1111 | fnmadd | -Form |
 """]]
 
 ## 3R-1W-CRio (RM-1P-3S1D)
@@ -577,11 +598,6 @@ minor_59.csv | 0b11100 | fmsubs | -Form |
 minor_59.csv | 0b11101 | fmadds | -Form |
 minor_59.csv | 0b11110 | fnmsubs | -Form |
 minor_59.csv | 0b11111 | fnmadds | -Form |
-minor_63h.csv | 0b0111 | fsel | -Form |
-minor_63h.csv | 0b1100 | fmsub | -Form |
-minor_63h.csv | 0b1101 | fmadd | -Form |
-minor_63h.csv | 0b1110 | fnmsub | -Form |
-minor_63h.csv | 0b1111 | fnmadd | -Form |
 """]]
 
 # svp64 remaps
@@ -594,9 +610,11 @@ minor_63h.csv | 0b1111 | fnmadd | -Form |
 * **LDST-3R**: LDSTRM-2P-3S
 * **LDST-3R-CRo**: LDSTRM-2P-3S
 * **LDST-3R-1W**: LDSTRM-2P-2S1D
+* **CRo**: -
 * **CRio**: RM-2P-1S1D
 * **CR=2R1W**: RM-1P-2S1D
 * **1W-CRi**: RM-2P-1S1D
+* **1R-CRo**: RM-2P-1S1D
 * **1R-CRo**: RM-2P-1S1D
 * **1R-CRio**: RM-2P-2S1D
 * **1R-1W**: RM-2P-1S1D
@@ -605,12 +623,12 @@ minor_63h.csv | 0b1111 | fnmadd | -Form |
 * **1R-1W-CRo**: RM-2P-1S1D
 * **1R-1W-CRio**: RM-2P-1S1D
 * **2R-CRo**: RM-1P-2S1D
-* **2R-CRio**: RM-1P-2S1D
 * **2R-1W**: RM-1P-2S1D
 * **2R-1W-CRo**: RM-1P-2S1D
 * **2R-1W-CRo**: RM-1P-2S1D
 * **2R-1W-CRi**: RM-1P-3S1D
 * **2R-1W-CRio**: RM-1P-2S1D
+* **3R-1W-CRo**: -
 * **3R-1W-CRio**: RM-1P-3S1D
 
 ## LDSTRM-2P-1S1D
@@ -632,6 +650,10 @@ minor_63h.csv | 0b1111 | fnmadd | -Form |
 ## LDSTRM-2P-3S
 
 [[!table format=csv file="openpower/isatables/LDSTRM-2P-3S.csv"]]
+
+## -
+
+[[!table format=csv file="openpower/isatables/-.csv"]]
 
 ## RM-2P-1S1D
 
