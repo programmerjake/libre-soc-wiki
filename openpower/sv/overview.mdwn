@@ -455,8 +455,10 @@ which is normally only what VCOMPRESS and VEXPAND do in traditional
 Vector ISAs: move registers.  Twin Predication can be applied to `extsw`
 or `fcvt`, LD/ST operations and even `rlwinmi` and other operations
 taking a single source and immediate(s) such as `addi`.  All of these
-are termed single-source, single-destination (LDST Address-generation,
-or AGEN, is a single source).
+are termed single-source, single-destination.
+
+LDST Address-generation,
+or AGEN, is a special case of single source, because elwidth overriding does not make sense to apply to the computation of the 64 bit address itself, but it *does* make sense to apply elwidth overrides to the data being accessed *at* that address.
 
 It also turns out that by using a single bit set in the source or
 destination, *all* the sequential ordered standard patterns of Vector
