@@ -162,16 +162,19 @@ The following fields are common to all Remapped Encodings:
 | MASK\_KIND    | `0`        | Execution (predication) Mask Kind                 |
 | MASK          | `1:3`      | Execution Mask                      |
 | ELWIDTH       | `4:5`      | Element Width                       |
-| SUBVL         | `6:7`      | Sub-vector length                   |                          
+| ELWIDTH_SRC   | `6:7`      | Element Width for Source      |
+| SUBVL         | `8:9`      | Sub-vector length                   |                          
 | MODE          | `19:23`    | changes Vector behaviour               |
 
 * MODE changes the behaviour of the SV operation (result saturation, mapreduce)
 * SUBVL groups elements together into vec2, vec3, vec4 for use in 3D and Audio/Video DSP work
-* ELWIDTH overrides the instruction's operand width
+* ELWIDTH and ELWIDTH_SRC overrides the instruction's destination and source operand width
 * MASK and MASK_KIND provide predication (two types of sources: scalar INT and Vector CR).
 
-Bits 9 to 18 are further decoded depending on RM category for the instruction.
+Bits 10 to 18 are further decoded depending on RM category for the instruction.
 These are given designations such as `RM-1P-3S1D` which indicates for this example that the operation is to be single-predicated and that there are 3 source operand EXTRA tags and one destination operand tag.
+
+Note that if ELWIDTH != ELWIDTH_SRC this may result in reduced performance or increased latency in some implementations due to lane-crossing. 
 
 # Mode
 
@@ -361,20 +364,19 @@ is based on whether the number of src operands is 2 or 3.  The full list of whic
 
 | Field Name | Field bits | Description                            |
 |------------|------------|----------------------------------------|
-| Rdest\_EXTRA2 | `8:9`   | extends Rdest (R\*\_EXTRA2 Encoding)   |
-| Rsrc1\_EXTRA2 | `10:11` | extends Rsrc1 (R\*\_EXTRA2 Encoding)   |
-| Rsrc2\_EXTRA2 | `12:13` | extends Rsrc2 (R\*\_EXTRA2 Encoding)   |
-| Rsrc3\_EXTRA2 | `14:15` | extends Rsrc3 (R\*\_EXTRA2 Encoding)   |
-| reserved      | `16:18` | reserved                               |
+| Rdest\_EXTRA2 | `10:11`   | extends Rdest (R\*\_EXTRA2 Encoding)   |
+| Rsrc1\_EXTRA2 | `12:13` | extends Rsrc1 (R\*\_EXTRA2 Encoding)   |
+| Rsrc2\_EXTRA2 | `14:15` | extends Rsrc2 (R\*\_EXTRA2 Encoding)   |
+| Rsrc3\_EXTRA2 | `16:17` | extends Rsrc3 (R\*\_EXTRA2 Encoding)   |
+| reserved      | `18` | reserved                               |
 
 ## RM-1P-2S1D
 
 | Field Name | Field bits | Description                               |
 |------------|------------|-------------------------------------------|
-| Rdest\_EXTRA3 | `8:10`  | extends Rdest  |
-| Rsrc1\_EXTRA3 | `11:13` | extends Rsrc1  |
-| Rsrc2\_EXTRA3 | `14:16` | extends Rsrc3    |
-| ELWIDTH_SRC   | `17:18` | Element Width for Source      |
+| Rdest\_EXTRA3 | `10:12` | extends Rdest  |
+| Rsrc1\_EXTRA3 | `13:15` | extends Rsrc1  |
+| Rsrc2\_EXTRA3 | `16:18` | extends Rsrc3  |
 
 These are for 2 operand 1 dest instructions, such as `add RT, RA,
 RB`. However also included are unusual instructions with an implicit dest
@@ -394,18 +396,13 @@ With the addition of the EXTRA bits, the three registers
 each may be *independently* made vector or scalar, and be independently
 augmented to 7 bits in length.
 
-Note that if ELWIDTH != ELWIDTH_SRC this may result in reduced performance or increased latency in some implementations due to lane-crossing. 
-
 ## RM-2P-1S1D/2S
 
 | Field Name | Field bits | Description                 |
 |------------|------------|----------------------------|
-| Rdest_EXTRA3 | `8:10`     | extends Rdest             |
-| Rsrc1_EXTRA3 | `11:13`    | extends Rsrc1             |
-| MASK_SRC     | `14:16`    | Execution Mask for Source |
-| ELWIDTH_SRC  | `17:18`    | Element Width for Source  |
-
-Note that if ELWIDTH != ELWIDTH_SRC this may result in reduced performance or increased latency in some implementations due to lane-crossing. 
+| Rdest_EXTRA3 | `10:12`    | extends Rdest             |
+| Rsrc1_EXTRA3 | `13:15`    | extends Rsrc1             |
+| MASK_SRC     | `16:18`    | Execution Mask for Source |
 
 `RM-2P-2S` is for `stw` etc. and is Rsrc1 Rsrc2.
 
@@ -418,14 +415,13 @@ RM-2P-2S1D:
 
 | Field Name | Field bits | Description                     |
 |------------|------------|----------------------------|
-| Rdest_EXTRA2 | `8:9`   | extends Rdest (R\*\_EXTRA2 Encoding)   |
-| Rsrc1_EXTRA2 | `10:11` | extends Rsrc1 (R\*\_EXTRA2 Encoding)   |
-| Rsrc2_EXTRA2 | `12:13` | extends Rsrc2 (R\*\_EXTRA2 Encoding)   |
-| MASK_SRC     | `14:16`    | Execution Mask for Source     |
-| ELWIDTH_SRC  | `17:18`    | Element Width for Source      |
+| Rdest_EXTRA2 | `10:11`  | extends Rdest (R\*\_EXTRA2 Encoding)   |
+| Rsrc1_EXTRA2 | `12:13`  | extends Rsrc1 (R\*\_EXTRA2 Encoding)   |
+| Rsrc2_EXTRA2 | `14:16`  | extends Rsrc2 (R\*\_EXTRA2 Encoding)   |
+| MASK_SRC     | `17:18`  | Execution Mask for Source     |
 
 Note that for 1S2P the EXTRA2 dest and src names are switched (Rsrc_EXTRA2
-is in bits 8:9, Rdest1_EXTRA2 in 10:11)
+is in bits 10:11, Rdest1_EXTRA2 in 12:13)
 
 Also that for 3S (to cover `stdx` etc.) the names are switched to 3 src: Rsrc1_EXTRA2, Rsrc2_EXTRA2, Rsrc3_EXTRA2.
 
