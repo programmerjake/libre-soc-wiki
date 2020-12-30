@@ -485,10 +485,10 @@ destination, *all* the sequential ordered standard patterns of Vector
 ISAs are provided: VSPLAT, VSELECT, VINSERT, VCOMPRESS, VEXPAND.
 
 The only one missing from the list here, because it is non-sequential,
-is VGATHER: moving registers by specifying a vector of register indices
+is VGATHER (and VSCATTER): moving registers by specifying a vector of register indices
 (`regs[rd] = regs[regs[rs]]` in a loop).  This one is tricky because it
 typically does not exist in standard scalar ISAs.  If it did it would
-be called [[sv/mv.x]]. Once Vectorised, it's a VGATHER.
+be called [[sv/mv.x]]. Once Vectorised, it's a VGATHER/VSCATTER.
 
 # CR predicate result analysis
 
