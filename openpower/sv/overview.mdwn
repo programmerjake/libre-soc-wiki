@@ -563,6 +563,8 @@ With VL truncated the analysis looking for the zero byte and the subsequent STOR
 
 SIMD strncpy hand-written assembly routines are, to be blunt about it, a total nightmare.  240 instructions is not uncommon, and the worst thing about them is that they are unable to cope with detection of a page fault condition.
 
+Note: see <https://bugs.libre-soc.org/show_bug.cgi?id=561>
+
 # Data-dependent fail-first
 
 This is a minor variant on the CR-based predicate-result mode.  Where pred-result continues with independent element testing (any of which may be parallelised), data-dependent fail-first *stops* at the first failure:
