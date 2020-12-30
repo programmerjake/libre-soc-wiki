@@ -416,7 +416,11 @@ The primary reason for this is because Shader Compilers treat vec2/3/4 as
 Swizzle is particularly important for 3D work.  It allows in-place
 reordering of XYZW, ARGB etc. and access of sub-portions of the same in
 arbitrary order *without* requiring timeconsuming scalar mv instructions
-(scalar due to the convoluted offsets).  With somewhere between 10% and 30% of
+(scalar due to the convoluted offsets).  
+
+Swizzling does not just do permutations: it allows multiple copying of vec2/3/4 elements, such as XXXW as the source operand, which will take 3 copies of the vec4 first element.
+
+With somewhere between 10% and 30% of
 operations in 3D Shaders involving swizzle this is a huge saving and
 reduces pressure on register files.
 
