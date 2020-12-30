@@ -144,6 +144,8 @@ this is where our "simple" loop gets its first complexity.
         if (RA.isvec)  { irs1 += 1; }
         if (RB.isvec)  { irs2 += 1; }
 
+This could have been written out as eight separate cases: one each for when each of RA, RB or RT is scalar or vector.  Those eight cases, when optimally combined, result in the pseudocode above.
+
 With some walkthroughs it is clear that the loop exits immediately
 after the first scalar destination result is written, and that when the
 destination is a Vector the loop proceeds to fill up the register file,
