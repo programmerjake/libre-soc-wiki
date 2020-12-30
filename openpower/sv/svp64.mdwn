@@ -205,6 +205,137 @@ Fields:
 * **N** sets signed/unsigned saturation.
 **RC1** as if Rc=1, stores CRs *but not the result*
 
+# ELWIDTH Encoding
+
+Default behaviour is set to 0b00 so that zeros follow the convention of
+"npt doing anything".  In this case it means that elwidth overrides
+are not applicable.  Thus if a 32 bit instruction operates on 32 bit,
+`elwidth=0b00` specifies that this behaviour is unmodified.  Likewise
+when a processor is switched from 64 bit to 32 bit mode, `elwidth=0b00`
+states that, again, the behaviour is not to be modified.
+
+Only when elwidth is nonzero is the element width overridden to the
+explicitly required value.
+
+## Elwidth for Integers:
+
+| Value | Mnemonic       | Description                        |
+|-------|----------------|------------------------------------|
+| 00    | DEFAULT        | default behaviour for operation    |
+| 01    | `ELWIDTH=b`    | Byte: 8-bit integer                  |
+| 10    | `ELWIDTH=h`    | Halfword: 16-bit integer             |
+| 11    | `ELWIDTH=w`    | Word: 32-bit integer                 |
+
+## Elwidth for FP Registers:
+
+| Value | Mnemonic       | Description                        |
+|-------|----------------|------------------------------------|
+| 00    | DEFAULT        | default behaviour for FP operation     |
+| 01    | `ELWIDTH=bf16` | Reserved for `bf16` |
+| 10    | `ELWIDTH=f16`  | 16-bit IEEE 754 Half floating-point   |
+| 11    | `ELWIDTH=f32`  | 32-bit IEEE 754 Single floating-point  |
+
+Note:
+[`bf16`](https://en.wikipedia.org/wiki/Bfloat16_floating-point_format)
+is reserved for a future implementation of SV
+
+## Elwidth for CRs:
+
+TODO, important, particularly for crops, mfcr and mtcr, what elwidth
+even means.  instead it may be possible to use the bits as extra indices
+(EXTRA6) to access the full 64 CRs.  TBD, several ideas
+
+The actual width of the CRs cannot be altered: they are 4 bit.  Also,
+for Rc=1 operations that produce a result (in RT or FRT) and corresponding CR, it is
+the INT/FP result to which the elwidth override applies, *not* the CR.
+This therefore inherently places Rc=1 operations firmly out of scope as far as a "meaning" for elwidth on CRs is concerned.
+
+As mentioned TBD, this leaves crops etc. to have a meaning defined for
+elwidth, because these ops are pure explicit CR based.
+
+Examples: mfxm may take the extra bits and use them as extra mask bits.
+
+# SUBVL Encoding
+
+the default for SUBVL is 1 and its encoding is 0b00 to indicate that
+SUBVL is effectively disabled (a SUBVL for-loop of only one element). this
+lines up in combination with all other "default is all zeros" behaviour.
+
+| Value | Mnemonic  | Subvec  | Description            |
+|-------|-----------|---------|------------------------|
+| 00    | `SUBVL=1` | single  | Sub-vector length of 1 |
+| 01    | `SUBVL=2` | vec2    | Sub-vector length of 2 |
+| 10    | `SUBVL=3` | vec3    | Sub-vector length of 3 |
+| 11    | `SUBVL=4` | vec4    | Sub-vector length of 4 |
+
+The SUBVL encoding value may be thought of as an inclusive range of a
+sub-vector.  SUBVL=2 represents a vec2, its encoding is 0b01, therefore
+this may be considered to be elements 0b00 to 0b01 inclusive.
+
+# MASK/MASK_SRC & MASK_KIND Encoding
+
+One bit (`MASKMODE`) indicates the mode: CR or Int predication.   The two
+types may not be mixed.
+
+Special note: to get default behaviour (SV disabled) this field must
+be set to zero in combination with Integer Predication also being set
+to 0b000. this has the effect of enabling "all 1s" in the predicate
+mask, which is equivalent to "not having any predication at all"
+and consequently, in combination with all other default zeros, fully
+disables SV.
+
+| Value | Description                                          |
+|-------|------------------------------------------------------|
+| 0     | MASK/MASK_SRC are encoded using Integer Predication  |
+| 1     | MASK/MASK_SRC are encoded using CR-based Predication |
+
+Integer Twin predication has a second set of 3 bits that uses the same
+encoding thus allowing either the same register (r3 or r10) to be used
+for both src and dest, or different regs (one for src, one for dest).
+
+Likewise CR based twin predication has a second set of 3 bits, allowing
+a different test to be applied.
+
+## Integer Predication (MASK_KIND=0)
+
+When the predicate mode bit is zero the 3 bits are interpreted as below.
+Twin predication has an identical 3 bit field similarly encoded.
+
+| Value | Mnemonic | Element `i` enabled if:      |
+|-------|----------|------------------------------|
+| 000   | ALWAYS   | predicate effectively all 1s |
+| 001   | 1 << R3  | `i == R3`                    |
+| 010   | R3       | `R3 & (1 << i)` is non-zero  |
+| 011   | ~R3      | `R3 & (1 << i)` is zero      |
+| 100   | R10      | `R10 & (1 << i)` is non-zero |
+| 101   | ~R10     | `R10 & (1 << i)` is zero     |
+| 110   | R30      | `R30 & (1 << i)` is non-zero |
+| 111   | ~R30     | `R30 & (1 << i)` is zero     |
+
+## CR-based Predication (MASK_KIND=1)
+
+When the predicate mode bit is one the 3 bits are interpreted as below.
+Twin predication has an identical 3 bit field similarly encoded
+
+| Value | Mnemonic | Element `i` is enabled if     |
+|-------|----------|--------------------------|
+| 000   | lt       | `CR[offs+i].LT` is set   |
+| 001   | nl/ge    | `CR[offs+i].LT` is clear |
+| 010   | gt       | `CR[offs+i].GT` is set   |
+| 011   | ng/le    | `CR[offs+i].GT` is clear |
+| 100   | eq       | `CR[offs+i].EQ` is set   |
+| 101   | ne       | `CR[offs+i].EQ` is clear |
+| 110   | so/un    | `CR[offs+i].FU` is set   |
+| 111   | ns/nu    | `CR[offs+i].FU` is clear |
+
+CR based predication.  TODO: select alternate CR for twin predication? see
+[[discussion]]  Overlap of the two CR based predicates must be taken
+into account, so the starting point for one of them must be suitably
+high, or accept that for twin predication VL must not exceed the range
+where overlap will occur, *or* that they use the same starting point
+but select different *bits* of the same CRs
+
+`offs` is defined as CR32 (4x8) so as to mesh cleanly with Vectorised Rc=1 operations (see below).  Rc=1 operations start from CR8 (TBD).
 
 # Extra Remapped Encoding
 
@@ -384,138 +515,6 @@ Encoding shown MSB down to LSB
 | 01          | Scalar | 0b001   | BA[4:2] | BA[1:0] |
 | 10          | Vector | BA[4:2] | 0b000   | BA[1:0] |
 | 11          | Vector | BA[4:2] | 0b100   | BA[1:0] |
-
-# ELWIDTH Encoding
-
-Default behaviour is set to 0b00 so that zeros follow the convention of
-"npt doing anything".  In this case it means that elwidth overrides
-are not applicable.  Thus if a 32 bit instruction operates on 32 bit,
-`elwidth=0b00` specifies that this behaviour is unmodified.  Likewise
-when a processor is switched from 64 bit to 32 bit mode, `elwidth=0b00`
-states that, again, the behaviour is not to be modified.
-
-Only when elwidth is nonzero is the element width overridden to the
-explicitly required value.
-
-## Elwidth for Integers:
-
-| Value | Mnemonic       | Description                        |
-|-------|----------------|------------------------------------|
-| 00    | DEFAULT        | default behaviour for operation    |
-| 01    | `ELWIDTH=b`    | Byte: 8-bit integer                  |
-| 10    | `ELWIDTH=h`    | Halfword: 16-bit integer             |
-| 11    | `ELWIDTH=w`    | Word: 32-bit integer                 |
-
-## Elwidth for FP Registers:
-
-| Value | Mnemonic       | Description                        |
-|-------|----------------|------------------------------------|
-| 00    | DEFAULT        | default behaviour for FP operation     |
-| 01    | `ELWIDTH=bf16` | Reserved for `bf16` |
-| 10    | `ELWIDTH=f16`  | 16-bit IEEE 754 Half floating-point   |
-| 11    | `ELWIDTH=f32`  | 32-bit IEEE 754 Single floating-point  |
-
-Note:
-[`bf16`](https://en.wikipedia.org/wiki/Bfloat16_floating-point_format)
-is reserved for a future implementation of SV
-
-## Elwidth for CRs:
-
-TODO, important, particularly for crops, mfcr and mtcr, what elwidth
-even means.  instead it may be possible to use the bits as extra indices
-(EXTRA6) to access the full 64 CRs.  TBD, several ideas
-
-The actual width of the CRs cannot be altered: they are 4 bit.  Also,
-for Rc=1 operations that produce a result (in RT or FRT) and corresponding CR, it is
-the INT/FP result to which the elwidth override applies, *not* the CR.
-This therefore inherently places Rc=1 operations firmly out of scope as far as a "meaning" for elwidth on CRs is concerned.
-
-As mentioned TBD, this leaves crops etc. to have a meaning defined for
-elwidth, because these ops are pure explicit CR based.
-
-Examples: mfxm may take the extra bits and use them as extra mask bits.
-
-# SUBVL Encoding
-
-the default for SUBVL is 1 and its encoding is 0b00 to indicate that
-SUBVL is effectively disabled (a SUBVL for-loop of only one element). this
-lines up in combination with all other "default is all zeros" behaviour.
-
-| Value | Mnemonic  | Subvec  | Description            |
-|-------|-----------|---------|------------------------|
-| 00    | `SUBVL=1` | single  | Sub-vector length of 1 |
-| 01    | `SUBVL=2` | vec2    | Sub-vector length of 2 |
-| 10    | `SUBVL=3` | vec3    | Sub-vector length of 3 |
-| 11    | `SUBVL=4` | vec4    | Sub-vector length of 4 |
-
-The SUBVL encoding value may be thought of as an inclusive range of a
-sub-vector.  SUBVL=2 represents a vec2, its encoding is 0b01, therefore
-this may be considered to be elements 0b00 to 0b01 inclusive.
-
-# MASK/MASK_SRC & MASK_KIND Encoding
-
-One bit (`MASKMODE`) indicates the mode: CR or Int predication.   The two
-types may not be mixed.
-
-Special note: to get default behaviour (SV disabled) this field must
-be set to zero in combination with Integer Predication also being set
-to 0b000. this has the effect of enabling "all 1s" in the predicate
-mask, which is equivalent to "not having any predication at all"
-and consequently, in combination with all other default zeros, fully
-disables SV.
-
-| Value | Description                                          |
-|-------|------------------------------------------------------|
-| 0     | MASK/MASK_SRC are encoded using Integer Predication  |
-| 1     | MASK/MASK_SRC are encoded using CR-based Predication |
-
-Integer Twin predication has a second set of 3 bits that uses the same
-encoding thus allowing either the same register (r3 or r10) to be used
-for both src and dest, or different regs (one for src, one for dest).
-
-Likewise CR based twin predication has a second set of 3 bits, allowing
-a different test to be applied.
-
-## Integer Predication (MASK_KIND=0)
-
-When the predicate mode bit is zero the 3 bits are interpreted as below.
-Twin predication has an identical 3 bit field similarly encoded.
-
-| Value | Mnemonic | Element `i` enabled if:      |
-|-------|----------|------------------------------|
-| 000   | ALWAYS   | predicate effectively all 1s |
-| 001   | 1 << R3  | `i == R3`                    |
-| 010   | R3       | `R3 & (1 << i)` is non-zero  |
-| 011   | ~R3      | `R3 & (1 << i)` is zero      |
-| 100   | R10      | `R10 & (1 << i)` is non-zero |
-| 101   | ~R10     | `R10 & (1 << i)` is zero     |
-| 110   | R30      | `R30 & (1 << i)` is non-zero |
-| 111   | ~R30     | `R30 & (1 << i)` is zero     |
-
-## CR-based Predication (MASK_KIND=1)
-
-When the predicate mode bit is one the 3 bits are interpreted as below.
-Twin predication has an identical 3 bit field similarly encoded
-
-| Value | Mnemonic | Element `i` is enabled if     |
-|-------|----------|--------------------------|
-| 000   | lt       | `CR[offs+i].LT` is set   |
-| 001   | nl/ge    | `CR[offs+i].LT` is clear |
-| 010   | gt       | `CR[offs+i].GT` is set   |
-| 011   | ng/le    | `CR[offs+i].GT` is clear |
-| 100   | eq       | `CR[offs+i].EQ` is set   |
-| 101   | ne       | `CR[offs+i].EQ` is clear |
-| 110   | so/un    | `CR[offs+i].FU` is set   |
-| 111   | ns/nu    | `CR[offs+i].FU` is clear |
-
-CR based predication.  TODO: select alternate CR for twin predication? see
-[[discussion]]  Overlap of the two CR based predicates must be taken
-into account, so the starting point for one of them must be suitably
-high, or accept that for twin predication VL must not exceed the range
-where overlap will occur, *or* that they use the same starting point
-but select different *bits* of the same CRs
-
-`offs` is defined as CR32 (4x8) so as to mesh cleanly with Vectorised Rc=1 operations (see below).  Rc=1 operations start from CR8 (TBD).
 
 # Appendix
 
