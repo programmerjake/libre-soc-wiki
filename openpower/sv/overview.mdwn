@@ -408,6 +408,9 @@ is applied to the whole subvector:
         if (RA.isvec)  { irs1 += 1; }
         if (RB.isvec)  { irs2 += 1; }
 
+The primary reason for this is because Shader Compilers treat vec2/3/4 as
+"single units".  Recognising this in hardware is just sensible.
+
 # Swizzle <a name="swizzle"></a>
 
 Swizzle is particularly important for 3D work.  It allows in-place
