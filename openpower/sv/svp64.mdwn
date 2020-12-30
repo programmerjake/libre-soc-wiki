@@ -348,11 +348,11 @@ but select different *bits* of the same CRs
 
 # Extra Remapped Encoding
 
-Shows all instruction-specific fields in the Remapped Encoding `RM[8:18]` for all instruction variants.  
+Shows all instruction-specific fields in the Remapped Encoding `RM[8:18]` for all instruction variants.  Note that due to the very tight space, the encoding mode is *not* included in the prefix itself.  The mode is "applied", similar to OpenPOWER "Forms" (X-Form, D-Form) on a per-instruction basis, and, like "Forms" are given a designation (below) of the form `RM-nP-nSnD`. The full list of which instructions use which remaps is here [[opcode_regs_deduped]].
 
 There are two categories:  Single and Twin Predication.
 Due to space considerations further subdivision of Single Predication
-is based on whether the number of src operands is 2 or 3.  The full list of which instructions use which remaps is here [[opcode_regs_deduped]].
+is based on whether the number of src operands is 2 or 3.  
 
 * `RM-1P-3S1D` Single Predication dest/src1/2/3, applies to 4-operand instructions (fmadd, isel, madd).
 * `RM-1P-2S1D` Single Predication dest/src1/2 applies to 3-operand instructions (src1 src2 dest)
