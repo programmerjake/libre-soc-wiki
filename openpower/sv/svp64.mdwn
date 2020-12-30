@@ -235,18 +235,20 @@ explicitly required value.
 | Value | Mnemonic       | Description                        |
 |-------|----------------|------------------------------------|
 | 00    | DEFAULT        | default behaviour for operation    |
-| 01    | `ELWIDTH=b`    | Byte: 8-bit integer                  |
+| 01    | `ELWIDTH=w`    | Word: 32-bit integer                 |
 | 10    | `ELWIDTH=h`    | Halfword: 16-bit integer             |
-| 11    | `ELWIDTH=w`    | Word: 32-bit integer                 |
+| 11    | `ELWIDTH=b`    | Byte: 8-bit integer                  |
+
+This encoding is chosen such that the byte width may be computed as `(3-ew)<<8`
 
 ## Elwidth for FP Registers:
 
 | Value | Mnemonic       | Description                        |
 |-------|----------------|------------------------------------|
 | 00    | DEFAULT        | default behaviour for FP operation     |
-| 01    | `ELWIDTH=bf16` | Reserved for `bf16` |
+| 01    | `ELWIDTH=f32`  | 32-bit IEEE 754 Single floating-point  |
 | 10    | `ELWIDTH=f16`  | 16-bit IEEE 754 Half floating-point   |
-| 11    | `ELWIDTH=f32`  | 32-bit IEEE 754 Single floating-point  |
+| 11    | `ELWIDTH=bf16` | Reserved for `bf16` |
 
 Note:
 [`bf16`](https://en.wikipedia.org/wiki/Bfloat16_floating-point_format)
