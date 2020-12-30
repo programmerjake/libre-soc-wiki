@@ -172,7 +172,7 @@ The following fields are common to all Remapped Encodings:
 * MASK and MASK_KIND provide predication (two types of sources: scalar INT and Vector CR).
 
 Bits 10 to 18 are further decoded depending on RM category for the instruction.
-These are given designations such as `RM-1P-3S1D` which indicates for this example that the operation is to be single-predicated and that there are 3 source operand EXTRA tags and one destination operand tag.
+Similar to OpenPOWER `X-Form` etc. these are given designations, such as `RM-1P-3S1D` which indicates for this example that the operation is to be single-predicated and that there are 3 source operand EXTRA tags and one destination operand tag.
 
 Note that if ELWIDTH != ELWIDTH_SRC this may result in reduced performance or increased latency in some implementations due to lane-crossing. 
 
