@@ -52,7 +52,7 @@ This document focusses specifically on how that fits into available space.  The 
 
 For the new fields added in SVP64, instructions that have any of their
 fields set to a reserved value must cause an illegal instruction trap,
-to allow emulation of future instruction sets.
+to allow emulation of future instruction sets.  Reserved values are always all zeros.
 
 This is unlike OpenPower ISA v3.1, which in many instances does not require a trap if reserved fields are nonzero.
 
@@ -163,7 +163,7 @@ The following fields are common to all Remapped Encodings:
 | MASK          | `1:3`      | Execution Mask                      |
 | ELWIDTH       | `4:5`      | Element Width                       |
 | SUBVL         | `6:7`      | Sub-vector length                   |                          
-| MODE          | `19:23` | changes Vector behaviour               |
+| MODE          | `19:23`    | changes Vector behaviour               |
 
 Bits 9 to 18 are further decoded depending on RM category for the instruction.
 
