@@ -157,7 +157,6 @@ Remapped Encoding field (RM).
 
 The following fields are common to all Remapped Encodings:
 
-
 | Field Name | Field bits | Description                            |
 |------------|------------|----------------------------------------|
 | MASK\_KIND    | `0`        | Execution (predication) Mask Kind                 |
@@ -168,10 +167,50 @@ The following fields are common to all Remapped Encodings:
 
 Bits 9 to 18 are further decoded depending on RM category for the instruction.
 
+# Mode
+
+Mode is an augmentation of SV behaviour.  Some of these alterations are element-based (saturation), others involve post-analysis (predicate result) and others are Vector-based (mapreduce, fail-on-first).
+
+These are the modes:
+
+* **normal** mode is straight vectorisation.  no augmentations: the vector comprises an array of independently created results.
+* **ffirst** or data-dependent fail-on-first: see separate section.  the vector may be truncated depending on certain criteria.
+  *VL is altered as a result*.
+* **sat mode** or saturation: clamps each elemrnt result to a min/max rather than overflows / wraps.  allows signed and unsigned clamping. 
+* **reduce mode**. a mapreduce is performed.  the result is a scalar.  a result vector however is required, as the upper elements may be used to store intermediary computations.  the result of the mapreduce is in the first element with a nonzero predicate bit.  see separate section below.
+  note that there are comprehensive caveats when using this mode.
+* **pred-result** will test the result (CR testing selects a bit of CR and inverts it, just like branch testing) and if the test fails it is as if the predicate bit was zero.  When Rc=1 the CR element however is still stored in the CR regfile, even if the test failed.  This scheme does not apply to crops (crand, cror).  See appendix for details.
+
+Note that ffirst and reduce modes are not anticipated to be high-performance in some implementations.  ffirst due to interactions with VL, and reduce due to it requiring additional operations to produce a result.  normal, saturate and pred-result are however independent and may easily be parallelised to give high performance, regardless of the value of VL.
+
+The Mode table is laid out as follows:
+
+| 0-1 |  2  |  3   4  |  description              |
+| --- | --- |---------|-------------------------- |
+| 00  |   0 |  sz  dz | normal mode                      |
+| 00  |   1 | sz CRM  | reduce mode (mapreduce), SUBVL=1 |
+| 00  |   1 | SVM CRM | subvector reduce mode, SUBVL>1   |
+| 01  | inv | CR-bit  | Rc=1: ffirst CR sel              |
+| 01  | inv | sz  RC1 |  Rc=0: ffirst z/nonz |
+| 10  |   N | sz   dz |  sat mode: N=0/1 u/s |
+| 11  | inv | CR-bit  |  Rc=1: pred-result CR sel |
+| 11  | inv | sz  RC1 |  Rc=0: pred-result z/nonz |
+
+Fields:
+
+* **sz / dz**  if predication is enabled will put zeros into the dest (or as src in the case of twin pred) when the predicate bit is zero.  otherwise the element is ignored or skipped, depending on context.
+* **inv CR bit** just as in branches (BO) these bits allow testing of a CR bit and whether it is set (inv=0) or unset (inv=1)
+* **CRM** affects the CR on reduce mode when Rc=1
+* **SVM** sets "subvector" reduce mode
+* **N** sets signed/unsigned saturation.
+**RC1** as if Rc=1, stores CRs *but not the result*
+
+
 # Extra Remapped Encoding
 
-Shows all fields in the Remapped Encoding `RM[0:23]` for all instruction
-variants.  There are two categories:  Single and Twin Predication.
+Shows all instruction-specific fields in the Remapped Encoding `RM[8:18]` for all instruction variants.  
+
+There are two categories:  Single and Twin Predication.
 Due to space considerations further subdivision of Single Predication
 is based on whether the number of src operands is 2 or 3.  The full list of which instructions use which remaps is here [[opcode_regs_deduped]].
 
@@ -189,7 +228,7 @@ is based on whether the number of src operands is 2 or 3.  The full list of whic
 | Rsrc1\_EXTRA2 | `10:11` | extends Rsrc1 (R\*\_EXTRA2 Encoding)   |
 | Rsrc2\_EXTRA2 | `12:13` | extends Rsrc2 (R\*\_EXTRA2 Encoding)   |
 | Rsrc3\_EXTRA2 | `14:15` | extends Rsrc3 (R\*\_EXTRA2 Encoding)   |
-| reserved      | `16`    | reserved                               |
+| reserved      | `16:18` | reserved                               |
 
 ## RM-1P-2S1D
 
@@ -259,44 +298,6 @@ Twin Predication.  therefore these are treated as RM-2P-2S1D and the
 src spec for RA is also used for the same RA as a dest.
 
 Note that if ELWIDTH != ELWIDTH_SRC this may result in reduced performance or increased latency in some implementations due to lane-crossing. 
-
-# Mode
-
-Mode is an augmentation of SV behaviour.  Some of these alterations are element-based (saturation), others involve post-analysis (predicate result) and others are Vector-based (mapreduce, fail-on-first).
-
-These are the modes:
-
-* **normal** mode is straight vectorisation.  no augmentations: the vector comprises an array of independently created results.
-* **ffirst** or data-dependent fail-on-first: see separate section.  the vector may be truncated depending on certain criteria.
-  *VL is altered as a result*.
-* **sat mode** or saturation: clamps each elemrnt result to a min/max rather than overflows / wraps.  allows signed and unsigned clamping. 
-* **reduce mode**. a mapreduce is performed.  the result is a scalar.  a result vector however is required, as the upper elements may be used to store intermediary computations.  the result of the mapreduce is in the first element with a nonzero predicate bit.  see separate section below.
-  note that there are comprehensive caveats when using this mode.
-* **pred-result** will test the result (CR testing selects a bit of CR and inverts it, just like branch testing) and if the test fails it is as if the predicate bit was zero.  When Rc=1 the CR element however is still stored in the CR regfile, even if the test failed.  This scheme does not apply to crops (crand, cror).  See appendix for details.
-
-Note that ffirst and reduce modes are not anticipated to be high-performance in some implementations.  ffirst due to interactions with VL, and reduce due to it requiring additional operations to produce a result.  normal, saturate and pred-result are however independent and may easily be parallelised to give high performance, regardless of the value of VL.
-
-The Mode table is laid out as follows:
-
-| 0-1 |  2  |  3   4  |  description              |
-| --- | --- |---------|-------------------------- |
-| 00  |   0 |  sz  dz | normal mode                      |
-| 00  |   1 | sz CRM  | reduce mode (mapreduce), SUBVL=1 |
-| 00  |   1 | SVM CRM | subvector reduce mode, SUBVL>1   |
-| 01  | inv | CR-bit  | Rc=1: ffirst CR sel              |
-| 01  | inv | sz  RC1 |  Rc=0: ffirst z/nonz |
-| 10  |   N | sz   dz |  sat mode: N=0/1 u/s |
-| 11  | inv | CR-bit  |  Rc=1: pred-result CR sel |
-| 11  | inv | sz  RC1 |  Rc=0: pred-result z/nonz |
-
-Fields:
-
-* **sz / dz**  if predication is enabled will put zeros into the dest (or as src in the case of twin pred) when the predicate bit is zero.  otherwise the element is ignored or skipped, depending on context.
-* **inv CR bit** just as in branches (BO) these bits allow testing of a CR bit and whether it is set (inv=0) or unset (inv=1)
-* **CRM** affects the CR on reduce mode when Rc=1
-* **SVM** sets "subvector" reduce mode
-* **N** sets signed/unsigned saturation.
-**RC1** as if Rc=1, stores CRs *but not the result*
 
 # R\*\_EXTRA2 and R\*\_EXTRA3 Encoding
 
