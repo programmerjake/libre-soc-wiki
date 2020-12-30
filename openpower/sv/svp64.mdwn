@@ -165,12 +165,13 @@ The following fields are common to all Remapped Encodings:
 | SUBVL         | `6:7`      | Sub-vector length                   |                          
 | MODE          | `19:23`    | changes Vector behaviour               |
 
-Bits 9 to 18 are further decoded depending on RM category for the instruction.
-
 * MODE changes the behaviour of the SV operation (result saturation, mapreduce)
 * SUBVL groups elements together into vec2, vec3, vec4 for use in 3D and Audio/Video DSP work
 * ELWIDTH overrides the instruction's operand width
 * MASK and MASK_KIND provide predication (two types of sources: scalar INT and Vector CR).
+
+Bits 9 to 18 are further decoded depending on RM category for the instruction.
+These are given designations such as `RM-1P-3S1D` which indicate that the operation is to be single-predicated and that there are 3 source operand EXTRA tags and one destination operand tag.
 
 # Mode
 
