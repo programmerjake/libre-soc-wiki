@@ -54,7 +54,7 @@ Summary
 
 # SimpleV
 
-see [[simple_v_extension]] - will fit into 48/64/VBLOCK, see below.
+see [[openpower/sv]].
 SimpleV: a "hardware for-loop" which involves type-casting (both) the
 register files to "a sequence of elements".  The **one** instruction
 (an unmodified **scalar** instruction) is interpreted as a *hardware
@@ -71,7 +71,7 @@ Branch Facility (Section 2.3.1 V2.07B and V3.0B) has 4-bit registers: CR0 and CR
 
 ## Carry
 
-SimpleV extends (wraps) *scalar* opcodes with a hardware-level for-loop. Therefore, each scalar operation with a carry-in and carry-out will **require its own carry in and out bit**. Therefore, an extra SPR will be required which allows context switches to save this full set of carry bits.
+SimpleV extends (wraps) *scalar* opcodes with a hardware-level for-loop. Therefore, each scalar operation with a carry-in and carry-out will **require its own carry in and out bit**. Most sensible location to use is the CRs
 
 # Integer Overflow / Saturate
 
