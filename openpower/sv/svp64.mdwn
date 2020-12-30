@@ -153,20 +153,7 @@ Following the prefix will be the suffix: this is simply a 32-bit v3.0B / v3.1B
 instruction.  That instruction becomes "prefixed" with the SVP context: the
 Remapped Encoding field (RM).
 
-# Remapped Encoding Fields
-
-Shows all fields in the Remapped Encoding `RM[0:23]` for all instruction
-variants.  There are two categories:  Single and Twin Predication.
-Due to space considerations further subdivision of Single Predication
-is based on whether the number of src operands is 2 or 3.
-
-* `RM-1P-3S1D` Single Predication dest/src1/2/3, applies to 4-operand instructions (fmadd, isel, madd).
-* `RM-1P-2S1D` Single Predication dest/src1/2 applies to 3-operand instructions (src1 src2 dest)
-* `RM-2P-1S1D` Twin Predication (src=1, dest=1)
-* `RM-2P-2S1D` Twin Predication (src=2, dest=1) primarily for LDST (Indexed)
-* `RM-2P-1S2D` Twin Predication (src=1, dest=2) primarily for LDST Update
-
-## Common RM fields
+# Common RM fields
 
 The following fields are common to all Remapped Encodings:
 
@@ -180,6 +167,19 @@ The following fields are common to all Remapped Encodings:
 | MODE          | `19:23` | changes Vector behaviour               |
 
 Bits 9 to 18 are further decoded depending on RM category for the instruction.
+
+# Extra Remapped Encoding
+
+Shows all fields in the Remapped Encoding `RM[0:23]` for all instruction
+variants.  There are two categories:  Single and Twin Predication.
+Due to space considerations further subdivision of Single Predication
+is based on whether the number of src operands is 2 or 3.  The full list of which instructions use which remaps is here [[opcode_regs_deduped]].
+
+* `RM-1P-3S1D` Single Predication dest/src1/2/3, applies to 4-operand instructions (fmadd, isel, madd).
+* `RM-1P-2S1D` Single Predication dest/src1/2 applies to 3-operand instructions (src1 src2 dest)
+* `RM-2P-1S1D` Twin Predication (src=1, dest=1)
+* `RM-2P-2S1D` Twin Predication (src=2, dest=1) primarily for LDST (Indexed)
+* `RM-2P-1S2D` Twin Predication (src=1, dest=2) primarily for LDST Update
 
 ## RM-1P-3S1D
 
