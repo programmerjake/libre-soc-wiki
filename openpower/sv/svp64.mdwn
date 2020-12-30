@@ -285,6 +285,8 @@ this may be considered to be elements 0b00 to 0b01 inclusive.
 
 # MASK/MASK_SRC & MASK_KIND Encoding
 
+TODO: rename MASK_KIND to MASKMODE
+
 One bit (`MASKMODE`) indicates the mode: CR or Int predication.   The two
 types may not be mixed.
 
@@ -295,10 +297,10 @@ mask, which is equivalent to "not having any predication at all"
 and consequently, in combination with all other default zeros, fully
 disables SV.
 
-| Value | Description                                          |
-|-------|------------------------------------------------------|
-| 0     | MASK/MASK_SRC are encoded using Integer Predication  |
-| 1     | MASK/MASK_SRC are encoded using CR-based Predication |
+| MASK\_KIND Value | Description                                          |
+|-----------|------------------------------------------------------|
+| 0         | MASK/MASK_SRC are encoded using Integer Predication  |
+| 1         | MASK/MASK_SRC are encoded using CR-based Predication |
 
 Integer Twin predication has a second set of 3 bits that uses the same
 encoding thus allowing either the same register (r3 or r10) to be used
