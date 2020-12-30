@@ -167,6 +167,11 @@ The following fields are common to all Remapped Encodings:
 
 Bits 9 to 18 are further decoded depending on RM category for the instruction.
 
+* MODE changes the behaviour of the SV operation (result saturation, mapreduce)
+* SUBVL groups elements together into vec2, vec3, vec4 for use in 3D and Audio/Video DSP work
+* ELWIDTH overrides the instruction's operand width
+* MASK and MASK_KIND provide predication (two types of sources: scalar INT and Vector CR).
+
 # Mode
 
 Mode is an augmentation of SV behaviour.  Some of these alterations are element-based (saturation), others involve post-analysis (predicate result) and others are Vector-based (mapreduce, fail-on-first).
