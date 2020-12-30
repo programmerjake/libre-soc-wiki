@@ -214,6 +214,10 @@ Fields:
 * **N** sets signed/unsigned saturation.
 **RC1** as if Rc=1, stores CRs *but not the result*
 
+## LD/ST ffirst
+
+ffirst LD/ST to multiple pages via a Vectorised base is considered a security risk due to the abuse of probing multiple pages in rapid succession and getting feedback on which pages would fail.  Therefore in these special circumstances requesting ffirst eith a vector base is instead interpreted as element-strided LD/ST.
+
 # ELWIDTH Encoding
 
 Default behaviour is set to 0b00 so that zeros follow the convention of
