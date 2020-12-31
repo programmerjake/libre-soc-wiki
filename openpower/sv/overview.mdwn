@@ -290,8 +290,9 @@ registers.  In c this would be:
 
 Conceptually, to get our variable element width vectors,
 we may think of the regfile as instead being the following c-based data
-structure, where all types uint16_t are in little-endian order:
+structure, where all types uint16_t etc. are in little-endian order:
 
+    #pragma(packed)
     typedef union {
         uint8_t  actual_bytes[8];
         uint8_t  b[0]; // array of type uint8_t
