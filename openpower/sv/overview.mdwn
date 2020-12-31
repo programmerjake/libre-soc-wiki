@@ -376,6 +376,14 @@ of the destination.  The only situation where a full overwrite occurs
 is on "default" behaviour.  This is extremely important to consider the
 register file as a byte-level store, not a 64-bit-level store.
 
+## Why LE regfile?
+
+The concept of having a regfile where the byte ordering of the underlying SRAM seems utter nonsense.  Surely, a hardware implementation gets to choose the order, right? The bytes come in, all registers are 64 bit and it's just wiring, right?
+
+The assumption in that question was, "all registers are 64 bit".  SV allows SIMD-style packing of vectors into the 64 bit registers, and consequently it becomes critically important to decide a byte-order.  That decision was - arbitrarily - LE mode.  Actually it wasn't arbitrary at all: it was such hell to implement CRs and LD/ST in LibreSOC, with arbitrary insertions of 7-index here and 3-bitindex there that the decision to pick LE was extremrly easy.
+
+Without such a decision, if two words are packed as elements into a 64 bit register, what does this mean? Should they be inverted so that the lower indexed element does into the HI or the LO word? should the 8 bytes of each register be inverted? Should the bytes in each element be inverted?  The decision was therefore made: the c typedef union is, in a LE context, the definitive canonical definition, and implementations may choose whatever internal HDL wire order they like as long as the results conform to the elwidth pseudocode.
+
 ## Source and Destination overrides
 
 A minor fly in the ointment: what happens if the source and destination are over-ridden to different widths?  For example, FP16 arithmetic is not accurate enough and may introduce rounding errors when up-converted to FP32 output.  The rule is therefore set:
