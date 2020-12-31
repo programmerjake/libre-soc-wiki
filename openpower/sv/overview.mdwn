@@ -368,6 +368,77 @@ of the destination.  The only situation where a full overwrite occurs
 is on "default" behaviour.  This is extremely important to consider the
 register file as a byte-level store, not a 64-bit-level store.
 
+## Source and Destination overrides
+
+A minor fly in the ointment: what happens if the source and destination are over-ridden to different widths?  For example, FP16 arithmetic is not accurate enough and may introduce rounding errors when up-converted to FP32 output.  The rule is therefore set:
+
+    The operation MUST take place at the larger of the two widths
+
+In pseudocode this is:
+
+    for i = 0 to VL-1:
+       src1 = get_polymorphed_reg(RA, srcwid, i)
+       src2 = get_polymorphed_reg(RB, srcwid, i)
+       opwidth = max(srcwid, destwid)
+       result = op_add(src1, src2, opwidth) # at max width
+       set_polymorphed_reg(rd, destwid, i, result)
+
+It will turn out that under some conditions the combination of the extension of the source registers followed by truncation of the result gets rid of bits that didn't matter, and the operation might as well have taken place at the narrower width and could save resources that way.  Examples include Logical OR where the source extension would place zeros in the upper bits, the result will be truncated and throw those zeros away.
+
+Counterexamples include the previously mentioned FP16 arithmetic, where for operations such as division of large numbers by very small ones it should be clear that internal accuracy will play a major role in influencing the result.  Hence the rule that the calculation takes place at the maximum bitwidth, and truncation follows afterwards.
+
+## Signed arithmetic
+
+What happens when the operation involves signed arithmetic?  Here the implementor has to use common sense, and make sure behaviour is accurately documented.  If the result of the unmodified operation is sign-extended because one of the inputs is signed, then the input source operands must be first read at their overridden bitwidth and *then* sign-extended:
+
+      for i = 0 to VL-1:
+       src1 = get_polymorphed_reg(RA, srcwid, i)
+       src2 = get_polymorphed_reg(RB, srcwid, i)
+       opwidth = max(srcwid, destwid)
+       # srces known to be less than result width
+       src1 = sign_extend(src1, srcwid, destwid)
+       src2 = sign_extend(src2, srcwid, destwid)
+       result = op_signed(src1, src2, opwidth) # at max width
+       set_polymorphed_reg(rd, destwid, i, result)
+  
+The key here is that the cues are taken from the underlying operation.
+
+## Saturation
+
+Audio DSPs need to be able to clip sound when the "volume" is adjusted, but if it is too loud and the signal wraps, distortion occurs.  The solution is to clip (saturate) the audio and allow this to be detected.  In practical terms this is a post-result analysis however it needs to take place at the largest bitwidth i.e. before a result is element width truncated.  Only then can the arithmetic saturation condition be detected:
+
+    for i = 0 to VL-1:
+       src1 = get_polymorphed_reg(RA, srcwid, i)
+       src2 = get_polymorphed_reg(RB, srcwid, i)
+       opwidth = max(srcwid, destwid)
+       # unsigned add
+       result = op_add(src1, src2, opwidth) # at max width
+       # now saturate (unsigned)
+       sat = max(result, (1<<destwid)-1)
+       set_polymorphed_reg(rd, destwid, i, sat)
+       # set sat overflow
+       if Rc=1:
+          CR.ov = (sat != result)
+       
+So the actual computation took place at the larger width, but was post-analysed as an unsigned operation.  If however "signed" saturation is requested then the actual arithmetic operation has to be carefully analysed to see what that actually means.
+
+In terms of FP arithmetic, which by definition always has a sign bit do always takes place as a signed operation anyway, the request to saturate to signed min/max is pretty clear.  However for integer arithmetic such as shift (plain shift, not arithmetic shift), or logical operations such as XOR, which were never designed to have the assumption that its inputs be considered as signed numbers, common sense has to kick in, and follow what CR0 does.
+
+CR0 for Logical operations still applies: the test is still applied to produce CR.eq, CR.lt and CR.gt analysis.  Following this lead we may do the same thing: although the input operations for and OR or XOR can in no way be thought of as "signed" we may at least consider the result to be signed, and thus apply min/max range detection -128 to +127 when truncating down to 8 bit for example.
+
+    for i = 0 to VL-1:
+       src1 = get_polymorphed_reg(RA, srcwid, i)
+       src2 = get_polymorphed_reg(RB, srcwid, i)
+       opwidth = max(srcwid, destwid)
+       # logical op, signed has no meaning
+       result = op_xor(src1, src2, opwidth)
+       # now saturate (unsigned)
+       sat = max(result, (1<<destwid-1)-1)
+       sat = min(result, -(1<<destwid-1))
+       set_polymorphed_reg(rd, destwid, i, sat)
+
+Overall here the rule is: apply common sense then document the behaviour really clearly, for each and every operation.
+
 # Quick recap so far
 
 The above functionality pretty much covers around 85% of Vector ISA needs.
