@@ -6,5 +6,7 @@ Whilst this is fantastic in that it provides opportunities for speeding up FP64 
 
 To solve this, the FP values need to be compacted or expanded such that Vector operations do not waste space.  The current thinking is that it nay be reasonable to overload `fmv` at different element widths (srcwid != destwid) to perform the necessary conversion, as opposed to just simply doing a straight bitcopy with truncation.
 
+The result of this has some interesting side-effects when considering what "single precision FP operations" means when elwidth=32.  A reasonable interpretation is: the operation is to be performed at FP16 precision yet the result placed in FP32 format, just as how for FP64 single-precision is xarried out at FP32 and placed in FP64.
+
 see <https://bugs.libre-soc.org/show_bug.cgi?id=564> for discussion.
 
