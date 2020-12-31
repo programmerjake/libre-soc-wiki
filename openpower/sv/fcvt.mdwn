@@ -1,0 +1,10 @@
+# SV FP Conversion
+
+OpenPOWER Scalar ISA requires that FP32 numbers be distributed throughout the bits of the underlying FP64 register such that at any time an FP64 opcode nay be used, without performing any kind of conversion, directly on that FP32 value.  Likewise if precision is not important an FP32 opcode may be called on an FP64 value without conversion needed.
+
+Whilst this is fantastic in that it provides opportunities for speeding up FP64 operations it plays merry hell with SV compacted Vectors of FP32 and FP16 elements, when element width overrides come into play.
+
+To solve this, the FP values need to be compacted or expanded such that Vector operations do not waste space.  The current thinking is that it nay be reasonable to overload `fmv` at different element widths (srcwid != destwid) to perform the necessary conversion, as opposed to just simply doing a straight bitcopy with truncation.
+
+see <https://bugs.libre-soc.org/show_bug.cgi?id=564> for discussion.
+
