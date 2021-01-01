@@ -338,11 +338,43 @@ Starting with all zeros, setting `actual_bytes[3]` in any given `reg_t` to 0x01 
 * i[0] = 0x00010000
 * l[0] = 0x0000000000010000
 
-Then, our simple loop, instead of accessing the array of regfile entries
-with a computed index `iregs[RT+i]`, would access the appropriate element of the
-appropriate width, such as `iregs[RT].s[i]` in order to access 16 bit elements starting from RT.  Thus we have a series of overlapping conceptual arrays
-that each start at what is traditionally thought of as "a register".
-It then helps if we have a couple of routines:
+In tabular form, starting an elwidth=8 loop from r0 and extending for
+16 elements would begin at r0 and extend over the entirety of r1:
+
+       | byte0 | byte1 | byte2 | byte3 | byte4 | byte5 | byte6 | byte7 |
+       | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- |
+    r0 | b[0]  | b[1]  | b[2]  | b[3]  | b[4]  | b[5]  | b[6]  | b[7]  |
+    r1 | b[8]  | b[9]  | b[10] | b[11] | b[12] | b[13] | b[14] | b[15] |
+
+Starting an elwidth=16 loop from r0 and extending for
+7 elements would begin at r0 and extend partly over r1.  Note that
+b0 indicates the low byte (lowest 8 bits) of each 16-bit word, and
+b1 represents the top byte:
+
+       | byte0 | byte1 | byte2 | byte3 | byte4 | byte5 | byte6 | byte7 |
+       | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- |
+    r0 | s[0].b0  b1   | s[1].b0  b1   | s[2].b0  b1   |  s[3].b0  b1  |
+    r1 | s[4].b0  b1   | s[5].b0  b1   | s[6].b0  b1   |  unmodified   |
+
+Likewise for elwidth=32, and a loop extending for 3 elements.  b0 through
+b3 represent the bytes (numbered lowest for LSB and highest for MSB) within
+each element word:
+
+       | byte0 | byte1 | byte2 | byte3 | byte4 | byte5 | byte6 | byte7 |
+       | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- |
+    r0 | w[0].b0  b1      b2      b3   | w[1].b0  b1      b2      b3   |
+    r1 | w[2].b0  b1      b2      b3   | unmodified    unmodified      |
+
+64-bit (default) elements access the full registers.  In each case the
+register number (`RT`, `RA`) indicates the *starting* point for the storage
+and retrieval of the elements.
+
+Our simple loop, instead of accessing the array of regfile entries
+with a computed index `iregs[RT+i]`, would access the appropriate element
+of the appropriate width, such as `iregs[RT].s[i]` in order to access
+16 bit elements starting from RT.  Thus we have a series of overlapping
+conceptual arrays that each start at what is traditionally thought of as
+"a register".  It then helps if we have a couple of routines:
 
     get_polymorphed_reg(reg, bitwidth, offset):
         reg_t res = 0;
@@ -448,7 +480,7 @@ What happens when the operation involves signed arithmetic?  Here the implemento
        src2 = sign_extend(src2, srcwid, destwid)
        result = op_signed(src1, src2, opwidth) # at max width
        set_polymorphed_reg(rd, destwid, i, result)
-  
+
 The key here is that the cues are taken from the underlying operation.
 
 ## Saturation
@@ -467,7 +499,7 @@ Audio DSPs need to be able to clip sound when the "volume" is adjusted, but if i
        # set sat overflow
        if Rc=1:
           CR.ov = (sat != result)
-       
+
 So the actual computation took place at the larger width, but was post-analysed as an unsigned operation.  If however "signed" saturation is requested then the actual arithmetic operation has to be carefully analysed to see what that actually means.
 
 In terms of FP arithmetic, which by definition always has a sign bit do always takes place as a signed operation anyway, the request to saturate to signed min/max is pretty clear.  However for integer arithmetic such as shift (plain shift, not arithmetic shift), or logical operations such as XOR, which were never designed to have the assumption that its inputs be considered as signed numbers, common sense has to kick in, and follow what CR0 does.
@@ -535,7 +567,7 @@ The primary reason for this is because Shader Compilers treat vec2/3/4 as
 Swizzle is particularly important for 3D work.  It allows in-place
 reordering of XYZW, ARGB etc. and access of sub-portions of the same in
 arbitrary order *without* requiring timeconsuming scalar mv instructions
-(scalar due to the convoluted offsets).  
+(scalar due to the convoluted offsets).
 
 Swizzling does not just do permutations: it allows multiple copying of vec2/3/4 elements, such as XXXW as the source operand, which will take 3 copies of the vec4 first element.
 
