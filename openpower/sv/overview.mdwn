@@ -18,16 +18,19 @@ Contents:
 # Introduction: SIMD and Cray Vectors
 
 SIMD, the primary method for easy parallelism of the
-past 30 years in Computer Architectures, is [known to be
-harmful](https://www.sigarch.org/simd-instructions-considered-harmful/).
+past 30 years in Computer Architectures, is
+[known to be harmful](https://www.sigarch.org/simd-instructions-considered-harmful/).
 SIMD provides a seductive simplicity that is easy to implement in
-hardware.  With each doubling in width it promises increases in raw performance without the complexity of either multi-issue or out-of-order execution.
+hardware.  With each doubling in width it promises increases in raw
+performance without the complexity of either multi-issue or out-of-order
+execution.
 
 Unfortunately, even with predication added, SIMD only becomes more and
 more problematic with each power of two SIMD width increase introduced
 through an ISA revision.  The opcode proliferation, at O(N^6), inexorably
 spirals out of control in the ISA, detrimentally impacting the hardware,
-the software, the compilers and the testing and compliance.  Here are the typical dimensions that result in such massive proliferation:
+the software, the compilers and the testing and compliance.  Here are
+the typical dimensions that result in such massive proliferation:
 
 * Operation (add, mul)
 * bitwidth (8, 16, 32, 64, 128)
@@ -36,16 +39,18 @@ the software, the compilers and the testing and compliance.  Here are the typica
 * HI/LO swizzle (Audio L/R channels)
 * Saturation (Clamping at max range)
 
-These typically are multiplied up to produce explicit opcodes numbering in the thousands on, for example the ARC Video/DSP cores.
+These typically are multiplied up to produce explicit opcodes numbering
+in the thousands on, for example the ARC Video/DSP cores.
 
 Cray-style variable-length Vectors on the other hand result in
 stunningly elegant and small loops, exceptionally high data throughput
-per instruction (by one *or greater* orders of magnitude than SIMD), with no alarmingly high setup and cleanup code, where
-at the hardware level the microarchitecture may execute from one element
-right the way through to tens of thousands at a time, yet the executable
-remains exactly the same and the ISA remains clear, true to the RISC
-paradigm, and clean.  Unlike in SIMD, powers of two limitations are not
-involved in the ISA or in the assembly code.
+per instruction (by one *or greater* orders of magnitude than SIMD), with
+no alarmingly high setup and cleanup code, where at the hardware level
+the microarchitecture may execute from one element right the way through
+to tens of thousands at a time, yet the executable remains exactly the
+same and the ISA remains clear, true to the RISC paradigm, and clean.
+Unlike in SIMD, powers of two limitations are not involved in the ISA
+or in the assembly code.
 
 SimpleV takes the Cray style Vector principle and applies it in the
 abstract to a Scalar ISA, in the process allowing register file size
@@ -85,11 +90,13 @@ basis further refinements can be added which build up towards an extremely
 powerful Vector augmentation system, with very little in the way of
 additional opcodes required: simply external "context".
 
-x86 was originally only 80 instructions: prior to AVX512 over 1,300 additional instructions have been added, almost all of them SIMD.
+x86 was originally only 80 instructions: prior to AVX512 over 1,300
+additional instructions have been added, almost all of them SIMD.
 
 RISC-V RVV as of version 0.9 is over 188 instructions (more than the
-rest of RV64G combined: 80 for RV64G and 27 for C). Over 95% of that functionality is added to
-OpenPOWER v3 0B, by SimpleV augmentation, with around 5 to 8 instructions.
+rest of RV64G combined: 80 for RV64G and 27 for C). Over 95% of that
+functionality is added to OpenPOWER v3 0B, by SimpleV augmentation,
+with around 5 to 8 instructions.
 
 Even in OpenPOWER v3.0B, the Scalar Integer ISA is around 150
 instructions, with IEEE754 FP adding approximately 80 more. VSX, being
@@ -118,8 +125,9 @@ by SimpleV:
   (struct-based LD/ST from RVV for example)
 * 32-bit instruction lengths. [[svp64]] had to be added as 64 bit.
 
-These limitations, which stem inherently from the adaptation process of starting from a Scalar ISA, are not insurmountable. Over time, they may well be
-addressed in future revisions of SV.
+These limitations, which stem inherently from the adaptation process of
+starting from a Scalar ISA, are not insurmountable. Over time, they may
+well be addressed in future revisions of SV.
 
 The rest of this document builds on the above simple loop to add:
 
@@ -153,7 +161,9 @@ this is where our "simple" loop gets its first complexity.
         if (RA.isvec)  { irs1 += 1; }
         if (RB.isvec)  { irs2 += 1; }
 
-This could have been written out as eight separate cases: one each for when each of `RA`, `RB` or `RT` is scalar or vector.  Those eight cases, when optimally combined, result in the pseudocode above.
+This could have been written out as eight separate cases: one each for
+when each of `RA`, `RB` or `RT` is scalar or vector.  Those eight cases,
+when optimally combined, result in the pseudocode above.
 
 With some walkthroughs it is clear that the loop exits immediately
 after the first scalar destination result is written, and that when the
@@ -174,15 +184,31 @@ there is no separate Vector register file*: it's all the same instruction,
 on the standard register file, just with a loop.  Scalar happens to set
 that loop size to one.
 
-The important insight from the above is that, strictly speaking, Simple-V is not really a Vectorisation scheme at all: it is more of a hardware ISA "Compression scheme", allowing as it does for what would normally require multiple sequential instructions to be replaced with just one.  This is where the rule that Program Order must be preserved in Sub-PC execution derives from.  However in other ways, which will emerge below, the "tagging" concept presents an opportunity to include features definitely not common outside of Vector ISAs, and in that regard it's definitely a class of Vectorisation.
+The important insight from the above is that, strictly speaking, Simple-V
+is not really a Vectorisation scheme at all: it is more of a hardware
+ISA "Compression scheme", allowing as it does for what would normally
+require multiple sequential instructions to be replaced with just one.
+This is where the rule that Program Order must be preserved in Sub-PC
+execution derives from.  However in other ways, which will emerge below,
+the "tagging" concept presents an opportunity to include features
+definitely not common outside of Vector ISAs, and in that regard it's
+definitely a class of Vectorisation.
 
 ## Register "tagging"
 
-As an aside: in [[sv/svp64]] the encoding which allows SV to both extend the range beyond r0-r31 and to determine whether it is a scalar or vector is encoded in two to three bits, depending on the instruction.
+As an aside: in [[sv/svp64]] the encoding which allows SV to both extend
+the range beyond r0-r31 and to determine whether it is a scalar or vector
+is encoded in two to three bits, depending on the instruction.
 
-The reason for using so few bits is because there are up to *four* registers to mark in this way (`fma`, `isel`) which starts to be of concern when there are only 24 available bits to specify the entire SV Vectorisation Context.  In fact, for a small subset of instructions it is just not possible to tag every single register.  Under these rare circumstances a tag has to be shared between two registers.
+The reason for using so few bits is because there are up to *four*
+registers to mark in this way (`fma`, `isel`) which starts to be of
+concern when there are only 24 available bits to specify the entire SV
+Vectorisation Context.  In fact, for a small subset of instructions it
+is just not possible to tag every single register.  Under these rare
+circumstances a tag has to be shared between two registers.
 
-Below is the pseudocode which expresses the relationship which is usually applied to *every* register:
+Below is the pseudocode which expresses the relationship which is usually
+applied to *every* register:
 
     if extra3_mode:
         spec = EXTRA3 # bit 2 s/v, 0-1 extends range
@@ -195,9 +221,19 @@ Below is the pseudocode which expresses the relationship which is usually applie
          RA.isvec = False
          return (spec[0:1] << 5) | RA
 
-Here we can see that the scalar registers are extended in the top bits, whilst vectors are shifted up by 2 bits, and then extended in the LSBs.  Condition Registers have a slightly different scheme, along the same principle, which takes into account the fact that each CR may be bit-level addressed by Condition Register operations.
+Here we can see that the scalar registers are extended in the top bits,
+whilst vectors are shifted up by 2 bits, and then extended in the LSBs.
+Condition Registers have a slightly different scheme, along the same
+principle, which takes into account the fact that each CR may be bit-level
+addressed by Condition Register operations.
 
-Readers familiar with OpenPOWER will know of Rc=1 operations that create an associated post-result "test", placing this test into an implicit Condition Register.  The original researchers who created the POWER ISA chose CR0 for Integer, and CR1 for Floating Point.  These *also become Vectorised* - implicitly - if the associated destination register is also Vectorised.  This allows for some very interesting savings on instruction count due to the very same CR Vectors being predication masks.
+Readers familiar with OpenPOWER will know of Rc=1 operations that create
+an associated post-result "test", placing this test into an implicit
+Condition Register.  The original researchers who created the POWER ISA
+chose CR0 for Integer, and CR1 for Floating Point.  These *also become
+Vectorised* - implicitly - if the associated destination register is
+also Vectorised.  This allows for some very interesting savings on
+instruction count due to the very same CR Vectors being predication masks.
 
 # Adding single predication
 
@@ -237,11 +273,17 @@ as if this were a straight OpenPOWER v3.0B non-augmented instruction.
 Single Predication therefore provides several modes traditionally seen
 in Vector ISAs:
 
-* VINSERT: the predicate may be set as a single bit, the sources are scalar and the destination a vector.
-* VSPLAT (result broadcasting) is provided by making the sources scalar and the destination a vector, and having no predicate set or having multiple bits set.
-* VSELECT is provided by setting up (at least one of) the sources as a vector, using a single bit in olthe predicate, and the destination as a scalar.
+* VINSERT: the predicate may be set as a single bit, the sources are
+  scalar and the destination a vector.
+* VSPLAT (result broadcasting) is provided by making the sources scalar
+  and the destination a vector, and having no predicate set or having
+  multiple bits set.
+* VSELECT is provided by setting up (at least one of) the sources as a
+  vector, using a single bit in olthe predicate, and the destination as
+  a scalar.
 
-All of this capability and coverage without even adding one single actual Vector opcode, let alone 180, 600 or 1,300!
+All of this capability and coverage without even adding one single actual
+Vector opcode, let alone 180, 600 or 1,300!
 
 # Predicate "zeroing" mode
 
@@ -312,9 +354,12 @@ structure, where all types uint16_t etc. are in little-endian order:
 
     reg_t int_regfile[128]; // SV extends to 128 regs
 
-This means that Vector elements start from locations specified by 64 bit "register" but that from that location onwards the elements *overlap subsequent registers*.
+This means that Vector elements start from locations specified by 64 bit
+"register" but that from that location onwards the elements *overlap
+subsequent registers*.
 
-Here is another way to view the same concept, bearing in mind that it is assumed a LE memory order:
+Here is another way to view the same concept, bearing in mind that it
+is assumed a LE memory order:
 
     uint8_t reg_sram[8*128];
     uint8_t *actual_bytes = &reg_sram[RA*8];
@@ -331,7 +376,8 @@ Here is another way to view the same concept, bearing in mind that it is assumed
         uint64_t *l = (uint64_t*)actual_bytes;
         l[idx] = result;
 
-Starting with all zeros, setting `actual_bytes[3]` in any given `reg_t` to 0x01 would mean that:
+Starting with all zeros, setting `actual_bytes[3]` in any given `reg_t`
+to 0x01 would mean that:
 
 * b[0..2] = 0x00 and b[3] = 0x01
 * s[0] = 0x0000 and s[1] = 0x0001
@@ -438,21 +484,45 @@ register file as a byte-level store, not a 64-bit-level store.
 
 ## Why LE regfile?
 
-The concept of having a regfile where the byte ordering of the underlying SRAM seems utter nonsense.  Surely, a hardware implementation gets to choose the order, right? It's memory only where LE/BE matters, right? The bytes come in, all registers are 64 bit and it's just wiring, right?
+The concept of having a regfile where the byte ordering of the underlying
+SRAM seems utter nonsense.  Surely, a hardware implementation gets to
+choose the order, right? It's memory only where LE/BE matters, right? The
+bytes come in, all registers are 64 bit and it's just wiring, right?
 
-Ordinarily this would be 100% correct, in both a scalar ISA and in a Cray style Vector one.  The assumption in that last question was, however, "all registers are 64 bit".  SV allows SIMD-style packing of vectors into the 64 bit registers, where one instruction and the next may interpret that very same register as containing elements of completely different widths.
+Ordinarily this would be 100% correct, in both a scalar ISA and in a Cray
+style Vector one.  The assumption in that last question was, however, "all
+registers are 64 bit".  SV allows SIMD-style packing of vectors into the
+64 bit registers, where one instruction and the next may interpret that
+very same register as containing elements of completely different widths.
 
-Consequently it becomes critically important to decide a byte-order.  That decision was - arbitrarily - LE mode.  Actually it wasn't arbitrary at all: it was such hell to implement BE supported interpretations of CRs and LD/ST in LibreSOC, based on a terse spec that provides insufficient clarity and assumes significant working knowledge of OpenPOWER, with arbitrary insertions of 7-index here and 3-bitindex there, the decision to pick LE was extremely easy.
+Consequently it becomes critically important to decide a byte-order.
+That decision was - arbitrarily - LE mode.  Actually it wasn't arbitrary
+at all: it was such hell to implement BE supported interpretations of CRs
+and LD/ST in LibreSOC, based on a terse spec that provides insufficient
+clarity and assumes significant working knowledge of OpenPOWER, with
+arbitrary insertions of 7-index here and 3-bitindex there, the decision
+to pick LE was extremely easy.
 
-Without such a decision, if two words are packed as elements into a 64 bit register, what does this mean? Should they be inverted so that the lower indexed element goes into the HI or the LO word? should the 8 bytes of each register be inverted? Should the bytes in each element be inverted? These arw all equally valid and legitimate interpretations of what constitutes "BE" and rhey all cause merry mayhem.
+Without such a decision, if two words are packed as elements into a
+64 bit register, what does this mean? Should they be inverted so that
+the lower indexed element goes into the HI or the LO word? should the
+8 bytes of each register be inverted? Should the bytes in each element
+be inverted? These arw all equally valid and legitimate interpretations
+of what constitutes "BE" and rhey all cause merry mayhem.
 
-The decision was therefore made: the c typedef union is the canonical definition, and its members are defined as being in LE order. From there, implementations may choose whatever internal HDL wire order they like as long as the results produced conform to the elwidth pseudocode.
+The decision was therefore made: the c typedef union is the canonical
+definition, and its members are defined as being in LE order. From there,
+implementations may choose whatever internal HDL wire order they like
+as long as the results produced conform to the elwidth pseudocode.
 
 ## Source and Destination overrides
 
-A minor fly in the ointment: what happens if the source and destination are over-ridden to different widths?  For example, FP16 arithmetic is not accurate enough and may introduce rounding errors when up-converted to FP32 output.  The rule is therefore set:
+A minor fly in the ointment: what happens if the source and destination
+are over-ridden to different widths?  For example, FP16 arithmetic is
+not accurate enough and may introduce rounding errors when up-converted
+to FP32 output.  The rule is therefore set:
 
-    The operation MUST take place at the larger of the two widths
+    The operation MUST take place at the larger of the two widths.
 
 In pseudocode this is:
 
@@ -463,13 +533,27 @@ In pseudocode this is:
        result = op_add(src1, src2, opwidth) # at max width
        set_polymorphed_reg(rd, destwid, i, result)
 
-It will turn out that under some conditions the combination of the extension of the source registers followed by truncation of the result gets rid of bits that didn't matter, and the operation might as well have taken place at the narrower width and could save resources that way.  Examples include Logical OR where the source extension would place zeros in the upper bits, the result will be truncated and throw those zeros away.
+It will turn out that under some conditions the combination of the
+extension of the source registers followed by truncation of the result
+gets rid of bits that didn't matter, and the operation might as well have
+taken place at the narrower width and could save resources that way.
+Examples include Logical OR where the source extension would place
+zeros in the upper bits, the result will be truncated and throw those
+zeros away.
 
-Counterexamples include the previously mentioned FP16 arithmetic, where for operations such as division of large numbers by very small ones it should be clear that internal accuracy will play a major role in influencing the result.  Hence the rule that the calculation takes place at the maximum bitwidth, and truncation follows afterwards.
+Counterexamples include the previously mentioned FP16 arithmetic,
+where for operations such as division of large numbers by very small
+ones it should be clear that internal accuracy will play a major role
+in influencing the result.  Hence the rule that the calculation takes
+place at the maximum bitwidth, and truncation follows afterwards.
 
 ## Signed arithmetic
 
-What happens when the operation involves signed arithmetic?  Here the implementor has to use common sense, and make sure behaviour is accurately documented.  If the result of the unmodified operation is sign-extended because one of the inputs is signed, then the input source operands must be first read at their overridden bitwidth and *then* sign-extended:
+What happens when the operation involves signed arithmetic?  Here the
+implementor has to use common sense, and make sure behaviour is accurately
+documented.  If the result of the unmodified operation is sign-extended
+because one of the inputs is signed, then the input source operands must
+be first read at their overridden bitwidth and *then* sign-extended:
 
       for i = 0 to VL-1:
        src1 = get_polymorphed_reg(RA, srcwid, i)
@@ -485,7 +569,12 @@ The key here is that the cues are taken from the underlying operation.
 
 ## Saturation
 
-Audio DSPs need to be able to clip sound when the "volume" is adjusted, but if it is too loud and the signal wraps, distortion occurs.  The solution is to clip (saturate) the audio and allow this to be detected.  In practical terms this is a post-result analysis however it needs to take place at the largest bitwidth i.e. before a result is element width truncated.  Only then can the arithmetic saturation condition be detected:
+Audio DSPs need to be able to clip sound when the "volume" is adjusted,
+but if it is too loud and the signal wraps, distortion occurs.  The
+solution is to clip (saturate) the audio and allow this to be detected.
+In practical terms this is a post-result analysis however it needs to
+take place at the largest bitwidth i.e. before a result is element width
+truncated.  Only then can the arithmetic saturation condition be detected:
 
     for i = 0 to VL-1:
        src1 = get_polymorphed_reg(RA, srcwid, i)
@@ -500,11 +589,25 @@ Audio DSPs need to be able to clip sound when the "volume" is adjusted, but if i
        if Rc=1:
           CR.ov = (sat != result)
 
-So the actual computation took place at the larger width, but was post-analysed as an unsigned operation.  If however "signed" saturation is requested then the actual arithmetic operation has to be carefully analysed to see what that actually means.
+So the actual computation took place at the larger width, but was
+post-analysed as an unsigned operation.  If however "signed" saturation
+is requested then the actual arithmetic operation has to be carefully
+analysed to see what that actually means.
 
-In terms of FP arithmetic, which by definition always has a sign bit do always takes place as a signed operation anyway, the request to saturate to signed min/max is pretty clear.  However for integer arithmetic such as shift (plain shift, not arithmetic shift), or logical operations such as XOR, which were never designed to have the assumption that its inputs be considered as signed numbers, common sense has to kick in, and follow what CR0 does.
+In terms of FP arithmetic, which by definition always has a sign bit do
+always takes place as a signed operation anyway, the request to saturate
+to signed min/max is pretty clear.  However for integer arithmetic such
+as shift (plain shift, not arithmetic shift), or logical operations
+such as XOR, which were never designed to have the assumption that its
+inputs be considered as signed numbers, common sense has to kick in,
+and follow what CR0 does.
 
-CR0 for Logical operations still applies: the test is still applied to produce CR.eq, CR.lt and CR.gt analysis.  Following this lead we may do the same thing: although the input operations for and OR or XOR can in no way be thought of as "signed" we may at least consider the result to be signed, and thus apply min/max range detection -128 to +127 when truncating down to 8 bit for example.
+CR0 for Logical operations still applies: the test is still applied to
+produce CR.eq, CR.lt and CR.gt analysis.  Following this lead we may
+do the same thing: although the input operations for and OR or XOR can
+in no way be thought of as "signed" we may at least consider the result
+to be signed, and thus apply min/max range detection -128 to +127 when
+truncating down to 8 bit for example.
 
     for i = 0 to VL-1:
        src1 = get_polymorphed_reg(RA, srcwid, i)
@@ -517,7 +620,8 @@ CR0 for Logical operations still applies: the test is still applied to produce C
        sat = min(result, -(1<<destwid-1))
        set_polymorphed_reg(rd, destwid, i, sat)
 
-Overall here the rule is: apply common sense then document the behaviour really clearly, for each and every operation.
+Overall here the rule is: apply common sense then document the behaviour
+really clearly, for each and every operation.
 
 # Quick recap so far
 
@@ -569,11 +673,15 @@ reordering of XYZW, ARGB etc. and access of sub-portions of the same in
 arbitrary order *without* requiring timeconsuming scalar mv instructions
 (scalar due to the convoluted offsets).
 
-Swizzling does not just do permutations: it allows multiple copying of vec2/3/4 elements, such as XXXW as the source operand, which will take 3 copies of the vec4 first element.
+Swizzling does not just do permutations: it allows multiple copying of
+vec2/3/4 elements, such as XXXZ as the source operand, which will take
+3 copies of the vec4 first element (vec4[0]), placing them at positions vec4[0],
+vec4[1] and vec4[2], whilst the "Z" element (vec4[2]) was copied into vec4[3].
 
-With somewhere between 10% and 30% of
-operations in 3D Shaders involving swizzle this is a huge saving and
-reduces pressure on register files.
+With somewhere between 10% and 30% of operations in 3D Shaders involving
+swizzle this is a huge saving and reduces pressure on register files
+due to having to use significant numbers of mv operations to get vector
+elements to "line up".
 
 In SV given the percentage of operations that also involve initialisation
 to 0.0 or 1.0 into subvector elements the decision was made to include
@@ -628,18 +736,21 @@ or `fcvt`, LD/ST operations and even `rlwinmi` and other operations
 taking a single source and immediate(s) such as `addi`.  All of these
 are termed single-source, single-destination.
 
-LDST Address-generation,
-or AGEN, is a special case of single source, because elwidth overriding does not make sense to apply to the computation of the 64 bit address itself, but it *does* make sense to apply elwidth overrides to the data being accessed *at* that address.
+LDST Address-generation, or AGEN, is a special case of single source,
+because elwidth overriding does not make sense to apply to the computation
+of the 64 bit address itself, but it *does* make sense to apply elwidth
+overrides to the data being accessed *at* that address.
 
 It also turns out that by using a single bit set in the source or
 destination, *all* the sequential ordered standard patterns of Vector
 ISAs are provided: VSPLAT, VSELECT, VINSERT, VCOMPRESS, VEXPAND.
 
 The only one missing from the list here, because it is non-sequential,
-is VGATHER (and VSCATTER): moving registers by specifying a vector of register indices
-(`regs[rd] = regs[regs[rs]]` in a loop).  This one is tricky because it
-typically does not exist in standard scalar ISAs.  If it did it would
-be called [[sv/mv.x]]. Once Vectorised, it's a VGATHER/VSCATTER.
+is VGATHER (and VSCATTER): moving registers by specifying a vector of
+register indices (`regs[rd] = regs[regs[rs]]` in a loop).  This one is
+tricky because it typically does not exist in standard scalar ISAs.
+If it did it would be called [[sv/mv.x]]. Once Vectorised, it's a
+VGATHER/VSCATTER.
 
 # CR predicate result analysis
 
@@ -663,7 +774,9 @@ into the predication system?
 
 Note that whilst the Vector of CRs is always written to the CR regfile,
 only those result elements that pass the BO test get written to the
-integer regfile (when RC1 mode is not set).  In RC1 mode the CR is always stored, but the result never is. This effectively turns every arithmetic operation into a type of `cmp` instruction.
+integer regfile (when RC1 mode is not set).  In RC1 mode the CR is always
+stored, but the result never is. This effectively turns every arithmetic
+operation into a type of `cmp` instruction.
 
 Here for example if FP overflow occurred, and the CR testing was carried
 out for that, all valid results would be stored but invalid ones would
@@ -677,16 +790,22 @@ that there would be savings to be had in some types of operations where
 the post-result analysis, if not included in SV, would need a second
 predicate calculation followed by a predicate mask AND operation.
 
-Note, hilariously, that Vectorised Condition Register Operations (crand, cror) may
-also have post-result analysis applied to them.  With Vectors of CRs being
-utilised *for* predication, possibilities for compact and elegant code
-begin to emerge from this innocuous-looking addition to SV.
+Note, hilariously, that Vectorised Condition Register Operations (crand,
+cror) may also have post-result analysis applied to them.  With Vectors
+of CRs being utilised *for* predication, possibilities for compact and
+elegant code begin to emerge from this innocuous-looking addition to SV.
 
 # Exception-based Fail-on-first
 
-One of the major issues with Vectorised LD/ST operations is when a batch of LDs cross a page-fault boundary.  With considerable resources being taken up with in-flight data, a large Vector LD being cancelled or unable to roll back is either a detriment to performance or can cause data corruption.
+One of the major issues with Vectorised LD/ST operations is when a
+batch of LDs cross a page-fault boundary.  With considerable resources
+being taken up with in-flight data, a large Vector LD being cancelled
+or unable to roll back is either a detriment to performance or can cause
+data corruption.
 
-What if, then, rather than cancel an entire Vector LD because the last operation would cause a page fault, instead truncate the Vector to the last successful element?
+What if, then, rather than cancel an entire Vector LD because the last
+operation would cause a page fault, instead truncate the Vector to the
+last successful element?
 
 This is called "fail-on-first".  Here is strncpy, illustrated from RVV:
 
@@ -708,17 +827,29 @@ This is called "fail-on-first".  Here is strncpy, illustrated from RVV:
     exit:
         c.ret
 
-Vector Length VL is truncated inherently at the first page faulting byte-level LD.  Otherwise, with more powerful hardware the number of elements LOADed from memory could be dozens to hundreds or greater (memory bandwidth permitting).
+Vector Length VL is truncated inherently at the first page faulting
+byte-level LD.  Otherwise, with more powerful hardware the number of
+elements LOADed from memory could be dozens to hundreds or greater
+(memory bandwidth permitting).
 
-With VL truncated the analysis looking for the zero byte and the subsequent STORE (a straight ST, not a ffirst ST) can proceed, safe in the knowledge that every byte loaded in the Vector is valid.  Implementors are even permitted to "adapt" VL, truncating it early so that, for example, subsequent iterations of loops will have LD/STs on aligned boundaries.
+With VL truncated the analysis looking for the zero byte and the
+subsequent STORE (a straight ST, not a ffirst ST) can proceed, safe in the
+knowledge that every byte loaded in the Vector is valid.  Implementors are
+even permitted to "adapt" VL, truncating it early so that, for example,
+subsequent iterations of loops will have LD/STs on aligned boundaries.
 
-SIMD strncpy hand-written assembly routines are, to be blunt about it, a total nightmare.  240 instructions is not uncommon, and the worst thing about them is that they are unable to cope with detection of a page fault condition.
+SIMD strncpy hand-written assembly routines are, to be blunt about it,
+a total nightmare.  240 instructions is not uncommon, and the worst
+thing about them is that they are unable to cope with detection of a
+page fault condition.
 
 Note: see <https://bugs.libre-soc.org/show_bug.cgi?id=561>
 
 # Data-dependent fail-first
 
-This is a minor variant on the CR-based predicate-result mode.  Where pred-result continues with independent element testing (any of which may be parallelised), data-dependent fail-first *stops* at the first failure:
+This is a minor variant on the CR-based predicate-result mode.  Where
+pred-result continues with independent element testing (any of which may
+be parallelised), data-dependent fail-first *stops* at the first failure:
 
     if Rc=0: BO = inv<<2 | 0b00 # test CR.eq bit z/nz
     for i in range(VL):
@@ -734,23 +865,58 @@ This is a minor variant on the CR-based predicate-result mode.  Where pred-resul
         if not RC1: iregs[RT+i] = result
         if RC1 or Rc=1: crregs[offs+i] = CRnew
 
-This is particularly useful, again, for FP operations that might overflow, where it is desirable to end the loop early, but also desirable to complete at least those operations that were okay (passed the test) without also having to slow down execution by adding extra instructions that tested for the possibility of that failure, in advance of doing the actual calculation.
+This is particularly useful, again, for FP operations that might overflow,
+where it is desirable to end the loop early, but also desirable to
+complete at least those operations that were okay (passed the test)
+without also having to slow down execution by adding extra instructions
+that tested for the possibility of that failure, in advance of doing
+the actual calculation.
 
-The only minor downside here though is the change to VL, which in some implementations may cause pipeline stalls.  This was one of the reasons why CR-based pred-result analysis was added, because that at least is entirely paralleliseable.
+The only minor downside here though is the change to VL, which in some
+implementations may cause pipeline stalls.  This was one of the reasons
+why CR-based pred-result analysis was added, because that at least is
+entirely paralleliseable.
 
 # Instruction format
 
-Whilst this overview shows the internals, it does not go into detail on the actual instruction format itself.  There are a couple of reasons for this: firstly, it's under development, and secondly, it needs to be proposed to the OpenPOWER Foundation ISA WG for consideration and review.
+Whilst this overview shows the internals, it does not go into detail
+on the actual instruction format itself.  There are a couple of reasons
+for this: firstly, it's under development, and secondly, it needs to be
+proposed to the OpenPOWER Foundation ISA WG for consideration and review.
 
-That said: draft pages for [[sv/setvl]] and [[sv/svp64]] are written up.  The `setvl` instruction is pretty much as would be expected from a Cray style VL  instruction: the only differences being that, firstly, the MAXVL (Maximum Vector Length) has to be specified, because that determines - precisely - how many of the *scalar* registers are to be used for a given Vector.  Secondly: within the limit of MAXVL, VL is required to be set to the requested value. By contrast, RVV systems permit the hardware to set arbitrary values of VL.
+That said: draft pages for [[sv/setvl]] and [[sv/svp64]] are written up.
+The `setvl` instruction is pretty much as would be expected from a
+Cray style VL  instruction: the only differences being that, firstly,
+the MAXVL (Maximum Vector Length) has to be specified, because that
+determines - precisely - how many of the *scalar* registers are to be
+used for a given Vector.  Secondly: within the limit of MAXVL, VL is
+required to be set to the requested value. By contrast, RVV systems
+permit the hardware to set arbitrary values of VL.
 
-The other key question is of course: what's the actual instruction format, and what's in it? Bearing in mind that this requires OPF review, the current draft is at the [[sv/svp64]] page, and includes space for all the different modes, the predicates, element width overrides, SUBVL and the register extensions, in 24 bits.  This just about fits into an OpenPOWER v3.1B 64 bit Prefix by borrowing some of the Reserved Encoding space.  The v3.1B suffix - containing as it does a 32 bit OpenPOWER instruction - aligns perfectly with SV.
+The other key question is of course: what's the actual instruction format,
+and what's in it? Bearing in mind that this requires OPF review, the
+current draft is at the [[sv/svp64]] page, and includes space for all the
+different modes, the predicates, element width overrides, SUBVL and the
+register extensions, in 24 bits.  This just about fits into an OpenPOWER
+v3.1B 64 bit Prefix by borrowing some of the Reserved Encoding space.
+The v3.1B suffix - containing as it does a 32 bit OpenPOWER instruction -
+aligns perfectly with SV.
 
 Further reading is at the main [[SV|sv]] page.
 
 # Conclusion
 
-Starting from a scalar ISA - OpenPOWER v3.0B - it was shown above that, with conceptual sub-loops, a Scalar ISA can be turned into a Vector one, by embedding Scalar instructions - unmodified - into a Vector "context" using "Prefixing".  With careful thought, this technique reaches 90% par with good Vector ISAs, increasing to 95% with the addition of a mere handful of additional context-vectoriseable scalar instructions ([[sv/mv.x]] amongst them).
+Starting from a scalar ISA - OpenPOWER v3.0B - it was shown above that,
+with conceptual sub-loops, a Scalar ISA can be turned into a Vector one,
+by embedding Scalar instructions - unmodified - into a Vector "context"
+using "Prefixing".  With careful thought, this technique reaches 90%
+par with good Vector ISAs, increasing to 95% with the addition of a
+mere handful of additional context-vectoriseable scalar instructions
+([[sv/mv.x]] amongst them).
 
-What is particularly cool about the SV concept is that custom extensions and research need not be concerned about inventing new Vector instructions and how to get them to interact with the Scalar ISA: they are effectively one and the same.  Any new instruction added at the Scalar level is inherently and automatically Vectorised, following some simple rules.
+What is particularly cool about the SV concept is that custom extensions
+and research need not be concerned about inventing new Vector instructions
+and how to get them to interact with the Scalar ISA: they are effectively
+one and the same.  Any new instruction added at the Scalar level is
+inherently and automatically Vectorised, following some simple rules.
 
