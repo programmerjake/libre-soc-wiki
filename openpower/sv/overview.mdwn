@@ -673,7 +673,7 @@ reordering of XYZW, ARGB etc. and access of sub-portions of the same in
 arbitrary order *without* requiring timeconsuming scalar mv instructions
 (scalar due to the convoluted offsets).
 
-Swizzling does not just do permutations: it allows multiple copying of
+Swizzling does not just do permutations: it allows arbitrary selection and multiple copying of
 vec2/3/4 elements, such as XXXZ as the source operand, which will take
 3 copies of the vec4 first element (vec4[0]), placing them at positions vec4[0],
 vec4[1] and vec4[2], whilst the "Z" element (vec4[2]) was copied into vec4[3].
@@ -707,7 +707,8 @@ Compute workloads it is unusual: it is only because SV is targetted at
 3D and Video that it is being considered.
 
 Some 3D GPU ISAs also allow for two-operand subvector swizzles.  These are
-sufficiently unusual, and the immediate opcode space required so large,
+sufficiently unusual, and the immediate opcode space required so large
+(12 bits per vec4 source),
 that the tradeoff balance was decided in SV to only add mv.swizzle.
 
 # Twin Predication
@@ -739,7 +740,7 @@ are termed single-source, single-destination.
 LDST Address-generation, or AGEN, is a special case of single source,
 because elwidth overriding does not make sense to apply to the computation
 of the 64 bit address itself, but it *does* make sense to apply elwidth
-overrides to the data being accessed *at* that address.
+overrides to the data being accessed *at* that memory address.
 
 It also turns out that by using a single bit set in the source or
 destination, *all* the sequential ordered standard patterns of Vector
