@@ -1,0 +1,6 @@
+# SV Context Propagation
+
+[[sv/svp64]] context is 24 bits long, and Swizzle is 12.  These are enormous and not sustainable as far as power consumption is concerned.  Also, there is repetition of the same contexts to different instructions. An idea therefore is to add a level of indirection that allows these contexts to be applied to multiple instructions.
+
+The basic principle is to have a special instruction in an svp64 context that takes a copy of the `RM[0..23]` bits, alongside a 16 bit suite of bits that indicates which of the following 16 32 bit instructions will have that `RM` applied to them.  
+
