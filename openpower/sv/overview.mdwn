@@ -27,7 +27,16 @@ Unfortunately, even with predication added, SIMD only becomes more and
 more problematic with each power of two SIMD width increase introduced
 through an ISA revision.  The opcode proliferation, at O(N^6), inexorably
 spirals out of control in the ISA, detrimentally impacting the hardware,
-the software, the compilers and the testing and compliance.
+the software, the compilers and the testing and compliance.  Here are the typical dimensions that result in such massive proliferation:
+
+* Operation (add, mul)
+* bitwidth (8, 16, 32, 64, 128)
+* Conversion between bitwidths (FP16-FP32-64)
+* Signed/unsigned
+* HI/LO swizzle (Audio L/R channels)
+* Saturation (Clamping at max range)
+
+These typically are multiplied up to produce explicit opcodes numberingvin the thousands on, for example the ARC Video/DSP cores.
 
 Cray-style variable-length Vectors on the other hand result in
 stunningly elegant and small loops, exceptionally high data throughput
