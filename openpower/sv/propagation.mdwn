@@ -2,9 +2,19 @@
 
 [[sv/svp64]] context is 24 bits long, and Swizzle is 12.  These are enormous and not sustainable as far as power consumption is concerned.  Also, there is repetition of the same contexts to different instructions. An idea therefore is to add a level of indirection that allows these contexts to be applied to multiple instructions.
 
-The basic principle is to have a special instruction in an svp64 context that takes a copy of the `RM[0..23]` bits, alongside a 16 bit suite of bits that indicates which of the following 16 32 bit instructions will have that `RM` applied to them.  
+The basic principle is to have a special instruction in an svp64 context that takes a copy of the `RM[0..23]` bits, alongside a 20 bit suite of bits that indicates which of the following 16 32 bit instructions will have that `RM` applied to them.  The 20 bit suite is pushed into a 64 bit SPR, with the top 24 bits cobtaining the `RM` and the other 40 being a shift register.  This may be done multiple times.
 
-| 0.5|6.10|11.15|16.31|  name   |
-| -- | -- | --- | --- | ------- |
-| OP | RT | RA  |     | I-Form  |
-| OP | RT | RA  | imm |         |
+| 0.5|6..8 | 9.11|12.31|  name   |
+| -- | --  | --- | --- | ------- |
+| OP | MMM |     |     | ?-Form  |
+| OP | 000 | idx | imm |         |
+
+There are up to 8 possible 64 bit SPRs, the last (indexed 0b111) is always zeros.  Each is independently shifting down except when a Context Propagation instruction or an svp64 encoded insteuction is at the current PC.
+
+Any time the LSB of any one of the 7 Context SPRs is zero, the 24 bit `RM` Context in that SPR is applied to the current 32 bit v3.0B instruction, making it an svp64 opcode instead of v3.0B.
+
+When the 40 bits of any one of the SPRs reaches zero the entire SPR is set to zero, and the entire SPR bank shuffles down so that at no time will there be an DPR containing zeros splitting up the SPRs.  This allows a data-dependent fail-first copy of all SPRs to be used as a single instruction because the last SPR will always be zero.
+
+As these changes occur on a fixed schedule conpilers should not have difficulties statically allocating the Context Propagation, as long as certain conventions are followed, such as avoidance of allowing the context to propagate through branches used by more than one incoming path, and loops.
+
+
