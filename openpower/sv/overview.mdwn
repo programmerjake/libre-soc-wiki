@@ -305,7 +305,7 @@ structure, where all types uint16_t etc. are in little-endian order:
 
 This means that Vector elements start from locations specified by 64 bit "register" but that from that location onwards the elements *overlap subsequent registers*.
 
-Here is another way to view the same concept:
+Here is another way to view the same concept, bearing in mind that it is assumed a LE memory order:
 
     uint8_t reg_sram[8*128];
     uint8_t *actual_bytes = &reg_sram[RA*8];
