@@ -594,8 +594,8 @@ post-analysed as an unsigned operation.  If however "signed" saturation
 is requested then the actual arithmetic operation has to be carefully
 analysed to see what that actually means.
 
-In terms of FP arithmetic, which by definition always has a sign bit do
-always takes place as a signed operation anyway, the request to saturate
+In terms of FP arithmetic, which by definition has a sign bit (so
+always takes place as a signed operation anyway), the request to saturate
 to signed min/max is pretty clear.  However for integer arithmetic such
 as shift (plain shift, not arithmetic shift), or logical operations
 such as XOR, which were never designed to have the assumption that its
