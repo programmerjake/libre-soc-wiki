@@ -303,7 +303,26 @@ structure, where all types uint16_t etc. are in little-endian order:
 
     reg_t int_regfile[128]; // SV extends to 128 regs
 
-Setting `actual_bytes[3]` in any given `reg_t` to 0x01 would mean that:
+This means that Vector elements start from locations specified by 64 bit "register" but that from that location onwards the elements *overlap subsequent registers*.
+
+Here is another way to view the same concept:
+
+    uint8_t reg_sram[8*128];
+    uint8_t *actual_bytes = &reg_sram[RA*8];
+    if elwidth == 8:
+        uint8_t *b = (uint8_t*)actual_bytes;
+        b[idx] = result;
+    if elwidth == 16:
+        uint16_t *s = (uint16_t*)actual_bytes;
+        s[idx] = result;
+    if elwidth == 32:
+        uint32_t *i = (uint32_t*)actual_bytes;
+        i[idx] = result;
+    if elwidth == default:
+        uint64_t *l = (uint64_t*)actual_bytes;
+        l[idx] = result;
+
+Starting with all zeros, setting `actual_bytes[3]` in any given `reg_t` to 0x01 would mean that:
 
 * b[0..2] = 0x00 and b[3] = 0x01
 * s[0] = 0x0000 and s[1] = 0x0001
@@ -311,8 +330,8 @@ Setting `actual_bytes[3]` in any given `reg_t` to 0x01 would mean that:
 * l[0] = 0x0000000000010000
 
 Then, our simple loop, instead of accessing the array of regfile entries
-with a computed index, would access the appropriate element of the
-appropriate type.  Thus we have a series of overlapping conceptual arrays
+with a computed index `iregs[RT+i]`, would access the appropriate element of the
+appropriate width, such as `iregs[RT].s[i]` in order to access 16 bit elements starting from RT.  Thus we have a series of overlapping conceptual arrays
 that each start at what is traditionally thought of as "a register".
 It then helps if we have a couple of routines:
 
