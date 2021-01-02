@@ -11,9 +11,11 @@ The 21 bit suite is inserted in bit-order from bit zero up until the last highes
 | OP | MM |     |     | ?-Form  |
 | OP | 00 | idx | imm |         |
 
-There are up to 8 possible 64 bit SPRs, the last (indexed 0b111) is always zeros.  Each is independently shifting down except when a Context Propagation instruction or an svp64 encoded instruction is at the current PC.
+There are up to 8 possible 64 bit SPRs, the last (indexed 0b111) is always zeros.  Each is independently shifting its 40 bits down by one bit, except when a Context Propagation instruction or an svp64 encoded instruction is at the current PC.
 
-Any time the LSB of any one of the 7 Context SPRs is zero, the 24 bit `RM` Context in that SPR is applied to the current 32 bit v3.0B instruction, making it an svp64 opcode instead of v3.0B.
+Prior to the shift dropping the LSBs, any time the LSB of any one of the 7 Context SPRs is set, the 24 bit `RM` Context in that SPR is applied to the current 32 bit v3.0B instruction, making it an svp64 opcode instead of v3.0B.
+
+If a situation would arise where more than one LSB is set (signalling an attempt to apply multiple contexts to the same instruction), an exception is raised.  Given that this may be detected when the value is inserted, an exception *MAY* be raised by the Context Propagation instruction rather than waiting until it reaches the LSBs.  As this is quite expensive (multi-way bit-comparison) it is optional.  However raising an illegal instruction should the conflict reach the LSBs is mandatory.
 
 When the 40 bits of any one of the SPRs reaches zero the entire SPR is set to zero, and the entire SPR bank shuffles down (all SPRs above the one now zero move down one index position) so that at no time will there be an SPR containing zeros splitting up the other SPRs.  This allows a data-dependent fail-first copy of all SPRs to be used as a single instruction because the last SPR will always be zero.
 
