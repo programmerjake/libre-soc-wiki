@@ -15,8 +15,25 @@ There are up to 8 possible 64 bit SPRs, the last (indexed 0b111) is always zeros
 
 Any time the LSB of any one of the 7 Context SPRs is zero, the 24 bit `RM` Context in that SPR is applied to the current 32 bit v3.0B instruction, making it an svp64 opcode instead of v3.0B.
 
-When the 40 bits of any one of the SPRs reaches zero the entire SPR is set to zero, and the entire SPR bank shuffles down so that at no time will there be an SPR containing zeros splitting up the SPRs.  This allows a data-dependent fail-first copy of all SPRs to be used as a single instruction because the last SPR will always be zero.
+When the 40 bits of any one of the SPRs reaches zero the entire SPR is set to zero, and the entire SPR bank shuffles down (all SPRs above the one now zero move down one index position) so that at no time will there be an SPR containing zeros splitting up the other SPRs.  This allows a data-dependent fail-first copy of all SPRs to be used as a single instruction because the last SPR will always be zero.
 
-As these changes occur on a precise schedule: compilers should not have difficulties statically allocating the Context Propagation, as long as certain conventions are followed, such as avoidance of allowing the context to propagate through branches used by more than one incoming path, and loops.
+These changes occur on a precise schedule: compilers should not have difficulties statically allocating the Context Propagation, as long as certain conventions are followed, such as avoidance of allowing the context to propagate through branches used by more than one incoming path, and loops.
 
+# Swizzle Propagation
 
+Swizzle Contexts follow the same schedule except that there is a mask for specifying to which registers the swizzle is to be applied, and there is onlyy 17 bit suite to indicate the instructions to which the swizzle applies.
+
+| 0.5|6.7 | 8.10| 11.14 | 15.31 |  name   |
+| -- | -- | --- | ----- | ----- | ------- |
+| OP | MM |     | mask  |       | ?-Form  |
+| OP | 01 | idx | mask  |  imm  |         |
+
+Note however that only instructions which contain SUBVL!=1 cause the Swizxle SPRs to count down, and that consequently it is only svp64 encoded instructions 
+to which this applies. *This includes Context-propagated ones!*
+
+The mask is encoded as follows:
+
+* bit 0 indicates that the dest reg is swizxled
+* bit 1 indicates that src1 is swizzled
+* bit 2 indicates that src1 is swizzled
+* bit 3 indicates that src1 is swizzled
