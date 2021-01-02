@@ -2,22 +2,28 @@
 
 [[sv/svp64]] context is 24 bits long, and Swizzle is 12.  These are enormous and not sustainable as far as power consumption is concerned.  Also, there is repetition of the same contexts to different instructions. An idea therefore is to add a level of indirection that allows these contexts to be applied to multiple instructions.
 
-The basic principle is to have a special instruction in an svp64 context that takes a copy of the `RM[0..23]` bits, alongside a 21 bit suite that indicates which of the following 20 32 bit instructions will have that `RM` applied to them.  20 bits of the 21 bit suite are pushed into a 64 bit SPR, with the top 24 bits containing the `RM` and the other 40 being a shift register.  This may be done multiple times.
+The basic principle is to have a special instruction in an svp64 context that takes a copy of the `RM[0..23]` bits, alongside a 21 bit suite that indicates which of the following 20 32 bit instructions will have that `RM` applied to them.  An index is associated with each (up to four of them) such that multiple alternate contexts can be applied.  Under four 40 bit "stacks", 20 bits of the 21 bit suite are pushed into a given indexed stack. This may be done multiple times, with the upper bits being discarded.
+
+If under a given index the `RM` is different, this indicates that the stavk is to be overwitten: rather than push the 40 bits upwards, the new 20 bits entirely overwrites the old 40 bits.  To set any of the eight stacks to zero the 20 bit value must be set to zero.
 
 The 21 bit suite is inserted in bit-order from bit zero up until the last highest set bit (excluding that last bit).  For example: if the immediate contains 0b110 then the 40 bit shift register is pushed up by 2 bits, and its LSBs become 0b10.  Thus, the number of bits to be inserted is encoded within the 21 bits (using only 1 marker bit to do so).
 
-| 0.5|6.7 | 8.10|11.31|  name   |
-| -- | -- | --- | --- | ------- |
-| OP | MM |     |     | ?-Form  |
-| OP | 00 | idx | imm |         |
+| 0.5|6.8  | 9.10|11.31|  name   |
+| -- | --- | --- | --- | ------- |
+| OP | MMM |     |     | ?-Form  |
+| OP | 000 | idx | imm |         |
 
-There are up to 8 possible 64 bit SPRs, the last (indexed 0b111) is always zeros.  Each is independently shifting its 40 bits down by one bit, except when a Context Propagation instruction or an svp64 encoded instruction is at the current PC.
+There are 4 64 bit SPRs used for storing Context, and the data is stored as follows:
 
-Prior to the shift dropping the LSBs, any time the LSB of any one of the 7 Context SPRs is set, the 24 bit `RM` Context in that SPR is applied to the current 32 bit v3.0B instruction, making it an svp64 opcode instead of v3.0B.
+* Starting from the LSBs of the first SPR, the eight 24 bit `RM` are stored, wrapping round when crossing from one SPR to the next.  This covers 3*12 bytes which requires 1.5 64 bit SPRs to store QTY4 24 bit values.
+* 
+* Starting from half way through the 2nd SPR up to the MSB of the 4th the *indices* are stored 2x 40 bits for a total of 80 bits.
 
-If a situation would arise where more than one LSB is set (signalling an attempt to apply multiple contexts to the same instruction), an exception is raised.  Given that this may be detected when the value is inserted, an exception *MAY* be raised by the Context Propagation instruction rather than waiting until it reaches the LSBs.  As this is quite expensive (multi-way bit-comparison) it is optional.  However raising an illegal instruction should the conflict reach the LSBs is mandatory.
+Thus when an `RM` is inserted the bits 
 
-When the 40 bits of any one of the SPRs reaches zero the entire SPR is set to zero, and the entire SPR bank shuffles down (all SPRs above the one now zero move down one index position) so that at no time will there be an SPR containing zeros splitting up the other SPRs.  This allows a data-dependent fail-first copy of all SPRs to be used as a single instruction because the last SPR will always be zero.
+If a situation would arise where more than one LSB is set (signalling an attempt to apply multiple contexts to the same instruction), an exception is raised.  Given that this may be detected when the value is inserted, an exception is raised by the Context Propagation instruction.
+
+The 80 bit shift register may be shuffled down
 
 These changes occur on a precise schedule: compilers should not have difficulties statically allocating the Context Propagation, as long as certain conventions are followed, such as avoidance of allowing the context to propagate through branches used by more than one incoming path, and variable-length loops.
 
