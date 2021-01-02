@@ -2,12 +2,14 @@
 
 [[sv/svp64]] context is 24 bits long, and Swizzle is 12.  These are enormous and not sustainable as far as power consumption is concerned.  Also, there is repetition of the same contexts to different instructions. An idea therefore is to add a level of indirection that allows these contexts to be applied to multiple instructions.
 
-The basic principle is to have a special instruction in an svp64 context that takes a copy of the `RM[0..23]` bits, alongside a 20 bit suite of bits that indicates which of the following 16 32 bit instructions will have that `RM` applied to them.  The 20 bit suite is pushed into a 64 bit SPR, with the top 24 bits cobtaining the `RM` and the other 40 being a shift register.  This may be done multiple times.
+The basic principle is to have a special instruction in an svp64 context that takes a copy of the `RM[0..23]` bits, alongside a 21 bit suite that indicates which of the following 20 32 bit instructions will have that `RM` applied to them.  20 bits of the 21 bit suite are pushed into a 64 bit SPR, with the top 24 bits cobtaining the `RM` and the other 40 being a shift register.  This may be done multiple times.
 
-| 0.5|6..8 | 9.11|12.31|  name   |
-| -- | --  | --- | --- | ------- |
-| OP | MMM |     |     | ?-Form  |
-| OP | 000 | idx | imm |         |
+The 21 bit suite is inserted in bit-order from bit zero up until the last highest set bit (excluding that last bit).  For example: if the immediate contains 0b110 then the 40 bit shift register is pushed up by 2 bits, and its LSBs become 0b10.  Thus, the number of bits to be inserted is encoded within the 21 bits (using only 1 marker bit to do so).
+
+| 0.5|6.7 | 8.10|11.31|  name   |
+| -- | -- | --- | --- | ------- |
+| OP | MM |     |     | ?-Form  |
+| OP | 00 | idx | imm |         |
 
 There are up to 8 possible 64 bit SPRs, the last (indexed 0b111) is always zeros.  Each is independently shifting down except when a Context Propagation instruction or an svp64 encoded instruction is at the current PC.
 
