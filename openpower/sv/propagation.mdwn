@@ -2,7 +2,7 @@
 
 [[sv/svp64]] context is 24 bits long, and Swizzle is 12.  These are enormous and not sustainable as far as power consumption is concerned.  Also, there is repetition of the same contexts to different instructions. An idea therefore is to add a level of indirection that allows these contexts to be applied to multiple instructions.
 
-The basic principle is to have a special instruction in an svp64 context that takes a copy of the `RM[0..23]` bits, alongside a 21 bit suite that indicates which of the following 20 32 bit instructions will have that `RM` applied to them.  20 bits of the 21 bit suite are pushed into a 64 bit SPR, with the top 24 bits cobtaining the `RM` and the other 40 being a shift register.  This may be done multiple times.
+The basic principle is to have a special instruction in an svp64 context that takes a copy of the `RM[0..23]` bits, alongside a 21 bit suite that indicates which of the following 20 32 bit instructions will have that `RM` applied to them.  20 bits of the 21 bit suite are pushed into a 64 bit SPR, with the top 24 bits containing the `RM` and the other 40 being a shift register.  This may be done multiple times.
 
 The 21 bit suite is inserted in bit-order from bit zero up until the last highest set bit (excluding that last bit).  For example: if the immediate contains 0b110 then the 40 bit shift register is pushed up by 2 bits, and its LSBs become 0b10.  Thus, the number of bits to be inserted is encoded within the 21 bits (using only 1 marker bit to do so).
 
@@ -17,7 +17,9 @@ Any time the LSB of any one of the 7 Context SPRs is zero, the 24 bit `RM` Conte
 
 When the 40 bits of any one of the SPRs reaches zero the entire SPR is set to zero, and the entire SPR bank shuffles down (all SPRs above the one now zero move down one index position) so that at no time will there be an SPR containing zeros splitting up the other SPRs.  This allows a data-dependent fail-first copy of all SPRs to be used as a single instruction because the last SPR will always be zero.
 
-These changes occur on a precise schedule: compilers should not have difficulties statically allocating the Context Propagation, as long as certain conventions are followed, such as avoidance of allowing the context to propagate through branches used by more than one incoming path, and loops.
+These changes occur on a precise schedule: compilers should not have difficulties statically allocating the Context Propagation, as long as certain conventions are followed, such as avoidance of allowing the context to propagate through branches used by more than one incoming path, and variable-length loops.
+
+Loops, clearly, because if the setup of the shift registers does not precisely match the number of instructions, the meaning of those instructions will change as the bits in the shift registers run out!  However if the loops are of fixed dize and small enough (40 instructions maximum) then it is perfectly reasonable to insert repeated patterns into the shift registers, enough to cover all the loops.  Ordinarily however the use of the Context Propagation instructions should be inside the loop and it is the responsibility of the compiler and assembler writer to ensure that the shift registers reach zero before the loop jump point. 
 
 # Swizzle Propagation
 
