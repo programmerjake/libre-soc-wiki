@@ -16,16 +16,40 @@ There are 4 64 bit SPRs used for storing Context, and the data is stored as foll
 * Starting from the LSBs of the first SPR, the eight 24 bit `RM` are stored, wrapping round when crossing from one SPR to the next.  This covers 3*8 bytes which requires 3 64 bit SPRs to store QTY8 24 bit values.
 * Starting from the LSB of the 4th SPR up to the MSB of the 8th the *indices* are stored 3x 40 bits for a total of 160 bits.
 
-Thus when an `RM` is inserted the bits 
-
 If a situation would arise where more than one LSB is set (signalling an attempt to apply multiple contexts to the same instruction), an exception is raised.  Given that this may be detected when the value is inserted, an exception is raised by the Context Propagation instruction.
-
-The 80 bit shift register may be shuffled down
 
 These changes occur on a precise schedule: compilers should not have difficulties statically allocating the Context Propagation, as long as certain conventions are followed, such as avoidance of allowing the context to propagate through branches used by more than one incoming path, and variable-length loops.
 
 Loops, clearly, because if the setup of the shift registers does not precisely match the number of instructions, the meaning of those instructions will change as the bits in the shift registers run out!  However if the loops are of fixed size and small enough (40 instructions maximum) then it is perfectly reasonable to insert repeated patterns into the shift registers, enough to cover all the loops.  Ordinarily however the use of the Context Propagation instructions should be inside the loop and it is the responsibility of the compiler and assembler writer to ensure that the shift registers reach zero before the loop jump point. 
 
+## Pseudocode:
+
+The internal data structures need not precisely match the SPRs.  Here are some internal datastructures:
+
+    bit sreg[7][40] # seven 40 bit shift registers
+    bit RM[7][24]   # seven svp64 prefixes
+    int sregoffs[7] # indicator where last bits were placed
+
+The Context Propagation instruction then inserts bits into the selected stream:
+
+    count = 20-count_trailing_zeros(imm)
+    RM[idx] = new_RM
+    start = sregoffs[idx]
+    sreg[idx][start:start+count] = imm[0:count]
+    sregoffs[idx] += count
+
+With each shift register being maintained independently the new bits are dropoed in where the last ones end.  To get which one is to be applied is as follows:
+
+    for i in range(7):
+        if sreg[i][0]:
+            apply_RM = RM[i]
+        sreg[i] = sreg[i] >> 1
+        sregoffs[i] -= 1
+
+Note that it is the LSB that says which prefix is to be applied.
+
+To create the SPRs the RMs and shift registers are concatenated together, 24 bits `RM` assocuated 
+    
 # Swizzle Propagation
 
 Swizzle Contexts follow the same schedule except that there is a mask for specifying to which registers the swizzle is to be applied, and there is only 17 bit suite to indicate the instructions to which the swizzle applies.
