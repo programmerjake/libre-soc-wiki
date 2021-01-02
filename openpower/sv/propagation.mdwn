@@ -2,11 +2,9 @@
 
 [[sv/svp64]] context is 24 bits long, and Swizzle is 12.  These are enormous and not sustainable as far as power consumption is concerned.  Also, there is repetition of the same contexts to different instructions. An idea therefore is to add a level of indirection that allows these contexts to be applied to multiple instructions.
 
-The basic principle is to have a special instruction in an svp64 context that takes a copy of the `RM[0..23]` bits, alongside a 21 bit suite that indicates which of the following 20 32 bit instructions will have that `RM` applied to them.  An index is associated with each (up to four of them) such that multiple alternate contexts can be applied.  Under four 40 bit "stacks", 20 bits of the 21 bit suite are pushed into a given indexed stack. This may be done multiple times, with the upper bits being discarded.
+The basic principle is to have a suite of 40 indices in a shift register that indicate one of seven `RM[0:23]` prefixes shall be applied to upcoming 32 bit v3.0B instructions.  The Least Significant Index in the shift register is the one that is applied.  One of those indices is 0b000 which indicates "no prefix applied".
 
-If under a given index the `RM` is different, this indicates that the stavk is to be overwitten: rather than push the 40 bits upwards, the new 20 bits entirely overwrites the old 40 bits.  To set any of the eight stacks to zero the 20 bit value must be set to zero.
-
-The 21 bit suite is inserted in bit-order from bit zero up until the last highest set bit (excluding that last bit).  For example: if the immediate contains 0b110 then the 40 bit shift register is pushed up by 2 bits, and its LSBs become 0b10.  Thus, the number of bits to be inserted is encoded within the 21 bits (using only 1 marker bit to do so).
+A special instruction in an svp64 context takes a copy of the `RM[0..23]` bits, alongside a 21 bit suite that indicates up to 20 32 bit instructions will have that `RM` applied to them, as well as an index to associate with the `RM`.  If there are already indices set within the shift register then the new entries are placed after the end of the highest-indexed one.
 
 | 0.5|6.8  | 9.10|11.31|  name   |
 | -- | --- | --- | --- | ------- |
@@ -15,9 +13,8 @@ The 21 bit suite is inserted in bit-order from bit zero up until the last highes
 
 There are 4 64 bit SPRs used for storing Context, and the data is stored as follows:
 
-* Starting from the LSBs of the first SPR, the eight 24 bit `RM` are stored, wrapping round when crossing from one SPR to the next.  This covers 3*12 bytes which requires 1.5 64 bit SPRs to store QTY4 24 bit values.
-* 
-* Starting from half way through the 2nd SPR up to the MSB of the 4th the *indices* are stored 2x 40 bits for a total of 80 bits.
+* Starting from the LSBs of the first SPR, the eight 24 bit `RM` are stored, wrapping round when crossing from one SPR to the next.  This covers 3*8 bytes which requires 3 64 bit SPRs to store QTY8 24 bit values.
+* Starting from the LSB of the 4th SPR up to the MSB of the 8th the *indices* are stored 3x 40 bits for a total of 160 bits.
 
 Thus when an `RM` is inserted the bits 
 
