@@ -30,7 +30,7 @@ The reason for merging the contexts is so that different aspects msy be applied.
 
 These changes occur on a precise schedule: compilers should not have difficulties statically allocating the Context Propagation, as long as certain conventions are followed, such as avoidance of allowing the context to propagate through branches used by more than one incoming path, and variable-length loops.
 
-Loops, clearly, because if the setup of the shift registers does not precisely match the number of instructions, the meaning of those instructions will change as the bits in the shift registers run out!  However if the loops are of fixed size and small enough (40 instructions maximum) then it is perfectly reasonable to insert repeated patterns into the shift registers, enough to cover all the loops.  Ordinarily however the use of the Context Propagation instructions should be inside the loop and it is the responsibility of the compiler and assembler writer to ensure that the shift registers reach zero before the loop jump point. 
+Loops, clearly, because if the setup of the shift registers does not precisely match the number of instructions, the meaning of those instructions will change as the bits in the shift registers run out!  However if the loops are of fixed size and small enough (40 instructions maximum) then it is perfectly reasonable to insert repeated patterns into the shift registers, enough to cover all the loops.  Ordinarily however the use of the Context Propagation instructions should be inside the loop and it is the responsibility of the compiler and assembler writer to ensure that the shift registers reach zero before any loop jump-back point. 
 
 ## Pseudocode:
 
