@@ -26,7 +26,7 @@ There are 4 64 bit SPRs used for storing Context, and the data is stored as foll
 
 When each LSB is nonzero in any one of the seven Shift Registers the corresponding Contexts are looked up and merged (ORed) together.  Contexts for different purposes however may not be mixed: an illegal instruction is raised if this occurs.
 
-The reason for merging the contexts is so that different aspects msy be applied.  For example some `RM` contexts may indicate that predication is to be applied to an instruction whilst another context may contain the svp64 Mode.  Combining the two allows the predication aspect to be merged and shared, makung for better packing.
+The reason for merging the contexts is so that different aspects msy be applied.  For example some `RM` contexts may indicate that predication is to be applied to an instruction whilst another context may contain the svp64 Mode.  Combining the two allows the predication aspect to be merged and shared, making for better packing.
 
 These changes occur on a precise schedule: compilers should not have difficulties statically allocating the Context Propagation, as long as certain conventions are followed, such as avoidance of allowing the context to propagate through branches used by more than one incoming path, and variable-length loops.
 
