@@ -2,7 +2,7 @@
 
 [[sv/svp64]] context is 24 bits long, and Swizzle is 12.  These are enormous and not sustainable as far as power consumption is concerned.  Also, there is repetition of the same contexts to different instructions. An idea therefore is to add a level of indirection that allows these contexts to be applied to multiple instructions.
 
-The basic principle is to have a suite of 40 indices in a shift register that indicate one of seven `RM[0:23]` prefixes shall be applied to upcoming 32 bit v3.0B instructions.  The Least Significant Index in the shift register is the one that is applied.  One of those indices is 0b000 which indicates "no prefix applied".
+The basic principle is to have a suite of 40 indices in a shift register that indicate one of seven Contexts shall be applied to upcoming 32 bit v3.0B instructions.  The Least Significant Index in the shift register is the one that is applied.  One of those indices is 0b000 which indicates "no prefix applied".
 
 A special instruction in an svp64 context takes a copy of the `RM[0..23]` bits, alongside a 21 bit suite that indicates up to 20 32 bit instructions will have that `RM` applied to them, as well as an index to associate with the `RM`.  If there are already indices set within the shift register then the new entries are placed after the end of the highest-indexed one.
 
@@ -13,7 +13,11 @@ A special instruction in an svp64 context takes a copy of the `RM[0..23]` bits, 
 
 There are 4 64 bit SPRs used for storing Context, and the data is stored as follows:
 
-* Starting from the LSBs of the first SPR, the eight 24 bit `RM` are stored, wrapping round when crossing from one SPR to the next.  This covers 3*8 bytes which requires 3 64 bit SPRs to store QTY8 24 bit values.
+| 0....4 | 5.7 | 8........31 |  name     |
+| ------ | --- | ----------- | --------- |
+| 00000  | idx | `RM[0:23`   |  svp64 RM |
+| 1 mask | idx | swiz1 swiz2 |  swizzle  |
+
 * Starting from the LSB of the 4th SPR up to the MSB of the 8th the *indices* are stored 3x 40 bits for a total of 160 bits.
 
 If a situation would arise where more than one LSB is set (signalling an attempt to apply multiple contexts to the same instruction), an exception is raised.  Given that this may be detected when the value is inserted, an exception is raised by the Context Propagation instruction.
