@@ -24,7 +24,7 @@ There are 4 64 bit SPRs used for storing Context, and the data is stored as foll
   2 per 64 bit SPR and 1 in the 4th.
 * Starting from bit 32 of the 4th SPR, in batches of 40 bits the Shift Registers are stored.
 
-When each LSB is nonzero in any one of the seven Shift Registers the corresponding Contexts are looked up and merged (ORed) together.  Cintexts for different purposes however may not be mixed: an illegal instruction is raised if this occurs.
+When each LSB is nonzero in any one of the seven Shift Registers the corresponding Contexts are looked up and merged (ORed) together.  Contexts for different purposes however may not be mixed: an illegal instruction is raised if this occurs.
 
 The reason for merging the contexts is so that different aspects msy be applied.  For example some `RM` contexts may indicate that predication is to be applied to an instruction whilst another context may contain the svp64 Mode.  Combining the two allows the predication aspect to be merged and shared, makung for better packing.
 
@@ -48,7 +48,7 @@ The Context Propagation instruction then inserts bits into the selected stream:
     sreg[idx][start:start+count] = imm[0:count]
     sregoffs[idx] += count
 
-With each shift register being maintained independently the new bits are dropoed in where the last ones end.  To get which one is to be applied is as follows:
+With each shift register being maintained independently the new bits are dropped in where the last ones end.  To get which one is to be applied is as follows:
 
     apply_context
     for i in range(7):
