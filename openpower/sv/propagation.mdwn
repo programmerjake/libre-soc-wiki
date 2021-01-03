@@ -63,12 +63,14 @@ Note that it is the LSB that says which context is to be applied.
 
 Swizzle Contexts follow the same schedule except that there is a mask for specifying to which registers the swizzle is to be applied, and there is only 17 bit suite to indicate the instructions to which the swizzle applies.
 
+The bits in rhe svp64 `RM` field are interpreted as a pair of 12 bit swizzles 
+
 | 0.5| 6.8 | 9.11| 12.14 | 15.31 |  name   |
 | -- | --- | --- | ----- | ----- | ------- |
 | OP | MMM |     | mask  |       | ?-Form  |
 | OP | 001 | idx | mask  |  imm  |         |
 
-Note however that it is only  svp64 encoded instructions 
+Note however that it is only svp64 encoded instructions 
 to which swizzle applies, so Swizzle Shift Registers only activate (and shift down) on svp64 instructions. *This includes Context-propagated ones!*
 
 The mask is encoded as follows:
@@ -78,3 +80,5 @@ The mask is encoded as follows:
 * bit 2 indicates that src3 is swizzled
 
 When the compiler creates Swizzle Contexts it is important to recall that the Contexts will be ORed together. Thus one Context may specify a mask whilst the other Context specifies the swizzles: ORing different mask contexts with different swizzle Contexts allows more combinations than would normally fit into seven Contexts.
+
+More than one bit is permitted to be set in the mask: swiz1 is applied to the first src operand specified by the mask, and swiz2 is applied to the second.
