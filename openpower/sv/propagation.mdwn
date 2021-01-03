@@ -85,7 +85,9 @@ More than one bit is permitted to be set in the mask: swiz1 is applied to the fi
 
 # 2D/3D Matrix Remap
 
-*Based on the old version [[simple_v_extension/remap]], the Shape CSRs remain the same as does the algorithm that performs the remapping*.  Remap allows up to four Vectors (`fma`) to be algorithmically arbitrarily remapped via 1D, 2D or 3D reshaping.
+*Based on the old version [[simple_v_extension/remap]], the Shape CSRs remain the same as does the algorithm that performs the remapping*.
+
+Remap allows up to four Vectors (all four arguments of `fma` for example) to be algorithmically arbitrarily remapped via 1D, 2D or 3D reshaping.
 
 Vectors may be remapped such that Matrix multiply of any arbitrary size is performed in one Vectorised `fma` instruction as long as the total number of elements is less than 64 (maximum for VL).
 
@@ -107,3 +109,9 @@ Again it is the 24 bit `RM` that is interpreted differently:
 The shape indices 0-3 are numbered 0-3 whilst the masks are bitmasks that indicate src or dest to which the associated shape (0-3) is to be applied.
 A zero mask indicates that the Shape is not to be applied.  Note that whilst the masks are unary encoded the Shape indices sh0-3 are not: this must be taken into consideration when ORing occurs.
 
+The mask is encoded as follows:
+
+* bit 0 indicates that dest is swizzled
+* bit 1 indicates that src1 is swizzled
+* bit 2 indicates that src2 is swizzled
+* bit 3 indicates that src3 is swizzled
