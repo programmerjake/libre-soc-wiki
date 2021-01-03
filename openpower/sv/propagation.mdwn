@@ -11,7 +11,7 @@ A special instruction in an svp64 context takes a copy of the `RM[0..23]` bits, 
 | OP | MMM |     |     | ?-Form  |
 | OP | 000 | idx | imm |         |
 
-Two different types of contexts are available so far: svp64 RM and swizzle. Their format is as follows when stired in SPRs: 
+Two different types of contexts are available so far: svp64 RM and swizzle. Their format is as follows when stored in SPRs: 
 
 | 0..3 | 5..7 | 8........31 |  name     |
 | ---- | ---- | ----------- | --------- |
@@ -68,8 +68,8 @@ Swizzle Contexts follow the same schedule except that there is a mask for specif
 | OP | MM |     | mask  |       | ?-Form  |
 | OP | 01 | idx | mask  |  imm  |         |
 
-Note however that only instructions which contain SUBVL!=1 cause the Swizxle SPRs to count down, and that consequently it is only svp64 encoded instructions 
-to which this applies. *This includes Context-propagated ones!*
+Note however that it is only  svp64 encoded instructions 
+to which swizzle applies, so Swizxle Shift Registers only activate (and shift down) on svp64 instructions. *This includes Context-propagated ones!*
 
 The mask is encoded as follows:
 
