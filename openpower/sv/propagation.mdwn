@@ -13,10 +13,10 @@ A special instruction in an svp64 context takes a copy of the `RM[0..23]` bits, 
 
 Two different types of contexts are available so far: svp64 RM and swizzle. Their format is as follows when stored in SPRs: 
 
-| 0..3 | 5..7 | 8........31 |  name     |
-| ---- | ---- | ----------- | --------- |
-| 0000 | 0000 | `RM[0:23]`  |  svp64 RM |
-| 0001 | mask | swiz1 swiz2 |  swizzle  |
+| 0...4 | 5..7 | 8........31 |  name     |
+| ----- | ---- | ----------- | --------- |
+| 00000 | 000  | `RM[0:23]`  |  svp64 RM |
+| 00001 | mask | swiz1 swiz2 |  swizzle  |
 
 There are 4 64 bit SPRs used for storing Context, and the data is stored as follows:
 
@@ -63,17 +63,18 @@ Note that it is the LSB that says which context is to be applied.
 
 Swizzle Contexts follow the same schedule except that there is a mask for specifying to which registers the swizzle is to be applied, and there is only 17 bit suite to indicate the instructions to which the swizzle applies.
 
-| 0.5|6.7 | 8.10| 11.14 | 15.31 |  name   |
-| -- | -- | --- | ----- | ----- | ------- |
-| OP | MM |     | mask  |       | ?-Form  |
-| OP | 01 | idx | mask  |  imm  |         |
+| 0.5| 6.8 | 9.11| 12.14 | 15.31 |  name   |
+| -- | --- | --- | ----- | ----- | ------- |
+| OP | MMM |     | mask  |       | ?-Form  |
+| OP | 001 | idx | mask  |  imm  |         |
 
 Note however that it is only  svp64 encoded instructions 
 to which swizzle applies, so Swizxle Shift Registers only activate (and shift down) on svp64 instructions. *This includes Context-propagated ones!*
 
 The mask is encoded as follows:
 
-* bit 0 indicates that the dest reg is swizzled
-* bit 1 indicates that src1 is swizzled
-* bit 2 indicates that src2 is swizzled
-* bit 3 indicates that src3 is swizzled
+* bit 0 indicates that src1 is swizzled
+* bit 1 indicates that src2 is swizzled
+* bit 2 indicates that src3 is swizzled
+
+When the compiler creates Swizxle Contexts it is important to recall that the Contexts will be ORee together. Thus one Context may specify a mask whilst the other Context specifies the swizzles: ORing different mask contexts with different swizzles allows more combinations than would normally fit into seven Contexts.
