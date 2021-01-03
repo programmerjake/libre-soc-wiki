@@ -11,16 +11,22 @@ A special instruction in an svp64 context takes a copy of the `RM[0..23]` bits, 
 | OP | MMM |     |     | ?-Form  |
 | OP | 000 | idx | imm |         |
 
+Two different types of contexts are available so far: svp64 RM and swizzle. Their format is as follows when stired in SPRs: 
+
+| 0..3 | 5..7 | 8........31 |  name     |
+| ---- | ---- | ----------- | --------- |
+| 0000 | 0000 | `RM[0:23]`  |  svp64 RM |
+| 0001 | mask | swiz1 swiz2 |  swizzle  |
+
 There are 4 64 bit SPRs used for storing Context, and the data is stored as follows:
 
-| 0....4 | 5.7 | 8........31 |  name     |
-| ------ | --- | ----------- | --------- |
-| 00000  | idx | `RM[0:23`   |  svp64 RM |
-| 1 mask | idx | swiz1 swiz2 |  swizzle  |
+* 7 32 bit contexts are stored, each indexed from 0b001 to 0b111,
+  2 per 64 bit SPR and 1 in the 4th.
+* Starting from bit 32 of the 4th SPR, in batches of 40 bits the Shift Registers are stored.
 
-* Starting from the LSB of the 4th SPR up to the MSB of the 8th the *indices* are stored 3x 40 bits for a total of 160 bits.
+When each LSB is nonzero in any one of the seven Shift Registers the corresponding Contexts are looked up and merged (ORed) together.  Cintexts for different purposes however may not be mixed: an illegal instruction is raised if this occurs.
 
-If a situation would arise where more than one LSB is set (signalling an attempt to apply multiple contexts to the same instruction), an exception is raised.  Given that this may be detected when the value is inserted, an exception is raised by the Context Propagation instruction.
+The reason for merging the contexts is so that different aspects msy be applied.  For example some `RM` contexts may indicate that predication is to be applied to an instruction whilst another context may contain the svp64 Mode.  Combining the two allows the predication aspect to be merged and shared, makung for better packing.
 
 These changes occur on a precise schedule: compilers should not have difficulties statically allocating the Context Propagation, as long as certain conventions are followed, such as avoidance of allowing the context to propagate through branches used by more than one incoming path, and variable-length loops.
 
@@ -31,29 +37,28 @@ Loops, clearly, because if the setup of the shift registers does not precisely m
 The internal data structures need not precisely match the SPRs.  Here are some internal datastructures:
 
     bit sreg[7][40] # seven 40 bit shift registers
-    bit RM[7][24]   # seven svp64 prefixes
+    bit context[7][24]   # seven contexts
     int sregoffs[7] # indicator where last bits were placed
 
 The Context Propagation instruction then inserts bits into the selected stream:
 
     count = 20-count_trailing_zeros(imm)
-    RM[idx] = new_RM
+    context[idx] = new_context
     start = sregoffs[idx]
     sreg[idx][start:start+count] = imm[0:count]
     sregoffs[idx] += count
 
 With each shift register being maintained independently the new bits are dropoed in where the last ones end.  To get which one is to be applied is as follows:
 
+    apply_context
     for i in range(7):
         if sreg[i][0]:
-            apply_RM = RM[i]
+            apply_context |= context[i]
         sreg[i] = sreg[i] >> 1
         sregoffs[i] -= 1
 
-Note that it is the LSB that says which prefix is to be applied.
+Note that it is the LSB that says which context is to be applied.
 
-To create the SPRs the RMs and shift registers are concatenated together, 24 bits `RM` assocuated 
-    
 # Swizzle Propagation
 
 Swizzle Contexts follow the same schedule except that there is a mask for specifying to which registers the swizzle is to be applied, and there is only 17 bit suite to indicate the instructions to which the swizzle applies.
