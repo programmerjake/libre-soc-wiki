@@ -1,4 +1,67 @@
+2021-01-03
+
+	* 560: Pointed out the circular reasoning in assuming LE in
+	showing it works for LE and BE, stated the problem with BE and how
+	the current BE status is incompatible with both PPC vectors and
+	with how svp64 vectors are said to be expected to work.
+	Recommended ruling BE out entirely for now, if the approach is to
+	not look into the problems, this will result in broken,
+	self-inconsistent specs that we'll either have to discontinue or
+	carry indefinitely.
+	* 558: Looked at the riscv implementation, particularly commit
+	4922a0bed80f8fa1b7d507eee6f94fb9c34bfc32, the testcases in
+	299ed9a4eaa569a5fc2b2291911ebf55318e85e4, and the reduction of
+	redundant setvli in e71a47e3cd553cec24afbc752df2dc2214dd3850, and
+	5fa22b2687b1f6ca1558fb487fc07e83ffe95707 that enables vl to not be
+	a power of two.
+	* 560: Wrote up about significance, ordering, endianness and such
+	conventions.  (6:21)
+
+2020-12-30
+
+	* 559: Luke split out the issue of whether we should we have
+	automatic detection and reversal of direction of vectors, so that
+	they always behave as if parallel, even if implemented as
+	sequential.  Jacob pointed out that reversal is not enough for
+	some 3-operand cases.
+	* SVP64: Second review call.
+	* 562: Filed, on elwidth encoding.
+	* 558: Raised the need for the compiler to be able to save and
+	restore VL, if it's exposed separately from maxvl; also brought up
+	calling conventions.
+	* 560: Commented on potential endianness issue: identity of
+	register as scalar and of first element of vector starting at that
+	register.  More questions on issues that arise in big endian mode,
+	and compatibility we may wish to aim for.  Some difficulties in
+	getting as much as a conversation going on endianness-influenced
+	sub-register iteration order; presented a simple scenario that
+	demonstrates the fundamental programming problems that will arise
+	out of favoring LE as we seem to.
+	* 558: Explained why disregarding things the compiler will do on
+	its own and arguing it shouldn't do that doesn't make the initial
+	project simpler, but harder, and also more fragile and likely to
+	be throw-away code in the end.  Argued for in favor of seeing
+	where we want to get to in the end, and then mapping out what it
+	takes to get features we want for the first stage so that it's a
+	step in the general direction of the end goal.  (6:43)
+
+2020-12-28
+
+	* 558: Commented on vector modes, insns, regalloc, scheduling,
+	auto vectorization, instrinsics, and the possibilities of vector
+	length and component modes as parameters to template insns and
+	instrinsics, and of mechanic generation thereof.  (2:22)
+
+2020-12-26
+
+	* SVP64: Reviewed overview and proposed encoding, posted more
+	questions.  (2:30)
+
 2020-12-25
+
+	* Email backlog.
+	* SVP64: More studying, more making sense.  Asked about
+	parallelism vs dependencies.  (3:02)
 
 	* 550: Implemented the first cut at svp64 prefix in the assembler,
 	namely, a 32-bit pseudo-insn that takes a 24-bit immediate
