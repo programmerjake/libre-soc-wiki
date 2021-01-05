@@ -482,7 +482,7 @@ of the destination.  The only situation where a full overwrite occurs
 is on "default" behaviour.  This is extremely important to consider the
 register file as a byte-level store, not a 64-bit-level store.
 
-## Why LE regfile?
+## Why a LE regfile?
 
 The concept of having a regfile where the byte ordering of the underlying
 SRAM seems utter nonsense.  Surely, a hardware implementation gets to
@@ -507,13 +507,19 @@ Without such a decision, if two words are packed as elements into a
 64 bit register, what does this mean? Should they be inverted so that
 the lower indexed element goes into the HI or the LO word? should the
 8 bytes of each register be inverted? Should the bytes in each element
-be inverted? These arw all equally valid and legitimate interpretations
+be inverted? Should the element indexing loop order be broken onto discontiguous chunks such as 32107654 rather than 01234567, and if so at what granilsrity of discontinuity? These are all equally valid and legitimate interpretations
 of what constitutes "BE" and they all cause merry mayhem.
 
 The decision was therefore made: the c typedef union is the canonical
 definition, and its members are defined as being in LE order. From there,
 implementations may choose whatever internal HDL wire order they like
 as long as the results produced conform to the elwidth pseudocode.
+
+*Note: it turns out that both x86 SIMD and NEON SIMD follow this convention, namely that both are implicitly LE, even though their ISA Manuals may not explicitly spell this out
+
+* <https://developer.arm.com/documentation/ddi0406/c/Application-Level-Architecture/Application-Level-Memory-Model/Endian-support/Endianness-in-Advanced-SIMD?lang=en>
+* <https://stackoverflow.com/questions/24045102/how-does-endianness-work-with-simd-registers>
+
 
 ## Source and Destination overrides
 
