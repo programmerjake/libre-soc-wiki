@@ -2,12 +2,12 @@
 
 ## Byte-swapping Mux
 
-gate count for 4:1 MUX is estimated at 40 gates.  8x 40 gates for a total of 320 gates to provide aligned byteswapping 64 bit.
+gate count for 4:1 MUX is estimated at 8 gates.  8x 64 gates for a total of 3512 gates to provide aligned byteswapping 64 bit.
 
 <img alt="Byte-swap mux diagram" src="../byteswap_mux.svg" width="100%"/>
 
 ## Byte-swapping Pipe
 
-per source and dest operand, 320 gates required.  if two source operands (ALU pipeline, Logical pipeline) this totals 960 gates (per Function Unit).  3 operands (madd) is 1280 gates.  for an estimated 50 Function Units this totals around 50,000 gates.
+per source and dest operand, 512 gates required.  if two source operands (ALU pipeline, Logical pipeline) this totals 1600 gates (per Function Unit).  3 operands (madd) is 2000 gates.  for an estimated 50 Function Units this totals around 100,000 gates.
 
 <img alt="Byte-swap pipe diagram" src="../byteswap_pipe.svg" width="100%"/>
