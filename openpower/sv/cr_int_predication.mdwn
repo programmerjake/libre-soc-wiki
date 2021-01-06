@@ -37,7 +37,7 @@ this gets particularly powerful if data-dependent predication is also enabled.
 
 # Bit ordering.
 
-IBM chose MSB0 for the OpenPOWER v3.0B specification.  This makes things slightly hair-raising.  Our model initially therefore to follow the logical progression from the defined behaviour of `mtcr` and `mfcr` etc.  
+IBM chose MSB0 for the OpenPOWER v3.0B specification.  This makes things slightly hair-raising.  Our desire initially is therefore to follow the logical progression from the defined behaviour of `mtcr` and `mfcr` etc.  
 In [[isa/sprset]] we see the pseudocode for `mtcrf` for example:
 
     mtcrf FXM,RS
@@ -46,9 +46,23 @@ In [[isa/sprset]] we see the pseudocode for `mtcrf` for example:
       if FXM[n] = 1 then
         CR[4*n+32:4*n+35] <- (RS)[4*n+32:4*n+35]
 
-This places (according to a mask schedule) `CR0` into MSB0-numbered bits 32-35 of the target Integer register `RS`, these bits of `RS` being the 31st down to the 28th.  Unfortunately, even when not Vectorised, this inserts CR numbering inversions on each batch of 8 CRs, massively complicating matters.
+This places (according to a mask schedule) `CR0` into MSB0-numbered bits 32-35 of the target Integer register `RS`, these bits of `RS` being the 31st down to the 28th.  Unfortunately, even when not Vectorised, this inserts CR numbering inversions on each batch of 8 CRs, massively complicating matters.  Predication when using CRs would have to be morphed to this (unacceptably complex) behaviour:
 
-In other words unless we do something about this, when we transger bits from an Integer Predicate into a Vector of CRs, our numbering of CRs, when enumerating them in a CR Vector, would be CR7 CR6 CR5.... CR0 **CR15** CR14 CR13... CR8 **CR23** CR22 etc. **not** CR0 CR1 ... CR23.
+    for i in range(VL):
+         n = (7-(i%8)) | (i & ~0x7) # total mess
+         CRpredicate = CR{n}        # select CR0, CR1, ....
+         predbit = CRpredicate[offs]  # select eq..ov bit
+
+Which is nowhere close to matching the straightforward obvious case:
+
+    for i in range(VL):
+         if INTpredmode:
+             predbit = (r3)[63-i] # IBM MSB0 spec sigh
+         else:
+             CRpredicate = CR{i} # start at CR0, work up
+             predbit = CRpredicate[offs]
+
+In other words unless we do something about this, when we transfer bits from an Integer Predicate into a Vector of CRs, our numbering of CRs, when enumerating them in a CR Vector, would be **CR7** CR6 CR5.... CR0 **CR15** CR14 CR13... CR8 **CR23** CR22 etc. **not** the more natural and obvious CR0 CR1 ... CR23.
 
 Therefore the instructions below need to **redefine** the relationship so that CR numbers (CR0, CR1) sequentially match the arithmetically-ordered bits of Integer registers.  By `arithmetic` this is deduced from the fact that the ibsteuction `addi r3, r0, 1` it will result in the **LSB** (numbered 63 in IBM MSB0 order) of r3 being set to 1 and all other bits,set to zero.  We therefore refer, below, to this LSB as "Arithmetic bit 0", and it is this bit which is used - defined - as being the first bit used in predication (on element 0).
 
