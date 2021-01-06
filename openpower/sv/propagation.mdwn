@@ -22,17 +22,17 @@ then the new entries are placed after the end of the highest-indexed one.
 
 | 0.5|6.8  | 9.10|11.31|  name   |
 | -- | --- | --- | --- | ------- |
-| OP | MMM |     |     | ?-Form  |
-| OP | 000 | idx | imm |         |
+| OP |     | MMM |     | ?-Form  |
+| OP | idx | 000 | imm |         |
 
 Two different types of contexts are available so far: svp64 RM and
 swizzle. Their format is as follows when stored in SPRs:
 
-| 0...4 | 5..7 | 8........31 |  name     |
-| ----- | ---- | ----------- | --------- |
-| 00000 | 000  | `RM[0:23]`  |  svp64 RM |
-| 00001 | mask | swiz1 swiz2 |  swizzle  |
-| 00010 | 000  | sh0-3 ms0-3 |  Remap    |
+| 0..3 | 4..7   | 8........31 |  name     |
+| ---- | ----   | ----------- | --------- |
+| 0000 | 0000   | `RM[0:23]`  |  svp64 RM |
+| 0001 | 0 mask | swiz1 swiz2 |  swizzle  |
+| 0010 | brev   | sh0-3 ms0-3 |  Remap    |
 
 
 There are 4 64 bit SPRs used for storing Context, and the data is stored
@@ -114,8 +114,8 @@ swizzles
 
 | 0.5| 6.8 | 9.11| 12.14 | 15.31 |  name   |
 | -- | --- | --- | ----- | ----- | ------- |
-| OP | MMM |     | mask  |       | ?-Form  |
-| OP | 001 | idx | mask  |  imm  |         |
+| OP |     | MMM | mask  |       | ?-Form  |
+| OP | idx | 001 | mask  |  imm  |         |
 
 Note however that it is only svp64 encoded instructions to which swizzle
 applies, so Swizzle Shift Registers only activate (and shift down)
@@ -157,10 +157,17 @@ apply to which registers.
 The instruction format is the same as `RM` and thus uses 21 bits of
 immediate, 29 of which are dropped into the indexed Shift Register
 
-| 0.5|6.8  | 9.10|11.31|  name   |
-| -- | --- | --- | --- | ------- |
-| OP | MMM |     |     | ?-Form  |
-| OP | 010 | idx | imm |         |
+| 0.5| 6.8 | 9.10| 11.14 | 15.31|  name   |
+| -- | --- | --- | ----  | ---- | ------- |
+| OP |     | MM  |       |      | ?-Form  |
+| OP | idx | 01  | brev  | imm  |         |
+
+brev field, which also applied down to SUBVL elements (not to the whole vec2/3/4, that would be handled by swizzle reordering)
+
+* bit 0 indicates that dest elements are byte-reversed
+* bit 1 indicates that src1 elements are byte-reversed
+* bit 2 indicates that src2 elements are byte-reversed
+* bit 3 indicates that src3 elements are byte-reversed
 
 Again it is the 24 bit `RM` that is interpreted differently:
 
