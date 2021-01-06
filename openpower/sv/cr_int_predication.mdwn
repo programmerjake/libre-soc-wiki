@@ -50,9 +50,9 @@ This places (according to a mask schedule) `CR0` into MSB0-numbered bits 32-35 o
 
 In other words unless we do something about this, when we transger bits from an Integer Predicate into a Vector of CRs, our numbering of CRs, when enumerating them in a CR Vector, would be CR7 CR6 CR5.... CR0 **CR15** CR14 CR13... CR8 **CR23** CR22 etc. **not** CR0 CR1 ... CR23.
 
-Therefore the instructions below need to **redefine** the relationship so that CR numbers (CR0, CR1) sequentially match the arithmetically-ordered bits of Integer registers.  By `arithmetic` this is deduced from the fact that the ibsteuction `addi r3, r0, 1` 
+Therefore the instructions below need to **redefine** the relationship so that CR numbers (CR0, CR1) sequentially match the arithmetically-ordered bits of Integer registers.  By `arithmetic` this is deduced from the fact that the ibsteuction `addi r3, r0, 1` it will result in the **LSB** (numbered 63 in IBM MSB0 order) of r3 being set to 1 and all other bits,set to zero.  We therefore refer, below, to this LSB as "Arithmetic bit 0", and it is this bit which is used - defined - as being the first bit used in predication (on element 0).
 
-Below is some pseudocode that, given a CR offset `offs` to represent `CR.eq` thru to `CR.ov` respectively, will copy the predicate bits in the correct order:
+Below is some pseudocode that, given a CR offset `offs` to represent `CR.eq` thru to `CR.ov` respectively, will copy the INT predicate bits in the correct order into the first 8 CRs:
 
     do n = 0 to 7
         CR[4*n+32+offs] <- (RS)[63-n]
@@ -63,6 +63,9 @@ Assuming that `offs` is set to `CR.eq` this results in:
 * Arithmetic bit 1  of RS being inserted into CR1.eq
 * ...
 * Arithmetic bit 7 of RS being inserted into CR7.eq
+
+To clarify, then: all instructions below do **NOT** follow the IBM convention, they follow the natural sequence CR0 CR1 instead.  However it is critically important to note that the offsets **in** a CR (`CR.eq` for example) continue to follow the v3.0B definition and convention.
+
 
 # Instruction form and pseudocode
 
