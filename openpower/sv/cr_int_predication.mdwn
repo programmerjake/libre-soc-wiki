@@ -83,6 +83,12 @@ To clarify, then: all instructions below do **NOT** follow the IBM convention, t
 
 # Instruction form and pseudocode
 
+Note that `CR{n}` refers to `CR0` when `n=0` and consequently, for CR0-7, is defined, in v3.0B pseudocode, as:
+
+     CR{7-n} = CR[32+n*4:35+n*4]
+
+Instruction format:
+
     | 0-5 | 6-10  | 11 | 12-15 | 16-18 | 19-20 | 21-25   | 26-30   | 31 |
     | --- | ----  | -- | ----- | ----- | ----- | -----   | -----   | -- |
     | 19  | RT    |    | mask  | BB    |    /  | XO[0:4] | XO[5:9] | /  |
@@ -97,7 +103,7 @@ bit 11=0, bit 19=0
 
     crrweird: RT, BB, mask.mode
 
-    creg = CRfile[32+BB*4:36+BB*4]
+    creg = CR{BB}
     n0 = mask[0] & (mode[0] == creg[0])
     n1 = mask[1] & (mode[1] == creg[1])
     n2 = mask[2] & (mode[2] == creg[2])
@@ -113,29 +119,31 @@ bit 11=1, bit 19=0
     n1 = mask[1] & (mode[1] == reg[0])
     n2 = mask[2] & (mode[2] == reg[0])
     n3 = mask[3] & (mode[3] == reg[0])
-    CRfile[32+BB*4:36+BB*4] = n0 || n1 || n2 || n3
+    CR{BB} = n0 || n1 || n2 || n3
 
 bit 11=0, bit 19=1
 
     crweird: BT, BB, mask.mode
 
-    creg = CRfile[32+BB*4:36+BB*4]
+    creg = CR{BB}
     n0 = mask[0] & (mode[0] == creg[0])
     n1 = mask[1] & (mode[1] == creg[1])
     n2 = mask[2] & (mode[2] == creg[2])
     n3 = mask[3] & (mode[3] == creg[3])
-    CRfile[32+BT*4:36+BT*4] = n0 || n1 || n2 || n3
+    CR{BT} = n0 || n1 || n2 || n3
 
 bit 11=1, bit 19=1
 
     crweirder: BFT, BB, mask.mode
 
-    creg = CRfile[32+BB*4:36+BB*4]
+    creg = CR{BB}
     n0 = mask[0] & (mode[0] == creg[0])
     n1 = mask[1] & (mode[1] == creg[1])
     n2 = mask[2] & (mode[2] == creg[2])
     n3 = mask[3] & (mode[3] == creg[3])
-    CRfile[32+BFT] = n0|n1|n2|n3
+    BF = BFT[2:4] # select CR
+    bit = BFT[0:1] # select bit of CR
+    CR{BF}[bit] = n0|n1|n2|n3
 
 Pseudo-op:
 
