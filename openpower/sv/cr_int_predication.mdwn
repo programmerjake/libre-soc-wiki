@@ -4,6 +4,7 @@ See:
 
 * <https://bugs.libre-soc.org/show_bug.cgi?id=533>
 * <https://bugs.libre-soc.org/show_bug.cgi?id=527>
+* <https://bugs.libre-soc.org/show_bug.cgi?id=569>
 
 Basic concept:
 
@@ -33,6 +34,35 @@ Side-effects:
 * CR twin predication with zeroing is likewise a way to interact with the incoming integer
 
 this gets particularly powerful if data-dependent predication is also enabled.
+
+# Bit ordering.
+
+IBM chose MSB0 for the OpenPOWER v3.0B specification.  This makes things slightly hair-raising.  Our model initially therefore to follow the logical progression from the defined behaviour of `mtcr` and `mfcr` etc.  
+In [[isa/sprset]] we see the pseudocode for `mtcrf` for example:
+
+    mtcrf FXM,RS
+
+    do n = 0 to 7
+      if FXM[n] = 1 then
+        CR[4*n+32:4*n+35] <- (RS)[4*n+32:4*n+35]
+
+This places (according to a mask schedule) `CR0` into MSB0-numbered bits 32-35 of the target Integer register `RS`, these bits of `RS` being the 31st down to the 28th.  Unfortunately, even when not Vectorised, this inserts CR numbering inversions on each batch of 8 CRs, massively complicating matters.
+
+In other words unless we do something about this, when we transger bits from an Integer Predicate into a Vector of CRs, our numbering of CRs, when enumerating them in a CR Vector, would be CR7 CR6 CR5.... CR0 **CR15** CR14 CR13... CR8 **CR23** CR22 etc. **not** CR0 CR1 ... CR23.
+
+Therefore the instructions below need to **redefine** the relationship so that CR numbers (CR0, CR1) sequentially match the arithmetically-ordered bits of Integer registers.  By `arithmetic` this is deduced from the fact that the ibsteuction `addi r3, r0, 1` 
+
+Below is some pseudocode that, given a CR offset `offs` to represent `CR.eq` thru to `CR.ov` respectively, will copy the predicate bits in the correct order:
+
+    do n = 0 to 7
+        CR[4*n+32+offs] <- (RS)[63-n]
+
+Assuming that `offs` is set to `CR.eq` this results in:
+
+* Arithmetic bit 0 (the LSB) of RS being inserted into CR0.eq
+* Arithmetic bit 1  of RS being inserted into CR1.eq
+* ...
+* Arithmetic bit 7 of RS being inserted into CR7.eq
 
 # Instruction form and pseudocode
 
