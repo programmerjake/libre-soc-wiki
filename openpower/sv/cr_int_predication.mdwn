@@ -64,7 +64,7 @@ Which is nowhere close to matching the straightforward obvious case:
 
 In other words unless we do something about this, when we transfer bits from an Integer Predicate into a Vector of CRs, our numbering of CRs, when enumerating them in a CR Vector, would be **CR7** CR6 CR5.... CR0 **CR15** CR14 CR13... CR8 **CR23** CR22 etc. **not** the more natural and obvious CR0 CR1 ... CR23.
 
-Therefore the instructions below need to **redefine** the relationship so that CR numbers (CR0, CR1) sequentially match the arithmetically-ordered bits of Integer registers.  By `arithmetic` this is deduced from the fact that the ibsteuction `addi r3, r0, 1` it will result in the **LSB** (numbered 63 in IBM MSB0 order) of r3 being set to 1 and all other bits,set to zero.  We therefore refer, below, to this LSB as "Arithmetic bit 0", and it is this bit which is used - defined - as being the first bit used in predication (on element 0).
+Therefore the instructions below need to **redefine** the relationship so that CR numbers (CR0, CR1) sequentially match the arithmetically-ordered bits of Integer registers.  By `arithmetic` this is deduced from the fact that the instruction `addi r3, r0, 1` will result in the **LSB** (numbered 63 in IBM MSB0 order) of r3 being set to 1 and all other bits set to zero.  We therefore refer, below, to this LSB as "Arithmetic bit 0", and it is this bit which is used - defined - as being the first bit used in Integer predication (on element 0).
 
 Below is some pseudocode that, given a CR offset `offs` to represent `CR.eq` thru to `CR.ov` respectively, will copy the INT predicate bits in the correct order into the first 8 CRs:
 
