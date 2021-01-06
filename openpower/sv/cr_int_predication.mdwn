@@ -108,17 +108,18 @@ bit 11=0, bit 19=0
     n1 = mask[1] & (mode[1] == creg[1])
     n2 = mask[2] & (mode[2] == creg[2])
     n3 = mask[3] & (mode[3] == creg[3])
-    RT[0] = n0|n1|n2|n3
+    RT[63] = n0|n1|n2|n3 # MSB0 numbering, 63 is LSB
 
 bit 11=1, bit 19=0
 
     mtcrweird: RA, BB, mask.mode
 
     reg = (RA|0)
-    n0 = mask[0] & (mode[0] == reg[0])
-    n1 = mask[1] & (mode[1] == reg[0])
-    n2 = mask[2] & (mode[2] == reg[0])
-    n3 = mask[3] & (mode[3] == reg[0])
+    lsb = reg[63] # MSB0 numbering
+    n0 = mask[0] & (mode[0] == lsb)
+    n1 = mask[1] & (mode[1] == lsb)
+    n2 = mask[2] & (mode[2] == lsb)
+    n3 = mask[3] & (mode[3] == lsb)
     CR{BB} = n0 || n1 || n2 || n3
 
 bit 11=0, bit 19=1
