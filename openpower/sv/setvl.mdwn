@@ -132,7 +132,7 @@ Note that whilst it is possible to set both MVL and VL from the same immediate, 
       sub r3, r3, r4
       ...
     test:
-      setvli. r4, r3, VL=64, MVL=64
+      setvli. r4, r3, MVL=64
       bne cr0, loop
     end:
       blr
