@@ -366,7 +366,7 @@ but select different *bits* of the same CRs
 
 `offs` is defined as CR32 (4x8) so as to mesh cleanly with Vectorised Rc=1 operations (see below).  Rc=1 operations start from CR8 (TBD).
 
-Notes from Jacob: CR6-7 allows Scalar ops to refer to these without having to do a transfer (v3.0B).  Another idea: the DepMatrices treat scalar CRs as one "thing" and treat the Vectors as a completely separate "thing".
+Notes from Jacob: CR6-7 allows Scalar ops to refer to these without having to do a transfer (v3.0B).  Another idea: the DepMatrices treat scalar CRs as one "thing" and treat the Vectors as a completely separate "thing".  also: do modulo arithmetic on allocation of CRs.
 
 # Extra Remapped Encoding
 
