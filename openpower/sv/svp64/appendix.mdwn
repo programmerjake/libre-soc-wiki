@@ -14,7 +14,7 @@ independent.  XER SO and other global "accumulation" flags (CR.OV) cause
 Read-Write Hazards on single-bit global resources, having a significant
 detrimental effect.
 
-Consequently in SV, XER.SO and CR.OV behaviour is disregarded (including in cmp instructions) .  XER is
+Consequently in SV, XER.SO and CR.OV behaviour is disregarded (including in `cmp` instructions).  XER is
 simply neither read nor written.  This includes when `scalar identity behaviour` occurs.  If precise OpenPOWER v3.0/1 scalar behaviour is desired then OpenPOWER v3.0/1 instructions should be used without an SV Prefix.
 
 An interesting side-effect of this decision is that the OE flag is now free for other uses when SV Prefixing is used.
@@ -118,14 +118,16 @@ The reason for all three is because Saturation (and other transformations) may o
 
 In order to respect OpenPOWER v3.0B Scalar behaviour the memory side is treated effectively as completely separate and distinct from SV augmentation.  This is primarily down to quirks surrounding LE/BE and byte-reversal in OpenPOWER.
 
-Note the following:
+Note the following regarding the pseudocode to follow:
 
 * `scalar identity behaviour` SV Context parameter conditions turn this
   into a straight absolute fully-compliant Scalar v3.0B LD operation
 * `brev` selects whether the operation is the byte-reversed variant (`ldbrx`
   rather than `ld`)
-* `op_width` specifies the operation width (`lb`, `lh`, `lw`, `ld`)
-* `imm_offs` specifies the immediate offset `ld r3, imm_offs(r5)`
+* `op_width` specifies the operation width (`lb`, `lh`, `lw`, `ld`) as
+  a "normal" part of Scalar v3.0B LD
+* `imm_offs` specifies the immediate offset `ld r3, imm_offs(r5)`, again
+  as a "normal" part of Scalar v3.0B LD
 * `svctx` specifies the SV Context and includes VL as well as source and
   destination elwidth overrides.
 
