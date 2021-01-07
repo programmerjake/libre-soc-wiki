@@ -120,11 +120,11 @@ Note the following:
 
 * `scalar identity behaviour` SV Context parameter conditions turn this
   into a straight absolute fully-compliant Scalar v3.0B LD operation
-* brev selects whether the operation is the byte-reversed variant (ldbrx
-  rather than ld)
-* op_width specifies the operation width (lb, lh, lw, ld)
-* imm_offs specifies the immediate offset `ld r3, imm_offs(r5)`
-* svctx specifies the SV Context and includes VL as well as source and
+* `brev` selects whether the operation is the byte-reversed variant (`ldbrx`
+  rather than `ld`)
+* `op_width` specifies the operation width (`lb`, `lh`, `lw`, `ld`)
+* `imm_offs` specifies the immediate offset `ld r3, imm_offs(r5)`
+* `svctx` specifies the SV Context and includes VL as well as source and
   destination elwidth overrides.
 
 Below is the pseudocode for Unit-Strided LD (which includes Vector capability):
