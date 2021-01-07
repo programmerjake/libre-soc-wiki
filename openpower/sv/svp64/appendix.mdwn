@@ -309,7 +309,7 @@ analysis and research) to be as follows:
 
     CR_index = 7-(BA>>2)      # top 3 bits but BE
     bit_index = 3-(BA & 0b11) # low 2 bits but BE
-    CR_reg = CR[CR_index]      # get the CR
+    CR_reg = CR{CR_index}     # get the CR
     # finally get the bit from the CR.
     CR_bit = (CR_reg & (1<<bit_index)) != 0
 
@@ -341,7 +341,7 @@ algorithm to determin CR\_reg is modified to as follows:
         CR_index = (spec[0:1]<<3) | CR_index
     # same as for v3.0/v3.1 from this point onwards
     bit_index = 3-(BA & 0b11) # low 2 bits but BE
-    CR_reg = CR[CR_index]      # get the CR
+    CR_reg = CR{CR_index}     # get the CR
     # finally get the bit from the CR.
     CR_bit = (CR_reg & (1<<bit_index)) != 0
 
@@ -385,8 +385,8 @@ CR element*.  Greatly simplified pseudocode:
          # calculate the vector result of an add
          iregs[RT+i] = iregs[RA+i] + iregs[RB+i]
          # now calculate CR bits
-         CRs[8+i].eq = iregs[RT+i] == 0
-         CRs[8+i].gt = iregs[RT+i] > 0
+         CRs{8+i}.eq = iregs[RT+i] == 0
+         CRs{8+i}.gt = iregs[RT+i] > 0
          ... etc
 
 If a "cumulated" CR based analysis of results is desired (a la VSX CR6)
