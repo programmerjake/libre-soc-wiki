@@ -9,6 +9,22 @@ See links:
 
 Use of setvl results in changes to the MVL, VL and STATE SPRs. see [[sv/sprs]]♧
 
+# Behaviour and Rationale
+
+SV's Vector Engine is based on Cray-style Variable-length Vectorisation,
+just like RVV.  However unlike RVV, SV sits on top of the standard Scalar
+regfiles: there is no separate Vector register numbering.  Therefore, also
+unlike RVV, SV does not have hard-coded "Lanes".  The relevant parameter
+in RVV is "MAXVL" and this is architecturally hard-coded into RVV systems,
+anywhere from 1 to tens of thousands of Lanes in supercomputers.
+
+SV is more like how MMX used to sit on top of the x86 FP regfile.  Therefore
+when Vector operations are performed, the question has to be asked, "well,
+how much of the regfile do you want to allocate to this operation?" and
+the answer to that effectively needs to be parameterised.  Hence: MAXVL
+(MVL) is set from an immediate, so that the compiler may decide, statically, a guaranteed resource allocation.
+
+
 # Format
 
 *(Allocation of opcode TBD pending OPF ISA WG approval)*
