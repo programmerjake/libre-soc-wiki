@@ -366,6 +366,8 @@ but select different *bits* of the same CRs
 
 `offs` is defined as CR32 (4x8) so as to mesh cleanly with Vectorised Rc=1 operations (see below).  Rc=1 operations start from CR8 (TBD).
 
+Notes from Jacob: CR6-7 allows Scalar ops to refer to these without having to do a transfer (v3.0B).  Another idea: the DepMatrices treat scalar CRs as one "thing" and treat the Vectors as a completely separate "thing".
+
 # Extra Remapped Encoding
 
 Shows all instruction-specific fields in the Remapped Encoding `RM[8:18]` for all instruction variants.  Note that due to the very tight space, the encoding mode is *not* included in the prefix itself.  The mode is "applied", similar to OpenPOWER "Forms" (X-Form, D-Form) on a per-instruction basis, and, like "Forms" are given a designation (below) of the form `RM-nP-nSnD`. The full list of which instructions use which remaps is here [[opcode_regs_deduped]]. (*Machine-readable CSV files have been provided which will make the task of creating SV-aware ISA decoders easier*).
