@@ -20,10 +20,20 @@ anywhere from 1 to tens of thousands of Lanes in supercomputers.
 
 SV is more like how MMX used to sit on top of the x86 FP regfile.  Therefore
 when Vector operations are performed, the question has to be asked, "well,
-how much of the regfile do you want to allocate to this operation?" and
-the answer to that effectively needs to be parameterised.  Hence: MAXVL
-(MVL) is set from an immediate, so that the compiler may decide, statically, a guaranteed resource allocation.
+how much of the regfile do you want to allocate to this operation?" because if it is too small an amount performance may be affected, and if too large then other registers would overlap and cause dataa  corruption, or even if allocated correctly would require spill to memory.
 
+The answer effectively needs to be parameterised.  Hence: MAXVL
+(MVL) is set from an immediate, so that the compiler may decide, statically, a guaranteed resource allocation according to the needs of the application.
+
+Other than being able to set MVL, SV's VL (Vector Length) works just like RVV's VL, with one minor twist.  RVV permits the `setvl` instruction to set VL to an arbitrary value.  Given that RVV only works on Vector Loops, thus is fine and oart of its value and design.  However, SV sits on top of the standard registrr files.  When MVL=VL=2, a Vector Add on `r3` will perform two Scalar Adds: one on `r3` and one on `r4`.
+
+Thus there is the opportunity to set VL to an explicit value (within the limits of MVL) with the reasonable expectation that if two operations are requested (by setting VL=2) then two operations are guaranteed.  This avoids the need for a loop (with not-insignificant use of the regfiles for counters), simply teo ib
+instructions:
+
+    setvli r0, MVL=64, VL=64
+    ld r0.v, 0(r30) # load 64 registers from memory
+
+This is *guaranteed* 100% without fail to perform 64 unit-strided LDs starting from the address pointed to by r30 and put the contents into r0 through r63.  Thus it becomes a "LOAD-MULTI". Twin Predication could even be used to only load relevant registers from the stack.  This *only works if VL is set to the requested value* (caveat being, limited to not exceed MVL)
 
 # Format
 
