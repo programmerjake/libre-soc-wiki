@@ -106,68 +106,6 @@ This is equivalent to
 followed by
 `llvm.masked.expandload.*`
 
-# LOAD/STORE Elwidths <a name="ldst"></a>
-
-Loads and Stores are almost unique in that the OpenPOWER Scalar ISA provides a width for the operation (lb, lh, lw, ld).  Only `extsb` and others like it provide an explicit operation width.  With SV providing source and dest elwidth overrides, there are now *three* widths involved:
-
-* operation width (lb=8, lh=16, lw=32, ld=64)
-* source width override
-* destination element override
-
-The reason for all three is because Saturation (and other transformations) may occur in between, which rely on the source and destination width, and have nothing to do (per se) with the operation width (in this case, a memory load operation).
-
-In order to respect OpenPOWER v3.0B Scalar behaviour the memory side is treated effectively as completely separate and distinct from SV augmentation.  This is primarily down to quirks surrounding LE/BE and byte-reversal in OpenPOWER.
-
-Note the following regarding the pseudocode to follow:
-
-* `scalar identity behaviour` SV Context parameter conditions turn this
-  into a straight absolute fully-compliant Scalar v3.0B LD operation
-* `brev` selects whether the operation is the byte-reversed variant (`ldbrx`
-  rather than `ld`)
-* `op_width` specifies the operation width (`lb`, `lh`, `lw`, `ld`) as
-  a "normal" part of Scalar v3.0B LD
-* `imm_offs` specifies the immediate offset `ld r3, imm_offs(r5)`, again
-  as a "normal" part of Scalar v3.0B LD
-* `svctx` specifies the SV Context and includes VL as well as source and
-  destination elwidth overrides.
-
-Below is the pseudocode for Unit-Strided LD (which includes Vector capability).  Note that twin predication, predication-zeroing, saturation
-and other modes have all been removed, for clarity and simplicity:
-
-    # LD not VLD! (ldbrx if brev=True)
-    # this covers unit stride mode
-    function op_ld(rd, rs, brev, op_width, imm_offs, svctx)
-      for (int i = 0, int j = 0; i < svctx.VL && j < svctx.VL;):
-
-        # unit stride mode, compute the address
-        srcbase = ireg[rs] + i * op_width;
-
-        # takes care of (merges) processor LE/BE and ld/ldbrx
-        bytereverse = brev XNOR MSR.LE
-
-        # read the underlying memory
-        memread <= mem[srcbase + imm_offs];
-
-        # optionally performs 8-byte swap (because src_elwidth=64)
-        if (bytereverse):
-            memread = byteswap(memread, op_width)
-
-        # now truncate to source over-ridden width.
-        if (svctx.src_elwidth != default)
-            memread = adjust_wid(memread, op_width, svctx.src_elwidth)
-
-        # note that here we would now do saturation if it was enabled.
-        ... saturation adjustment...
-
-        # takes care of inserting memory-read (now correctly byteswapped)
-        # into regfile underlying LE-defined order, into the right place
-        # within the NEON-like register, respecting destination element
-        # bitwidth, and the element index (j)
-        set_polymorphed_reg(rd, svctx.dest_bitwidth, j, memread)
-
-        # increments both src and dest element indices (no predication here)
-        i++;
-        j++;
 
 # Rounding, clamp and saturate
 
