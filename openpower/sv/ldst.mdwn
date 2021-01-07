@@ -105,16 +105,23 @@ Note the following regarding the pseudocode to follow:
 * `svctx` specifies the SV Context and includes VL as well as
   destination elwidth overrides.
 
-Below is the pseudocode for Unit-Strided LD (which includes Vector capability).  Note that twin predication, predication-zeroing, saturation
+Below is the pseudocode for Unit-Strided LD (which includes Vector capability).
+
+Note that twin predication, predication-zeroing, saturation
 and other modes have all been removed, for clarity and simplicity:
 
     # LD not VLD! (ldbrx if brev=True)
-    # this covers unit stride mode
+    # this covers unit stride mode and a type of vector offset
     function op_ld(RT, RA, brev, op_width, imm_offs, svctx)
       for (int i = 0, int j = 0; i < svctx.VL && j < svctx.VL;):
 
-        # unit stride mode, compute the address
-        srcbase = ireg[RA] + i * op_width;
+        if RA.isvec:
+            # strange vector mode, compute 64 bit address which is
+            # not polymorphic! elwidth hardcoded to 64 here
+            srcbase = get_polymorphed_reg(RA, 64, i)
+        else:
+            # unit stride mode, compute the address
+            srcbase = ireg[RA] + i * op_width;
 
         # takes care of (merges) processor LE/BE and ld/ldbrx
         bytereverse = brev XNOR MSR.LE
@@ -142,3 +149,4 @@ and other modes have all been removed, for clarity and simplicity:
         i++;
         j++;
 
+When RA is marked as Vectorised the mode switches to an anomalous version similar to Indexed.  The element indices increment to select a 64 bit base address, effectively as if the src elwidth was hard-set to "default".  The important thing to note is that `i*op_width` is *not* added on to the base address unless RA is marked as a scalar address.
