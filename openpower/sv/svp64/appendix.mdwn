@@ -106,6 +106,41 @@ This is equivalent to
 followed by
 `llvm.masked.expandload.*`
 
+# LOAD/STORE Elwidths <a name="ldst"></a>
+
+
+    # LD not VLD! (ldbrx if brev=True)
+    # this covers unit stride mode
+    function op_ld(rd, rs, brev, op_width, imm_offs, svctx)
+      for (int i = 0, int j = 0; i < VL && j < VL;):
+
+        # unit stride mode, compute the address
+        srcbase = ireg[rs] + i * op_width;
+
+        # takes care of (merges) processor LE/BE and ld/ldbrx
+        bytereverse = brev XNOR MSR.LE
+
+        # read the underlying memory
+        memread <= mem[srcbase + imm_offs];
+
+        # optionally performs 8-byte swap (because src_elwidth=64)
+        if (bytereverse):
+            memread = byteswap(memread, op_width)
+
+        # now truncate to source over-ridden width
+        if (svctx.src_elwidth != default)
+            memread = adjust_wid(memread, op_width, svctx.src_elwidth)
+
+        # takes care of inserting memory-read (now correctly byteswapped)
+        # into regfile underlying LE-defined order, into the right place
+        # within the NEON-like register, respecting destination element
+        # bitwidth, and the element index (j)
+        set_polymorphed_reg(rd, svctx.dest_bitwidth, j, memread)
+
+        # increments both src and dest element indices (no predication here)
+        i++;
+        j++;
+
 # Rounding, clamp and saturate
 
 see  [[av_opcodes]].
