@@ -116,7 +116,7 @@ Loads and Stores are almost unique in that the OpenPOWER Scalar ISA provides a w
 
 The reason for all three is because Saturation (and other transformations) may occur in between, which rely on the source and destination width, and have nothing to do (per se) with the operation width.
 
-Below is the pseudocode for Unit-Strided LD.  Note the following:
+Note the following:
 
 * `scalar identity behaviour` SV Context parameter conditions turn this
   into a straight absolute fully-compliant Scalar v3.0B LD operation
@@ -127,6 +127,7 @@ Below is the pseudocode for Unit-Strided LD.  Note the following:
 * svctx specifies the SV Context and includes VL as well as source and
   destination elwidth overrides.
 
+Below is the pseudocode for Unit-Strided LD (which includes Vector capability):
 
     # LD not VLD! (ldbrx if brev=True)
     # this covers unit stride mode
