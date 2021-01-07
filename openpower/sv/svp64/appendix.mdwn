@@ -108,13 +108,15 @@ followed by
 
 # LOAD/STORE Elwidths <a name="ldst"></a>
 
-Loads and Stores are almost unique in that the OpenPOWER Scalar ISA provides a width for the operation (lb, lh, lw, ld).  There are therefore three widths involved:
+Loads and Stores are almost unique in that the OpenPOWER Scalar ISA provides a width for the operation (lb, lh, lw, ld).  Only `extsb` and others like it provide an explicit operation width.  With SV providing source and dest elwidth overrides, there are now *three* widths involved:
 
 * operation width (lb=8, lh=16, lw=32, ld=64)
 * source width override
 * destination element override
 
-The reason for all three is because Saturation (and other transformations) may occur in between, which rely on the source and destination width, and have nothing to do (per se) with the operation width.
+The reason for all three is because Saturation (and other transformations) may occur in between, which rely on the source and destination width, and have nothing to do (per se) with the operation width (in this case, a memory load operation).
+
+In order to respect OpenPOWER v3.0B Scalar behaviour the memory side is treated effectively as completely separate and distinct from SV augmentation.  This is primarily down to quirks surrounding LE/BE and byte-reversal in OpenPOWER.
 
 Note the following:
 
