@@ -127,7 +127,8 @@ Note the following:
 * `svctx` specifies the SV Context and includes VL as well as source and
   destination elwidth overrides.
 
-Below is the pseudocode for Unit-Strided LD (which includes Vector capability):
+Below is the pseudocode for Unit-Strided LD (which includes Vector capability).  Note that twin predication, predication-zeroing, saturation
+and other modes have all been removed, for clarity and simplicity:
 
     # LD not VLD! (ldbrx if brev=True)
     # this covers unit stride mode
