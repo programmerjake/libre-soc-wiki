@@ -53,6 +53,8 @@ Note that setmvli is a pseudo-op, based on RA/RT=0, and setvli likewise
     setvli VL=8    : setvl r5, r0, VL=8
     setmvli MVL=8  : setvl r0, r0, MVL=8
 
+Note that whilst it is possible to set both MVL and VL from the same immediate, it is not possible to set them to different immediates in the same instruction.  That would require two instructions. 
+
 # Pseudocode
 
     // instruction fields:
