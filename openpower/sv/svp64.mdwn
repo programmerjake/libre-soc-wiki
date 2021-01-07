@@ -337,6 +337,8 @@ Twin predication has an identical 3 bit field similarly encoded.
 | 110   | R30      | `R30 & (1 << i)` is non-zero |
 | 111   | ~R30     | `R30 & (1 << i)` is zero     |
 
+r10 and r30 are at the high end of temporary and unused registers, so as not to interfere with register allocation from ABIs.
+
 ## CR-based Predication (MASKMODE=1)
 
 When the predicate mode bit is one the 3 bits are interpreted as below.
