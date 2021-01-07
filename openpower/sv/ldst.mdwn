@@ -122,7 +122,7 @@ and other modes have all been removed, for clarity and simplicity:
         # read the underlying memory
         memread <= mem[srcbase + imm_offs];
 
-        # optionally performs 8-byte swap (because src_elwidth=64)
+        # optionally performs byteswap at op width
         if (bytereverse):
             memread = byteswap(memread, op_width)
 
