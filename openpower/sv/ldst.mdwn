@@ -30,7 +30,8 @@ Thus we can see that Vector Indexed may be covered, and, as demonstrated with th
 
 At the minimum however it is possible to provide unit stride and vector mode, as follows:
 
-    function op_ld(RT, RA, immed, update=False) # LD not VLD!
+    # LD not VLD!
+    function op_ld(RT, RA, immed, svctx, update=False)
       rdv = map_dest_extra(RT);
       rsv = map_src_extra(RA);
       ps = get_pred_val(FALSE, RA); # predication on src
@@ -39,16 +40,19 @@ At the minimum however it is possible to provide unit stride and vector mode, as
         # skip nonpredicates elements
         if (RA.isvec) while (!(ps & 1<<i)) i++;
         if (RT.isvec) while (!(pd & 1<<j)) j++;
-        if (RA.isvec)
+        if RA.isvec:
           # indirect mode (multi mode)
-          EA = ireg[rsv+i] + immoed;
+          EA = ireg[rsv+i] + immed;
           if update: ireg[rsv+i] = EA;
-        elif (RT.isvec)
+        elif svctx.ldstmode == unitstride:
           # unit and element stride mode
           EA = ireg[rsv] + i * immed
-          if update: ireg[rsv] = EA; # note: overwrites repeatedly
+          # note: overwrites repeatedly, effectively
+          # giving the last non-masked-out value 
+          if update: ireg[rsv] = EA;
         else
           # standard scalar mode (but predicated)
+          # no stride multiplier means VSPLAT mode
           EA = ireg[rsv] + immed
           if update: ireg[rsv] = EA;
         ireg[rdv+j] <= MEM[EA];
