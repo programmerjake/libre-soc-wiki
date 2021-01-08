@@ -32,7 +32,8 @@ Thus we can see that Vector Indexed may be covered, and, as demonstrated with th
 At the minimum however it is possible to provide unit stride and vector mode, as follows:
 
     # LD not VLD!
-    function op_ld(RT, RA, immed, svctx, update=False)
+    # op_width: lb=1, lh=2, lw=4, ld=8
+    op_load(RT, RA, op_width, immed, svctx, update):
       rdv = map_dest_extra(RT);
       rsv = map_src_extra(RA);
       ps = get_pred_val(FALSE, RA); # predication on src
@@ -45,15 +46,21 @@ At the minimum however it is possible to provide unit stride and vector mode, as
           # indirect mode (multi mode)
           EA = ireg[rsv+i] + immed;
           if update: ireg[rsv+i] = EA;
+        elif svctx.ldstmode == elementstride:
+          # element stride mode
+          EA = ireg[rsv] + i * immed
+          # note: overwrites repeatedly, effectively
+          # giving the last non-masked-out value 
+          if update: ireg[rsv] = EA;
         elif svctx.ldstmode == unitstride:
           # unit and element stride mode
-          EA = ireg[rsv] + i * immed
+          EA = ireg[rsv] + i * op_width
           # note: overwrites repeatedly, effectively
           # giving the last non-masked-out value 
           if update: ireg[rsv] = EA;
         else
           # standard scalar mode (but predicated)
-          # no stride multiplier means VSPLAT mode
+          # no stride multiplier means VSPLAT/VINSERT mode
           EA = ireg[rsv] + immed
           if update: ireg[rsv] = EA;
         ireg[rdv+j] <= MEM[EA];
@@ -72,9 +79,9 @@ Indexed LD is:
       pd = get_pred_val(FALSE, RT); # ... AND on dest
       for (i=0, j=0, k=0; i < VL && j < VL && k < VL):
         # skip nonpredicated RA, RB and RT
-        if (RA.isvec) while (!(ps & 1<<i)) i++; 
-        if (RB.isvec) while (!(ps & 1<<k)) k++; 
-        if (RT.isvec) while (!(pd & 1<<j)) j++; 
+        if (RA.isvec) while (!(ps & 1<<i)) i++;
+        if (RB.isvec) while (!(ps & 1<<k)) k++;
+        if (RT.isvec) while (!(pd & 1<<j)) j++;
         EA = ireg[rsv+i] + ireg[rso+k] # indexed address
         if update: ireg[rsv+i] = EA
         ireg[rdv+j] <= MEM[EA];
@@ -83,7 +90,7 @@ Indexed LD is:
         if (!RA.isvec && !RB.isvec)
             break # scalar-scalar
         if (RA.isvec) i++;
-        if (RB.isvec) i++;
+        if (RB.isvec) k++;
         if (RT.isvec) j++;
 
 # LOAD/STORE Elwidths <a name="ldst"></a>
