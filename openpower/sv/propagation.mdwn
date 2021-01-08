@@ -1,5 +1,7 @@
 # SV Context Propagation
 
+[[!toc]]
+
 Context Propagation is for a future version of SV
 
 [[sv/svp64]] context is 24 bits long, and Swizzle is 12.  These
@@ -25,7 +27,7 @@ then the new entries are placed after the end of the highest-indexed one.
 | OP |     | MMM |     | ?-Form  |
 | OP | idx | 000 | imm |         |
 
-Two different types of contexts are available so far: svp64 RM and
+Three different types of contexts are available so far: svp64 RM and
 swizzle. Their format is as follows when stored in SPRs:
 
 | 0..3 | 4..7   | 8........31 |  name     |
@@ -150,7 +152,9 @@ is performed in one Vectorised `fma` instruction as long as the total
 number of elements is less than 64 (maximum for VL).
 
 Additionally it may be used to perform "zipping" and "unzipping" of
-elements in a regular fashion of any arbitrary size and depth: RGB or Audio channel data may be split into separate contiguous lanes of registers, for example.
+elements in a regular fashion of any arbitrary size and depth: RGB
+or Audio channel data may be split into separate contiguous lanes of
+registers, for example.
 
 There are four possible Shapes.  Unlike swizzle contexts this one requires
 he external remap Shape SPRs because the state information is too large
@@ -165,7 +169,8 @@ immediate, 29 of which are dropped into the indexed Shift Register
 | OP |     | MM  |       |      | ?-Form  |
 | OP | idx | 01  | brev  | imm  |         |
 
-brev field, which also applied down to SUBVL elements (not to the whole vec2/3/4, that would be handled by swizzle reordering)
+brev field, which also applied down to SUBVL elements (not to the whole
+vec2/3/4, that would be handled by swizzle reordering)
 
 * bit 0 indicates that dest elements are byte-reversed
 * bit 1 indicates that src1 elements are byte-reversed
