@@ -149,8 +149,11 @@ Vectors may be remapped such that Matrix multiply of any arbitrary size
 is performed in one Vectorised `fma` instruction as long as the total
 number of elements is less than 64 (maximum for VL).
 
+Additionally it may be used to perform "zipping" and "unzipping" of
+elements in a regular fashion of any arbitrary size and depth: RGB or Audio channel data may be split into separate contiguous lanes of registers, for example.
+
 There are four possible Shapes.  Unlike swizzle contexts this one requires
-rhe external remap Shape SPRs because the state information is too large
+he external remap Shape SPRs because the state information is too large
 to fit into the Context itself.  Thus the Remap Context says which Shapes
 apply to which registers.
 
