@@ -1,20 +1,22 @@
-# CSRs <a name="csrs"></a>
+[[!tag standards]]
 
-There are five CSRs, available in any privilege level:
+# SPRs <a name="sprs"></a>
+
+There are five SPRs, available in any privilege level:
 
 * MVL (the Maximum Vector Length)
-* VL (which has different characteristics from standard CSRs)
+* VL (which has different characteristics from standard SPRs)
 * SUBVL (effectively a kind of SIMD)
 * STATE (containing copies of MVL, VL and SUBVL as well as context information)
 
-For Privilege Levels (trap handling) there are the following CSRs,
+For Privilege Levels (trap handling) there are the following SPRs,
 where x may be u, s or h for User, Supervisor or Hypervisor
 Modes respectively:
 
 * (x)eSTATE (useful for saving and restoring during context switch,
   and for providing fast transitions)
 
-The u/s CSRs are treated and handled exactly like their (x)epc
+The u/s SPRs are treated and handled exactly like their (x)epc
 equivalents.  On entry to or exit from a privilege level, the contents
 of its (x)eSTATE are swapped with STATE.
 
@@ -47,7 +49,7 @@ Illegal values raise an exception.
 
 ## STATE
 
-This is a standard CSR that contains sufficient information for a
+This is a standard SPR that contains sufficient information for a
 full context save/restore.  It contains (and permits setting of):
 
 * MVL
@@ -59,7 +61,7 @@ full context save/restore.  It contains (and permits setting of):
 * svoffs - the subvector element offset of the current
   parallel instruction being executed
 
-The format of the STATE CSR is as follows:
+The format of the STATE SPR is as follows:
 
 | Field | Name     | Description           |
 | ----- | -------- | --------------------- |
