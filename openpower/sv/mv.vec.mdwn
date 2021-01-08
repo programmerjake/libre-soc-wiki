@@ -4,6 +4,8 @@ In the SIMD VSX set, section 6.8.1 and 6.8.2 p254 of v3.0B has a series of pack 
 
 See <https://bugs.libre-soc.org/show_bug.cgi?id=230#c30>
 
+Note that some of these may be covered by [[remap] which is described in [[sv/propagation]]
+
 # move to/from vec2/3/4
 
 Basic idea: mv operations where either the src or dest is specifically marked as having SUBVL apply to it, but, crucially, the *other* argument does *not*. Note that this is highly unusual in SimpleV, which normally only allows SUBVL to be applied uniformly across all dest and all src.
