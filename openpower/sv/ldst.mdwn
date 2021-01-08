@@ -7,13 +7,15 @@ Links:
 * <https://llvm.org/devmtg/2016-11/Slides/Emerson-ScalableVectorizationinLLVMIR.pdf>
 * <https://github.com/riscv/riscv-v-spec/blob/master/v-spec.adoc#vector-loads-and-stores>
 
-Vectorisation of Load and Store requires creation, from scalar operations, a number of different types:
+Vectorisation of Load and Store requires creation, from scalar operations,
+a number of different types:
 
 * fixed stride (contiguous sequence with no gaps)
 * element strided (sequential but regularly offset, with gaps)
 * vector indexed (vector of base addresses and vector of offsets)
 
-OpenPOWER Load/Store operations may be seen from [[isa/fixedload]] and [[isa/fixedstore]] pseudocode to be of the form:
+OpenPOWER Load/Store operations may be seen from [[isa/fixedload]] and
+[[isa/fixedstore]] pseudocode to be of the form:
 
     lbux RT, RA, RB
     EA <- (RA) + (RB)
@@ -25,11 +27,17 @@ and for immediate variants:
     EA <- RA + EXTS(D)
     RT <- MEM(EA)
 
-Thus in the first example, the source registers may each be independently marked as scalar or vector, and likewise the destination; in the second example only the one source and one dest may be marked as scalar or vector.
+Thus in the first example, the source registers may each be independently
+marked as scalar or vector, and likewise the destination; in the second
+example only the one source and one dest may be marked as scalar or
+vector.
 
-Thus we can see that Vector Indexed may be covered, and, as demonstrated with the pseudocode below, the immediate can be set to the element width in order to give unit stride.
+Thus we can see that Vector Indexed may be covered, and, as demonstrated
+with the pseudocode below, the immediate can be set to the element width
+in order to give unit stride.
 
-At the minimum however it is possible to provide unit stride and vector mode, as follows:
+At the minimum however it is possible to provide unit stride and vector
+mode, as follows:
 
     # LD not VLD!
     # op_width: lb=1, lh=2, lw=4, ld=8
@@ -92,14 +100,25 @@ Indexed LD is:
 
 # LOAD/STORE Elwidths <a name="ldst"></a>
 
-Loads and Stores are almost unique in that the OpenPOWER Scalar ISA provides a width for the operation (lb, lh, lw, ld).  Only `extsb` and others like it provide an explicit operation width.  In order to fit the different types of LD/ST Modes into SV the src elwidth field is used to select that Mode, and the actual src elwidth is implicitly the same as the operation width.  We then still apply Twin Predication but using:
+Loads and Stores are almost unique in that the OpenPOWER Scalar ISA
+provides a width for the operation (lb, lh, lw, ld).  Only `extsb` and
+others like it provide an explicit operation width.  In order to fit the
+different types of LD/ST Modes into SV the src elwidth field is used to
+select that Mode, and the actual src elwidth is implicitly the same as
+the operation width.  We then still apply Twin Predication but using:
 
 * operation width (lb=8, lh=16, lw=32, ld=64) as src elwidth
 * destination element width override
 
-Saturation (and other transformations) occur on the value loaded from memory as if it was an "infinite bitwidth", sign-extended (if Saturation requests signed) from the source width (lb, lh, lw, ld) followed then by the actual Saturation to the destination width.
+Saturation (and other transformations) occur on the value loaded from
+memory as if it was an "infinite bitwidth", sign-extended (if Saturation
+requests signed) from the source width (lb, lh, lw, ld) followed then
+by the actual Saturation to the destination width.
 
-In order to respect OpenPOWER v3.0B Scalar behaviour the memory side is treated effectively as completely separate and distinct from SV augmentation.  This is primarily down to quirks surrounding LE/BE and byte-reversal in OpenPOWER.
+In order to respect OpenPOWER v3.0B Scalar behaviour the memory side
+is treated effectively as completely separate and distinct from SV
+augmentation.  This is primarily down to quirks surrounding LE/BE and
+byte-reversal in OpenPOWER.
 
 Note the following regarding the pseudocode to follow:
 
@@ -158,4 +177,23 @@ and other modes have all been removed, for clarity and simplicity:
         i++;
         j++;
 
-When RA is marked as Vectorised the mode switches to an anomalous version similar to Indexed.  The element indices increment to select a 64 bit base address, effectively as if the src elwidth was hard-set to "default".  The important thing to note is that `i*op_width` is *not* added on to the base address unless RA is marked as a scalar address.
+When RA is marked as Vectorised the mode switches to an anomalous
+version similar to Indexed.  The element indices increment to select a
+64 bit base address, effectively as if the src elwidth was hard-set to
+"default".  The important thing to note is that `i*op_width` is *not*
+added on to the base address unless RA is marked as a scalar address.
+
+# Remapped LD/ST
+
+In the [[sv/propagation]] page the concept of "Remapping" is described.
+Whilst it is expensive to set up (2 64-bit opcodes minimum) it provides
+a way to arbitrarily perform 1D, 2D and 3D "remapping" of up to 64
+elements worth of LDs or STs.  The usual interest in such re-mapping
+is for example in separating out 24-bit RGB channel data into separate
+contiguous registers.  Remap easily covers this capability, and with
+elwidth overrides and saturation may do so with built-in conversion that
+would normally require sign-extension and min/max Vectorised instructions.
+
+Thus we do not need to provide specialist LD/ST "Structure Packed" opcodes
+because the generic abstracted concept of "Remapping", when applied to
+LD/ST, will give that capability.
