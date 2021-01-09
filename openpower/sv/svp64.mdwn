@@ -203,6 +203,7 @@ The Mode table is laid out as follows:
 | 00  |   0 |  sz  dz | normal mode                      |
 | 00  |   1 | sz CRM  | reduce mode (mapreduce), SUBVL=1 |
 | 00  |   1 | SVM CRM | subvector reduce mode, SUBVL>1   |
+| 01  | mod | rsvd    | see [[sv/ldst]] if src is Vector  |
 | 01  | inv | CR-bit  | Rc=1: ffirst CR sel              |
 | 01  | inv | sz  RC1 |  Rc=0: ffirst z/nonz |
 | 10  |   N | sz   dz |  sat mode: N=0/1 u/s |
@@ -220,7 +221,8 @@ Fields:
 
 ## LD/ST ffirst
 
-ffirst LD/ST to multiple pages via a Vectorised base is considered a security risk due to the abuse of probing multiple pages in rapid succession and getting feedback on which pages would fail.  Therefore in these special circumstances requesting ffirst eith a vector base is instead interpreted as element-strided LD/ST.  See <https://bugs.libre-soc.org/show_bug.cgi?id=561>
+ffirst LD/ST to multiple pages via a Vectorised base is considered a security risk due to the abuse of probing multiple pages in rapid succession and getting feedback on which pages would fail.  Therefore in these special circumstances requesting ffirst with a vector base is instead interpreted as element-strided LD/ST.  See <https://bugs.libre-soc.org/show_bug.cgi?id=561>
+and [[sv/ldst]]
 
 # ELWIDTH Encoding
 
