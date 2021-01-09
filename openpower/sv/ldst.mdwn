@@ -104,7 +104,7 @@ Indexed LD is:
         if (RB.isvec) k++;
         if (RT.isvec) j++;
 
-Note in both cases that [[sv/svp64]] allows RA in "update" mode (`ldux`) to be effectively a completely different register from RA-as-a-source.  This because there is room in svp64 to extend RA-as-src as well as RA-as-dest, both independently as scalar or vector *and* independently extending their range.
+Note in both cases that [[sv/svp64]] allows RA-as-a-dest in "update" mode (`ldux`) to be effectively a *completely different* register from RA-as-a-source.  This because there is room in svp64 to extend RA-as-src as well as RA-as-dest, both independently as scalar or vector *and* independently extending their range.
 
 # Determining the LD/ST Modes
 
