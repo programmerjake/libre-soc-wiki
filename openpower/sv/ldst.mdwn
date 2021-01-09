@@ -38,10 +38,7 @@ vector.
 
 Thus we can see that Vector Indexed may be covered, and, as demonstrated
 with the pseudocode below, the immediate can be set to the element width
-in order to give unit stride.
-
-At the minimum however it is possible to provide unit stride and vector
-mode, as follows:
+in order to give unit or element stride.  With there being no way to tell which from the Scalar opcode, the choice is provided instead by the SV Context.
 
     # LD not VLD!
     # op_width: lb=1, lh=2, lw=4, ld=8
@@ -73,7 +70,7 @@ mode, as follows:
         # compute EA
         EA = srcbase + offs
         # update RA? load from memory
-        if update: ireg[rsv+i] = EA;
+        if update: ireg[RAupdate+i] = EA;
         ireg[RT+j] <= MEM[EA];
         if (!RT.isvec)
             break # destination scalar, end now
@@ -83,9 +80,6 @@ mode, as follows:
 Indexed LD is:
  
     function op_ldx(RT, RA, RB, update=False) # LD not VLD!
-      rdv = map_dest_extra(RT);
-      rsv = map_src_extra(RA);
-      rso = map_src_extra(RB);
       ps = get_pred_val(FALSE, RA); # predication on src
       pd = get_pred_val(FALSE, RT); # ... AND on dest
       for (i=0, j=0, k=0; i < VL && j < VL && k < VL):
@@ -93,9 +87,9 @@ Indexed LD is:
         if (RA.isvec) while (!(ps & 1<<i)) i++;
         if (RB.isvec) while (!(ps & 1<<k)) k++;
         if (RT.isvec) while (!(pd & 1<<j)) j++;
-        EA = ireg[rsv+i] + ireg[rso+k] # indexed address
-        if update: ireg[rsv+i] = EA
-        ireg[rdv+j] <= MEM[EA];
+        EA = ireg[RA+i] + ireg[RB+k] # indexed address
+        if update: ireg[RAupdate+i] = EA
+        ireg[RT+j] <= MEM[EA];
         if (!RT.isvec)
             break # destination scalar, end immediately
         if (!RA.isvec && !RB.isvec)
