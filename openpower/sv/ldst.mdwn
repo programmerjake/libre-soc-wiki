@@ -42,12 +42,13 @@ in order to give unit or element stride.  With there being no way to tell which 
 
     # LD not VLD!
     # op_width: lb=1, lh=2, lw=4, ld=8
-    op_load(RT, RA, op_width, immed, svctx, update):
+    op_load(RT, RA, op_width, immed, svctx, RAupdate):
       ps = get_pred_val(FALSE, RA); # predication on src
       pd = get_pred_val(FALSE, RT); # ... AND on dest
-      for (int i = 0, int j = 0; i < VL && j < VL;):
+      for (i=0, j=0, u=0; i < VL && j < VL;):
         # skip nonpredicates elements
         if (RA.isvec) while (!(ps & 1<<i)) i++;
+        if (RAupdate.isvec) while (!(ps & 1<<u)) u++;
         if (RT.isvec) while (!(pd & 1<<j)) j++;
         if svctx.ldstmode == elementstride:
           # element stride mode
@@ -58,7 +59,7 @@ in order to give unit or element stride.  With there being no way to tell which 
           srcbase = ireg[RA]
           offs = i * op_width
         elif RA.isvec:
-          # indirect mode (multi mode)
+          # type of indirect (indexed) but with an immediate
           srcbase = ireg[RA+i]
           offs = immed;
         else
@@ -69,8 +70,9 @@ in order to give unit or element stride.  With there being no way to tell which 
 
         # compute EA
         EA = srcbase + offs
-        # update RA? load from memory
-        if update: ireg[RAupdate+i] = EA;
+        # update RA?
+        if RAupdate: ireg[RAupdate+u] = EA;
+        # load from memory
         ireg[RT+j] <= MEM[EA];
         if (!RT.isvec)
             break # destination scalar, end now
@@ -79,16 +81,17 @@ in order to give unit or element stride.  With there being no way to tell which 
 
 Indexed LD is:
  
-    function op_ldx(RT, RA, RB, update=False) # LD not VLD!
+    function op_ldx(RT, RA, RB, RAupdate=False) # LD not VLD!
       ps = get_pred_val(FALSE, RA); # predication on src
       pd = get_pred_val(FALSE, RT); # ... AND on dest
-      for (i=0, j=0, k=0; i < VL && j < VL && k < VL):
+      for (i=0, j=0, k=0, u=0; i < VL && j < VL && k < VL):
         # skip nonpredicated RA, RB and RT
         if (RA.isvec) while (!(ps & 1<<i)) i++;
+        if (RAupdate.isvec) while (!(ps & 1<<u)) u++;
         if (RB.isvec) while (!(ps & 1<<k)) k++;
         if (RT.isvec) while (!(pd & 1<<j)) j++;
         EA = ireg[RA+i] + ireg[RB+k] # indexed address
-        if update: ireg[RAupdate+i] = EA
+        if RAupdate: ireg[RAupdate+u] = EA
         ireg[RT+j] <= MEM[EA];
         if (!RT.isvec)
             break # destination scalar, end immediately
@@ -97,6 +100,8 @@ Indexed LD is:
         if (RA.isvec) i++;
         if (RB.isvec) k++;
         if (RT.isvec) j++;
+
+Note in both cases that [[sv/svp64]] allows RA in "update" mode (`ldux`) to be effectively a completely different register from RA-as-a-source.  This because there is room in svp64 to extend RA-as-src as well as RA-as-dest, both independently as scalar or vector *and* independently extending their range.
 
 # Determining the LD/ST Modes
 
@@ -132,6 +137,8 @@ TODO
 | 10  |   N | sz  str |  sat mode: N=0/1 u/s |
 | 11  | inv | CR-bit  |  Rc=1: pred-result CR sel |
 | 11  | inv | str RC1 |  Rc=0: pred-result z/nonz |
+
+The `str` bit is only relevant when `RA.isvec` is clear: this indicates 
 
 
     modes for RA+RB indexed version:
