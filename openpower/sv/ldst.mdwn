@@ -257,12 +257,6 @@ and other modes have all been removed, for clarity and simplicity:
         i++;
         j++;
 
-When RA is marked as Vectorised the mode switches to an anomalous
-version similar to Indexed.  The element indices increment to select a
-64 bit base address, effectively as if the src elwidth was hard-set to
-"default".  The important thing to note is that `i*op_width` is *not*
-added on to the base address unless RA is marked as a scalar address.
-
 # Remapped LD/ST
 
 In the [[sv/propagation]] page the concept of "Remapping" is described.
