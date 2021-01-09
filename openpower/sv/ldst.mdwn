@@ -132,12 +132,12 @@ TODO
 
 | 0-1 |  2  |  3   4  |  description              |
 | --- | --- |---------|-------------------------- |
-| 00  |   0 |  sz  dz | normal mode                      |
-| 01  | inv | CR-bit  | Rc=1: ffirst CR sel              |
-| 01  | inv | sz  RC1 |  Rc=0: ffirst z/nonz |
-| 10  |   N | sz   dz |  sat mode: N=0/1 u/s |
+| 00  | str |  sz  dz | normal mode               |
+| 01  | inv | CR-bit  | Rc=1: ffirst CR sel       |
+| 01  | inv | str RC1 |  Rc=0: ffirst z/nonz |
+| 10  |   N | sz  str |  sat mode: N=0/1 u/s |
 | 11  | inv | CR-bit  |  Rc=1: pred-result CR sel |
-| 11  | inv | sz  RC1 |  Rc=0: pred-result z/nonz |
+| 11  | inv | str RC1 |  Rc=0: pred-result z/nonz |
 
 
     modes for RA+RB indexed version:
@@ -152,11 +152,21 @@ TODO
 | 0-1 |  2  |  3   4  |  description              |
 | --- | --- |---------|-------------------------- |
 | 00  |   0 |  sz  dz | normal mode                      |
+| 00  | rsv |  rsvd   | reserved                     |
 | 01  | inv | CR-bit  | Rc=1: ffirst CR sel              |
 | 01  | inv | sz  RC1 |  Rc=0: ffirst z/nonz |
 | 10  |   N | sz   dz |  sat mode: N=0/1 u/s |
 | 11  | inv | CR-bit  |  Rc=1: pred-result CR sel |
 | 11  | inv | sz  RC1 |  Rc=0: pred-result z/nonz |
+
+     imm(RA)  RT.v   RA.v   no stride allowed
+     imm(RA)  RY.s   RA.v   no stride allowed
+     imm(RA)  RT.v   RA.s   stride-select needed
+     imm(RA)  RT.s   RA.s   not vectorised
+     RA,RB    RT.v  RA/RB.v ffirst banned
+     RA,RB    RT.s  RA/RB.v ffirst banned
+     RA,RB    RT.v  RA/RB.s vsplat activated
+     RA,RB    RT.s  RA/RB.s not vectirised
 
 # LOAD/STORE Elwidths <a name="ldst"></a>
 
