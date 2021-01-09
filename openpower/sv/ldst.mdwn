@@ -37,8 +37,7 @@ example only the one source and one dest may be marked as scalar or
 vector.
 
 Thus we can see that Vector Indexed may be covered, and, as demonstrated
-with the pseudocode below, the immediate can be set to the element width
-in order to give unit or element stride.  With there being no way to tell which from the Scalar opcode, the choice is provided instead by the SV Context.
+with the pseudocode below, the immediate can be used to give unit stride or element stride.  With there being no way to tell which from the OpenPOWER v3.0B Scalar opcode alone, the choice is provided instead by the SV Context.
 
     # LD not VLD!  format - ldop RT, immed(RA)
     # op_width: lb=1, lh=2, lw=4, ld=8
