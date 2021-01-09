@@ -10,7 +10,7 @@ REMAP allows the usual vector loop `0..VL-1` to be "reshaped" (re-mapped) from a
 form to a 2D or 3D transposed form, or "offset" to permit arbitrary
 access to elements, independently on each Vector src or dest register.
 
-Their primary use is for Matrix Multiplication, reordering of sequential data in-place.  Four CSRs are provided so that a single FMAC may be used in a single loop to perform 4x4 times 4x4 Matrix multiplication, generating 64 FMACs.  Adfitionwl uses include regular "Structure Packing" such as RGB pixel data extraction and reforming.
+Their primary use is for Matrix Multiplication, reordering of sequential data in-place.  Four CSRs are provided so that a single FMAC may be used in a single loop to perform 4x4 times 4x4 Matrix multiplication, generating 64 FMACs.  Additional uses include regular "Structure Packing" such as RGB pixel data extraction and reforming.
 
 # SHAPE 1D/2D/3D vector-matrix remapping CSRs
 
