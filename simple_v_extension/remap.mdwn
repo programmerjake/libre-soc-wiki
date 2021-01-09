@@ -68,8 +68,8 @@ throughout this document where a (parallelism) for-loop would normally
 run from 0 to VL-1 to refer to contiguous register
 elements; instead, where REMAP indicates to do so, the element index
 is run through the above algorithm to work out the **actual** element
-index, instead.  Given that there are three possible SHAPE entries, up to
-three separate registers in any given operation may be simultaneously
+index, instead.  Given that there are four possible SHAPE entries, up to
+four separate registers in any given operation may be simultaneously
 remapped:
 
     function op_add(rd, rs1, rs2) # add not VADD!
@@ -87,11 +87,7 @@ remapped:
 
 By changing remappings, 2D matrices may be transposed "in-place" for one
 operation, followed by setting a different permutation order without
-having to move the values in the registers to or from memory.  Also,
-the reason for having REMAP separate from the three SHAPE CSRs is so
-that in a chain of matrix multiplications and additions, for example,
-the SHAPE CSRs need only be set up once; only the REMAP CSR need be
-changed to target different registers.
+having to move the values in the registers to or from memory.
 
 Note that:
 
@@ -101,7 +97,8 @@ Note that:
   applies (i.e. it offsets elements *within* registers rather than
   entire registers).
 * If permute option 000 is utilised, the actual order of the
-  reindexing does not change!
+  reindexing does not change.  However, modulo MVL still occurs
+  which will result in repeated operations (use with caution).
 * If two or more dimensions are set to zero, the actual order does not change!
 * The above algorithm is pseudo-code **only**.  Actual implementations
   will need to take into account the fact that the element for-looping
