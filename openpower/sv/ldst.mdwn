@@ -192,10 +192,15 @@ Whilst it is expensive to set up (2 64-bit opcodes minimum) it provides
 a way to arbitrarily perform 1D, 2D and 3D "remapping" of up to 64
 elements worth of LDs or STs.  The usual interest in such re-mapping
 is for example in separating out 24-bit RGB channel data into separate
-contiguous registers.  Remap easily covers this capability, and with
+contiguous registers.  NEON covers this as shown in the diagram below:
+
+<img src="https://community.arm.com/cfs-file/__key/communityserver-blogs-components-weblogfiles/00-00-00-21-42/Loading-RGB-data-with-structured-load.png" >
+
+Remap easily covers this capability, and with
 elwidth overrides and saturation may do so with built-in conversion that
-would normally require sign-extension and min/max Vectorised instructions.
+would normally require additional sign-extension and min/max
+Vectorised instructions as post-processing stages.
 
 Thus we do not need to provide specialist LD/ST "Structure Packed" opcodes
 because the generic abstracted concept of "Remapping", when applied to
-LD/ST, will give that capability.
+LD/ST, will give that same capability, with far more flexibility.
