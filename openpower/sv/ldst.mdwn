@@ -40,7 +40,7 @@ Thus we can see that Vector Indexed may be covered, and, as demonstrated
 with the pseudocode below, the immediate can be set to the element width
 in order to give unit or element stride.  With there being no way to tell which from the Scalar opcode, the choice is provided instead by the SV Context.
 
-    # LD not VLD!
+    # LD not VLD!  format - ldop RT, immed(RA)
     # op_width: lb=1, lh=2, lw=4, ld=8
     op_load(RT, RA, op_width, immed, svctx, RAupdate):
       ps = get_pred_val(FALSE, RA); # predication on src
@@ -77,10 +77,12 @@ in order to give unit or element stride.  With there being no way to tell which 
         if (!RT.isvec)
             break # destination scalar, end now
         if (RA.isvec) i++;
+        if (RAupdate.isvec) u++;
         if (RT.isvec) j++;
 
 Indexed LD is:
  
+    # format: ldop RT, RA, RB
     function op_ldx(RT, RA, RB, RAupdate=False) # LD not VLD!
       ps = get_pred_val(FALSE, RA); # predication on src
       pd = get_pred_val(FALSE, RT); # ... AND on dest
@@ -98,6 +100,7 @@ Indexed LD is:
         if (!RA.isvec && !RB.isvec)
             break # scalar-scalar
         if (RA.isvec) i++;
+        if (RAupdate.isvec) u++;
         if (RB.isvec) k++;
         if (RT.isvec) j++;
 
