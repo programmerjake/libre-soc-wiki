@@ -67,7 +67,7 @@ and variable-length loops.
 Loops, clearly, because if the setup of the shift registers does
 not precisely match the number of instructions, the meaning of those
 instructions will change as the bits in the shift registers run out!
-However if the loops are of fixed size and small enough (40 instructions
+However if the loops are of fixed static size, with no conditional early exit,  and small enough (40 instructions
 maximum) then it is perfectly reasonable to insert repeated patterns into
 the shift registers, enough to cover all the loops.  Ordinarily however
 the use of the Context Propagation instructions should be inside the
