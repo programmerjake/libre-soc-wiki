@@ -59,7 +59,7 @@ in order to give unit or element stride.  With there being no way to tell which 
           srcbase = ireg[RA]
           offs = i * op_width
         elif RA.isvec:
-          # type of indirect (indexed) but with an immediate
+          # quirky Vector indexed mode but with an immediate
           srcbase = ireg[RA+i]
           offs = immed;
         else
@@ -138,10 +138,17 @@ TODO
 | 11  | inv | CR-bit  |  Rc=1: pred-result CR sel |
 | 11  | inv | str RC1 |  Rc=0: pred-result z/nonz |
 
-The `str` bit is only relevant when `RA.isvec` is clear: this indicates 
+The `str` bit is only relevant when `RA.isvec` is clear: this indicates
+whether stride is unit or element:
 
+    if RA.isvec:
+        svctx.ldstmode = indexed
+    elif str == 0:
+        svctx.ldstmode = unitstride
+    else:
+        svctx.ldstmode = elementstride
 
-    modes for RA+RB indexed version:
+Thr modes for RA+RB indexed version are slightly different:
 
     * saturation
     * predicate-result
