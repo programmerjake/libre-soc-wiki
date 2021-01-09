@@ -4,6 +4,7 @@
 
 Links:
 
+* <https://bugs.libre-soc.org/show_bug.cgi?id=561>
 * <https://bugs.libre-soc.org/show_bug.cgi?id=572>
 * <https://bugs.libre-soc.org/show_bug.cgi?id=571>
 * <https://llvm.org/devmtg/2016-11/Slides/Emerson-ScalableVectorizationinLLVMIR.pdf>
@@ -15,6 +16,7 @@ a number of different types:
 * fixed stride (contiguous sequence with no gaps)
 * element strided (sequential but regularly offset, with gaps)
 * vector indexed (vector of base addresses and vector of offsets)
+* fail-first on the same (where it makes sense to do so)
 
 OpenPOWER Load/Store operations may be seen from [[isa/fixedload]] and
 [[isa/fixedstore]] pseudocode to be of the form:
@@ -50,22 +52,24 @@ mode, as follows:
         # skip nonpredicates elements
         if (RA.isvec) while (!(ps & 1<<i)) i++;
         if (RT.isvec) while (!(pd & 1<<j)) j++;
-        if RA.isvec:
+        if svctx.ldstmode == elementstride:
+          # element stride mode
+          srcbase = ireg[RA]
+          offs = i * immed
+        elif svctx.ldstmode == unitstride:
+          # unit stride mode
+          srcbase = ireg[RA]
+          offs = i * op_width
+        elif RA.isvec:
           # indirect mode (multi mode)
           srcbase = ireg[RA+i]
           offs = immed;
-        else:
+        else
+          # standard scalar mode (but predicated)
+          # no stride multiplier means VSPLAT mode
           srcbase = ireg[RA]
-          if svctx.ldstmode == elementstride:
-            # element stride mode
-            offs = i * immed
-          elif svctx.ldstmode == unitstride:
-            # unit stride mode
-            offs = i * op_width
-          else
-            # standard scalar mode (but predicated)
-            # no stride multiplier means VSPLAT mode
-            offs = immed
+          offs = immed
+
         # compute EA
         EA = srcbase + offs
         # update RA? load from memory
@@ -99,6 +103,31 @@ Indexed LD is:
         if (RA.isvec) i++;
         if (RB.isvec) k++;
         if (RT.isvec) j++;
+
+# Determining the LD/ST Modes
+
+A minor complication (caused by the retro-fitting of modern Vector
+features to a Scalar ISA) is that certain features do not exactly make
+sense or are considered a security risk.  Fail-first on Vector Indexed
+allows attackers to probe large numbers of pages from userspace, where
+strided fail-first (by creating contiguous sequential LDs) does not.
+
+In addition, even in other modes, Vector source RA makes no sense for
+computing offsets, and reduce mode even less.  Realistically we need
+an alternative table meaning for [[sv/svp64]] mode.
+
+TODO
+
+| 0-1 |  2  |  3   4  |  description              |
+| --- | --- |---------|-------------------------- |
+| 00  |   0 |  sz  dz | normal mode                      |
+| 00  |   1 | sz CRM  | reduce mode (mapreduce), SUBVL=1 |
+| 00  |   1 | SVM CRM | subvector reduce mode, SUBVL>1   |
+| 01  | inv | CR-bit  | Rc=1: ffirst CR sel              |
+| 01  | inv | sz  RC1 |  Rc=0: ffirst z/nonz |
+| 10  |   N | sz   dz |  sat mode: N=0/1 u/s |
+| 11  | inv | CR-bit  |  Rc=1: pred-result CR sel |
+| 11  | inv | sz  RC1 |  Rc=0: pred-result z/nonz |
 
 # LOAD/STORE Elwidths <a name="ldst"></a>
 
