@@ -4,36 +4,17 @@
 
 This section is under revision (and is optional)
 
-# REMAP CSR <a name="remap" />
+# REMAP <a name="remap" />
 
-There is one 32-bit CSR which may be used to indicate which registers,
-if used in any operation, must be "reshaped" (re-mapped) from a linear
+REMAP allows the usual vector loop `0 to VL-1` to be "reshaped" (re-mapped) from a linear
 form to a 2D or 3D transposed form, or "offset" to permit arbitrary
-access to elements within a register.
+access to elements, independently on each Vector src or dest register.
 
-Their primary use is for Matrix Multiplication, reordering of sequential data in-place.  Three CSRs are provided so that a single FMAC may be used in a single loop to perform 4x4 times 4x4 Matrix multiplication, generating 64 FMACs.
-
-The 32-bit REMAP CSR may reshape up to 3 registers:
-
-| 29..28 | 27..26 | 25..24 | 23 | 22..16  | 15 | 14..8   | 7  | 6..0    |
-| ------ | ------ | ------ | -- | ------- | -- | ------- | -- | ------- |
-| shape2 | shape1 | shape0 | 0  | regidx2 | 0  | regidx1 | 0  | regidx0 |
-
-regidx0-2 refer not to the Register CSR CAM entry but to the underlying
-*real* register (see regidx, the value) and consequently is 7-bits wide.
-When set to zero (referring to x0), clearly reshaping x0 is pointless,
-so is used to indicate "disabled".
-shape0-2 refers to one of three SHAPE CSRs.  A value of 0x3 is reserved.
-Bits 7, 15, 23, 30 and 31 are also reserved, and must be set to zero.
-
-It is anticipated that these specialist CSRs not be very often used.
-Unlike the CSR Register and Predication tables, the REMAP CSRs use
-the full 7-bit regidx so that they can be set once and left alone,
-whilst the CSR Register entries pointing to them are disabled, instead.
+Their primary use is for Matrix Multiplication, reordering of sequential data in-place.  Four CSRs are provided so that a single FMAC may be used in a single loop to perform 4x4 times 4x4 Matrix multiplication, generating 64 FMACs.  Adfitionwl uses include regular "Structure Packing" such as RGB pixel data extraction and reforming.
 
 # SHAPE 1D/2D/3D vector-matrix remapping CSRs
 
-There are three "shape" CSRs, SHAPE0, SHAPE1, SHAPE2, 32-bits in each,
+There are four "shape" CSRs, SHAPE0-3, 32-bits in each,
 which have the same format.  
 
 [[!inline raw="yes" pages="simple_v_extension/shape_table_format" ]]
