@@ -168,6 +168,7 @@ A summary of the effect of Vectorisation of src or dest:
      RA,RB    RT.s  RA/RB.s not vectorised
 
 Note that cache-inhibited LD/ST (`ldcix`) when VSPLAT is activated will perform **multiple** LD/ST operations, sequentially.  `ldcix` even with scalar src will read the same memory location *multiple times*, storing the result in successive Vector destination registers.  This because the cache-inhibit instructions are used to read and write memory-mapped peripherals.
+If a genuine VSPLAT is required then a scalar cache-inhibited LD should be performed, followed by a VSPLAT-augmented mv.
 
 # LOAD/STORE Elwidths <a name="ldst"></a>
 
