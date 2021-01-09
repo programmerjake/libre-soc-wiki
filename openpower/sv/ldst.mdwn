@@ -196,10 +196,10 @@ contiguous registers.  NEON covers this as shown in the diagram below:
 
 <img src="https://community.arm.com/cfs-file/__key/communityserver-blogs-components-weblogfiles/00-00-00-21-42/Loading-RGB-data-with-structured-load.png" >
 
-Remap easily covers this capability, and with
+Remap easily covers this capability, and with dest
 elwidth overrides and saturation may do so with built-in conversion that
-would normally require additional sign-extension and min/max
-Vectorised instructions as post-processing stages.
+would normally require additional width-extension, sign-extension and
+min/max Vectorised instructions as post-processing stages.
 
 Thus we do not need to provide specialist LD/ST "Structure Packed" opcodes
 because the generic abstracted concept of "Remapping", when applied to
