@@ -114,23 +114,16 @@ sense or are considered a security risk.  Fail-first on Vector Indexed
 allows attackers to probe large numbers of pages from userspace, where
 strided fail-first (by creating contiguous sequential LDs) does not.
 
-In addition, even in other modes, Vector source RA makes no sense for
-computing offsets, and reduce mode even less.  Realistically we need
+In addition, reduce mode makes no sense, and for LD/ST with immediates
+ Vector source RA makes no sense either. Realistically we need
 an alternative table meaning for [[sv/svp64]] mode.
 
-TODO
+* saturation
+* predicate-result
+* normal
+* fail-first, where vector source on RA or RB is banned
 
-    in all cases:
-     - vector immed(RA) nonsense.
-     - unit-stride/el-stride needed on immed(RA)
-
-    modes for immed(RA) version:
-
-    * saturation
-    * predicate-result?
-    * normal
-    * fail-first
-      - vector RA is "banned"
+The table for [[sv/svp64] for immed(RA) is:
 
 | 0-1 |  2  |  3   4  |  description              |
 | --- | --- |---------|-------------------------- |
@@ -151,14 +144,7 @@ whether stride is unit or element:
     else:
         svctx.ldstmode = elementstride
 
-Thr modes for RA+RB indexed version are slightly different:
-
-    * saturation
-    * predicate-result
-    * normal
-    * fail-first
-      - vector RA or RB is "banned"
-
+The modes for RA+RB indexed version are slightly different:
 
 | 0-1 |  2  |  3   4  |  description              |
 | --- | --- |---------|-------------------------- |
@@ -170,14 +156,18 @@ Thr modes for RA+RB indexed version are slightly different:
 | 11  | inv | CR-bit  |  Rc=1: pred-result CR sel |
 | 11  | inv | sz  RC1 |  Rc=0: pred-result z/nonz |
 
+A summary of the effect of Vectorisation of src or dest:
+ 
      imm(RA)  RT.v   RA.v   no stride allowed
      imm(RA)  RY.s   RA.v   no stride allowed
      imm(RA)  RT.v   RA.s   stride-select needed
      imm(RA)  RT.s   RA.s   not vectorised
      RA,RB    RT.v  RA/RB.v ffirst banned
      RA,RB    RT.s  RA/RB.v ffirst banned
-     RA,RB    RT.v  RA/RB.s vsplat activated
-     RA,RB    RT.s  RA/RB.s not vectirised
+     RA,RB    RT.v  RA/RB.s VSPLAT possible
+     RA,RB    RT.s  RA/RB.s not vectorised
+
+Note that cache-inhibited LD/ST (`ldcix`) when VSPLAT is activated will perform **multiple** LD/ST operations, sequentially.  `ldcix` even with scalar src will read the same memory location *multiple times*, storing the result in successive Vector destination registers.  This because the cache-inhibit instructions are used to read and write memory-mapped peripherals.
 
 # LOAD/STORE Elwidths <a name="ldst"></a>
 
