@@ -143,17 +143,15 @@ the second.
 
 # 2D/3D Matrix Remap
 
-*Based on the old version [[simple_v_extension/remap]], the Shape CSRs
-remain the same as does the algorithm that performs the remapping*.
-
-Remap allows up to four Vectors (all four arguments of `fma` for example)
+[[sv/remap]] allows up to four Vectors (all four arguments of `fma` for example)
 to be algorithmically arbitrarily remapped via 1D, 2D or 3D reshaping.
+The amount of information needed to do so is however quite large: consequently it is only practical to apply indirectly, via Context propagation.
 
 Vectors may be remapped such that Matrix multiply of any arbitrary size
 is performed in one Vectorised `fma` instruction as long as the total
 number of elements is less than 64 (maximum for VL).
 
-Additionally it may be used to perform "zipping" and "unzipping" of
+Additionally, in a fashion known as "Structure Packing" in NEON and RVV, it may be used to perform "zipping" and "unzipping" of
 elements in a regular fashion of any arbitrary size and depth: RGB
 or Audio channel data may be split into separate contiguous lanes of
 registers, for example.
@@ -193,7 +191,9 @@ are not: this must be taken into consideration when ORing occurs.
 
 The mask is encoded as follows:
 
-* bit 0 indicates that dest is reshaped
-* bit 1 indicates that src1 is reshaped
-* bit 2 indicates that src2 is reshaped
-* bit 3 indicates that src3 is reshaped
+* bit 0 indicates that the first svp64 EXTRA field is reshaped
+* bit 1 indicates that the second svp64 EXTRA field is reshaped
+* bit 2 indicates that the third sv64 EXTRA field is reshaped
+* bit 3 indicates that the fourth svp64 EXTRA field reshaped
+
+This allows even instructions that have 2 destination registers to be reshaped.
