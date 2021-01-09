@@ -1,10 +1,13 @@
-**OBSOLETE**, superceded by [[openpower/transcendentals]]
+# Transcendental operations
 
-# Zftrans - transcendental operations
+To be updated to OpenPOWER.
 
 Summary:
 
-*This proposal extends RISC-V scalar floating point operations to add IEEE754 transcendental functions (pow, log etc) and trigonometric functions (sin, cos etc). These functions are also 98% shared with the Khronos Group OpenCL Extended Instruction Set.*
+*This proposal extends OpenPOWER scalar floating point operations to
+add IEEE754 transcendental functions (pow, log etc) and trigonometric
+functions (sin, cos etc). These functions are also 98% shared with the
+Khronos Group OpenCL Extended Instruction Set.*
 
 With thanks to:
 
@@ -100,7 +103,6 @@ covered by Supercomputer Vectorisation Standards (such as RVV).
 
 **The "contra"-requirements are**:
 
-* NOT for use with RVV (RISC-V Vector Extension). These are *scalar* opcodes.
   Ultra Low Power Embedded platforms (smart watches) are sufficiently
   resource constrained that Vectorisation (of any kind) is likely to be
   unnecessary and inappropriate.
@@ -113,212 +115,6 @@ covered by Supercomputer Vectorisation Standards (such as RVV).
   use this proposal means that they have completely different needs.
 * This proposal is for *sharing* of effort in reducing development costs
 
-# Requirements Analysis <a name="requirements_analysis"></a>
-
-**Platforms**:
-
-3D Embedded will require significantly less accuracy and will need to make
-power budget and die area compromises that other platforms (including Embedded)
-will not need to make.
-
-3D UNIX Platform has to be performance-price-competitive: subtly-reduced
-accuracy in FP32 is acceptable where, conversely, in the UNIX Platform,
-IEEE754 compliance is a hard requirement that would compromise power
-and efficiency on a 3D UNIX Platform.
-
-Even in the Embedded platform, IEEE754 interoperability is beneficial,
-where if it was a hard requirement the 3D Embedded platform would be severely
-compromised in its ability to meet the demanding power budgets of that market.
-
-Thus, learning from the lessons of
-[SIMD considered harmful](https://www.sigarch.org/simd-instructions-considered-harmful/)
-this proposal works in conjunction with the [[zfpacc_proposal]], so as
-not to overburden the OP32 ISA space with extra "reduced-accuracy" opcodes.
-
-**Use-cases**:
-
-There really is little else in the way of suitable markets.  3D GPUs
-have extremely competitive power-efficiency and power-budget requirements
-that are completely at odds with the other market at the other end of
-the spectrum: Numerical Computation.
-
-Interoperability in Numerical Computation is absolutely critical: it
-implies (correlates directly with) IEEE754 compliance.  However full
-IEEE754 compliance automatically and inherently penalises a GPU on
-performance and die area, where accuracy is simply just not necessary.
-
-To meet the needs of both markets, the two new platforms have to be created,
-and [[zfpacc_proposal]] is a critical dependency.  Runtime selection of
-FP accuracy allows an implementation to be "Hybrid" - cover UNIX IEEE754
-compliance *and* 3D performance in a single ASIC.
-
-**Power and die-area requirements**:
-
-This is where the conflicts really start to hit home.
-
-A "Numerical High performance only" proposal (suitable for Server / HPC
-only) would customise and target the Extension based on a quantitative
-analysis of the value of certain opcodes *for HPC only*.  It would
-conclude, reasonably and rationally, that it is worthwhile adding opcodes
-to RVV as parallel Vector operations, and that further discussion of
-the matter is pointless.
-
-A "Proprietary GPU effort" (even one that was intended for publication
-of its API through, for example, a public libre-licensed Vulkan SPIR-V
-Compiler) would conclude, reasonably and rationally, that, likewise, the
-opcodes were best suited to be added to RVV, and, further, that their
-requirements conflict with the HPC world, due to the reduced accuracy.
-This on the basis that the silicon die area required for IEEE754 is far
-greater than that needed for reduced-accuracy, and thus their product
-would be completely unacceptable in the market if it had to meet IEEE754,
-unnecessarily.
-
-An "Embedded 3D" GPU has radically different performance, power
-and die-area requirements (and may even target SoftCores in FPGA).
-Sharing of the silicon to cover multi-function uses (CORDIC for example)
-is absolutely essential in order to keep cost and power down, and high
-performance simply is not.  Multi-cycle FSMs instead of pipelines may
-be considered acceptable, and so on.  Subsets of functionality are
-also essential.
-
-An "Embedded Numerical" platform has requirements that are separate and
-distinct from all of the above!
-
-Mobile Computing needs (tablets, smartphones) again pull in a different
-direction: high performance, reasonable accuracy, but efficiency is
-critical.  Screen sizes are not at the 4K range: they are within the
-800x600 range at the low end (320x240 at the extreme budget end), and
-only the high-performance smartphones and tablets provide 1080p (1920x1080).
-With lower resolution, accuracy compromises are possible which the Desktop
-market (4k and soon to be above) would find unacceptable.
-
-Meeting these disparate markets may be achieved, again, through
-[[zfpacc_proposal]], by subdividing into four platforms, yet, in addition
-to that, subdividing the extension into subsets that best suit the different
-market areas.
-
-**Software requirements**:
-
-A "custom" extension is developed in near-complete isolation from the
-rest of the RISC-V Community.  Cost savings to the Corporation are
-large, with no direct beneficial feedback to (or impact on) the rest
-of the RISC-V ecosystem.
-
-However given that 3D revolves around Standards - DirectX, Vulkan, OpenGL,
-OpenCL - users have much more influence than first appears.  Compliance
-with these standards is critical as the userbase (Games writers,
-scientific applications) expects not to have to rewrite extremely large
-and costly codebases to conform with *non-standards-compliant* hardware.
-
-Therefore, compliance with public APIs (Vulkan, OpenCL, OpenGL, DirectX)
-is paramount, and compliance with Trademarked Standards is critical.
-Any deviation from Trademarked Standards means that an implementation
-may not be sold and also make a claim of being, for example, "Vulkan
-compatible".
-
-For 3D, this in turn reinforces and makes a hard requirement a need for public
-compliance with such standards, over-and-above what would otherwise be
-set by a RISC-V Standards Development Process, including both the
-software compliance and the knock-on implications that has for hardware.
-
-For libraries such as libm and numpy, accuracy is paramount, for software  interoperability across multiple platforms. Some algorithms critically rely on correct IEEE754, for example.
-The conflicting accuracy requirements can be met through the zfpacc extension.
-
-**Collaboration**:
-
-The case for collaboration on any Extension is already well-known.
-In this particular case, the precedent for inclusion of Transcendentals
-in other ISAs, both from Graphics and High-performance Computing, has
-these primitives well-established in high-profile software libraries and
-compilers in both GPU and HPC Computer Science divisions.  Collaboration
-and shared public compliance with those standards brooks no argument.
-
-The combined requirements of collaboration and multi accuracy requirements
-mean that *overall this proposal is categorically and wholly unsuited
-to relegation of "custom" status*.
-
-# Quantitative Analysis <a name="analysis"></a>
-
-This is extremely challenging.  Normally, an Extension would require full,
-comprehensive and detailed analysis of every single instruction, for every
-single possible use-case, in every single market.  The amount of silicon
-area required would be balanced against the benefits of introducing extra
-opcodes, as well as a full market analysis performed to see which divisions
-of Computer Science benefit from the introduction of the instruction,
-in each and every case.
-
-With 34 instructions, four possible Platforms, and sub-categories of
-implementations even within each Platform, over 136 separate and distinct
-analyses is not a practical proposition.
-
-A little more intelligence has to be applied to the problem space,
-to reduce it down to manageable levels.
-
-Fortunately, the subdivision by Platform, in combination with the
-identification of only two primary markets (Numerical Computation and
-3D), means that the logical reasoning applies *uniformly* and broadly
-across *groups* of instructions rather than individually, making it a primarily
-hardware-centric and accuracy-centric decision-making process.
-
-In addition, hardware algorithms such as CORDIC can cover such a wide
-range of operations (simply by changing the input parameters) that the
-normal argument of compromising and excluding certain opcodes because they
-would significantly increase the silicon area is knocked down.
-
-However, CORDIC, whilst space-efficient, and thus well-suited to
-Embedded, is an old iterative algorithm not well-suited to High-Performance
-Computing or Mid to High-end GPUs, where commercially-competitive
-FP32 pipeline lengths are only around 5 stages.
-
-Not only that, but some operations such as LOG1P, which would normally
-be excluded from one market (due to there being an alternative macro-op
-fused sequence replacing it) are required for other markets due to
-the higher accuracy obtainable at the lower range of input values when
-compared to LOG(1+P).
-
-(Thus we start to see why "proprietary" markets are excluded from this
-proposal, because "proprietary" markets would make *hardware*-driven
-optimisation decisions that would be completely inappropriate for a
-common standard).
-
-ATAN and ATAN2 is another example area in which one market's needs
-conflict directly with another: the only viable solution, without compromising
-one market to the detriment of the other, is to provide both opcodes
-and let implementors make the call as to which (or both) to optimise,
-at the *hardware* level.
-
-Likewise it is well-known that loops involving "0 to 2 times pi", often
-done in subdivisions of powers of two, are costly to do because they
-involve floating-point multiplication by PI in each and every loop.
-3D GPUs solved this by providing SINPI variants which range from 0 to 1
-and perform the multiply *inside* the hardware itself.  In the case of
-CORDIC, it turns out that the multiply by PI is not even needed (is a
-loop invariant magic constant).
-
-However, some markets may not wish to *use* CORDIC, for reasons mentioned
-above, and, again, one market would be penalised if SINPI was prioritised
-over SIN, or vice-versa.
-
-In essence, then, even when only the two primary markets (3D and
-Numerical Computation) have been identified, this still leaves two
-(three) diametrically-opposed *accuracy* sub-markets as the prime
-conflict drivers:
-
-* Embedded Ultra Low Power
-* IEEE754 compliance
-* Khronos Vulkan compliance
-
-Thus the best that can be done is to use Quantitative Analysis to work
-out which "subsets" - sub-Extensions - to include, provide an additional
-"accuracy" extension, be as "inclusive" as possible, and thus allow
-implementors to decide what to add to their implementation, and how best
-to optimise them.
-
-This approach *only* works due to the uniformity of the function space,
-and is **not** an appropriate methodology for use in other Extensions
-with huge (non-uniform) market diversity even with similarly large
-numbers of potential opcodes.  BitManip is the perfect counter-example.
-
 # Proposed Opcodes vs Khronos OpenCL vs IEEE754-2019<a name="khronos_equiv"></a>
 
 This list shows the (direct) equivalence between proposed opcodes,
@@ -326,8 +122,8 @@ their Khronos OpenCL equivalents, and their IEEE754-2019 equivalents.
 98% of the opcodes in this proposal that are in the IEEE754-2019 standard
 are present in the Khronos Extended Instruction Set.
 
-For RISCV opcode encodings see 
-[[rv_major_opcode_1010011]]
+For RISCV opcode encodings see [[rv_major_opcode_1010011]]
+**TODO** replace with OpenPOWER
 
 See
 <https://www.khronos.org/registry/spir-v/specs/unified1/OpenCL.ExtendedInstructionSet.100.html>
@@ -481,7 +277,9 @@ following opcodes:
 
 These in FP32 and FP16 only: no FP32 hardware, at all.
 
-Vivante Embedded/Mobile 3D (etnaviv <https://github.com/laanwj/etna_viv/blob/master/rnndb/isa.xml>) only has the following:
+Vivante Embedded/Mobile 3D (etnaviv
+<https://github.com/laanwj/etna_viv/blob/master/rnndb/isa.xml>) 
+only has the following:
 
     sin, cos2pi
     cos, sin2pi
@@ -554,7 +352,8 @@ Therefore they are their own subset extension.
 
 SINH, COSH, TANH, ASINH, ACOSH, ATANH
 
-These are the hyperbolic/inverse-hyperbolic functions. Their use in 3D is limited.
+These are the hyperbolic/inverse-hyperbolic functions. Their use in 3D
+is limited.
 
 They can all be synthesised using LOG, SQRT and so on, so depend
 on Zftrans.  However, once again, at the limits of the range, IEEE754
@@ -591,10 +390,14 @@ errors) is not acceptable.
 In for example CORDIC the multiplication by PI may be moved outside of
 the hardware algorithm as a loop invariant, with no power or area penalty.
 
-Again, therefore, if SINPI (etc.) were excluded, programmers would be penalised by being forced to divide by PI in some circumstances. Likewise if SIN were excluded, programmers would be penaslised by being forced to *multiply* by PI in some circumstances.
+Again, therefore, if SINPI (etc.) were excluded, programmers would be
+penalised by being forced to divide by PI in some circumstances. Likewise
+if SIN were excluded, programmers would be penaslised by being forced
+to *multiply* by PI in some circumstances.
 
-Thus again, a slightly different application of the same general argument applies to give Ztrignpi and
-Ztrigpi as subsets.  3D GPUs will almost certainly provide both.
+Thus again, a slightly different application of the same general argument
+applies to give Ztrignpi and Ztrigpi as subsets.  3D GPUs will almost
+certainly provide both.
 
 ### Zarctrigpi and Zarctrignpi
 
@@ -714,7 +517,9 @@ sequencer) more complicated that necessary.
 
 We therefore I think have a case for bringing back ATAN and including ATAN2.
 
-The reason is that whilst a microcode-like GPU-centric platform would do ATAN2 in terms of ATAN, a UNIX-centric platform would do it the other way round.
+The reason is that whilst a microcode-like GPU-centric platform would
+do ATAN2 in terms of ATAN, a UNIX-centric platform would do it the other
+way round.
 
 (that is the hypothesis, to be evaluated for correctness. feedback requested).
 
