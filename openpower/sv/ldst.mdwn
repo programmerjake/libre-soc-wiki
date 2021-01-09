@@ -116,14 +116,14 @@ strided fail-first (by creating contiguous sequential LDs) does not.
 
 In addition, reduce mode makes no sense, and for LD/ST with immediates
  Vector source RA makes no sense either. Realistically we need
-an alternative table meaning for [[sv/svp64]] mode.
+an alternative table meaning for [[sv/svp64]] mode.  The following modes make sense:
 
 * saturation
-* predicate-result
+* predicate-result (mostly for cache-inhibited LD/ST)
 * normal
 * fail-first, where vector source on RA or RB is banned
 
-The table for [[sv/svp64] for immed(RA) is:
+The table for [[sv/svp64]] for immed(RA) is:
 
 | 0-1 |  2  |  3   4  |  description              |
 | --- | --- |---------|-------------------------- |
