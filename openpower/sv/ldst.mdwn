@@ -172,18 +172,24 @@ TODO
 
 Loads and Stores are almost unique in that the OpenPOWER Scalar ISA
 provides a width for the operation (lb, lh, lw, ld).  Only `extsb` and
-others like it provide an explicit operation width.  In order to fit the
-different types of LD/ST Modes into SV the src elwidth field is used to
-select that Mode, and the actual src elwidth is implicitly the same as
-the operation width.  We then still apply Twin Predication but using:
+others like it provide an explicit operation width.  There are therefore
+*three* widths involved:
 
-* operation width (lb=8, lh=16, lw=32, ld=64) as src elwidth
+* operation width (lb=8, lh=16, lw=32, ld=64)
+s src elelent width override
 * destination element width override
 
-Saturation (and other transformations) occur on the value loaded from
-memory as if it was an "infinite bitwidth", sign-extended (if Saturation
-requests signed) from the source width (lb, lh, lw, ld) followed then
-by the actual Saturation to the destination width.
+Some care is therefore needed to express and make clear the transformations, 
+which are expressly in this order:
+
+* Load at the operation width (lb/lh/lw/ld) as usual
+* byte-reversal as usual
+* Non-saturated mode:
+   - zero-extension or truncation from operation width to source elwidth
+   - zero/truncation to dest elwidth
+* Saturated mode:
+   - Sign-extension or truncation from operation width to source width
+   - signed/unsigned saturation down to dest elwidth
 
 In order to respect OpenPOWER v3.0B Scalar behaviour the memory side
 is treated effectively as completely separate and distinct from SV
@@ -201,7 +207,7 @@ Note the following regarding the pseudocode to follow:
 * `imm_offs` specifies the immediate offset `ld r3, imm_offs(r5)`, again
   as a "normal" part of Scalar v3.0B LD
 * `svctx` specifies the SV Context and includes VL as well as
-  destination elwidth overrides.
+  source and destination elwidth overrides.
 
 Below is the pseudocode for Unit-Strided LD (which includes Vector capability).
 
@@ -213,13 +219,15 @@ and other modes have all been removed, for clarity and simplicity:
     function op_ld(RT, RA, brev, op_width, imm_offs, svctx)
       for (int i = 0, int j = 0; i < svctx.VL && j < svctx.VL;):
 
-        if RA.isvec:
+        if not svctx.unit/el-strided:
             # strange vector mode, compute 64 bit address which is
             # not polymorphic! elwidth hardcoded to 64 here
             srcbase = get_polymorphed_reg(RA, 64, i)
         else:
-            # unit stride mode, compute the address
-            srcbase = ireg[RA] + i * op_width;
+            # unit / element stride mode, compute 64 bit address
+            srcbase = get_polymorphed_reg(RA, 64, 0)
+            # adjust for unit/el-stride
+            srcbase += ....
 
         # takes care of (merges) processor LE/BE and ld/ldbrx
         bytereverse = brev XNOR MSR.LE
@@ -231,11 +239,13 @@ and other modes have all been removed, for clarity and simplicity:
         if (bytereverse):
             memread = byteswap(memread, op_width)
 
-        # now truncate/extend to over-ridden width.
-        if not svpctx.saturation_mode:
-            memread = adjust_wid(memread, op_width, svctx.dest_elwidth)
-        else:
+
+        # check saturation.
+        if svpctx.saturation_mode:
             ... saturation adjustment...
+        else:
+            # truncate/extend to over-ridden source width.
+            memread = adjust_wid(memread, op_width, svctx.src_elwidth)
 
         # takes care of inserting memory-read (now correctly byteswapped)
         # into regfile underlying LE-defined order, into the right place
