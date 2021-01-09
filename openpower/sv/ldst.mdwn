@@ -11,12 +11,13 @@ Links:
 * <https://github.com/riscv/riscv-v-spec/blob/master/v-spec.adoc#vector-loads-and-stores>
 
 Vectorisation of Load and Store requires creation, from scalar operations,
-a number of different types:
+a number of different modes:
 
 * fixed stride (contiguous sequence with no gaps)
 * element strided (sequential but regularly offset, with gaps)
 * vector indexed (vector of base addresses and vector of offsets)
 * fail-first on the same (where it makes sense to do so)
+* Structure Packing (covered in SV by [[sv/remap]]).
 
 OpenPOWER Load/Store operations may be seen from [[isa/fixedload]] and
 [[isa/fixedstore]] pseudocode to be of the form:
