@@ -196,14 +196,13 @@ These are the modes:
 
 Note that ffirst and reduce modes are not anticipated to be high-performance in some implementations.  ffirst due to interactions with VL, and reduce due to it requiring additional operations to produce a result.  normal, saturate and pred-result are however inter-element independent and may easily be parallelised to give high performance, regardless of the value of VL.
 
-The Mode table is laid out as follows:
+The Mode table for operations except LD/ST is laid out as follows:
 
 | 0-1 |  2  |  3   4  |  description              |
 | --- | --- |---------|-------------------------- |
 | 00  |   0 |  sz  dz | normal mode                      |
 | 00  |   1 | sz CRM  | reduce mode (mapreduce), SUBVL=1 |
 | 00  |   1 | SVM CRM | subvector reduce mode, SUBVL>1   |
-| 01  | mod | rsvd    | see [[sv/ldst]] if src is Vector  |
 | 01  | inv | CR-bit  | Rc=1: ffirst CR sel              |
 | 01  | inv | sz  RC1 |  Rc=0: ffirst z/nonz |
 | 10  |   N | sz   dz |  sat mode: N=0/1 u/s |
