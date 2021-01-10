@@ -2,11 +2,16 @@
 
 # summary
 
+1-op and variants
+
+| dest | src1 | subop | op       |
+| ---- | ---- | ----- | -------- |
+| RT   | RA   | ..    | bmatflip | 
+
 2-op and variants
 
 | dest | src1 | src2 | subop | op       |
 | ---- | ---- | ---- | ----- | -------- |
-| RT   | RA   | RB   | ..    | bmatflip | 
 | RT   | RA   | RB   | or    | bmatflip | 
 | RT   | RA   | RB   | xor   | bmatflip | 
 | RT   | RA   | RB   | bdep  | dep/ext  | 
@@ -37,12 +42,12 @@ ops
 | NN | RA | RB  | sh  | 00    | SH | 1010110 |Rc| gorci |
 | NN | RA | RB  | RC  | 00    | 0  | 0110110 |Rc| gorcw |
 | NN | RA | RB  | sh  | 00    | 0  | 1110110 |Rc| gorcwi |
-| NN | RA | RB  | sh  | 00    | 1  | 1110110 |Rc| rsvd   |
+| NN | RA | RB  | RC  | 00    | 1  | 1110110 |Rc| bmator  |
 | NN | RA | RB  | RC  | 01    | 0  | 0010110 |Rc| grev |
 | NN | RA | RB  | sh  | 01    | SH | 1010110 |Rc| grevi |
 | NN | RA | RB  | RC  | 01    | 0  | 0110110 |Rc| grevw |
 | NN | RA | RB  | sh  | 01    | 0  | 1110110 |Rc| grevwi |
-| NN | RA | RB  | sh  | 01    | 1  | 1110110 |Rc| rsvd   |
+| NN | RA | RB  | RC  | 01    | 1  | 1110110 |Rc| bmatxor   |
 | NN | RA | RB  | RC  | 10    | 0  | 0010110 |Rc| shfl |
 | NN | RA | RB  | sh  | 10    | SH | 1010110 |Rc| shfli |
 | NN | RA | RB  | RC  | 10    | 0  | 0110110 |Rc| shflw |
