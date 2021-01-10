@@ -141,6 +141,25 @@ also, another possible variant involving swizzle and vec4:
         idx = RA.x[i] << 2 | RA.y[i] << 1 | RA.z[i]
         RT[i] = (RA.w[i] & (1<<idx)) != 0
 
+| 0.5|6.10|11.15| 16.23 |24.27 | 28.30 |31|
+| -- | -- | --- | ----- | ---- | ----- |--|
+| NN | RT | RA  | xyzw  | mask |   010 |0 |
+
+    for i in range(8):
+        idx = RA.x[i] << 2 | RA.y[i] << 1 | RA.z[i]   
+        res = (RA.w[i] & (1<<idx)) != 0
+        for j in range(4):
+             if mask[j]: RT[i+j*8] = res
+
+| 0.5|6.10|11.15| 16.23 |24.27 | 28.30 |31|
+| -- | -- | --- | ----- | ---- | ----- |--|
+| NN | RT | RA  | imm   | mask |   010 |1 |
+
+    for i in range(8):
+        idx = RA.x[i] << 2 | RA.y[i] << 1 | RA.z[i]   
+        res = (imm & (1<<idx)) != 0
+        for j in range(3):
+             if mask[j]: RT[i+j*8] = res
 
 another mode selection would be CRs not Ints. 
 
