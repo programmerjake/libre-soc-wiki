@@ -69,15 +69,15 @@ bits 21..22 may be used to specify a mode, such as treating the whole integer ze
 
 a 4 operand variant which becomes more along the lines of an FPGA:
 
-| 0.5|6.10|11.15|16.20|21.25| 26..30   |31|
-| -- | -- | --- | --- | --- | -------- |--|
-| NN | RT | RA  | RB  | RC  | mode  10 |Rc|
+| 0.5|6.10|11.15|16.20|21.25| 26..30  |31|
+| -- | -- | --- | --- | --- | ------- |--|
+| NN | RT | RA  | RB  | RC  | mode 010 |Rc|
 
     for i in range(64):
         idx = RT[i] << 2 | RA[i] << 1 | RB[i]
         RT[i] = (RC & (1<<idx)) != 0
 
-mode (3 bit) may be used to do inversion of ordering, similar to carryless mul.
+mode (2 bit) may be used to do inversion of ordering, similar to carryless mul.
 
 also, another possible variant involving swizzle and vec4:
 
@@ -103,10 +103,10 @@ another mode selection would be CRs not Ints.
 
 based on RV bitmanip singlebit set, instruction format similar to shift
 
-| 0.5|6.10|11.15|16.20| 21.25 | 26.27 | 28.30 |31|
-| -- | -- | --- | --- | ----- | ----- | ----- |--|
-| NN | RT | RA  | RB  | RC    | itype | 0  00 |Rc|
-| NN | RT | RA  | RB  | sh    | itype | SH 01 |Rc|
+| 0.5|6.10|11.15|16.20| 21.22 | 23 | 24..30  |31|
+| -- | -- | --- | --- | ----- | -- | ------- |--|
+| NN | RA | RB  | RC  | itype | 0  | 0000110 |Rc|
+| NN | RA | RB  | sh  | itype | SH | 0100110 |Rc|
 
 ```
 uint_xlen_t bmset(RA, RB, sh)
@@ -247,10 +247,14 @@ uint_xlen_t xperm(uint_xlen_t RA, uint_xlen_t RB, int sz_log2)
     }
     return r;
 }
-uint_xlen_t xperm_n (uint_xlen_t RA, uint_xlen_t RB) {  return xperm(RA, RB, 2); }
-uint_xlen_t xperm_b (uint_xlen_t RA, uint_xlen_t RB) {  return xperm(RA, RB, 3); }
-uint_xlen_t xperm_h (uint_xlen_t RA, uint_xlen_t RB) {  return xperm(RA, RB, 4); }
-uint_xlen_t xperm_w (uint_xlen_t RA, uint_xlen_t RB) {  return xperm(RA, RB, 5); }
+uint_xlen_t xperm_n (uint_xlen_t RA, uint_xlen_t RB)
+{  return xperm(RA, RB, 2); }
+uint_xlen_t xperm_b (uint_xlen_t RA, uint_xlen_t RB)
+{  return xperm(RA, RB, 3); }
+uint_xlen_t xperm_h (uint_xlen_t RA, uint_xlen_t RB)
+{  return xperm(RA, RB, 4); }
+uint_xlen_t xperm_w (uint_xlen_t RA, uint_xlen_t RB)
+{  return xperm(RA, RB, 5); }
 ```
 
 # gorc
