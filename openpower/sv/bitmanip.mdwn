@@ -57,9 +57,9 @@ uint_xlen_t bext(uint_xlen_t RA, uint_xlen_t RB)
 
 Similar to FPGA LUTs: for every bit perform a lookup into a table using an 8bit immediate, or in another register
 
-| 0.5|6.10|11.15|16.20| 21..22 | 23...30 |31|  name   |
-| -- | -- | --- | --- | ------ | ------- |--| ------- |
-| NN | RT | RA  | RB  | 0   0  | im[0:7] |Rc| XL-Form |
+| 0.5|6.10|11.15|16.20| 21..25| 26..30   |31|
+| -- | -- | --- | --- | ----- | -------- |--|
+| NN | RT | RA  | RB  | im0-4 | im5-7 00 |Rc|
 
     for i in range(64):
         idx = RT[i] << 2 | RA[i] << 1 | RB[i]
@@ -69,9 +69,9 @@ bits 21..22 may be used to specify a mode, such as treating the whole integer ze
 
 a 4 operand variant which becomes more along the lines of an FPGA:
 
-| 0.5|6.10|11.15|16.20| 21..22 | 23...30 |31|  name   |
-| -- | -- | --- | --- | ------ | ------- |--| ------- |
-| NN | RT | RA  | RB  | 1   0  | RC mode |Rc| XL-Form |
+| 0.5|6.10|11.15|16.20|21.25| 26..30   |31|
+| -- | -- | --- | --- | --- | -------- |--|
+| NN | RT | RA  | RB  | RC  | mode  10 |Rc|
 
     for i in range(64):
         idx = RT[i] << 2 | RA[i] << 1 | RB[i]
@@ -88,9 +88,9 @@ also, another possible variant involving swizzle and vec4:
 
 another mode selection would be CRs not Ints. 
 
-| 0.5|6.8 | 9.11|12.14|15.17|18.21|22 | 23...30 |31|  name   |
-| -- | -- | --- | --- | --- |-----| - | ------- |--| ------- |
-| NN | BT | BA  | BB  | BC  |mask | 1 | im[0:7] |Rc| XL-Form |
+| 0.5|6.8 | 9.11|12.14|15.17|18.20| 21..25| 26.29|30|31|
+| -- | -- | --- | --- | --- |-----| ----- | ---- |--|--|
+| NN | BT | BA  | BB  | BC  |im5-7| im0-4 | mask |1 |Rc|
 
     for i in range(4):
         if not mask[i] continue
