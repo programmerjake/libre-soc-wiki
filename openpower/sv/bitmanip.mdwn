@@ -9,7 +9,7 @@
 
 # vector bit deposit
 
-vpdepd VRT,VRA,VRB
+vpdepd VRT,VRA,VRB, identical to RV bitmamip bdep
 
     do while(m < 64)
        if VSR[VRB+32].dword[i].bit[63-m]=1 then do
@@ -18,10 +18,39 @@ vpdepd VRT,VRA,VRB
           k = k + 1
        m = m + 1
 
+```
+
+uint_xlen_t bdep(uint_xlen_t RA, uint_xlen_t RB)
+{
+    uint_xlen_t r = 0;
+    for (int i = 0, j = 0; i < XLEN; i++)
+        if ((RB >> i) & 1) {
+            if ((RA >> j) & 1)
+                r |= uint_xlen_t(1) << i;
+            j++;
+        }
+    return r;
+}
+
+```
+
 # vector bit extract
 
-other way round
+other way round: identical to RV bext
 
+```
+uint_xlen_t bext(uint_xlen_t RA, uint_xlen_t RB)
+{
+    uint_xlen_t r = 0;
+    for (int i = 0, j = 0; i < XLEN; i++)
+        if ((RB >> i) & 1) {
+            if ((RA >> i) & 1)
+                r |= uint_xlen_t(1) << j;
+            j++;
+        }
+    return r;
+}
+```
 # ternary bitops
 
 for every bit perform a lookup into a table using an 8bit immediate
@@ -258,36 +287,6 @@ based on RV bitmanip, covered by ternary bitops
 uint_xlen_t cmix(uint_xlen_t RA, uint_xlen_t RB, uint_xlen_t RC) {
     return (RA & RB) | (RC & ~RB);
 }
-```
-
-# bdep, bext
-
-based on RV bitmanip
-
-```
-uint_xlen_t bext(uint_xlen_t RA, uint_xlen_t RB)
-{
-    uint_xlen_t r = 0;
-    for (int i = 0, j = 0; i < XLEN; i++)
-        if ((RB >> i) & 1) {
-            if ((RA >> i) & 1)
-                r |= uint_xlen_t(1) << j;
-            j++;
-        }
-    return r;
-}
-uint_xlen_t bdep(uint_xlen_t RA, uint_xlen_t RB)
-{
-    uint_xlen_t r = 0;
-    for (int i = 0, j = 0; i < XLEN; i++)
-        if ((RB >> i) & 1) {
-            if ((RA >> j) & 1)
-                r |= uint_xlen_t(1) << i;
-            j++;
-        }
-    return r;
-}
-
 ```
 
 # carryless mul
