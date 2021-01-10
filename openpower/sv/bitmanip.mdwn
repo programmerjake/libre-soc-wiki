@@ -22,6 +22,20 @@
 | RT   | RA   | RB   |  |  | 
 | RT   | RA   | RB   |  |  | 
 
+ops
+
+| 0.5|6.10|11.15|16.20| 21.22 | 23 | 24..30  |31| name |
+| -- | -- | --- | --- | ----- | -- | ------- |--| ---- |
+| NN | RA | RB  | RC  | itype | 0  | 0000110 |Rc| bmops |
+| NN | RA | RB  | sh  | itype | SH | 1000110 |Rc| bmopsi |
+| NN | RA | RB  | RC  | itype | 1  | 0000110 |Rc| xperm |
+| NN | RA | RB  | RC  | itype | 0  | 0001110 |Rc| clmul |
+| NN | RA | RB  | sh  | itype | 1  | 0101110 |Rc| clmulw |
+| NN | RA | RB  | RC  | 00    | 0  | 0010110 |Rc| gorc |
+| NN | RA | RB  | sh  | 00    | SH | 1010110 |Rc| gorci |
+| NN | RA | RB  | RC  | 01    | 0  | 0010110 |Rc| grev |
+| NN | RA | RB  | sh  | 01    | SH | 1010110 |Rc| grevi |
+
 # bit to byte permute
 
 similar to matrix permute in RV bitmanip, which has XOR and OR variants
@@ -125,10 +139,6 @@ another mode selection would be CRs not Ints.
 
 based on RV bitmanip singlebit set, instruction format similar to shift
 
-| 0.5|6.10|11.15|16.20| 21.22 | 23 | 24..30  |31|
-| -- | -- | --- | --- | ----- | -- | ------- |--|
-| NN | RA | RB  | RC  | itype | 0  | 0000110 |Rc|
-| NN | RA | RB  | sh  | itype | SH | 0100110 |Rc|
 
 ```
 uint_xlen_t bmset(RA, RB, sh)
