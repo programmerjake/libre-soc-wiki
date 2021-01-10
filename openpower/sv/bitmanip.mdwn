@@ -101,6 +101,11 @@ another mode selection would be CRs not Ints.
 
 based on RV bitmanip singlebit set, instruction format similar to shift
 
+| 0.5|6.10|11.15|16.20| 21.25 | 26.27 | 28.30 |31|
+| -- | -- | --- | --- | ----- | ----- | ----- |--|
+| NN | RT | RA  | RB  | RC    | itype | 0  00 |Rc|
+| NN | RT | RA  | RB  | sh    | itype | SH 01 |Rc|
+
 ```
 uint_xlen_t bmset(RA, RB, sh)
 {
