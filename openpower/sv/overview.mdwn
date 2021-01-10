@@ -466,10 +466,9 @@ bits will be *unaltered*.
 
 Note that things such as zero/sign-extension (and predication) have
 been left out to illustrate the elwidth concept. Also note that it turns
-out to be important to perform the operation at the maximum bitwidth -
-`max(srcwid, destwid)` - such that any truncation, rounding errors or
+out to be important to perform the operation internally at effectively an *infinite* bitwidth such that any truncation, rounding errors or
 other artefacts may all be ironed out.  This turns out to be important
-when applying Saturation for Audio DSP workloads.
+when applying Saturation for Audio DSP workloads, particularly for multiply and IEEE754 FP rounding.  By "infinite" this is conceptual only: in reality, the application of the different truncations and width-extensions set a fixed deterministic practical limit on the internal precision needed, on a per-operation basis.
 
 Other than that, element width overrides, which can be applied to *either*
 source or destination or both, are pretty straightforward, conceptually.
