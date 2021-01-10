@@ -1,5 +1,27 @@
 [[!tag standards]]
 
+# summary
+
+2-op and variants
+
+| dest | src1 | src2 | subop | op       |
+| ---- | ---- | ---- | ----- | -------- |
+| RT   | RA   | RB   | ..    | bmatflip | 
+| RT   | RA   | RB   | or    | bmatflip | 
+| RT   | RA   | RB   | xor   | bmatflip | 
+| RT   | RA   | RB   | bdep  | dep/ext  | 
+| RT   | RA   | RB   | bext  | dep/ext  | 
+| RT   | RA   | RB   |       | grev  |
+| RT   | RA   | RB   |       | gorc |  
+| RT   | RA   | RB   | shuf  | shuffle | 
+| RT   | RA   | RB   | unshuf| shuffle | 
+| RT   | RA   | RB   | width | xperm  | 
+| RT   | RA   | RB   | type  | clmul | 
+| RT   | RA   | RB   |  |  | 
+| RT   | RA   | RB   |  |  | 
+| RT   | RA   | RB   |  |  | 
+| RT   | RA   | RB   |  |  | 
+
 # bit to byte permute
 
 similar to matrix permute in RV bitmanip, which has XOR and OR variants
