@@ -97,33 +97,37 @@ another mode selection would be CRs not Ints.
               crregs[BC][i]
         crregs[BT][i] = (imm & (1<<idx)) != 0
 
-# single bit set
+# bitnask set
 
-based on RV bitmanip, instruction format similar to shift
+based on RV bitmanip singlebit set, instruction format similar to shift
 
 ```
-uint_xlen_t sbset(uint_xlen_t RA, uint_xlen_t RB)
+uint_xlen_t bmset(RA, RB, sh)
 {
     int shamt = RB & (XLEN - 1);
-    return RA | (uint_xlen_t(1) << shamt);
+    mask = (2<<sh)-1;
+    return RA | (mask << shamt);
 }
 
-uint_xlen_t sbclr(uint_xlen_t RA, uint_xlen_t RB)
+uint_xlen_t bmclr(RA, RB, sh)
 {
     int shamt = RB & (XLEN - 1);
-    return RA & ~(uint_xlen_t(1) << shamt);
+    mask = (2<<sh)-1;
+    return RA & ~(mask << shamt);
 }
 
-uint_xlen_t sbinv(uint_xlen_t RA, uint_xlen_t RB)
+uint_xlen_t bminv(RA, RB, sh)
 {
     int shamt = RB & (XLEN - 1);
-    return RA ^ (uint_xlen_t(1) << shamt);
+    mask = (2<<sh)-1;
+    return RA ^ (mask << shamt);
 }
 
-uint_xlen_t sbext(uint_xlen_t RA, uint_xlen_t RB)
+uint_xlen_t bmext(RA, RB, sh)
 {
     int shamt = RB & (XLEN - 1);
-    return 1 & (RA >> shamt);
+    mask = (2<<sh)-1;
+    return mask & (RA >> shamt);
 }
 ```
 
