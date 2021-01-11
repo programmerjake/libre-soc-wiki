@@ -427,19 +427,19 @@ Install from git source by doing the following:
 
 Note: an ongoing bug in maturin interferes with successful installation.  This can be worked around by explicitly installing only the .whl files needed rather than installing everything (*.whl).
 
-## Coriolis2
-
-See [[HDL_workflow/coriolis2]] page, for those people doing layout work.
-
 ## Chips4Makers JTAG
 
 As this is an actual ASIC, we do not rely on an FPGA's JTAG TAP interface, instead require a full complete independent implementation of JTAG. Staf Verhaegen has one, with a full test suite, and it is superb and well-written.  The Libre-SOC version includes DMI (Debug Memory Interface):
 
-    git clone https://git.libre-soc.org/c4m-jtag.git
+    git clone https://git.libre-soc.org/git/c4m-jtag.git/
 
 Included is an IDCODE tap point, Wishbone Master (for direct memory read and write, fully independent of the core), IOPad redirection and testing, and general purpose shift register capability for any custom use.
 
 We added a DMI to JTAG bridge in LibreSOC which is directly connected to the core, to access registers and to be able to start and stop the core and change the PC.  In combination with the JTAG Wishbone interface the test ASIC can have a bootloader uploaded directly into onboard SRAM and execution begun.
+
+## Coriolis2
+
+See [[HDL_workflow/coriolis2]] page, for those people doing layout work.
 
 # Registering for git repository access
 
