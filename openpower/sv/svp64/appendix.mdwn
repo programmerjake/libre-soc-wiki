@@ -1,6 +1,7 @@
 # Appendix
 
 * <https://bugs.libre-soc.org/show_bug.cgi?id=574>
+* <https://bugs.libre-soc.org/show_bug.cgi?id=558#c47>
 
 This is the appendix to [[sv/svp64]], providing explanations of modes
 etc. leaving the main svp64 page's primary purpose as outlining the instruction format.
@@ -297,6 +298,20 @@ possibility for indexing individual bits (crops BA/BB/BT).  Again however
 the access pattern needs to be understandable in relation to v3.0B / v3.1B
 numbering, with a clear linear relationship and mapping existing when
 SV is applied.
+
+## Analysis for compilers
+
+gcc and llvm automatically manage CRs: they are not explicitly accessible even at the assembly level (asm statement). This causes something of an issue even just for basic testing.  A solution then is to leverage the following:
+
+* scalar instructions produce scalar CRs.
+* gcc and llvm scalar instructions produce scalar CRs.
+* vector instructions produce vector CRs
+* therefore with the exception of branches there should be a match which does not require heavy modification of gcc
+
+The basic principle being to ensure that Vector attribute tags propagate through to the CRs.  For this to worrk all gcc and llvm code must act as if the numbering of CRs is kept entirely looking scalar despite the fact that it is actually vector.
+
+Thus the compiler when referring to CR0 still generates code that it thinks is scalar and thinks a scalar computation created CR0 but the same code serves double-duty and thus does not need drastic rewrites or modification.
+
 
 ## CR EXTRA mapping table and algorithm
 
