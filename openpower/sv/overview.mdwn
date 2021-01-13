@@ -633,7 +633,7 @@ truncating down to 8 bit for example.
        opwidth = max(srcwid, destwid)
        # logical op, signed has no meaning
        result = op_xor(src1, src2, opwidth)
-       # now saturate (unsigned)
+       # now saturate (signed)
        sat = max(result, (1<<destwid-1)-1)
        sat = min(result, -(1<<destwid-1))
        set_polymorphed_reg(rd, destwid, i, sat)
