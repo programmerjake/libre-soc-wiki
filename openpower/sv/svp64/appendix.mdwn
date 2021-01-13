@@ -314,7 +314,9 @@ Thus the compiler when referring to CR0 still generates code that it thinks is s
 
 In concrete terms: when the Vector looping proceeds to increment Integer or FP register numbers linearly, `fp1 fp2 fp3...` when `Rc=1` the Vector of CRs should start at `CR1` just as they do in scalar execution but *not overwrite CR2*.  Instead proceed to write to at least 8 or 16 CRs before doing so.
 
-Two ways in which this may occur: either for numbering to be linear (`CR0..CR127`) but to jump in increments of 8, or to be expressed as sub-numbers similar to FP: `CR1.0 CR1.1 ... CR1.15 CR2.0`. Fractional numbering is more natural and intuitive.  Here is a table showing progression from 0 to VL-1 when VL=18, should an Integer Vector operation writes first to `CR0`.  It is the 16th element before `CR1` is overwritten: 
+Two ways in which this may occur: either for numbering to be linear (`CR0..CR127`) but to jump in increments of 8, or to be expressed as sub-numbers similar to FP fractions: `CR1.0 CR1.1 ... CR1.15 CR2.0`. Fractional numbering is more natural and intuitive.  The "original" (scalar) CRs 0-7 therefore are interleaved every 16th point in the progression.  They are also effectively given a second name: `CR0` is now also named `CR0.0` in effect.
+
+Here is a table showing progression from 0 to VL-1 when VL=18, should an Integer Vector operation writes first to `CR0`.  It is the 16th element before `CR1` is overwritten: 
 
     CRn.0     CR0 0  CR1 16 CR2    CR3    CR4   CR5   CR6   CR7
     CRn.1         1      17
@@ -322,7 +324,7 @@ Two ways in which this may occur: either for numbering to be linear (`CR0..CR127
     ...          ..
     CRn.15       15
 
-This gives an opportunity to minimise modifications to gcc and llvm for any Vectorisation up to a reasonable length of `MVL=16`.
+This gives an opportunity to minimise modifications to gcc and llvm for any Vectorisation up to a reasonable length of `MVL=16`.  The register file is viewed as comprising 16 32-bit Condition Registers. 
 
 ## CR EXTRA mapping table and algorithm
 
@@ -350,35 +352,32 @@ applies, **not** the CR\_bit portion (bits 0:1).
         spec = EXTRA3
     else:
         spec = EXTRA2<<1 | 0b0
-    if spec[2]:
-       # vector constructs "BA[2:4] spec[0:1] 0 BA[0:1]"
-       return ((BA >> 2)<<5) | # hi 3 bits shifted up
-              (spec[0:1]<<3) |  # to make room for these
+    # constructs "BA[2:4] spec[0:1] 00 BA[0:1]"
+       return ((BA >> 2)<<6) | # hi 3 bits shifted up
+              (spec[0:1]<<4) | # to make room for these
               (BA & 0b11)      # CR_bit on the end
-    else:
-       # scalar constructs "0 spec[0:1] BA[0:4]"
-       return (spec[0:1] << 5) | BA
 
 Thus, for example, to access a given bit for a CR in SV mode, the v3.0B
-algorithm to determin CR\_reg is modified to as follows:
+algorithm to determine CR\_reg is modified to as follows, noting that there are now 16 32 bit CRs, and that the element progression is *not linear*:
 
-    CR_index = 7-(BA>>2)      # top 3 bits but BE
-    if spec[2]:
-        # vector mode
-        CR_index = (CR_index<<3) | (spec[0:1] << 1)
-    else:
-        # scalar mode
-        CR_index = (spec[0:1]<<3) | CR_index
-    # same as for v3.0/v3.1 from this point onwards
-    bit_index = 3-(BA & 0b11) # low 2 bits but BE
-    CR_reg = CR{CR_index}     # get the CR
-    # finally get the bit from the CR.
-    CR_bit = (CR_reg & (1<<bit_index)) != 0
+    def get_cr_bit(BA, idx): # for idx 0 to VL-1
+        CR_index = 7-(BA>>2)      # top 3 bits but BE
+        CR_index = (CR_index<<4) | (spec[0:1] << 2)
+        # first get one of the 16 32-bit CRs
+        CR_row = (CR_index>>4) + (idx&0xf)
+        CR = CRfile[CR_row]
+        # now get the 4 bit CRn in that 32-bit CR
+        CR_col = (CR_index + (idx>>4)) & 0x7
+        CR_reg = CR{CR_col}   # get 4 bit CRn
+        # same as for v3.0/v3.1 from this point onwards
+        bit_index = 3-(BA & 0b11) # low 2 bits but BE
+        # finally get the bit from the CR.
+        CR_bit = (CR_reg & (1<<bit_index)) != 0
 
 Note here that the decoding pattern to determine CR\_bit does not change.
 
 Note: high-performance implementations may read/write Vectors of CRs in
-batches of aligned 32-bit chunks (CR0-7, CR7-15).  This is to greatly
+batches of aligned 32-bit chunks.  This is to greatly
 simplify internal design.  If instructions are issued where CR Vectors
 do not start on a 32-bit aligned boundary, performance may be affected.
 
