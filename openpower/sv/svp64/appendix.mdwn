@@ -312,6 +312,17 @@ The basic principle being to ensure that Vector attribute tags propagate through
 
 Thus the compiler when referring to CR0 still generates code that it thinks is scalar and thinks a scalar computation created CR0 but the same code serves double-duty and thus does not need drastic rewrites or modification.
 
+In concrete terms: when the Vector looping proceeds to increment Integer or FP register numbers linearly, `fp1 fp2 fp3...` when `Rc=1` the Vector of CRs should start at `CR1` just as they do in scalar execution but *not overwrite CR2*.  Instead proceed to write to at least 8 or 16 CRs before doing so.
+
+Two ways in which this may occur: either for numbering to be linear (`CR8, CR9`) or to be expressed as sub-numbers similar to FP: `CR1.0 CR1.1 ... CR1.15 CR2.0`. Fractional numbering is more natural and intuitive.  Here is a table showing progression from 0 to VL-1 when VL=18, should an Integer Vector operation writes first to `CR0`.  It is the 16th element before `CR1` is overwritten: 
+
+    CRn.0     CR0 0  CR1 16 CR2    CR3    CR4   CR5   CR6   CR7
+    CRn.1         1      17
+    CRn.2         2
+    ...          ..
+    CRn.15       15
+
+This gives an opportunity to minimise modifications to gcc and llvm for any Vectorisation up to a reasonable length of `MVL=16`.
 
 ## CR EXTRA mapping table and algorithm
 
