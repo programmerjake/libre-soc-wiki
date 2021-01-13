@@ -324,7 +324,9 @@ Here is a table showing progression from 0 to VL-1 when VL=18, where an Integer 
     ...          ..
     CRn.15       15
 
-This gives an opportunity to minimise modifications to gcc and llvm for any Vectorisation up to a reasonable length of `MVL=16`.  The register file is viewed as comprising 16 32-bit Condition Registers. 
+This gives an opportunity to minimise modifications to gcc and llvm for any Vectorisation up to a reasonable length of `MVL=16`.  The register file is viewed as comprising 16 32-bit Condition Registers.
+
+*There is a downside to this approach*: some of the CRs are not directly accessible even through Scalar EXTRA marking and will require predicated (VINDEXed) cr move operations.
 
 ## CR EXTRA mapping table and algorithm
 
