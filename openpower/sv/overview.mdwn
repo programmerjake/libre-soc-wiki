@@ -535,18 +535,23 @@ are over-ridden to different widths?  For example, FP16 arithmetic is
 not accurate enough and may introduce rounding errors when up-converted
 to FP32 output.  The rule is therefore set:
 
-    The operation MUST take place at the larger of the two widths.
+    The operation MUST take place effectively at infinite precision:
+    actual precision determined by the operation and the operand widths
 
 In pseudocode this is:
 
     for i = 0 to VL-1:
        src1 = get_polymorphed_reg(RA, srcwid, i)
        src2 = get_polymorphed_reg(RB, srcwid, i)
-       opwidth = max(srcwid, destwid)
+       opwidth = max(srcwid, destwid) # usually
        result = op_add(src1, src2, opwidth) # at max width
        set_polymorphed_reg(rd, destwid, i, result)
 
-It will turn out that under some conditions the combination of the
+In reality the source and destination widths determine the actual required
+precision in a given ALU.  The reason for setting "effectively" infinite precision
+is illustrated for example by Saturated-multiply, where if the internal precision was insufficient it would not be possible to correctly determine the maximum clip range had been exceeded.
+
+Thus it will turn out that under some conditions the combination of the
 extension of the source registers followed by truncation of the result
 gets rid of bits that didn't matter, and the operation might as well have
 taken place at the narrower width and could save resources that way.
@@ -573,8 +578,8 @@ be first read at their overridden bitwidth and *then* sign-extended:
        src2 = get_polymorphed_reg(RB, srcwid, i)
        opwidth = max(srcwid, destwid)
        # srces known to be less than result width
-       src1 = sign_extend(src1, srcwid, destwid)
-       src2 = sign_extend(src2, srcwid, destwid)
+       src1 = sign_extend(src1, srcwid, opwidth)
+       src2 = sign_extend(src2, srcwid, opwidth)
        result = op_signed(src1, src2, opwidth) # at max width
        set_polymorphed_reg(rd, destwid, i, result)
 
