@@ -12,6 +12,8 @@ REMAP, like all of SV, is abstracted out, meaning that unlike traditional Vector
 
 Note that REMAP does not apply to sub-vector elements: that is what swizzle is for.  Swizzle *can* however be applied to the same instruction as REMAP.
 
+REMAP is quite expensive to set up, and on some implementations introduce latency, so should realistically be used only where it is worthwhile
+
 # SHAPE 1D/2D/3D vector-matrix remapping SPRs
 
 There are four "shape" SPRs, SHAPE0-3, 32-bits in each,
