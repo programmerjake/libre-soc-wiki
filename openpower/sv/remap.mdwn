@@ -8,6 +8,10 @@ access to elements, independently on each Vector src or dest register.
 
 Their primary use is for Matrix Multiplication, reordering of sequential data in-place.  Four SPRs are provided so that a single FMAC may be used in a single loop to perform 4x4 times 4x4 Matrix multiplication, generating 64 FMACs.  Additional uses include regular "Structure Packing" such as RGB pixel data extraction and reforming.
 
+REMAP, like all of SV, is abstracted out, meaning that unlike traditional Vector ISAs which would typically only have a limited set of instructions that can be structure-packed (LD/ST typically), REMAP may be applied to literally any instruction: CRs, Arithmetic, Logical, LD/ST, anything.
+
+Note that REMAP does not apply to sub-vector elements: that is what swizzle is for.  Swizzle *can* however be applied to the same instruction as REMAP.
+
 # SHAPE 1D/2D/3D vector-matrix remapping SPRs
 
 There are four "shape" SPRs, SHAPE0-3, 32-bits in each,
@@ -18,7 +22,7 @@ which have the same format.
 The algorithm below shows how REMAP works more clearly, and may be
 executed as a python program:
 
-    xdim = 3
+    xdim = 3 # changeme
     ydim = 4
     zdim = 1
 
@@ -59,10 +63,8 @@ executed as a python program:
                 break
             idxs[order[i]] = 0
 
-Here, it is assumed that this algorithm be run within all pseudo-code
-throughout this document where a (parallelism) for-loop would normally
-run from 0 to VL-1 to refer to contiguous register
-elements; instead, where REMAP indicates to do so, the element index
+
+Each element index from the for-loop `0..VL-1`
 is run through the above algorithm to work out the **actual** element
 index, instead.  Given that there are four possible SHAPE entries, up to
 four separate registers in any given operation may be simultaneously
@@ -74,8 +76,8 @@ remapped:
       for (i = 0; i < VL; i++)
         xSTATE.srcoffs = i # save context
         if (predval & 1<<i) # predication uses intregs
-           ireg[rd+remap(id)] <= ireg[rs1+remap(irs1)] +
-                                 ireg[rs2+remap(irs2)];
+           ireg[rd+remap1(id)] <= ireg[rs1+remap2(irs1)] +
+                                  ireg[rs2+remap3(irs2)];
            if (!int_vec[rd ].isvector) break;
         if (int_vec[rd ].isvector)  { id += 1; }
         if (int_vec[rs1].isvector)  { irs1 += 1; }
@@ -90,8 +92,8 @@ Note that:
 * Over-running the register file clearly has to be detected and
   an illegal instruction exception thrown
 * When non-default elwidths are set, the exact same algorithm still
-  applies (i.e. it offsets elements *within* registers rather than
-  entire registers).
+  applies (i.e. it offsets *polymorphic* elements *within* registers rather 
+  than entire registers).
 * If permute option 000 is utilised, the actual order of the
   reindexing does not change.  However, modulo MVL still occurs
   which will result in repeated operations (use with caution).
@@ -100,12 +102,15 @@ Note that:
   will need to take into account the fact that the element for-looping
   must be **re-entrant**, due to the possibility of exceptions occurring.
   See SVSTATE SPR, which records the current element index.
+  Continuing after return from an interrupt may introduce latency
+  due to re-computation of the remapped offsets.
 * Twin-predicated operations require **two** separate and distinct
   element offsets.  The above pseudo-code algorithm will be applied
   separately and independently to each, should each of the two
-  operands be remapped.  *This even includes C.LDSP* and other operations
+  operands be remapped.  *This even includes unit-strided LD/ST*
+  and other operations
   in that category, where in that case it will be the **offset** that is
-  remapped (see Compressed Stack LOAD/STORE section).
+  remapped.
 * Offset is especially useful, on its own, for accessing elements
   within the middle of a register.  Without offsets, it is necessary
   to either use a predicated MV, skipping the first elements, or
@@ -116,6 +121,9 @@ Note that:
   entries to be regularly presented to operands **more than once**, thus
   allowing the same underlying registers to act as an accumulator of
   multiple vector or matrix operations, for example.
+* Note especially that Program Order **must** still be respected
+  even when overlaps occur that read or write the same register
+  elements *including polymorphic ones*
 
 Clearly here some considerable care needs to be taken as the remapping
 could hypothetically create arithmetic operations that target the
