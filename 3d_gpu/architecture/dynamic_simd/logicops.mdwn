@@ -1,4 +1,4 @@
-# Logic boolean operations
+# Partitioned Logical boolean operations
 
 Links
 
@@ -98,11 +98,18 @@ Example:
 
 when p2p1p0 == 101 this indicates 
 
-* that the output is to contain an XOR of the top 8 bits, the middle 16 bits, and the low 8 bits. this in a 4 bit result (`o3o2o1o0`) divided into `o3`, `o2o1` and `o0`
-  - the top bit of the 4-bit answer contains x3
-  - the middle 2 bits contain the XOR of x1 and x2
-  - the first bit contains x0.
+* that the output is to contain:
+  -  an XOR of the top 8 bits
+  - the middle 16 bits
+  - and the low 8 bits.
+* this in a 4 bit result (`o3o2o1o0`) divided into `o3`, `o2o1` and `o0`
+  - the top bit `o3` of the 4-bit answer contains x3
+  - the middle 2 bits `o2o1`  contain the XOR of x1 and x2
+  - the first bit `o0` contains x0.
 * therefore, the final result:
   - the top bit contains the XOR of the input bits 24 to 31
   - the middle 2 bits contains the XOR of bits 8 to 15
   - the lowest bit contains the XOR of bits 0 to 7.
+
+A different partition creates a completely different SIMD subdivision.
+This is *entirely dynamic*.
