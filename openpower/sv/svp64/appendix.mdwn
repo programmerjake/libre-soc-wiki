@@ -326,12 +326,12 @@ applies, **not** the CR\_bit portion (bits 0:1):
     else:
         spec = EXTRA2<<1 | 0b0
     if spec[2]:
-       # vector constructs "BA[2:4] spec[0:1] 0 BA[0:1]"
-       return ((BA >> 2)<<5) | # hi 3 bits shifted up
-              (spec[0:1]<<3) |  # to make room for these
+       # vector constructs "BA[2:4] spec[0:1] 00 BA[0:1]"
+       return ((BA >> 2)<<6) | # hi 3 bits shifted up
+              (spec[0:1]<<4) | # to make room for these
               (BA & 0b11)      # CR_bit on the end
     else:
-       # scalar constructs "0 spec[0:1] BA[0:4]"
+       # scalar constructs "00 spec[0:1] BA[0:4]"
        return (spec[0:1] << 5) | BA
 
 Thus, for example, to access a given bit for a CR in SV mode, the v3.0B
@@ -339,10 +339,10 @@ algorithm to determin CR\_reg is modified to as follows:
 
     CR_index = 7-(BA>>2)      # top 3 bits but BE
     if spec[2]:
-        # vector mode
-        CR_index = (CR_index<<3) | (spec[0:1] << 1)
+        # vector mode, 0-124 increments of 4
+        CR_index = (CR_index<<4) | (spec[0:1] << 2)
     else:
-        # scalar mode
+        # scalar mode, 0-32 increments of 1
         CR_index = (spec[0:1]<<3) | CR_index
     # same as for v3.0/v3.1 from this point onwards
     bit_index = 3-(BA & 0b11) # low 2 bits but BE
