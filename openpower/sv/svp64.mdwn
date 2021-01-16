@@ -492,28 +492,28 @@ encodings used in the original SV Prefix scheme.  the reason why they
 were chosen is so that scalar registers in v3.0B and prefixed scalar
 registers have access to the same 32 registers.
 
-| R\*\_EXTRA3 | Mode | Range | MSB downto LSB |
+| R\*\_EXTRA3 | Mode | Range/Inc | MSB downto LSB |
 |-----------|-------|---------------|---------------------|
-| 000       | Scalar | `r0-r31` | `0b00 RA`      |
-| 001       | Scalar | `r32-r63` | `0b01 RA`      |
-| 010       | Scalar | `r64-r95` | `0b10 RA`      |
-| 011       | Scalar | `r96-r127` | `0b11 RA`      |
-| 100       | Vector | `r0-r124` | `RA 0b00`      |
-| 101       | Vector | `r1-r125` | `RA 0b01`      |
-| 110       | Vector | `r2-r126` | `RA 0b10`      |
-| 111       | Vector | `r3-r127` | `RA 0b11`      |
+| 000       | Scalar | `r0-r31`/1 | `0b00 RA`      |
+| 001       | Scalar | `r32-r63`/1 | `0b01 RA`      |
+| 010       | Scalar | `r64-r95`/1 | `0b10 RA`      |
+| 011       | Scalar | `r96-r127`/1 | `0b11 RA`      |
+| 100       | Vector | `r0-r124`/4 | `RA 0b00`      |
+| 101       | Vector | `r1-r125`/4 | `RA 0b01`      |
+| 110       | Vector | `r2-r126`/4 | `RA 0b10`      |
+| 111       | Vector | `r3-r127`/4 | `RA 0b11`      |
 
 ## INT/FP EXTRA2
 
 alternative which is understandable and, if EXTRA2 is zero will map to
 "no effect" i.e Scalar OpenPOWER register naming:
 
-| R\*\_EXTRA2 | Mode | Range | MSB down to LSB |
+| R\*\_EXTRA2 | Mode | Range/inc | MSB down to LSB |
 |-----------|-------|---------------|---------------------|
-| 00       | Scalar | `r0-r31` | `0b00 RA`                |
-| 01       | Scalar | `r32-r63` | `0b01 RA`      |
-| 10       | Vector | `r0-r124` | `RA 0b00`      |
-| 11       | Vector | `r2-r126` | `RA 0b10`   |
+| 00       | Scalar | `r0-r31`/1 | `0b00 RA`                |
+| 01       | Scalar | `r32-r63`/1 | `0b01 RA`      |
+| 10       | Vector | `r0-r124`/4 | `RA 0b00`      |
+| 11       | Vector | `r2-r126`/4 | `RA 0b10`   |
 
 ## CR EXTRA3
 
@@ -521,16 +521,16 @@ CR encoding is essentially the same but made more complex due to CRs being bit-b
 
  Encoding shown MSB down to LSB
 
-| R\*\_EXTRA3 | Mode | 7..5    | 4..2    | 1..0    |
-|-------------|------|---------| --------|---------|
-| 000       | Scalar | 0b000   | BA[4:2] | BA[1:0] |
-| 001       | Scalar | 0b001   | BA[4:2] | BA[1:0] |
-| 010       | Scalar | 0b010   | BA[4:2] | BA[1:0] |
-| 011       | Scalar | 0b011   | BA[4:2] | BA[1:0] |
-| 100       | Vector | BA[4:2] | 0b000   | BA[1:0] |
-| 101       | Vector | BA[4:2] | 0b010   | BA[1:0] |
-| 110       | Vector | BA[4:2] | 0b100   | BA[1:0] |
-| 111       | Vector | BA[4:2] | 0b110   | BA[1:0] |
+| R\*\_EXTRA3 | Mode | Range/Inc     | 7..5    | 4..2    | 1..0    |
+|-------------|------|---------------|--------| --------|---------|
+| 000       | Scalar | `CR0-CR7`/1   | 0b000   | BA[4:2] | BA[1:0] |
+| 001       | Scalar | `CR0-CR7`/1   | 0b001   | BA[4:2] | BA[1:0] |
+| 010       | Scalar | `CR0-CR7`/1   | 0b010   | BA[4:2] | BA[1:0] |
+| 011       | Scalar | `CR0-CR7`/1   | 0b011   | BA[4:2] | BA[1:0] |
+| 100       | Vector | `CR0-CR7`/4   | BA[4:2] | 0b000   | BA[1:0] |
+| 101       | Vector | `CR0-CR7`/4   | BA[4:2] | 0b010   | BA[1:0] |
+| 110       | Vector | `CR0-CR7`/4   | BA[4:2] | 0b100   | BA[1:0] |
+| 111       | Vector | `CR0-CR7`/4   | BA[4:2] | 0b110   | BA[1:0] |
 
 ## CR EXTRA2
 
