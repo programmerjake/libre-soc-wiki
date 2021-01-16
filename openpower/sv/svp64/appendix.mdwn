@@ -299,35 +299,6 @@ the access pattern needs to be understandable in relation to v3.0B / v3.1B
 numbering, with a clear linear relationship and mapping existing when
 SV is applied.
 
-## Analysis for compilers
-
-gcc and llvm automatically manage CRs: they are not explicitly accessible even at the assembly level (asm statement). This causes something of an issue even just for basic testing.  A solution then is to leverage the following:
-
-* scalar instructions produce scalar CRs.
-* gcc and llvm scalar instructions produce scalar CRs.
-* vector instructions produce vector CRs
-* therefore with the exception of branches there should be a match which does not require heavy modification of gcc
-
-The basic principle being to ensure that Vector attribute tags propagate through to the CRs.  For this to worrk all gcc and llvm code must act as if the numbering of CRs is kept entirely looking scalar despite the fact that it is actually vector.
-
-Thus the compiler when referring to CR0 still generates code that it thinks is scalar and thinks a scalar computation created CR0 but the same code serves double-duty and thus does not need drastic rewrites or modification.
-
-In concrete terms: when the Vector looping proceeds to increment Integer or FP register numbers linearly, `fp1 fp2 fp3...` when `Rc=1` the Vector of CRs should start at `CR1` for element 0 just as they do in scalar execution but *not overwrite CR2* for element 1.
-
-Two ways in which this may occur: either for numbering to be linear (`CR0..CR127`) but to jump in increments of 8, or to be expressed as sub-numbers similar to FP fractions: `CR1.0 CR1.1 ... CR1.15 CR2.0`. Fractional numbering is more natural and intuitive.  The "original" (scalar) CRs 0-7 therefore are interleaved every 16th point in the progression.  They are also effectively given a second name: `CR0` is now also named `CR0.0` in effect.
-
-Here is a table showing progression from 0 to VL-1 when VL=18, where an Integer Vector operation writes first to `CR0` for element 0.  It is the 16th element before `CR1` is overwritten: 
-
-    CRn.0     CR0 0  CR1 16 CR2    CR3    CR4   CR5   CR6   CR7
-    CRn.1         1      17
-    CRn.2         2
-    ...          ..
-    CRn.15       15
-
-This gives an opportunity to minimise modifications to gcc and llvm for any Vectorisation up to a reasonable length of `MVL=16`.  The register file is viewed as comprising 16 32-bit Condition Registers.
-
-*There is a downside to this approach*: some of the CRs are not directly accessible even through Scalar EXTRA marking and will require predicated (VINDEXed) cr move operations.
-
 ## CR EXTRA mapping table and algorithm
 
 Numbering relationships for CR fields are already complex due to being
