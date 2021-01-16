@@ -467,6 +467,12 @@ EXTRA is the means by which two things are achieved:
 2. Register field numbers (limited typically to 5 bit)
    are extended in range, both for Scalar and Vector.
 
+The register files are therefore extended:
+
+* INT is extended from r0-31 to 128
+* FP is extended from fp0-32 to 128
+* CR is extended from CR0-7 to CR0-127
+
 In the following tables register numbers are constructed from the
 standard v3.0B / v3.1B 32 bit register field (RA, FRA) and the EXTRA2
 or EXTRA3 field from the SV Prefix.  The prefixing is arranged so that
@@ -484,6 +490,9 @@ A pseudocode algorithm explains the relationship, for INT/FP (see [[svp64/append
     else:         # scalar
          return (spec[0:1] << 5) | RA
 
+Future versions may extend to 256 by shifting Vector numbering up.
+Scalar will not be altered.
+
 ## INT/FP EXTRA3
 
 alternative which is understandable and, if EXTRA3 is zero, maps to
@@ -492,7 +501,18 @@ encodings used in the original SV Prefix scheme.  the reason why they
 were chosen is so that scalar registers in v3.0B and prefixed scalar
 registers have access to the same 32 registers.
 
-| R\*\_EXTRA3 | Mode | Range/Inc | MSB downto LSB |
+Fields are as follows:
+
+* Value: R_EXTRA3
+* Mode: register is tagged as scalar or vector
+* Range/Inc: the range of registers accessible from this EXTRA
+  encoding, and the "increment" (accessibility). "/4" means
+  that this EXTRA encoding may only give access (starting point)
+  every 4th register.
+* MSB..LSB: the bit field showing how the register opcode field
+  combines with EXTRA to give (extend) the register number (GPR)
+
+| Value | Mode | Range/Inc | 6..0 |
 |-----------|-------|---------------|---------------------|
 | 000       | Scalar | `r0-r31`/1 | `0b00 RA`      |
 | 001       | Scalar | `r32-r63`/1 | `0b01 RA`      |
@@ -508,9 +528,9 @@ registers have access to the same 32 registers.
 alternative which is understandable and, if EXTRA2 is zero will map to
 "no effect" i.e Scalar OpenPOWER register naming:
 
-| R\*\_EXTRA2 | Mode | Range/inc | MSB down to LSB |
-|-----------|-------|---------------|---------------------|
-| 00       | Scalar | `r0-r31`/1 | `0b00 RA`                |
+| R\*\_EXTRA2 | Mode | Range/inc | 6..0 |
+|-----------|-------|---------------|-----------|
+| 00       | Scalar | `r0-r31`/1 | `0b00 RA`     |
 | 01       | Scalar | `r32-r63`/1 | `0b01 RA`      |
 | 10       | Vector | `r0-r124`/4 | `RA 0b00`      |
 | 11       | Vector | `r2-r126`/4 | `RA 0b10`   |
