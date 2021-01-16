@@ -517,20 +517,20 @@ alternative which is understandable and, if EXTRA2 is zero will map to
 
 ## CR EXTRA3
 
-CR encoding is essentially the same but made more complex due to CRs being bit-based.  See separate section for explanation and pseudocode.
+CR encoding is essentially the same but made more complex due to CRs being bit-based.  See [[svp64/appendix]] for explanation and pseudocode.
 
  Encoding shown MSB down to LSB
 
-| R\*\_EXTRA3 | Mode | Range/Inc     | 7..5    | 4..2    | 1..0    |
-|-------------|------|---------------|--------| --------|---------|
-| 000       | Scalar | `CR0-CR7`/1   | 0b000   | BA[4:2] | BA[1:0] |
-| 001       | Scalar | `CR0-CR7`/1   | 0b001   | BA[4:2] | BA[1:0] |
-| 010       | Scalar | `CR0-CR7`/1   | 0b010   | BA[4:2] | BA[1:0] |
-| 011       | Scalar | `CR0-CR7`/1   | 0b011   | BA[4:2] | BA[1:0] |
-| 100       | Vector | `CR0-CR7`/4   | BA[4:2] | 0b000   | BA[1:0] |
-| 101       | Vector | `CR0-CR7`/4   | BA[4:2] | 0b010   | BA[1:0] |
-| 110       | Vector | `CR0-CR7`/4   | BA[4:2] | 0b100   | BA[1:0] |
-| 111       | Vector | `CR0-CR7`/4   | BA[4:2] | 0b110   | BA[1:0] |
+| R\*\_EXTRA3 | Mode | Range/Inc     | 8..5      | 4..2    | 1..0    |
+|-------------|------|---------------|-----------| --------|---------|
+| 000       | Scalar | `CR0-CR7`/1   | 0b0000    | BA[4:2] | BA[1:0] |
+| 001       | Scalar | `CR8-CR15`/1  | 0b0001    | BA[4:2] | BA[1:0] |
+| 010       | Scalar | `CR16-CR23`/1 | 0b0010    | BA[4:2] | BA[1:0] |
+| 011       | Scalar | `CR24-CR32`/1 | 0b0011    | BA[4:2] | BA[1:0] |
+| 100       | Vector | `CR0-CR120`/8 | BA[4:2] 0 | 0b000   | BA[1:0] |
+| 101       | Vector | `CR2-CR122`/8 | BA[4:2] 0 | 0b100   | BA[1:0] |
+| 110       | Vector | `CR4-CR124`/8 | BA[4:2] 1 | 0b000   | BA[1:0] |
+| 111       | Vector | `CR6-CR126`/8 | BA[4:2] 1 | 0b100   | BA[1:0] |
 
 ## CR EXTRA2
 
