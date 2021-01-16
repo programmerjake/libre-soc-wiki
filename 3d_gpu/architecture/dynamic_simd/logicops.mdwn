@@ -70,9 +70,9 @@ the second observation then is that, actually, just like the other partitioned o
 
 Exactly the same as for eq, instead the "xor" operator for example is the amalgamation of 4 partial results, x0 to x3.
 
-    partition:     P    P    P     (3 bits)
-    a        : .... .... .... .... (32 bits)
-    xor-a    : x0  P x1 P x2 P x3  (4+3 bits, P=1 if no partition)
+    partition:     P    P    P     (3 partition bits)
+    a        : .... .... .... .... (32 input bits)
+    xor-a    : x0  P x1 P x2 P x3  (4+3 bits, P=0 "breaks")
     
     x0 = input[0:7].xor()
     x1 = input[8:15].xor()
@@ -98,6 +98,11 @@ Example:
 
 when p2p1p0 == 101 this indicates 
 
-* that the output is to contain an XOR of the top 8 bits, the middle 16 bits, and the low 8 bits. this in a 4 bit result (o3o2o1o0) divided into `o3`, `o2o1` and `o0`
-* the top bit of the 4-bit answer contains x3, the middle 2 bits contain the XOR or x1 and x2, the first bit contains x0.
-* therefore, the final result: the top bit contains the XOR of the input bits 24 to 31, the middle 2 bits contains the XOR of bits 8 to 15, the lowest bit contains the XOR of bits 0 to 7.
+* that the output is to contain an XOR of the top 8 bits, the middle 16 bits, and the low 8 bits. this in a 4 bit result (`o3o2o1o0`) divided into `o3`, `o2o1` and `o0`
+  - the top bit of the 4-bit answer contains x3
+  - the middle 2 bits contain the XOR of x1 and x2
+  - the first bit contains x0.
+* therefore, the final result:
+  - the top bit contains the XOR of the input bits 24 to 31
+  - the middle 2 bits contains the XOR of bits 8 to 15
+  - the lowest bit contains the XOR of bits 0 to 7.
