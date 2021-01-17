@@ -509,12 +509,15 @@ clarity and assumes significant working knowledge of OpenPOWER, with
 arbitrary insertions of 7-index here and 3-bitindex there, the decision
 to pick LE was extremely easy.
 
-Without such a decision, if two words are packed as elements into a
-64 bit register, what does this mean? Should they be inverted so that
-the lower indexed element goes into the HI or the LO word? should the
-8 bytes of each register be inverted? Should the bytes in each element
-be inverted? Should the element indexing loop order be broken onto discontiguous chunks such as 32107654 rather than 01234567, and if so at what granilsrity of discontinuity? These are all equally valid and legitimate interpretations
-of what constitutes "BE" and they all cause merry mayhem.
+Without such a decision, if two words are packed as elements into a 64
+bit register, what does this mean? Should they be inverted so that the
+lower indexed element goes into the HI or the LO word? should the 8
+bytes of each register be inverted? Should the bytes in each element
+be inverted? Should the element indexing loop order be broken onto
+discontiguous chunks such as 32107654 rather than 01234567, and if so
+at what granularity of discontinuity? These are all equally valid and
+legitimate interpretations of what constitutes "BE" and they all cause
+merry mayhem.
 
 The decision was therefore made: the c typedef union is the canonical
 definition, and its members are defined as being in LE order. From there,
