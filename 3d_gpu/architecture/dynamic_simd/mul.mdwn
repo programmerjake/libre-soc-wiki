@@ -4,8 +4,8 @@
 
 This is complicated!  It is necessary to compute a full NxN matrix of partial multiplication results, then perform a cascade of adds (long multipication, in binary), using PartitionedAdd, which will "automatically" break the results down into segments, at all times, keeping each partitioned result separate.
 
-Therefore, for a full 64 bit multiply, with 7 partitions, a matrix of 8x8 multiplications are performed, then added up in each column of the same magnitude, in exactly the same way as described by Vedic Mathematics,
-
-<img src="https://img.fireden.net/sci/image/1483/07/1483079339205.png" width="400px" />
+Therefore, for a full 64 bit multiply, with 7 partitions, a matrix of 8x8 multiplications are performed, then added up in each column of the same magnitude, in exactly the same way as described by Vedic Mathematics.  Ultimately it is the partitions on the adds that allows the entire multiply to be broken into SIMD pieces.
 
 The [Wallace Tree](https://en.wikipedia.org/wiki/Wallace_tree) algorithm is presently deployed, here: we need to use the (more efficient) [Dadda algorithm](https://en.wikipedia.org/wiki/Dadda_multiplier)
+
+<img src="https://img.fireden.net/sci/image/1483/07/1483079339205.png" width="350px" />
