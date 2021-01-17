@@ -149,7 +149,15 @@ Note that the operation takes place at the maximum bitwidth (max of src and dest
 
 There are two variants here.  The first is when the destination is scalar and at least one of the sources is Vector.  The second is more complex and involves map-reduction on vectors.
 
-The defining characteristic distinguishing Scalar-dest reduce mode from Vector reduce mode is that Scalar-dest reduce issues VL element operations, whereas Vector reduce mode performs an actual map-reduce (tree reduction): typically `O(VL log VL)` actual computations.
+The first defining characteristic distinguishing Scalar-dest reduce mode from Vector reduce mode is that Scalar-dest reduce issues VL element operations, whereas Vector reduce mode performs an actual map-reduce (tree reduction): typically `O(VL log VL)` actual computations.
+
+The second defining characteristic of scalar-dest reduce mode is that it
+is, in simplistic and shallow terms *serial and sequential in nature*,
+whereas the Vector reduce mode is definitely inherently paralleliseable.
+
+The reason why scalar-dest reduce mode is "simplistically" serial and
+sequential is that in certain circumstances (such as an `OR` operation
+or a MIN/MAX operation) it may be possible to parallelise the reduction.
 
 ## Scalar result reduce mode
 
