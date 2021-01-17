@@ -166,22 +166,42 @@ or a MIN/MAX operation) it may be possible to parallelise the reduction.
 
 ## Scalar result reduce mode
 
-Scalar reduction is categorised by:
+In this mode, one register is identified as being the "accumulator".
+Scalar reduction is thus categorised by:
 
 * One of the sources is a Vector
 * the destination is a scalar
 * optionally but most usefully when one source register is also the destination
+* That the source register type is the same as the destination register
+  type identified as the "accumulator".  scalar reduction on `cmp`,
+  `setb` or `isel` is not possible for example because of the mixture
+  between CRs and GPRs.
 
-Typical applications include simple operations such as `ADD r3, r10.v, r3`
-where, clearly, r3 is being used to accumulate the addition of all elements is the vector starting at r10.
+Typical applications include simple operations such as `ADD r3, r10.v,
+r3` where, clearly, r3 is being used to accumulate the addition of all
+elements is the vector starting at r10.
 
      # add RT, RA,RB but when RT==RA
      for i in range(VL):
           iregs[RA] += iregs[RB+i] # RT==RA
 
-However, *unless* the operation is marked as "mapreduce", SV **terminates** at the first scalar operation.  Only by marking the operation as "mapreduce" will it continue to issue multiple sub-looped (element) instructions in `Program Order`.
+However, *unless* the operation is marked as "mapreduce", SV ordinarily
+**terminates** at the first scalar operation.  Only by marking the
+operation as "mapreduce" will it continue to issue multiple sub-looped
+(element) instructions in `Program Order`.
 
-Other examples include shift-mask operations where a Vector of inserts into a single destination register is required, as a way to construct a value quickly from multiple arbitrary bit-ranges and bit-offsets.  Using the same register as both the source and destination, with Vectors of different offsets masks and values to be inserted has multiple applications including Video, cryptography and JIT compilation. 
+Other examples include shift-mask operations where a Vector of inserts
+into a single destination register is required, as a way to construct
+a value quickly from multiple arbitrary bit-ranges and bit-offsets.
+Using the same register as both the source and destination, with Vectors
+of different offsets masks and values to be inserted has multiple
+applications including Video, cryptography and JIT compilation.
+
+Subtract and Divide are still permitted to be executed in this mode,
+although from an algorithmic perspective it is strongly discouraged.
+It would be better to use addition followed by one final subtract,
+or in the case of divide, to get better accuracy, to perform a multiply
+cascade followed by a final divide.
 
 ## Vector result reduce mode
 
