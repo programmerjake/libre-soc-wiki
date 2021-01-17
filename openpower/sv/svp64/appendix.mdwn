@@ -203,6 +203,11 @@ It would be better to use addition followed by one final subtract,
 or in the case of divide, to get better accuracy, to perform a multiply
 cascade followed by a final divide.
 
+Note that single-operand or three-operand scalar-dest reduce is perfectly
+well permitted: both still meet the qualifying characteristics that one
+source operand can also be the destination, which allows the "accumulator"
+to be identified.
+
 ## Vector result reduce mode
 
 1. limited to single predicated dual src operations (add RT, RA, RB).
