@@ -608,7 +608,7 @@ truncated.  Only then can the arithmetic saturation condition be detected:
        set_polymorphed_reg(rd, destwid, i, sat)
        # set sat overflow
        if Rc=1:
-          CR.ov = (sat != result)
+          CR[i].ov = (sat != result)
 
 So the actual computation took place at the larger width, but was
 post-analysed as an unsigned operation.  If however "signed" saturation
