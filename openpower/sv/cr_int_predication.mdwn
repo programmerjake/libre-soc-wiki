@@ -11,7 +11,7 @@ See:
 
 Rationale:
 
-Condition Registers are conceptually perfect for use as predicate masks, the only problem being that typical Vector ISAs have quite comprehensive mask-based instructions: set-before-first, popcount and much more.  In fact many Vector ISAs can use Vectors *as* masks.  This is not practical for SV given the premise to minimise adding of instructions.
+Condition Registers are conceptually perfect for use as predicate masks, the only problem being that typical Vector ISAs have quite comprehensive mask-based instructions: set-before-first, popcount and much more.  In fact many Vector ISAs can use Vectors *as* masks, consequently the entire Vector ISA is available for use in creating masks.  This is not practical for SV given the premise to minimise adding of instructions.
 
 With the scalar OpenPOWER v3.0B ISA having already popcnt, cntlz and others normally seen in Vector Mask operations it makes sense to allow *both* scalar integers *and* CR-Vectors to be predicate masks.  That in turn means that much more comprehensive interaction between CRs and scalar Integers is required.
 
