@@ -12,11 +12,17 @@ Links
 
 # Summary
 
-In-advance, the summary of operations that need to be added is:
+In-advance, the summary of base scalar operations that need to be added is:
 
 | instruction  | pseudocode               |
+| ------------ | ------------------------      |
 | average-add. | result = (src1 + src2 + 1) >> 1 |
 | abs-diff     | result = abs (src1-src2) |
+| signed min   | result = (src1 < src2) ? src1 : src2  |
+| signed max   | result = (src1 > src2) ? src1 : src2  |
+| bitwise sel  | (a ? b : c) - use bitmanip ternary |
+
+All other capabilities are achieved with [[sv/svp64]] modes and swizzle.
 
 # Audio
 
