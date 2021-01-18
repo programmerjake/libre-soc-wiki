@@ -172,7 +172,7 @@ Pseudo-op:
 The name "weird" refers to a minor violation of SV rules when it comes to deriving the Vectorised versions of these instructions.
 
 Normally the progression of the SV for-loop would move on to the next register.
-Instead however these instructions **remain in the same register** and insert or transfer between **bits** of the scalar integer source or destination.
+Instead however in the scalar case these instructions **remain in the same register** and insert or transfer between **bits** of the scalar integer source or destination.
 
     crrweird: RT, BB, mask.mode
 
