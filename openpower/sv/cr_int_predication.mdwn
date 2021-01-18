@@ -107,11 +107,11 @@ Instruction format:
 
     | 0-5 | 6-10  | 11 | 12-15 | 16-18 | 19-20 | 21-25   | 26-30   | 31 |
     | --- | ----  | -- | ----- | ----- | ----- | -----   | -----   | -- |
-    | 19  | RT    |    | mask  | BB    |    /  | XO[0:4] | XO[5:9] | /  |
-    | 19  | RT    | 0  | mask  | BB    |  0 /  | XO[0:4] | 0 mode  | /  |
+    | 19  | RT    |    | mask  | BB    |       | XO[0:4] | XO[5:9] | /  |
+    | 19  | RT    | 0  | mask  | BB    |  0 M  | XO[0:4] | 0 mode  | Rc |
     | 19  | RA    | 1  | mask  | BB    |  0 /  | XO[0:4] | 0 mode  | /  |
     | 19  | BT // | 0  | mask  | BB    |  1 /  | XO[0:4] | 0 mode  | /  |
-    | 19  | BFT   | 1  | mask  | BB    |  1 /  | XO[0:4] | 0 mode  | /  |
+    | 19  | BFT   | 1  | mask  | BB    |  1 M  | XO[0:4] | 0 mode  | /  |
 
 mode is encoded in XO and is 4 bits
 
@@ -124,7 +124,10 @@ bit 11=0, bit 19=0
     n1 = mask[1] & (mode[1] == creg[1])
     n2 = mask[2] & (mode[2] == creg[2])
     n3 = mask[3] & (mode[3] == creg[3])
-    RT[63] = n0|n1|n2|n3 # MSB0 numbering, 63 is LSB
+    result = n0|n1|n2|n3 if M else n0&n1&n2&n3
+    RT[63] = result # MSB0 numbering, 63 is LSB
+    If Rc:
+        CR1 = analyse(RT)
 
 bit 11=1, bit 19=0
 
@@ -160,7 +163,8 @@ bit 11=1, bit 19=1
     n3 = mask[3] & (mode[3] == creg[3])
     BF = BFT[2:4] # select CR
     bit = BFT[0:1] # select bit of CR
-    CR{BF}[bit] = n0|n1|n2|n3
+    result = n0|n1|n2|n3 if M else n0&n1&n2&n3
+    CR{BF}[bit] = result
 
 Pseudo-op:
 
@@ -187,10 +191,11 @@ Instead however in the scalar case these instructions **remain in the same regis
         n1 = mask[1] & (mode[1] == creg[1])
         n2 = mask[2] & (mode[2] == creg[2])
         n3 = mask[3] & (mode[3] == creg[3])
+        result = n0|n1|n2|n3 if M else n0&n1&n2&n3
         if RT.isvec:
-            iregs[RT+i][63] = n0|n1|n2|n3
+            iregs[RT+i][63] = result
         else:
-            iregs[RT][63-i] = n0|n1|n2|n3
+            iregs[RT][63-i] = result
 
 Note that:
 
