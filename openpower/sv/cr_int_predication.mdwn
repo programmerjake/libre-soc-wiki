@@ -15,6 +15,8 @@ Condition Registers are conceptually perfect for use as predicate masks, the onl
 
 With the scalar OpenPOWER v3.0B ISA having already popcnt, cntlz and others normally seen in Vector Mask operations it makes sense to allow *both* scalar integers *and* CR-Vectors to be predicate masks.  That in turn means that much more comprehensive interaction between CRs and scalar Integers is required.
 
+The opportunity is therefore taken to also augment CR logical arithmetic as well, using a mask-based paradigm that takes into consideration multiple bits of each CR (eq/lt/gt/ov).  v3.0B Scalar CR instructions (crand, crxor) only allow a single bit calculation.
+
 Basic concept:
 
 * CR-based instructions that perform simple AND/OR/XOR from all four bits
