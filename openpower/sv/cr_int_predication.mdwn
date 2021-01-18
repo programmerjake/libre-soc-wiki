@@ -52,6 +52,10 @@ In [[isa/sprset]] we see the pseudocode for `mtcrf` for example:
 This places (according to a mask schedule) `CR0` into MSB0-numbered bits 32-35 of the target Integer register `RS`, these bits of `RS` being the 31st down to the 28th.  Unfortunately, even when not Vectorised, this inserts CR numbering inversions on each batch of 8 CRs, massively complicating matters.  Predication when using CRs would have to be morphed to this (unacceptably complex) behaviour:
 
     for i in range(VL):
+       if INTpredmode:
+         predbit = (r3)[63-i] # IBM MSB0 spec sigh
+       else:
+         # completely incomprehensible vertical numbering
          n = (7-(i%8)) | (i & ~0x7) # total mess
          CRpredicate = CR{n}        # select CR0, CR1, ....
          predbit = CRpredicate[offs]  # select eq..ov bit
@@ -59,11 +63,11 @@ This places (according to a mask schedule) `CR0` into MSB0-numbered bits 32-35 o
 Which is nowhere close to matching the straightforward obvious case:
 
     for i in range(VL):
-         if INTpredmode:
-             predbit = (r3)[63-i] # IBM MSB0 spec sigh
-         else:
-             CRpredicate = CR{i} # start at CR0, work up
-             predbit = CRpredicate[offs]
+       if INTpredmode:
+         predbit = (r3)[63-i] # IBM MSB0 spec sigh
+       else:
+         CRpredicate = CR{i} # start at CR0, work up
+         predbit = CRpredicate[offs]
 
 In other words unless we do something about this, when we transfer bits from an Integer Predicate into a Vector of CRs, our numbering of CRs, when enumerating them in a CR Vector, would be **CR7** CR6 CR5.... CR0 **CR15** CR14 CR13... CR8 **CR23** CR22 etc. **not** the more natural and obvious CR0 CR1 ... CR23.
 
