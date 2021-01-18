@@ -24,13 +24,12 @@ of its (x)eSTATE are swapped with STATE.
 
 MAXVECTORLENGTH is the same concept as MVL in RVV, except that it
 is variable length and may be dynamically set.  MVL is
-however limited to the regfile bitwidth XLEN (1-32 for RV32,
-1-64 for RV64 and so on).
+however limited to the regfile bitwidth, 64.
 
 ## Vector Length (VL) <a name="vl" />
 
 VSETVL is slightly different from RVV.  Similar to RVV, VL is set to be within
-the range 1 <= VL <= MVL (where MVL in turn is limited to 1 <= MVL <= XLEN)
+the range 0 <= VL <= MVL (where MVL in turn is limited to 1 <= MVL <= XLEN)
 
     VL = rd = MIN(vlen, MVL)
 
@@ -54,11 +53,11 @@ full context save/restore.  It contains (and permits setting of):
 
 * MVL
 * VL
-* dsttoffs - the destination element offset of the current parallel
+* dststep - the destination element offset of the current parallel
   instruction being executed
-* srcoffs - for twin-predication, the source element offset as well.
+* srcstep - for twin-predication, the source element offset as well.
 * SUBVL
-* svoffs - the subvector element offset of the current
+* svstep - the subvector element offset of the current
   parallel instruction being executed
 
 The format of the STATE SPR is as follows:
@@ -67,10 +66,10 @@ The format of the STATE SPR is as follows:
 | ----- | -------- | --------------------- |
 | 0:6   | maxvl    | Max Vector Length |
 | 7:13  |    vl    | Vector Length |
-| 14:20 | srcoffs  | |
-| 21:27 | dstoffs  | |
+| 14:20 | srcstep  | |
+| 21:27 | dststep  | |
 | 28:29 | subvl    | |
-| 30:31 | svoffs   | |
+| 30:31 | svstep   | |
 
 The relationship between SUBVL and the subvl field is:
 
@@ -85,5 +84,6 @@ Notes:
 
 * The entries are truncated to be within range.  Attempts to set VL to
   greater than MAXVL will truncate VL.
-* Setting srcoffs, dstoffs to 64 or greater, or VL or MVL to greater than 64 is reserved and will cause an illegal instruction trap.
+* Setting srcstep, dststep to 64 or greater, or VL or MVL to greater
+  than 64 is reserved and will cause an illegal instruction trap.
 
