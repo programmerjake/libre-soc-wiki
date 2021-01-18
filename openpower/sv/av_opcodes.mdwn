@@ -106,7 +106,8 @@ The spec says the max relative inaccuracy is 1/4096.
 
 *In conjunction with the FPSPR "accuracy" bit These could be done by assigning meaning to the "sat mode" SVP64 bits in a FP context. 0b00 is IEEE754 FP, 0b01 is 2^12 accuracy for FP32. These can be applied to standard scalar FP ops*
 
-The other alternative is to use the "single precision" FP operations on a 32-bit elwidth override.  As explained in [[sv/]] this halves the precision.
+The other alternative is to use the "single precision" FP operations on a 32-bit elwidth override.  As explained in [[sv/fcvt]] this halves the precision,
+operating at FP16 accuracy but storing in a FP32 format.
 
 ## vec_madd(s) - FMA, multiply-add, optionally saturated
 
