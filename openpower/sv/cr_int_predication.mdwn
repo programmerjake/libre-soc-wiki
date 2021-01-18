@@ -9,6 +9,12 @@ See:
 * <https://bugs.libre-soc.org/show_bug.cgi?id=569>
 * <https://bugs.libre-soc.org/show_bug.cgi?id=558#c47>
 
+Rationale:
+
+Condition Registers are conceptually perfect for use as predicate masks, the only problem being that typical Vector ISAs have quite comprehensive mask-based instructions: set-before-first, popcount and much more.  In fact many Vector ISAs can use Vectors *as* masks.  This is not practical for SV given the premise to minimise adding of instructions.
+
+With the scalar OpenPOWER v3.0B ISA having already popcnt, cntlz and others normally seen in Vector Mask operations it makes sense to allow *both* scalar integers *and* CR-Vectors to be predicate masks.  That in turn means that much more comprehensive interaction between CRs and scalar Integers is required.
+
 Basic concept:
 
 * CR-based instructions that perform simple AND/OR/XOR from all four bits
@@ -161,3 +167,35 @@ Pseudo-op:
     mtcrclr BB, mask  mtcrweird r0, BB, mask.0b1111
 
 
+# Vectorised versions
+
+The name "weird" refers to a minor violation of SV rules when it comes to deriving the Vectorised versions of these instructions.
+
+Normally the progression of the SV for-loop would move on to the next register.
+Instead however these instructions **remain in the same register** and insert or transfer between **bits** of the scalar integer source or destination.
+
+    crrweird: RT, BB, mask.mode
+
+    for i in range(VL):
+        if BB.isvec:
+            creg = CR{BB+i}
+        else:
+            creg = CR{BB}
+        n0 = mask[0] & (mode[0] == creg[0])
+        n1 = mask[1] & (mode[1] == creg[1])
+        n2 = mask[2] & (mode[2] == creg[2])
+        n3 = mask[3] & (mode[3] == creg[3])
+        if RT.isvec:
+            iregs[RT+i][63] = n0|n1|n2|n3
+        else:
+            iregs[RT][63-i] = n0|n1|n2|n3
+
+Note that:
+
+* in the scalar case the CR-Vector assessment
+  is stored bit-wise starting at the LSB of the
+   destination scalar INT
+* in the INT-vector case the result is stored in the
+  LSB of each element in the result vector
+
+Note that element width overrides are respected on the INT src or destination register (but that elwidth overrides on CRs are meaningless)
