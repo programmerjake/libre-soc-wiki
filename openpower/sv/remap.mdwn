@@ -169,3 +169,14 @@ At the same time, VL will, because there is no SHAPE on f8, increment straight s
 The only other instruction required is to ensure that f4-f7 are initialised (usually to zero).
 
 It should be clear that a 4x4 by 4x4 Matrix Multiply, being effectively the same technique applied to four independent vectors, can be done by setting VL=64, using an extra dimension on the SHAPE0 and SHAPE1 SPRs, and applying a rotating 1D SHAPE SPR of xdim=16 to f8 in order to get it to apply four times to compute the four columns worth of vectors.
+
+# SUBVL Remap
+
+Remapping even of SUBVL (vec2/3/4) elements is permitted, as if the sub-vectir elements were simply part of the main VL loop.  This is the *complete opposite* of predication which **only** applies to the whole vec2/3/4.
+
+The reason for allowing SUBVL Remaps is that some regular patterns using Swizzle which would otherwise require multiple explicit instructions with 12 bit swizzles encoded in them may be efficently encoded with Remap instead.  Not however that Swizzle is *still permitted to be applied*.
+
+An example where SUBVL Remap is appropriate is the Rijndael MixColumns stage:
+
+<img src="https://en.wikipedia.org/wiki/Advanced_Encryption_Standard#/media/File:AES-MixColumns.svg" size="400px" />
+
