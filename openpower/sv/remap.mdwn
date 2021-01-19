@@ -186,5 +186,31 @@ A 2D REMAP allows:
 * the columns themselves to be iterated as an outer loop
 * a 32 bit `GF(256)` multiply on the vec4 to be performed.
 
-This entirely in-place without special 128-bit opcodes.
+This entirely in-place without special 128-bit opcodes.  Below is
+the pseudocode for [[!wiki Rindael MixColumns]]
 
+```
+void gmix_column(unsigned char *r) {
+    unsigned char a[4];
+    unsigned char b[4];
+    unsigned char c;
+    unsigned char h;
+    // none of these need swizzle but they do need SUBVL.Remap
+    for (c = 0; c < 4; c++) {
+        a[c] = r[c];
+        h = (unsigned char)((signed char)r[c] >> 7);
+        b[c] = r[c] << 1;
+        b[c] ^= 0x1B & h; /* Rijndael's Galois field */
+    }
+    // SUBVL.Remap still needed here
+    // These may each be 32 bit Swizzled
+    // r0.vec4 = b.vec4
+    // r0.vec4 ^= a.vec4.WXYZ
+    // r0.vec4 ^= a.vec4.ZWXY
+    // r0.vec4 ^= b.vec4.YZWX ^ a.vec4.YZWX
+    r[0] = b[0] ^ a[3] ^ a[2] ^ b[1] ^ a[1];
+    r[1] = b[1] ^ a[0] ^ a[3] ^ b[2] ^ a[2];
+    r[2] = b[2] ^ a[1] ^ a[0] ^ b[3] ^ a[3]; 
+    r[3] = b[3] ^ a[2] ^ a[1] ^ b[0] ^ a[0];
+}
+```
