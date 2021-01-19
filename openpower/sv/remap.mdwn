@@ -178,5 +178,13 @@ The reason for allowing SUBVL Remaps is that some regular patterns using Swizzle
 
 An example where SUBVL Remap is appropriate is the Rijndael MixColumns stage:
 
-<img src="https://en.wikipedia.org/wiki/Advanced_Encryption_Standard#/media/File:AES-MixColumns.svg" size="400px" />
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/AES-MixColumns.svg/600px-AES-MixColumns.svg.png" width="400px" />
+
+A 2D REMAP allows:
+
+* the column bytes (as a vec4) to be iterated over as an inner loop.
+* the columns themselves to be iterated as an outer loop
+* a 32 bit `GF(256)` multiply on the vec4 to be performed.
+
+This entirely in-place without special 128-bit opcodes.
 
