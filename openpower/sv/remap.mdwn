@@ -229,3 +229,5 @@ void gmix_column(unsigned char *r) {
 With the assumption made by the above code that the column bytes have already been turned around (vertical rather than horizontal) SUBVL.REMAP may transparently fill that role, in-place, without a complex byte-level mv operation.
 
 The application of the swizzles allows the remapped vec4 a, b and r variables to perform four straight linear 32 bit XOR operations where a scalar processor would be required to perform 16 byte-level individual operations.  Given wide enough SIMD backends in hardware these 3 bit XORs may be done as single-cycle operations across the entire 128 bit Rijndael Matrix.
+
+The other alternative is to simply perform the actual 4x4 GF(256) Matrix Multiply using the MDS Matrix.
