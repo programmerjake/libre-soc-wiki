@@ -172,7 +172,13 @@ It should be clear that a 4x4 by 4x4 Matrix Multiply, being effectively the same
 
 # SUBVL Remap
 
-Remapping even of SUBVL (vec2/3/4) elements is permitted, as if the sub-vectir elements were simply part of the main VL loop.  This is the *complete opposite* of predication which **only** applies to the whole vec2/3/4.
+Remapping even of SUBVL (vec2/3/4) elements is permitted, as if the sub-vectir elements were simply part of the main VL loop.  This is the *complete opposite* of predication which **only** applies to the whole vec2/3/4.  In pseudocode this would be:
+
+      for (i = 0; i < VL; i++)
+        if (predval & 1<<i) # apply to VL not SUBVL
+          for (j = 0; j < SUBVL; j++)
+             id = i*SUBVL + j # not, "id=i".
+             ireg[RT+remap1(id)] ...
 
 The reason for allowing SUBVL Remaps is that some regular patterns using Swizzle which would otherwise require multiple explicit instructions with 12 bit swizzles encoded in them may be efficently encoded with Remap instead.  Not however that Swizzle is *still permitted to be applied*.
 
