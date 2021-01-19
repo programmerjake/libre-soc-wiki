@@ -192,7 +192,7 @@ a 2D REMAP allows:
 * the column bytes (as a vec4) to be iterated over as an inner loop,
   progressing vertically (`a00 a10 a20 a30`)
 * the columns themselves to be iterated as an outer loop
-* a 32 bit `GF(256)` multiply on the vec4 to be performed.
+* a 32 bit `GF(256)` Matrix Multiply on the vec4 to be performed.
 
 This entirely in-place without special 128-bit opcodes.  Below is
 the pseudocode for [[!wikipedia Rijndael MixColumns]]
