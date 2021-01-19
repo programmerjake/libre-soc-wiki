@@ -34,10 +34,10 @@ swizzle. Their format is as follows when stored in SPRs:
 
 | 0..3 | 4..7   | 8........31 |  name     |
 | ---- | ----   | ----------- | --------- |
-| 0000 | 0000   | `RM[0:23]`  |  svp64 RM |
+| 0000 | 0000   | `RM[0:23]`  |  [[sv/svp64]] RM |
 | 0001 | 0 mask | swiz1 swiz2 |  swizzle  |
-| 0010 | brev   | sh0-3 ms0-3 |  Remap    |
-
+| 0010 | brev   | sh0-3 ms0-3 |  [Remap](sv/remap)    |
+| 0011 | brev   | sh0-3 ms0-3 |  [SubVL Remap](sv/remap)    |
 
 There are 4 64 bit SPRs used for storing Context, and the data is stored
 as follows:
@@ -167,10 +167,13 @@ immediate, 29 of which are dropped into the indexed Shift Register
 | 0.5| 6.8 | 9.10| 11.14 | 15.31|  name   |
 | -- | --- | --- | ----  | ---- | ------- |
 | OP |     | MM  |       |      | ?-Form  |
-| OP | idx | 01  | brev  | imm  |         |
+| OP | idx | 10  | brev  | imm  | Remap        |
+| OP | idx | 11  | brev  | imm  | SUBVL Remap    |
+
+SUBVL Remap applies the remapping even into the SUBVL Elements, for a total of `VL\*SUBVL` Elements.  **swizzle may be applied on top as a second phase** after SUBVL Remap.
 
 brev field, which also applied down to SUBVL elements (not to the whole
-vec2/3/4, that would be handled by swizzle reordering)
+vec2/3/4, that would be handled by swizzle reordering):
 
 * bit 0 indicates that dest elements are byte-reversed
 * bit 1 indicates that src1 elements are byte-reversed
