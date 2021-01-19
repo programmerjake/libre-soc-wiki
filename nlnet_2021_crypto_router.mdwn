@@ -20,6 +20,17 @@ if you need any HTML to make your point please include this as attachment.
 
 ## Abstract: Can you explain the whole project and its expected outcome(s).
 
+Blockchain and cryotographic primitives are extremely complex mathematics
+where performance and power consumption contend with understandability, correctness and auditability.  Implementations of cryptographic alorithms in OpenSSL for example are hard-coded hand-optimised assembler, which makes review and trust extremely challenging, particularly when "best practices" (SSL Certificates) result in some algorithms being retired as obsolete with increasing frequency.
+
+Even just the implementations of cryptographic and blockchain algorithms have to be so heavily optimised for a particular instruction set, in order to get high performance, that it is almost impossible to read the original whitepaper and see how it is relevant or correct (the lack of funding for review of OpenSSL rocked the internet back in 2012, with HeartBleed).
+
+Simple-V Vectorisation has some extremely unusual data manipulation properties that negate the need for such heavy optimisation.  We would like to explore this in-depth, for example examining Galois Field arithmetic, the basis of Elliptic Curve, AES, Error-correction algorithms and more, at the fundamental mathematical level and providing Vector Matrix Multiply and other abstractions, the combination of which lead to auditors to be able to see extremely clearly and quickly what the relationship is between the math and the actual implementation in hardware.  The focus will be on investigation and implementation of cryptographic primitives for use in Blockchain, OpenSSL, on keeping the implementation simple and leveraging Formal Correctness Proofs to verify them.
+
+The target worked example will be not to simply put this into an FPGA but to put together a 130nm ASIC under the Google Skywater Open PDK ASIC Programme, as a proof-of-concept Gigabit Router chip capable of securely handling network traffic and, having the underlying cryptographic primitives in place, being the basis of peer networking and blockchain applications which can be trusted with thode tasks by its full HDL and source code being publicly available for independent review.
+
+Ultimately we want a demonstration ASIC of a tamper-proof auditable hardware implementation which can be trusted by end-users.
+
 
 # Have you been involved with projects or organisations relevant to this project before? And if so, can you tell us a bit about your contributions?
 
