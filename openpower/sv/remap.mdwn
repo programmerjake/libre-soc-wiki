@@ -183,6 +183,7 @@ An example where SUBVL Remap is appropriate is the Rijndael MixColumns stage:
 A 2D REMAP allows:
 
 * the column bytes (as a vec4) to be iterated over as an inner loop.
+  (`a00 a10 a20 a30`)
 * the columns themselves to be iterated as an outer loop
 * a 32 bit `GF(256)` multiply on the vec4 to be performed.
 
