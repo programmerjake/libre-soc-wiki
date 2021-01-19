@@ -196,7 +196,9 @@ void gmix_column(unsigned char *r) {
     unsigned char b[4];
     unsigned char c;
     unsigned char h;
-    // none of these need swizzle but they do need SUBVL.Remap
+    // no swizzle here but still SUBVL.Remap
+    // can be done as vec4 byte-level
+    // elwidth overrides though.
     for (c = 0; c < 4; c++) {
         a[c] = r[c];
         h = (unsigned char)((signed char)r[c] >> 7);
@@ -204,7 +206,8 @@ void gmix_column(unsigned char *r) {
         b[c] ^= 0x1B & h; /* Rijndael's Galois field */
     }
     // SUBVL.Remap still needed here
-    // These may each be 32 bit Swizzled
+    // byyelevel elwidth overrides and vec4
+    // These may then each be 4x 8bit bit Swizzled
     // r0.vec4 = b.vec4
     // r0.vec4 ^= a.vec4.WXYZ
     // r0.vec4 ^= a.vec4.ZWXY
@@ -216,4 +219,6 @@ void gmix_column(unsigned char *r) {
 }
 ```
 
-With the assumption made by the above code that the column bytes have already been turned around (vertical rather than horizontal) SUBVL.REMAP may transparently fill that role, in-place, without a complex mv operation.  The application of the swizzles allows the remapped vec4 a, b and r variables to perform four straight linear 32 bit XOR operations where a scalar processor would be required to perform 16 byte-level individual operations.  Given wide enough SIMD backends in hardware these 3 bit XORs may be done as single-cycle operations across the entire 128 bit Rijndael Matrix.
+With the assumption made by the above code that the column bytes have already been turned around (vertical rather than horizontal) SUBVL.REMAP may transparently fill that role, in-place, without a complex byte-level mv operation.
+
+The application of the swizzles allows the remapped vec4 a, b and r variables to perform four straight linear 32 bit XOR operations where a scalar processor would be required to perform 16 byte-level individual operations.  Given wide enough SIMD backends in hardware these 3 bit XORs may be done as single-cycle operations across the entire 128 bit Rijndael Matrix.
