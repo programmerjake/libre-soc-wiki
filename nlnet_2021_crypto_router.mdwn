@@ -41,6 +41,19 @@ EUR $50,000.
 
 # Explain what the requested budget will be used for? 
 
+* Detailed review and documentation of the analysis of cryptographic hashing and encryption algorithms used in cryptonote and other blockchain technologies to ascertain the fundamental principles and mathematical primitives
+  - So far the list includes Rijndael (AES), SHA2, Graestl, Blake256, Chacga8, Keccac and more
+  - From these it is clear that the primitives involve Matrix Multiply
+    operations and Galois Field arithmetic, as well as ternary bitmanipulation
+    and Carry-capable Vector "long arithmetic".
+* Hardware implementation of the underlying instruction primitives and Vector-Matrix concepts needed to support the crypto-primitives used in blockchain algorithms
+* Proof of Concept software implementation of the hashing algorithms identified, showing how Vectorised Matrix manipulation atvthe ISA level can greatly simplify the readability and clarity of cryptography, for aydit purposes.
+* Formal Correctness proofs of the underlying hardware instruction primitives
+* Implementation of RGMII and USB-ULPI in nmigen
+* Implementation in nmigen of a DMA Engine suitable for Ethernet Frame packet transfer
+* Porting of FlexLib ASIC Cell Library to google Skywater 130nm PDK
+* Creation of an FPGA proof of concept Gigabit Router using a LibreSOC SimpleV core
+* Layout of Gigabit Router ASIC using coriolis2 using google Skywater 130nm PDK
 
 # Does the project have other funding sources, both past and present?
 
@@ -57,3 +70,4 @@ EUR $50,000.
 
 # Extra info to be submitted
 
+* https://github.com/cryptonotefoundation/cryptonote/blob/master/src/crypto/
