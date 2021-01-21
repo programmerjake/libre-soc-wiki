@@ -5,16 +5,16 @@ Links
 * <https://bugs.libre-soc.org/show_bug.cgi?id=176>
 * <https://bugs.libre-soc.org/show_bug.cgi?id=549>
 
-These are not the same as bitwise operations equivalent to:
+These are **not** the same as bitwise logical operations equivalent to:
 
      for i in range(64):
-         result[i] = a[i] xor b[i]
+         result[i] = a[i] xor b[i] # 2 operands
 
 they are instead SIMD versions of:
 
      result = 0 # initial value (single bit)
      for i in range(64):
-         result = result xor a[i]
+         result = result xor a[i] # one operand
 
 # Requirements
 
