@@ -642,5 +642,19 @@ similar to x86 "rex" prefix.
 
 For actual assembler:
 
-    sv.asmcode.mode.vec reg.v/8, src.s/16, pred={maskreg}, spred={maskreg}
+    sv.asmcode/mode.vec{N}.ew=8,sw=16,m={pred},sm={pred} reg.v, src.s
 
+For modes:
+
+* pred-result:
+  - pm=lt/gt/le/ge/eq/ne/so/ns OR
+  - pm=RC1 OR pm=~RC1
+* fail-first
+  - ff=lt/gt/le/ge/eq/ne/so/ns OR
+  - ff=RC1 OR pm=~RC1
+* saturation:
+  - sats
+  - satu
+* map-reduce:
+  - mr OR crm: "normal" map-reduce mode or CR-mode
+  - svm: when SUBVL=2/3/4 (vec2/3/4) sub-vector mapreduce is enabled
