@@ -644,6 +644,21 @@ For actual assembler:
 
     sv.asmcode/mode.vec{N}.ew=8,sw=16,m={pred},sm={pred} reg.v, src.s
 
+Qualifiers:
+
+* vec{N}: vec2 OR vec3 OR vec4 - sets SUBVL=2/3/4
+* ew={N}: ew=8/16/32 - sets elwidth override
+* sw={N}: sw=8/16/32 - sets source elwidth override
+* ff={xx}: see fail-first mode
+* pr={xx}: see predicate-result mode
+* sat{x}: satu / sats - see saturation mode
+* mr: see map-reduce mode
+* mr.svm see map-reduce with sub-vector mode
+* crm: see map-reduce CR mode
+* crm.svm see map-reduce CR with sub-vector mode
+* sz: predication with source-zeroing
+* dz: predication with dest-zeroing
+
 For modes:
 
 * pred-result:
@@ -658,3 +673,4 @@ For modes:
 * map-reduce:
   - mr OR crm: "normal" map-reduce mode or CR-mode
   - svm: when SUBVL=2/3/4 (vec2/3/4) sub-vector mapreduce is enabled
+
