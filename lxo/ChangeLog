@@ -1,3 +1,75 @@
+2021-01-24
+
+	* GCC: Introduced vector modes, registers, classes, constraints,
+	renumbered and remapped registers, went over literals referring to
+	register numbers, and started implementation of move/load/store
+	and add for the V*DI integral types.  Still have to test that the
+	compiler still works after the renumbering.  The new insns are not
+	generated yet, I haven't made the new registers usable for
+	anything yet.  (12:13)
+
+2021-01-22
+
+	* 578: Specifying and debating the task with luke and, later,
+	jacob.  Difficulties in conveying the requirements and overcoming
+	the complexities involved in figuring out how to parse each asm
+	operand in Python, underspecification of the input language,
+	disagreement as to the complexity and the amount of work required
+	to duplicate existing binutils functionality in python, and then
+	duplicate this work one more time into binutils later, led Luke to
+	take it upon himself.
+	* 579: Talked to Jacob a bit about potential implementation
+	strategies.  The need to build an immediate constant to use as the
+	operand to .long/svp64 makes for plenty of complexity, even in
+	C++.  I'm again unhappy with a plan that involves so much
+	intentional waste of effort.  I'm also very surprised with the
+	estimated amount of work involved in this task, compared with
+	578, that is a much bigger one with all the rewriting of an asm
+	parser, and likely more rewriting as the extended asm syntax
+	evolves.  And thus pretty much a full workday ends up wasted,
+	most of it complaining about planning to waste work.  (8:29)
+
+2021-01-19
+
+	* Virtual Coffe (1:39)
+
+2021-01-13
+
+	* Microwatts meeting (1:08)
+
+2021-01-07
+
+	* 572: New, split out of 570, on what .[sv], elwidth, subvl
+	affect in load/store ops: the address [vector] or the in-memory
+	[vector]?
+
+2021-01-06
+
+	* 570: New.  It's not specified whether selection of elwidth
+	sub-dword bytes get byte-reversed into LE before or after the
+	selection.  The specs say we convert loaded words to LE as quickly
+	as possible, so that all internal operations are LE, but this
+	would lead to reversal of sub-register vector elements when
+	loading, even when using svp64 loads with the correct elwidth_src.
+	* 569: New.  Also concerned about how to get bit arrays properly
+	loaded into predicate registers so that the *bits* are reversed to
+	match LE requirements.
+	* 568: New.  After gotting clarification from Jacob about setvl's
+	behavior: VL gets set to MIN(VL, MAXVL), you can count on its not
+	being a smaller value.  This is documented only in pseudocode, it
+	could be made more self-evident.  (3:13)
+
+2021-01-05
+
+	* 567: Cesar filed it for me; I clarified it a bit further.
+
+2021-01-04
+
+	* 560: Tried to show I understand the effects of loads and
+	byte-swapping loads in both endiannesses, and restated my
+	suggestion of iteration order matching the natural memory layout
+	of arrays/vectors.  (1:46)
+
 2021-01-03
 
 	* 560: Pointed out the circular reasoning in assuming LE in
