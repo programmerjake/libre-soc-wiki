@@ -115,22 +115,22 @@ allows attackers to probe large numbers of pages from userspace, where
 strided fail-first (by creating contiguous sequential LDs) does not.
 
 In addition, reduce mode makes no sense, and for LD/ST with immediates
- Vector source RA makes no sense either. Realistically we need
+ Vector source RA makes no sense either (or, is a quirk). Realistically we need
 an alternative table meaning for [[sv/svp64]] mode.  The following modes make sense:
 
 * saturation
 * predicate-result (mostly for cache-inhibited LD/ST)
 * normal
-* fail-first, where vector source on RA or RB is banned
+* fail-first, where a vector source on RA or RB is banned
 
-The table for [[sv/svp64]] for immed(RA) is:
+The table for [[sv/svp64]] for `immed(RA)` is:
 
 | 0-1 |  2  |  3   4  |  description              |
 | --- | --- |---------|-------------------------- |
 | 00  | str |  sz  dz | normal mode               |
 | 01  | inv | CR-bit  | Rc=1: ffirst CR sel       |
 | 01  | inv | els RC1 |  Rc=0: ffirst z/nonz |
-| 10  |   N | sz  str |  sat mode: N=0/1 u/s |
+| 10  |   N | sz  els |  sat mode: N=0/1 u/s |
 | 11  | inv | CR-bit  |  Rc=1: pred-result CR sel |
 | 11  | inv | els RC1 |  Rc=0: pred-result z/nonz |
 
@@ -144,7 +144,7 @@ whether stride is unit or element:
     else:
         svctx.ldstmode = elementstride
 
-The modes for RA+RB indexed version are slightly different:
+The modes for `RA+RB` indexed version are slightly different:
 
 | 0-1 |  2  |  3   4  |  description              |
 | --- | --- |---------|-------------------------- |
