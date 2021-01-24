@@ -52,3 +52,22 @@ People coordinating different tasks. This doesn't mean exclusive work on these a
 * Tobias:
 * Alexandre: binutils-svp64-assembler
 
+# Adding SV
+
+order: listed in [[sv/overview]]
+
+## sv.setvl
+
+a [[sv/setvl]] instruction is needed, which also implements [[sv/sprs]] i.e. primarily the `SVSTATE` SPR.
+
+* ISACaller: TODO
+* power-gem5: TODO
+* TestIssuer: TODO
+
+## VL for-loop
+
+main SV for-loop, as a FSM, updating `SVSTATE.srcstep`, using it as the index in the for-loop from 0 to VL-1
+
+* ISACaller: TODO
+* power-gem5: TODO
+* TestIssuer: TODO
