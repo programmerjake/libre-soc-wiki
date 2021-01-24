@@ -302,7 +302,14 @@ permutations of vector selection, to identify above asm-syntax:
 
 TODO: indexed mode
 
-     RA,RB    RT.v  RA/RB.v ffirst banned
-     RA,RB    RT.s  RA/RB.v ffirst banned
-     RA,RB    RT.v  RA/RB.s VSPLAT possible
-     RA,RB    RT.s  RA/RB.s not vectorised
+     RA,RB    RT.v  RA.v  RB.v
+        sv.ldx r#.v, r#2, r#3.v -> whole vector at r#2+r#3
+     RA,RB    RT.v  RA.s  RB.v
+        sv.ldx r#.v, r#2.v, r#3.v -> whole vector at r#2+r#3
+     RA,RB    RT.v  RA.v  RB.s
+        sv.ldx r#.v, r#2.v, r#3 -> vector of addresses
+     RA,RB    RT.v  RA.s  RB.s
+     RA,RB    RT.s  RA.v  RB.v
+     RA,RB    RT.s  RA.s  RB.v
+     RA,RB    RT.s  RA.v  RB.s
+     RA,RB    RT.s  RA.s  RB.s not vectorised
