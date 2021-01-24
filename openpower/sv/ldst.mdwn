@@ -13,7 +13,7 @@ Links:
 Vectorisation of Load and Store requires creation, from scalar operations,
 a number of different modes:
 
-* fixed stride (contiguous sequence with no gaps)
+* fixed stride (contiguous sequence with no gaps) aka "unit" stride
 * element strided (sequential but regularly offset, with gaps)
 * vector indexed (vector of base addresses and vector of offsets)
 * fail-first on the same (where it makes sense to do so)
@@ -284,7 +284,7 @@ LD/ST, will give that same capability, with far more flexibility.
 this section covers assembly notation for the immediate and indexed LD/ST.
 the summary is that in immediate mode for LD it is not clear that if the 
 destination register is Vectorised `RT.v` but the source `imm(RA)` is scalar
-the memory being read is *still a vector load*.
+the memory being read is *still a vector load*, known as "unit or element strides".
 
 This anomaly is made clear with the following notation:
 
