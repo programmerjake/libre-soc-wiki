@@ -141,8 +141,25 @@ whether stride is unit or element:
         svctx.ldstmode = indexed
     elif els == 0:
         svctx.ldstmode = unitstride
-    else:
+    elif immediate != 0:
         svctx.ldstmode = elementstride
+
+An immediate of zero is a safety-valve to allow `LD-VSPLAT`:
+in effect the multiplication of the immediate-offset by zero results
+in reading from the exact same memory location.
+
+For `LD-VSPLAT`, on non-cache-inhibited Loads, the read can occur
+just the once and be copied, rather than hitting the Data Cache
+multiple times with the same memory read at the same location.
+
+For ST from a vector source onto a scalar destination: with the Vector
+loop effectively creating multiple memory writes to the same location,
+we can deduce that the last of these will be the "successful" one. Thus,
+implementations are free and clear to optimise out the overwriting STs,
+leaving just the last one as the "winner".  Bear in mind that predicate
+masks will skip some elements (in source non-zeroing mode).
+
+Note that there are no immediate versions of cache-inhibited LD/ST.
 
 The modes for `RA+RB` indexed version are slightly different:
 
@@ -160,7 +177,7 @@ A summary of the effect of Vectorisation of src or dest:
  
      imm(RA)  RT.v   RA.v   no stride allowed
      imm(RA)  RT.s   RA.v   no stride allowed
-     imm(RA)  RT.v   RA.s   stride-select needed
+     imm(RA)  RT.v   RA.s   stride-select allowed
      imm(RA)  RT.s   RA.s   not vectorised
      RA,RB    RT.v  RA/RB.v ffirst banned
      RA,RB    RT.s  RA/RB.v ffirst banned
@@ -168,7 +185,8 @@ A summary of the effect of Vectorisation of src or dest:
      RA,RB    RT.s  RA/RB.s not vectorised
 
 Note that cache-inhibited LD/ST (`ldcix`) when VSPLAT is activated will perform **multiple** LD/ST operations, sequentially.  `ldcix` even with scalar src will read the same memory location *multiple times*, storing the result in successive Vector destination registers.  This because the cache-inhibit instructions are used to read and write memory-mapped peripherals.
-If a genuine VSPLAT is required then a scalar cache-inhibited LD should be performed, followed by a VSPLAT-augmented mv.
+If a genuine cache-inhibited LD-VSPLAT is required then a *scalar*
+cache-inhibited LD should be performed, followed by a VSPLAT-augmented mv.
 
 # LOAD/STORE Elwidths <a name="ldst"></a>
 
