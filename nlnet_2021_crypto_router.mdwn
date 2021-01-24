@@ -34,6 +34,14 @@ Ultimately we want a demonstration ASIC of a tamper-proof auditable hardware imp
 
 # Have you been involved with projects or organisations relevant to this project before? And if so, can you tell us a bit about your contributions?
 
+NLnet is backing the Libre-SOC project with a number of PET Grants (ending this year).  So far we have, thanks to NLnet:
+* Implemented the integer OpenPOWER ISA in a libre-compatible Lattice FPGA (ECP5)
+* Provided Formal Correctness proofs for all OpenPOWER pipelines implemented so far
+* Implemented a parameteriseable IEEE754 HDL library including SQRT, RSQRT and CORDIC pipelines and run several hundred thousand unit tests.
+* Implemented a "data primitives" library called nmutil which provides the basis of reconfigurable pipelines suitable for Reservation Stations in OoO microarchitectures
+* Started a dynamically-reconfigureable SIMD arithmetic HDL class that transparently computes parallel results but has an API as if it were a singke Signal, to nmigen
+
+These are all spin-off resulting from the overall NLnet funding to complete the creation of a hybrid 3D GPU and VPU.  
 
 # Requested Amount    
 
@@ -59,9 +67,18 @@ EUR $50,000.
 
 # Does the project have other funding sources, both past and present?
 
+We had a corporate sponsor kindly donate to the project through NLnet for about 10 months.  Other than that our developers have been 100% reliant on NLnet donations for some time.
 
 # Compare your own project with existing or historical efforts.
 
+There exist many academic implementations of cryptographic primitives, as well as Open Source RTL blocks.  There also exist many heavily-optimised algorithms targetted at proprietary processors.
+
+* Hardcoded HDL (typically verilog or VHDL) for specific algorithms defeats the purpose of the intended exercise (crpyto *primitives*)
+* Crypto-primitives are not entirely useful on their own unless made accessible through an ISA
+* Proprietary ISAs typically provide certain aspects (GF8MULB - a byte-wise GF8 multiply that is only suitable for Rijndael) but do not provide general-purpose operations.  OpenPOWER provides hardcoded primitives for Rijndael MixColumns and SHA256 but not much else.
+* Proprietary ISAs also provide SIMD bitmanipulation, suitable for cryptographic algorithms, but the optimised algorithms have to be written just above assembler level and are extremely hard to understand.
+
+The approach taken for this proposal is to go back to the underlying mathematical principles behind the crypto-primitives and target Cray-style Vector (not SIMD) ISA, with Matrix capability, directly at the mathematical operations.  This has not been done before.
 
 ## What are significant technical challenges you expect to solve during the project, if any?
 
