@@ -129,17 +129,17 @@ The table for [[sv/svp64]] for immed(RA) is:
 | --- | --- |---------|-------------------------- |
 | 00  | str |  sz  dz | normal mode               |
 | 01  | inv | CR-bit  | Rc=1: ffirst CR sel       |
-| 01  | inv | str RC1 |  Rc=0: ffirst z/nonz |
+| 01  | inv | els RC1 |  Rc=0: ffirst z/nonz |
 | 10  |   N | sz  str |  sat mode: N=0/1 u/s |
 | 11  | inv | CR-bit  |  Rc=1: pred-result CR sel |
-| 11  | inv | str RC1 |  Rc=0: pred-result z/nonz |
+| 11  | inv | els RC1 |  Rc=0: pred-result z/nonz |
 
-The `str` bit is only relevant when `RA.isvec` is clear: this indicates
+The `els` bit is only relevant when `RA.isvec` is clear: this indicates
 whether stride is unit or element:
 
     if RA.isvec:
         svctx.ldstmode = indexed
-    elif str == 0:
+    elif els == 0:
         svctx.ldstmode = unitstride
     else:
         svctx.ldstmode = elementstride
@@ -288,3 +288,21 @@ LD/ST, will give that same capability, with far more flexibility.
     <lxo> point being, you take an operand with the "m" constraint (or other memory-operand constraints), append .v to it and you're done addressing the in-memory vector
     <lxo> as in asm ("sv.ld1 %0.v, %1.v" : "=r"(vec_in_reg) : "m"(vec_in_mem));
     <lxo> (and ld%U1 got mangled into underline; %U expands to x if the address is a sum of registers
+
+permutations of vector selection, to identify above asm-syntax:
+
+     imm(RA)  RT.v   RA.v   no stride allowed
+         sv.ld r#.v, ofst(r#2.v) -> r#2 is a vector of addresses
+     imm(RA)  RT.s   RA.v   no stride allowed
+         sv.ld r#, ofst(r#2.v) -> r#2 is a vector of addresses
+     imm(RA)  RT.v   RA.s   stride-select needed
+         sv.ld r#.v, ofst(r#2).v -> the whole vector is at ofst+r#2
+     imm(RA)  RT.s   RA.s   not vectorised
+         sv.ld r#, ofst(r#2)
+
+TODO: indexed mode
+
+     RA,RB    RT.v  RA/RB.v ffirst banned
+     RA,RB    RT.s  RA/RB.v ffirst banned
+     RA,RB    RT.v  RA/RB.s VSPLAT possible
+     RA,RB    RT.s  RA/RB.s not vectorised
