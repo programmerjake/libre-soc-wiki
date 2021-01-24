@@ -297,10 +297,10 @@ permutations of vector selection, to identify above asm-syntax:
          sv.ld r#, ofst(r#2.v) -> r#2 is a vector of addresses
            (dest r# is scalar) -> VSELECT mode
      imm(RA)  RT.v   RA.s   fixed stride: unit or element
-         sv.ld r#.v, ofst(r#2).v -> the whole vector is at ofst+r#2
+         sv.ld r#.v, ofst(r#2).v -> whole vector is at ofst+r#2
            mem      0    1    2
            destreg  r#   r#+1 r#+2
-         sv.ld/els r#.v, ofst(r#2).v -> the vector is at ofst*elidx+r#2
+         sv.ld/els r#.v, ofst(r#2).v -> vector at ofst*elidx+r#2
            mem      0 ...    offs ...   offs*2
            destreg  r#       r#+1       r#+2
      imm(RA)  RT.s   RA.s   not vectorised
