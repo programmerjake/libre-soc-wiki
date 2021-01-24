@@ -178,7 +178,7 @@ others like it provide an explicit operation width.  There are therefore
 *three* widths involved:
 
 * operation width (lb=8, lh=16, lw=32, ld=64)
-s src elelent width override
+* src elelent width override
 * destination element width override
 
 Some care is therefore needed to express and make clear the transformations, 
@@ -278,3 +278,13 @@ min/max Vectorised instructions as post-processing stages.
 Thus we do not need to provide specialist LD/ST "Structure Packed" opcodes
 because the generic abstracted concept of "Remapping", when applied to
 LD/ST, will give that same capability, with far more flexibility.
+
+# notes from lxo
+
+    <lxo> sv.ld r#.v, ofst(r#).v -> the whole vector is at ofst+r#
+    <lxo> sv.ld r#.v, ofst(r#.v) -> r# is a vector of addresses
+    <lxo> similarly sv.ldx r#.v, r#, r#.v -> whole vector at r#+r#
+    <lxo> whereas sv.ldx r#.v, r#.v, r# -> vector of addresses
+    <lxo> point being, you take an operand with the "m" constraint (or other memory-operand constraints), append .v to it and you're done addressing the in-memory vector
+    <lxo> as in asm ("sv.ld1 %0.v, %1.v" : "=r"(vec_in_reg) : "m"(vec_in_mem));
+    <lxo> (and ld%U1 got mangled into underline; %U expands to x if the address is a sum of registers
