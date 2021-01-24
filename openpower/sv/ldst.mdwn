@@ -281,6 +281,21 @@ LD/ST, will give that same capability, with far more flexibility.
 
 # notes from lxo
 
+this section covers assembly notation for the immediate and indexed LD/ST.
+the summary is that in immediate mode for LD it is not clear that if the 
+destination register is Vectorised `RT.v` but the source `imm(RA)` is scalar
+the memory being read is *still a vector load*.
+
+This anomaly is made clear with the following notation:
+
+    sv.ld RT.v, imm(RA).v
+
+The following notation, although technically correct due to being implicitly identical to the above, is prohibited and is a syntax error:
+ 
+    sv.ld RT.v, imm(RA)
+
+Notes taken from IRC conversation
+
     <lxo> sv.ld r#.v, ofst(r#).v -> the whole vector is at ofst+r#
     <lxo> sv.ld r#.v, ofst(r#.v) -> r# is a vector of addresses
     <lxo> similarly sv.ldx r#.v, r#, r#.v -> whole vector at r#+r#
