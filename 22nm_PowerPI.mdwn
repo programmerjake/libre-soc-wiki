@@ -1,41 +1,93 @@
-# Specs for 2022 SOC
+# Specs for 22/28nm SOC
 
-## Applications
+**Overall goal: an SoC that is capable of meeting multiple markets:**
 
- - We are providing open source drivers for the GPU,
-hopefully completed by Fall 2022.
- - Given that POWER CPUs do not have GPUs, RaptorCS
-would like the LibreSOC to be able function as a
-discrete GPU in PCIE slave mode for POWER9 CPUs.
- - Lastly, RaptorCS would like to manufacture single
-board computers.
+* Basic "Pi" style SBC role (aka POWER-Pi)
+* Libre-style smartphone, tablet, netbook and chromebook products
+  - Pine64, Purism, FairPhone, many others
+* Baseboard Management Controller (BMC) replacement for ASpeed products
+  - including PCIe Video Card capability after BMC Boot
+* Mid-end low-cost Graphics Card with reasonable 3D and VPU capabilities
+  - This as a sub-goal of the BMC functionality (stand-alone)
 
-## Devices
- - 4 Core POWER CPU
- - SimpleV Capability and GPU Instructions
+By meeting the needs of multiple markets in a single SoC the product has
+broader appeal yet amortises the NREs across all of them.  This is
+industry-standard practice: ST Micro and ATMEL use the exact same die in
+up to 12-14 different products.
+
+**Timeframe from when funding is received:**
+
+* 6-8 months for PHY negotiation and supply by IP Vendors (DDR4 is always
+  custom-tailored by the supplier)
+* 6-8 months development (in parallel with PHY negotiation)
+* 3-4 months FPGA proof-of-concept (partial overlap with above)
+* 4-6 months layout development once design is frozen (partial overlap with
+  above)
+
+Total: 12-18 months development time.  **This is industry-standard**
+
+**NREs:**
+
+These are ballpark estimates:
+
+* USD 250,000 for layout software licensing (Cadence / Synopsis / Mentor)
+* USD 400,000 for engineer to perform layout to GDS-II
+* USD 1,000,000 for (LP)DDR3/4 which includes customisation by IP vendor
+* USD 250,000 for Libre-licensed DDR firmware (normally closed binary)
+* USD 250,000 for USB3/C
+* USD 250,000 for HDMI PHY (includes HDCP closed firmware: DVI may be better)
+* USD 50,000 for PCIe PHY
+* USD 50,000 for RGMII Ethernet PHY
+* USD 50,000 for Libre-licensed PCIe firmware (normally closed binary)
+* USD 2,000,000 for Engineers
+* USD 2,000,000 for 22nm Production Masks (1,000,000 for 28nm)
+* USD 200,000 per 22nm MPW Shuttle Service (test ASICs.  28nm is 100,000)
+* USD 200,000 estimated for other PHYs (UART, SD/MMC, I2C, SPI)
+
+Total is around USD 7 million.
+
+Note that this is a bare minimum and may require re-spins of the production
+masks.  A safety margin is recommended to cover at least 2 additional
+re-spins.  Business Operating costs bring the total realistically
+to around USD 12 million.
+
+Production cost is expected to be around the $3.50 to $4 mark meaning
+that a sale price of around $12-$13 will require **1 million units**
+sold to recover the NREs.
+
+**Even if the SoC used an off-the-shelf OpenPOWER core these development
+NREs are still required**
+
+# Functionality
+
+ - 4 Core dual-issue LibreSOC OpenPOWER CPU
+ - SimpleV Capability with VPU and GPU Instructions *no need for separate GPU*
  - IOMMU
- - Coherent Accelerator Processor Proxy (CAPP) functional unit
- - PCIe host Controller
- - PCIe Slave controller(RaptorCS wants to use LibreSOC as a GPU on their POWER mobos)
- - BMC - enables LibreSOC to become a discrete GPU with video output and ethernet.
+ - PCIe Host Controller
+ - PCIe Slave controller (RaptorCS wants to use LibreSOC as a Graphics Card
+    on their TALOS-II motherboards)
+ - BMC capability (OpenBMC / LibreBMC) - enables LibreSOC to replace the
+   closed source ASpeed BMC product range, booting up
  - RGB/TTL framebuffer VGA/LCD PHY from Richard Herveille, RoaLogic.
+ - Pinmux for mapping multiple I/O functions to pins (standard fare
+   for SoCs, to reduce pincount)
 
-## Interfaces
+# Interfaces
 
-### Advanced
+## Advanced
 
  - SERDES - 10rx, 14tx
    - 4tx, 4rx for [OMI(DDR4](https://openpowerfoundation.org/wp-content/uploads/2018/10/Jeff-Steuchli.OpenCAPI-OPS-OMI.pdf) on top of SERDES with OpenCAPI protocol) @5GHz
-   - 2tx, 2rx for ethernet
    - 4tx, 4rx for PCIe and other CAPI devices
-   - 3tx for HDMI (note: requires HDMI Trademark Licensing and Compliance Testing)
+   - 3tx for HDMI (note: requires HDMI Trademark Licensing and Compliance Testing.  DVI is an alternative)
  - [OpenFSI](https://openpowerfoundation.org/?resource_lib=field-replaceable-unit-fru-service-interface-fsi-openfsi-specification) instead of JTAG
    - [Raptor HDL](https://gitlab.raptorengineering.com/raptor-engineering-public/lpc-spi-bridge-fpga)
    - [Raptor Libsigrok](https://gitlab.raptorengineering.com/raptor-engineering-public/dsview/-/tree/master/libsigrokdecode4DSL/decoders/fsi)
- - USB 2.0 - [Luna USB](https://github.com/greatscottgadgets/luna)
+ - USB-OTG / USB2 - [Luna USB](https://github.com/greatscottgadgets/luna)
 with [USB3300 PHY](https://www.microchip.com/wwwproducts/en/USB3300#datasheet-toggle) (Tested max at 333MB/s with Luna on ECP5)
+ - [[shakti/m_class/USB3]]
 
-### Basic
+## Basic
 
 These should be easily doable with LiteX.
 
@@ -48,8 +100,8 @@ These should be easily doable with LiteX.
 * [[shakti/m_class/EINT]]
 * [[shakti/m_class/RGBTTL]] in conjunction with TI TFP410a or Chrontel converter
 
-## Protocols
- - IPMT over i2c to talk to the BMC
+# Protocols
+ - IMPI over i2c to talk to the BMC
    - [Intel Spec Sheet](https://www.intel.com/content/dam/www/public/us/en/documents/product-briefs/second-gen-interface-spec-v2.pdf)
    - [RaptorCS HDL](https://gitlab.raptorengineering.com/raptor-engineering-public/lpc-spi-bridge-fpga/blob/master/ipmi_bt_slave.v)
  - Reset Vector is set Flexver address over LPC
