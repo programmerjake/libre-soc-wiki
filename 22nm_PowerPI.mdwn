@@ -67,10 +67,14 @@ NREs are still required**
  - PCIe Slave controller (RaptorCS wants to use LibreSOC as a Graphics Card
     on their TALOS-II motherboards)
  - BMC capability (OpenBMC / LibreBMC) - enables LibreSOC to replace the
-   closed source ASpeed BMC product range, booting up
+   closed source ASpeed BMC product range, booting up large servers
+   securely
  - RGB/TTL framebuffer VGA/LCD PHY from Richard Herveille, RoaLogic.
  - Pinmux for mapping multiple I/O functions to pins (standard fare
    for SoCs, to reduce pincount)
+ - SD/MMC and eMMC
+ - Standard "Pi / Arduino" SoC-style interfaces including UART, I2C,
+   SPI, GPIO, PWM, EINT, AC97.
 
 # Interfaces
 
@@ -96,9 +100,14 @@ These should be easily doable with LiteX.
 * [[shakti/m_class/GPIO]]
 * [[shakti/m_class/SPI]]
 * [[shakti/m_class/QSPI]]
-* [[shakti/m_class/LPC]]
+* [[shakti/m_class/LPC]] - BMC Management
 * [[shakti/m_class/EINT]]
-* [[shakti/m_class/RGBTTL]] in conjunction with TI TFP410a or Chrontel converter
+* [[shakti/m_class/PWM]]
+* [[shakti/m_class/RGBTTL]] in conjunction with:
+  - TI TFP410a (DVI / HDMI)
+  - Chrontel converter (DVI, eDP, VGA)
+  - Solomon SSD2828 (MIP)
+  - TI SN75LVDS83b (LVDS)
 
 # Protocols
  - IMPI over i2c to talk to the BMC
