@@ -65,6 +65,14 @@ a [[sv/setvl]] instruction is needed, which also implements [[sv/sprs]] i.e. pri
 * power-gem5: TODO
 * TestIssuer: TODO
 
+## SVSRR0 for exceptions
+
+SV's SVSTATE context is effectively a Sub-PC.  On exceptions the PC is saved into SRR0: it should come as no surprise that SVSTATE must be treated exactly the same.  SVSRR0 therefore is added to the list to be saved/restored in **exactly** the same way and time as SRR0 and SRR1.  This is fundamental and absolutely critical to view SVSTATE as a full peer of PC (CIA, NIA).
+
+* ISACaller: TODO
+* power-gem5: TODO
+* TestIssuer: TODO
+
 ## VL for-loop
 
 main SV for-loop, as a FSM, updating `SVSTATE.srcstep`, using it as the index in the for-loop from 0 to VL-1
