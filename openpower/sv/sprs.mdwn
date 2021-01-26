@@ -92,12 +92,12 @@ Notes:
 
 # SVSRR0
 
-In scalar v3.0B traps, exceptions and interrupts, two SRRs are saved/resyored:
+In scalar v3.0B traps, exceptions and interrupts, two SRRs are saved/restored:
 
 * SRR0 to store the PC
 * SRR1 to store a copy of the MSR
 
-Given that SVSTATE is effectively a Sub-PC it is critically important to add saving/restoring of SVSTATE as a full peer equal in status to PC.  At any time PC is saved or restored, so is SVSTATE in **exactly** the same way for **exactly** the same reasons.
+Given that SVSTATE is effectively a Sub-PC it is critically important to add saving/restoring of SVSTATE as a full peer equal in status to PC, in every way.  At any time PC is saved or restored, so is SVSTATE in **exactly** the same way for **exactly** the same reasons.
 
 The SPR name given for the purposes of saving/restoring SVSTATE is SVSRR0.
 
