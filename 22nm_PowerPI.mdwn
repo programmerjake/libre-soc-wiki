@@ -120,20 +120,27 @@ NREs are still required**
 
 # Interfaces
 
+Much of the advanced section is "under consideration" because there are proprietary firmware issues involved as well as high power consumption and high costs involved.  OpenCAPI for example would, in 22nm, at 25 ghz, be an enourmous power draw (IBM used 14nm for the POWER9 25ghz SERDES)
+
+HDCP is present in HDMI, as well as being optional in eDP and by extension USB-C as well.  Licensing of any of these Controllers therefore introduces the risk of closed firmware which will be viewed unfavourably by the educational markets, libre/open supporters and advocates, as well as cause Customer Support issues and introduce security vulnerabilities that *cannot be fixed or evaluated*.
+
+Great care therefore needs to be taken in selecting the advanced interfaces.
+
 ## Advanced
 
  - SERDES - 10rx, 14tx
-   - 4tx, 4rx for [OMI(DDR4](https://openpowerfoundation.org/wp-content/uploads/2018/10/Jeff-Steuchli.OpenCAPI-OPS-OMI.pdf) on top of SERDES with OpenCAPI protocol) @5GHz
+   - 4tx, 4rx for [OMI(DDR4](https://openpowerfoundation.org/wp-content/uploads/2018/10/Jeff-Steuchli.OpenCAPI-OPS-OMI.pdf) on top of SERDES with OpenCAPI protocol) @25GHz
    - 4tx, 4rx for PCIe and other CAPI devices
    - 3tx for HDMI (note: requires HDMI Trademark Licensing and Compliance Testing.  DVI is an alternative)
- - [OpenFSI](https://openpowerfoundation.org/?resource_lib=field-replaceable-unit-fru-service-interface-fsi-openfsi-specification) instead of JTAG
-   - [Raptor HDL](https://gitlab.raptorengineering.com/raptor-engineering-public/lpc-spi-bridge-fpga)
-   - [Raptor Libsigrok](https://gitlab.raptorengineering.com/raptor-engineering-public/dsview/-/tree/master/libsigrokdecode4DSL/decoders/fsi)
  - USB-OTG / USB2 - [Luna USB](https://github.com/greatscottgadgets/luna)
 with [USB3300 PHY](https://www.microchip.com/wwwproducts/en/USB3300#datasheet-toggle) (Tested max at 333MB/s with Luna on ECP5)
  - [[shakti/m_class/USB3]]
 
 ## Basic
+
+ - [OpenFSI](https://openpowerfoundation.org/?resource_lib=field-replaceable-unit-fru-service-interface-fsi-openfsi-specification) instead of JTAG
+  - [Raptor HDL](https://gitlab.raptorengineering.com/raptor-engineering-public/lpc-spi-bridge-fpga)
+  - [Raptor Libsigrok](https://gitlab.raptorengineering.com/raptor-engineering-public/dsview/-/tree/master/libsigrokdecode4DSL/decoders/fsi)
 
 These should be easily doable with LiteX.
 
