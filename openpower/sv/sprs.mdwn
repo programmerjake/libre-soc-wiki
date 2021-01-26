@@ -8,6 +8,7 @@ There are five SPRs, available in any privilege level:
 * VL (which has different characteristics from standard SPRs)
 * SUBVL (effectively a kind of SIMD)
 * STATE (containing copies of MVL, VL and SUBVL as well as context information)
+* SVSRR0 which is used for exceptions and traps to store SVSTATE.
 
 For Privilege Levels (trap handling) there are the following SPRs,
 where x may be u, s or h for User, Supervisor or Hypervisor
@@ -20,13 +21,13 @@ The u/s SPRs are treated and handled exactly like their (x)epc
 equivalents.  On entry to or exit from a privilege level, the contents
 of its (x)eSTATE are swapped with STATE.
 
-## MAXVECTORLENGTH (MVL) <a name="mvl" />
+# MAXVECTORLENGTH (MVL) <a name="mvl" />
 
 MAXVECTORLENGTH is the same concept as MVL in RVV, except that it
 is variable length and may be dynamically set.  MVL is
 however limited to the regfile bitwidth, 64.
 
-## Vector Length (VL) <a name="vl" />
+# Vector Length (VL) <a name="vl" />
 
 VSETVL is slightly different from RVV.  Similar to RVV, VL is set to be within
 the range 0 <= VL <= MVL (where MVL in turn is limited to 1 <= MVL <= XLEN)
@@ -35,7 +36,7 @@ the range 0 <= VL <= MVL (where MVL in turn is limited to 1 <= MVL <= XLEN)
 
 where 1 <= MVL <= XLEN
 
-## SUBVL - Sub Vector Length
+# SUBVL - Sub Vector Length
 
 This is a "group by quantity" that effectively asks each iteration
 of the hardware loop to load SUBVL elements of width elwidth at a
@@ -46,7 +47,7 @@ The main effect of SUBVL is that predication bits are applied per
 **group**, rather than by individual element.  Legal values are 1 to 4.
 Illegal values raise an exception.
 
-## STATE
+# STATE
 
 This is a standard SPR that contains sufficient information for a
 full context save/restore.  It contains (and permits setting of):
@@ -86,4 +87,18 @@ Notes:
   greater than MAXVL will truncate VL.
 * Setting srcstep, dststep to 64 or greater, or VL or MVL to greater
   than 64 is reserved and will cause an illegal instruction trap.
+
+# SVSRR0
+
+In scalar v3.0B traps, exceptions and interrupts, two SRRs are saved/resyored:
+
+* SRR0 to store the PC
+* SRR1 to store a copy of the MSR
+
+Given that SVSTATE is effectively a Sub-PC it is critically important to add saving/restoring of SVSTATE as a full peer equal in status to PC.  At any time PC is saved or restored, so is SVSTATE in **exactly** the same way for **exactly** the same reasons.
+
+The SPR name given for the purposes of saving/restoring SVSTATE is SVSRR0.
+
+
+
 
