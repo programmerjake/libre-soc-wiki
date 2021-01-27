@@ -19,11 +19,12 @@ Links:
 
 # Code to convert
 
-There are three projects:
+There are four projects:
 
 * TestIssuer (the HDL)
 * ISACaller (the python-based simulator)
 * power-gem5 (a cycle accurate simulator)
+* Microwatt
 
 Each of these needs to have SV augmentation, and the best way to
 do it is if they are all done at the same time, implementing the same
@@ -52,10 +53,31 @@ People coordinating different tasks. This doesn't mean exclusive work on these a
 * Luke: ISACaller, python-assembler-generator-class
 * Tobias:
 * Alexandre: binutils-svp64-assembler
+* Paul: microwatt
 
 # Adding SV
 
 order: listed in [[sv/overview]]
+
+## svp64 decoder
+
+An autogenerator containing CSV files is available so that the task of creating deciders is not burdensome.  sv_analyse.py creates the CSV files, SVP64RM class picks them up.
+
+* ISACaller: TODO
+* power-gem5: TODO
+* TestIssuer: TODO
+* Microwatt: TODO
+* python-based assembler-translator: 40% done (lkcl)
+* c++ macros: underway (jacob)
+
+## SVSTATE SPR needed
+
+This is a peer of MSR but is stored in an SPR.  It should be considered part of the state of PC+MSR.
+
+* ISACaller: TODO
+* power-gem5: TODO
+* TestIssuer: TODO
+* Microwatt: TODO
 
 ## sv.setvl
 
@@ -64,6 +86,7 @@ a [[sv/setvl]] instruction is needed, which also implements [[sv/sprs]] i.e. pri
 * ISACaller: TODO
 * power-gem5: TODO
 * TestIssuer: TODO
+* Microwatt: TODO
 
 ## SVSRR0 for exceptions
 
@@ -72,6 +95,7 @@ SV's SVSTATE context is effectively a Sub-PC.  On exceptions the PC is saved int
 * ISACaller: TODO
 * power-gem5: TODO
 * TestIssuer: TODO
+* Microwatt: TODO
 
 ## VL for-loop
 
@@ -80,3 +104,4 @@ main SV for-loop, as a FSM, updating `SVSTATE.srcstep`, using it as the index in
 * ISACaller: TODO
 * power-gem5: TODO
 * TestIssuer: TODO
+* Microwatt: TODO
