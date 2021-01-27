@@ -140,9 +140,9 @@ bits 21..22 may be used to specify a mode, such as treating the whole integer ze
 
 a 4 operand variant which becomes more along the lines of an FPGA:
 
-| 0.5|6.10|11.15|16.20|21.25| 26..30  |31|
-| -- | -- | --- | --- | --- | ------- |--|
-| NN | RT | RA  | RB  | RC  | mode 1  |1 |
+| 0.5|6.10|11.15|16.20|21.25| 26...30  |31|
+| -- | -- | --- | --- | --- | -------- |--|
+| NN | RT | RA  | RB  | RC  | mode 001 |Rc|
 
     for i in range(64):
         idx = RT[i] << 2 | RA[i] << 1 | RB[i]
@@ -158,7 +158,7 @@ also, another possible variant involving swizzle and vec4:
 
 | 0.5|6.10|11.15| 16.23 |24.27 | 28.30 |31|
 | -- | -- | --- | ----- | ---- | ----- |--|
-| NN | RT | RA  | xyzw  | mask | mode 1 |1 |
+| NN | RT | RA  | xyzw  | mask | 01 1  |1 |
 
     for i in range(8):
         idx = RA.x[i] << 2 | RA.y[i] << 1 | RA.z[i]   
@@ -168,7 +168,7 @@ also, another possible variant involving swizzle and vec4:
 
 | 0.5|6.10|11.15| 16.23 |24.27 | 28.30 |31|
 | -- | -- | --- | ----- | ---- | ----- |--|
-| NN | RT | RA  | imm   | mask | mode 1 |1 |
+| NN | RT | RA  | imm   | mask | 101   |1 |
 
     for i in range(8):
         idx = RA.x[i] << 2 | RA.y[i] << 1 | RA.z[i]   
@@ -178,16 +178,16 @@ also, another possible variant involving swizzle and vec4:
 
 another mode selection would be CRs not Ints. 
 
-| 0.5|6.8 | 9.11|12.14|15.17|18.20| 21..25| 26.29|30|31|
-| -- | -- | --- | --- | --- |-----| ----- | ---- |--|--|
-| NN | BT | BA  | BB  | BC  |im5-7| im0-4 | mask |1 |0 |
+| 0.5|6.8 | 9.11|12.14|15|16.23|24.27 | 28.30|31|
+| -- | -- | --- | --- |- |-----|----- | -----|--|
+| NN | BA | BB  | BC  |0 |imm  | mask | 101  |0 |
 
     for i in range(4):
         if not mask[i] continue
         idx = crregs[BA][i] << 2 |
               crregs[BB][i] << 1 |
               crregs[BC][i]
-        crregs[BT][i] = (imm & (1<<idx)) != 0
+        crregs[BA][i] = (imm & (1<<idx)) != 0
 
 # bitmask set
 
