@@ -155,6 +155,22 @@ signed and unsigned min/max for integer.  this is sort-of partly synthesiseable 
 
 signed/unsigned min/max gives more flexibility.
 
+```
+uint_xlen_t min(uint_xlen_t rs1, uint_xlen_t rs2)
+{ return (int_xlen_t)rs1 < (int_xlen_t)rs2 ? rs1 : rs2;
+}
+uint_xlen_t max(uint_xlen_t rs1, uint_xlen_t rs2)
+{ return (int_xlen_t)rs1 > (int_xlen_t)rs2 ? rs1 : rs2;
+}
+uint_xlen_t minu(uint_xlen_t rs1, uint_xlen_t rs2)
+{ return rs1 < rs2 ? rs1 : rs2;
+}
+uint_xlen_t maxu(uint_xlen_t rs1, uint_xlen_t rs2)
+{ return rs1 > rs2 ? rs1 : rs2;
+}
+```
+
+
 # ternary bitops
 
 Similar to FPGA LUTs: for every bit perform a lookup into a table using an 8bit immediate, or in another register
