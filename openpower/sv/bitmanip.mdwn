@@ -4,15 +4,16 @@
 
 minor opcode allocation
 
-    |  28.30 |31| name   |
-    | ------ |--| ------ |
-    |   00   |Rc| ternaryi |
-    |  001   |Rc| ternary |
-    |  011   |Rc| gf*      |
-    |  101   |1 | ternaryv |
+    |  28.30 |31| name      |
+    | ------ |--| --------- |
+    |   00   |Rc| ternaryi  |
+    |  001   |Rc| ternary   |
+    |  011   |Rc| gf*       |
+    |  101   |1 | ternaryv  |
     |  101   |0 | ternarycr |
-    |  110   |1 | 2-op |
-    |  111   |Rc| reserved |
+    |  110   |1 | 1/2-op    |
+    |  111   |Rc| reserved  |
+
 1-op and variants
 
 | dest | src1 | subop | op       |
@@ -34,7 +35,6 @@ minor opcode allocation
 | RT   | RA   | RB   | shuf  | shuffle | 
 | RT   | RA   | RB   | unshuf| shuffle | 
 | RT   | RA   | RB   | width | xperm  | 
-| RT   | RA   | RB   | type  | clmul | 
 | RT   | RA   | RB   | type | minmax | 
 | RT   | RA   | RB   |  |  | 
 | RT   | RA   | RB   |  |  | 
