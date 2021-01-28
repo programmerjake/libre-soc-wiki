@@ -413,7 +413,9 @@ uint_xlen_t clmulr(uint_xlen_t RA, uint_xlen_t RB)
     return x;
 }
 ```
-# Galois Field Multiply
+# Galois Field
+
+## Multiply
 
 this requires 3 parameters and a "degree"
 
@@ -429,7 +431,7 @@ realistically with the degree also needing to be an immediate it should be broug
 
 where the SimpleV variant may override RS-as-src differently from RS-as-dest
 
-GF add
+## GF add
 
     RS = GFADD(RS, RA|0, gfdegree, modulo=RB)
 
@@ -487,7 +489,7 @@ if __name__ == "__main__":
     print("{:02x}".format(multGF2(0b10000000, 0b10000011)))
 ```
 
-gf invert
+## gf invert
 
 ```
 def gf_degree(a) :
