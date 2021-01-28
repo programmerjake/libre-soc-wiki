@@ -20,8 +20,6 @@ minor opcode allocation
 | dest | src1 | subop | op       |
 | ---- | ---- | ----- | -------- |
 | RT   | RA   | ..    | bmatflip | 
-| RT   | RA   | size  | crc32    | 
-| RT   | RA   | size  | crc32c   | 
 
 2-op and variants
 
@@ -551,36 +549,6 @@ def gf_invert(a, mod=0x1B) :
     j = gf_degree(a) - gf_degree(v)
 
   return g1
-```
-
-# crc
-
-* <https://stackoverflow.com/questions/21171733/calculating-constants-for-crc32-using-pclmulqdq>
-* <https://en.wikipedia.org/wiki/Cyclic_redundancy_check>
-
-```
-uint_xlen_t crc32(uint_xlen_t x, int nbits)
-{
-    for (int i = 0; i < nbits; i++)
-        x = (x >> 1) ^ (0xEDB88320 & ~((x&1)-1));
-    return x;
-}
-uint_xlen_t crc32c(uint_xlen_t x, int nbits)
-{
-    for (int i = 0; i < nbits; i++)
-        x = (x >> 1) ^ (0x82F63B78 & ~((x&1)-1));
-    return x;
-}
-uint_xlen_t crc32_b(uint_xlen_t RA) { return crc32(RA, 8); }
-uint_xlen_t crc32_h(uint_xlen_t RA) { return crc32(RA, 16); }
-uint_xlen_t crc32_w(uint_xlen_t RA) { return crc32(RA, 32); }
-uint_xlen_t crc32c_b(uint_xlen_t RA) { return crc32c(RA, 8); }
-uint_xlen_t crc32c_h(uint_xlen_t RA) { return crc32c(RA, 16); }
-uint_xlen_t crc32c_w(uint_xlen_t RA) { return crc32c(RA, 32); }
-#if XLEN > 32
-uint_xlen_t crc32_d (uint_xlen_t RA) { return crc32 (RA, 64); }
-uint_xlen_t crc32c_d(uint_xlen_t RA) { return crc32c(RA, 64); }
-#endif
 ```
 
 # bitmatrix
