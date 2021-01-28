@@ -431,13 +431,6 @@ realistically with the degree also needing to be an immediate it should be broug
 
 where the SimpleV variant may override RS-as-src differently from RS-as-dest
 
-## GF add
-
-    RS = GFADD(RS, RA|0, gfdegree, modulo=RB)
-
-| 0.5|6.10|11.15|16.20|21.25| 26..30  |31|
-| -- | -- | --- | --- | --- | ------- |--|
-| NN | RS | RA  | RB  | deg | 01  011 |Rc|
 
 
 ```
@@ -488,6 +481,13 @@ if __name__ == "__main__":
     # Evaluate the product (x^7)(x^7 + x + 1)
     print("{:02x}".format(multGF2(0b10000000, 0b10000011)))
 ```
+## GF add
+
+    RS = GFADD(RS, RA|0, gfdegree, modulo=RB)
+
+| 0.5|6.10|11.15|16.20|21.25| 26..30  |31|
+| -- | -- | --- | --- | --- | ------- |--|
+| NN | RS | RA  | RB  | deg | 01  011 |Rc|
 
 ## gf invert
 
