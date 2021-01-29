@@ -116,7 +116,7 @@ main SV for-loop, as a FSM, updating `SVSTATE.srcstep`, using it as the index in
 
 This **includes** any exceptions, hence why SVSTATE exists and why SVSRR0 must be used to store SVSTATE alongside when SRR0 and SRR1 store PC and MSR.
 
-Due to the need for exceptions to occur in the middle, the loop should *not* be implemented as an actual for-loop, whilst recognising that optimised implementations may do multi-issue element execution as long as Program Order is preserved.
+Due to the need for exceptions to occur in the middle, the loop should *not* be implemented as an actual for-loop, whilst recognising that optimised implementations may do multi-issue element execution as long as Program Order is preserved, just as it would be for the PC.
 
 * ISACaller: TODO
 * power-gem5: TODO
