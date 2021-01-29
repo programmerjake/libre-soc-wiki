@@ -41,12 +41,11 @@ Page Faults etc. aside this is *guaranteed* 100% without fail to perform 64 unit
 
 *(Allocation of opcode TBD pending OPF ISA WG approval)*
 
-| 0.5|6.10|11.15|16.20| 21..24.25   | 26...30 |31|  name   |
-| -- | -- | --- | --- | ----------- | ------- |--| ------- |
-| 19 | RT | RA  |     | XO[0:4]     | XO[5:9] |Rc| XL-Form |
-| 19 | RT | RA  | imm | i //  vs ms | NNNNN   |Rc| setvl   |
+| 0.5|6.10|11.15|16..23  | 24.25  | 26...30 |31|  name   |
+| -- | -- | --- | ------ | ------ | ------- |--| ------- |
+| 19 | RT | RA  | SVi // | vs ms  | XO[0:4] |Rc| setvl   |
 
-Note that imm spans 7 bits (16 to 22), and that bit 22 is reserved and must be zero.  Setting bit 22 causes an illegal exception.
+Note that imm (SVi) spans 7 bits (16 to 22), and that bit 22 and 23 is reserved and must be zero.  Setting bit 22 or 23 causes an illegal exception.
 
 Note that in immediate setting mode VL and MVL start from **one** i.e. that an immediate value of zero will result in VL/MVL being set to 1.  0b111111 results in VL/MVL being set to 64. This is because setting VL/MVL to 1 results in "scalar identity" behaviour, where setting VL/MVL to 0 would result in all Vector operations becoming `nop`.  If this is truly desired (nop behaviour) then setting VL and MVL to zero is to be done via the [[SV SPRs|sv/sprs]]
 
