@@ -251,7 +251,7 @@
    |0    |6   |11   |16   |26   |31
    | OPCD|  RT|   d1|   d0|   XO|d2
 
-# 1.6.28 SV-FORM
+# 1.6.28 SVL-FORM
    |0     |6    |11    |16   |22 |24 |25 |26    |31 |
    | OPCD |  RT |   RA | SVi |// |vs |ms |   XO |Rc |
 
@@ -566,7 +566,7 @@
         Formats: X
     ms (25)
         Field used in Simple-V to specify whether MVL is to be set
-        Formats: SV
+        Formats: SVL
     NB (16:20)
         Field used to specify the number of bytes to move
         in an immediate Move Assist instruction.
@@ -610,7 +610,7 @@
     RA (11:15)
         Field used to specify a GPR to be used as a
         source or as a target.
-        Formats: A, D, DQ, DQE, DS, M, MD, MDS, TX, VA, VX, X, XO, XS, SV
+        Formats: A, D, DQ, DQE, DS, M, MD, MDS, TX, VA, VX, X, XO, XS, SVL
     RB (16:20)
         Field used to specify a GPR to be used as a
         source.
@@ -632,7 +632,7 @@
         1    Set Condition Register Field 0 or Field 1 as
              described in Section 2.3.1, 'Condition Regis-
              ter' on page 30.
-        Formats: A, M, MD, MDS, X, XFL, XO, XS, Z22, Z23, SV
+        Formats: A, M, MD, MDS, X, XFL, XO, XS, Z22, Z23, SVL
     RIC (12:13)
         Field used to specify what types of entries to inval-
         idate for tlbie[l].
@@ -658,7 +658,7 @@
         Formats: DS, X
     RT (6:10)
         Field used to specify a GPR to be used as a target.
-        Formats: A, D, DQE, DS, DX, VA, VX, X, XFX, XO, XX2, SV
+        Formats: A, D, DQE, DS, DX, VA, VX, X, XFX, XO, XX2, SVL
     RTp (6:10)
         Field used to specify an even/odd pair of GPRs to
         be concatenated and used as a target.
@@ -714,7 +714,7 @@
          Formats: X
     SVi (16:21)
          Simple-V immediate field for setting VL or MVL
-         Formats: SV
+         Formats: SVL
     SX,S (28,6:10)
          Fields SX and S are concatenated to specify a
          VSR to be used as a source.
@@ -799,7 +799,7 @@
         Formats: DS, VA, VC, VX, X
     vs (24)
         Field used in Simple-V to specify whether VL is to be set
-        Formats: SV
+        Formats: SVL
     W (15)
         Field used by the mtfsfi and mtfsf instructions to
         specify the target word in the FPSCR.
@@ -851,7 +851,7 @@
         Formats: XX4
     XO (26:30)
         Extended opcode field.
-        Formats: A, DX, SV
+        Formats: A, DX, SVL
     XO (26:31)
         Extended opcode field.
         Formats: VA
