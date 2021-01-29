@@ -251,6 +251,10 @@
    |0    |6   |11   |16   |26   |31
    | OPCD|  RT|   d1|   d0|   XO|d2
 
+# 1.6.28 SV-FORM
+   |0     |6    |11    |16   |22 |24 |25 |26    |31 |
+   | OPCD |  RT |   RA | SVi |// |vs |ms |   XO |Rc |
+
 # 1.6.28 Instruction Fields
     A (6)
         Field used by the tbegin. instruction to specify an
@@ -560,6 +564,9 @@
         Field used in X-form instructions to specify a sub-
         set of storage accesses.
         Formats: X
+    ms (25)
+        Field used in Simple-V to specify whether MVL is to be set
+        Formats: SV
     NB (16:20)
         Field used to specify the number of bytes to move
         in an immediate Move Assist instruction.
@@ -705,6 +712,9 @@
          Field used by the Segment Register Manipulation
          instructions (see Book III).
          Formats: X
+    SVi (16:21)
+         Simple-V immediate field for setting VL or MVL
+         Formats: SV
     SX,S (28,6:10)
          Fields SX and S are concatenated to specify a
          VSR to be used as a source.
@@ -787,6 +797,9 @@
     VRT (6:10)
         Field used to specify a VR to be used as a target.
         Formats: DS, VA, VC, VX, X
+    vs (24)
+        Field used in Simple-V to specify whether VL is to be set
+        Formats: SV
     W (15)
         Field used by the mtfsfi and mtfsf instructions to
         specify the target word in the FPSCR.
@@ -838,7 +851,7 @@
         Formats: XX4
     XO (26:30)
         Extended opcode field.
-        Formats: A, DX
+        Formats: A, DX, SV
     XO (26:31)
         Extended opcode field.
         Formats: VA
