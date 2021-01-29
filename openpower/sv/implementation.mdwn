@@ -109,7 +109,7 @@ SV's SVSTATE context is effectively a Sub-PC.  On exceptions the PC is saved int
 
 main SV for-loop, as a FSM, updating `SVSTATE.srcstep`, using it as the index in the for-loop from 0 to VL-1.  Register numbers are incremented by one if marked as vector.
 
-*This loop goes in between decode and issue phases*.  It is as if there were multiple sequential instructions in the instruction stream *and the loop must be treated as such*.  Specifically: all register read and write hazards **MUST** be respected; the Program Order must be respected.
+*This loop goes in between decode and issue phases*.  It is as if there were multiple sequential instructions in the instruction stream *and the loop must be treated as such*.  Specifically: all register read and write hazards **MUST** be respected; the Program Order must be respected even though and especially because this is Sub-PC execution.
 
 This **includes** any exceptions, hence why SVSTATE exists and why SVSRR0 must be used to store SVSTATE alongside when SRR0 and SRR1 store PC and MSR.
 
