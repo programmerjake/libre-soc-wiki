@@ -1,3 +1,58 @@
+2021-01-31
+
+	* GCC: Started debugging regressions in the stage1 non-svp64
+	compiler.  Noticed that the renaming of mov to @altivec_mov
+	removed expanders for some modes used by altivec but not by svp64.
+	Reintroduced them, and added floating-point svp64 mov patterns.
+	Split out of the main patch a preparation patch that could be
+	submitted upstream right away, for it just prepares for register
+	renumbering.  Fixed conditional register usage that, when svp64
+	was not enabled, caused the LAST/MAX_* non-SVP64 registers to be
+	marked as fixed, which caused the frame pointer to not be
+	preserved across calls.  Fixed the *logue routines to account for
+	the register renumbering.  Fixed the svp64 add expander to use a
+	correct expansion of <VI_unit>, covering V2DI at power8.  With
+	that, we're down to a single C regression, when not enabling
+	svp64.  While the expected behavior is for the compiler to
+	optimize gcc.target/powerpc/dform-3.c's gpr function so that p->c
+	is (re)loaded to e.g. r10&r11 with a vsx_movv2df_64bit, because
+	the MEM cost for its reload is negative, whereas the
+	svp64-modified compiler keeps both such instructions, first
+	loading to a VSX reg, then splitting it into a pair of GPRs.  It
+	is a performance bug, but the generated code works.  Trying a
+	bootstrap!  Stage2 wouldn't build because of /* within comments in
+	rs6000-modes.def; adjusted the commented-out entries I'd put in to
+	avoid that.  The memory move costs were off because of the use of
+	literal regno 32 when computing the costs for FPR classes.
+	Regstrapped the prepping patch successfully, then went back to the
+	patch that introduces svp64 support, still disabled.  -msvp64 is
+	still slightly, but without enabling it, we may be down to no
+	regressions, testing should confirm.  (14:37)
+
+2021-01-30
+
+	* GCC: Fixed the boundaries of the loops that disable SVP64
+	registers when SVP64 is not enabled.  Fixed macros used for
+	parameter and return value assignment to reflect the new FP
+	numbers.  Require at least one register operand for svp64 vector
+	mov pattern.  Add emit of altivec insn when not using svp64.
+	Introduced a first svp64 reload change for preferred_reload, to
+	avoid trying to reload constants into altivec registers.  A lot
+	more work will be needed for svp64 reloads.  A non-svp64 native
+	compiler builds stage1, but the compiler is still pretty broken,
+	with thousands of regressions.  A svp one builds stage1 and fails
+	in libgcc, with a bunch of asm failures because of (unsupported)
+	sv.* opcodes, and one reload failure in decContext, that I started
+	investigating.  (8:22)
+
+2021-01-27
+
+	* µW (1:10)
+
+2021-01-26
+
+	* VCoffee (1:41)
+
 2021-01-24
 
 	* GCC: Introduced vector modes, registers, classes, constraints,
