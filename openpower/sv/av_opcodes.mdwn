@@ -4,7 +4,7 @@
 
 the fundamental principle of SV is a hardware for-loop. therefore the first (and in nearly 100% of cases only) place to put Vector operations is first and foremost in the *scalar* ISA.  However only by analysing those scalar opcodes *in* a SV Vectorisation context does it become clear why they are needed and how they may be designed.
 
-This page therefore has acompanying discussion at <https://bugs.libre-soc.org/show_bug.cgi?id=230> for evolution of suitable opcodes.
+This page therefore has accompanying discussion at <https://bugs.libre-soc.org/show_bug.cgi?id=230> for evolution of suitable opcodes.
 
 Links
 
@@ -22,7 +22,7 @@ In-advance, the summary of base scalar operations that need to be added is:
 | signed max   | result = (src1 > src2) ? src1 : src2  |
 | bitwise sel  | (a ? b : c) - use bitmanip ternary |
 
-All other capabilities are achieved with [[sv/svp64]] modes and swizzle.
+All other capabilities (saturate in particular) are achieved with [[sv/svp64]] modes and swizzle.
 
 # Audio
 
