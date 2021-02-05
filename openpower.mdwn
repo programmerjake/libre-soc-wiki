@@ -173,12 +173,3 @@ Store activation length in a CSR.
 
 Requirements are to have one instruction in each subpage which resets all the way back to PowerISA default. The other is a "back up stack by 1".
 
-# RISCV userspace
-
-Dual ISA, RV userspace only. Requires PowerISA to be able to context-switch RV registers and CSRs.
-
-the exception entry point:
-<https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/powerpc/kernel/exceptions-64s.S?h=v5.4-rc5#n409>
-
-the rest of the context switch code is in a different file:
-<https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/powerpc/kernel/entry_64.S?h=v5.4-rc5#n589>
