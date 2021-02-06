@@ -466,7 +466,7 @@ element width.  Our first simple loop thus becomes:
        src1 = get_polymorphed_reg(RA, srcwid, i)
        src2 = get_polymorphed_reg(RB, srcwid, i)
        result = src1 + src2 # actual add here
-       set_polymorphed_reg(rd, destwid, i, result)
+       set_polymorphed_reg(RT, destwid, i, result)
 
 With this loop, if elwidth=16 and VL=3 the first 48 bits of the target
 register will contain three 16 bit addition results, and the upper 16
