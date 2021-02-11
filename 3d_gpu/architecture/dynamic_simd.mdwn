@@ -22,7 +22,7 @@ Pages below describe the basic features of each and track the relevant bugreport
 
 # Integration with nmigen
 
-Dynamic partitioning of signals is not enough on its own.  Basic operations such as `x + y` are functional, producing 1x64 bit, or 2x32 or 4x16 or 8x8 or anywhere in between, but what about control and decisions? Here is the "normal" way in which SIMD decisions are performed:
+Dynamic partitioning of signals is not enough on its own.  Basic operations such as `x + y` are functional, producing results 1x64 bit, or 2x32 or 4x16 or 8x8 or anywhere in between, but what about control and decisions? Here is the "normal" way in which SIMD decisions are performed:
 
     if partitions == 1x64
          with m.If(x > y):
