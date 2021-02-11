@@ -19,3 +19,26 @@ Pages below describe the basic features of each and track the relevant bugreport
 * [[dynamic_simd/mul]]
 * [[dynamic_simd/shift]]
 * [[dynamic_simd/logicops]] some all xor
+
+# Integration with nmigen
+
+Dynamic partitioning of signals is not enough on its own.  Basic operations such as `x + y` are functional, producing 1x64 bit, or 2x32 or 4x16 or 8x8 or anywhere in between, but what about control and decisions? Here is the "normal" way in which SIMD decisions are performed:
+
+    if partitions == 1x64
+         with m.If(x > y):
+              do something
+    elif partitions == 2x32:
+         with m.If(x[0:31] > y[0:31]):
+              do something on 1st half
+         elif ...
+    elif ...
+    # many more lines of repeated laborious hand written
+    # SIMD nonsense all exactly the same except for the
+    # for loop and sizes.
+
+Clearly this is a total unmaintainable nightmare of worthless crud.  What we actually want is:
+
+    with m.If(x > y):
+         do something dynamic
+
+This means that nmigen needs to "understand" the partitioning, in m.If, m.Else and m.Switch, at the bare minimum.
