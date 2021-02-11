@@ -36,9 +36,13 @@ Dynamic partitioning of signals is not enough on its own.  Basic operations such
     # SIMD nonsense all exactly the same except for the
     # for loop and sizes.
 
-Clearly this is a total unmaintainable nightmare of worthless crud.  What we actually want is:
+Clearly this is a total unmaintainable nightmare of worthless crud which, if continued throughout a large project with 40,000 lines of code, would completely destroy all chances of that project being successful by turning 40,000 lines into 400,000 lines of unreadable spaghetti.
 
-    with m.If(x > y):
-         do something dynamic
+A much more intelligent approach is needed. What we actually want is:
+
+    with m.If(x > y): # do a partitioned compare here
+         do something dynamic here
+
+where behind the scenes the above laborious for-loops (conceptually) are created, hidden, behind the scenes, looking to all intents and purposes however that this is exactly like any other nmigen Signal.
 
 This means that nmigen needs to "understand" the partitioning, in m.If, m.Else and m.Switch, at the bare minimum.
