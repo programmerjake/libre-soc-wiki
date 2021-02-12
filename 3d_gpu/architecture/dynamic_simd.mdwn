@@ -51,4 +51,4 @@ where behind the scenes the above laborious for-loops (conceptually) are created
 
 This means that nmigen needs to "understand" the partitioning, in m.If, m.Else and m.Switch, at the bare minimum.
 
-Analysis of the internals of nmigen shows that m.If, m.Else and m.Switch are all redirected to `Value.cases'.  Within that function Mux and other "global" functions (similar to python operator functions).  The hypothesis is therefore proposed that if `Value.mux` is added in an identical way to how `operator.add` calls `__add__` this may turn out to be all that (or most of what) is needed.
+Analysis of the internals of nmigen shows that m.If, m.Else and m.Switch are all redirected to `Value.cases`.  Within that function Mux and other "global" functions (similar to python operator functions).  The hypothesis is therefore proposed that if `Value.mux` is added in an identical way to how `operator.add` calls `__add__` this may turn out to be all that (or most of what) is needed.
