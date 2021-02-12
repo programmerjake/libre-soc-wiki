@@ -13,7 +13,7 @@ minor opcode allocation
     |  101   |1 | ternaryv  |
     |  101   |0 | ternarycr |
     |  110   |Rc| 1/2-op    |
-    |  111   |Rc| reserved  |
+    |  111   |Rc| bitmaski  |
 
 1-op and variants
 
@@ -231,9 +231,11 @@ however bitmask-invert is not, and set/clr are not covered, although they can us
 
 bmext (RB) version is not the same as rldicl because bmext is a right shift by RC, where rldicl is a left rotate.  for the immediate version this does not matter.
 
-| 0.5|6.10|11.15|16.20|21.25| 26..30  |31|
-| -- | -- | --- | --- | --- | ------- |--|
-| NN | RT | RA  | RB  | RC  | mode 010 |Rc|
+| 0.5|6.10|11.15|16.20|21.25| 26..30  |31| name  |
+| -- | -- | --- | --- | --- | ------- |--| ----- |
+| NN | RT | RA  | RB  | RC  | mode 010 |Rc| bm*   |
+| NN | RT | RA  | RB  | RC  | 0 1  111 |Rc| bmrev |
+| NN |    |     |     |     | 1 1  111 |Rc| rsvd |
 
 ```
 uint_xlen_t bmset(RA, RB, sh)
@@ -272,6 +274,12 @@ msb = rb[5:0];
 rev[0:msb] = ra[msb:0];
 rt = ZE(rev[msb:0]);
 ```
+
+| 0.5|6.10|11.15|16.20|21.26| 27..30  |31| name   |
+| -- | -- | --- | --- | --- | ------- |--| ------ |
+| NN | RT | RA  | RB  | sh  | 0   111 |Rc| bmrevi |
+
+
 
 # grev
 
