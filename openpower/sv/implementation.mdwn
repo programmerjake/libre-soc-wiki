@@ -135,6 +135,14 @@ Due to the need for exceptions to occur in the middle, the loop should *not* be 
 * TestIssuer: part done <https://git.libre-soc.org/?p=soc.git;a=commitdiff;h=92ba64ea13794dea71816be746a056d52e245651>
 * Microwatt: TODO
 
+Remember the following register files need to have for-loops, plus
+unit tests:
+
+* GPR
+* SPRs (yes, really: mtspr and mfspr are SV Context-extensible)
+* Condition Registers
+* FPR (if present)
+
 ## Increasing register file sizes
 
 TODO.  INTs, FPs, CRs, these all increase to 128.  Welcome To Vector ISAs.
