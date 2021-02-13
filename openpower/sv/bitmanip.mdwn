@@ -6,6 +6,8 @@
 
 this extension amalgamates bitnanipulation primitives from many sources, including RISC-V bitmanip, Packed SIMD, AVX-512 and OpenPOWER VSX.  Vectorisation and SIMD are removed: these are straight scalar (element) ooerations.  Vectorisation Context is provided by [[openpower/sv]].
 
+ternaryv is experimental and is the only operation that may be considered a "Packed SIMD".  It is added as a variant of the already well-justified ternary operation (done in AVX512 as an immediate only) "because it looks fun". As it is based on the LUT4 concept it will allow accelerated emulation of FPGAs.  Other vendors of ISAs are buying FPGA companies to achieve a similar objective.
+
 # summary
 
 minor opcode allocation
