@@ -63,7 +63,7 @@ minor opcode allocation
 | NN | RS | RA  | RB  | deg   | 00  011  |Rc| gfmul |
 | NN | RS | RA  | RB  | deg   | 01  011  |Rc| gfadd |
 | NN | RT | RA  | RB  | deg   | 10  011  |Rc| gfinv |
-| NN | RS | RA  | RB  | deg   | 11  011  |Rc| gf rsvd |
+| NN | RS | RA  | RB  | deg   | 11  011  |Rc| gfmod |
 
 | 0.5|6.10|11.15| 16.23 |24.27 | 28.30 |31| name |
 | -- | -- | --- | ----- | ---- | ----- |--| ------ |
@@ -598,6 +598,10 @@ def gf_invert(a, mod=0x1B) :
 
   return g1
 ```
+
+## GF mod
+
+modulo arithmetic to ensure a polynomial is in range seems sensible to have.
 
 # bitmatrix
 
