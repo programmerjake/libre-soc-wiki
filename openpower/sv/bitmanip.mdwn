@@ -229,7 +229,8 @@ based on RV bitmanip singlebit set, instruction format similar to shift
 [[isa/fixedshift]].  bmext is actually covered already (shift-with-mask rldicl but only immediate version).
 however bitmask-invert is not, and set/clr are not covered, although they can use the same Shift ALU.
 
-bmext (RB) version is not the same as rldicl because bmext is a right shift by RC, where rldicl is a left rotate.  for the immediate version this does not matter.
+bmext (RB) version is not the same as rldicl because bmext is a right shift by RC, where rldicl is a left rotate.  for the immediate version this does not matter, so a bmexti is not required.
+bmrev however there is no direct equivalent and consequently a bmrevi is required.
 
 | 0.5|6.10|11.15|16.20|21.25| 26..30  |31| name  |
 | -- | -- | --- | --- | --- | ------- |--| ----- |
