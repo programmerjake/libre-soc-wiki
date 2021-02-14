@@ -60,10 +60,10 @@ minor opcode allocation
 | -- | -- | --- | --- | ----- | -------- |--| ------ |
 | NN | RT | RA  | RB  | RC    | mode 001 |Rc| ternary |
 | NN | RT | RA  | RB  | im0-4 | im5-7 00 |Rc| ternaryi |
-| NN | RS | RA  | RB  | deg   | 00  011  |Rc| gfmul |
+| NN | RS | RA  | RB  | RC    | 00  011  |Rc| gfmul |
 | NN | RS | RA  | RB  | deg   | 01  011  |Rc| gfadd |
 | NN | RT | RA  | RB  | deg   | 10  011  |Rc| gfinv |
-| NN | RS | RA  | RB  | deg   | 11  011  |Rc| gfmod |
+| NN | RS | RA  | RB  | deg   | 11  011  |Rc| gfmuli |
 
 | 0.5|6.10|11.15| 16.23 |24.27 | 28.30 |31| name |
 | -- | -- | --- | ----- | ---- | ----- |--| ------ |
@@ -82,6 +82,9 @@ ops
 | NN | RA | RB  | RC  | itype | 0  | 0100 110 |Rc| minmax |
 | NN | RA | RB  |     |       | 1  | 0100 110 |Rc| rsvd |
 | NN | RA | RB  | sh  | itype | SH | 1000 110 |Rc| bmopsi |
+| NN | RA | RB  |     |       |    | 1100 110 |Rc| rsvd |
+| NN | RA | RB  |     |       |    | 1100 110 |Rc| rsvd |
+| NN | RA | RB  |     |       |    | 1100 110 |Rc| rsvd |
 | NN | RA | RB  |     |       |    | 1100 110 |Rc| rsvd |
 | NN | RA | RB  |     |       | 0  | 0001 110 |Rc| rsvd |
 | NN | RA | RB  |     |       | 0  | 0101 110 |Rc| rsvd |
@@ -511,10 +514,12 @@ this requires 3 parameters and a "degree"
 realistically with the degree also needing to be an immediate it should be brought down to an overwrite version:
 
     RS = GFMUL(RS, RA, gfdegree, modulo=RB)
+    RS = GFMUL(RS, RA, gfdegree=RC, modulo=RB)
 
 | 0.5|6.10|11.15|16.20|21.25| 26..30  |31|
 | -- | -- | --- | --- | --- | ------- |--|
 | NN | RS | RA  | RB  | deg | 00  011 |Rc|
+| NN | RS | RA  | RB  | RC  | 11  011 |Rc|
 
 where the SimpleV variant may override RS-as-src differently from RS-as-dest
 
