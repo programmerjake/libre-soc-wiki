@@ -6,6 +6,16 @@ a nmigen Signal, in every way, as a full peer of a nmigen Signal, with
 no requirement on the part of the developer to even know that it is
 performing parallel dynamically-partitioned operations.
 
+nmigen 32-bit Signal:
+
+    a        : .... .... .... .... (32 bits)
+
+Dynamically-partitioned 32-bit Signal subdivided into 4 by 3 partition bits:
+
+    partition:     P    P    P     (3 bits)
+    a        : .... .... .... .... (32 bits)
+    exp-a    : ....P....P....P.... (32+3 bits, P=1 if no partition)
+
 Links:
 
 * <https://bugs.libre-soc.org/show_bug.cgi?id=458> m.If/Switch 
