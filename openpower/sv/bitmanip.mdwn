@@ -61,9 +61,10 @@ minor opcode allocation
 | NN | RT | RA  | RB  | RC    | mode 001 |Rc| ternary |
 | NN | RT | RA  | RB  | im0-4 | im5-7 00 |Rc| ternaryi |
 | NN | RS | RA  | RB  | RC    | 00  011  |Rc| gfmul |
-| NN | RS | RA  | RB  | deg   | 01  011  |Rc| gfadd |
+| NN | RS | RA  | RB  | RC    | 01  011  |Rc| gfadd |
 | NN | RT | RA  | RB  | deg   | 10  011  |Rc| gfinv |
 | NN | RS | RA  | RB  | deg   | 11  011  |Rc| gfmuli |
+| NN | RS | RA  | RB  | deg   | 11  111  |Rc| gfaddi |
 
 | 0.5|6.10|11.15| 16.23 |24.27 | 28.30 |31| name |
 | -- | -- | --- | ----- | ---- | ----- |--| ------ |
@@ -575,13 +576,13 @@ if __name__ == "__main__":
 ```
 ## GF add
 
-    RS = GFADD(RS, RA|0, gfdegree, modulo=RB)
-    RS = GFADDI(RS, RA|0, gfdegree=RC, modulo=RB)
+    RS = GFADDI(RS, RA|0, gfdegree, modulo=RB)
+    RS = GFADD(RS, RA|0, gfdegree=RC, modulo=RB)
 
 | 0.5|6.10|11.15|16.20|21.25| 26..30  |31| name  |
 | -- | -- | --- | --- | --- | ------- |--| ----- |
-| NN | RS | RA  | RB  | RC  | 0 1  011 |Rc| gfadd |
-| NN | RS | RA  | RB  | RC  | 1 1  111 |Rc| gfaddi |
+| NN | RS | RA  | RB  | deg | 0 1  011 |Rc| gfaddi |
+| NN | RS | RA  | RB  | RC  | 1 1  111 |Rc| gfadd |
 
 GFMOD is a pseudo-op where RA=0
 
