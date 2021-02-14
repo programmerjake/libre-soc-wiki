@@ -249,7 +249,7 @@ bmrev however there is no direct equivalent and consequently a bmrevi is require
 | -- | -- | --- | --- | --- | ------- |--| ----- |
 | NN | RT | RA  | RB  | RC  | mode 010 |Rc| bm*   |
 | NN | RT | RA  | RB  | RC  | 0 1  111 |Rc| bmrev |
-| NN |    |     |     |     | 1 1  111 |Rc| rsvd |
+
 
 ```
 uint_xlen_t bmset(RA, RB, sh)
@@ -576,10 +576,14 @@ if __name__ == "__main__":
 ## GF add
 
     RS = GFADD(RS, RA|0, gfdegree, modulo=RB)
+    RS = GFADDI(RS, RA|0, gfdegree=RC, modulo=RB)
 
-| 0.5|6.10|11.15|16.20|21.25| 26..30  |31|
-| -- | -- | --- | --- | --- | ------- |--|
-| NN | RS | RA  | RB  | deg | 01  011 |Rc|
+| 0.5|6.10|11.15|16.20|21.25| 26..30  |31| name  |
+| -- | -- | --- | --- | --- | ------- |--| ----- |
+| NN | RS | RA  | RB  | RC  | 0 1  011 |Rc| gfadd |
+| NN | RS | RA  | RB  | RC  | 1 1  111 |Rc| gfaddi |
+
+GFMOD is a pseudo-op where RA=0
 
 ## gf invert
 
@@ -614,10 +618,6 @@ def gf_invert(a, mod=0x1B) :
 
   return g1
 ```
-
-## GF mod
-
-modulo arithmetic to ensure a polynomial is in range seems sensible to have.
 
 # bitmatrix
 
