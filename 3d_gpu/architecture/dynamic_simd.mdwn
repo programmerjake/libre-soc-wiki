@@ -15,17 +15,18 @@ sections, by 3 partition bits:
 
     partition:     P    P    P     (3 bits)
     a        : .... .... .... .... (32 bits, illustrated as 4x8)
-    exp-a    : ....P....P....P.... (32+3 bits, P=1 if no partition)
+    exp-a    : ....P....P....P.... (32+3 bits, P=0 if no partition)
 
 Each partitioned section shall act as an independent Signal where the **partitioning is dynamic at runtime** and may subdivide the above example
 into all 8 possible combinations of the 3 Partition bits:
 
-    exp-a    : ....0....0....0.... 4x 8-bit
-    exp-a    : ....0....0....1.... 2x 8-bit plus 1x 16-bit
-    exp-a    : ....0....1....0.... 2x 16-bit
+    exp-a    : ....0....0....0.... 1x 32-bit
+    exp-a    : ....0....0....1.... 1x 8-bit plus 1x 24-bit
+    exp-a    : ....0....1....0.... 1x 8-bit, 1x 16-bit, 1x 8-bit
     ...
     ...
-    exp-a    : ....1....1....1.... 1x 32-bit
+    exp-a    : ....1....1....0.... 2x 8-bit, 1x 16-bit
+    exp-a    : ....1....1....1.... 4x 8-bit
 
 
 Links:
