@@ -12,6 +12,15 @@ Examples:
 
 # Boolean truth table
 
+Given the four byte-level comparisons `eq0-eq3`:
+
+    eq0 = a[0:7] == b[0:7]
+    eq1 = a[8:15] == b[8:15]
+    eq2 = a[16:23] == b[16:23]
+    eq3 = a[24:31] == b[24:31]
+
+the truth table for the 4-bit outputs `o0-o3` are as follows:
+
 [[!table  data="""
 p2p1p0 | o0       | o1 | o2 | o3
 ++++++ | ++++++++ | ++++++++ | ++++++++ | ++
