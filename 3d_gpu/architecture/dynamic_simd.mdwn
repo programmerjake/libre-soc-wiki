@@ -8,13 +8,13 @@ performing parallel dynamically-partitioned operations.
 
 nmigen 32-bit Signal:
 
-    a        : .... .... .... .... (32 bits)
+    a        : .... .... .... .... (32 bits, illustrated as 4x8)
 
 Dynamically-partitioned 32-bit Signal subdivided into four 8-bit
 sections, by 3 partition bits:
 
     partition:     P    P    P     (3 bits)
-    a        : .... .... .... .... (32 bits)
+    a        : .... .... .... .... (32 bits, illustrated as 4x8)
     exp-a    : ....P....P....P.... (32+3 bits, P=1 if no partition)
 
 Each partitioned section shall act as an independent Signal where the **partitioning is dynamic at runtime** and may subdivide the above example
