@@ -109,6 +109,17 @@ ops
 | NN | RA | RB  | RC  | 11    | 1  | 1110 110 |Rc| clmulh  |
 | NN | RA | RB  |     |       |    | NN11 110 |Rc| rsvd  |
 
+# count leading/trailing zeros with mask
+
+in v3.1 p105
+
+```
+count = 0
+do i = 0 to 63 if((RB)i=1) then do
+if((RS)i=1) then break end end count ← count + 1
+RA ← EXTZ64(count)
+```
+
 # bit to byte permute
 
 similar to matrix permute in RV bitmanip, which has XOR and OR variants
