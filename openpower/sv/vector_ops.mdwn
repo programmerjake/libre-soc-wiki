@@ -271,7 +271,13 @@ used not just for carry lookahead, also a special type of predication mask opera
 
 Stackoverflow algorithm `((P|G)+G)^P` works on the cumulated bits of P and G from associated vector units (P and G are integers here).  The result of the algorithm is the new carry-in which already includes ripple, one bit of carry per element.
 
-
+    At each id, compute C[id] = A[id]+B[id]+0
+    Get G[id] = C[id] > radix -1
+    Get P[id] = C[id] == radix-1
+    Join all P[id] together, likewise G[id]
+    Compute newC = ((P|G)+G)^P << 1
+    result[id] = (C[id] + newC[id]) % radix
+    
 
 two versions: scalar int version and CR based version.
 
