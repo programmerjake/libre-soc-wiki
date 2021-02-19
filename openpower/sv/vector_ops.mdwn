@@ -278,7 +278,7 @@ Stackoverflow algorithm `((P|G)+G)^P` works on the cumulated bits of P and G fro
     Get G[id] = C[id] > radix -1
     Get P[id] = C[id] == radix-1
     Join all P[id] together, likewise G[id]
-    Compute newC = ((P|G)+G)^P << 1
+    Compute newC = ((P|G)+G)^P
     result[id] = (C[id] + newC[id]) % radix
 ```   
 
