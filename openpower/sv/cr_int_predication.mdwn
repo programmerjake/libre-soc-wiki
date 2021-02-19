@@ -94,7 +94,7 @@ Assuming that `offs` is set to `CR.eq` this results in:
 * ...
 * Arithmetic bit 7 of RS being inserted into CR7.eq
 
-To clarify, then: all instructions below do **NOT** follow the IBM convention, they follow the natural sequence CR0 CR1 instead.  However it is critically important to note that the offsets **in** a CR (`CR.eq` for example) continue to follow the v3.0B definition and convention.
+To clarify, then: all instructions below do **NOT** follow the IBM convention, they follow the natural sequence CR0 CR1 instead, using `CR{fieldnum}` to refer to the individual CR Firlds.  However it is critically important to note that the offsets **in** a CR field (`CR.eq` for example) continue to follow the v3.0B definition and convention.
 
 
 # Instruction form and pseudocode
