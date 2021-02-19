@@ -264,6 +264,14 @@ used not just for carry lookahead, also a special type of predication mask opera
 * <https://i.stack.imgur.com/QSLKY.png>
 * <https://stackoverflow.com/questions/27971757/big-integer-addition-code>
   `((P|G)+G)^P`
+* <https://en.m.wikipedia.org/wiki/Carry-lookahead_adder>
+
+     P = (A | B) & Ci
+     G = (A & B)
+
+Stackoverflow algorithm `((P|G)+G)^P` works on the cumulated bits of P and G from associated vector units (P and G are integers here).  The result of the algorithm is the new carry-in which already includes ripple, one bit of carry per element.
+
+
 
 two versions: scalar int version and CR based version.
 
