@@ -1,3 +1,77 @@
+2021-02-20
+
+	* GCC: Lowering DWARF_FRAME_REGISTERS, once I rebuilt the
+	compiler, libgcc, and the test program, avoided the problem.  That
+	didn't make much sense, so I reversed that change and got back to
+	debugging.  The signal frame seemed to be unwound correctly, but
+	instead of using the linux-unwind fallback frame stuff, that I'd
+	messed with a week before, I noticed it was using frame info from
+	the __sigtramp64rt (sp?) entry point in the kernel-supplied vdso.
+	Though I'm pretty sure that changing that file got me some
+	different results the week before, with vdso it couldn't possibly
+	be where things got wrong.  So I proceeded to unwinding the frame
+	until we hit the caller of the infinitely-recursive function, and
+	found we got to the end of the stack before reaching it.  Huh?  A
+	GDB stack frame also hit the same problem.  Oh, maybe there was
+	something wrong with the frame info for those early calls in the
+	thread.  But the stack frame only stopped at the third or fourth
+	recursive call.  That seemed fishy, so I started the program over,
+	and checked the stack trace at the point of the signal delivery,
+	and found it was fine.  I stepped into the signal handler, and
+	into the exception raising machinery, and it was still fine.  Only
+	after we started the unwinding did it get corrupted.  At first I
+	suspected something going wrong because of out-of-range accesses
+	to the regs array, recompiled compiler and library and program
+	just to be sure, and still the same issue.  Finally, then it
+	occurred to me to check where the alternate stack stack, in which
+	the stack overflow signal was handled, and found it to be running
+	into the other end of the task's stack.  Turns out the Ada
+	runtime, when starting a task, allocates an alt stack to handle
+	stack overflows out of the stack itself.  With the larger register
+	file, unwinding was taking up more of the alt stack space,
+	overflowing it and thus overwriting part of the task's call stack,
+	corrupting it to the point that the unwinder could no longer reach
+	the exception handler in the task setup code, supposed to catch an
+	escaping exception for the task parent to analyze/reraise.
+	Growing the alt stack size in the Ada runtime fixes the problem,
+	but since this explains why lowering DWARF_FRAME_REGISTERS avoided
+	the problem, I'm now happy to have it set to the lower value, at
+	least until call-saved SVP64 regs are needed.  Adjusted other
+	references to ARG_POINTER_REGNUM in libgcc to use a fixed index.
+	Wrote a blog post about this, while regstrapping the fix.
+	https://www.fsfla.org/blogs/lxo/2021-02-20-longest-debugging-session.en.html
+	Success, no regressions.  (9:09)
+
+2021-02-13
+
+	* GCC: Found libgcc/config/linux-unwind.h using GCC's internal
+	register numbers, and thus in need of renumbering as well.  Alas,
+	the right fix didn't jump at me.  There's some confusion about
+	using mapped register numbers or not.  Using the pristine
+	libgcc_eh.a to link the program built with the new compiler, using
+	newly-built libraries, it works, but with the new libgcc_eh.a, it
+	fails, whether using 291 or 99 or 67 for R_AR, that used to be
+	ARG_POINTER_REGNUM.  Changing R_AR and rebuilding doesn't alter
+	anything within gcc/ada, so it's not the Ada runtime.  I guess
+	I may have to go back to debugging, as it's not clear whether GCC
+	is losing track of the frames or not finding the handler that
+	would propagate the EH to the thread that activated the task.
+	Tried experimenting with overriding DWARF_FRAME_REGISTERS to its
+	original value.  (6:13)
+
+2021-02-10
+
+	* MW (0:48)
+
+2021-02-09
+
+	* VC (1:59)
+
+2021-02-05
+
+	* GCC: Started investigating the remaining regressions, all in
+	Ada.  They all turn out to be -fstack-check tests.  (0:40)
+
 2021-01-31
 
 	* GCC: Started debugging regressions in the stage1 non-svp64
