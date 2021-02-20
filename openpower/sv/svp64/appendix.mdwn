@@ -442,8 +442,8 @@ or v3.1B specification*).  However with some care and consideration
 the exact same mapping used for INT and FP regfiles may be applied,
 just to the upper bits, as explained below.
 
-In OpenPOWER v3.0/1, BF/BT/BA/BB are all 5 bits.  The top 3 bits (2:4)
-select one of the 8 CRs; the bottom 2 bits (0:1) select one of 4 bits
+In OpenPOWER v3.0/1, BF/BT/BA/BB are all 5 bits.  The top 3 bits (0:2)
+select one of the 8 CRs; the bottom 2 bits (3:4) select one of 4 bits
 *in* that CR.  The numbering was determined (after 4 months of
 analysis and research) to be as follows:
 
@@ -454,31 +454,31 @@ analysis and research) to be as follows:
     CR_bit = (CR_reg & (1<<bit_index)) != 0
 
 When it comes to applying SV, it is the CR\_reg number to which SV EXTRA2/3
-applies, **not** the CR\_bit portion (bits 0:1):
+applies, **not** the CR\_bit portion (bits 3:4):
 
     if extra3_mode:
         spec = EXTRA3
     else:
         spec = EXTRA2<<1 | 0b0
-    if spec[2]:
-       # vector constructs "BA[2:4] spec[0:1] 00 BA[0:1]"
+    if spec[0]:
+       # vector constructs "BA[0:2] spec[1:2] 00 BA[3:4]"
        return ((BA >> 2)<<6) | # hi 3 bits shifted up
-              (spec[0:1]<<4) | # to make room for these
+              (spec[1:2]<<4) | # to make room for these
               (BA & 0b11)      # CR_bit on the end
     else:
-       # scalar constructs "00 spec[0:1] BA[0:4]"
-       return (spec[0:1] << 5) | BA
+       # scalar constructs "00 spec[1:2] BA[0:4]"
+       return (spec[1:2] << 5) | BA
 
 Thus, for example, to access a given bit for a CR in SV mode, the v3.0B
 algorithm to determin CR\_reg is modified to as follows:
 
     CR_index = 7-(BA>>2)      # top 3 bits but BE
-    if spec[2]:
+    if spec[0]:
         # vector mode, 0-124 increments of 4
-        CR_index = (CR_index<<4) | (spec[0:1] << 2)
+        CR_index = (CR_index<<4) | (spec[1:2] << 2)
     else:
         # scalar mode, 0-32 increments of 1
-        CR_index = (spec[0:1]<<3) | CR_index
+        CR_index = (spec[1:2]<<3) | CR_index
     # same as for v3.0/v3.1 from this point onwards
     bit_index = 3-(BA & 0b11) # low 2 bits but BE
     CR_reg = CR{CR_index}     # get the CR

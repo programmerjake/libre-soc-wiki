@@ -485,10 +485,10 @@ A pseudocode algorithm explains the relationship, for INT/FP (see [[svp64/append
         spec = EXTRA3
     else:
         spec = EXTRA2 << 1 # same as EXTRA3, shifted
-    if spec[2]: # vector
-         return (RA << 2) | spec[0:1]
+    if spec[0]: # vector
+         return (RA << 2) | spec[1:2]
     else:         # scalar
-         return (spec[0:1] << 5) | RA
+         return (spec[1:2] << 5) | RA
 
 Future versions may extend to 256 by shifting Vector numbering up.
 Scalar will not be altered.
