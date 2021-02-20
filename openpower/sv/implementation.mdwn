@@ -140,8 +140,10 @@ unit tests:
 
 * GPR
 * SPRs (yes, really: mtspr and mfspr are SV Context-extensible)
-* Condition Registers
+* Condition Registers.  see note below
 * FPR (if present)
+
+When Rc=1 is encountered in an SVP64 Context the destination is different (TODO) i.e. not CR0 or CR1.  Implicit Rc=1 Condition Registers are still Vectorised but do **not** have EXTRA2/3 spec adjustments.  The only part if the EXTRA2/3 spec that is observed and respected is whether the CR is Vectorised (isvec).
 
 ## Increasing register file sizes
 
