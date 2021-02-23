@@ -120,6 +120,10 @@ SV's SVSTATE context is effectively a Sub-PC.  On exceptions the PC is saved int
 * TestIssuer: TODO
 * Microwatt: TODO
 
+## Illegal instruction exceptions
+
+Anything not listed as SVP64 extended must raise an illegal exception if prefixed. setvl, branch, mtmsr, mfmsr at the minimum.
+
 ## VL for-loop
 
 main SV for-loop, as a FSM, updating `SVSTATE.srcstep`, using it as the index in the for-loop from 0 to VL-1.  Register numbers are incremented by one if marked as vector.
