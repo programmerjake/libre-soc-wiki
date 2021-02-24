@@ -19,3 +19,30 @@ the pseudo-code for all opcodes in the POWER v3.0B Public Spec
 * [[isa/stringldst]]
 * [[isa/system]]
 
+# Pseudocode syntax
+
+The syntax is shown in the v3.0B OpenPOWER Reference Manual.  The implementation of a parser, using python-ply, is here: <https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/decoder/pseudo/parser.py;hb=HEAD>
+
+The parser is based on the python-ply GardenSnake.py example (except bugs were fixed in it, first).  Extra tokens, in the lexer phase, are inserted dynamically into the stream to make the parser think that it is seeing python-like syntax where in fact it is not.  Example: when a pseudocode keyword "THEN" is seen, this is substituted for ":". The keyword "ELSE" will also automatically have a second ":" token inserted in order to comply with python syntax.  Thus the following pseudocode:
+
+    if x = 1 then
+       RT <- 1
+    else
+       RT <- 0
+
+results in the parser seeing the following python code:
+
+    if x == 1:
+       RT = 1
+    else
+       RT = 0
+
+To support this python-like syntax some of the pseudocode after extraction from the PDF had to be cleaned up and proper indentation added.
+
+Also worth noting as used in the above example: the following operators are used:
+
+* `<-` assignment, instead of "=" as in python
+* `=` equals comparator, instead of "==" as in python
+* `||` concatenate, done bitwise, in MSB0 order.
+* `>u' for unsigned greater (">" is signed)
+* `<u' for unsigned lessthan ("<" is signed)
