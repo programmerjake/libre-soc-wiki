@@ -40,48 +40,48 @@ Now lets review all of the relevant material on this page before we begin the wi
 
 Next we will wire up the STLINKv2 and our FPGA in three separate stages. 
 
-* First attaching one end of a jumper cable to each necessary header pin on the STLINKv2. 
+* First we will attach the FEMALE end of a FEMALE-TO-MALE (FTM) jumper cable to each necessary header pin on the STLINKv2. 
 
-* Then we will attach the end of a new jumper cable to each male header pin on the FPGA.
+* Then we will attach one end of a FEMALE-TO-FEMALE (FTF) cable to each male header pin on the FPGA.
 
 * Finally, we will connect the wires from the STLINKv2 to the wires from the FPGA by matching the colours of the wires.
 
-This way you do not lose the connections when you want to disconnect and store the two devices. We are using FEMALE-TO-FEMALE jumper cables on the male header pins of each of the FPGA so that the wires do not randomly damage the bare PCB due to a short.
+This way you do not lose the connections when you want to disconnect and store the two devices. We are using FEMALE-TO-FEMALE jumper cables on the male header pins of the FPGA so that the wires do not randomly damage the bare PCB due to a short.
 
 We will wire each of the pins on the the STLINKv2 according to the diagrams, tables, and images on this page. 
 
-| Action | Colour | Pin # | Pin Name |
-|--------|--------|-------|----------|
-| Attach | Red    |   2   |   VREF   |
-| Attach | Black  |   4   |   GND    |
-| Attach | Green  |   5   |   TDI    |
-| Attach | Blue   |   7   |   TMS    |
-| Attach | White  |   9   |   TCK    |
-| Attach | Yellow |  13   |   TDO    |
+|   Action   | Colour | Pin # | Pin Name |
+|------------|--------|-------|----------|
+| Attach FTM | Red    |   2   |   VREF   |
+| Attach FTM | Black  |   4   |   GND    |
+| Attach FTM | Green  |   5   |   TDI    |
+| Attach FTM | Blue   |   7   |   TMS    |
+| Attach FTM | White  |   9   |   TCK    |
+| Attach FTM | Yellow |  13   |   TDO    |
 
 Next, we will wire each of the pins on the the FPGA according to the diagrams, tables, and images on this page.
 
 Follow this section if you have the ULX3S FPGA:
 
-| Action | Colour | Pin # | Pin Name |
-|--------|--------|-------|----------|
-| Attach | Red    |   2   |   VREF   |
-| Attach | Black  |   4   |   GND    |
-| Attach | Green  |   5   |   TDI    |
-| Attach | Blue   |   6   |   TMS    |
-| Attach | White  |   7   |   TCK    |
-| Attach | Yellow |   8   |   TDO    |
+|   Action   | Colour | Pin # | Pin Name |
+|------------|--------|-------|----------|
+| Attach FTF | Red    |   2   |   VREF   |
+| Attach FTF | Black  |   4   |   GND    |
+| Attach FTF | Green  |   5   |   TDI    |
+| Attach FTF | Blue   |   6   |   TMS    |
+| Attach FTF | White  |   7   |   TCK    |
+| Attach FTF | Yellow |   8   |   TDO    |
 
 Follow this section if you have the Versa ECP5 FPGA:
 
-| Action | Colour | X3 Pin # | Pin Name |
-|--------|--------|----------|----------|
-| Attach | Red    |    39    |   VREF   |
-| Attach | Black  |     1    |   GND    |
-| Attach | Green  |     4    |   TDI    |
-| Attach | Blue   |     5    |   TMS    |
-| Attach | White  |     6    |   TCK    |
-| Attach | Yellow |     7    |   TDO    |
+|   Action   | Colour | X3 Pin # | Pin Name |
+|------------|--------|----------|----------|
+| Attach FTF | Red    |    39    |   VREF   |
+| Attach FTF | Black  |     1    |   GND    |
+| Attach FTF | Green  |     4    |   TDI    |
+| Attach FTF | Blue   |     5    |   TMS    |
+| Attach FTF | White  |     6    |   TCK    |
+| Attach FTF | Yellow |     7    |   TDO    |
 
 Final steps for both FPGA boards:
 
@@ -100,7 +100,7 @@ Finally, we will connect the jumper cables of the same colour from STLINKv2 and 
 | Attach the ends of the **GREEN** jumper cables |
 | Attach the ends of the **BLUE** jumper cables  |
 | Attach the ends of the **WHITE** jumper cables |
-| Attach the ends of the **YELLO** jumper cables |
+| Attach the ends of the **YELLOW** jumper cables |
 
 ## Connecting the dots:
 
