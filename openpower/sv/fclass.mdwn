@@ -4,7 +4,7 @@ xvtstdcsp v3.0B p768
 
 | 0.5| 6..10 |11.15| 16.20 | 21...30 |31|  name   |
 | -- | ----- | --- | ----- | ------- |--| ------- |
-| PO | BT/dx | FRA | dc    | XO      |dm| fptstsp |
+| PO | BF/dx | FRA | dc    | XO      |dm| fptstsp |
 
 ```
 DCMX <- dc || dm || dx
@@ -16,7 +16,7 @@ class.Infinity  <- (exponent = 0xFF) & (fraction = 0)
 class.NaN  <- (exponent = 0xFF) & (fraction != 0)
 class.Zero  <- (exponent = 0x00) & (fraction = 0)
 class.Denormal  <- (exponent = 0x00) & (fraction != 0)
-CR{BT} <- ((DCMX[0] & class.NaN & !sign)  |
+CR{BF} <- ((DCMX[0] & class.NaN & !sign)  |
            (DCMX[1] & class.NaN & sign))  ||
           ((DCMX[6] & class.Denormal & !sign) |
            (DCMX[7] & class.Denormal & sign)) ||
