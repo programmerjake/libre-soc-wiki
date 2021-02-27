@@ -1,26 +1,36 @@
+# fclass
+
 xvtstdcsp v3.0B p768
 
+| 0.5|6.10|11.15|16.18 | 19.26  | 27...30 |31|  name   |
+| -- | -- | --- | ---- | ------ | ------- |--| ------- |
+| PO | RT | FRA | BA   | DCMX   | XO[0:3] |Rc| fptstsp |
+
 ```
-DCMX  <- dc || dm || dx
-do i = 0 to 3
-src  <- VSR[32×BX+B].word[i]
-sign  <- src.bit[0]
-exponent  <- src.bit[1:8]
-fraction  <- src.bit[9:31]
+src  <- (FRA)[32:63]
+sign  <- src[0]
+exponent  <- src[1:8]
+fraction  <- src[9:31]
 class.Infinity  <- (exponent = 0xFF) & (fraction = 0)
 class.NaN  <- (exponent = 0xFF) & (fraction != 0)
 class.Zero  <- (exponent = 0x00) & (fraction = 0)
 class.Denormal  <- (exponent = 0x00) & (fraction != 0)
-match <- (DCMX.bit[0] & class.NaN) |
-         (DCMX.bit[1] & class.Infinity & !sign) |
-         (DCMX.bit[2] & class.Infinity & sign) |
-         (DCMX.bit[3] & class.Zero & !sign) |
-         (DCMX.bit[4] & class.Zero & sign) |
-         (DCMX.bit[5] & class.Denormal & !sign) |
-         (DCMX.bit[6] & class.Denormal & sign)
+match <- (DCMX[0] & class.NaN & !sign)  |
+         (DCMX[1] & class.NaN & sign)  |
+         (DCMX[2] & class.Infinity & !sign) |
+         (DCMX[3] & class.Infinity & sign) |
+         (DCMX[4] & class.Zero & !sign) |
+         (DCMX[5] & class.Zero & sign) |
+         (DCMX[6] & class.Denormal & !sign) |
+         (DCMX[7] & class.Denormal & sign)
+
 if match = 1 then
-    VSR[32×TX+T].dword[i] <- 0xFFFF_FFFF 
+    RT[32:63] <- 0xFFFF_FFFF 
 else 
-    VSR[32×TX+T].dword[i] <- 0x0000_0000
+    RT[32:63] <- 0x0000_0000
 end
+CR{BA} = class.Zero ||
+         class.Infinity ||
+         class.Denormal ||
+         class.NaN
 ```
