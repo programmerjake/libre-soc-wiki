@@ -166,11 +166,13 @@ def keyname(row):
 
 def process_csvs():
     csvs = {}
+    csvs_svp64 = {}
     bykey = {}
     primarykeys = set()
     dictkeys = OrderedDict()
     immediates = {}
     insns = {} # dictionary of CSV row, by instruction
+    insn_to_csv = {}
 
     print ("# OpenPOWER ISA register 'profile's")
     print ('')
@@ -197,9 +199,11 @@ def process_csvs():
             continue
         #print (fname)
         csvname = os.path.split(fname)[1]
+        csvname_ = csvname.split(".")[0]
         # csvname is something like: minor_59.csv, fname the whole path
         csv = get_csv(fname)
         csvs[fname] = csv
+        csvs_svp64[csvname_] = []
         for row in csv:
             if blank_key(row):
                 continue
@@ -210,6 +214,7 @@ def process_csvs():
             if insn_name.startswith('bc') or 'rfid' in insn_name:
                 continue
             insns[insn_name] = row # accumulate csv data by instruction
+            insn_to_csv[insn_name] = csvname_ # CSV file name by instruction
             dkey = create_key(row)
             key = tuple(dkey.values())
             # print("key=", key)
@@ -545,6 +550,9 @@ def process_csvs():
                 if res[k] == 'NONE' or res[k] == '':
                     res[k] = '0'
             svp64[value].append(res)
+            # also add to by-CSV version
+            csv_fname = insn_to_csv[insn_name]
+            csvs_svp64[csv_fname].append(res)
 
     print ('')
 
@@ -559,6 +567,78 @@ def process_csvs():
 
         #csvcols = ['insn', 'Ptype', 'Etype', '0', '1', '2', '3']
         write_csv("%s.csv" % value, csv, csvcols)
+
+    # and a nice microwatt VHDL file
+    file_path = find_wiki_file("sv_decode.vhdl")
+    with open(file_path, 'w') as vhdl:
+        # autogeneration warning
+        vhdl.write("-- this file is auto-generated, do not edit\n")
+        vhdl.write("-- http://libre-soc.org/openpower/sv_analysis.py")
+        vhdl.write("-- part of Libre-SOC, sponsored by NLnet\n")
+        vhdl.write("\n")
+
+        # first create array types
+        lens = {'major' : 63,
+                'minor_4': 63,
+                'minor_19': 7,
+                'minor_30': 15,
+                'minor_31': 1023,
+                'minor_58': 63,
+                'minor_59': 31,
+                'minor_62': 63,
+                'minor_63l': 511,
+                'minor_63h': 16,
+                }
+        for value, csv in csvs_svp64.items():
+            # munge name
+            value = value.lower()
+            value = value.replace("-", "_")
+            if value not in lens:
+                todo = "    -- TODO %s (or no SVP64 augmentation)\n"
+                vhdl.write(todo % value)
+                continue
+            width = lens[value]
+            typarray = "    type sv_%s_rom_array_t is " \
+                       "array(0 to %d) of sv_decode_rom_t;\n"
+            vhdl.write(typarray % (value, width))
+
+        # now output structs
+        hdr = "\n" \
+              "    constant sv_%s_decode_rom_array :\n" \
+              "             sv_%s_rom_array_t := (\n"
+        ftr = "          others  => sv_illegal_inst\n" \
+              "    );\n\n"
+        for value, csv in csvs_svp64.items():
+            # munge name
+            value = value.lower()
+            value = value.replace("-", "_")
+            if value not in lens:
+                continue
+            vhdl.write(hdr % (value, value))
+            for entry in csv:
+                insn = str(entry['insn'])
+                op = insns[insn]['opcode']
+                # binary-to-vhdl-binary
+                if op.startswith("0b"):
+                    op = "2#%s#" % op[2:]
+                row = []
+                for colname in csvcols[1:]:
+                    re = entry[colname]
+                    # zero replace with NONE
+                    if re == '0':
+                        re = 'NONE'
+                    # source/dest designation
+                    re = re.replace("s", "S")
+                    re = re.replace("d", "D")
+                    re = re.replace(":", "_")
+                    re = re.replace(";", "_")
+                    # 1/2 predication
+                    re = re.replace("1P", "P1")
+                    re = re.replace("2P", "P2")
+                    row.append(re)
+                row = ', '.join(row)
+                vhdl.write("    %13s => (%s), -- %s\n" % (op, row, insn))
+            vhdl.write(ftr)
 
 if __name__ == '__main__':
     process_csvs()
