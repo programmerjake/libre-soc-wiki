@@ -17,6 +17,8 @@ import os
 from os.path import dirname, join
 from glob import glob
 from collections import OrderedDict
+from soc.decoder.power_svp64 import SVP64RM
+
 
 # Return absolute path (ie $PWD) + isatables + name
 def find_wiki_file(name):
@@ -35,7 +37,7 @@ def get_csv(name):
 # Write an array of dictionaries to the CSV file name:
 def write_csv(name, items, headers):
     file_path = find_wiki_file(name)
-    with open(file_path, 'wb') as csvfile:
+    with open(file_path, 'w') as csvfile:
         writer = csv.DictWriter(csvfile, headers, lineterminator="\n")
         writer.writeheader()
         writer.writerows(items)
@@ -568,6 +570,30 @@ def process_csvs():
         #csvcols = ['insn', 'Ptype', 'Etype', '0', '1', '2', '3']
         write_csv("%s.csv" % value, csv, csvcols)
 
+    # get SVP64 augmented CSV files
+    svt = SVP64RM()
+    # Expand that (all .csv files)
+    pth = find_wiki_file("*.csv")
+
+    # Ignore those containing: valid test sprs
+    for fname in glob(pth):
+        if '-' in fname:
+            continue
+        if 'valid' in fname:
+            continue
+        if 'test' in fname:
+            continue
+        if fname.endswith('sprs.csv'):
+            continue
+        if fname.endswith('minor_19_valid.csv'):
+            continue
+        if 'RM' in fname:
+            continue
+        svp64_csv = svt.get_svp64_csv(fname)
+
+    csvcols = ['insn', 'Ptype', 'Etype']
+    csvcols += ['in1', 'in2', 'in3', 'out', 'CR in', 'CR out']
+
     # and a nice microwatt VHDL file
     file_path = find_wiki_file("sv_decode.vhdl")
     with open(file_path, 'w') as vhdl:
@@ -617,6 +643,7 @@ def process_csvs():
             vhdl.write(hdr % (value, value))
             for entry in csv:
                 insn = str(entry['insn'])
+                sventry = svt.svp64_instrs.get(insn, None)
                 op = insns[insn]['opcode']
                 # binary-to-vhdl-binary
                 if op.startswith("0b"):
@@ -627,14 +654,17 @@ def process_csvs():
                     # zero replace with NONE
                     if re == '0':
                         re = 'NONE'
-                    # source/dest designation
-                    re = re.replace("s", "S")
-                    re = re.replace("d", "D")
-                    re = re.replace(":", "_")
-                    re = re.replace(";", "_")
                     # 1/2 predication
                     re = re.replace("1P", "P1")
                     re = re.replace("2P", "P2")
+                    row.append(re)
+                print (sventry)
+                for colname in ['sv_in1', 'sv_in2', 'sv_in3', 'sv_out',
+                                'sv_cr_in', 'sv_cr_out']:
+                    if sventry is None:
+                        re = 'NONE'
+                    else:
+                        re = sventry[colname]
                     row.append(re)
                 row = ', '.join(row)
                 vhdl.write("    %13s => (%s), -- %s\n" % (op, row, insn))
