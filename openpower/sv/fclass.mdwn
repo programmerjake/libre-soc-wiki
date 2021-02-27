@@ -1,1 +1,26 @@
 xvtstdcsp v3.0B p768
+
+```
+DCMX  <- dc || dm || dx
+do i = 0 to 3
+src  <- VSR[32×BX+B].word[i]
+sign  <- src.bit[0]
+exponent  <- src.bit[1:8]
+fraction  <- src.bit[9:31]
+class.Infinity  <- (exponent = 0xFF) & (fraction = 0)
+class.NaN  <- (exponent = 0xFF) & (fraction != 0)
+class.Zero  <- (exponent = 0x00) & (fraction = 0)
+class.Denormal  <- (exponent = 0x00) & (fraction != 0)
+match <- (DCMX.bit[0] & class.NaN) |
+         (DCMX.bit[1] & class.Infinity & !sign) |
+         (DCMX.bit[2] & class.Infinity & sign) |
+         (DCMX.bit[3] & class.Zero & !sign) |
+         (DCMX.bit[4] & class.Zero & sign) |
+         (DCMX.bit[5] & class.Denormal & !sign) |
+         (DCMX.bit[6] & class.Denormal & sign)
+if match = 1 then
+    VSR[32×TX+T].dword[i] <- 0xFFFF_FFFF 
+else 
+    VSR[32×TX+T].dword[i] <- 0x0000_0000
+end
+```
