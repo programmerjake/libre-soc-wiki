@@ -1,5 +1,7 @@
 # fclass
 
+In SV just as with [[sv/fcvt]] single precision is to be considered half-of-elwidth precision.  Thus when elwidth=FP32 fptstsp will test half that precision, at FP16.
+
 xvtstdcsp v3.0B p768
 
 | 0.5| 6..10 |11.15| 16.20 | 21...30 |31|  name   |
@@ -26,12 +28,11 @@ CR{BF} <- ((DCMX[0] & class.NaN & !sign)  |
            (DCMX[5] & class.Zero & sign))
 ```
 
+64 bit variant fptstdp is as follows:
+
 ```
-
-
-src <- VSR[32×BX+B].dword[i]
 sign <- src.bit[0]
 exponent <- src.bit[1:11]
 fraction <- src.bit[12:63]
-      .... 7FF
+      exponent & 7FF
 ```
