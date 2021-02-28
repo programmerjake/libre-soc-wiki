@@ -2,7 +2,10 @@
 
 In SV just as with [[sv/fcvt]] single precision is to be considered half-of-elwidth precision.  Thus when elwidth=FP32 fptstsp will test half that precision, at FP16.
 
-based on xvtstdcsp v3.0B p768 the instruction performs analysis of the FP number to determine if it is Infinity, NaN, Denormalised or Zero and if so which sign.  unlike xvtstdcsp the result is stored in a Condition Register specified by BF.
+based on xvtstdcsp v3.0B p768 the instruction performs analysis of the FP number to determine if it is Infinity, NaN, Denormalised or Zero and if so which sign.
+
+unlike xvtstdcsp the result is stored in a Condition Register specified by BF.
+this allows it to be used as a predicate mask.  setb may be used to create the equivalent of xvtstdcsp if desired.
 
 | 0.5| 6..10 |11.15| 16.20 | 21...30 |31|  name   |
 | -- | ----- | --- | ----- | ------- |--| ------- |
