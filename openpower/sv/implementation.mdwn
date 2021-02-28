@@ -77,6 +77,8 @@ An autogenerator containing CSV files is available so that the task of creating 
 * python-based assembler-translator: 40% done (lkcl)
 * c++ macros: underway (jacob)
 
+Note when decoding the RM intobits different modes that LDST interprets the 5 mode bits differently not just on whether it is LD/ST bit also what *type* of LD/ST. Immediate LD/ST is further qualified to indicate if it operates in element-strided or unit-strided mode.  However Indexed LD/ST is not.
+
 Links:
 
 * <https://git.libre-soc.org/?p=libreriscv.git;a=blob;f=openpower/sv_analysis.py;hb=HEAD>
