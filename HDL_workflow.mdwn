@@ -129,9 +129,11 @@ straight away.
 
 Hint: to create a new page, find a suitable page that would link to it,
 first, then put the link in of the page you want to create, as if the
-page already exists.  Save that page, and you will find a questionmark
+page already exists.  Save that page, and you will find a question mark
 next to the new link you created.  click that link, and it will fire up a
 "create new page" editor.
+
+Wiki pages are formatted in [[markdown|ikiwiki/markdown]] syntax.
 
 Hint again: the wiki is backed by a git repository.  Don't go overboard
 but at the same time do not be afraid that you might "damage" or "lose"
@@ -143,31 +145,30 @@ Assistance in creating a much better theme greatly appreciated.  e.g.
 
 ## git
 
-we use git. more on this below.  we also use gitolite3 running on a
-dedicated server.  again, it is extremely effective and low resource
-utilisation.  reminder: lions are involved if github is mentioned.
+We use git. More on this below.  We also use [gitolite3](https://gitolite.com/gitolite/) running on a dedicated server.  again, it is extremely effective and low resource utilisation. Reminder: lions are involved if github is mentioned.
 
-gitweb is provided which does a decent job. <https://git.libre-soc.org/>
+[gitweb](https://git.wiki.kernel.org/index.php/Gitweb) is provided which does a decent job. <https://git.libre-soc.org/>
+
+[Git](https://en.wikipedia.org/wiki/Git) does version control, ie it tracks changes to files so that previous versions can be got back or compared.
 
 ## ftp server
 
-<https://ftp.libre-soc.org/ is available for storing large files
+<https://ftp.libre-soc.org/> is available for storing large files
 that do not belong in a git repository, if we have (or ever need)
-any.  images (etc.) if small and appropriate should go into the
+any.  Images (etc.) if small and appropriate should go into the
 wiki, however .tgz archives (etc.) and, at some point, binaries,
 should be on the ftp server.
 
-ask on the list if you have a file that belongs on the ftp server.
+Ask on the list if you have a file that belongs on the ftp server.
 
 ## server
 
-as an aside: all this is "old school" and run on a single core 512MB
+As an aside: all this is "old school" and run on a single core 512MB
 VM with only a 20GB HDD allocation. it costs only 8 GBP per month from
 mythic-beasts and means that the project is in no way dependent on anyone
 else - not microsoft, not google, not facebook, not amazon.
 
-we tried gitlab. it didn't go well. please don't ask to replace the
-above extremely resource-efficient services with it.
+we tried [gitlab](https://about.gitlab.com/). it didn't go well. please don't ask to replace the above extremely resource-efficient services with it.
 
 # Hardware
 
@@ -179,7 +180,7 @@ High end Graphics Cards are nonessential.
 
 What is particularly useful is to have hi-res screens (curved is
 *strongly* recommended if the LCD is over 24in wide, to avoid eyeballs
-going "prism" through longterm use), and to have several of them: the
+going "prism" through long term use), and to have several of them: the
 more the better.  Either a DisplayLink UD160A (or more modern variant)
 or simply using a second machine (lower spec hardware because it will
 run editors) is really effective.
@@ -192,7 +193,7 @@ have access to such high resolution screens.
 
 # Operating System
 
-First install and become familiar with Debian (ubuntu if you absolutely
+First install and become familiar with [Debian](https://www.debian.org/) ([Ubuntu](https://ubuntu.com/) if you absolutely
 must) for standardisation cross-team and so that toolchain installation
 is greatly simplified.  yosys in particular warns that trying to use
 Windows, BSD or MacOS will get you into a world of pain.
@@ -204,14 +205,14 @@ complex desktops can be used however may consume greater resources.
 # editors and editing
 
 Whilst this is often a personal choice, the fact that many editors are
-GUI based and run fullscreen with the entire right hand side *and* middle
+GUI based and run full-screen with the entire right hand side *and* middle
 *and* the majority of the left side of the hi-res screen entirely unused
 and bereft of text leaves experienced developers both amused and puzzled.
 
-At the point where such fullscreen users commit code with line lengths
+At the point where such full-screen users commit code with line lengths
 well over 160 characters, that amusement quickly evaporates.
 
-Where the problems occur with fullscreen editor usage is when a project
+Where the problems occur with full-screen editor usage is when a project
 is split into dozens if not hundreds of small files (as this one is). At
 that point it becomes pretty much essential to have as many as six to
 eight files open *and on-screen* at once, without overlaps i.e. not in
@@ -224,13 +225,13 @@ xterm windows is *relevant to the task at hand*.
 [[!img 2020-01-24_11-56.png size=640x ]]
 
 (hint/tip: fvwm2 set up with "mouse-over to raise focus, rather than
-additionally requiring a mouseclick, can save a huge amount of cumulative
+additionally requiring a mouse click, can save a huge amount of cumulative
 development time here, switching between editor terminal(s) and the
 command terminals).
 
 Once this becomes necessary, it it turn implies that having greater
-than 80 chars per line - and running editors fullscreen - is a severe
-hindance to an essential *and highly effective* workflow technique.
+than 80 chars per line - and running editors full-screen - is a severe
+hinderance to an essential *and highly effective* workflow technique.
 
 Additionally, care should be taken to respect that not everyone will have
 200+ column editor windows and the eyesight of a hawk. They may only have
@@ -240,9 +241,7 @@ others, as such developers with limited screen resources would need to
 continuously page-up and page-down to read the code even of a single
 function, in full.
 
-This helps explain in part, below, why compliance with pep8 is enforced,
-including its 80 character limit.  In short: not everyone has the same
-"modern" GUI workflow or has access to the same computing resources as
+This helps explain in part, below, why compliance with [pep8](https://pep8.org/) is enforced, including its 80 character limit.  In short: not everyone has the same "modern" GUI workflow or has access to the same computing resources as
 you, so please do respect that.
 
 More on this concept is
@@ -267,9 +266,7 @@ root prompt, and save yourself some typing.
 * apt-get install python-virtualenv  # this is an alternative to python3-venv
 * return to user prompt (ctrl-d)
 
-This will get you python3 and other tools that are needed. graphviz is
-essential for showing the interconnections between cells, and gtkwave
-is essential for debugging.
+This will get you python3 and other tools that are needed. [graphviz](https://graphviz.org/) is essential for showing the interconnections between cells, and [gtkwave](http://gtkwave.sourceforge.net/) is essential for debugging.
 
 If you would like to save yourself a lot more typing, check out the
 [dev-env-setup](https://git.libre-soc.org/?p=dev-env-setup.git;a=summary)
@@ -307,6 +304,10 @@ script (which also installs symbiyosys and its dependencies)
 Do not try to use a fixed revision of yosys (currently 0.9), nmigen is evolving
 and frequently interacts with yosys.
 
+[Yosys](http://www.clifford.at/yosys/) is a framework for Verilog RTL.
+[Verilog](https://en.wikipedia.org/wiki/Verilog) is a hardware description language.
+RTL [Register Transfer Level](https://en.wikipedia.org/wiki/Register-transfer_level) models how data moves between [registers](https://en.wikipedia.org/wiki/Hardware_register).
+
 ## symbiyosys
 
 Follow the instructions here:
@@ -317,9 +318,11 @@ out if desired) however the more that are installed the more effective
 the formal proof scripts will be (less resource utilisation in certain
 circumstances).
 
+[SymbiYosys](https://symbiyosys.readthedocs.io/en/latest/) (sby) is a front-end driver program for Yosys-based formal hardware verification flows.
+
 ## nmigen
 
-nmigen may be installed as follows:
+[nmigen](https://m-labs.hk/gateware/nmigen/) may be installed as follows:
 
 * mkdir ~/src
 * cd !$
@@ -331,9 +334,11 @@ nmigen may be installed as follows:
 
 testing can then be carried out with "python3 setup.py test"
 
+nmigen is a Python toolbox for building complex digital hardware.
+
 ## Softfloat and sfpy
 
-These are a test suite dependency for the ieee754fpu library, and
+These are a test suite dependency for the [ieee754fpu](https://www.gaisler.com/index.php/products/ipcores/ieee754fpu) library, and
 will be changed in the future to use Jacob's [simple-soft-float](https://crates.io/crates/simple-soft-float)
 library.  In the meantime, sfpy can be built as follows:
 
