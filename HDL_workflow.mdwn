@@ -31,12 +31,12 @@ The main message here: **use the right tool for the right job**.
 * ftp server (<https://ftp.libre-soc.org/>): large (temporary,
   auto-generated) file store.
 
-we will add an IRC channel at some point when there are enough people
+We will add an IRC channel at some point when there are enough people
 to warrant having one (and it will be publicly archived)
 
-note also the lack of a "forum" in the above list.  this is very deliberate.  forums are a serious distraction when it comes to technical heavily goal-orientated development. recent internet users may enjoy looking up the "AOL metoo postings" meme.
+Note also the lack of a "forum" in the above list.  this is very deliberate.  forums are a serious distraction when it comes to technical heavily goal-orientated development. recent internet users may enjoy looking up the "AOL metoo postings" meme.
 
-note also the complete lack of "social platforms". if we wanted to tell everybody how much better each of us are than anyone else in the team, how many times we made a commit (look at me, look at me, i'm so clever), and how many times we went to the bathroom, we would have installed a social media based project "management" system.
+Note also the complete lack of "social platforms". if we wanted to tell everybody how much better each of us are than anyone else in the team, how many times we made a commit (look at me, look at me, i'm so clever), and how many times we went to the bathroom, we would have installed a social media based project "management" system.
 
 ## Main contact method: mailing list
 
@@ -104,9 +104,9 @@ See <https://git.libre-soc.org/>
 
 ### gmail "spam"ifying the list
 
-see <https://blog.kittycooper.com/2014/05/keeping-my-mailing-list-emails-out-of-gmails-spam-folder/>
+See <https://blog.kittycooper.com/2014/05/keeping-my-mailing-list-emails-out-of-gmails-spam-folder/>
 
-basically it is possible to select any message from the list, create a "filter" (under "More"),
+Basically it is possible to select any message from the list, create a "filter" (under "More"),
 and, on the 2nd dialog box, click the "never send this to Spam" option.
 
 ## Bugtracker
@@ -168,7 +168,7 @@ VM with only a 20GB HDD allocation. it costs only 8 GBP per month from
 mythic-beasts and means that the project is in no way dependent on anyone
 else - not microsoft, not google, not facebook, not amazon.
 
-we tried [gitlab](https://about.gitlab.com/). it didn't go well. please don't ask to replace the above extremely resource-efficient services with it.
+We tried [gitlab](https://about.gitlab.com/). it didn't go well. please don't ask to replace the above extremely resource-efficient services with it.
 
 # Hardware
 
@@ -253,8 +253,8 @@ access to ultra-high resolution screens.
 
 # Software prerequisites
 
-Whilst many resources online advocate "sudo" in front of all root-level
-commands below, this quickly becomes tiresome. run "sudo bash", get a
+Whilst many resources online advocate "`sudo`" in front of all root-level
+commands below, this quickly becomes tiresome. run "`sudo bash`", get a
 root prompt, and save yourself some typing.
 
 * sudo bash
@@ -332,7 +332,7 @@ circumstances).
 * python3 setup.py develop
 * ctrl-d
 
-testing can then be carried out with "python3 setup.py test"
+Testing can then be carried out with "python3 setup.py test"
 
 nmigen is a Python toolbox for building complex digital hardware.
 
@@ -403,6 +403,9 @@ Install gdb from source.  Obtain the latest tarball, unpack it, then:
     make -j$(nproc)
     make install
 
+[gdb](https://en.wikipedia.org/wiki/GNU_Debugger) lets you debug running programs.
+[qemu](https://www.qemu.org/) emulates processors, you can run programs under qemu.
+
 ## power_instruction_analyzer (pia)
 
 We have a custom tool built in rust by programmerjake to help analyze
@@ -430,7 +433,7 @@ Install from git source by doing the following:
     maturin build --cargo-extra-args=--features=python-extension
     python3 -m pip install --user target/wheels/*.whl
 
-Note: an ongoing bug in maturin interferes with successful installation.  This can be worked around by explicitly installing only the .whl files needed rather than installing everything (\*.whl).
+Note: an ongoing bug in maturin interferes with successful installation.  This can be worked around by explicitly installing only the `.whl` files needed rather than installing everything (`\*.whl`).
 
 ## Chips4Makers JTAG
 
@@ -440,7 +443,13 @@ As this is an actual ASIC, we do not rely on an FPGA's JTAG TAP interface, inste
 
 Included is an IDCODE tap point, Wishbone Master (for direct memory read and write, fully independent of the core), IOPad redirection and testing, and general purpose shift register capability for any custom use.
 
-We added a DMI to JTAG bridge in LibreSOC which is directly connected to the core, to access registers and to be able to start and stop the core and change the PC.  In combination with the JTAG Wishbone interface the test ASIC can have a bootloader uploaded directly into onboard SRAM and execution begun.
+We added a DMI to JTAG bridge in LibreSOC which is directly connected to the core, to access registers and to be able to start and stop the core and change the PC.  In combination with the JTAG Wishbone interface the test [ASIC](https://en.wikipedia.org/wiki/Application-specific_integrated_circuit) can have a bootloader uploaded directly into onboard [SRAM](https://en.wikipedia.org/wiki/Static_random-access_memory) and execution begun.
+
+[Chips4Makers](https://chips4makers.io/) make it possible for makers and hobbyists to make their own open source chips.
+
+[JTAG](https://en.wikipedia.org/wiki/JTAG) (Joint Test Action Group) is an industry standard for verifying designs and testing printed circuit boards after manufacture.
+
+The [Wishbone bus](https://en.wikipedia.org/wiki/Wishbone_%28computer_bus%29) is an open source hardware computer bus intended to let the parts of an integrated circuit communicate with each other.
 
 ## Coriolis2
 
@@ -450,14 +459,14 @@ See [[HDL_workflow/coriolis2]] page, for those people doing layout work.
 
 After going through the onboarding process and having agreed to take
 responsibility for certain tasks, ask on the mailing list for git
-repository access, sending in a public key (id_rsa.pub). If you do
-not have one then generate it with ssh-keygen -t rsa. You will find it
-in ~/.ssh
+repository access, sending in a public key (`id_rsa.pub`). If you do
+not have one then generate it with `ssh-keygen -t rsa`. You will find it
+in `~/.ssh`
 
 NEVER SEND ANYONE THE PRIVATE KEY.  By contrast the public key, on
 account of being public, is perfectly fine to make... err... public.
 
-Create a file ~/.ssh/config with the following lines:
+Create a file `~/.ssh/config` with the following lines:
 
     Host git.libre-soc.org
     Port 922
@@ -506,7 +515,7 @@ done with this script <https://git.libre-soc.org/?p=dev-env-setup.git;a=blob;f=i
 * git clone gitolite3@git.libre-soc.org:soc.git
 
 In each of these directories, in the order listed, track down the
-setup.py file, then, as root (sudo bash), run the following:
+`setup.py` file, then, as root (`sudo bash`), run the following:
 
 * python3 setup.py develop
 
@@ -518,13 +527,13 @@ own machine these days.
 The reason for the order is because soc depends on ieee754fpu, and
 ieee754fpu depends on nmutil
 
-If "python3 setup.py install" is used it is a pain: edit, then
+If "`python3 setup.py install`" is used it is a pain: edit, then
 install. edit, then install. It gets extremely tedious, hence why
 "develop" was created.
 
 # Development Rules
 
-team communication:
+Team communication:
 
 * new members, add yourself to the [[about_us]] page and create yourself a home page using someone else's page as a template.
 * communicate on the mailing list or the bugtracker an intent to take
@@ -536,7 +545,7 @@ team communication:
   then unless it is a dire personal emergency please say so, on-list. we
   won't mind. we'll help sort it out.
 
-regarding the above it is important that you read, understand, and agree
+Regarding the above it is important that you read, understand, and agree
 to the [[charter]] because the charter is about ensuring that we operate
 as an effective organisation.  It's *not* about "setting rules and meting
 out punishment".
@@ -575,18 +584,18 @@ cover corner cases and take far less time to write
 
 ### Enable editor auto-detection of file changes by external programs
 
-This is important.  "git pull" will merge in changes.  If you then
+This is important.  "`git pull`" will merge in changes.  If you then
 arbitrarily save a file without re-loading it, you risk destroying
 other people's work.
 
 ### Absolutely no auto-generated output
 
 * **do not commit autogenerated output**. write a shell script and commit
-  that, or add a Makefile to run the command that generates the output, but
+  that, or add a `Makefile` to run the command that generates the output, but
   **do not** add the actual output of **any** command to the repository.
   ever.  this is really important.  even if it is a human-readable file
   rather than a binary object file.
-  it is very common to add pdfs (the result of running latex2pdf) or configure.in (the result of running automake), they are an absolute nuisance and interfere hugely with git diffs, as well as waste hard disk space *and* network bandwidth. don't do it.
+  it is very common to add pdfs (the result of running `latex2pdf`) or configure.in (the result of running `automake`), they are an absolute nuisance and interfere hugely with git diffs, as well as waste hard disk space *and* network bandwidth. don't do it.
 
 ### Write commands that do tasks and commit those
 
@@ -600,7 +609,7 @@ other people's work.
 * if you find yourself repeating commands regularly, chances are high
   that someone else will need to run them, too. clearly this includes
   yourself, therefore, to make everyone's lives easier including your own,
-  put them into a .sh shell script (and/or a Makefile), commit them to
+  put them into a `.sh` shell script (and/or a `Makefile`), commit them to
   the repository and document them at the very minimum in the README,
   INSTALL.txt or somewhere in a docs folder as appropriate.  if unsure,
   ask on the mailing list for advice.
@@ -637,7 +646,7 @@ other people's work.
   is **not** in use **anywhere** by any other code. then make a *small*
   (single purpose) followup commit which actually puts that code into use.
 
-this last rule is kinda flexible, because if you add the code *and* add
+This last rule is kinda flexible, because if you add the code *and* add
 the unit test *and* added it into the main code *and* ran all relevant
 unit tests on all cascade-impacted areas by that change, that's perfectly
 fine too.  however if it is the end of a day, and you need to stop and
@@ -647,23 +656,23 @@ and follow up the next day *after* running the full relevant unit tests.
 
 ### Why such strict rules?
 
-the reason for all the above is because python is a dynamically typed language.
+The reason for all the above is because python is a dynamically typed language.
 make one tiny change at the base level of the class hierarchy and the
 effect may be disastrous.
 
-it is therefore worth reiterating: make absolutely certain that you *only*
+It is therefore worth reiterating: make absolutely certain that you *only*
 commit working code or zero-impact code.
 
-therefore, if you are absolutely certain that a new addition (new file,
+Therefore, if you are absolutely certain that a new addition (new file,
 new class, new function) is not going to have any side-effects, committing
 it (a large amount of code) is perfectly fine.
 
-as a general rule, however, do not use this an an excuse to write code
+As a general rule, however, do not use this an an excuse to write code
 first then write unit tests as an afterthought.  write *less* code *in
 conjunction* with its (more basic) unit tests, instead. then, folliw up with
 additions and improvements.
 
-the reason for separating out commits to single purpose only becomes
+The reason for separating out commits to single purpose only becomes
 obvious (and regretted if not followed) when, months later, a mistake
 has to be tracked down and reverted.  if the commit does not have an
 easy-to-find message, it cannot even be located, and once found, if the
@@ -713,22 +722,22 @@ than it should be, the reversion process becomes extremely painful.
   causes unnecessary resource utilisation, makes code readability and
   tracking extremely difficult, and results in unintended side-effects.
 
-example: often you want to find the code from which a class was imported.
+Example: often you want to find the code from which a class was imported.
 nirmally you go to the top of the file, check the imports, and you know
 exactly which file has the class because of the import path.  by using
 wildcards, you have absolutely *no clue* which wildcard imported which
 class or classes.
 
-example: sometimes you may accidentally have duplicate code maintained
+Example: sometimes you may accidentally have duplicate code maintained
 in two or more places.  editing one of them you find, puzzlingly, that
 the code behaves in some files with the old behaviour, but in others it
-works.  after a nassive amount of investigation, you find that the working
+works.  after a massive amount of investigation, you find that the working
 files happen to have a wildcard import of the newer accidental duplicate
 class **after** the wildcard import of the older class with exactly the
 same name.  if you had used explicit imports, you would have spotted
 the double import of the class from two separate locations, immediately.
 
-really.  don't.  use.  wildcards.
+Really.  don't.  use.  wildcards.
 
 ### Keep file and variables short but clear
 
@@ -751,12 +760,12 @@ up five to ten lines rather than one or two. at that point, the length
 of the code is adversely affected and thus so is readability by forcing
 readers to scroll through reams of pages.
 
-it is a tricky balance: basically use your common sense, or just ask
+It is a tricky balance: basically use your common sense, or just ask
 someone else, "can you understand this code?"
 
 ### Reasons for code structure
 
-regarding code structure: we decided to go with small modules that are
+Regarding code structure: we decided to go with small modules that are
 both easy to analyse, as well as fit onto a single page and be readable
 when displayed as a visual graph on a full UHD monitor.  this is done
 as follows:
@@ -769,7 +778,7 @@ as follows:
   show, then space, then pressing the tab key twice will give a full list
   of submodules (one of which will be "top")
 
-you can now fullsize the graphviz window and scroll around.  if it looks
+You can now fullsize the graphviz window and scroll around.  if it looks
 reasonably obvious at 100% zoom, i.e the connections can be clearly
 related in your mind back to the actual code (by matching the graph names
 against signals and modules in the original nmigen code) and the words are
