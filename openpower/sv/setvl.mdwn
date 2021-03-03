@@ -33,7 +33,7 @@ Thus there is the opportunity to set VL to an explicit value (within the limits 
 instructions:
 
     setvli r0, MVL=64, VL=64
-    ld r0.v, 0(r30) # load 64 registers from memory
+    ld r0.v, 0(r30) # load exactly 64 registers from memory
 
 Page Faults etc. aside this is *guaranteed* 100% without fail to perform 64 unit-strided LDs starting from the address pointed to by r30 and put the contents into r0 through r63.  Thus it becomes a "LOAD-MULTI". Twin Predication could even be used to only load relevant registers from the stack.  This *only works if VL is set to the requested value* rather than, as in RVV, allowing the hardware to set VL to an arbitrary value (caveat being, limited to not exceed MVL)
 
