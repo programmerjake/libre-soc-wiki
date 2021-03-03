@@ -17,7 +17,12 @@ transparency, readability, documentation, effective team communication
 and formal mathematical proofs for all code at all levels is therefore
 paramount.
 
-Therefore, we need not only to be "self-sufficient" (absolutely under no circumstances critically reliant on somebody else's servers **or protocols**) we also need to ensure that everything (including all communication such as the mailing list archives) are recorded, replicable, and accessible in perpetuity.  Use of slack or a "forum" either actively prevents or makes that much harder.
+Therefore, we need not only to be "self-sufficient" (absolutely
+under no circumstances critically reliant on somebody else's servers
+**or protocols**) we also need to ensure that everything (including
+all communication such as the mailing list archives) are recorded,
+replicable, and accessible in perpetuity.  Use of slack or a "forum"
+either actively prevents or makes that much harder.
 
 # Collaboration resources
 
@@ -34,9 +39,16 @@ The main message here: **use the right tool for the right job**.
 We will add an IRC channel at some point when there are enough people
 to warrant having one (and it will be publicly archived)
 
-Note also the lack of a "forum" in the above list.  this is very deliberate.  forums are a serious distraction when it comes to technical heavily goal-orientated development. recent internet users may enjoy looking up the "AOL metoo postings" meme.
+Note also the lack of a "forum" in the above list.  this is very
+deliberate.  forums are a serious distraction when it comes to technical
+heavily goal-orientated development. recent internet users may enjoy
+looking up the "AOL metoo postings" meme.
 
-Note also the complete lack of "social platforms". if we wanted to tell everybody how much better each of us are than anyone else in the team, how many times we made a commit (look at me, look at me, i'm so clever), and how many times we went to the bathroom, we would have installed a social media based project "management" system.
+Note also the complete lack of "social platforms". if we wanted to tell
+everybody how much better each of us are than anyone else in the team,
+how many times we made a commit (look at me, look at me, i'm so clever),
+and how many times we went to the bathroom, we would have installed a
+social media based project "management" system.
 
 ## Main contact method: mailing list
 
@@ -106,8 +118,9 @@ See <https://git.libre-soc.org/>
 
 See <https://blog.kittycooper.com/2014/05/keeping-my-mailing-list-emails-out-of-gmails-spam-folder/>
 
-Basically it is possible to select any message from the list, create a "filter" (under "More"),
-and, on the 2nd dialog box, click the "never send this to Spam" option.
+Basically it is possible to select any message from the list, create a
+"filter" (under "More"), and, on the 2nd dialog box, click the "never
+send this to Spam" option.
 
 ## Bugtracker
 
@@ -145,11 +158,17 @@ Assistance in creating a much better theme greatly appreciated.  e.g.
 
 ## git
 
-We use git. More on this below.  We also use [gitolite3](https://gitolite.com/gitolite/) running on a dedicated server.  again, it is extremely effective and low resource utilisation. Reminder: lions are involved if github is mentioned.
+We use git. More on this below.  We also use
+[gitolite3](https://gitolite.com/gitolite/) running on a dedicated server.
+again, it is extremely effective and low resource utilisation. Reminder:
+lions are involved if github is mentioned.
 
-[gitweb](https://git.wiki.kernel.org/index.php/Gitweb) is provided which does a decent job. <https://git.libre-soc.org/>
+[gitweb](https://git.wiki.kernel.org/index.php/Gitweb) is provided which
+does a decent job. <https://git.libre-soc.org/>
 
-[Git](https://en.wikipedia.org/wiki/Git) does version control, ie it tracks changes to files so that previous versions can be got back or compared.
+[Git](https://en.wikipedia.org/wiki/Git) does version control, ie it
+tracks changes to files so that previous versions can be got back or
+compared.
 
 ## ftp server
 
@@ -168,7 +187,9 @@ VM with only a 20GB HDD allocation. it costs only 8 GBP per month from
 mythic-beasts and means that the project is in no way dependent on anyone
 else - not microsoft, not google, not facebook, not amazon.
 
-We tried [gitlab](https://about.gitlab.com/). it didn't go well. please don't ask to replace the above extremely resource-efficient services with it.
+We tried [gitlab](https://about.gitlab.com/). it didn't go well. please
+don't ask to replace the above extremely resource-efficient services
+with it.
 
 # Hardware
 
@@ -193,7 +214,9 @@ have access to such high resolution screens.
 
 # Operating System
 
-First install and become familiar with [Debian](https://www.debian.org/) ([Ubuntu](https://ubuntu.com/) if you absolutely
+First install and become familiar with
+[Debian](https://www.debian.org/) ([Ubuntu](https://ubuntu.com/)
+if you absolutely
 must) for standardisation cross-team and so that toolchain installation
 is greatly simplified.  yosys in particular warns that trying to use
 Windows, BSD or MacOS will get you into a world of pain.
@@ -241,8 +264,10 @@ others, as such developers with limited screen resources would need to
 continuously page-up and page-down to read the code even of a single
 function, in full.
 
-This helps explain in part, below, why compliance with [pep8](https://pep8.org/) is enforced, including its 80 character limit.  In short: not everyone has the same "modern" GUI workflow or has access to the same computing resources as
-you, so please do respect that.
+This helps explain in part, below, why compliance with
+[pep8](https://pep8.org/) is enforced, including its 80 character limit.
+In short: not everyone has the same "modern" GUI workflow or has access
+to the same computing resources as you, so please do respect that.
 
 More on this concept is
 [here](https://www.linuxjournal.com/content/line-length-limits).
@@ -269,7 +294,10 @@ root prompt, and save yourself some typing.
 
 (The above assumes that you are running Debian.)
 
-This will get you python3 and other tools that are needed. [graphviz](https://graphviz.org/) is essential for showing the interconnections between cells, and [gtkwave](http://gtkwave.sourceforge.net/) is essential for debugging.
+This will get you python3 and other tools that are
+needed. [graphviz](https://graphviz.org/) is essential
+for showing the interconnections between cells, and
+[gtkwave](http://gtkwave.sourceforge.net/) is essential for debugging.
 
 If you would like to save yourself a lot more typing, check out the
 [dev-env-setup](https://git.libre-soc.org/?p=dev-env-setup.git;a=summary)
@@ -304,23 +332,32 @@ Or, alternatively, use the
 [yosys-et-al](https://git.libre-soc.org/?p=dev-env-setup.git;a=blob;f=yosys-et-al;hb=HEAD)
 script (which also installs symbiyosys and its dependencies)
 
-Do not try to use a fixed revision of yosys (currently 0.9), nmigen is evolving
-and frequently interacts with yosys.
+Do not try to use a fixed revision of yosys (currently 0.9), nmigen is
+evolving and frequently interacts with yosys.
 
 [Yosys](http://www.clifford.at/yosys/) is a framework for Verilog RTL.
-[Verilog](https://en.wikipedia.org/wiki/Verilog) is a hardware description language.
-RTL [Register Transfer Level](https://en.wikipedia.org/wiki/Register-transfer_level) models how data moves between [registers](https://en.wikipedia.org/wiki/Hardware_register).
+[Verilog](https://en.wikipedia.org/wiki/Verilog) is a hardware description
+language.
+RTL [Register Transfer
+Level](https://en.wikipedia.org/wiki/Register-transfer_level)
+models how data moves between
+[registers](https://en.wikipedia.org/wiki/Hardware_register).
 
 ## symbiyosys
 
-To install follow the [instructions here](https://symbiyosys.readthedocs.io/en/latest/install.html) Once done look at [A simple BMC example](https://symbiyosys.readthedocs.io/en/latest/quickstart.html)
+To install follow the [instructions
+here](https://symbiyosys.readthedocs.io/en/latest/install.html)
+Once done look at [A simple BMC
+example](https://symbiyosys.readthedocs.io/en/latest/quickstart.html)
 
 You do not have to install all of those (avy, boolector can be left
 out if desired) however the more that are installed the more effective
 the formal proof scripts will be (less resource utilisation in certain
 circumstances).
 
-[SymbiYosys](https://symbiyosys.readthedocs.io/en/latest/) (sby) is a front-end driver program for Yosys-based formal hardware verification flows.
+[SymbiYosys](https://symbiyosys.readthedocs.io/en/latest/) (sby) is a
+front-end driver program for Yosys-based formal hardware verification
+flows.
 
 ## nmigen
 
@@ -340,9 +377,11 @@ nmigen is a Python toolbox for building complex digital hardware.
 
 ## Softfloat and sfpy
 
-These are a test suite dependency for the [ieee754fpu](https://www.gaisler.com/index.php/products/ipcores/ieee754fpu) library, and
-will be changed in the future to use Jacob's [simple-soft-float](https://crates.io/crates/simple-soft-float)
-library.  In the meantime, sfpy can be built as follows:
+These are a test suite dependency for the
+[ieee754fpu](https://www.gaisler.com/index.php/products/ipcores/ieee754fpu)
+library, and will be changed in the future to use Jacob's
+[simple-soft-float](https://crates.io/crates/simple-soft-float) library.
+In the meantime, sfpy can be built as follows:
 
     git clone --recursive https://github.com/billzorn/sfpy.git
     cd sfpy
@@ -405,8 +444,9 @@ Install gdb from source.  Obtain the latest tarball, unpack it, then:
     make -j$(nproc)
     make install
 
-[gdb](https://en.wikipedia.org/wiki/GNU_Debugger) lets you debug running programs.
-[qemu](https://www.qemu.org/) emulates processors, you can run programs under qemu.
+[gdb](https://en.wikipedia.org/wiki/GNU_Debugger) lets you debug running
+programs.  [qemu](https://www.qemu.org/) emulates processors, you can
+run programs under qemu.
 
 ## power_instruction_analyzer (pia)
 
@@ -424,7 +464,8 @@ Make sure we have the correct and up-to-date rust compiler (rustc):
     rustup default stable
     rustup update
 
-Use rust's package manager *cargo* to install the rust-python build tool maturin:
+Use rust's package manager *cargo* to install the rust-python build
+tool maturin:
 
     cargo install maturin
 
@@ -435,23 +476,44 @@ Install from git source by doing the following:
     maturin build --cargo-extra-args=--features=python-extension
     python3 -m pip install --user target/wheels/*.whl
 
-Note: an ongoing bug in maturin interferes with successful installation.  This can be worked around by explicitly installing only the `.whl` files needed rather than installing everything (`\*.whl`).
+Note: an ongoing bug in maturin interferes with successful installation.
+This can be worked around by explicitly installing only the `.whl`
+files needed rather than installing everything (`\*.whl`).
 
 ## Chips4Makers JTAG
 
-As this is an actual ASIC, we do not rely on an FPGA's JTAG TAP interface, instead require a full complete independent implementation of JTAG. Staf Verhaegen has one, with a full test suite, and it is superb and well-written.  The Libre-SOC version includes DMI (Debug Memory Interface):
+As this is an actual ASIC, we do not rely on an FPGA's JTAG TAP
+interface, instead require a full complete independent implementation
+of JTAG. Staf Verhaegen has one, with a full test suite, and it is
+superb and well-written.  The Libre-SOC version includes DMI (Debug
+Memory Interface):
 
     git clone https://git.libre-soc.org/git/c4m-jtag.git/
 
-Included is an IDCODE tap point, Wishbone Master (for direct memory read and write, fully independent of the core), IOPad redirection and testing, and general purpose shift register capability for any custom use.
+Included is an IDCODE tap point, Wishbone Master (for direct memory read
+and write, fully independent of the core), IOPad redirection and testing,
+and general purpose shift register capability for any custom use.
 
-We added a DMI to JTAG bridge in LibreSOC which is directly connected to the core, to access registers and to be able to start and stop the core and change the PC.  In combination with the JTAG Wishbone interface the test [ASIC](https://en.wikipedia.org/wiki/Application-specific_integrated_circuit) can have a bootloader uploaded directly into onboard [SRAM](https://en.wikipedia.org/wiki/Static_random-access_memory) and execution begun.
+We added a DMI to JTAG bridge in LibreSOC which is
+directly connected to the core, to access registers and
+to be able to start and stop the core and change the PC.
+In combination with the JTAG Wishbone interface the test
+[ASIC](https://en.wikipedia.org/wiki/Application-specific_integrated_circuit)
+can have a bootloader uploaded directly into onboard
+[SRAM](https://en.wikipedia.org/wiki/Static_random-access_memory) and
+execution begun.
 
-[Chips4Makers](https://chips4makers.io/) make it possible for makers and hobbyists to make their own open source chips.
+[Chips4Makers](https://chips4makers.io/) make it possible for makers
+and hobbyists to make their own open source chips.
 
-[JTAG](https://en.wikipedia.org/wiki/JTAG) (Joint Test Action Group) is an industry standard for verifying designs and testing printed circuit boards after manufacture.
+[JTAG](https://en.wikipedia.org/wiki/JTAG) (Joint Test Action Group) is
+an industry standard for verifying designs and testing printed circuit
+boards after manufacture.
 
-The [Wishbone bus](https://en.wikipedia.org/wiki/Wishbone_%28computer_bus%29) is an open source hardware computer bus intended to let the parts of an integrated circuit communicate with each other.
+The [Wishbone
+bus](https://en.wikipedia.org/wiki/Wishbone_%28computer_bus%29) is an open
+source hardware computer bus intended to let the parts of an integrated
+circuit communicate with each other.
 
 ## Coriolis2
 
@@ -506,8 +568,9 @@ if you want it, always ensure that a new git checkout is set up with rebase.
 
 # Checking out the HDL repositories
 
-Before running the following, install the dependencies.  This is easiest
-done with this script <https://git.libre-soc.org/?p=dev-env-setup.git;a=blob;f=install-hdl-apt-reqs;hb=HEAD>
+Before running the following, install the
+dependencies.  This is easiest done with this script
+<https://git.libre-soc.org/?p=dev-env-setup.git;a=blob;f=install-hdl-apt-reqs;hb=HEAD>
 
 * mkdir ~/src
 * cd !$
@@ -542,7 +605,8 @@ Team communication:
   responsibility for a particular task.
 * assign yourself as the bug's owner
 * *keep in touch* about what you are doing, and why you are doing it.
-* edit your home page regularly, particularly to track tasks so that they can be paid by NLNet.
+* edit your home page regularly, particularly to track tasks so that
+  they can be paid by NLNet.
 * if you cannot do something that you have taken responsibility for,
   then unless it is a dire personal emergency please say so, on-list. we
   won't mind. we'll help sort it out.
@@ -561,9 +625,10 @@ for actual code development
 * plan in advance to write not just code but a full test suite for
   that code.  **this is not optional**. large python projects that do not
   have unit tests **FAIL** (see separate section below).
-* Prioritise writing formal proofs and a single clear unit test that is more like a "worked example".
+* Prioritise writing formal proofs and a single clear unit test that is more
+  like a "worked example".
   We receive NLNet funds for writing formal proofs, plus they
-cover corner cases and take far less time to write
+  cover corner cases and take far less time to write
 
 ### Commit tested or zero-dependent code
 
@@ -597,7 +662,10 @@ other people's work.
   **do not** add the actual output of **any** command to the repository.
   ever.  this is really important.  even if it is a human-readable file
   rather than a binary object file.
-  it is very common to add pdfs (the result of running `latex2pdf`) or configure.in (the result of running `automake`), they are an absolute nuisance and interfere hugely with git diffs, as well as waste hard disk space *and* network bandwidth. don't do it.
+  it is very common to add pdfs (the result of running `latex2pdf`) or
+  configure.in (the result of running `automake`), they are an absolute
+  nuisance and interfere hugely with git diffs, as well as waste hard
+  disk space *and* network bandwidth. don't do it.
 
 ### Write commands that do tasks and commit those
 
@@ -631,7 +699,10 @@ other people's work.
 
 ### Do not break existing code
 
-* keep working code working **at all times**. find ways to ensure that this is the case. examples include writing alternative classes that replace existing functionality and adding runtime options to select between old and new code.
+* keep working code working **at all times**. find ways to ensure that
+  this is the case. examples include writing alternative classes that
+  replace existing functionality and adding runtime options to select
+  between old and new code.
 
 ### Small commits with relevant commit message
 
@@ -658,9 +729,9 @@ and follow up the next day *after* running the full relevant unit tests.
 
 ### Why such strict rules?
 
-The reason for all the above is because python is a dynamically typed language.
-make one tiny change at the base level of the class hierarchy and the
-effect may be disastrous.
+The reason for all the above is because python is a dynamically typed
+language.  make one tiny change at the base level of the class hierarchy
+and the effect may be disastrous.
 
 It is therefore worth reiterating: make absolutely certain that you *only*
 commit working code or zero-impact code.
