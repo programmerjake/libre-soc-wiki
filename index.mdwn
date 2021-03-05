@@ -111,7 +111,8 @@ Also note that you can edit this wiki.  You can experiment in the [[Sandbox]].
 
 ## Quick peek at the code
 
-Here is an example process of how to play with the soc code:
+Here is an example process of how to play with the soc code.  The last
+step you will have needed to install yosys:
 
     pip3 install virtualenv requests
     mkdir ~/.virtualenvs && cd ~/.virtualenvs
@@ -119,16 +120,28 @@ Here is an example process of how to play with the soc code:
     source ~/.virtualenvs/libresoc/bin/activate
     
     cd ~; mkdir libresoc; cd libresoc
+    git clone https://git.libre-soc.org/git/nmigen.git
+    git clone https://git.libre-soc.org/git/nmigen-soc.git
     git clone https://git.libre-soc.org/git/nmutil.git
+    git clone https://git.libre-soc.org/git/c4m-jtag.git
     git clone https://git.libre-soc.org/git/ieee754fpu.git
     git clone https://git.libre-soc.org/git/soc.git
     
+    cd nmigen; python setup.py develop; cd ..
+    cd nmigen-soc; python setup.py develop; cd ..
+    cd c4m-jtag; python setup.py develop; cd ..
     cd nmutil; make install; cd ..
     cd ieee754fpu; make install; cd ..
     cd soc; make gitupdate; make install; cd ..
     
     python3 soc/src/soc/decoder/power_decoder.py
     yosys -p "read_ilang decoder.il; show dec31" 
+
+The full install process may be automated using scripts found
+here: <https://git.libre-soc.org/?p=dev-env-setup.git;a=summary>
+which you can clone with:
+
+    git clone https://git.libre-soc.org/git/dev-env-setup.git
 
 ## How can I learn?
 
@@ -157,8 +170,8 @@ design. See [[HDL_workflow]]
 
 We also need to find a c++ engineer with compiler experience to work on
 a MESA 3D driver. This will begin life similar to SwiftShader however
-retaining the vectorisation and predication intrinsics as well as hardware
-accelerated opcodes (all of which SwiftShader lacks)
+retaining the vectorisation and predication intrinsics then adding
+hardware accelerated opcodes (all of which SwiftShader lacks)
 
 Also, individuals with experience in formal mathematical verification
 are quite welcome.
