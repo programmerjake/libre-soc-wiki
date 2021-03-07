@@ -16,15 +16,6 @@ they are instead SIMD versions of:
      for i in range(64):
          result = result xor a[i] # one operand
 
-more specifically (8x8 version):
-
-     result = 0 # i bit, clear all bits
-     for j in range(8)
-         partial = 0 # initial value (single bit)
-         for i in range(8):
-             partial = partial xor a[i+j*8]
-         result[j] = partial
-
 # Requirements
 
 Given a signal width (typically 64) and given an array of "Partition Points" (typically 7) that break the signal down into an arbitrary permutaion of 8 bit to 64 bit independent SIMD results, compute the following: 
