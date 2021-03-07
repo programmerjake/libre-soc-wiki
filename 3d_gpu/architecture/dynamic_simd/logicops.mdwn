@@ -18,12 +18,12 @@ they are instead SIMD versions of:
 
 more specifically (8x8 version):
 
-     result = 0 # 64 bit, clear all bits
+     result = 0 # i bit, clear all bits
      for j in range(8)
          partial = 0 # initial value (single bit)
          for i in range(8):
              partial = partial xor a[i+j*8]
-         result[j*8] = partial
+         result[j] = partial
 
 # Requirements
 
