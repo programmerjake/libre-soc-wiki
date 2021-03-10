@@ -3,12 +3,15 @@
 ## Setting up new debootstrap and chroot into it
 
 export MY_CHROOT=/stable-chroot
+
 mkdir $MY_CHROOT
 
 debootstrap stable $MY_CHROOT http://deb.debian.org/debian/
 
 mount -t proc proc $MY_CHROOT/proc
+
 mount -t sysfs sysfs $MY_CHROOT/sys
+
 mount -t devpts devpts $MY_CHROOT/dev/pts/
 
 chroot $MY_CHROOT /bin/bash
