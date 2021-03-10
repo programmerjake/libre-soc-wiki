@@ -15,7 +15,7 @@ chroot $MY_CHROOT /bin/bash
 
 ## Steps to compile Project Trellis
 
-Necessary software to install
+### Necessary software to install
 
 apt-get install git
 
@@ -23,29 +23,34 @@ apt-get install python3 python3-dev clang cmake libboost-dev libboost-filesystem
 
 git clone --recursive https://github.com/YosysHQ/prjtrellis
 
-Build Project Trellis
+### Build Project Trellis
 
 cd prjtrellis
+
 cd libtrellis
 
 cmake -DCMAKE_INSTALL_PREFIX=/usr/local/libtrellis .
+
 make
+
 make install
 
 ## Steps to compile Project Nextpnr with ECP5
 
-Necessary software to install
+### Necessary software to install
 
 apt-get install libeigen3-dev
 
 git clone --recursive https://github.com/YosysHQ/nextpnr
 
-Build Project nextpnr-ecp5
+### Build Project nextpnr-ecp5
 
 cd nextpnr
 
 cmake -DCMAKE_INSTALL_PREFIX=/usr/local/nextpnr-ecp5 -DARCH=ecp5 -DTRELLIS_INSTALL_PREFIX=/usr/local/libtrellis .
+
 make
+
 make install
 
 Please adjust the install paths for nextpnr and previous prjtrellis.
