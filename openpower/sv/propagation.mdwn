@@ -31,12 +31,13 @@ then the new entries are placed after the end of the highest-indexed one.
 | OP |     | MMM |     | ?-Form  |
 | OP | idx | 000 | imm |         |
 
-Three different types of contexts are available so far: svp64 RM and
+Four different types of contexts are available so far: svp64 RM, setvl, Remap and
 swizzle. Their format is as follows when stored in SPRs:
 
 | 0..3 | 4..7   | 8........31 |  name     |
 | ---- | ----   | ----------- | --------- |
 | 0000 | 0000   | `RM[0:23]`  |  [[sv/svp64]] RM |
+| 0000 | 0001   |`setvl[0:23]`|  [[sv/setvl]] VL |
 | 0001 | 0 mask | swiz1 swiz2 |  swizzle  |
 | 0010 | brev   | sh0-3 ms0-3 |  [Remap](sv/remap)    |
 | 0011 | brev   | sh0-3 ms0-3 |  [SubVL Remap](sv/remap)    |
@@ -202,3 +203,13 @@ The mask is encoded as follows:
 * bit 3 indicates that the fourth svp64 EXTRA field reshaped
 
 This allows even instructions that have 2 destination registers to be reshaped.
+
+# setvl
+
+Fitting into 22 bits with 2 reserved and 2 for future
+expansion of SV Vector Length is a total of 24 bits
+which is exactly the same size as SVP64 RM
+
+| 0.5|6.10| 11..18 |19.20  |21| 22.23 |
+| -- | -- | ------ | ----- |--| ----- |
+| RT | RA | SVi // | vs ms |Rc| rsvd  |
