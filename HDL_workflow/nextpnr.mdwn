@@ -2,6 +2,11 @@
 
 ## Setting up new debootstrap and chroot into it
 
+Run the following if you wish to isolate the nextpnr-ecp5 build
+from other software (reproducible builds) or use the schroot
+auto-preparation script here:
+<https://git.libre-soc.org/?p=dev-env-setup.git;a=blob;f=mk-deb-chroot;hb=HEAD>
+
     export MY_CHROOT=/stable-chroot
     mkdir $MY_CHROOT
     debootstrap stable $MY_CHROOT http://deb.debian.org/debian/
