@@ -1,0 +1,52 @@
+# Installation instructions for nextpnr with ECP5 support
+
+## Setting up new debootstrap and chroot into it
+
+export MY_CHROOT=/stable-chroot
+mkdir $MY_CHROOT
+
+debootstrap stable $MY_CHROOT http://deb.debian.org/debian/
+
+mount -t proc proc $MY_CHROOT/proc
+mount -t sysfs sysfs $MY_CHROOT/sys
+mount -t devpts devpts $MY_CHROOT/dev/pts/
+
+chroot $MY_CHROOT /bin/bash
+
+## Steps to compile Project Trellis
+
+Necessary software to install
+
+apt-get install git
+
+apt-get install python3 python3-dev clang cmake libboost-dev libboost-filesystem-dev libboost-thread-dev libboost-program-options-dev libboost-iostreams-dev openocd
+
+git clone --recursive https://github.com/YosysHQ/prjtrellis
+
+Build Project Trellis
+
+cd prjtrellis
+cd libtrellis
+
+cmake -DCMAKE_INSTALL_PREFIX=/usr/local/libtrellis .
+make
+make install
+
+## Steps to compile Project Nextpnr with ECP5
+
+Necessary software to install
+
+apt-get install libeigen3-dev
+
+git clone --recursive https://github.com/YosysHQ/nextpnr
+
+Build Project nextpnr-ecp5
+
+cd nextpnr
+
+cmake -DCMAKE_INSTALL_PREFIX=/usr/local/nextpnr-ecp5 -DARCH=ecp5 -DTRELLIS_INSTALL_PREFIX=/usr/local/libtrellis .
+make
+make install
+
+Please adjust the install paths for nextpnr and previous prjtrellis.
+
