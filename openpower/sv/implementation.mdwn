@@ -78,7 +78,9 @@ An autogenerator containing CSV files is available so that the task of creating 
 * python-based assembler-translator: 40% done (lkcl)
 * c++ macros: underway (jacob)
 
-Note when decoding the RM intobits different modes that LDST interprets the 5 mode bits differently not just on whether it is LD/ST bit also what *type* of LD/ST. Immediate LD/ST is further qualified to indicate if it operates in element-strided or unit-strided mode.  However Indexed LD/ST is not.
+Note when decoding the RM into bits different modes that LDST interprets the 5 mode bits differently not just on whether it is LD/ST bit also what *type* of LD/ST. Immediate LD/ST is further qualified to indicate if it operates in element-strided or unit-strided mode.  However Indexed LD/ST is not.
+
+**IMPORTANT**! when spotting RA=0 in some instructions it is critical to note that the *full **seven** bits* are used (those from EXTRA2/3 included) because RA is no longer only five bits. 
 
 Links:
 
