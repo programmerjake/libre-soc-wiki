@@ -388,8 +388,9 @@ def process_csvs():
                 res['2'] = 's:RA' # RA: Rsrc1_EXTRA2
 
             elif value == 'LDSTRM-2P-2S':
+                # stw, std, sth, stb
                 res['Etype'] = 'EXTRA3' # RM EXTRA2 type
-                res['0'] = 'd:RS' # RT: Rdest1_EXTRA2
+                res['0'] = 's:RS' # RT: Rdest1_EXTRA2
                 res['1'] = 's:RA' # RA: Rsrc1_EXTRA2
 
             elif value == 'LDSTRM-2P-2S1D':
