@@ -1,0 +1,36 @@
+# setvl
+
+SVL-Form
+
+* setvl RT, RA, SVi, vs, ms
+
+Pseudo-code:
+
+    VLimm <- SVi + 1
+
+    if vs = 1 then
+        if RA = 0 then
+            VL <- (RA)
+        else
+            VL <- VLimm
+    else
+        VL <- SVSTATE[7:13]
+
+    if ms = 1 then
+        MVL <- VLimm
+    else
+        MVL <- SVSTATE[0:6]
+
+    if VL > MVL then
+        VL = MVL
+
+    SVSTATE[0:6] = MVL
+    SVSTATE[7:13] = VL
+
+    if RT != 0 then
+        RT <- VL
+
+Special Registers Altered:
+
+    CR0                     (if Rc=1)
+
