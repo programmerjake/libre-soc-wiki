@@ -188,14 +188,23 @@ At the same time the `Rc=1` CR offsets normslly CR0 and CR1 for fixed and FP sca
 
 ## Single and Twin Predication
 
-both CR and INT predication is needed, as well as zeroing in both
+both CR and INT predication is needed, as well as zeroing in both.
+the order is best done as follows:
 
-* INT-based single: TODO
-* CR-based single:  TODO
-* INT-based twin:   TODO
-* CR-based twin:    TODO
-* Zeroing single:   TODO
-* Zeroing twin:     TODO
+* INT-based single
+* CR-based single
+* srcstep+dststep
+* INT-based twin
+* CR-based twin
+* Zeroing single
+* Zeroing twin
+
+Best done as a FSM that "advances" srcstep and dststep over the
+zeros in their respective predicate masks, *including* when the
+src and dest predicate mask is "All 1s".
+
+Bear in mind that srcstep+deststep are a form of back-to-back
+VGATHER+VSCATTER
 
 Progress:
 
