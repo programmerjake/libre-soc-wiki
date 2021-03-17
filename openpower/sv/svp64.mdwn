@@ -324,6 +324,20 @@ for both src and dest, or different regs (one for src, one for dest).
 Likewise CR based twin predication has a second set of 3 bits, allowing
 a different test to be applied.
 
+Note that it is assumed that Predicate Masks (whether INT or CR)
+are read *before* the operations proceed.  In practice (for CR Fields)
+this creates an unnecessary block on parallelism.  Therefore,
+it is up to the programmer to ensure that the CR fields used as
+Predicate Masks are not being written to by any parallel Vector Loop.
+Doing so results in **UNDEFINED** behaviour, according to the definition
+outlined in the OpenPOWER v3.0B Specification.
+
+Hardware Implementations are therefore free and clear to delay reading
+of individual CR fields until the actual predicated element operation
+needs to take place, safe in the knowledge that no programmer will
+have issued a Vector Instruction where previous elements could have
+overwritten (destroyed) not-yet-executed CR-Predicated element operations.
+
 ## Integer Predication (MASKMODE=0)
 
 When the predicate mode bit is zero the 3 bits are interpreted as below.
