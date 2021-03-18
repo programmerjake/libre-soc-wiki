@@ -325,6 +325,7 @@ def process_csvs():
     print ("# svp64 remaps")
     svp64 = OrderedDict()
     # create a CSV file, per category, with SV "augmentation" info
+    # XXX note: 'out2' not added here, needs to be added to CSV files
     csvcols = ['insn', 'Ptype', 'Etype', '0', '1', '2', '3']
     csvcols += ['in1', 'in2', 'in3', 'out', 'CR in', 'CR out'] # temporary
     for key in primarykeys:
@@ -361,6 +362,10 @@ def process_csvs():
             # go through each register matching to Rxxxx_EXTRAx
             for k in ['0', '1', '2', '3']:
                 res[k] = ''
+            # create "fake" out2 (TODO, needs to be added to CSV files)
+            res['out2'] = 'NONE'
+            if insn['upd'] == '1': # LD/ST with update has RA as out2
+                res['out2'] = 'RA'
 
             # temporary useful info
             regs = []
@@ -572,7 +577,7 @@ def process_csvs():
         print ('')
 
         #csvcols = ['insn', 'Ptype', 'Etype', '0', '1', '2', '3']
-        write_csv("%s.csv" % value, csv, csvcols)
+        write_csv("%s.csv" % value, csv, csvcols + ['out2'])
 
     # okaaay, now we re-read them back in for producing microwatt SV
 
