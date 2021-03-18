@@ -215,6 +215,8 @@ def process_csvs():
                 continue
             if insn_name.startswith('bc') or 'rfid' in insn_name:
                 continue
+            if insn_name in ['setvl',]: # SVP64 opcodes
+                continue
 
             insns[insn_name] = row # accumulate csv data by instruction
             insn_to_csv[insn_name] = csvname_ # CSV file name by instruction
