@@ -215,6 +215,7 @@ def process_csvs():
                 continue
             if insn_name.startswith('bc') or 'rfid' in insn_name:
                 continue
+
             insns[insn_name] = row # accumulate csv data by instruction
             insn_to_csv[insn_name] = csvname_ # CSV file name by instruction
             dkey = create_key(row)
@@ -571,8 +572,10 @@ def process_csvs():
         #csvcols = ['insn', 'Ptype', 'Etype', '0', '1', '2', '3']
         write_csv("%s.csv" % value, csv, csvcols)
 
+    # okaaay, now we re-read them back in for producing microwatt SV
+
     # get SVP64 augmented CSV files
-    svt = SVP64RM()
+    svt = SVP64RM(microwatt_format=True)
     # Expand that (all .csv files)
     pth = find_wiki_file("*.csv")
 
