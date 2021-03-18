@@ -605,14 +605,14 @@ def process_csvs():
         svp64_csv = svt.get_svp64_csv(fname)
 
     csvcols = ['insn', 'Ptype', 'Etype']
-    csvcols += ['in1', 'in2', 'in3', 'out', 'CR in', 'CR out']
+    csvcols += ['in1', 'in2', 'in3', 'out', 'out2', 'CR in', 'CR out']
 
     # and a nice microwatt VHDL file
     file_path = find_wiki_file("sv_decode.vhdl")
     with open(file_path, 'w') as vhdl:
         # autogeneration warning
         vhdl.write("-- this file is auto-generated, do not edit\n")
-        vhdl.write("-- http://libre-soc.org/openpower/sv_analysis.py")
+        vhdl.write("-- http://libre-soc.org/openpower/sv_analysis.py\n")
         vhdl.write("-- part of Libre-SOC, sponsored by NLnet\n")
         vhdl.write("\n")
 
@@ -642,9 +642,13 @@ def process_csvs():
             vhdl.write(typarray % (value, width))
 
         # now output structs
+        sv_cols = ['sv_in1', 'sv_in2', 'sv_in3', 'sv_out', 'sv_out2',
+                                'sv_cr_in', 'sv_cr_out']
+        fullcols = csvcols + sv_cols
         hdr = "\n" \
               "    constant sv_%s_decode_rom_array :\n" \
-              "             sv_%s_rom_array_t := (\n"
+              "             sv_%s_rom_array_t := (\n" \
+              "        -- %s\n"
         ftr = "          others  => sv_illegal_inst\n" \
               "    );\n\n"
         for value, csv in csvs_svp64.items():
@@ -653,7 +657,7 @@ def process_csvs():
             value = value.replace("-", "_")
             if value not in lens:
                 continue
-            vhdl.write(hdr % (value, value))
+            vhdl.write(hdr % (value, value, "  ".join(fullcols)))
             for entry in csv:
                 insn = str(entry['insn'])
                 sventry = svt.svp64_instrs.get(insn, None)
@@ -672,8 +676,7 @@ def process_csvs():
                     re = re.replace("2P", "P2")
                     row.append(re)
                 print (sventry)
-                for colname in ['sv_in1', 'sv_in2', 'sv_in3', 'sv_out',
-                                'sv_cr_in', 'sv_cr_out']:
+                for colname in sv_cols:
                     if sventry is None:
                         re = 'NONE'
                     else:
