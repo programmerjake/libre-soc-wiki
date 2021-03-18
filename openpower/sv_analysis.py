@@ -326,6 +326,7 @@ def process_csvs():
     svp64 = OrderedDict()
     # create a CSV file, per category, with SV "augmentation" info
     # XXX note: 'out2' not added here, needs to be added to CSV files
+    # KEEP TRACK OF THESE https://bugs.libre-soc.org/show_bug.cgi?id=619
     csvcols = ['insn', 'Ptype', 'Etype', '0', '1', '2', '3']
     csvcols += ['in1', 'in2', 'in3', 'out', 'CR in', 'CR out'] # temporary
     for key in primarykeys:
@@ -363,6 +364,7 @@ def process_csvs():
             for k in ['0', '1', '2', '3']:
                 res[k] = ''
             # create "fake" out2 (TODO, needs to be added to CSV files)
+            # KEEP TRACK HERE https://bugs.libre-soc.org/show_bug.cgi?id=619
             res['out2'] = 'NONE'
             if insn['upd'] == '1': # LD/ST with update has RA as out2
                 res['out2'] = 'RA'
