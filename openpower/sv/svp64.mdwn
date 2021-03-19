@@ -203,13 +203,13 @@ The Mode table for operations except LD/ST is laid out as follows:
 | 0-1 |  2  |  3   4  |  description              |
 | --- | --- |---------|-------------------------- |
 | 00  |   0 |  sz  dz | normal mode                      |
-| 00  |   1 | sz CRM  | reduce mode (mapreduce), SUBVL=1 |
+| 00  |   1 | dz CRM  | reduce mode (mapreduce), SUBVL=1 |
 | 00  |   1 | SVM CRM | subvector reduce mode, SUBVL>1   |
 | 01  | inv | CR-bit  | Rc=1: ffirst CR sel              |
-| 01  | inv | sz  RC1 |  Rc=0: ffirst z/nonz |
+| 01  | inv | dz  RC1 |  Rc=0: ffirst z/nonz |
 | 10  |   N | sz   dz |  sat mode: N=0/1 u/s |
 | 11  | inv | CR-bit  |  Rc=1: pred-result CR sel |
-| 11  | inv | sz  RC1 |  Rc=0: pred-result z/nonz |
+| 11  | inv | dz  RC1 |  Rc=0: pred-result z/nonz |
 
 Fields:
 
