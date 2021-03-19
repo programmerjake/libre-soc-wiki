@@ -4,9 +4,10 @@
 
 **DRAFT STATUS**
 
-this extension amalgamates bitnanipulation primitives from many sources, including RISC-V bitmanip, Packed SIMD, AVX-512 and OpenPOWER VSX.  Vectorisation and SIMD are removed: these are straight scalar (element) operations making them suitable for embedded applications.
+this extension amalgamates bitmanipulation primitives from many sources, including RISC-V bitmanip, Packed SIMD, AVX-512 and OpenPOWER VSX.  Vectorisation and SIMD are removed: these are straight scalar (element) operations making them suitable for embedded applications.
 Vectorisation Context is provided by [[openpower/sv]].
 
+Scaoar variants of bitmanip oerations found in VSX are added so that VSX may be retired as "legacy" in the far future (10 to 20 years).  Also, because VSX is hundreds of opcodes, requires 128 bit pathways, and is wholly unsuited to low power or embedded scenarios.
 
 ternaryv is experimental and is the only operation that may be considered a "Packed SIMD".  It is added as a variant of the already well-justified ternary operation (done in AVX512 as an immediate only) "because it looks fun". As it is based on the LUT4 concept it will allow accelerated emulation of FPGAs.  Other vendors of ISAs are buying FPGA companies to achieve a similar objective.
 
@@ -183,11 +184,18 @@ uint_xlen_t bext(uint_xlen_t RA, uint_xlen_t RB)
 found in v3.1 p106
 
 ```
-ptr0 ← 0 ptr1 ← 0 do i = 0 to 63 if((RB)i=0) then do
-resultptr0 ← (RS)i end ptr0 ← ptr0 + 1
-if((RB)63-i==1) then do
-result63-ptr1 ← (RS)63-i end end ptr1 ← ptr1 + 1
-RA ← result
+ptr0 = 0
+ptr1 = 0
+do i = 0 to 63
+    if((RB)i=0) then do
+       resultptr0 = (RS)i
+    end 
+    ptr0 = ptr0 + 1
+    if((RB)63-i==1) then do
+        result63-ptr1 = (RS)63-i
+    end
+    ptr1 = ptr1 + 1
+RA = result
 ```
 
 # int min/max
