@@ -52,8 +52,8 @@ minor opcode allocation
 | RT   | RA   | RB   | unshuf| shuffle | 
 | RT   | RA   | RB   | width | xperm  | 
 | RT   | RA   | RB   | type | minmax | 
-| RT   | RA   | RB   |  | av abs avgadd  | 
-| RT   | RA   | RB   |  |  | 
+| RT   | RA   | RB   |      | av abs avgadd  | 
+| RT   | RA   | RB   | type | vmask ops | 
 | RT   | RA   | RB   |  |  | 
 
 3 ops 
@@ -80,7 +80,8 @@ minor opcode allocation
 | -- | -- | --- | --- |- |-----|----- | -----|--| -------|
 | NN | BA | BB  | BC  |0 |imm  | mask | 101  |0 | ternarycr |
 
-ops
+ops (note that av avg and abs as well as vec scalar mask
+are included here)
 
 | 0.5|6.10|11.15|16.20| 21.22 | 23 | 24....30 |31| name |
 | -- | -- | --- | --- | ----- | -- | -------- |--| ---- |
@@ -93,7 +94,10 @@ ops
 | NN | RA | RB  |     |   11  | 1  | 0100 110 |Rc| rsvd |
 | NN | RA | RB  | sh  | itype | SH | 1000 110 |Rc| bmopsi |
 | NN | RA | RB  |     |       |    | 1100 110 |Rc| rsvd |
-| NN | RA | RB  |     |       | 0  | 0001 110 |Rc| rsvd |
+| NN | RA | RB  | RC  |   00  | 0  | 0001 110 |Rc| vec sbfm |
+| NN | RA | RB  | RC  |   01  | 0  | 0001 110 |Rc| vec sofm |
+| NN | RA | RB  | RC  |   10  | 0  | 0001 110 |Rc| vec sifm |
+| NN | RA | RB  | RC  |   11  | 0  | 0001 110 |Rc| vec cprop |
 | NN | RA | RB  |     |       | 0  | 0101 110 |Rc| rsvd |
 | NN | RA | RB  | RC  | 00    | 0  | 0010 110 |Rc| gorc |
 | NN | RA | RB  | sh  | 00    | SH | 1010 110 |Rc| gorci |
