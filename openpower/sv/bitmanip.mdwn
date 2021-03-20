@@ -52,7 +52,7 @@ minor opcode allocation
 | RT   | RA   | RB   | unshuf| shuffle | 
 | RT   | RA   | RB   | width | xperm  | 
 | RT   | RA   | RB   | type | minmax | 
-| RT   | RA   | RB   |  |  | 
+| RT   | RA   | RB   |  | av abs avgadd  | 
 | RT   | RA   | RB   |  |  | 
 | RT   | RA   | RB   |  |  | 
 
@@ -87,11 +87,11 @@ ops
 | NN | RA | RB  |     |       | 0  | 0000 110 |Rc| rsvd   |
 | NN | RA | RB  | RC  | itype | 1  | 0000 110 |Rc| xperm |
 | NN | RA | RB  | RC  | itype | 0  | 0100 110 |Rc| minmax |
-| NN | RA | RB  |     |       | 1  | 0100 110 |Rc| rsvd |
+| NN | RA | RB  | RC  |   00  | 1  | 0100 110 |Rc| av avgadd |
+| NN | RA | RB  | RC  |   01  | 1  | 0100 110 |Rc| av abs |
+| NN | RA | RB  |     |   10  | 1  | 0100 110 |Rc| rsvd |
+| NN | RA | RB  |     |   11  | 1  | 0100 110 |Rc| rsvd |
 | NN | RA | RB  | sh  | itype | SH | 1000 110 |Rc| bmopsi |
-| NN | RA | RB  |     |       |    | 1100 110 |Rc| rsvd |
-| NN | RA | RB  |     |       |    | 1100 110 |Rc| rsvd |
-| NN | RA | RB  |     |       |    | 1100 110 |Rc| rsvd |
 | NN | RA | RB  |     |       |    | 1100 110 |Rc| rsvd |
 | NN | RA | RB  |     |       | 0  | 0001 110 |Rc| rsvd |
 | NN | RA | RB  |     |       | 0  | 0101 110 |Rc| rsvd |
