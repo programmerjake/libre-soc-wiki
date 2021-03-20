@@ -18,11 +18,11 @@ In-advance, the summary of base scalar operations that need to be added is:
 | ------------ | ------------------------      |
 | average-add. | result = (src1 + src2 + 1) >> 1 |
 | abs-diff     | result = abs (src1-src2) |
-| signed min   | result = (src1 < src2) ? src1 : src2  |
-| signed max   | result = (src1 > src2) ? src1 : src2  |
+| signed min   | result = (src1 < src2) ? src1 : src2 use bitmanip |
+| signed max   | result = (src1 > src2) ? src1 : src2  use bitmanip |
 | bitwise sel  | (a ? b : c) - use bitmanip ternary |
 
-All other capabilities (saturate in particular) are achieved with [[sv/svp64]] modes and swizzle.  Note that unsigned integer minmax is added in bitmanip.
+All other capabilities (saturate in particular) are achieved with [[sv/svp64]] modes and swizzle.  Note that minmax and ternary are added in bitmanip.
 
 # Audio
 
