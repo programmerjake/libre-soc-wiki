@@ -7,13 +7,13 @@
 this extension amalgamates bitmanipulation primitives from many sources, including RISC-V bitmanip, Packed SIMD, AVX-512 and OpenPOWER VSX.  Vectorisation and SIMD are removed: these are straight scalar (element) operations making them suitable for embedded applications.
 Vectorisation Context is provided by [[openpower/sv]].
 
-Scaoar variants of bitmanip oerations found in VSX are added so that VSX may be retired as "legacy" in the far future (10 to 20 years).  Also, because VSX is hundreds of opcodes, requires 128 bit pathways, and is wholly unsuited to low power or embedded scenarios.
+When combined with SV, scalar variants of bitmanip operations found in VSX are added so that VSX may be retired as "legacy" in the far future (10 to 20 years).  Also, VSX is hundreds of opcodes, requires 128 bit pathways, and is wholly unsuited to low power or embedded scenarios.
 
-ternaryv is experimental and is the only operation that may be considered a "Packed SIMD".  It is added as a variant of the already well-justified ternary operation (done in AVX512 as an immediate only) "because it looks fun". As it is based on the LUT4 concept it will allow accelerated emulation of FPGAs.  Other vendors of ISAs are buying FPGA companies to achieve a similar objective.
+ternaryv is experimental and is the only operation that may be considered a "Packed SIMD".  It is added as a variant of the already well-justified ternary operation (done in AVX512 as an immediate only) "because it looks fun". As it is based on the LUT4 concept it will allow accelerated emulation of FPGAs.  Other vendors of ISAs are buying FPGA companies to achieve similar objectives.
 
-general-purpose Galois Field operations are added so as to avoid huge opcode proliferation across many areas of Computer Science.  however for convenience and also to avoid setup costs, some of the more common operations (clmul, crc32) are also added.  The expectation is that these operations would all be covered by the same pipeline.
+general-purpose Galois Field operations are added so as to avoid huge custom opcode proliferation across many areas of Computer Science.  however for convenience and also to avoid setup costs, some of the more common operations (clmul, crc32) are also added.  The expectation is that these operations would all be covered by the same pipeline.
 
-note that there are brownfield spaces below that could incorporate some of the set-before-first and other scalar operations listed in [[sv/vector_ops]], ane
+note that there are brownfield spaces below that could incorporate some of the set-before-first and other scalar operations listed in [[sv/vector_ops]], and
 the [[sv/av_opcodes]]
 
 # summary
