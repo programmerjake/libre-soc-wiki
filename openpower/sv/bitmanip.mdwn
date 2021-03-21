@@ -14,7 +14,7 @@ ternaryv is experimental and is the only operation that may be considered a "Pac
 general-purpose Galois Field operations are added so as to avoid huge custom opcode proliferation across many areas of Computer Science.  however for convenience and also to avoid setup costs, some of the more common operations (clmul, crc32) are also added.  The expectation is that these operations would all be covered by the same pipeline.
 
 note that there are brownfield spaces below that could incorporate some of the set-before-first and other scalar operations listed in [[sv/vector_ops]], and
-the [[sv/av_opcodes]]
+the [[sv/av_opcodes]] as well as [[sv/setvl]]
 
 # summary
 
@@ -115,7 +115,7 @@ are included here)
 | NN | RA | RB  | RC  | 10    |    | 1110 110 |Rc| rsvd   |
 | NN | RA | RB  | RC  | 11    | 0  | 1110 110 |Rc| clmulr  |
 | NN | RA | RB  | RC  | 11    | 1  | 1110 110 |Rc| clmulh  |
-| NN | RA | RB  |     |       |    | NN11 110 |Rc| rsvd  |
+| NN |    |     |     |       |    | --11 110 |Rc| setvl  |
 
 # count leading/trailing zeros with mask
 
