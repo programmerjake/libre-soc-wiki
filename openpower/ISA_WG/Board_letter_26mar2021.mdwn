@@ -22,7 +22,7 @@ to be sent to:
 
 Dear OPF Board,
 
-As you know the LibreSOC team have been working for over 3 years on a massive conceptual upgrade to the OpenPOWER ISA, based on Cray-Style Vectors, which will modernise it for today's 3D and VPU workloads, with an incidental side-effect of upgrading it for future supercomputing needs over the next few decades in a clean and elegant fashion.  RISC-V has RVV, ARM has SVE2, x86 has AVX512, whilst OpenPOWER has an out-of-date SIMD ISA. It goes without saying that over the decades, SIMD has been demonstrated to be harmful.
+As you know the LibreSOC team have been working for over 3 years on a massive conceptual upgrade to the OpenPOWER ISA, based on Cray-Style Vectors, which will modernise it for today's 3D and VPU workloads, with an incidental side-effect of upgrading it for future supercomputing needs over the next few decades in a clean and elegant fashion.  RISC-V has RVV, ARM has SVE2, x86 has AVX512, whilst OpenPOWER has an out-of-date SIMD ISA. It goes without saying that over the past few decades, SIMD has been demonstrated to be harmful.
 
 https://www.sigarch.org/simd-instructions-considered-harmful/
 
@@ -34,10 +34,12 @@ The problem is that our Bitmanipulation Extension alone, needed for Audio/Video 
 
 http://libre-soc.org/openpower/bitmanip
 
-More than that, these are all "general-purpose" opcodes with uses far beyond LibreSOC's use-case (notwithstanding LibreSOC's use-case itself being by definition general-purpose).  More than that, we have a duty and responsibility given that LibreSOC is targeting high-profile mass-volume general-purpose computing, it is our duty to ensure that use of EXT22 does not result in end-user developer pressure for upstream tool-chains to override the OPF's intentions, by *unintentionally* de-facto dominating (effectively allocating) EXT22 for LibreSOC use.
+More than that, these are all "general-purpose" opcodes with uses far beyond LibreSOC's use-case (notwithstanding LibreSOC's use-case itself being by definition general-purpose).  More than that, given that LibreSOC is targeting high-profile mass-volume general-purpose computing, it is our duty and responsibility to ensure that use of EXT22 does not result in end-user developer pressure for upstream tool-chains to override the OPF's intentions, by *unintentionally* de-facto dominating (effectively allocating) EXT22 for LibreSOC use.
 
-The instructions in the PowerISA v3.0C document therefore *require* us to contact the OpenPOWER Foundation, to initiate the process of including our opcodes, and SVP64, in the OpenPOWER ISA.
+The advice in the PowerISA v3.0C document therefore *require* us to contact the OpenPOWER Foundation, to initiate the process of including our opcodes, and SVP64, in the OpenPOWER ISA.
 
-In speaking verbally and informally with various people (Toshaan, Paul and Hugh) we have pieced together the way that the OpenPOWER Foundation ISA Workgroup is to be set up.  
+In speaking verbally and informally with various people (Toshaan, Paul and Hugh) we have pieced together the way that the OpenPOWER Foundation ISA Workgroup is to be set up, and we have become aware that there may be a mis-match here caused by "otherwise normally expected" provenance of ISA proposals which, from what we can gather, is being built-in to the ISA WG's by-laws.
+
+From what we understand, there are two things: firstly that individuals with no affiliation (to a Company or Academic Institution) would be prevented from tabling arbitrary ISA extensions (without a sponsor, that is).  Given that the OPF ISA WG has to act entirely fairly i.e. in a non-discriminatory fashion towards all proposals, yet also take into account the huge burden of time and responsibility that results in perpetuity from any such inclusion it is a reasonable balance, 
 
 Note: the work that LibreSOC is doing is intended for the long term. Even if, by some mischance, LibreSOC was to evaporate the work that we are doing would still be available since what we do is open source.
