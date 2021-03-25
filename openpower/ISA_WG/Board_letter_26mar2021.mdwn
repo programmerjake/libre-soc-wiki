@@ -28,13 +28,13 @@ https://www.sigarch.org/simd-instructions-considered-harmful/
 
 Normally, such huge ISA development efforts would be instigated, organised and funded through either Academia or an extremely large Corporation, or a Consortium combining multiple such entities.  It is therefore without precedent across the Computing Industry for something of this magnitude of effort to come not only from *individuals* with a completely independent non-affiliated Libre background but from a Libre background that is funded by a Charitable Foundation with a mandate to only fund "Works for the Public Good" (NLnet).
 
-From reading the PowerISA v3.0C sections we have learned and taken on board that a "Sandbox" opcode exists (EXT22) which is intended for "small private extensions" to the OpenPOWER ISA, and the expectation that these extendions mot be supported by upstream toolchains is something we agree wholeheartedly with,
+From reading the PowerISA v3.0C sections we have learned and taken on board that a "Sandbox" opcode exists (EXT22) which is intended for "small private extensions" to the OpenPOWER ISA, and the expectation that these extensions not be supported by upstream tool-chains is something we agree wholeheartedly with,
 
 The problem is that our Bitmanipulation Extension alone, needed for Audio/Video and cryptographic workloads, struggles to fit into that space, and we have not yet added Custom 3D opcodes or the IEEE754 Transcendentals (SIN, COS).
 
 http://libre-soc.org/openpower/bitmanip
 
-More than that, these are all "general-purpose" opcodes with uses far beyond LibreSOC's use-case (notwithstanding LibreSOC's use-case itself being by definition general-purpose).  More than that, we have a duty and responsibility given that LibreSOC is targetting high-profile mass-volume general-purpose computing, it is our duty to ensure that use of EXT22 does not result in end-user developer pressure for upstream toolchains to override the OPF's intentions, by *unintentionally* de-facto dominating (effectively allocating) EXT22 for LibreSOC use.
+More than that, these are all "general-purpose" opcodes with uses far beyond LibreSOC's use-case (notwithstanding LibreSOC's use-case itself being by definition general-purpose).  More than that, we have a duty and responsibility given that LibreSOC is targeting high-profile mass-volume general-purpose computing, it is our duty to ensure that use of EXT22 does not result in end-user developer pressure for upstream tool-chains to override the OPF's intentions, by *unintentionally* de-facto dominating (effectively allocating) EXT22 for LibreSOC use.
 
 The instructions in the PowerISA v3.0C document therefore *require* us to contact the OpenPOWER Foundation, to initiate the process of including our opcodes, and SVP64, in the OpenPOWER ISA.
 
