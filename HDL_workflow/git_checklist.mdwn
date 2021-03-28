@@ -1,3 +1,59 @@
+[!] *mepy: Working in progress* [!]
+
 # git checklist
 
 when using git this is a reminder of commands to run and best practices
+
+## How does working with git looks like
+- You download a directory with project files in it
+- Modify some files, add others
+- Upload your work so other can take advantage of it
+
+In git you do this by
+- *Cloning* a repository (aka downloading stuff)
+- *Committing* your local changes (aka you "take note" of what you did. e.g. modified some files, added new files, deleted some files and so on)
+- *Pushing* your work online (aka uploading online)
+
+## Cloning
+(optional) `cd ` + somewhere in your disk
+
+`git clone ` + repo url
+
+## Making changes
+// You know what to do
+
+## Committing
+`git add` + files you want to "take note" of.
+
+E.g. `git add test.png` will take note of the “test.png" file for when you will want to commit your work. (Committing your work is like saving in a videogame. When you are good with what you have done, you save the stage of your "enjoyment").
+
+When committing you are required to add a comment to your "save file" (commit).
+Like "I added the test.png file".
+
+## Pushing
+When you are done committing all your stuff, you want to share it with other. So you push on the remote repository (directory).
+
+So you just `git push`.
+
+
+### Notes 1
+Pay attention to:
+- what you modify in the repository
+- what files you add to your commit
+- when pushing, what are you actually pushing
+
+### Notes 2
+When doing `git commit` best thing to do is to add ` -m "<comment here, without brackets>"`
+
+Like this: `git commit -m "added test.png"`.
+
+If you omit the -m option, a text editor will appear to let you insert a commit message. Sometimes is useful to let git open the editor. e.g. for long comments or comments with quotes in it.
+
+If `vim` editor opens (you get stuck into something you do not know how to exit from), remember:
+- type `i` to "insert text".
+- when you are doing typing some text, press the esc key on the keyboard
+- if you want to save the comment/text, press `w` (means "write")
+- to quit, press `q`
+You are done. 
+
+To quit without saving/writing: `q!` (e.g. you want to exit)
