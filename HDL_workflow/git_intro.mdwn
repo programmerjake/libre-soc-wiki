@@ -11,10 +11,10 @@ In git you do this by:
 
 * *Cloning* a repository (aka downloading stuff)
 * *Committing* your local changes (aka you "take note" of what you did. e.g. modified some files, added new files, deleted some files and so on)
-* *Pushing* your work online (aka uploading online)
+* *Pushing* your work online
 
 ## Cloning
-(optional) `cd ` + somewhere in your disk  
+(optional) [[!template id=popup mouseover="`cd <somewhere in your disk>` (?)" popup="""'cd' stands for 'change directory'. <br>It let you change the working directory to another one.""" ]]  
 `git clone ` + repo url
 
 ## Making changes
@@ -33,7 +33,7 @@ Ahah, I was kidding. Remember:
 > not what ACTION was done on what file.
 
 ## Pushing
-When you are done committing all your stuff, you want to share it with other. So you push on the remote repository (directory).
+When you are done committing all your stuff, you want to share it with other. So you push to the remote repository (directory).
 
 So you just `git push`.
 
@@ -43,21 +43,20 @@ Pay attention to:
 
 * what you modify in the repository 
 * what files you add to your commit
-* when pushing, what are you actually pushing
+* before pushing, what you are actually going to push
 
 ### Notes 2
-When doing `git commit` best thing to do is to add ` -m "<comment here, without brackets>"`
+When doing `git commit` the quickest way to add the comment is by adding ` -m "<your comment here, without brackets>"`
 
-Like this: `git commit -m "added test.png"`.
+Like this: `git commit -m "made a correction to the calculate_sum function"`.
 
-If you omit the -m option, a text editor will appear to let you insert a commit message. Sometimes is useful to let git open the editor. e.g. for long comments or comments with quotes in it.
+If you omit the -m option, a text editor will appear to let you insert a commit message. Sometimes it is useful to let git open the editor. e.g. for long comments or comments with quotes in it.
 
 If `vim` editor opens (you get stuck into something you do not know how to exit from), remember:
 
 * type `i` to "insert text".
-* when you are doing typing some text, press the esc key on the keyboard
+* when you are done typing text, press the esc key on the keyboard
 * if you want to save the comment/text, press `w` (means "write")
 * to quit, press `q`
-
-You are done.  
-To quit without saving/writing: `q!` (e.g. you want to exit)
+  
+To quit without saving/writing type: `q!` (e.g. you want to exit)
