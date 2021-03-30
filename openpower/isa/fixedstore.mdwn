@@ -1,3 +1,28 @@
+<!-- This defines instructions described in PowerISA Version 3.0 B Book 1 -->
+
+<!-- This defines instructions that store from a register to RAM -->
+
+<!-- Note that these pages also define equivalent load instructions, -->
+<!-- these are described in fixedload.mdwn -->
+
+<!-- Section 3.3.3 Fixed-Point Store Instructions pages 54 - 57 -->
+<!-- Section 3.3.3.1 64-bit Fixed-Point Store Instructions page 57 -->
+<!-- Section 3.3.4 Fixed Point Load and Store Quadword Instructions pages 58 - 59 -->
+<!-- Section 3.3.5 Fixed-Point Load and Store with Byte Reversal Instructions page 60 -->
+<!-- Section 3.3.5.1 64-Bit Load and Store with Byte Reversal Instructions page 61 -->
+<!-- Section 3.3.6 Fixed-Point Load and Store Multiple Instructions page 62 -->
+
+<!-- MISSING stbh -->
+<!-- MISSING stbhx -->
+<!-- MISSING stbhu -->
+<!-- MISSING stbhux -->
+<!-- MISSING stbw -->
+<!-- MISSING stbwx -->
+<!-- MISSING stbwu -->
+<!-- MISSING stbwux -->
+
+<!-- Section 3.3.3 Fixed-Point Store Instructions pages 54 - 57 -->
+
 # Store Byte
 
 D-Form
@@ -190,6 +215,10 @@ Special Registers Altered:
 
     None
 
+
+
+<!-- Section 3.3.3.1 64-bit Fixed-Point Store Instructions page 57 -->
+
 # Store Doubleword
 
 DS-Form
@@ -254,6 +283,18 @@ Special Registers Altered:
 
     None
 
+
+<!-- Section 3.3.4 Fixed Point Load and Store Quadword Instructions pages 58 - 59 -->
+
+<!-- For stq, the contents of an even-odd pair of GPRs is stored into the quadword -->
+<!-- in storage addressed by EA as follows. In Big-Endian mode, the even-numbered -->
+<!-- GPR is stored into the doubleword in storage addressed by EA and the -->
+<!-- odd-numbered GPR is stored into the doubleword addressed by EA+8. In -->
+<!-- Little-Endian mode, the even-numbered GPR is stored byte-reversed into the -->
+<!-- doubleword in storage addressed by EA+8 and the odd-numbered GPR is stored -->
+<!-- byte-reversed into the doubleword addressed by EA. -->
+
+
 # Store Quadword
 
 DS-Form
@@ -269,6 +310,8 @@ Pseudo-code:
 Special Registers Altered:
 
     None
+
+<!-- Section 3.3.5 Fixed-Point Load and Store with Byte Reversal Instructions page 60 -->
 
 # Store Halfword Byte-Reverse Indexed
 
@@ -303,6 +346,8 @@ Special Registers Altered:
 
     None
 
+<!-- Section 3.3.5.1 64-Bit Load and Store with Byte Reversal Instructions page 61 -->
+
 # Store Doubleword Byte-Reverse Indexed
 
 X-Form
@@ -321,6 +366,9 @@ Pseudo-code:
 Special Registers Altered:
 
     None
+
+
+<!-- Section 3.3.6 Fixed-Point Load and Store Multiple Instructions page 62 -->
 
 # Store Multiple Word
 
@@ -342,3 +390,4 @@ Special Registers Altered:
 
     None
 
+<!-- Checked March 2021 -->

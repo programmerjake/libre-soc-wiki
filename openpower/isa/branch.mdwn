@@ -1,3 +1,25 @@
+<!-- Instructions here described in PowerISA Version 3.0 B Book 1 -->
+
+<!-- Section 2.4 Branch Instructions. Pages 33 - 39 -->
+
+<!-- The sequence of instruction execution can be changed by the Branch -->
+<!-- instructions. Because all instructions are on word boundaries, bits 62 and 63 -->
+<!-- of the generated branch target address are ignored by the processor in -->
+<!-- performing the branch. -->
+
+<!-- target_addr specifies the branch target address. -->
+
+<!-- If AA=0 then the branch target address is the sum of LI || 0b00 sign-extended -->
+<!-- and the address of this instruction, with the high-order 32 bits of the branch -->
+<!-- target address set to 0 in 32-bit mode. -->
+
+<!-- If AA=1 then the branch target address is the value LI || 0b00 sign-extended, -->
+<!-- with the high-order 32 bits of the branch target address set to 0 in 32-bit -->
+<!-- mode. -->
+
+<!-- If LK=1 then the effective address of the instruction following the Branch -->
+<!-- instruction is placed into the Link Register. -->
+
 # Branch
 
 I-Form
@@ -103,3 +125,6 @@ Special Registers Altered:
 
     CTR                    (if BO2=0)
     LR                       (if LK=1)
+
+
+<!-- Checked March 2021 -->

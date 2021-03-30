@@ -1,3 +1,32 @@
+<!-- This defines instructions described in PowerISA Version 3.0 B Book 1 -->
+
+<!-- Section 4.4.4 Move To/From System Register Instructions pages 970 - 1038 -->
+
+<!-- Section 4.4.4 Move To/From System Register Instructions pages 970 - 1038 -->
+<!-- Section 3.3.17 Move To/From System Register Instructions Page 120 -->
+<!-- Section 4.3.2 Data Cache Instructions Page 850 -->
+
+<!-- This needs checking again -->
+
+<!-- The Move To Special Purpose Register and Move From Special Purpose Register -->
+<!-- instructions are described in Book I, but only at the level available to an -->
+<!-- application programmer. For example, no mention is made there of registers that -->
+<!-- can be accessed only in privileged state. The descriptions of these instructions -->
+<!-- given below extend the descriptions given in Book I, but do not list Special -->
+<!-- Purpose Registers that are implementation-dependent. In the descriptions of -->
+<!-- these instructions given in below, the “defined” SPR numbers are the SPR -->
+<!-- numbers shown in the Figure 18 for the instruction and the -->
+<!-- implementation-specific SPR numbers that are implemented, and similarly for -->
+<!-- “defined” registers. All other SPR numbers are undefined for the instruction. -->
+<!-- (Implementation-specific SPR numbers that are not implemented are considered to -->
+<!-- be undefined.) When an SPR is defined for mtspr and undefined for mfspr, or -->
+<!-- vice versa, a hyphen appears in the column for the instruction for which the -->
+<!-- SPR number is undefined. -->
+
+
+
+<!-- Page 974 -->
+
 # Move To Special Purpose Register
 
 XFX-Form
@@ -20,6 +49,8 @@ Special Registers Altered:
 
     See spec 3.3.17
 
+<!-- Page 975 -->
+
 # Move From Special Purpose Register
 
 XFX-Form
@@ -41,6 +72,8 @@ Pseudo-code:
 Special Registers Altered:
 
     None
+
+<!-- Section 3.3.17 Move To/From System Register Instructions Page 120 -->
 
 # Move to CR from XER Extended
 
@@ -142,6 +175,8 @@ Special Registers Altered:
 
     None
 
+<!-- Out of order from the PDF. Page 977 -->
+
 # Move To Machine State Register
 
 X-Form
@@ -210,6 +245,8 @@ Special Registers Altered:
 
     None
 
+<!-- Section 4.3.2 Data Cache Instructions Page 850 -->
+
 # Data Cache Block set to Zero
 
 X-Form
@@ -226,6 +263,8 @@ Special Registers Altered:
 
     None
 
+<!-- Section 5.9.3.3 TLB Management Instructions Page 1033 -->
+
 # TLB Invalidate Entry
 
 X-Form
@@ -240,3 +279,5 @@ Special Registers Altered:
 
     None
 
+<!-- MISSING tlbiel page 1038 -->
+<!-- MISSING tlbsync page 1042 -->

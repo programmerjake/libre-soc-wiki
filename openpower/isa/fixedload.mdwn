@@ -1,3 +1,31 @@
+<!-- This defines instructions described in PowerISA Version 3.0 B Book 1 -->
+
+<!-- This defines instructions that load from RAM to a register -->
+
+<!-- Note that these pages also define equivalent store instructions, -->
+<!-- these are described in fixedstore.mdwn -->
+
+<!-- Section 3.3.2 This defines the Fixed-Point Load Instructions pages 47 - 53 -->
+<!-- Section 3.3.3 Fixed-Point Store Instructions pages 54 - 56 -->
+<!-- Section 3.3.3.1 64-bit Fixed-Point Store Instructions pages 57 -->
+<!-- Section 3.3.4 Fixed Point Load and Store Quadword Instructions pages 58 - 59 -->
+<!-- Section 3.3.5 Fixed-Point Load and Store with Byte Reversal Instructions page 60 -->
+<!-- Section 3.3.5.1 64-Bit Load and Store with Byte Reversal Instructions page 61 -->
+<!-- Section 3.3.6 Fixed-Point Load and Store Multiple Instructions page 62 -->
+
+
+
+<!-- Section 3.3.2 This defines the Fixed-Point Load Instructions pages 47 - 53 -->
+
+<!-- The byte, halfword, word, or doubleword in storage addressed by EA is loaded -->
+<!-- into register RT. -->
+
+<!-- Many of the Load instructions have an “update” form, in which register RA is -->
+<!-- updated with the effective address. For these forms, if RA!=0 and RA!=RT, the -->
+<!-- effective address is placed into register RA and the storage element (byte, -->
+<!-- halfword, word, or doubleword) addressed by EA is loaded into RT. -->
+
+
 # Load Byte and Zero
 
 D-Form
@@ -366,6 +394,31 @@ Special Registers Altered:
 
     None
 
+<!-- Section 3.3.3 Fixed-Point Store Instructions pages 54 - 56 -->
+
+<!-- The contents of register RS are stored into the byte, halfword, word, or -->
+<!-- doubleword in storage addressed by EA. -->
+
+<!-- Many of the Store instructions have an “update” form, in which register RA is -->
+<!-- updated with the effective address. For these forms, the following rules apply. -->
+
+<!-- If RA!=0, the effective address is placed into register RA. -->
+
+<!-- If RS=RA, the contents of register RS are copied to the target storage element -->
+<!-- and then EA is placed into RA (RS). -->
+
+<!-- Section 3.3.3.1 64-bit Fixed-Point Store Instructions pages 57 -->
+
+<!-- Section 3.3.4 Fixed Point Load and Store Quadword Instructions pages 58 - 59 -->
+
+<!-- For lq, the quadword in storage addressed by EA is loaded into an even-odd pair -->
+<!-- of GPRs as follows. In Big-Endian mode, the even-numbered GPR is loaded with -->
+<!-- the doubleword from storage addressed by EA and the odd-numbered GPR is loaded -->
+<!-- with the doubleword addressed by EA+8. In Little-Endian mode, the even-numbered -->
+<!-- GPR is loaded with the byte-reversed doubleword from storage addressed by EA+8 -->
+<!-- and the odd-numbered GPR is loaded with the byte-reversed doubleword addressed -->
+<!-- by EA. -->
+
 # Load Quadword
 
 DQ-Form
@@ -381,6 +434,10 @@ Pseudo-code:
 Special Registers Altered:
 
     None
+
+<!-- MISSING stq -->
+
+<!-- Section 3.3.5 Fixed-Point Load and Store with Byte Reversal Instructions page 60 -->
 
 # Load Halfword Byte-Reverse Indexed
 
@@ -399,6 +456,8 @@ Special Registers Altered:
 
     None
 
+<!-- MISSING sthbrx -->
+
 # Load Word Byte-Reverse Indexed
 
 X-Form
@@ -416,6 +475,11 @@ Pseudo-code:
 Special Registers Altered:
 
     None
+
+<!-- MISSING stwbrx -->
+
+
+<!-- Section 3.3.5.1 64-Bit Load and Store with Byte Reversal Instructions page 61 -->
 
 # Load Doubleword Byte-Reverse Indexed
 
@@ -437,6 +501,10 @@ Special Registers Altered:
 
     None
 
+<!-- MISSING stdbrx -->
+
+<!-- Section 3.3.6 Fixed-Point Load and Store Multiple Instructions page 62 -->
+
 # Load Multiple Word
 
 DQ-Form
@@ -456,3 +524,7 @@ Pseudo-code:
 Special Registers Altered:
 
     None
+
+<!-- MISSING stmw -->
+
+
