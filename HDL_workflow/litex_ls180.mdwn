@@ -35,4 +35,33 @@ into soclayout experiments9:
 and you can then begin the build process inside the coriolis2 chroot:
 
     cd soclayout/experiments9
-    nohup ./build_ls180.sh &
+    nohup ./build_full.sh &
+
+**note that you will need yosys checkout 049e3abf9 for the coriolis2 build**
+this is encoded into the dev-env-setup script which automates the chroot
+creation <https://git.libre-soc.org/?p=dev-env-setup.git;a=blob;f=coriolis2-chroot;hb=HEAD>
+
+# build process for ls180 with 4k srams
+
+for the variant with 4k srams:
+
+    cd soc
+    make ls180_4k_verilog
+    cd src/soc/litex/florent
+    make ls1804k
+    cp ls180.il /tmp
+
+at this point you can copy ls180.il over to the coriolis2 chroot,
+into soclayout experiments9 in a **different** location from the
+above:
+
+    soclayout/experiments9/non_generated/full_core_4_4ksram_ls180.il 
+
+and you can then begin the build process inside the coriolis2 chroot:
+
+    cd soclayout/experiments9
+    nohup ./build_full_4ksram.sh &
+
+**note that you will need yosys checkout 049e3abf9 for the coriolis2 build**
+this is encoded into the dev-env-setup script which automates the chroot
+creation <https://git.libre-soc.org/?p=dev-env-setup.git;a=blob;f=coriolis2-chroot;hb=HEAD>
