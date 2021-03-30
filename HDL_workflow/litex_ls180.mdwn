@@ -10,3 +10,24 @@ the following have been identified as working with sim.py.  dependencies:
     apt-get install libjson-c-dev
     apt-get install libevent-dev
     apt-get install verilator
+
+# build process for ls180
+
+for the variant without 4k srams:
+
+    standard install (see [[HDL_workflow]]
+    cd soc
+    make ls180_verilog
+    cd src/soc/litex/florent
+    make ls180
+    cp ls180.il /tmp
+
+at this point you can copy ls180.il over to the coriolis2 chroot,
+into soclayout experiments9:
+
+    soclayout/experiments9/non_generated/full_core_ls180.il 
+
+and you can then begin the build process inside the coriolis2 chroot:
+
+    cd soclayout/experiments9
+    nohup ./build_ls180.sh &
