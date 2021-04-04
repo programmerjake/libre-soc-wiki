@@ -113,6 +113,12 @@ retain their v3.0B / v3.1B OpenPOWER Standard compliant meaning.
     111 |        |       | EXT58 | EXT59 |       | EXT61  |       | EXT63 | 111
         |  000   |   001 |   010 |  011  |   100 |   101  | 110   |  111
 
+# Single Predication
+
+This is a standard mode normally found in Vector ISAs.  every element in rvery source Vector and in the destination uses the same bit of one single predicate mask.
+
+Note however that in SVSTATE, implementors MUST increment both srcstep and dststep, and that the two must be equal at all times.
+
 # Twin Predication
 
 This is a novel concept that allows predication to be applied to a single
