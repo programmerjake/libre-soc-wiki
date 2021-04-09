@@ -1,4 +1,4 @@
-# ULX3S JTAG Connection with STLINKV2
+# ULX3S JTAG Connection with ft232r
 
 Cross referenced with:
 
@@ -16,7 +16,7 @@ Checklist based on above
     
 * ***DO*** make sure to ***only*** drive an input as an input, and to ***only*** drive an output as an output.
 
-* ***DO*** make sure to ***only*** wire up 5.0V to 5.0V and to ***only*** wire up GND to GND with the jumper-cables.
+* ***DO*** make sure to ***only*** wire up 3.3V to 3.3V and to ***only*** wire up GND to GND with the jumper-cables.
 
 * ***DO*** make sure that ***before*** even ***thinking*** of uploading to and powering up the FPGA that everything has been ***THOROUGHLY*** triple-checked.
 
@@ -27,37 +27,37 @@ To start we have to ensure we have a safe set up.
 | Checklist Step |
 |----------------|
 | Ensure power is disconnected from FPGA |
-| Ensure STLINKV2 USB is disconnected |
+| Ensure ft232r USB is disconnected |
 | Ensure FPGA USB is disconnected |
 
 Now lets review all of the relevant material on this page before we begin the wiring process.
 
 | Checklist Step |
 |----------------|
-| Review the STLINKv2 Connector diagram and table |
+| Review the ft232r Connector diagram and table |
 | Review the connections table for your model of fpga |
-| Ensure the orientation of the FPGA and STLINKv2 match that of the images and diagrams on this page |
+| Ensure the orientation of the FPGA and ft232r match that of the images and diagrams on this page |
 
-Next we will wire up the STLINKv2 and our FPGA in three separate stages. 
+Next we will wire up the ft232r and our FPGA in three separate stages. 
 
-* First we will attach the FEMALE end of a ***FEMALE-TO-MALE (FTM)*** jumper cable to each necessary header pin on the STLINKv2. 
+* First we will attach one end of a ***MALE-TO-MALE (MTM)*** jumper cable to each necessary female header pin-hole on the ft232f. 
 
 * Then we will attach one end of a ***FEMALE-TO-FEMALE (FTF)*** cable to each male header pin on the FPGA.
 
-* Finally, we will connect the wires from the STLINKv2 to the wires from the FPGA by matching the colours of the wires.
+* Finally, we will connect the wires from the ft232r to the wires from the FPGA by matching the colours of the wires.
 
 This way you do not lose the connections when you want to disconnect and store the two devices. We are using FEMALE-TO-FEMALE jumper cables on the male header pins of the FPGA so that the wires do not randomly damage the bare PCB due to a short.
 
-We will wire each of the pins on the the STLINKv2 according to the diagrams, tables, and images on this page. 
+We will wire each of the pins on the the ft232r according to the diagrams, tables, and images on this page. 
 
-|   Action   | Colour | Pin # | Pin Name |
-|------------|--------|-------|----------|
-| Attach FTM | Red    |   2   |   VREF   |
-| Attach FTM | Black  |   4   |   GND    |
-| Attach FTM | Green  |   5   |   TDI    |
-| Attach FTM | Blue   |   7   |   TMS    |
-| Attach FTM | White  |   9   |   TCK    |
-| Attach FTM | Yellow |  13   |   TDO    |
+|   Action   | Colour | Pin Name |
+|------------|--------|----------|
+| Attach MTM | Black  |   GND    |
+| Attach MTM | Brown  |   TMS    |
+| Attach MTM | Red    |   VCC    |
+| Attach MTM | Orange |   TCK    |
+| Attach MTM | Yellow |   TDI    |
+| Attach MTM | Green  |   TDO    |
 
 Next, we will wire each of the pins on the the FPGA according to the diagrams, tables, and images on this page.
 
@@ -67,10 +67,10 @@ Follow this section if you have the ULX3S FPGA:
 |------------|--------|-------|----------|
 | Attach FTF | Red    |   2   |   VREF   |
 | Attach FTF | Black  |   4   |   GND    |
-| Attach FTF | Green  |   5   |   TDI    |
-| Attach FTF | Blue   |   6   |   TMS    |
-| Attach FTF | White  |   7   |   TCK    |
-| Attach FTF | Yellow |   8   |   TDO    |
+| Attach FTF | Yellow |   5   |   TDI    |
+| Attach FTF | Brown  |   6   |   TMS    |
+| Attach FTF | Orange |   7   |   TCK    |
+| Attach FTF | Green  |   8   |   TDO    |
 
 Follow this section if you have the Versa ECP5 FPGA:
 
@@ -78,41 +78,37 @@ Follow this section if you have the Versa ECP5 FPGA:
 |------------|--------|----------|----------|
 | Attach FTF | Red    |    39    |   VREF   |
 | Attach FTF | Black  |     1    |   GND    |
-| Attach FTF | Green  |     4    |   TDI    |
-| Attach FTF | Blue   |     5    |   TMS    |
-| Attach FTF | White  |     6    |   TCK    |
-| Attach FTF | Yellow |     7    |   TDO    |
+| Attach FTF | Yellow |     4    |   TDI    |
+| Attach FTF | Brown  |     5    |   TMS    |
+| Attach FTF | Orange |     6    |   TCK    |
+| Attach FTF | Green  |     7    |   TDO    |
 
 Final steps for both FPGA boards:
 
 | Checklist Step |
 |----------------|
-| Check each jumper wire connection between the corresponding pins on the FPGA and the STLINKv2 **THREE** times |
+| Check each jumper wire connection between the corresponding pins on the FPGA and the ft232r **THREE** times |
 | ***lckl*** check for ground loops? |
 
 
-Finally, we will connect the jumper cables of the same colour from STLINKv2 and the FPGA.
+Finally, we will connect the jumper cables of the same colour from ft232r and the FPGA.
 
 | Checklist Step |
 |----------------|
-| Attach the ends of the **RED** jumper cables   |
-| Attach the ends of the **BLACK** jumper cables |
-| Attach the ends of the **GREEN** jumper cables |
-| Attach the ends of the **BLUE** jumper cables  |
-| Attach the ends of the **WHITE** jumper cables |
+| Attach the ends of the **RED** jumper cables    |
+| Attach the ends of the **BLACK** jumper cables  |
 | Attach the ends of the **YELLOW** jumper cables |
+| Attach the ends of the **BROWN** jumper cables  |
+| Attach the ends of the **ORANGE** jumper cables |
+| Attach the ends of the **GREEN** jumper cables  |
 
-Connect the ***ONLY*** USB-to-MicroUSB cable to the STLINKv2 ***ONLY***. This should be the ***ONLY*** USB cable connected to the setup of the STLINKv2 and the FPGA board. The ***ONLY*** things connected to the FPGA board are the coloured jumper cables from the above steps.
+***lckl if both the micro-usb cable and the ft232r GND and VCC wires are connected to the fpga will this result in volatage fighting where the fpga will be damaged?***
 
-If there are multiple USB cables connected the FPGA ***WILL*** be ***DAMAGED***.
-
-Finally, plug in the USB end of the USB-to-MicroUSB cable that is plugged into the STLINKv2 into your computer. Begin testing the SOC on the FPGA (instructions to follow).
+Finally, plug in the USB end of the USB-to-MicroUSB cable that is plugged into the ft232r into your computer. Begin testing the SOC on the FPGA (instructions to follow).
 
 ## Connecting the dots:
 
 Accurate render of board for reference <https://github.com/emard/ulx3s/blob/master/pic/ulx3st.jpg>
-
-STLINKV2 Pins and JTAG signals schematic/user guide <https://www.st.com/resource/en/user_manual/dm00026748-stlinkv2-incircuit-debuggerprogrammer-for-stm8-and-stm32-stmicroelectronics.pdf>
 
 Litex platform file <https://github.com/litex-hub/litex-boards/blob/master/litex_boards/platforms/ulx3s.py>
 
@@ -167,86 +163,81 @@ Board pin # (count) | Board pin label # | FPGA IO PAD | GPIO # (n/p) |   Label  
 
 As noted in the schematic pins GP,GN 0-7 are single ended non-differential pairs, whereas pins GP,GN 8-13 I haven't mapped out here as they are bidirectional differential pairs.
 
-Proposed FPGA External Pin to STLINK JTAG pin connections:
+
+``` ft232 pin and wire colour table converted to jtag signal names
+ _________________________
+| Pin # | Name |  Colour  |
+|-------|------|----------|
+|   1   | GND  |  Black   |
+|   2   | TMS  |  Brown   |
+|   3   | VCC  |  Red     |
+|   4   | TCK  |  Orange  |
+|   5   | TDI  |  Yellow  |
+|   6   | TDO  |  Green   |
+|_______|______|__________|
+```
+
+Proposed FPGA External Pin to ft232r JTAG pin connections:
 
 ```
    all pin #'s have headers pins on the fpga unless denoted as (no header)
  ______________________________________________________________________________
 |             | board |             |             |                |           |
-|             | label |             |             |STLINKV2  JTAG  |           |
+|             | label |             |             | ft232r   JTAG  |           |
 |    pin #    |   #   | FPGA IO PAD |GPIO # (n/p) | Pin #  (Signal)|Wire Colour|
 |_____________|_______|_____________|_____________|________________|___________|
 |1 (no header)|  3.3v |NOT CONNECTED|NOT CONNECTED| NOT CONNECTED  |    NOT    |
-|2            |  3.3v | IO VOLT REF | IO VOLT REF |    2 (MCU VDD) |    Red    |
+|2            |  3.3v | IO VOLT REF | IO VOLT REF |    3 (VCC)     |    Red    |
 |3 (no header)|-|(GND)|NOT CONNECTED|NOT CONNECTED| NOT CONNECTED  |    NOT    |
-|4            |-|(GND)|    NONE     |     GND     |    4 (GND)     |   Black   |
-|5 (J1_5-)    |   0   |     C11     |    gn[0]    |    5 (JTDI)    |   Green   |
-|6 (J1_5+)    |   0   |     B11     |    gp[0]    |    7 (JTMS)    |   Blue    |
-|7 (J1_7-)    |   1   |     A11     |    gn[1]    |    9 (JTCK)    |   White   |
-|8 (J1_7+)    |   1   |     A10     |    gp[1]    |   13 (JTDO)    |   Yellow  |
+|4            |-|(GND)|    NONE     |     GND     |    1 (GND)     |   Black   |
+|5 (J1_5-)    |   0   |     C11     |    gn[0]    |    5 (TDI)     |   Yellow  |
+|6 (J1_5+)    |   0   |     B11     |    gp[0]    |    2 (TMS)     |   Brown   |
+|7 (J1_7-)    |   1   |     A11     |    gn[1]    |    4 (TCK)     |   Orange  |
+|8 (J1_7+)    |   1   |     A10     |    gp[1]    |    6 (TDO)     |   Green   |
 |_____________|_______|_____________|_____________|________________|___________|
 ```
 
 Complete diagram:
 
 ```
-Pins intentionally have no header or are not connected to the STLINKVT are marked
+Pins intentionally have no header or are not connected to the ft232 are marked
 and therefore have no value are marked with 'NOT'
 
-(ST# JTAG) = (STLINKV2 pin #   JTAG signal name)
-
+(ft232r# JTAG) = (ft232r pin #   JTAG signal name)
 
                              J1
             Wire                             Wire
            Colour [GP{x}]|PCB label|[GN{x}] Colour
-(ST# JTAG)        (Pin count +)(Pin count -)      (ST# JTAG)
- ________________________V__________V_________________________
-|                                                             |
-|( 2 JVDD) red    [VREF] 2  |3.3V|  1   NOT   NOT    NOT      |
-|( 4 JGND) black   [GND] 4  | -| |  3   NOT   NOT    NOT      |
-|( 7 JTMS) blue    [GP0] 6  |  0 |  5  [GN0] green (5 JTDI)   |
-|(13 JTDO) yellow  [GP1] 8  |  1 |  7  [GN1] white (9 JTCK)   |
-|_____________________________________________________________|
+(ft232r# JTAG)   (Pin count +)(Pin count -)   (ft232r# JTAG)
+ ______________________V__________V_______________________
+|                                                         |
+|(3 VCC) red    [VREF] 2  |3.3V|  1   NOT   NOT    NOT    |
+|(1 GND) black   [GND] 4  | -| |  3   NOT   NOT    NOT    |
+|(2 TMS) brown   [GP0] 6  |  0 |  5  [GN0] yellow (5 TDI) |
+|(6 TDO) green   [GP1] 8  |  1 |  7  [GN1] orange (4 TCK) |
+|_________________________________________________________|
 ```
 
-## Images of wires on FPGA and on STLINKV2
+## Images of wires on FPGA and on ft232r
 
 Image of JTAG jumper wire connections on ULX3S FPGA side
 
 [[!img HDL_workflow/jtag_wires_ulx3s_fpga.jpg size="200x" ]] 
 
-Image of JTAG jumper wire connections on STLINKV2 side
-
-(same orientation as JTAG pinout documentation)
-
-[[!img HDL_workflow/jtag_wires_ulx3s_stlinkv2_same_orientation_as_jtag.jpg size="250x" ]]                                    
-
-Image of JTAG jumper wire connections on STLINKV2 side
-
-(opposite orientation as JTAG pinout documentation, 
-
-same orientation as 'ST' text on STLINKV2 device)
-
-[[!img HDL_workflow/jtag_wires_ulx3s_stlinkv2_opposite_orientation_to_jtag.jpg size="x302" ]]                                    
-
-# STLinkV2 connector
-
-[[!img 2020-11-03_14-08.png size="900x" ]] 
-
-[[!img 2020-11-03_14-09.png size="900x" ]] 
+Image of JTAG jumper wire connections on ft232r side
 
 # VERSA ECP5 Connections
 
 Table of connections:
 
-| X3  pin #   | FPGA IO PAD | STLinkv2       |Wire Colour|
-|-------------|-------------|----------------|-----------|
-|39 +3.3V     | 3.3V supply | 2 (MCU VDD)    |   Red     |
-|1 GND        | GND         | 4 (GND)        |   Black   |
-|4 IO29       |  B19        |    5 (TDI)     |   Green   |
-|5 IO30       |  B12        |    7 (TMS)     |   Blue    |
-|6 IO31       |  B9         |    9 (TCK)     |   White   |
-|7 IO32       |  E6         |   13 (TDO)     |   Yellow  |
+| X3  pin #   | FPGA IO PAD |  ft232r   |Wire Colour|
+|-------------|-------------|-----------|-----------|
+|   39 +3.3V  | 3.3V supply |  3 (VCC)  |   Red     |
+|    1 GND    |     GND     |  1 (GND)  |   Black   |
+|    4 IO29   |     B19     |  5 (TDI)  |   Yellow  |
+|    5 IO30   |     B12     |  2 (TMS)  |   Brown   |
+|    6 IO31   |     B9      |  4 (TCK)  |   Orange  |
+|    7 IO32   |     E6      |  6 (TDO)  |   Green   |
 
 [[!img 2020-11-03_13-22.png size="900x" ]] 
 
