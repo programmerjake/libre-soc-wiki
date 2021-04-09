@@ -1,0 +1,60 @@
+Switching off parts of the CPU
+==============================
+
+This is a few notes as a result of a discussion with Luke in April 2021.
+
+Overview
+--------
+
+The basic ideas are:
+
+* Few programs will use the Vector Registers or the Vector-Scalar Registers
+
+* If these could be switched off there will be power saving
+
+* Power these back up when needed
+
+* There might be other parts of the CPU that could also be opportunistically switched off
+
+A bit more detail
+-----------------
+
+* How to switch on/off ? Is it done by the hardware or controlled by the operating system (OS) ?
+
+** It should be under OS control.
+The OS already does this sort of thing for: disks, Bluetooth, ...
+The OS is in best position to know
+
+*** how much idle time makes a component a candidate for switching off
+
+*** when not to switch off - eg imminent use expected
+
+*** user preferences
+
+* What happens when a program tries to use something switched off ?
+
+** a hardware exception ought to be raised, in much the same way as when
+a program trying to use floating point with hardware that does not have floating point.
+The OS could then switch on and restart the process
+
+
+Questions
+---------
+
+* How long will it take to start (power up) part of the CPU
+
+** I have looked hard to try to get a clue
+
+** the best that I can do is [ARM's big.LITTLE](https://community.arm.com/developer/ip-products/processors/b/processors-ip-blog/posts/ten-things-to-know-about-big-little)
+talks about 30-100 microseconds to do process migration and voltage/frequency changes
+
+** this is NOT the same as what is being talked about here, but is the best that I can do
+
+** Finding how long to, eg, switch on/off a Bluetooth device might give closer estimate as to
+how long things take
+
+* How much power would be saved ?
+
+* How to implement this ?
+
+ADDW
