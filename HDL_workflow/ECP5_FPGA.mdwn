@@ -163,6 +163,54 @@ Board pin # (count) | Board pin label # | FPGA IO PAD | GPIO # (n/p) |   Label  
 
 As noted in the schematic pins GP,GN 0-7 are single ended non-differential pairs, whereas pins GP,GN 8-13 I haven't mapped out here as they are bidirectional differential pairs.
 
+``` from http://openocd.org/doc/html/Debug-Adapter-Configuration.html#index-ftdi
+List of connections (default physical pin numbers for FT232R in 28-pin SSOP package):
+
+    - RXD(5) - TDI
+    - TXD(1) - TCK
+    - RTS(3) - TDO
+    - CTS(11) - TMS
+    - DTR(2) - TRST
+    - DCD(10) - SRST 
+```
+
+``` from https://github.com/ntfreak/openocd/blob/master/src/jtag/drivers/ft232r.c#L79-L99
+/**
+ * FT232R GPIO bit number to RS232 name
+ */
+#define FT232R_BIT_COUNT 8
+static char *ft232r_bit_name_array[FT232R_BIT_COUNT] = {
+	"TXD", /* 0: pin 1  TCK output */
+	"RXD", /* 1: pin 5  TDI output */
+	"RTS", /* 2: pin 3  TDO input */
+	"CTS", /* 3: pin 11 TMS output */
+	"DTR", /* 4: pin 2  /TRST output */
+	"DSR", /* 5: pin 9  unused */
+	"DCD", /* 6: pin 10 /SYSRST output */
+	"RI"   /* 7: pin 6  unused */
+};
+
+static int tck_gpio; /* initialized to 0 by default */
+static int tdi_gpio = 1;
+static int tdo_gpio = 2;
+static int tms_gpio = 3;
+static int ntrst_gpio = 4;
+static int nsysrst_gpio = 6;
+```
+
+```from ft232 usb to 6 pin female header manual
+ _________________________
+| Pin # | Name |  Colour  |
+|-------|------|----------|
+|   1   | GND  |  Black   |
+|   2   | CTS  |  Brown   |
+|   3   | VCC  |  Red     |
+|   4   | TXD  |  Orange  |
+|   5   | RXD  |  Yellow  |
+|   6   | RTS  |  Green   |
+|_______|______|__________|
+```
+
 ft232 pin and wire colour table converted to jtag signal names:
 
 ```
@@ -219,7 +267,7 @@ and therefore have no value are marked with 'NOT'
 |_________________________________________________________|
 ```
 
-## Images of wires on FPGA and on ft232r
+## Images of wires on ulx3s FPGA and on ft232r (lkcl to update images for Versa ECP5)
 
 Image of JTAG jumper wire connections on ULX3S FPGA side:
 
@@ -245,9 +293,3 @@ Table of connections:
 |    5 IO30   |     B12     |  2 (TMS)  |   Brown   |
 |    6 IO31   |     B9      |  4 (TCK)  |   Orange  |
 |    7 IO32   |     E6      |  6 (TDO)  |   Green   |
-
-[[!img 2020-11-03_13-22.png size="900x" ]] 
-
-[[!img 2020-11-03_13-25.png size="900x" ]] 
-
-[[!img versa_ecp5_x3_connector.jpg size="900x" ]] 
