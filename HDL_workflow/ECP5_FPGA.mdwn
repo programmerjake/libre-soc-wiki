@@ -199,33 +199,21 @@ static int nsysrst_gpio = 6;
 ```
 
 ```from ft232 usb to 6 pin female header manual
- _________________________
-| Pin # | Name |  Colour  |
-|-------|------|----------|
-|   1   | GND  |  Black   |
-|   2   | CTS  |  Brown   |
-|   3   | VCC  |  Red     |
-|   4   | TXD  |  Orange  |
-|   5   | RXD  |  Yellow  |
-|   6   | RTS  |  Green   |
-|_______|______|__________|
-```
 
 ft232 pin and wire colour table converted to jtag signal names:
 
 ```
- _________________________
-| Pin # | Name |  Colour  |
-|-------|------|----------|
-|   1   | GND  |  Black   |
-|   2   | TMS  |  Brown   |
-|   3   | VCC  |  Red     |
-|   4   | TCK  |  Orange  |
-|   5   | TDI  |  Yellow  |
-|   6   | TDO  |  Green   |
-|_______|______|__________|
+|-------|------|--------|----------|
+| Pin # | JTAG |  FT232 | Colour   |
+|-------|------|--------|----------|
+|   1   | VCC  | VCC    |  Red     |
+|   2   | GND  | GND    |  Black   |
+|   3   | TCK  | TXD    |  White   |
+|   4   | TDI  | RXD    |  Green   |
+|   5   | TDO  | RTS    |  Yellow  |
+|   6   | TMS  | CTS    |  Blue    |
+|-------|------|--------|----------|
 ```
-
 Proposed FPGA External Pin to ft232r JTAG pin connections:
 
 ```
@@ -239,10 +227,10 @@ Proposed FPGA External Pin to ft232r JTAG pin connections:
 |2            |  3.3v | IO VOLT REF | IO VOLT REF |    3 (VCC)     |    Red    |
 |3 (no header)|-|(GND)|NOT CONNECTED|NOT CONNECTED| NOT CONNECTED  |    NOT    |
 |4            |-|(GND)|    NONE     |     GND     |    1 (GND)     |   Black   |
-|5 (J1_5-)    |   0   |     C11     |    gn[0]    |    5 (TDI)     |   Yellow  |
-|6 (J1_5+)    |   0   |     B11     |    gp[0]    |    2 (TMS)     |   Brown   |
-|7 (J1_7-)    |   1   |     A11     |    gn[1]    |    4 (TCK)     |   Orange  |
-|8 (J1_7+)    |   1   |     A10     |    gp[1]    |    6 (TDO)     |   Green   |
+|5 (J1_5-)    |   0   |     C11     |    gn[0]    |    5 (TDI)     |   Green   |
+|6 (J1_5+)    |   0   |     B11     |    gp[0]    |    2 (TMS)     |   Blue    |
+|7 (J1_7-)    |   1   |     A11     |    gn[1]    |    4 (TCK)     |   White   |
+|8 (J1_7+)    |   1   |     A10     |    gp[1]    |    6 (TDO)     |   Yellow  |
 |_____________|_______|_____________|_____________|________________|___________|
 ```
 
@@ -262,8 +250,8 @@ and therefore have no value are marked with 'NOT'
 |                                                         |
 |(3 VCC) red    [VREF] 2  |3.3V|  1   NOT   NOT    NOT    |
 |(1 GND) black   [GND] 4  | -| |  3   NOT   NOT    NOT    |
-|(2 TMS) brown   [GP0] 6  |  0 |  5  [GN0] yellow (5 TDI) |
-|(6 TDO) green   [GP1] 8  |  1 |  7  [GN1] orange (4 TCK) |
+|(2 TMS) Blue    [GP0] 6  |  0 |  5  [GN0] Green  (5 TDI) |
+|(6 TDO) Yellow  [GP1] 8  |  1 |  7  [GN1] White  (4 TCK) |
 |_________________________________________________________|
 ```
 
@@ -285,14 +273,14 @@ Colour markings on ft232r side:
 
 Table of connections:
 
-| X3  pin #   | FPGA IO PAD |  ft232r   |Wire Colour|
-|-------------|-------------|-----------|-----------|
-|   39 +3.3V  | 3.3V supply |  3 (VCC)  |   Red     |
-|    1 GND    |     GND     |  1 (GND)  |   Black   |
-|    4 IO29   |     B19     |  5 (TDI)  |   Yellow  |
-|    5 IO30   |     B12     |  2 (TMS)  |   Brown   |
-|    6 IO31   |     B9      |  4 (TCK)  |   Orange  |
-|    7 IO32   |     E6      |  6 (TDO)  |   Green   |
+| X3  pin #   | FPGA IO PAD |  Function | FT232  | Wire Colour|
+|-------------|-------------|-----------|--------|------------|
+|   39 +3.3V  | 3.3V supply |    (VCC)  | VREF   |   Red      |
+|    1 GND    |     GND     |    (GND)  | GND    |   Black    |
+|    4 IO29   |     B19     |    (TDI)  | RXD    |   Green    |
+|    5 IO30   |     B12     |    (TMS)  | CTS    |   Blue     |
+|    6 IO31   |     B9      |    (TCK)  | TXD    |   White    |
+|    7 IO32   |     E6      |    (TDO)  | RTS    |   Yellow   |
 
 [[!img 2020-11-03_13-22.png size="900x" ]] 
 
