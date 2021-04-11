@@ -52,8 +52,6 @@ We will wire each of the pins on the the ft232r according to the diagrams, table
 
 According to [https://www.sparkfun.com/datasheets/IC/FT232R_v104.pdf], page 8 - Table 1: pin 4 - VCCIO - should be supplied *by the FPGA*.
 
-According to Jacob: you nearly always need gnd for a return path for the current. if you don't have a return path right near the signal lines, it will totally mess up high speed signals, due to the extra inductance caused by the loop through the signal and off to a ground somewhere.
-
 Therefore we will not attach any jumpers to the red VCC wire of the ft232r cable, nor the fpga.
 
 |   Action   | Colour | Pin Name |
