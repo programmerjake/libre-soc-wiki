@@ -16,7 +16,7 @@ Checklist based on above
     
 * ***DO*** make sure to ***only*** drive an input as an input, and to ***only*** drive an output as an output.
 
-* ***DO*** make sure to ***only*** wire up GND to GND with the jumper-cables.
+* ***DO*** make sure to ***only*** wire up 3.3V to 3.3V and to ***only*** wire up GND to GND with the jumper-cables.
 
 * ***DO*** make sure that ***before*** even ***thinking*** of uploading to and powering up the FPGA that everything has been ***THOROUGHLY*** triple-checked.
 
@@ -48,16 +48,13 @@ Next we will wire up the ft232r and our FPGA in three separate stages.
 
 This way you do not lose the connections when you want to disconnect and store the two devices. We are using FEMALE-TO-FEMALE jumper cables on the male header pins of the FPGA so that the wires do not randomly damage the bare PCB due to a short.
 
-We will wire each of the pins on the the ft232r according to the diagrams, tables, and images on this page.
-
-According to <https://www.sparkfun.com/datasheets/IC/FT232R_v104.pdf>, page 8 - Table 1: pin 4 - VCCIO - should be supplied *by the FPGA*.
-
-Therefore we will not attach any jumpers to the red VCC wire of the ft232r cable, nor the fpga.
+We will wire each of the pins on the the ft232r according to the diagrams, tables, and images on this page. 
 
 |   Action   | Colour | Pin Name |
 |------------|--------|----------|
 | Attach MTM | Black  |   GND    |
 | Attach MTM | Brown  |   TMS    |
+| Attach MTM | Red    |   VCC    |
 | Attach MTM | Orange |   TCK    |
 | Attach MTM | Yellow |   TDI    |
 | Attach MTM | Green  |   TDO    |
@@ -68,6 +65,7 @@ Follow this section if you have the ULX3S FPGA:
 
 |   Action   | Colour | Pin # | Pin Name |
 |------------|--------|-------|----------|
+| Attach FTF | Red    |   2   |   VREF   |
 | Attach FTF | Black  |   4   |   GND    |
 | Attach FTF | Yellow |   5   |   TDI    |
 | Attach FTF | Brown  |   6   |   TMS    |
@@ -78,6 +76,7 @@ Follow this section if you have the Versa ECP5 FPGA:
 
 |   Action   | Colour | X3 Pin # | Pin Name |
 |------------|--------|----------|----------|
+| Attach FTF | Red    |    39    |   VREF   |
 | Attach FTF | Black  |     1    |   GND    |
 | Attach FTF | Yellow |     4    |   TDI    |
 | Attach FTF | Brown  |     5    |   TMS    |
@@ -89,16 +88,21 @@ Final steps for both FPGA boards:
 | Checklist Step |
 |----------------|
 | Check each jumper wire connection between the corresponding pins on the FPGA and the ft232r **THREE** times |
+| ***lckl*** check for ground loops? |
+
 
 Finally, we will connect the jumper cables of the same colour from ft232r and the FPGA.
 
 | Checklist Step |
 |----------------|
+| Attach the ends of the **RED** jumper cables    |
 | Attach the ends of the **BLACK** jumper cables  |
 | Attach the ends of the **YELLOW** jumper cables |
 | Attach the ends of the **BROWN** jumper cables  |
 | Attach the ends of the **ORANGE** jumper cables |
 | Attach the ends of the **GREEN** jumper cables  |
+
+***lckl if both the micro-usb cable and the ft232r GND and VCC wires are connected to the fpga will this result in volatage fighting where the fpga will be damaged?***
 
 Finally, plug in the USB end of the USB-to-MicroUSB cable that is plugged into the ft232r into your computer. Begin testing the SOC on the FPGA (instructions to follow).
 
@@ -134,13 +138,13 @@ For MALE VERTICAL header, SWAP EVEN and ODD pin numbers.
 
                     J1
 
- Label     [GP{x}]|PCB pin label|[GN{x}] Label
-             (Pin count +)(Pin count -)
-___________________V__________V________________
-NOT CONNECTED 3V3  2  |3.3V|  1  NOT CONNECTED
-             [GND] 4  | -| |  3  NOT CONNECTED
-PCLKT0_0     [GP0] 6  |  0 |  5  [GN0] PCLKC0_0
-PCLKT0_1     [GP1] 8  |  1 |  7  [GN1] PCLKC0_1 
+ Label  [GP{x}]|PCB pin label|[GN{x}] Label
+           (Pin count +)(Pin count -)
+_________________V__________V________________
+ IO VOLT REF 3V3 2  |3.3V|  1  NOT CONNECTED
+           [GND] 4  | -| |  3  NOT CONNECTED
+PCLKT0_0   [GP0] 6  |  0 |  5  [GN0] PCLKC0_0
+PCLKT0_1   [GP1] 8  |  1 |  7  [GN1] PCLKC0_1 
 
 
 GP,GN 0-7 single-ended connected to Bank0
@@ -167,6 +171,7 @@ ft232 pin and wire colour table converted to jtag signal names:
 |-------|------|----------|
 |   1   | GND  |  Black   |
 |   2   | TMS  |  Brown   |
+|   3   | VCC  |  Red     |
 |   4   | TCK  |  Orange  |
 |   5   | TDI  |  Yellow  |
 |   6   | TDO  |  Green   |
@@ -183,7 +188,7 @@ Proposed FPGA External Pin to ft232r JTAG pin connections:
 |    pin #    |   #   | FPGA IO PAD |GPIO # (n/p) | Pin #  (Signal)|Wire Colour|
 |_____________|_______|_____________|_____________|________________|___________|
 |1 (no header)|  3.3v |NOT CONNECTED|NOT CONNECTED| NOT CONNECTED  |    NOT    |
-|2            |  3.3v | IO VOLT REF | IO VOLT REF | NOT CONNECTED  |    NOT    |
+|2            |  3.3v | IO VOLT REF | IO VOLT REF |    3 (VCC)     |    Red    |
 |3 (no header)|-|(GND)|NOT CONNECTED|NOT CONNECTED| NOT CONNECTED  |    NOT    |
 |4            |-|(GND)|    NONE     |     GND     |    1 (GND)     |   Black   |
 |5 (J1_5-)    |   0   |     C11     |    gn[0]    |    5 (TDI)     |   Yellow  |
@@ -207,8 +212,8 @@ and therefore have no value are marked with 'NOT'
 (ft232r# JTAG)   (Pin count +)(Pin count -)   (ft232r# JTAG)
  ______________________V__________V_______________________
 |                                                         |
-|NOT      NOT   [VREF] 2  |3.3V|  1   NOT   NOT     NOT   |
-|(1 GND) black   [GND] 4  | -| |  3   NOT   NOT     NOT   |
+|(3 VCC) red    [VREF] 2  |3.3V|  1   NOT   NOT    NOT    |
+|(1 GND) black   [GND] 4  | -| |  3   NOT   NOT    NOT    |
 |(2 TMS) brown   [GP0] 6  |  0 |  5  [GN0] yellow (5 TDI) |
 |(6 TDO) green   [GP1] 8  |  1 |  7  [GN1] orange (4 TCK) |
 |_________________________________________________________|
@@ -230,6 +235,7 @@ Table of connections:
 
 | X3  pin #   | FPGA IO PAD |  ft232r   |Wire Colour|
 |-------------|-------------|-----------|-----------|
+|   39 +3.3V  | 3.3V supply |  3 (VCC)  |   Red     |
 |    1 GND    |     GND     |  1 (GND)  |   Black   |
 |    4 IO29   |     B19     |  5 (TDI)  |   Yellow  |
 |    5 IO30   |     B12     |  2 (TMS)  |   Brown   |
