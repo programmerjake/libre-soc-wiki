@@ -1,7 +1,10 @@
 Switching off parts of the CPU
 ==============================
 
-This is a few notes as a result of a discussion with Luke in April 2021.
+These are a few notes initially as a result of a discussion with Luke in April 2021.
+
+It has been updated since and should be regarded as a record of current
+thinking in a discussion; not any sort of conclusion.
 
 Overview
 --------
@@ -31,6 +34,14 @@ The OS is in best position to know
 
 *** user preferences
 
+** It has been suggested that a HW switch on would be much faster than the OS doing it
+
+*** what would be the state of the hardware restarted ? If registers are
+switched on what are the initial values ? This is something that the OS might
+want some say in - zero is not always the answer.
+
+*** Maybe a status bit per hardware component that causes an OS interrupt.
+
 * What happens when a program tries to use something switched off ?
 
 ** a hardware exception ought to be raised, in much the same way as when
@@ -53,8 +64,72 @@ talks about 30-100 microseconds to do process migration and voltage/frequency ch
 ** Finding how long to, eg, switch on/off a Bluetooth device might give closer estimate as to
 how long things take
 
+** Jacob says: I'd expect the power-on latency could be on the order of a few
+10s or 100s of nanoseconds, at which scale calling out to the OS greatly
+increases latency.
+
+** Jacob: I think it's faster than voltage/frequency switching because V/F
+switching usually involves adjusting the power-supply voltage, that takes on
+the order of microseconds, dwarfing the interrupt-to-OS latency.
+
 * How much power would be saved ?
 
 * How to implement this ?
+
+* What components could we power down ?
+
+** Register files, eg Vector Registers
+
+** Crypto hardware (I'm not sure if this would be worth it)
+
+** Embedded modem, Bluetooth, radio frequency signal processing, Wi-Fi, ...
+
+** We must recognise that new components will be wanted in future. What
+we do must be able to accomotate future uses.
+
+
+
+Comments
+--------
+
+Jacob:
+
+To help the OS decide when to power-off parts of the cpu, I think we need
+32-bit saturating counters (16-bit is not enough, 64-bit is overkill,
+saturating to avoid issues with wrap-around which would happen once a second at
+4GHz) of the number of clock cycles since the last time that part was last
+used. The counter is set to 0 when the cpu part is powered-back-on, even if it
+didn't end up being used (e.g. mis-speculation). The counters *must* be
+privileged-only, since they form an excellent side-channel for speculative
+execution due to mis-speculation still being a use of that hardware.
+
+ADDW: There is interaction with a previously discussed idea about what
+registers to (not) save/restore on a context switch. Not restoring is much the
+same as saying that the registers are not used.
+
+Jacob: We could have a simple OS-controlled compare register for each part
+where the part is powered-down if the compare register is < the last-use
+counter, allowing simple HW power management. If the OS wants finer control, it
+can set the compare register to 0xFFFFFFFF to force-power-on the part, and to
+something less than the current counter to power-down the part.
+
+I picked < instead of <= so both:
+1. 0xFFFFFFFF will never power-down since the counter stops at 0xFFFFFFFF and
+0xFFFFFFFF is not < 0xFFFFFFFF.
+2. 0 will still power-on the part if it's in use, since the counter is
+continuously cleared to 0 while the part is in use, and it remains powered on
+since 0 is not < 0.
+
+It might be handy to have a separate register the previous count is copied to
+when a part is powered-on, allowing the OS to detect edge-cases like the part
+being used shortly after power-off, allowing the OS to adjust the power-off
+interval to better optimize for the program's usage patterns.
+
+There would be one set of those 32-bit registers (maybe combined into 64-bit
+registers) for each independent power-zone on the cpu core.
+
+The compare field should be set to some reasonable default on core reset, I'd
+use 10000 as a reasonable first guess.
+
 
 ADDW
