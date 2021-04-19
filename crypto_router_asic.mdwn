@@ -1,0 +1,37 @@
+# Crypto-router ASIC
+
+* NLnet page: [[nlnet_2021_crypto_router]]
+* Top-level bugreport: <https://bugs.libre-soc.org/show_bug.cgi?id=589>
+
+# Specifications:
+
+All of these are entirely Libre-Licensed:
+
+* 300 mhz single-core, Libre-SOC OpenPOWER CPU
+* 180/130 nm (TBD)
+* 5x [[RGMII]] Gigabit Ethernet PHYs
+* 2x USB [[ULPI]] PHYs
+* Direct DMA interface (independent bulk transfer)
+* JTAG, GPIO, I2C, PWM, UART, SPI, QSPI, SD/MMC
+* On-board Dual-ported SRAM (for Packet Buffers)
+* Opencores [[sdram]]
+* Wishbone interfaces to all peripherals
+* XICS ICP / ICS Interrupt Controller
+
+# Example packet transfer:
+
+* Packet comes in on RGMII port 1.  Each PHY has its own dual-ported SRAM
+* Packet is **directly** stored in internal (dual-ported SRAM) by
+  the RGMII PHY itself
+* Interrupt notification is sent to the processor (XICS)
+* Processor inspects packet over Wishbone interface directly
+  connected to 2nd SRAM port.
+* Processor computes, based on decoding the ETH Frame, where the
+  packet must be sent to (which other RGM-II port: e.g. Port 2)
+* Processor initiates Memory-to-Memory DMA transfer
+* DMA Memory-to-Memory transfer, using Wishbone Bus, copies the ETH Frame
+  from one on-board SRAM to the target on-board SRAM associated with Port 2.
+* DMA Engine generates interrupt (XICS) to the CPU to say it is completed
+* Processor notifies target RGM-II PHY to activate "send" of frame out
+  through target RGM-II port 2.
+
