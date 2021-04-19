@@ -135,9 +135,9 @@ step you will have needed to install yosys:
     cd c4m-jtag; python setup.py develop; cd ..
     cd nmutil; make install; cd ..
     cd ieee754fpu; make install; cd ..
-    cd soc; make gitupdate; make install; cd ..
+    cd soc; make gitupdate; make develop
     
-    python3 soc/src/soc/decoder/power_decoder.py
+    python3 src/soc/decoder/power_decoder.py
     yosys -p "read_ilang decoder.il; show dec31" 
 
 The full install process may be automated using scripts found
