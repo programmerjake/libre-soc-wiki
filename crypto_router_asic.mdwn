@@ -40,3 +40,26 @@ All of these are entirely Libre-Licensed:
 * Processor notifies target RGM-II PHY to activate "send" of frame out
   through target RGM-II port 2.
 
+# Testing and Verification
+
+We will need full HDL simulations as well as post P&R simulations.
+These may be achieved as follows:
+
+* ISA-level unit tests as well as Formal Correctness Proofs.
+  Example [bpermd proof](https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/fu/logical/formal/proof_bpermd.py;hb=HEAD)
+  and individual unit tests for the
+  [Logical pipeline](https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/fu/logical/test/test_pipe_caller.py;hb=HEAD)
+* [Litex sim.py](https://git.libre-soc.org/?p=libresoc-litex.git;a=blob;f=sim.py;hb=HEAD)
+  with some peripherals developed in c++ as verilator modules
+* nmigen-based OpenPOWER Libre-SOC core co-simulation such as
+  this unit test,
+  [test_issuer.py](https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/simple/test/test_issuer.py;hb=HEAD)
+* [cocotb pre/post PnR](https://git.libre-soc.org/?p=soc-cocotb-sim.git;a=tree;f=ls180;hb=HEAD) including GHDL, Icarus and Verilator
+  (where best suited)
+
+Actual instructions being developed (bitmanip) may therefore be
+unit tested prior to deployment.  Following that, rapid simulations
+may be achieved by running Litex (the same HDL may also easily
+be uploaded to an FPGA).  When it comes to Place-and-Route of the
+ASIC, the cocotb simulations may be used to verify that the GDS-II
+layout has not been "damaged" by the PnR tools.
