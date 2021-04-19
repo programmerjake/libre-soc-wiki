@@ -3,9 +3,9 @@
 * NLnet page: [[nlnet_2021_crypto_router]]
 * Top-level bugreport: <https://bugs.libre-soc.org/show_bug.cgi?id=589>
 
-# Specifications:
+# Specifications
 
-All of these are entirely Libre-Licensed:
+All of these are entirely Libre-Licensed or are to be written as Libre-Licensed:
 
 * 300 mhz single-core,
   [Libre-SOC](https://git.libre-soc.org/?p=soc.git;a=blob;f=README.md;hb=HEAD)
@@ -23,7 +23,9 @@ All of these are entirely Libre-Licensed:
 * [XICS ICP / ICS](https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/interrupts/xics.py;hb=HEAD)
   Interrupt Controller
 
-# Example packet transfer:
+
+
+# Example packet transfer
 
 * Packet comes in on RGMII port 1.  Each PHY has its own dual-ported SRAM
 * Packet is **directly** stored in internal (dual-ported SRAM) by
@@ -63,3 +65,9 @@ may be achieved by running Litex (the same HDL may also easily
 be uploaded to an FPGA).  When it comes to Place-and-Route of the
 ASIC, the cocotb simulations may be used to verify that the GDS-II
 layout has not been "damaged" by the PnR tools.
+
+Peripherals functionality tests must also be part of the simulations,
+particularly using cocotb, to ensure that they remain functional after PnR.
+Supercomputer access for compilation of verilator and/or cxxrtl is available
+through [[fed4fire]]
+
