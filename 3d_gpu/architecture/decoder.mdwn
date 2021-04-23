@@ -191,8 +191,12 @@ In this way, different sections of the instruction are successively decoded (maj
 
 # second explanation / walkthrough
 
-we (manually) extracted the pseudo-code from the v3.0B specification
-(took 2 days):
+the general idea here is to minimise the actual amount of work
+by using human-and-machine-readable files as much as possible,
+and performing automated translation (compilation) into executable
+form.
+
+we (manually) extracted the pseudo-code from the v3.0B specification:
 <https://git.libre-soc.org/?p=libreriscv.git;a=blob;f=openpower/isa/fixedlogical.mdwn;hb=HEAD>
 
 then wrote a parser and language translator (aka compiler) to convert
