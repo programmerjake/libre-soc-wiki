@@ -189,4 +189,65 @@ The docstring for power_decoder.py gives more details: each level in the hierarc
 
 In this way, different sections of the instruction are successively decoded (major opcode, then minor opcode, then sub-patterns under those) until the required instruction is fully recognised, and the hierarchical cascade of switch patterns results in a flat interpretation being produced that is useful internally. 
 
+# second explanation / walkthrough
 
+```
+we (manually) extracted the pseudo-code from the v3.0B specification
+(took 2 days):
+https://git.libre-soc.org/?p=libreriscv.git;a=blob;f=openpower/isa/fixedlogical.mdwn;hb=HEAD
+
+then wrote a parser and language translator (aka compiler) to convert
+those code-fragments to python:
+https://git.libre-soc.org/?p=soc.git;a=tree;f=src/soc/decoder/pseudo;hb=HEAD
+
+then went to a lot of trouble over the course of several months to
+co-simulate them, update them, and make them accurate according to the
+actual spec:
+https://git.libre-soc.org/?p=libreriscv.git;a=blob;f=openpower/isa/fixedarith.mdwn;h=470a833ca2b8a826f5511c4122114583ef169e55;hb=HEAD#l721
+
+and created a fully-functioning python-based OpenPOWER ISA simulator:
+https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/decoder/isa/caller.py;hb=HEAD
+
+there is absolutely no reason why this language-translator (aka compiler)
+here
+https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/decoder/pseudo/parser.py;hb=HEAD
+
+should not be joined by another compiler, targetting c for use inside
+the linux kernel or, another compiler which auto-generates c++ for use
+inside power-gem5, such that this:
+https://github.com/power-gem5/gem5/blob/cae53531103ebc5bccddf874db85f2659b64000a/src/arch/power/isa/decoder.isa#L1214
+
+becomes an absolute breeze to update.
+
+note that we maintain a decoder which is based on Microwatt: we extracted
+microwatt's decode1.vhdl into CSV files, and parse them in python as
+hierarchical recursive data structures:
+https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/decoder/power_decoder.py;hb=HEAD
+
+where the actual CSV files that it reads are here:
+https://git.libre-soc.org/?p=libreriscv.git;a=tree;f=openpower/isatables;hb=HEAD
+
+this is then combined with *another* table that was extracted from the
+OpenPOWER v3.0B PDF:
+https://git.libre-soc.org/?p=libreriscv.git;a=blob;f=openpower/isatables/fields.text;hb=HEAD
+
+(the parser for that recognises "vertical bars" as being
+field-separators):
+https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/decoder/power_fields.py;hb=HEAD
+
+and FINALLY - and this is about the only major piece of code that
+actually involves any kind of manual code - again it is based on Microwatt
+decode2.vhdl - we put everything together to turn a binary opcode into
+"something that needs to be executed":
+https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/decoder/power_decoder2.py;hb=HEAD
+
+so our OpenPOWER simulator is actually based on:
+
+* machine-readable CSV files
+* machine-readable Field-Form files
+* machine-readable spec-accurate pseudocode files
+
+the only reason we haven't used those to turn it into HDL is because
+doing so is a massive research project, where a first pass would be
+highly likely to generate sub-optimal HDL
+```
