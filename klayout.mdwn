@@ -1,0 +1,16 @@
+# KLayout with FreePDK45
+
+* use the dev-env-setup script to create a clean debian/buster chroot
+* apt-get install build-essential g++
+* apt-get install libqt4-dev qt4-default qt4-qmake
+* obtain klayout git clone https://github.com/KLayout/klayout
+* cd klayout
+* ./build.sh -qt4 -noruby
+* export LD_LIBRARY_PATH={absolutepath}/klayout/bin-release/
+* ./bin-release/klayout &
+
+> Next to cgt you can also use klayout to view the gds.First copy the
+> klayout technology file to your home directory.From c4m-pdk-
+> freepdk45/klayout/tech copy C4M.FreePDK45 to ~/.klayout/techThen
+> open klayout, select C4M.FreePDK45 technology and then open
+> chip_r.gds.
