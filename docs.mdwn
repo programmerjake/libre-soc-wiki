@@ -29,12 +29,14 @@ Also see [[SOC Architecture|3d_gpu/architecture]]
     
     cd ~; mkdir libresoc; cd libresoc
     git clone https://git.libre-soc.org/git/nmutil.git
+    git clone https://git.libre-soc.org/git/c4m-jtag.git
     git clone https://git.libre-soc.org/git/ieee754fpu.git
     git clone https://git.libre-soc.org/git/soc.git
     
-    cd nmutil; make install; cd ..
-    cd ieee754fpu; make install; cd ..
-    cd soc; make gitupdate; make install; cd ..
+    cd nmutil; make develop; cd ..
+    cd c4m-jtag; make develop; cd ..
+    cd ieee754fpu; make develop; cd ..
+    cd soc; make gitupdate; make develop; cd ..
     
     python3 soc/src/soc/decoder/power_decoder.py
     yosys -p "read_ilang decoder.il; show dec31" 
