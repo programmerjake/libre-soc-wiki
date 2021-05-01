@@ -29,7 +29,9 @@ A separate script also helps install
 and a third can be used to set up a
 [debootstrap chroot](
 https://git.libre-soc.org/?p=dev-env-setup.git;a=blob;f=mk-deb-chroot;hb=HEAD).
-Also relevant is the [gdb gcc build](https://git.libre-soc.org/?p=dev-env-setup.git;a=blob;f=ppc64-gdb-gcc;hb=HEAD)
+The chroot is useful to ensure stability and repeatable builds: no
+errors or issues introduced by libraries being wrong versions.
+Also relevant is the [gdb gcc build](https://git.libre-soc.org/?p=dev-env-setup.git;a=blob;f=ppc64-gdb-gcc;hb=HEAD).
 
     pip3 install virtualenv requests
     mkdir ~/.virtualenvs && cd ~/.virtualenvs
