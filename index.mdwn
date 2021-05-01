@@ -126,6 +126,7 @@ step you will have needed to install yosys:
     git clone https://git.libre-soc.org/git/nmigen.git
     git clone https://git.libre-soc.org/git/nmigen-soc.git
     git clone https://git.libre-soc.org/git/nmutil.git
+    git clone https://git.libre-soc.org/git/openpower-isa.git
     git clone https://git.libre-soc.org/git/c4m-jtag.git
     git clone https://git.libre-soc.org/git/ieee754fpu.git
     git clone https://git.libre-soc.org/git/soc.git
@@ -133,8 +134,9 @@ step you will have needed to install yosys:
     cd nmigen; python setup.py develop; cd ..
     cd nmigen-soc; python setup.py develop; cd ..
     cd c4m-jtag; python setup.py develop; cd ..
-    cd nmutil; make install; cd ..
-    cd ieee754fpu; make install; cd ..
+    cd nmutil; make develop; cd ..
+    cd openpower-isa; make develop; cd ..
+    cd ieee754fpu; make develop; cd ..
     cd soc; make gitupdate; make develop
     
     python3 src/soc/decoder/power_decoder.py
