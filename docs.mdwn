@@ -22,6 +22,15 @@ Also see [[SOC Architecture|3d_gpu/architecture]]
 
 ## Installing the Codebase
 
+Installation is much easier when using the
+[install scripts](https://git.libre-soc.org/?p=dev-env-setup.git;a=blob;f=hdl-dev-repos;hb=HEAD).
+A separate script also helps install
+[dependencies](https://git.libre-soc.org/?p=dev-env-setup.git;a=blob;f=install-hdl-apt-reqs;hb=HEAD)
+and a third can be used to set up a
+[debootstrap chroot](
+https://git.libre-soc.org/?p=dev-env-setup.git;a=blob;f=mk-deb-chroot;hb=HEAD).
+Also relevant is the [gdb gcc build](https://git.libre-soc.org/?p=dev-env-setup.git;a=blob;f=ppc64-gdb-gcc;hb=HEAD)
+
     pip3 install virtualenv requests
     mkdir ~/.virtualenvs && cd ~/.virtualenvs
     python3 -m venv libresoc
@@ -29,11 +38,13 @@ Also see [[SOC Architecture|3d_gpu/architecture]]
     
     cd ~; mkdir libresoc; cd libresoc
     git clone https://git.libre-soc.org/git/nmutil.git
+    git clone https://git.libre-soc.org/git/openpower-isa.git
     git clone https://git.libre-soc.org/git/c4m-jtag.git
     git clone https://git.libre-soc.org/git/ieee754fpu.git
     git clone https://git.libre-soc.org/git/soc.git
     
     cd nmutil; make develop; cd ..
+    cd openpower-isa; make develop; cd ..
     cd c4m-jtag; make develop; cd ..
     cd ieee754fpu; make develop; cd ..
     cd soc; make gitupdate; make develop; cd ..
