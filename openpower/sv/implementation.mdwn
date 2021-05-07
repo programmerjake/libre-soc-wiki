@@ -208,6 +208,13 @@ src and dest predicate mask is "All 1s".
 Bear in mind that srcstep+deststep are a form of back-to-back
 VGATHER+VSCATTER
 
+Watch out in zeroing! CR0 will *not* be set (itself) to zero:
+the CR0.eq flag will be set because the *result* is still tested.
+correction: CR0-and-any-other-Vector-of-CR-fields (Vector elements
+have their corresponding CR field, so the test of zero needs to
+be done for the associated *element* result, not jam absolutely
+every element vector test *into* CR0)
+
 Progress:
 
 * TestIssuer <https://bugs.libre-soc.org/show_bug.cgi?id=617> 
