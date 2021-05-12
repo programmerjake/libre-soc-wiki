@@ -5,3 +5,43 @@
 * <https://ics21.github.io/>
 * <https://www.timeanddate.com/worldclock/meetingtime.html?day=14&month=6&year=2021&p1=%20141&p2=236&p3=1234&p4=250&p5=24&p6=224&iv=0>
 * <https://meep-project.eu/events/ics-2021>
+
+# Luke Leighton bio
+
+Luke Kenneth Casson Leighton specialises in Libre Ethical Technology.
+He has been using and programming computers continuously for 44 years,
+has a BEng (Hons), ACGI, in Theory of Computing from Imperial College,
+and recently put that education to good use in the form of the Libre-SOC
+Project: an entirely Libre-Licensed 3D Hybrid CPU-VPU-GPU based on
+OpenPOWER. He writes poetry and has been developing a HEP Physics theory
+for the past 36 years in his spare time.
+
+# SVP64 Abstract
+
+The OpenPOWER ISA has a strong multi-decades pedigree in Supercomputing:
+Matrix Multiply, 128-bit SIMD, BCD, Decimal Floating-point have been part
+of the ISA for decades, supporting Business and Scientific Computing.
+What the OpenPOWER ISA does not have is Vector processing, first
+successfully found in the Cray-1 Supercomputer, from 1976.
+
+SVP64 is an initiative being developed by the Libre-SOC team and
+funded by NLnet, that brings Cray-style Variable-length Vectorisation
+to the OpenPOWER ISA in a seamless and non-disruptive fashion.  The team
+is keeping the OpenPOWER Foundation appraised of progress, and plans to 
+submit SVP64 as an RFC to the newly-formed OpenPOWER ISA Working Group.
+
+SVP64 is based on the concept of embedding scalar operations into
+a Vectorisation Context: effectively a simple Sub-Program-Counter for-loop.
+However that Vectorisation Context effectively extends each of the 200+
+primary scalar operations in the OpenPOWER ISA by a factor of 4,000,
+to produce a staggering and unprecedented 800,000 unique Vector opcodes.
+
+Although SVP64 borrows from innovations in Computer Science over the
+past 50 years, including the original Cray Vectors, VLIW, Zero-overhead
+Loops from DSPs and Intel MMX, the end result is something entirely new.
+This talk will go through the development process of SVP64 and explain
+some of the innovative Vectorisation concepts that have never been seen 
+before in any commercial or academic Vector ISA, including
+Twin-Predication and "Post-result" predication, and how these will
+benefit Supercomputing performance and decrease power consumption,
+by reducing I-Cache usage.
