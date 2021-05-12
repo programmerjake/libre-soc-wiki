@@ -45,3 +45,34 @@ before in any commercial or academic Vector ISA, including
 Twin-Predication and "Post-result" predication, and how these will
 benefit Supercomputing performance and decrease power consumption,
 by reducing I-Cache usage.
+
+# Comprehensive life-cycle of mixed testing: HDL to gates
+
+The Libre-SOC Project is developed by Software Engineers with a Hardware
+background: in particular, Software Engineers with decades of experience
+in the Libre / Open software ecosystem.  There is a huge difference.
+
+Software Engineers have it drummed into them from either training or
+bitter experience that unit tests are critical at every level.  Whilst
+the Validation Process for an ASIC goes through a rigorous process
+in the Synthesis Tools to ensure its correctness at every step, the
+actual HDL itself, shockingly, is typically put together first and
+only on completion are high-level (binary) unit tests run.  Errors
+in a low-level subsystem thus become extremely hard to find.
+
+In addition to that, as a Libre Project, we have had to use Libre
+VLSI tools. These are in active development and have not - yet - 
+been used to develop ASICs beyond 130nm or over 1,000,000 gates.
+Our ASIC toolchain and HDL verification procedures are therefore
+functional but a little different from Industry-standard (proprietary)
+norm.
+
+This talk will therefore show, by example, how we went from low-level
+modules (with unit tests and Formal Correctness Proofs), to pipelines
+(with unit tests and Formal Correctness Proofs), to a functional Core
+(with several thousand unit tests), right the way to ASIC layout,
+from which the Netlist was extracted and then co-simulated with cocotb.
+At each and every stage - both pre and post layout and on FPGA - it
+has been possible to run the exact same JTAG Boundary Scan and basic
+startup procedure.
+
