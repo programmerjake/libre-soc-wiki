@@ -12,4 +12,11 @@ Certbot has been replaced with addw's scripts, see /var/www/acme/
 All web sites are SSL enabled, the non SSL ones redirect to the SSL one.
 The only exception is the location /.well-known/acme-challenge/ which is needed so that Let'sEncrypt can validate and issue certificates.
 
+irclogs redirects to an ircbot
+
+docs virtual host redirects to sphinx directories
+
 Nginx listens on IpV4 & IpV6.
+
+ikiwiki is upgraded with two underlays, one with bootstrap templates, the other with the openpower-isa git repository markdown files  a post-update hook checks out the openpower-isa repository, rebuild is not run becaise it delays git push completion.
+
