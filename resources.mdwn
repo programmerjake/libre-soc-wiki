@@ -46,33 +46,6 @@ This section is primarily a series of useful links found online
 
     "The objective of this work is to design and implement a TAP controller IP core compatible with IEEE 1149.1-2013 revision of the standard. The test logic architecture also includes the Test Mode Persistence controller and its associated logic. This work is expected to serve as a ready to use module that can be directly inserted in to a new digital IC designs with little modifications."
 
-# RISC-V Instruction Set Architecture
-
-**PLEASE UPDATE** - we are no longer implementing full RISCV, only user-space
-RISCV
-
-The Libre RISC-V Project is building a hybrid CPU/GPU SoC. As the name
-of the project implies, we will be following the RISC-V ISA I due to it
-being open-source and also because of the huge software and hardware
-ecosystem building around it. There are other open-source ISAs but none
-of them have the same momentum and energy behind it as RISC-V.
-
-To fully take advantage of the RISC-V ecosystem, it is important to be
-compliant with the RISC-V standards. Doing so will allow us to to reuse
-most software as-is and avoid major forks.
-
-* [Official compiled PDFs of RISC-V ISA Manual]
- (https://github.com/riscv/riscv-isa-manual/releases/latest)
-* [Working draft of the proposed RISC-V Bitmanipulation extension](https://github.com/riscv/riscv-bitmanip/blob/master/bitmanip-draft.pdf)
-* [RISC-V "V" Vector Extension](https://riscv.github.io/documents/riscv-v-spec/)
-* [RISC-V Supervisor Binary Interface Specification](https://github.com/riscv/riscv-sbi-doc/blob/master/riscv-sbi.md)
-
-Note: As far as I know, we aren't using the RISC-V V Extension directly
-at the moment (correction: we were never going to). However, there are many wiki pages that make a reference
-to the V extension so it would be good to include it here as a reference
-for comparative/informative purposes with regard to Simple-V.
-<https://github.com/riscv/riscv-v-spec/blob/master/v-spec.adoc#vsetvlivsetvl-instructions>
-
 # Radix MMU
  - [Qemu emulation](https://github.com/qemu/qemu/commit/d5fee0bbe68d5e61e2d2beb5ff6de0b9c1cfd182)
 
