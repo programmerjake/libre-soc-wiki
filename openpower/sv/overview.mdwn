@@ -641,8 +641,8 @@ truncating down to 8 bit for example.
        # logical op, signed has no meaning
        result = op_xor(src1, src2, opwidth)
        # now saturate (signed)
-       sat = max(result, (1<<destwid-1)-1)
-       sat = min(result, -(1<<destwid-1))
+       sat = min(result, (1<<destwid-1)-1)
+       sat = max(result, -(1<<destwid-1))
        set_polymorphed_reg(rd, destwid, i, sat)
 
 Overall here the rule is: apply common sense then document the behaviour
