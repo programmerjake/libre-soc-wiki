@@ -608,7 +608,7 @@ truncated.  Only then can the arithmetic saturation condition be detected:
        # unsigned add
        result = op_add(src1, src2, opwidth) # at max width
        # now saturate (unsigned)
-       sat = max(result, (1<<destwid)-1)
+       sat = min(result, (1<<destwid)-1)
        set_polymorphed_reg(rd, destwid, i, sat)
        # set sat overflow
        if Rc=1:
