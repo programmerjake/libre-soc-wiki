@@ -7,7 +7,7 @@ from other software (reproducible builds) or use the schroot
 auto-preparation script here:
 <https://git.libre-soc.org/?p=dev-env-setup.git;a=blob;f=mk-deb-chroot;hb=HEAD>
 
-    export MY_CHROOT=/stable-chroot
+    export MY_CHROOT=/opt/chroot/verilator
     mkdir $MY_CHROOT
     debootstrap stable $MY_CHROOT http://deb.debian.org/debian/
     mount -t proc proc $MY_CHROOT/proc
@@ -15,14 +15,17 @@ auto-preparation script here:
     mount -t devpts devpts $MY_CHROOT/dev/pts/
     chroot $MY_CHROOT /bin/bash
 
+The dev-env-setup chroot script is a little more sophisticated
+than the above
+
 ## Steps to compile Verilator
 
 ### Necessary software to install
 
-    apt-get install git
-    apt-get install python3 make autoconf g++ flex bison ccache \
-                    numactl libgoogle-perftools-dev perl-doc \
-                    zlibc zlib1g-dev
+    apt-get install git build-essential g++ ccachr
+    apt-get install python3 make autoconf flex bison \
+                    libgoogle-perftools-dev perl-doc \
+                    numactl zlibc zlib1g-dev
     git clone https://github.com/verilator/verilator
 
 ### Build Verilator
@@ -30,7 +33,7 @@ auto-preparation script here:
     cd verilator
     git checkout v4.106
     autoconf
-    ./configure --prefix=/usr/local/verilator
+    ./configure
     make -j$(nproc)
     make install
 
