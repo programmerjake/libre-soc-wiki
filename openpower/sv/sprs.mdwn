@@ -26,7 +26,7 @@ Modes respectively:
 
 The u/s SPRs are treated and handled exactly like their (x)epc
 equivalents.  On entry to or exit from a privilege level, the contents
-of its (x)eSTATE are swapped with STATE.
+of its (x)eSTATE are swapped with SVSTATE.
 
 # MAXVECTORLENGTH (MVL) <a name="mvl" />
 
@@ -102,10 +102,8 @@ In scalar v3.0B traps, exceptions and interrupts, two SRRs are saved/restored:
 * SRR0 to store the PC (CIA/NIA)
 * SRR1 to store a copy of the MSR
 
-Given that SVSTATE is effectively a Sub-PC it is critically important to add saving/restoring of SVSTATE as a full peer equal in status to PC, in every way.  At any time PC is saved or restored, so is SVSTATE in **exactly** the same way for **exactly** the same reasons.
+Given that SVSTATE is effectively a Sub-PC it is critically important to add saving/restoring of SVSTATE as a full peer equal in status to PC, in every way.  At any time PC is saved or restored, so is SVSTATE in **exactly** the same way for **exactly** the same reasons.  Thus, at an exception point,
+hardware **must** save/restore SVSTATE in SVSRR0 at exactly the same
+time that SRR0 is saved/restored in PC and SRR1 in MSR.
 
 The SPR name given for the purposes of saving/restoring SVSTATE is SVSRR0.
-
-
-
-
