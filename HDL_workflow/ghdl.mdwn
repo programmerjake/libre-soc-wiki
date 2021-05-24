@@ -1,0 +1,63 @@
+# Installation instructions for GHDL
+
+## Setting up new debootstrap and chroot into it
+
+Run the following if you wish to isolate the ghdl build
+from other software (reproducible builds) or use the schroot
+auto-preparation script here:
+<https://git.libre-soc.org/?p=dev-env-setup.git;a=blob;f=mk-deb-chroot;hb=HEAD>
+
+    export MY_CHROOT=/stable-chroot
+    mkdir $MY_CHROOT
+    debootstrap stable $MY_CHROOT http://deb.debian.org/debian/
+    mount -t proc proc $MY_CHROOT/proc
+    mount -t sysfs sysfs $MY_CHROOT/sys
+    mount -t devpts devpts $MY_CHROOT/dev/pts/
+    chroot $MY_CHROOT /bin/bash
+
+## Steps to compile GHDL
+
+### Necessary software to install
+
+    apt-get install git gnat gcc make g++ file texinfo zlib1g-dev
+
+    git clone https://github.com/ghdl/ghdl.git
+    wget https://ftp.gnu.org/gnu/gmp/gmp-6.2.1.tar.xz
+    wget https://ftp.gnu.org/gnu/mpc/mpc-1.2.1.tar.gz
+    wget https://www.mpfr.org/mpfr-4.1.0/mpfr-4.1.0.tar.xz
+    wget https://gcc.gnu.org/pub/gcc/infrastructure/isl-0.18.tar.bz2
+    wget https://ftp.gnu.org/gnu/gcc/gcc-10.3.0/gcc-10.3.0.tar.xz
+
+### Build GHDL
+
+    tar -xf gcc-10.3.0.tar.xz
+    cd gcc-10.3.0
+    tar -xf ../gmp-6.2.1.tar.xz
+    mv gmp-6.2.1 gmp
+    tar -xf ../mpc-1.2.1.tar.gz
+    mv mpc-1.2.1 mpc
+    tar -xf ../mpfr-4.1.0.tar.xz
+    mv mpfr-4.1.0 mpfr
+    tar -xf ../isl-0.18.tar.bz2
+    mv isl-0.18 isl
+    cd ..
+
+    cd ghdl
+    git checkout v1.0.0
+    mkdir build
+    cd build
+    ../configure --with-gcc=../../gcc-10.3.0 --prefix=/usr/local/ghdl
+    make copy-sources
+    mkdir gcc-objs; cd gcc-objs
+    ../../../gcc-10.3.0/configure --prefix=/usr/local/ghdl \
+    --enable-languages=c,vhdl --disable-bootstrap --disable-lto \
+    --disable-multilib --disable-libssp --disable-libgomp \
+    --disable-libquadmath --enable-default-pie
+    make -j$(nproc)
+    make install
+    cd ..
+    make ghdllib
+    make install
+
+Please adjust the install paths for ghdl.
+
