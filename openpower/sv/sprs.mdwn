@@ -12,7 +12,7 @@ There are five SPRs, available in any privilege level:
 * MVL (the Maximum Vector Length)
 * VL (which has different characteristics from standard SPRs)
 * SUBVL (effectively a kind of SIMD)
-* STATE (containing copies of MVL, VL and SUBVL as well as context information)
+* SVSTATE (containing copies of MVL, VL and SUBVL as well as context information)
 * SVSRR0 which is used for exceptions and traps to store SVSTATE.
 
 MVL, VL and SUBVL are only provided for convenience: normally [[sv/setvl]] would be used to obtain a copy of VL, for example.
@@ -54,7 +54,7 @@ The main effect of SUBVL is that predication bits are applied per
 **group**, rather than by individual element.  Legal values are 1 to 4.
 Illegal values raise an exception.
 
-# STATE
+# SVSTATE
 
 This is a standard SPR that contains sufficient information for a
 full context save/restore (see SVSRR0).  It contains (and permits setting of):
@@ -68,7 +68,7 @@ full context save/restore (see SVSRR0).  It contains (and permits setting of):
 * svstep - the subvector element offset of the current
   parallel instruction being executed
 
-The format of the STATE SPR is as follows:
+The format of the SVSTATE SPR is as follows:
 
 | Field | Name     | Description           |
 | ----- | -------- | --------------------- |
