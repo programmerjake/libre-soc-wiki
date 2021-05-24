@@ -1,0 +1,37 @@
+# Installation instructions for cocotb
+
+## Setting up new debootstrap and chroot into it
+
+Run the following if you wish to isolate the cocotb build
+from other software (reproducible builds) or use the schroot
+auto-preparation script here:
+<https://git.libre-soc.org/?p=dev-env-setup.git;a=blob;f=mk-deb-chroot;hb=HEAD>
+
+    export MY_CHROOT=/opt/chroot/cocotb
+    mkdir $MY_CHROOT
+    debootstrap stable $MY_CHROOT http://deb.debian.org/debian/
+    mount -t proc proc $MY_CHROOT/proc
+    mount -t sysfs sysfs $MY_CHROOT/sys
+    mount -t devpts devpts $MY_CHROOT/dev/pts/
+    chroot $MY_CHROOT /bin/bash
+
+The dev-env-setup chroot script is a little more sophisticated
+than the above
+
+## Steps to compile cocotb
+
+### Necessary software to install
+
+    apt-get install git python3 python3-dev g++ make \
+                    python3-setuptools python3-pytest
+
+### Build cocotb
+
+    git clone https://github.com/cocotb/cocotb.git
+
+    cd cocotb
+    git checkout v1.5.2
+    python3 setup.py install
+
+Please adjust the install paths for cocotb.
+
