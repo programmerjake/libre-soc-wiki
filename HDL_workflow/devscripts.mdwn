@@ -2,6 +2,8 @@
 
 Setting up the dependencies and repositories for Libre-SOC is big enough that it is just much easier to do in an automated fashion.  Follow these steps after making sure that you review the scripts line by line because they run as root and it is your responsibility to check them, not ours.
 
+Note the reason for entering the chroot as a user (not root) and then running sudo bash again is due to this procedure setting the SUDO_USER environment, on which the scripts critically rely.
+
     $ git clone https://git.libre-soc.org/git/dev-env-setup.git
     $ cd dev-env-setup
     $ sudo bash
@@ -16,4 +18,7 @@ Setting up the dependencies and repositories for Libre-SOC is big enough that it
     (libresoc)# exit
     (libresoc)$
 
-https://git.libre-soc.org/?p=dev-env-setup.git;a=blob;f=hdl-dev-repos;hb=HEAD
+<https://git.libre-soc.org/?p=dev-env-setup.git;a=blob;f=hdl-dev-repos;hb=HEAD>
+
+Additional scripts in the dev-env-setup repository will install yosys, verilator, coriolis2, ghdl, gdb and so on: from the above it is pretty straightforward and obvious to work out what to do.  There is an accompanying walkthrough video which goes through the above <
+https://m.youtube.com/watch?v=1-4eJKTNrEk>
