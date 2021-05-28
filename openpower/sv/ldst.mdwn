@@ -57,7 +57,7 @@ with the pseudocode below, the immediate can be used to give unit stride or elem
         elif svctx.ldstmode == unitstride:
           # unit stride mode
           srcbase = ireg[RA]
-          offs = i * op_width
+          offs = immed + (i * op_width)
         elif RA.isvec:
           # quirky Vector indexed mode but with an immediate
           srcbase = ireg[RA+i]
