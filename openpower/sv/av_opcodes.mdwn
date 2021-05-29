@@ -9,6 +9,7 @@ This page therefore has accompanying discussion at <https://bugs.libre-soc.org/s
 Links
 
 * [[vpu]]
+* [[sv/int_fp_mv]]
 * TODO review https://en.m.wikipedia.org/wiki/Multimedia_Acceleration_eXtensions
 
 # Summary
@@ -22,6 +23,7 @@ In-advance, the summary of base scalar operations that need to be added is:
 | signed min   | result = (src1 < src2) ? src1 : src2 use bitmanip |
 | signed max   | result = (src1 > src2) ? src1 : src2  use bitmanip |
 | bitwise sel  | (a ? b : c) - use bitmanip ternary |
+| int/fp move  | GPR(RT) = FPR(FRA) and FPR(FRT) = GPR(RA) |
 
 All other capabilities (saturate in particular) are achieved with [[sv/svp64]] modes and swizzle.  Note that minmax and ternary are added in bitmanip.
 
