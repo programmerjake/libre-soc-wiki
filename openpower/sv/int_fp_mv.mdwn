@@ -2,10 +2,31 @@
 
 Introduction:
 
-TODO
+OpenPOWER's existing scalar FP <-> INT conversion instructions
+are based on the assumption that VSX is available.  Thus, all
+conversions are from FPR to FPR, and assume that VSX operations
+will copy integer in and out of FPRs.
+
+When VSX is not implemented (Scalar FP Compliancy Level) this no
+longer holds, leaving the Scalar Compliancy Level lacking,
+with a power consumption penalty of having to use main memory
+for transfer of converted data between FPR and GPR.
+In a 3D GPU or in for example CODECs that rely on FP INT
+conversion this could be very significant.
+For SVP64 where there will be no VSX at all, Vectors of
+such conversions going via main memory would result in
+an even larger penalty.
+ 
+The bare minimum instructions required is to allow direct
+two-way bit-preserving transfers between FPR and GPR.
+With over 90% of transfers in 3D GPU Shader applications
+being conversions, a case can be made for including direct
+FP <-> INT conversion instructions rather than relying on
+macro-op fusion, which complicates the decoder phase.
 
 Links:
 
+* <https://bugs.libre-soc.org/show_bug.cgi?id=650>
 * <https://bugs.libre-soc.org/show_bug.cgi?id=230#c71>
 * <https://bugs.libre-soc.org/show_bug.cgi?id=230#c74>
 
@@ -17,10 +38,10 @@ TODO
 
 TODO
 
-# FP cvt targetting INTs
+# FP convert targetting INTs
 
 TODO
 
-# INT cvt targetting FP
+# INT convert targetting FP
 
 TODO
