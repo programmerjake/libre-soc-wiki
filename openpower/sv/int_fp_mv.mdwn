@@ -72,6 +72,7 @@ Reinterprets `UI << 16` as a 32-bit float, which is then converted to a 64-bit f
 This is equivalent to reinterpreting `UI` as a bf16 and converting to 64-bit float, writing to `FRT`.
 
 Example:
+
 ```
 # clearing a FPR
 fmvis f4, 0 # writes +0.0 to f4
@@ -93,6 +94,7 @@ Important: If the float load immediate instruction(s) are left out, change all [
 <div id="fpr-to-gpr-conversion-mode" />
 
 Mode values:
+
 | Mode | `rounding_mode` | Semantics                        |
 |------|-----------------|----------------------------------|
 | 000  | from `FPSCR`    | [OpenPower semantics]            |
@@ -180,6 +182,7 @@ Convert from 64-bit unsigned integer in the GPR `RA` to 32-bit float in `FRT`.
 # FP to Integer Conversion Pseudo-code
 
 Key for pseudo-code:
+
 | term                      | result type | definition                                                                                         |
 |---------------------------|-------------|----------------------------------------------------------------------------------------------------|
 | `fp`                      | --          | `f32` or `f64` (or other types from SimpleV)                                                       |
