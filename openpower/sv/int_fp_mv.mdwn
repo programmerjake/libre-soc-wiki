@@ -4,10 +4,16 @@ Introduction:
 
 High-performance CPU/GPU software needs to often convert between integers
 and floating-point, therefore fast conversion/data-movement instructions
-are needed. Because Libre-SOC is not implementing VMX/VSX and the
+are needed.  Also given that initialisation of floats tends to take up
+considerable space (even to just load 0.0) the inclusion of float immediate
+is up for consideration.
+
+Libre-SOC will be compliant with the
+**Scalar Floating-Point Subset** (SFFS) i.e. is not implementing VMX/VSX.
+With VMX/VSX not available in the SFFS Compliancy Level, the 
 existing non-VSX conversion/data-movement instructions require load/store
 instructions (slow and expensive) to transfer data between the FPRs and
-the GPRs, and because SimpleV needs efficient scalar instructions in
+the GPRs.  Also, because SimpleV needs efficient scalar instructions in
 order to generate efficient vector instructions, adding new instructions
 for data-transfer/conversion between FPRs and GPRs seems necessary.
 
@@ -49,7 +55,6 @@ Semantics required by all of:
   [`OpConvertFToS`](https://www.khronos.org/registry/spir-v/specs/unified1/SPIRV.html#OpConvertFToS)
   instructions when decorated with
   [the `SaturatedConversion` decorator](https://www.khronos.org/registry/spir-v/specs/unified1/SPIRV.html#_a_id_decoration_a_decoration).
-
 * JavaScript FP -> Integer conversion -- modular with Inf/NaN converted to 0
 
 Semantics required by JavaScript
