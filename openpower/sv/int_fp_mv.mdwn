@@ -5,7 +5,7 @@ Introduction:
 High-performance CPU/GPU software needs to often convert between integers
 and floating-point, therefore fast conversion/data-movement instructions
 are needed.  Also given that initialisation of floats tends to take up
-considerable space (even to just load 0.0) the inclusion of float immediate
+considerable space Geven to just load 0.0) the inclusion of float immediate
 is up for consideration.
 
 Libre-SOC will be compliant with the
@@ -272,7 +272,7 @@ def fp_to_int_java_script<fp, int>(v: fp) -> int:
     if v is NaN or infinite:
         return 0
     v = rint(v, rounding_mode)
-    v = v mod int::VALUE_COUNT  # 2^32 for i32, 2^64 for i64, result is +ve
+    v = v mod int::VALUE_COUNT  # 2^32 for i32, 2^64 for i64, result is non-negative
     bits = (uint)v
     return (int)bits
 ```
