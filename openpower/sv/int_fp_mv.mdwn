@@ -23,8 +23,9 @@ In addition, the vast majority of GPR <-> FPR data-transfers are as part
 of a FP <-> Integer conversion sequence, therefore reducing the number
 of instructions required to the minimum seems necessary.
 
-Therefore, we are proposing adding both:
+Therefore, we are proposing adding:
 
+* FPR load-immediate using `BF16` as the constant
 * FPR <-> GPR data-transfer instructions that just copy bits without conversion
 * FPR <-> GPR combined data-transfer/conversion instructions that do
   Integer <-> FP conversions
@@ -104,7 +105,7 @@ move a 32-bit float from a GPR to a FPR, just copying bits. Converts the
 
 Reinterprets `FI << 16` as a 32-bit float, which is then converted to a
 64-bit float and written to `FRT`.  This is equivalent to reinterpreting
-`FI` as a `BF16` and converting to 64-bit float, writing to `FRT`.
+`FI` as a `BF16` and converting to 64-bit float.
 
 Example:
 
@@ -128,15 +129,21 @@ sv.fmvis/vec4 f0, 0 # writes +0.0 to f0-f127
 ```
 Important: If the float load immediate instruction(s) are left out,
 change all [GPR to FPR conversion instructions](#GPR-to-FPR-conversions)
-to instead write `+0.0` if `RA` is register `0`, allowing clearing FPRs.
+to instead write `+0.0` if `RA` is register `0`, at least
+allowing clearing FPRs.
 
 |  0-5   | 6-10 | 11-25 | 26-30 | 31  |
 |--------|------|-------|-------|-----|
 |  Major | FRT  | FI    | XO    | FI0 |
 
 The above fits reasonably well with Minor 19 and follows the
-pattern shown by `addpcis`.  15 bits of FI fit into bits 11 to 25,
+pattern shown by `addpcis`, which uses an entire column of Minor 19
+XO.  15 bits of FI fit into bits 11 to 25,
 the top bit FI0 (MSB0 numbered 0) makes 16.
+
+    bf16 = FI0 || FI
+    fp32 = bf16 || [0]*16
+    FRT = Single_to_Double(fp32)
 
 ## FPR to GPR conversions
 
