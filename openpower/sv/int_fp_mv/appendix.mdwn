@@ -1,0 +1,214 @@
+# Equivalent OpenPower ISA v3.0 Assembly Language for FP -> Integer Conversion Modes
+
+## Rust
+
+```pub fn fcvttgd_rust(v: f64) -> i64 {
+    v as i64
+}
+
+pub fn fcvttgud_rust(v: f64) -> u64 {
+    v as u64
+}
+
+pub fn fcvttgw_rust(v: f64) -> i32 {
+    v as i32
+}
+
+pub fn fcvttguw_rust(v: f64) -> u32 {
+    v as u32
+}```
+
+### 64-bit float -> 64-bit signed integer
+
+```
+.LCPI0_0:
+        .long   0xdf000000
+.LCPI0_1:
+        .quad   0x43dfffffffffffff
+example::fcvttgd_rust:
+.Lfunc_gep0:
+        addis 2, 12, .TOC.-.Lfunc_gep0@ha
+        addi 2, 2, .TOC.-.Lfunc_gep0@l
+        addis 3, 2, .LCPI0_0@toc@ha
+        fctidz 2, 1
+        fcmpu 5, 1, 1
+        li 4, 1
+        li 5, -1
+        lfs 0, .LCPI0_0@toc@l(3)
+        addis 3, 2, .LCPI0_1@toc@ha
+        rldic 4, 4, 63, 0
+        fcmpu 0, 1, 0
+        lfd 0, .LCPI0_1@toc@l(3)
+        stfd 2, -8(1)
+        ld 3, -8(1)
+        fcmpu 1, 1, 0
+        cror 24, 0, 3
+        isel 3, 4, 3, 24
+        rldic 4, 5, 0, 1
+        isel 3, 4, 3, 5
+        isel 3, 0, 3, 23
+        blr
+        .long   0
+        .quad   0
+```
+
+### 64-bit float -> 64-bit unsigned integer
+
+```
+.LCPI1_0:
+        .long   0x00000000
+.LCPI1_1:
+        .quad   0x43efffffffffffff
+example::fcvttgud_rust:
+.Lfunc_gep1:
+        addis 2, 12, .TOC.-.Lfunc_gep1@ha
+        addi 2, 2, .TOC.-.Lfunc_gep1@l
+        addis 3, 2, .LCPI1_0@toc@ha
+        fctiduz 2, 1
+        li 4, -1
+        lfs 0, .LCPI1_0@toc@l(3)
+        addis 3, 2, .LCPI1_1@toc@ha
+        fcmpu 0, 1, 0
+        lfd 0, .LCPI1_1@toc@l(3)
+        stfd 2, -8(1)
+        ld 3, -8(1)
+        fcmpu 1, 1, 0
+        cror 20, 0, 3
+        isel 3, 0, 3, 20
+        isel 3, 4, 3, 5
+        blr
+        .long   0
+        .quad   0
+```
+
+### 64-bit float -> 32-bit signed integer
+
+```
+.LCPI2_0:
+        .long   0xcf000000
+.LCPI2_1:
+        .quad   0x41dfffffffc00000
+example::fcvttgw_rust:
+.Lfunc_gep2:
+        addis 2, 12, .TOC.-.Lfunc_gep2@ha
+        addi 2, 2, .TOC.-.Lfunc_gep2@l
+        addis 3, 2, .LCPI2_0@toc@ha
+        fctiwz 2, 1
+        lis 4, -32768
+        lis 5, 32767
+        lfs 0, .LCPI2_0@toc@l(3)
+        addis 3, 2, .LCPI2_1@toc@ha
+        fcmpu 0, 1, 0
+        lfd 0, .LCPI2_1@toc@l(3)
+        addi 3, 1, -4
+        stfiwx 2, 0, 3
+        fcmpu 5, 1, 1
+        lwz 3, -4(1)
+        fcmpu 1, 1, 0
+        cror 24, 0, 3
+        isel 3, 4, 3, 24
+        ori 4, 5, 65535
+        isel 3, 4, 3, 5
+        isel 3, 0, 3, 23
+        blr
+        .long   0
+        .quad   0
+```
+
+### 64-bit float -> 32-bit unsigned integer
+
+```
+.LCPI3_0:
+        .long   0x00000000
+.LCPI3_1:
+        .quad   0x41efffffffe00000
+example::fcvttguw_rust:
+.Lfunc_gep3:
+        addis 2, 12, .TOC.-.Lfunc_gep3@ha
+        addi 2, 2, .TOC.-.Lfunc_gep3@l
+        addis 3, 2, .LCPI3_0@toc@ha
+        fctiwuz 2, 1
+        li 4, -1
+        lfs 0, .LCPI3_0@toc@l(3)
+        addis 3, 2, .LCPI3_1@toc@ha
+        fcmpu 0, 1, 0
+        lfd 0, .LCPI3_1@toc@l(3)
+        addi 3, 1, -4
+        stfiwx 2, 0, 3
+        lwz 3, -4(1)
+        fcmpu 1, 1, 0
+        cror 20, 0, 3
+        isel 3, 0, 3, 20
+        isel 3, 4, 3, 5
+        blr
+        .long   0
+        .quad   0
+```
+
+## JavaScript
+
+```
+#include <stdint.h>
+
+namespace WTF {
+template<typename Target, typename Src>
+inline Target bitwise_cast(Src v) {
+    union {
+        Src s;
+        Target t;
+    } u;
+    u.s = v;
+…    if (exp < 32) {
+        int32_t missingOne = 1 << exp;
+        result &= missingOne - 1;
+        result += missingOne;
+    }
+
+    // If the input value was negative (we could test either 'number' or 'bits',
+    // but testing 'bits' is likely faster) invert the result appropriately.
+    return bits < 0 ? -result : result;
+}
+```
+
+### 64-bit float -> 32-bit signed integer
+
+```
+toInt32(double):
+        stfd 1,-16(1)
+        li 3,0
+        ori 2,2,0
+        ld 9,-16(1)
+        rldicl 8,9,12,53
+        addi 10,8,-1023
+        cmplwi 7,10,83
+        bgtlr 7
+        cmpwi 7,10,52
+        bgt 7,.L7
+        cmpwi 7,10,31
+        subfic 3,10,52
+        srad 3,9,3
+        extsw 3,3
+        bgt 7,.L4
+        li 8,1
+        slw 10,8,10
+        addi 8,10,-1
+        and 3,8,3
+        add 10,10,3
+        extsw 3,10
+.L4:
+        cmpdi 7,9,0
+        bgelr 7
+.L8:
+        neg 3,3
+        extsw 3,3
+        blr
+.L7:
+        cmpdi 7,9,0
+        addi 3,8,-1075
+        sld 3,9,3
+        extsw 3,3
+        bgelr 7
+        b .L8
+        .long 0
+        .byte 0,9,0,0,0,0,0,0
+```
