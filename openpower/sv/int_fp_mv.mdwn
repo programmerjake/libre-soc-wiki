@@ -7,21 +7,23 @@ High-performance CPU/GPU software needs to often convert between integers and fl
 In addition, the vast majority of GPR <-> FPR data-transfers are as part of a FP <-> Integer conversion sequence, therefore reducing the number of instructions required to the minimum seems necessary.
 
 Therefore, we are proposing adding both:
- * FPR <-> GPR data-transfer instructions that just copy bits without conversion
- * FPR <-> GPR combined data-transfer/conversion instructions that do Integer <-> FP conversions
+
+* FPR <-> GPR data-transfer instructions that just copy bits without conversion
+* FPR <-> GPR combined data-transfer/conversion instructions that do Integer <-> FP conversions
 
 Because we're adding new Integer <-> FP conversion instructions, we may as well take this opportunity to make the instructions well suited for common/important conversion sequences:
- * standard Integer -> FP conversion
+
+* standard Integer -> FP conversion
     * rounding mode read from FPSCR
 
- * standard OpenPower FP -> Integer conversion -- saturation with NaN converted to minimum valid integer
+* standard OpenPower FP -> Integer conversion -- saturation with NaN converted to minimum valid integer
 
     * Matches x86's conversion semantics
     * Has instructions for both:
         * rounding mode read from FPSCR
         * rounding mode is always truncate
 
- * Rust FP -> Integer conversion -- saturation with NaN converted to 0
+* Rust FP -> Integer conversion -- saturation with NaN converted to 0
 
     Semantics required by all of:
     * Rust's FP -> Integer conversion using the [`as` operator](https://doc.rust-lang.org/reference/expressions/operator-expr.html#semantics)
@@ -91,7 +93,7 @@ Important: If the float load immediate instruction(s) are left out, change all [
 
 ## FPR to GPR conversions
 
-<div id="fpr-to-gpr-conversion-mode" />
+<div id="fpr-to-gpr-conversion-mode"></div>
 
 Mode values:
 
@@ -194,7 +196,7 @@ Key for pseudo-code:
 | `int::VALUE_COUNT`        | Integer     | the number of different values `int` can store (`2^int::BITS`). too big to fit in `int`.           |
 | `rint(fp, rounding_mode)` | `fp`        | rounds the floating-point value `fp` to an integer according to rounding mode `rounding_mode`      |
 
-<div id="fp-to-int-openpower-conversion-semantics"/>
+<div id="fp-to-int-openpower-conversion-semantics"></div>
 OpenPower conversion semantics (section A.2 page 999 (page 1023) of OpenPower ISA v3.1):
 
 ```
@@ -208,7 +210,7 @@ def fp_to_int_open_power<fp, int>(v: fp) -> int:
     return (int)rint(v, rounding_mode)
 ```
 
-<div id="fp-to-int-rust-conversion-semantics"/>
+<div id="fp-to-int-rust-conversion-semantics"></div>
 Rust [conversion semantics](https://doc.rust-lang.org/reference/expressions/operator-expr.html#semantics) (with adjustment to add non-truncate rounding modes):
 
 ```
@@ -222,7 +224,7 @@ def fp_to_int_rust<fp, int>(v: fp) -> int:
     return (int)rint(v, rounding_mode)
 ```
 
-<div id="fp-to-int-javascript-conversion-semantics"/>
+<div id="fp-to-int-javascript-conversion-semantics"></div>
 JavaScript [conversion semantics](https://262.ecma-international.org/11.0/#sec-toint32) (with adjustment to add non-truncate rounding modes):
 
 ```
