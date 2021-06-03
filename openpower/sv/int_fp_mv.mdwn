@@ -130,14 +130,13 @@ Important: If the float load immediate instruction(s) are left out,
 change all [GPR to FPR conversion instructions](#GPR-to-FPR-conversions)
 to instead write `+0.0` if `RA` is register `0`, allowing clearing FPRs.
 
-|  0-5   | 6-10 | 11-24 | 2t-30 | 31  |
-|========|======|=======|=======|=====|
+|  0-5   | 6-10 | 11-25 | 26-30 | 31  |
+|--------|------|-------|-------|-----|
 |  Major | FRT  | FI    | XO    | FI0 |
 
 The above fits reasonably well with Minor 19 and follows the
-pattern shown by `addpcis`.  If four columns are used it is possible
-to gain 2 extra bits to make FI up to 16 bits.  Less than 14 is
-not recommended as it truncates the mantissa range.
+pattern shown by `addpcis`.  15 bits of FI fit into bits 11 to 25,
+the top bit FI0 (MSB0 numbered 0) makes 16.
 
 ## FPR to GPR conversions
 
