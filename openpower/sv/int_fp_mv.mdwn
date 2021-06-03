@@ -470,3 +470,50 @@ example::fcvttguw_rust:
         .long   0
         .quad   0
 ```
+
+## JavaScript
+
+https://gcc.godbolt.org/z/nG8Yh4dfW
+
+### 64-bit float -> 32-bit signed integer
+
+```
+toInt32(double):
+        stfd 1,-16(1)
+        li 3,0
+        ori 2,2,0
+        ld 9,-16(1)
+        rldicl 8,9,12,53
+        addi 10,8,-1023
+        cmplwi 7,10,83
+        bgtlr 7
+        cmpwi 7,10,52
+        bgt 7,.L7
+        cmpwi 7,10,31
+        subfic 3,10,52
+        srad 3,9,3
+        extsw 3,3
+        bgt 7,.L4
+        li 8,1
+        slw 10,8,10
+        addi 8,10,-1
+        and 3,8,3
+        add 10,10,3
+        extsw 3,10
+.L4:
+        cmpdi 7,9,0
+        bgelr 7
+.L8:
+        neg 3,3
+        extsw 3,3
+        blr
+.L7:
+        cmpdi 7,9,0
+        addi 3,8,-1075
+        sld 3,9,3
+        extsw 3,3
+        bgelr 7
+        b .L8
+        .long 0
+        .byte 0,9,0,0,0,0,0,0
+```
