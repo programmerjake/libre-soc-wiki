@@ -1,5 +1,29 @@
 # Equivalent OpenPower ISA v3.0 Assembly Language for FP -> Integer Conversion Modes
 
+## c (IEEE754 standard compliant)
+
+```
+int32_t toInt32(double number)
+{
+    uint32_t result = (int32_t)number;
+    return result;
+}
+```
+
+### 64-bit float -> 32-bit signed integer
+
+```
+toInt32(double):
+        fctiwz 1,1
+        addi 9,1,-16
+        stfiwx 1,0,9
+        lwz 3,-16(1)
+        extsw 3,3
+        blr
+        .long 0
+        .byte 0,9,0,0,0,0,0,0
+```
+
 ## Rust
 
 ```pub fn fcvttgd_rust(v: f64) -> i64 {
