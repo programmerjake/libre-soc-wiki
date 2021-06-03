@@ -2,38 +2,59 @@
 
 Introduction:
 
-High-performance CPU/GPU software needs to often convert between integers and floating-point, therefore fast conversion/data-movement instructions are needed. Because Libre-SOC is not implementing VMX/VSX and the existing non-VSX conversion/data-movement instructions require load/store instructions (slow and expensive) to transfer data between the FPRs and the GPRs, and because SimpleV needs efficient scalar instructions in order to generate efficient vector instructions, adding new instructions for data-transfer/conversion between FPRs and GPRs seems necessary.
+High-performance CPU/GPU software needs to often convert between integers
+and floating-point, therefore fast conversion/data-movement instructions
+are needed. Because Libre-SOC is not implementing VMX/VSX and the
+existing non-VSX conversion/data-movement instructions require load/store
+instructions (slow and expensive) to transfer data between the FPRs and
+the GPRs, and because SimpleV needs efficient scalar instructions in
+order to generate efficient vector instructions, adding new instructions
+for data-transfer/conversion between FPRs and GPRs seems necessary.
 
-In addition, the vast majority of GPR <-> FPR data-transfers are as part of a FP <-> Integer conversion sequence, therefore reducing the number of instructions required to the minimum seems necessary.
+In addition, the vast majority of GPR <-> FPR data-transfers are as part
+of a FP <-> Integer conversion sequence, therefore reducing the number
+of instructions required to the minimum seems necessary.
 
 Therefore, we are proposing adding both:
 
 * FPR <-> GPR data-transfer instructions that just copy bits without conversion
-* FPR <-> GPR combined data-transfer/conversion instructions that do Integer <-> FP conversions
+* FPR <-> GPR combined data-transfer/conversion instructions that do
+  Integer <-> FP conversions
 
-Because we're adding new Integer <-> FP conversion instructions, we may as well take this opportunity to make the instructions well suited for common/important conversion sequences:
+If we're adding new Integer <-> FP conversion instructions, we may
+as well take this opportunity to modernise the instructions and make them
+well suited for common/important conversion sequences:
 
 * standard Integer -> FP conversion
+  - rounding mode read from FPSCR
+* standard OpenPower FP -> Integer conversion -- saturation with NaN
+  converted to minimum valid integer
+  - Matches x86's conversion semantics
+  - Has instructions for both:
     * rounding mode read from FPSCR
-
-* standard OpenPower FP -> Integer conversion -- saturation with NaN converted to minimum valid integer
-
-    * Matches x86's conversion semantics
-    * Has instructions for both:
-        * rounding mode read from FPSCR
-        * rounding mode is always truncate
-
+    * rounding mode is always truncate
 * Rust FP -> Integer conversion -- saturation with NaN converted to 0
 
-    Semantics required by all of:
-    * Rust's FP -> Integer conversion using the [`as` operator](https://doc.rust-lang.org/reference/expressions/operator-expr.html#semantics)
-    * Java's [FP -> Integer conversion](https://docs.oracle.com/javase/specs/jls/se16/html/jls-5.html#jls-5.1.3)
-    * LLVM's [`llvm.fptosi.sat`](https://llvm.org/docs/LangRef.html#llvm-fptosi-sat-intrinsic) and [`llvm.fptoui.sat`](https://llvm.org/docs/LangRef.html#llvm-fptoui-sat-intrinsic) intrinsics
-    * SPIR-V's OpenCL dialect's [`OpConvertFToU`](https://www.khronos.org/registry/spir-v/specs/unified1/SPIRV.html#OpConvertFToU) and [`OpConvertFToS`](https://www.khronos.org/registry/spir-v/specs/unified1/SPIRV.html#OpConvertFToS) instructions when decorated with [the `SaturatedConversion` decorator](https://www.khronos.org/registry/spir-v/specs/unified1/SPIRV.html#_a_id_decoration_a_decoration).
+Semantics required by all of:
+
+* Rust's FP -> Integer conversion using the
+  [`as` operator](https://doc.rust-lang.org/reference/expressions/operator-expr.html#semantics)
+* Java's
+  [FP -> Integer conversion](https://docs.oracle.com/javase/specs/jls/se16/html/jls-5.html#jls-5.1.3)
+* LLVM's
+  [`llvm.fptosi.sat`](https://llvm.org/docs/LangRef.html#llvm-fptosi-sat-intrinsic) and
+  [`llvm.fptoui.sat`](https://llvm.org/docs/LangRef.html#llvm-fptoui-sat-intrinsic) intrinsics
+* SPIR-V's OpenCL dialect's
+  [`OpConvertFToU`](https://www.khronos.org/registry/spir-v/specs/unified1/SPIRV.html#OpConvertFToU) and
+  [`OpConvertFToS`](https://www.khronos.org/registry/spir-v/specs/unified1/SPIRV.html#OpConvertFToS)
+  instructions when decorated with
+  [the `SaturatedConversion` decorator](https://www.khronos.org/registry/spir-v/specs/unified1/SPIRV.html#_a_id_decoration_a_decoration).
 
 * JavaScript FP -> Integer conversion -- modular with Inf/NaN converted to 0
 
-    Semantics required by JavaScript
+Semantics required by JavaScript
+
+TODO: review and investigate other language semantics
 
 # Links
 
@@ -54,7 +75,9 @@ move a 64-bit float from a FPR to a GPR, just copying bits.
 
 `fmvtgs RT, FRA`
 
-move a 32-bit float from a FPR to a GPR, just copying bits. Converts the 64-bit float in `FRA` to a 32-bit float, then writes the 32-bit float to `RT`.
+move a 32-bit float from a FPR to a GPR, just copying bits. Converts the
+64-bit float in `FRA` to a 32-bit float, then writes the 32-bit float to
+`RT`.
 
 ## GPR to FPR moves
 
@@ -64,14 +87,17 @@ move a 64-bit float from a GPR to a FPR, just copying bits.
 
 `fmvfgs FRT, RA`
 
-move a 32-bit float from a GPR to a FPR, just copying bits. Converts the 32-bit float in `RA` to a 64-bit float, then writes the 64-bit float to `FRT`.
+move a 32-bit float from a GPR to a FPR, just copying bits. Converts the
+32-bit float in `RA` to a 64-bit float, then writes the 64-bit float to
+`FRT`.
 
 ### Float load immediate (kinda a variant of `fmvfg`)
 
 `fmvis FRT, UI`
 
-Reinterprets `UI << 16` as a 32-bit float, which is then converted to a 64-bit float and written to `FRT`.
-This is equivalent to reinterpreting `UI` as a bf16 and converting to 64-bit float, writing to `FRT`.
+Reinterprets `UI << 16` as a 32-bit float, which is then converted to a
+64-bit float and written to `FRT`.  This is equivalent to reinterpreting
+`UI` as a bf16 and converting to 64-bit float, writing to `FRT`.
 
 Example:
 
@@ -88,8 +114,9 @@ fmvis f4, 0x7F80 # writes +Infinity to f4
 fmvis f4, 0xFF80 # writes -Infinity to f4
 fmvis f4, 0x3FFF # writes +1.9921875 to f4
 ```
-
-Important: If the float load immediate instruction(s) are left out, change all [GPR to FPR conversion instructions](#GPR-to-FPR-conversions) to instead write `+0.0` if `RA` is register `0`, allowing clearing FPRs.
+Important: If the float load immediate instruction(s) are left out,
+change all [GPR to FPR conversion instructions](#GPR-to-FPR-conversions)
+to instead write `+0.0` if `RA` is register `0`, allowing clearing FPRs.
 
 ## FPR to GPR conversions
 
@@ -113,35 +140,43 @@ Mode values:
 
 `fcvttgw RT, FRA, Mode`
 
-Convert from 64-bit float to 32-bit signed integer, writing the result to the GPR `RT`. Converts using [mode `Mode`]
+Convert from 64-bit float to 32-bit signed integer, writing the result
+to the GPR `RT`. Converts using [mode `Mode`]
 
 `fcvttguw RT, FRA, Mode`
 
-Convert from 64-bit float to 32-bit unsigned integer, writing the result to the GPR `RT`. Converts using [mode `Mode`]
+Convert from 64-bit float to 32-bit unsigned integer, writing the result
+to the GPR `RT`. Converts using [mode `Mode`]
 
 `fcvttgd RT, FRA, Mode`
 
-Convert from 64-bit float to 64-bit signed integer, writing the result to the GPR `RT`. Converts using [mode `Mode`]
+Convert from 64-bit float to 64-bit signed integer, writing the result
+to the GPR `RT`. Converts using [mode `Mode`]
 
 `fcvttgud RT, FRA, Mode`
 
-Convert from 64-bit float to 64-bit unsigned integer, writing the result to the GPR `RT`. Converts using [mode `Mode`]
+Convert from 64-bit float to 64-bit unsigned integer, writing the result
+to the GPR `RT`. Converts using [mode `Mode`]
 
 `fcvtstgw RT, FRA, Mode`
 
-Convert from 32-bit float to 32-bit signed integer, writing the result to the GPR `RT`. Converts using [mode `Mode`]
+Convert from 32-bit float to 32-bit signed integer, writing the result
+to the GPR `RT`. Converts using [mode `Mode`]
 
 `fcvtstguw RT, FRA, Mode`
 
-Convert from 32-bit float to 32-bit unsigned integer, writing the result to the GPR `RT`. Converts using [mode `Mode`]
+Convert from 32-bit float to 32-bit unsigned integer, writing the result
+to the GPR `RT`. Converts using [mode `Mode`]
 
 `fcvtstgd RT, FRA, Mode`
 
-Convert from 32-bit float to 64-bit signed integer, writing the result to the GPR `RT`. Converts using [mode `Mode`]
+Convert from 32-bit float to 64-bit signed integer, writing the result
+to the GPR `RT`. Converts using [mode `Mode`]
 
 `fcvtstgud RT, FRA, Mode`
 
-Convert from 32-bit float to 64-bit unsigned integer, writing the result to the GPR `RT`. Converts using [mode `Mode`]
+Convert from 32-bit float to 64-bit unsigned integer, writing the result
+to the GPR `RT`. Converts using [mode `Mode`]
 
 [mode `Mode`]: #fpr-to-gpr-conversion-mode
 
@@ -232,7 +267,7 @@ def fp_to_int_java_script<fp, int>(v: fp) -> int:
     if v is NaN or infinite:
         return 0
     v = rint(v, rounding_mode)
-    v = v mod int::VALUE_COUNT  # 2^32 for i32, 2^64 for i64, the result is nonnegative
+    v = v mod int::VALUE_COUNT  # 2^32 for i32, 2^64 for i64, result is +ve
     bits = (uint)v
     return (int)bits
 ```
