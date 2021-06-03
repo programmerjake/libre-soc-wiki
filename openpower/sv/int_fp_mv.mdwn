@@ -121,9 +121,10 @@ fmvis f4, 0x7F80 # writes +Infinity to f4
 fmvis f4, 0xFF80 # writes -Infinity to f4
 fmvis f4, 0x3FFF # writes +1.9921875 to f4
 
-# clearing all 32 FPRs with 2 SVP64 instructions
+# clearing 128 FPRs with 2 SVP64 instructions
+# by issuing 32 vec4 (subvector length 4) ops
 setvli VL=MVL=32
-sv.fmvis f0, 0 # writes +0.0 to f0-f31
+sv.fmvis/vec4 f0, 0 # writes +0.0 to f0-f127
 ```
 Important: If the float load immediate instruction(s) are left out,
 change all [GPR to FPR conversion instructions](#GPR-to-FPR-conversions)
