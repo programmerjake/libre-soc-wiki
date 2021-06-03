@@ -98,11 +98,11 @@ move a 32-bit float from a GPR to a FPR, just copying bits. Converts the
 
 ### Float load immediate (kinda a variant of `fmvfg`)
 
-`fmvis FRT, UI`
+`fmvis FRT, FI`
 
-Reinterprets `UI << 16` as a 32-bit float, which is then converted to a
+Reinterprets `FI << 16` as a 32-bit float, which is then converted to a
 64-bit float and written to `FRT`.  This is equivalent to reinterpreting
-`UI` as a bf16 and converting to 64-bit float, writing to `FRT`.
+`FI` as a `BF16` and converting to 64-bit float, writing to `FRT`.
 
 Example:
 
@@ -118,10 +118,23 @@ fmvis f4, 0x7FC0 # writes +qNaN to f4
 fmvis f4, 0x7F80 # writes +Infinity to f4
 fmvis f4, 0xFF80 # writes -Infinity to f4
 fmvis f4, 0x3FFF # writes +1.9921875 to f4
+
+# clearing all 32 FPRs with 2 SVP64 instructions
+setvli VL=MVL=32
+sv.fmvis f0, 0 # writes +0.0 to f0-f31
 ```
 Important: If the float load immediate instruction(s) are left out,
 change all [GPR to FPR conversion instructions](#GPR-to-FPR-conversions)
 to instead write `+0.0` if `RA` is register `0`, allowing clearing FPRs.
+
+|  0-5   | 6-10 | 11-24 | 2t-30 | 31  |
+|========|======|=======|=======|=====|
+|  Major | FRT  | FI    | XO    | FI0 |
+
+The above fits reasonably well with Minor 19 and follows the
+pattern shown by `addpcis`.  If four columns are used it is possible
+to gain 2 extra bits to make FI up to 16 bits.  Less than 14 is
+not recommended as it truncates the mantissa range.
 
 ## FPR to GPR conversions
 
