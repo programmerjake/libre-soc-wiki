@@ -35,32 +35,70 @@ as well take this opportunity to modernise the instructions and make them
 well suited for common/important conversion sequences:
 
 * standard Integer -> FP conversion
-  - rounding mode read from FPSCR
-* standard OpenPower FP -> Integer conversion -- saturation with NaN
-  converted to minimum valid integer
+* standard OpenPower FP -> Integer conversion (saturation with NaN
+  converted to minimum valid integer)
+* Rust FP -> Integer conversion (saturation with NaN converted to 0)
+* JavaScript FP -> Integer conversion (modular with Inf/NaN converted to 0)
+
+# A bit more research into integer - fp conversion
+
+here is a paragraph which explains that there are different semantics
+for conversion, i don't know what the paragraph should say, but it needs
+to be here, to give some background.  it also acts as a lead-in to the
+sub-sections, introducing them and explaining why they are here, as
+justifications and background research as to why the ISA should support
+the feature being proposed.
+
+*nothing* can be left to chance or guesswork.
+
+## standard Integer -> FP conversion
+
+TODO, explain this further
+
+- rounding mode read from FPSCR
+
+# standard OpenPower FP -> Integer conversion
+
+TODO, explain this further, make this a complete sentence:
+"saturation with NaN converted to minimum valid integer"
+
   - Matches x86's conversion semantics
   - Has instructions for both:
     * rounding mode read from FPSCR
     * rounding mode is always truncate
-* Rust FP -> Integer conversion -- saturation with NaN converted to 0
 
-    Semantics required by all of:
+## Rust FP -> Integer conversion
 
-    * Rust's FP -> Integer conversion using the
-      [`as` operator](https://doc.rust-lang.org/reference/expressions/operator-expr.html#semantics)
-    * Java's
-      [FP -> Integer conversion](https://docs.oracle.com/javase/specs/jls/se16/html/jls-5.html#jls-5.1.3)
-    * LLVM's
-      [`llvm.fptosi.sat`](https://llvm.org/docs/LangRef.html#llvm-fptosi-sat-intrinsic) and
-      [`llvm.fptoui.sat`](https://llvm.org/docs/LangRef.html#llvm-fptoui-sat-intrinsic) intrinsics
-    * SPIR-V's OpenCL dialect's
-      [`OpConvertFToU`](https://www.khronos.org/registry/spir-v/specs/unified1/SPIRV.html#OpConvertFToU) and
-      [`OpConvertFToS`](https://www.khronos.org/registry/spir-v/specs/unified1/SPIRV.html#OpConvertFToS)
-      instructions when decorated with
-      [the `SaturatedConversion` decorator](https://www.khronos.org/registry/spir-v/specs/unified1/SPIRV.html#_a_id_decoration_a_decoration).
-* JavaScript FP -> Integer conversion -- modular with Inf/NaN converted to 0
+TODO, explain this further, the following is not a complete sentence,
+"saturation with NaN converted to 0"
 
-    Semantics required by JavaScript
+Semantics required by all of:
+(what does this mean, what is "required"?
+what semantics are being referred to? the sentence needs completing:
+"For Rust integer conversion, the semantics required are shown by the
+following, all of which are supported in XYZ" something like that)
+
+* Rust's FP -> Integer conversion using the
+  [`as` operator](https://doc.rust-lang.org/reference/expressions/operator-expr.html#semantics)
+* Java's
+  [FP -> Integer conversion](https://docs.oracle.com/javase/specs/jls/se16/html/jls-5.html#jls-5.1.3)
+* LLVM's
+  [`llvm.fptosi.sat`](https://llvm.org/docs/LangRef.html#llvm-fptosi-sat-intrinsic) and
+  [`llvm.fptoui.sat`](https://llvm.org/docs/LangRef.html#llvm-fptoui-sat-intrinsic) intrinsics
+* SPIR-V's OpenCL dialect's
+  [`OpConvertFToU`](https://www.khronos.org/registry/spir-v/specs/unified1/SPIRV.html#OpConvertFToU) and
+  [`OpConvertFToS`](https://www.khronos.org/registry/spir-v/specs/unified1/SPIRV.html#OpConvertFToS)
+  instructions when decorated with
+  [the `SaturatedConversion` decorator](https://www.khronos.org/registry/spir-v/specs/unified1/SPIRV.html#_a_id_decoration_a_decoration).
+
+## JavaScript FP -> Integer conversion
+
+modular with Inf/NaN converted to 0
+
+TODO, explain this further, it is not a sentence:
+"Semantics required by JavaScript"
+
+## Other languages
 
 TODO: review and investigate other language semantics
 
