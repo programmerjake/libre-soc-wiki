@@ -77,15 +77,19 @@ All of the following instructions use the standard OpenPower conversion to/from 
 
 ## FPR to GPR moves
 
-`fmvtg RT, FRA`
+* `fmvtg RT, FRA`
+* `fmvtg. RT, FRA`
 
-move a 64-bit float from a FPR to a GPR, just copying bits.
+move a 64-bit float from a FPR to a GPR, just copying bits directly.
+Rc=1 tests RT and sets CR0
 
-`fmvtgs RT, FRA`
+* `fmvtgs RT, FRA`
+* `fmvtgs. RT, FRA`
 
 move a 32-bit float from a FPR to a GPR, just copying bits. Converts the
 64-bit float in `FRA` to a 32-bit float, then writes the 32-bit float to
 `RT`.
+Rc=1 tests RT and sets CR0
 
 ## GPR to FPR moves
 
@@ -98,6 +102,8 @@ move a 64-bit float from a GPR to a FPR, just copying bits.
 move a 32-bit float from a GPR to a FPR, just copying bits. Converts the
 32-bit float in `RA` to a 64-bit float, then writes the 64-bit float to
 `FRT`.
+
+TODO: Rc=1 variants? also, any exceptions or FPSCR bits set?
 
 ### Float load immediate (kinda a variant of `fmvfg`)
 
