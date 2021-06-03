@@ -337,3 +337,136 @@ def fp_to_int_java_script<fp, int>(v: fp) -> int:
     bits = (uint)v
     return (int)bits
 ```
+
+# Equivalent OpenPower ISA v3.0 Assembly Language for FP -> Integer Conversion Modes
+
+## Rust
+
+https://rust.godbolt.org/z/jervW7ofb
+
+### 64-bit float -> 64-bit signed integer
+
+```
+.LCPI0_0:
+        .long   0xdf000000
+.LCPI0_1:
+        .quad   0x43dfffffffffffff
+example::fcvttgd_rust:
+.Lfunc_gep0:
+        addis 2, 12, .TOC.-.Lfunc_gep0@ha
+        addi 2, 2, .TOC.-.Lfunc_gep0@l
+        addis 3, 2, .LCPI0_0@toc@ha
+        fctidz 2, 1
+        fcmpu 5, 1, 1
+        li 4, 1
+        li 5, -1
+        lfs 0, .LCPI0_0@toc@l(3)
+        addis 3, 2, .LCPI0_1@toc@ha
+        rldic 4, 4, 63, 0
+        fcmpu 0, 1, 0
+        lfd 0, .LCPI0_1@toc@l(3)
+        stfd 2, -8(1)
+        ld 3, -8(1)
+        fcmpu 1, 1, 0
+        cror 24, 0, 3
+        isel 3, 4, 3, 24
+        rldic 4, 5, 0, 1
+        isel 3, 4, 3, 5
+        isel 3, 0, 3, 23
+        blr
+        .long   0
+        .quad   0
+```
+
+### 64-bit float -> 64-bit unsigned integer
+
+```
+.LCPI1_0:
+        .long   0x00000000
+.LCPI1_1:
+        .quad   0x43efffffffffffff
+example::fcvttgud_rust:
+.Lfunc_gep1:
+        addis 2, 12, .TOC.-.Lfunc_gep1@ha
+        addi 2, 2, .TOC.-.Lfunc_gep1@l
+        addis 3, 2, .LCPI1_0@toc@ha
+        fctiduz 2, 1
+        li 4, -1
+        lfs 0, .LCPI1_0@toc@l(3)
+        addis 3, 2, .LCPI1_1@toc@ha
+        fcmpu 0, 1, 0
+        lfd 0, .LCPI1_1@toc@l(3)
+        stfd 2, -8(1)
+        ld 3, -8(1)
+        fcmpu 1, 1, 0
+        cror 20, 0, 3
+        isel 3, 0, 3, 20
+        isel 3, 4, 3, 5
+        blr
+        .long   0
+        .quad   0
+```
+
+### 64-bit float -> 32-bit signed integer
+
+```
+.LCPI2_0:
+        .long   0xcf000000
+.LCPI2_1:
+        .quad   0x41dfffffffc00000
+example::fcvttgw_rust:
+.Lfunc_gep2:
+        addis 2, 12, .TOC.-.Lfunc_gep2@ha
+        addi 2, 2, .TOC.-.Lfunc_gep2@l
+        addis 3, 2, .LCPI2_0@toc@ha
+        fctiwz 2, 1
+        lis 4, -32768
+        lis 5, 32767
+        lfs 0, .LCPI2_0@toc@l(3)
+        addis 3, 2, .LCPI2_1@toc@ha
+        fcmpu 0, 1, 0
+        lfd 0, .LCPI2_1@toc@l(3)
+        addi 3, 1, -4
+        stfiwx 2, 0, 3
+        fcmpu 5, 1, 1
+        lwz 3, -4(1)
+        fcmpu 1, 1, 0
+        cror 24, 0, 3
+        isel 3, 4, 3, 24
+        ori 4, 5, 65535
+        isel 3, 4, 3, 5
+        isel 3, 0, 3, 23
+        blr
+        .long   0
+        .quad   0
+```
+
+### 64-bit float -> 32-bit unsigned integer
+
+```
+.LCPI3_0:
+        .long   0x00000000
+.LCPI3_1:
+        .quad   0x41efffffffe00000
+example::fcvttguw_rust:
+.Lfunc_gep3:
+        addis 2, 12, .TOC.-.Lfunc_gep3@ha
+        addi 2, 2, .TOC.-.Lfunc_gep3@l
+        addis 3, 2, .LCPI3_0@toc@ha
+        fctiwuz 2, 1
+        li 4, -1
+        lfs 0, .LCPI3_0@toc@l(3)
+        addis 3, 2, .LCPI3_1@toc@ha
+        fcmpu 0, 1, 0
+        lfd 0, .LCPI3_1@toc@l(3)
+        addi 3, 1, -4
+        stfiwx 2, 0, 3
+        lwz 3, -4(1)
+        fcmpu 1, 1, 0
+        cror 20, 0, 3
+        isel 3, 0, 3, 20
+        isel 3, 4, 3, 5
+        blr
+        .long   0
+        .quad   0
+```
