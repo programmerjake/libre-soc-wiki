@@ -106,33 +106,8 @@ TODO: review and investigate other language semantics
 
 # Proposed New Scalar Instructions
 
-All of the following instructions use the standard OpenPower conversion to/from 64-bit float format when reading/writing a 32-bit float from/to a FPR.
-
-This can be overridden by SimpleV, which sets the following
-operation "reinterpretation" rules:
-
-* any operation whose assembler mnemonic does not end in "s"
-  (being defined in v3.0B as a "double" operation) is
-  instead an operation at the overridden elwidth for the
-  relevant operand.
-* any operation nominally defined as a "single" FP operation
-  is redefined to be **half the elwidth** rather than
-  "half of 64 bit".
-
-Examples:
-
-* `sv.fmvtg/sw=32 RT.v, FRA.v` is defined as treating FRA
-   as a vector of *FP32* source operands each *32* bits wide
-   which are to be placed into *64* bit integer destination elements.
-* `sv.fmvfgs/dw=32 FRT.v, RA.v` is defined as taking the bottom
-   32 bits of each RA integer source, then performing a **32 bit**
-   FP32 to **FP16** conversion and storing the result in the
-   **32 bits** of an FRT destination element.
-
-"Single" is therefore redefined in SVP64 to be "half elwidth"
-rather than Double width hardcoded to 64 and Single width
-hardcoded to 32.  This allows a full range of conversions
-between FP64, FP32, FP16 and BF16.
+All of the following instructions use the standard OpenPower conversion to/from 64-bit float format when reading/writing a 32-bit float from/to a FPR. This can be overridden by SimpleV, as explained in the 
+ [[int_fp_mv/appendix]]
 
 ## FPR to GPR moves
 
