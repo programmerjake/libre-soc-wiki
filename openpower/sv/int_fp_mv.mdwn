@@ -27,7 +27,8 @@ that VSX would be there to complement it. However With VMX/VSX
 **not available** in the newly-introduced SFFS Compliancy Level, the
 existing non-VSX conversion/data-movement instructions require load/store
 instructions (slow and expensive) to transfer data between the FPRs and
-the GPRs.  Also, because SimpleV needs efficient scalar instructions in
+the GPRs.  For a 3D GPU this kills any modern competitive edge.
+Also, because SimpleV needs efficient scalar instructions in
 order to generate efficient vector instructions, adding new instructions
 for data-transfer/conversion between FPRs and GPRs multiplies the savings.
 
