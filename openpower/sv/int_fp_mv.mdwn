@@ -78,14 +78,9 @@ TODO, explain this further, make this a complete sentence:
 
 ### Rust FP -> Integer conversion
 
-TODO, explain this further, the following is not a complete sentence,
-"saturation with NaN converted to 0"
+For the sake of simplicity, the FP -> Integer conversion semantics generalized from those used by Rust's `as` operator will be referred to as [Rust conversion semantics](#fp-to-int-rust-conversion-semantics).
 
-Semantics required by all of:
-(what does this mean, what is "required"?
-what semantics are being referred to? the sentence needs completing:
-"For Rust integer conversion, the semantics required are shown by the
-following, all of which are supported in XYZ" something like that)
+Those same semantics are used in some way by all of the following languages (not necessarily for the default conversion method):
 
 * Rust's FP -> Integer conversion using the
   [`as` operator](https://doc.rust-lang.org/reference/expressions/operator-expr.html#semantics)
@@ -102,10 +97,7 @@ following, all of which are supported in XYZ" something like that)
 
 ### JavaScript FP -> Integer conversion
 
-modular with Inf/NaN converted to 0
-
-TODO, explain this further, it is not a sentence:
-"Semantics required by JavaScript"
+For the sake of simplicity, the FP -> Integer conversion semantics generalized from those used by JavaScripts's `ToInt32` abstract operation will be referred to as [JavaScript conversion semantics](#fp-to-int-javascript-conversion-semantics).
 
 ### Other languages
 
