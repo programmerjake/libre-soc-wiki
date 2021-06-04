@@ -159,7 +159,10 @@ Rc=1 tests RT and sets CR0
 
 `fmvfg FRT, RA`
 
-move a 64-bit float from a GPR to a FPR, just copying bits.
+move a 64-bit float from a GPR to a FPR, just copying bits. No exceptions
+are raised, no flags are altered of any kind.
+
+TODO: Rc=1 variants?
 
 `fmvfgs FRT, RA`
 
@@ -168,6 +171,8 @@ move a 32-bit float from a GPR to a FPR, just copying bits. Converts the
 `FRT`.
 
 TODO: Rc=1 variants?
+
+TODO: clear statement on evaluation as to whethrer exceptions or flags raised as part of the **FP** conversion (not the int bitcopy part, the converdion part.  the semantics should really be the same as frsp)
 
 ### Float load immediate (kinda a variant of `fmvfg`)
 
