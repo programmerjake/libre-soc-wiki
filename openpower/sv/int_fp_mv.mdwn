@@ -172,7 +172,16 @@ move a 32-bit float from a GPR to a FPR, just copying bits. Converts the
 
 TODO: Rc=1 variants?
 
-TODO: clear statement on evaluation as to whethrer exceptions or flags raised as part of the **FP** conversion (not the int bitcopy part, the converdion part.  the semantics should really be the same as frsp)
+TODO: clear statement on evaluation as to whethrer exceptions or flags raised as part of the **FP** conversion (not the int bitcopy part, the conversion part.  the semantics should really be the same as frsp)
+
+v3.0C section 4.6.1 states:
+
+FPRF is set to the class and sign of the result, except for Invalid Operation Exceptions when VE=1.
+
+    Special Registers Altered:
+      FPRF FR FI
+      FX OX UX XX VXSNAN
+      CR1 (if Rc=1)
 
 ### Float load immediate (kinda a variant of `fmvfg`)
 
