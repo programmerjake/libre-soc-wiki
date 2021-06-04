@@ -35,6 +35,10 @@ rather than Double width hardcoded to 64 and Single width
 hardcoded to 32.  This allows a full range of conversions
 between FP64, FP32, FP16 and BF16.
 
+Note however that attempts to perform "Single" operations on
+FP16 elwidths will raise an illegal instruction trap: Half
+of FP16 is FP8, which is not defined as a legal IEEE754 format.
+
 # Simple-V SVP64 Saturation
 
 SVP64 also allows for Saturation, such that the result is truncated
