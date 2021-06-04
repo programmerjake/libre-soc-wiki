@@ -1,3 +1,67 @@
+# SimpleV SVP64 polymorphic element width overrides
+
+SimpleV, the Draft Cray-style Vectorisation for OpenPOWER, may
+independently override both or either of the source or destination
+register bitwidth in the base operation used to create the Vector
+operation.  In the case of IEEE754 FP operands this gives an
+opportunity to add `FP16` as well.as `BF16` to the Power ISA
+with no actual new Scalar opcodes.
+
+However there is the potential for confusion as to the definition
+of what Single and Double mean when the operand width has been
+over-ridden.  Simple-V therefore sets the following
+ "reinterpretation" rules:
+
+* any operation whose assembler mnemonic does not end in "s"
+  (being defined in v3.0B as a "double" operation) is
+  instead an operation at the overridden elwidth for the
+  relevant operand, instead of a 64 bit "Double"
+* any operation nominally defined as a "single" FP operation
+  is redefined to be **half the elwidth** rather than
+  "half of 64 bit" (32 bit, aka "Single")
+
+Examples:
+
+* `sv.fmvtg/sw=32 RT.v, FRA.v` is defined as treating FRA
+   as a vector of *FP32* source operands each *32* bits wide
+   which are to be placed into *64* bit integer destination elements.
+* `sv.fmvfgs/dw=32 FRT.v, RA.v` is defined as taking the bottom
+   32 bits of each RA integer source, then performing a **32 bit**
+   FP32 to **FP16** conversion and storing the result in the
+   **32 bits** of an FRT destination element.
+
+"Single" is therefore redefined in SVP64 to be "half elwidth"
+rather than Double width hardcoded to 64 and Single width
+hardcoded to 32.  This allows a full range of conversions
+between FP64, FP32, FP16 and BF16.
+
+# Simple-V SVP64 Saturation
+
+SVP64 also allows for Saturation, such that the result is truncated
+to the maximum or minimum range of the result operand rather than
+overflowing.
+
+There will be some interaction here with Conversion routines which
+will need careful application of the SVP64 Saturation rules: some
+work will be duplicated by the operation itself, but in some cases
+it will change the result.
+
+The critical thing to note is that SVP64 Saturation is to be considered
+as the "priority override" where the operation should take place at
+"Infinite bitwidth followed by a result post-analysis phase".
+
+Thus if by chance an unsigned conversion to INT was carried out,
+with a destination override to 16 bit results, in combination
+with a **signed** SVP64 Saturation override, the result would
+be truncated to within the range 0 to 0x7FFF.  The actual
+operation itself, being an *Unsigned* conversion, would set the
+minimum value to zero, whilst the SVP64 *Signed* Saturation
+would set the maximum to a Signed 16 bit integer.
+
+As always with SVP64, some thought and care has to be put into
+how the override behaviour will interact with the base scalar
+operstion.
+
 # Equivalent OpenPower ISA v3.0 Assembly Language for FP -> Integer Conversion Modes
 
 ## c (IEEE754 standard compliant)
