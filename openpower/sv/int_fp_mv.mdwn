@@ -47,16 +47,12 @@ The assembly listings in the [[int_fp_mv/appendix]] show how costly
 some of these language-specific conversions are: Javascript is 35
 scalar instructions, including four branches.
 
-# A bit more research into integer - fp conversion
+## FP -> Integer conversions
 
-here is a paragraph which explains that there are different semantics
-for conversion, i don't know what the paragraph should say, but it needs
-to be here, to give some background.  it also acts as a lead-in to the
-sub-sections, introducing them and explaining why they are here, as
-justifications and background research as to why the ISA should support
-the feature being proposed.
-
-*nothing* can be left to chance or guesswork.
+Different programming languages turn out to have completely different
+semantics for FP to Integer conversion.  This section gives an overview
+of the different variants, listing the languages and hardware that
+implements each variant.
 
 ## standard Integer -> FP conversion
 
@@ -64,17 +60,15 @@ This conversion is outlined in the IEEE754 specification.  It is used
 by nearly all programming languages and CPUs.  In the case of OpenPOWER,
 the rounding mode is read from FPSCR
 
-## FP -> Integer conversions
-
 ### standard OpenPower FP -> Integer conversion
 
-TODO, explain this further, make this a complete sentence:
-"saturation with NaN converted to minimum valid integer"
+This conversion, instead of exact IEEE754 Compliance, performs
+"saturation with NaN converted to minimum valid integer". This
+is also exactly the same as the x86 ISA conversion senantics.
+OpenPOWER however has instructions for both:
 
-  - Matches x86's conversion semantics
-  - Has instructions for both:
-    * rounding mode read from FPSCR
-    * rounding mode is always truncate
+* rounding mode read from FPSCR
+* rounding mode always set to truncate
 
 ### Rust FP -> Integer conversion
 
