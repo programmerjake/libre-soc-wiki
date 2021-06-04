@@ -117,14 +117,14 @@ All of the following instructions use the standard OpenPower conversion to/from 
 
 Integer operands and results being in the GPR is the key differentiator between the proposed instructions
 (the entire rationale) compated to existing Scalar Power ISA.
-All existing Power ISA Scalar conversion instructions, all
+In all existing Power ISA Scalar conversion instructions, all
 operands are FPRs, even if the format of the source or destination
 data is actually a scalar integer.
 
 Note that source and destination widths can be overridden by SimpleV
 SVP64, and that SVP64 also has Saturation Modes *in addition*
 to those independently described here. SVP64 Overrides and Saturation
-work on *both* Fixed *and* Floating Point.
+work on *both* Fixed *and* Floating Point operands and results.
  The interactions with SVP64
 are explained in the  [[int_fp_mv/appendix]]
 
