@@ -183,6 +183,10 @@ Reinterprets `FI << 16` as a 32-bit float, which is then converted to a
 64-bit float and written to `FRT`.  This is equivalent to reinterpreting
 `FI` as a `BF16` and converting to 64-bit float.
 
+There is no need for an Rc=1 variant because this is an immediate loading
+instruction. This frees up one extra bit in the X-Form format for packing
+a full `BF16`.
+
 Example:
 
 ```
