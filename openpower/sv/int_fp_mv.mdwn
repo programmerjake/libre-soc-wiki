@@ -20,7 +20,7 @@ existing non-VSX conversion/data-movement instructions require load/store
 instructions (slow and expensive) to transfer data between the FPRs and
 the GPRs.  Also, because SimpleV needs efficient scalar instructions in
 order to generate efficient vector instructions, adding new instructions
-for data-transfer/conversion between FPRs and GPRs multiplies that cost.
+for data-transfer/conversion between FPRs and GPRs multiplies the savings.
 
 In addition, the vast majority of GPR <-> FPR data-transfers are as part
 of a FP <-> Integer conversion sequence, therefore reducing the number
