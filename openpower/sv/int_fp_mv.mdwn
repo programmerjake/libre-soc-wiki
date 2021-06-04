@@ -12,7 +12,10 @@ Libre-SOC will be compliant with the
 **Scalar Floating-Point Subset** (SFFS) i.e. is not implementing VMX/VSX,
 and with its focus on modern 3D GPU hybrid workloads represents an
 important new potential use-case for OpenPOWER.
-With VMX/VSX not available in the SFFS Compliancy Level, the
+
+The progressive development of the Scalar parts of the Power ISA assumed
+that VSX would be there to complement it. However With VMX/VSX 
+**not available** in the newly-introduced SFFS Compliancy Level, the
 existing non-VSX conversion/data-movement instructions require load/store
 instructions (slow and expensive) to transfer data between the FPRs and
 the GPRs.  Also, because SimpleV needs efficient scalar instructions in
