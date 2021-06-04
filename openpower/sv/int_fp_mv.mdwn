@@ -40,6 +40,10 @@ well suited for common/important conversion sequences:
 * Rust FP -> Integer conversion (saturation with NaN converted to 0)
 * JavaScript FP -> Integer conversion (modular with Inf/NaN converted to 0)
 
+The assembly listings in the [[int_fp_mv/appendix]] show how costly
+some of these language-specific conversions are: Javascript is 35
+scalar instructions, including four branches.
+
 # A bit more research into integer - fp conversion
 
 here is a paragraph which explains that there are different semantics
