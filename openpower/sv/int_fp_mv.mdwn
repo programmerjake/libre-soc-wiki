@@ -64,7 +64,9 @@ This conversion is outlined in the IEEE754 specification.  It is used
 by nearly all programming languages and CPUs.  In the case of OpenPOWER,
 the rounding mode is read from FPSCR
 
-# standard OpenPower FP -> Integer conversion
+## FP -> Integer conversions
+
+### standard OpenPower FP -> Integer conversion
 
 TODO, explain this further, make this a complete sentence:
 "saturation with NaN converted to minimum valid integer"
@@ -74,7 +76,7 @@ TODO, explain this further, make this a complete sentence:
     * rounding mode read from FPSCR
     * rounding mode is always truncate
 
-## Rust FP -> Integer conversion
+### Rust FP -> Integer conversion
 
 TODO, explain this further, the following is not a complete sentence,
 "saturation with NaN converted to 0"
@@ -98,14 +100,14 @@ following, all of which are supported in XYZ" something like that)
   instructions when decorated with
   [the `SaturatedConversion` decorator](https://www.khronos.org/registry/spir-v/specs/unified1/SPIRV.html#_a_id_decoration_a_decoration).
 
-## JavaScript FP -> Integer conversion
+### JavaScript FP -> Integer conversion
 
 modular with Inf/NaN converted to 0
 
 TODO, explain this further, it is not a sentence:
 "Semantics required by JavaScript"
 
-## Other languages
+### Other languages
 
 TODO: review and investigate other language semantics
 
