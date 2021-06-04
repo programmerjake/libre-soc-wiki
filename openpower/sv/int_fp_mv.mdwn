@@ -122,15 +122,21 @@ are explained in the  [[int_fp_mv/appendix]]
 * `fmvtg. RT, FRA`
 
 move a 64-bit float from a FPR to a GPR, just copying bits directly.
-Rc=1 tests RT and sets CR0
+As a direct bitcopy, no exceptions occur and no status flags are set.
+
+Rc=1 tests RT and sets CR0, exactly like all other Scalar Fixed-Point
+operations.
 
 * `fmvtgs RT, FRA`
 * `fmvtgs. RT, FRA`
 
 move a 32-bit float from a FPR to a GPR, just copying bits. Converts the
 64-bit float in `FRA` to a 32-bit float, then writes the 32-bit float to
-`RT`.
-Rc=1 tests RT and sets CR0
+`RT`. Effectively, `fmvtgs` is a macro-fusion of `frsp fmvtg`
+and therefore has the exact same exception and flags behaviour of `frsp`
+
+Unlike `frsp` however, with RT being a GPR, Rc=1 follows
+standard *integer* behaviour, i.e. tests RT and sets CR0.
 
 ## GPR to FPR moves
 
@@ -139,15 +145,16 @@ Rc=1 tests RT and sets CR0
 move a 64-bit float from a GPR to a FPR, just copying bits. No exceptions
 are raised, no flags are altered of any kind.
 
-TODO: Rc=1 variants?
+Rc=1 tests FRT and sets CR1
 
 `fmvfgs FRT, RA`
 
 move a 32-bit float from a GPR to a FPR, just copying bits. Converts the
 32-bit float in `RA` to a 64-bit float, then writes the 64-bit float to
-`FRT`. Effectively, `fmvfgs` is a macro-fusion of `fmvfg frsp`.
+`FRT`. Effectively, `fmvfgs` is a macro-fusion of `fmvfg frsp` and
+therefore has the exact same exception and flags behaviour of `frsp`
 
-TODO: Rc=1 variants?
+Rc=1 tests FRT and sets CR1
 
 TODO: clear statement on evaluation as to whether exceptions or flags raised as part of the **FP** conversion (not the int bitcopy part, the conversion part.  the semantics should really be the same as frsp)
 
