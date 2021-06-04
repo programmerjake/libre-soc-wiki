@@ -168,11 +168,11 @@ TODO: Rc=1 variants?
 
 move a 32-bit float from a GPR to a FPR, just copying bits. Converts the
 32-bit float in `RA` to a 64-bit float, then writes the 64-bit float to
-`FRT`.
+`FRT`. Effectively, `fmvfgs` is a macro-fusion of `fmvfg frsp`.
 
 TODO: Rc=1 variants?
 
-TODO: clear statement on evaluation as to whethrer exceptions or flags raised as part of the **FP** conversion (not the int bitcopy part, the conversion part.  the semantics should really be the same as frsp)
+TODO: clear statement on evaluation as to whether exceptions or flags raised as part of the **FP** conversion (not the int bitcopy part, the conversion part.  the semantics should really be the same as frsp)
 
 v3.0C section 4.6.7.1 states:
 
