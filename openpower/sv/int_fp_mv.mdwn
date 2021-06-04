@@ -109,8 +109,12 @@ TODO: review and investigate other language semantics
 
 # Proposed New Scalar Instructions
 
-All of the following instructions use the standard OpenPower conversion to/from 64-bit float format when reading/writing a 32-bit float from/to a FPR. This can be overridden by SimpleV, as explained in the 
- [[int_fp_mv/appendix]]
+All of the following instructions use the standard OpenPower conversion to/from 64-bit float format when reading/writing a 32-bit float from/to a FPR.
+
+Note that source and destination widths can be overridden by SimpleV
+SVP64, and that SVP64 also has Saturation Modes *in addition*
+to those independently described here.  The interactions with SVP64
+are explained in the  [[int_fp_mv/appendix]]
 
 ## FPR to GPR moves
 
