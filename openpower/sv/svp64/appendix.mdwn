@@ -260,6 +260,13 @@ well permitted: both still meet the qualifying characteristics that one
 source operand can also be the destination, which allows the "accumulator"
 to be identified.
 
+If the "accumulator" cannot be identified (one of the sources is also
+a destination) the results are **UNDEFINED**.  This permits implementations
+to not have to have complex decoding analysis of register fields: it
+is thus up to the programmer to ensure that one of the source registers
+is also a destination register in order to take advantage of Scalar
+Reduce Mode.
+
 If an interrupt or exception occurs in the middle of the scalar mapreduce,
 the scalar destination register **MUST** be updated with the current
 (intermediate) result, because this is how ```Program Order``` is
