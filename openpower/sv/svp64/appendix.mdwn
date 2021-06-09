@@ -217,7 +217,8 @@ or a MIN/MAX operation) it may be possible to parallelise the reduction.
 
 ## Scalar result reduce mode
 
-In this mode, one register is identified as being the "accumulator".
+In this mode, which is suited to operations involving carry or overflow,
+one register is identified as being the "accumulator".
 Scalar reduction is thus categorised by:
 
 * One of the sources is a Vector
@@ -264,12 +265,36 @@ the scalar destination register **MUST** be updated with the current
 (intermediate) result, because this is how ```Program Order``` is
 preserved (Vector Loops are to be considered to be just another instruction
 being executed in Program Order).  In this way, after return from interrupt,
-the scalar mapreduce may continue where it left off.
+the scalar mapreduce may continue where it left off.  This provides
+"precise" exception behaviour.
+
+Note that hardware is perfectly permitted to perform multi-issue
+parallel optimisation of the scalar reduce operation: it's just that
+as far as the user is concerned, all exceptions and interrupts **MUST**
+be precise.
 
 ## Vector result reduce mode
 
+Vector result reduce mode may utilise the destination vector for
+the purposes of storing intermediary results.  Interrupts and exceptions
+can therefore also be precise.  The result will be in the first
+non-predicate-masked-out destination element.  Note that unlike
+Scalar reduce mode, Vector reduce
+mode is *not* suited to operations which involve carry or overflow.
+
+Programs **MUST NOT** rely on the contents of the intermediate results:
+they may change from hardware implementation to hardware implementation.
+Some implementations may perform an incremental update, whilst others
+may choose to use the available Vector space for a binary tree reduction.
+If an incremental Vector is required (```x[i] = x[i-1] + y[i]```) then
+a *straight* SVP64 Vector instruction can be issued, where the source and
+destination registers overlap: ```sv.add 1.v, 9.v, 2.v```. Due to
+respecting ```Program Order``` being mandatory in SVP64, hardware should
+and must detect this case and issue an incremental sequence of scalar
+element instructions.
+
 1. limited to single predicated dual src operations (add RT, RA, RB).
-   triple source operations are prohibited (fma).
+   triple source operations are prohibited (such as fma).
 2. limited to operations that make sense.  divide is excluded, as is
    subtract (X - Y - Z produces different answers depending on the order)
    and asymmetric CRops (crandc, crorc). sane  operations:
@@ -297,17 +322,6 @@ the scalar mapreduce may continue where it left off.
    inputs are ignored; masked-out elements in the destination vector are
    unaltered (not used for the purposes of intermediary storage); the
    scalar result is placed in the first available unmasked element.
-
-Note: Programs **MUST NOT** rely on the contents of the intermediate results:
-they may change from hardware implementation to hardware implementation.
-Some implementations may perform an incremental update, whilst others
-may choose to use the available Vector space for a binary tree reduction.
-If an incremental Vector is required (```x[i] = x[i-1] + y[i]```) then
-a *straight* SVP64 Vector instruction can be issued, where the source and
-destination registers overlap: ```sv.add 1.v, 9.v, 2.v```. Due to
-respecting ```Program Order``` being mandatory in SVP64, hardware should
-and must detect this case and issue an incremental sequence of scalar
-element instructions.
 
 Pseudocode for the case where RA==RB:
 
