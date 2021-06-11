@@ -721,3 +721,59 @@ For modes:
   - mr OR crm: "normal" map-reduce mode or CR-mode.
   - mr.svm OR crm.svm: when vec2/3/4 set, sub-vector mapreduce is enabled
 
+# Proposed Parallel-reduction algorithm
+
+```
+/// reference implementation of proposed SimpleV reduction semantics.
+///
+/// `temp_pred` is a non-user-visible register that can be stored in some
+/// SPR if the reduction is interrupted, or we can just restart the
+reduction
+/// from the beginning since it will produce the same results.
+///
+/// all input arrays have length `vl`
+pub fn reduce(
+    vl: usize,
+    input_vec: &[f32],
+    temp_vec: &mut [f32],
+    input_pred: &[bool],
+    temp_pred: &mut [bool],
+) -> f32 {
+    assert_eq!(input_vec.len(), vl);
+    assert_eq!(temp_vec.len(), vl);
+    assert_eq!(input_pred.len(), vl);
+    assert_eq!(temp_pred.len(), vl);
+    for i in 0..vl {
+        temp_pred[i] = input_pred[i];
+        if temp_pred[i] {
+            temp_vec[i] = input_vec[i];
+        }
+    }
+    let mut step = 1;
+    while step < vl {
+        step *= 2;
+        for i in (0..vl).step_by(step) {
+            let other = i + step / 2;
+            let other_pred = other < vl && temp_pred[other];
+            if temp_pred[i] && other_pred {
+                // reduction operation -- we still use this algorithm even
+                // if the reduction operation isn't associative or
+                // commutative.
+                //
+                // `f32` addition is used as the reduction operation
+                // for ease of exposition.
+                temp_vec[i] += temp_vec[other];
+            } else if other_pred {
+                temp_vec[i] = temp_vec[other];
+            }
+            temp_pred[i] |= other_pred;
+        }
+    }
+    if vl != 0 && temp_pred[0] {
+        // return the result
+        temp_vec[0]
+    } else {
+        todo!("there weren't any enabled input elements, pick a default?")
+    }
+}
+```
