@@ -284,6 +284,10 @@ however bitmask-invert is not, and set/clr are not covered, although they can us
 bmext (RB) version is not the same as rldicl because bmext is a right shift by RC, where rldicl is a left rotate.  for the immediate version this does not matter, so a bmexti is not required.
 bmrev however there is no direct equivalent and consequently a bmrevi is required.
 
+bmset (register for mask amount) is particularly useful for creating
+predicate masks where the length is a dynamic runtime quantity.
+bmset(RA=0, RB=0, RC=mask) will produce a run of ones of length "mask" in a single instruction without needing to initialise or depend on any other registers.
+
 | 0.5|6.10|11.15|16.20|21.25| 26..30  |31| name  |
 | -- | -- | --- | --- | --- | ------- |--| ----- |
 | NN | RT | RA  | RB  | RC  | mode 010 |Rc| bm*   |
