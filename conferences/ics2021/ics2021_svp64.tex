@@ -33,10 +33,10 @@
 \begin{center}
  \begin{itemize}
    \item Open ISA: EULA v3.0B announced August 2019\vspace{6pt}
-   \item Compliancy subsets: mandatory and optional features 
+   \item Compliancy subsets: mandatory and optional features
    		 \vspace{6pt}
    \item Compliance provides royalty-free IBM Patent grant\vspace{6pt}
-   \item Custom extensions permitted (see v3.0C): recommends "common-usage" 
+   \item Custom extensions permitted (see v3.0C): recommends "common-usage"
          ones be submitted as RFCs to OpenPOWER ISA WG
 		\vspace{6pt}
    \item On this basis we have the freedom and are encouraged to create
@@ -70,28 +70,53 @@
   \end{itemize}
 }
 
+\frame{\frametitle{Severe Limitations of RISC-V for Supercomputing}
 
-\frame{\frametitle{What's different about SVP64?}
+\begin{center}
+ \begin{itemize}
+   \item Independent Research and public commentary:
+   https://news.ycombinator.com/item?id=24459314 \\
+         https://www.iscaconf.org/isca2020/papers/466100a052.pdf
+   		    		  \vspace{2pt}
+   \item No LOAD/STORE with Update (present in OpenPOWER)
+   \item No LOAD/STORE with Shift-immediate (as in ARM, x86)
+   \item No Condition Codes or Carry (present in OpenPOWER)\\
+   		 Extremely costly to add to compiler infrastructure
+   		 (already done in OpenPOWER).
+   \item Over-simplified ISA (assumption of macro-op fusion and Compressed
+   		 which massively complicates Multi-issue decode and Issue phases,
+   		 Multi-issue being fundamental to HPC)
+   \item RISC-V is great for Embedded scenarios, but it is just not up
+         to scratch for Supercomputing. OpenPOWER already is.
+
+  \end{itemize}
+\end{center}
+
+}
+
+
+\frame{\frametitle{The summary on SVP64}
 
  \begin{itemize}
    \item SVP64 is similar to Intel x86 "REP" instruction\\
    		 "please repeat the following instruction N times"\\
    		 (but add some extra "stuff" in the process)
-   		  \vspace{9pt}
+   		    		  \vspace{2pt}
+   \item Uses the Cray-style "setvl" instruction\\
+   		 (Cray-I, NEC SX-Aurora, RISC-V RVV)\\
+   		  \vspace{2pt}
    \item Unlike "REP" there is additional "Vector context":\\
    		 Predication, Twin-predication, Element-width Overrides,
    		 Map-reduce, Iteration, Saturation and more.
-   		  \vspace{9pt}
-   \item None of this requires extra instructions!\\
-   		 (except setvl and the "REP"-like prefix)\\
-   		  \vspace{6pt}
+   		  \vspace{2pt}
+   \item Just like "REP", none of this requires extra instructions!\\
+   		 (except setvl and the "REP"-like prefix itself)\\
+   		  \vspace{2pt}
    \item "SIMD Considered Harmful" principle applies equally
    		 to RISC-V Vectors (190+ instructions on top of RV64GC's 80)\\
    		 \em{RVV more than doubles the number of RISC-V instructions}.
   \end{itemize}
 }
-
-
 
 \begin{frame}[fragile]
 \frametitle{Simple-V ADD in a nutshell}
@@ -123,20 +148,26 @@ function op\_add(rd, rs1, rs2, predr) # add not VADD!
    \item "Twin Predication" (covers VSPLAT, VGATHER, VSCATTER, VINDEX etc.)
    \item SVP64: extensive "tag" (Vector context) augmentation
    \item "Context propagation": a VLIW-like context.  Allows contexts
-         to be repeatedly applied.
+         to be repeatedly applied (x86 "REP").
           Effectively a "hardware compression algorithm" for ISAs.
+   \item Map-reduce and Iteration (like Cray-I and SX-Aurora).\\
+         Also new: prefix-sum (Pascal's Triangle)
+   \item REMAP (suitable for in-place variable-sized Matrix
+         Multiply)    		
    \item Ultimate goal: cut down I-Cache usage, cuts down on power
-   \item Typical GPU has its own I-Cache and small shaders.\\
-        \textit{We are a Hybrid CPU/GPU: I-Cache is not separate!}
-   \item Needs to go through OpenPOWER Foundation `approval'         
+   \item Specifications: https://libre-soc.org/openpower/sv/
+   \item Needs to go through OpenPOWER Foundation `approval'
   \end{itemize}
 }
 
 \frame{\frametitle{How can you help?}
 
-\vspace{5pt}
+\vspace{15pt}
 
  \begin{itemize}
+   \item We need help. This is big. plenty of Research Opportunities\\
+         Also a lot more "Supercomputer-centric"
+         \vspace{3pt}
    \item Start here! https://libre-soc.org \\
    	     Mailing lists https://lists.libre-soc.org \\
    	     IRC Freenode libre-soc \\
@@ -147,39 +178,24 @@ function op\_add(rd, rs1, rs2, predr) # add not VADD!
    		 \vspace{3pt}
    \item Also profit-sharing in any commercial ventures \\
 	     \vspace{3pt}
-   \item How many opportunities to develop Libre SoCs exist,\\
-   	     and actually get paid for it?
-   	     	     \vspace{3pt}
-   \item I'm not a developer, how can I help?\\
-   		- Plenty of research needed, artwork, website \\
-   		- Help find customers and OEMs willing to commit (LOI)
   \end{itemize}
 }
 
-\frame{\frametitle{Simple SBC-style SoC}
-
-\begin{center}
-\includegraphics[width=0.9\textwidth]{shakti_libre_soc.jpg}
-\end{center}
-
-}
 
 \frame{\frametitle{Summary}
 
  \begin{itemize}
-   \item Goal is to create a mass-volume low-power embedded SoC suitable
-         for use in netbooks, chromebooks, tablets, smartphones, IoT SBCs.
-   \item No way we could implement a project of this magnitude without
-         nmigen (being able to use python OO to  HDL)
+   \item OpenPOWER is already a Supercomputer ISA: SVP64 greatly simplifies
+         it, goes back to the original Cray-style roots, and adds half a dozen
+         completely new innovations.
    \item Collaboration with OpenPOWER Foundation and Members absolutely
          essential. No short-cuts.  Standards to be developed and ratified
          so that everyone benefits.
    \item Riding the wave of huge stability of OpenPOWER ecosystem
-   \item Greatly simplified open 3D and Video drivers reduces product
-         development costs for customers
+   \item Greatly simplified software development: reduces costs and risks.
    \item It also happens to be fascinating, deeply rewarding technically
          challenging, and funded by NLnet
-         
+
   \end{itemize}
 }
 
@@ -191,7 +207,7 @@ function op\_add(rd, rs1, rs2, predr) # add not VADD!
 		   Questions?\vspace{12pt}
 	}
   \end{center}
-  
+
   \begin{itemize}
 	\item Discussion: http://lists.libre-soc.org
 	\item OFTC IRC \#libre-soc
