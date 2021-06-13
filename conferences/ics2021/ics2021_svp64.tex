@@ -98,20 +98,17 @@
 \frame{\frametitle{The summary on SVP64}
 
  \begin{itemize}
+   \item Specification: https://libre-soc.org/openpower/sv/svp64/
    \item SVP64 is similar to Intel x86 "REP" instruction\\
    		 "please repeat the following instruction N times"\\
    		 (but add some extra "stuff" in the process)
-   		    		  \vspace{2pt}
    \item Uses the Cray-style "setvl" instruction\\
    		 (Cray-I, NEC SX-Aurora, RISC-V RVV)\\
-   		  \vspace{2pt}
    \item Unlike "REP" there is additional "Vector context":\\
    		 Predication, Twin-predication, Element-width Overrides,
    		 Map-reduce, Iteration, Saturation and more.
-   		  \vspace{2pt}
    \item Just like "REP", none of this requires extra instructions!\\
    		 (except setvl and the "REP"-like prefix itself)\\
-   		  \vspace{2pt}
    \item "SIMD Considered Harmful" principle applies equally
    		 to RISC-V Vectors (190+ instructions on top of RV64GC's 80)\\
    		 \em{RVV more than doubles the number of RISC-V instructions}.
