@@ -17,7 +17,7 @@ The basic principle is to have a suite of 40 indices in a shift register
 that indicate one of seven Contexts shall be applied to upcoming 32 bit
 v3.0B instructions.  The Least Significant Index in the shift register is
 the one that is applied.  One of those indices is 0b000 which indicates
-"no prefix applied".
+"no prefix applied".  Effectively this is a bit-level FIFO.
 
 A special instruction in an svp64 context takes a copy of the `RM[0..23]`
 bits, alongside a 21 bit suite that indicates up to 20 32 bit instructions
