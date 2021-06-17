@@ -7,6 +7,17 @@
 Context Propagation is for a future version of SV.  It requires one
 Major opcode in some cases.
 
+The purpose of Context Propagation is a hardware compression algorithm
+for 64-bit prefix-suffix ISAs.  The prefix is *separated* from the suffix
+and, on the reasonable assumption  that the exact same prefix will need to 
+be applied to multiple suffixes, a bit-level FIFO is given to indicate
+when a particular prefix shall be applied to future instructions.
+
+In this way, with the suffixes being only 32 bit and multiple 32-bit
+instructions having the exact same prefix applied to them, the ISA is
+much more compact.
+
+Put another way:
 [[sv/svp64]] context is 24 bits long, and Swizzle is 12.  These
 are enormous and not sustainable as far as power consumption is
 concerned.  Also, there is repetition of the same contexts to different
