@@ -218,7 +218,7 @@ or a MIN/MAX operation) it may be possible to parallelise the reduction.
 ## Scalar result reduce mode
 
 In this mode, which is suited to operations involving carry or overflow,
-one register is identified as being the "accumulator".
+one register must be identified by the programmer as being the "accumulator".
 Scalar reduction is thus categorised by:
 
 * One of the sources is a Vector
@@ -226,7 +226,7 @@ Scalar reduction is thus categorised by:
 * optionally but most usefully when one source register is also the destination
 * That the source register type is the same as the destination register
   type identified as the "accumulator".  scalar reduction on `cmp`,
-  `setb` or `isel` is not possible for example because of the mixture
+  `setb` or `isel` makes no sense for example because of the mixture
   between CRs and GPRs.
 
 Typical applications include simple operations such as `ADD r3, r10.v,
@@ -241,6 +241,12 @@ However, *unless* the operation is marked as "mapreduce", SV ordinarily
 **terminates** at the first scalar operation.  Only by marking the
 operation as "mapreduce" will it continue to issue multiple sub-looped
 (element) instructions in `Program Order`.
+
+To.perform the loop in reverse order, the ```RG``` (reverse gear) bit must be set.  This is useful for leaving a cumulative suffix sum in reverse order:
+
+    for i in (VL-1 downto 0):
+        # RT-1 = RA gives a suffix sum
+        iregs[RT+i] = iregs[RA+i] - iregs[RB+i]
 
 Other examples include shift-mask operations where a Vector of inserts
 into a single destination register is required, as a way to construct
@@ -270,8 +276,8 @@ Reduce Mode.
 If an interrupt or exception occurs in the middle of the scalar mapreduce,
 the scalar destination register **MUST** be updated with the current
 (intermediate) result, because this is how ```Program Order``` is
-preserved (Vector Loops are to be considered to be just another instruction
-being executed in Program Order).  In this way, after return from interrupt,
+preserved (Vector Loops are to be considered to be just another way of issuing instructions
+in Program Order).  In this way, after return from interrupt,
 the scalar mapreduce may continue where it left off.  This provides
 "precise" exception behaviour.
 
