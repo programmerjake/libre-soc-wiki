@@ -60,6 +60,12 @@ as follows:
 * Starting from bit 32 of the 4th SPR, in batches of 40 bits the Shift
   Registers are stored.
 
+               0            31 32         63
+    SVREMAP0   context 0       context 1
+    SVREMAP1   context 2       context 3
+    SVREMAP2   context 4       context 5
+    SVREMAP3   context 6       
+
 When each LSB is nonzero in any one of the seven Shift Registers
 the corresponding Contexts are looked up and merged (ORed) together.
 Contexts for different purposes however may not be mixed: an illegal
