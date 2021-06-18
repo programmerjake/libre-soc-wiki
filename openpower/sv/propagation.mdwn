@@ -58,14 +58,19 @@ as follows:
 * 7 32 bit contexts are stored, each indexed from 0b001 to 0b111,
   2 per 64 bit SPR and 1 in the 4th.
 * Starting from bit 32 of the 4th SPR, in batches of 40 bits the Shift
-  Registers are stored.
+  Registers (bit-level FIFOs) are stored.
 
 ```
-               0            31 32         63
-    SVREMAP0   context 0       context 1
-    SVREMAP1   context 2       context 3
-    SVREMAP2   context 4       context 5
-    SVREMAP3   context 6       
+             0            31 32         63
+    SVCTX0   context 0       context 1
+    SVCTX1   context 2       context 3
+    SVCTX2   context 4       context 5
+    SVCTX3   context 6       FIFO0[0..31]
+    SVCTX4   FIFO0[32:39]   FIFO1[0:39] FIFO2[0:15]
+    SVCTX5   FIFO2[16:39]   FIFO3[0:39] FIFO4[0:7]
+    SVCTX5   FIFO4[8:39]    FIFO5[0:39] FIFO5[0:15]
+    SVCTX6   FIFO5[16:39]   FIFO6[0:39] FIFO7[0:7
+    SVCTX7   FIFO7[16:39]
 ```
 
 When each LSB is nonzero in any one of the seven Shift Registers
