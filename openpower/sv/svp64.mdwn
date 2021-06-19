@@ -203,8 +203,8 @@ The Mode table for operations except LD/ST is laid out as follows:
 | 0-1 |  2  |  3   4  |  description              |
 | --- | --- |---------|-------------------------- |
 | 00  |   0 |  dz  sz | normal mode                      |
-| 00  |   1 | dz CRM  | reduce mode (mapreduce), SUBVL=1 |
-| 00  |   1 | SVM CRM | subvector reduce mode, SUBVL>1   |
+| 00  |   1 | dz RG   | reduce mode (mapreduce), SUBVL=1 |
+| 00  |   1 | SVM RG  | subvector reduce mode, SUBVL>1   |
 | 01  | inv | CR-bit  | Rc=1: ffirst CR sel              |
 | 01  | inv | dz  RC1 |  Rc=0: ffirst z/nonz |
 | 10  |   N | dz   sz |  sat mode: N=0/1 u/s |
@@ -215,7 +215,8 @@ Fields:
 
 * **sz / dz**  if predication is enabled will put zeros into the dest (or as src in the case of twin pred) when the predicate bit is zero.  otherwise the element is ignored or skipped, depending on context.
 * **inv CR bit** just as in branches (BO) these bits allow testing of a CR bit and whether it is set (inv=0) or unset (inv=1)
-* **CRM** affects the CR on reduce mode when Rc=1
+* **RG** inverts the Vector Loop order (VL-1 downto 0) rather
+than the normal 0..VL-1
 * **SVM** sets "subvector" reduce mode
 * **N** sets signed/unsigned saturation.
 **RC1** as if Rc=1, stores CRs *but not the result*
