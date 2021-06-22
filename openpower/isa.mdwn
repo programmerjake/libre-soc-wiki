@@ -32,7 +32,7 @@ FP instructions: useful for testing <http://weitz.de/ieee/>
 
 # Pseudocode syntax
 
-The syntax is shown in the v3.0B OpenPOWER Reference Manual.  The implementation of a parser, using python-ply, is here: <https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/decoder/pseudo/parser.py;hb=HEAD>
+The syntax is shown in the v3.0B OpenPOWER Reference Manual.  The implementation of a parser, using python-ply, is here: <https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=src/openpower/decoder/pseudo/parser.py;hb=HEAD>
 
 The parser is based on the python-ply GardenSnake.py example (except bugs were fixed in it, first).  Extra tokens, in the lexer phase, are inserted dynamically into the stream to make the parser think that it is seeing python-like syntax where in fact it is not.  Example: when a pseudocode keyword "THEN" is seen, this is substituted for ":". The keyword "ELSE" will also automatically have a second ":" token inserted in order to comply with python syntax.  Thus the following pseudocode:
 
