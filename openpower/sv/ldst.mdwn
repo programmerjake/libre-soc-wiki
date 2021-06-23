@@ -140,19 +140,22 @@ an alternative table meaning for [[sv/svp64]] mode.  The following modes make se
 
 The table for [[sv/svp64]] for `immed(RA)` is:
 
-| 0-1 |  2  |  3   4  |  description              |
-| --- | --- |---------|-------------------------- |
-| 00  | els |  dz  sz | normal mode               |
-| 01  | inv | CR-bit  | Rc=1: ffirst CR sel       |
-| 01  | inv | els RC1 |  Rc=0: ffirst z/nonz      |
-| 10  |   N | dz  els |  sat mode: N=0/1 u/s      |
-| 11  | inv | CR-bit  |  Rc=1: pred-result CR sel |
-| 11  | inv | els RC1 |  Rc=0: pred-result z/nonz |
+| 0-1 |  2  |  3   4  |  description               |
+| --- | --- |---------|--------------------------- |
+| 00  | 0   |  dz els | normal mode                |
+| 00  | 1   |  dz rsv | bitreverse mode (FFT, DCT) |
+| 01  | inv | CR-bit  | Rc=1: ffirst CR sel        |
+| 01  | inv | els RC1 |  Rc=0: ffirst z/nonz       |
+| 10  |   N | dz  els |  sat mode: N=0/1 u/s       |
+| 11  | inv | CR-bit  |  Rc=1: pred-result CR sel  |
+| 11  | inv | els RC1 |  Rc=0: pred-result z/nonz  |
 
 The `els` bit is only relevant when `RA.isvec` is clear: this indicates
 whether stride is unit or element:
 
-    if RA.isvec:
+    if bitreversed:
+        svctx.ldstmode = bitreversed
+    elif RA.isvec:
         svctx.ldstmode = indexed
     elif els == 0:
         svctx.ldstmode = unitstride
