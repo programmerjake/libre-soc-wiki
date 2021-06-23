@@ -139,6 +139,13 @@ an alternative table meaning for [[sv/svp64]] mode.  The following modes make se
 * normal
 * fail-first, where a vector source on RA or RB is banned
 
+Also, given that FFT, DCT and other related algorithms
+are of such high importance in so many areas of Computer
+Science, a special "bit-reverse" mode has been added which
+allows the immediate offset to be ```0 4 2 6 1 5 3 7```
+automatically rather than needing to be created programmatically
+using Vectorised Indexed Mode.
+
 The table for [[sv/svp64]] for `immed(RA)` is:
 
 | 0-1 |  2  |  3   4  |  description               |
