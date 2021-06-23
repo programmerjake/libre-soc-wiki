@@ -64,8 +64,9 @@ Unlike in SIMD, powers of two limitations are not involved in the ISA
 or in the assembly code.
 
 SimpleV takes the Cray style Vector principle and applies it in the
-abstract to a Scalar ISA, in the process allowing register file size
-increases using "tagging" (similar to how x86 originally extended
+abstract to a Scalar ISA in the same way that x86 used to do its "REP" instruction.  In the process, "context" is applied, allowing amongst other things
+a register file size
+increase using "tagging" (similar to how x86 originally extended
 registers from 32 to 64 bit).
 
 ## SV
