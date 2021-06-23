@@ -87,6 +87,14 @@ with the pseudocode below, the immediate can be used to give unit stride or elem
         if (RAupdate.isvec) u++;
         if (RT.isvec) j++;
 
+    # reverses the bitorder up to "width" bits
+    def bitrev(val, width):
+      result = 0
+      for _ in range(width):
+        result = (result << 1) | (val & 1)
+        val >>= 1
+      return result
+
 Indexed LD is:
  
     # format: ldop RT, RA, RB
