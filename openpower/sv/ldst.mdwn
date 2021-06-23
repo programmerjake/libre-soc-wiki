@@ -42,7 +42,7 @@ with the pseudocode below, the immediate can be used to give unit stride or elem
 
     # LD not VLD!  format - ldop RT, immed(RA)
     # op_width: lb=1, lh=2, lw=4, ld=8
-    op_load(RT, RA, op_width, immed, svctx, RAupdate):
+    op_load(RT, RA, RC, op_width, immed, svctx, RAupdate):
       ps = get_pred_val(FALSE, RA); # predication on src
       pd = get_pred_val(FALSE, RT); # ... AND on dest
       for (i=0, j=0, u=0; i < VL && j < VL;):
@@ -50,7 +50,14 @@ with the pseudocode below, the immediate can be used to give unit stride or elem
         if (RA.isvec) while (!(ps & 1<<i)) i++;
         if (RAupdate.isvec) while (!(ps & 1<<u)) u++;
         if (RT.isvec) while (!(pd & 1<<j)) j++;
-        if svctx.ldstmode == elementstride:
+        if svctx.ldstmode == bitreversed: # for FFT/DCT
+          # FFT/DCT bitreversed mode
+          if (RA.isvec)
+            srcbase = ireg[RA+i]
+          else
+            srcbase = ireg[RA]
+          offs = (bitrev(i, VL) * immed) << RC
+        elif svctx.ldstmode == elementstride:
           # element stride mode
           srcbase = ireg[RA]
           offs = i * immed              # j*immed for a ST
