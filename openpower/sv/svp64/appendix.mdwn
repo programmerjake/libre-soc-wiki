@@ -472,10 +472,16 @@ Yes, really: CR operations (mtcr, crand, cror) may be Vectorised,
 predicated, and also pred-result mode applied to it.  In this case,
 the Vectorisation applies to the batch of 4 bits, i.e. it is not the CR
 individual bits that are treated as the Vector, but the CRs themselves
-(CR0, CR8, CR9...)
+(CR0, CR8, CR9...).
+
+Put another way: Vectorised crand uses the higher bits of BA BB BC
+to select the CR Field: these will increment sequentially as the Vector
+loop progresses, whereas the lower 2 bits (selecting one of eq, ge, le, ov) 
+remain the same.
 
 Thus after each Vectorised operation (crand) a test of the CR result
-can in fact be performed.
+can in fact be performed. However the only meaningful comparision will
+be "eq" or "ne", given that the result is only one bit.
 
 # CR Operations
 
