@@ -1,4 +1,4 @@
-[[!tag standards]]
+[[!tag oldstandards]]
 
 MV.X and MV.swizzle
 ===================
