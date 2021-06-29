@@ -34,18 +34,18 @@ for the past 36 years in his spare time.
 
 # Talk links
 
-* <https://libre-soc.org/openpower/sv/overview/>
-* <https://www.sigarch.org/simd-instructions-considered-harmful/>
-* <https://course.ece.cmu.edu/~ece740/f13/lib/exe/fetch.php?media=seth-740-fall13-module5.1-simd-vector-gpu.pdf>
-* <https://godbolt.org/z/f8a7PMPWc>
-* <https://patchwork.ozlabs.org/project/glibc/patch/20200929152103.18564-1-rzinsly@linux.ibm.com/>
-* <https://github.com/plctlab/rvv-benchmark/blob/master/strncpy.s>
-* <https://godbolt.org/z/4oGjTe8Ko>
-* <https://ffmpeg.org/doxygen/3.1/mpegaudiodsp__template_8c_source.html#l00121>
-* <https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=media/audio/mp3/mp3_0_apply_window_float.s;hb=HEAD>
-* <https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=media/audio/mp3/mp3_0_apply_window_float_basicsv.s;hb=HEAD>
-* <https://en.wikipedia.org/wiki/Cooley%E2%80%93Tukey_FFT_algorithm#Data_reordering,_bit_reversal,_and_in-place_algorithms>
-* <https://en.wikipedia.org/wiki/File:DIT-FFT-butterfly.png>
-* <https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=src/openpower/decoder/isa/test_caller_svp64_ldst.py;hb=HEAD>
-* <https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=src/openpower/decoder/isa/test_caller_svp64_fft.py;h=6cb2b522be85a2f86a0b505d1878dbcec645cb90;hb=8dfffc9c2ff7bb91715500160d1b057f9bef3ba0>
+* SVP64 Overview <https://libre-soc.org/openpower/sv/overview/>
+* SIMD Considered harmful (massive understatement) <https://www.sigarch.org/simd-instructions-considered-harmful/>
+* Carnegie course on Vector Processors <https://course.ece.cmu.edu/~ece740/f13/lib/exe/fetch.php?media=seth-740-fall13-module5.1-simd-vector-gpu.pdf>
+* IAXPY AVX512 (quite shocking) <https://godbolt.org/z/f8a7PMPWc>
+* 250 lines of hand-crafted assembler for VSX strncpy <https://patchwork.ozlabs.org/project/glibc/patch/20200929152103.18564-1-rzinsly@linux.ibm.com/>
+* under 20 lines for Vectorised strncpy <https://github.com/plctlab/rvv-benchmark/blob/master/strncpy.s>
+* IAXPY for VSX (around 60 lines of assembler) <https://godbolt.org/z/4oGjTe8Ko>
+* FFMPEG MP3 code snippet inner loop <https://ffmpeg.org/doxygen/3.1/mpegaudiodsp__template_8c_source.html#l00121>
+* FFMPEG MP3 assembler, 450 lines <https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=media/audio/mp3/mp3_0_apply_window_float.s;hb=HEAD>
+* FFMPEG SVP64 MP3, under 100 lines <https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=media/audio/mp3/mp3_0_apply_window_float_basicsv.s;hb=HEAD>
+* Cooley Tukey FFT algorithm <https://en.wikipedia.org/wiki/Cooley%E2%80%93Tukey_FFT_algorithm#Data_reordering,_bit_reversal,_and_in-place_algorithms>
+* in-place FFT Buttery <https://en.wikipedia.org/wiki/File:DIT-FFT-butterfly.png>
+* SVP64 bit-reverse LOAD <https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=src/openpower/decoder/isa/test_caller_svp64_ldst.py;hb=HEAD>
+* SVP64 twin +/- Vectorised FMAC <https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=src/openpower/decoder/isa/test_caller_svp64_fft.py;h=6cb2b522be85a2f86a0b505d1878dbcec645cb90;hb=8dfffc9c2ff7bb91715500160d1b057f9bef3ba0>
 * not part of the video, more info about REMAP [[openpower/sv/remap]]
