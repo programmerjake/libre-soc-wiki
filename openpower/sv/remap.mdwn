@@ -22,10 +22,12 @@ REMAP is quite expensive to set up, and on some implementations introduce latenc
 There are four "shape" SPRs, SHAPE0-3, 32-bits in each,
 which have the same format.  
 
-[[!inline raw="yes" pages="simple_v_extension/shape_table_format" ]]
+[[!inline raw="yes" pages="openpower/sv/shape_table_format" ]]
 
 The algorithm below shows how REMAP works more clearly, and may be
 executed as a python program:
+
+[[!inline raw="yes" pages="openpower/sv/remap.py" ]]
 
     xdim = 3 # changeme
     ydim = 4
