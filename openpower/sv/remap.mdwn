@@ -216,7 +216,7 @@ void gmix_column(unsigned char *r) {
         b[c] ^= 0x1B & h; /* Rijndael's Galois field */
     }
     // SUBVL.Remap still needed here
-    // byyelevel elwidth overrides and vec4
+    // bytelevel elwidth overrides and vec4
     // These may then each be 4x 8bit bit Swizzled
     // r0.vec4 = b.vec4
     // r0.vec4 ^= a.vec4.WXYZ
