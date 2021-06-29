@@ -2,12 +2,11 @@ Shape is 32-bits.  When SHAPE is set entirely to zeros, remapping is
 disabled: the register's elements are a linear (1D) vector.
 
 | 31..30   | 29..24 | 23..21  | 20..18  | 17..12  | 11..6   | 5..0    |
-| -------- | ------ | ------- | ------- | ------- | -------- | ------- |
-| applydim | offset | invxyz  | permute | zdimsz  | ydimsz  | xdimsz  |
+| -------- | ------ | ------- | ------- | ------- | ------- | ------- |
+| mode     | offset | invxyz  | permute | zdimsz  | ydimsz  | xdimsz  |
 
-applydim will set to zero the dimensions less than this. applydim=0
-applies all three. applydim=1 applies y and z. applydim=2 applys only
-z. applydim=3 is reserved.
+mode sets different behaviours (straight matrix multiply, FFT, DCT).
+matrix multiply sets mode=0b00
 
 invxyz will invert the start index of each of x, y or z. If invxyz[0] is
 zero then x-dimensional counting begins from 0 and increments, otherwise
@@ -15,14 +14,20 @@ it begins from xdimsz-1 and iterates down to zero. Likewise for y and z.
 
 offset will have the effect equivalent to the sequential element loop
 to appear to run for offset (additional) iterations prior to actually
-generating output.
+generating output.  in pseudo-code the loop would be:
+
+    for index in offset to (offset+VL-1)
 
 xdimsz, ydimsz and zdimsz are offset by 1, such that a value of 0 indicates
-that the array dimensionality for that dimension is 1.  A value of xdimsz=2
-would indicate that in the first dimension there are 3 elements in the
-array.  The format of the array is therefore as follows:
+that the array dimensionality for that dimension is 1. any dimension
+not intended to be used must have its value set to 0 (dimensionality
+of 1).  A value of xdimsz=2 would indicate that in the first dimension
+there are 3 elements in the array.  For example, to create a 2D array
+X,Y of dimensionality X=3 and Y=2, set xdimsz=2, ydimsz=1 and zdimsz=0
 
-    array[xdim+1][ydim+1][zdim+1]
+The format of the array is therefore as follows:
+
+    array[xdimsz+1][ydimsz+1][zdimsz+1]
 
 However whilst illustrative of the dimensionality, that does not take the
 "permute" setting into account.  "permute" may be any one of six values
@@ -39,5 +44,6 @@ below shows how the permutation dimensionality order works:
 | 101     | 2,1,0 | (zdim+1)(ydim+1)(xdim+1) |
 
 In other words, the "permute" option changes the order in which
-nested for-loops over the array would be done.
+nested for-loops over the array would be done.  See executable
+python reference code for further details.
 
