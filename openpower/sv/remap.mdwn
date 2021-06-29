@@ -27,49 +27,9 @@ which have the same format.
 The algorithm below shows how REMAP works more clearly, and may be
 executed as a python program:
 
-[[!inline quick="yes" raw="yes" pages="/openpower/sv/remap.py" ]]
-
-    xdim = 3 # changeme
-    ydim = 4
-    zdim = 1
-
-    lims = [xdim, ydim, zdim]
-    idxs = [0,0,0] # starting indices
-    order = [0,1,2] # experiment with different permutations, here
-    offset = 2     # experiment with different offset, here
-    VL = xdim * ydim * zdim # multiply (or add) to this to get "cycling"
-    applydim = 0
-    invxyz = [0,0,0]
-
-    # run for offset iterations before actually starting
-    for idx in range(offset):
-        for i in range(3):
-            idxs[order[i]] = idxs[order[i]] + 1
-            if (idxs[order[i]] != lims[order[i]]):
-                break
-            idxs[order[i]] = 0
-
-    break_count = 0
-
-    for idx in range(VL):
-        ix = [0] * 3
-        for i in range(3):
-            if i >= applydim:
-                ix[i] = idxs[i]
-            if invxyz[i]:
-                ix[i] = lims[i] - 1 - ix[i]
-        new_idx = ix[0] + ix[1] * xdim + ix[2] * xdim * ydim
-        print new_idx,
-        break_count += 1
-        if break_count == lims[order[0]]:
-            print
-            break_count = 0
-        for i in range(3):
-            idxs[order[i]] = idxs[order[i]] + 1
-            if (idxs[order[i]] != lims[order[i]]):
-                break
-            idxs[order[i]] = 0
-
+```
+[[!inline quick="yes" raw="yes" pages="openpower/sv/remap.py" ]]
+```
 
 Each element index from the for-loop `0..VL-1`
 is run through the above algorithm to work out the **actual** element
