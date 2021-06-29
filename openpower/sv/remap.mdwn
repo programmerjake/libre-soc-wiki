@@ -5,17 +5,28 @@
 see [[sv/propagation]] because it is currently the only way to apply
 REMAP.  
 
-REMAP allows the usual vector loop `0..VL-1` to be "reshaped" (re-mapped) from a linear
-form to a 2D or 3D transposed form, or "offset" to permit arbitrary
-access to elements, independently on each Vector src or dest register.
+REMAP allows the usual vector loop `0..VL-1` to be "reshaped" (re-mapped)
+from a linear form to a 2D or 3D transposed form, or "offset" to permit
+arbitrary access to elements, independently on each Vector src or dest
+register.
 
-Their primary use is for Matrix Multiplication, reordering of sequential data in-place.  Four SPRs are provided so that a single FMAC may be used in a single loop to perform 4x4 times 4x4 Matrix multiplication, generating 64 FMACs.  Additional uses include regular "Structure Packing" such as RGB pixel data extraction and reforming.
+Their primary use is for Matrix Multiplication, reordering of sequential
+data in-place.  Four SPRs are provided so that a single FMAC may be
+used in a single loop to perform 4x4 times 4x4 Matrix multiplication,
+generating 64 FMACs.  Additional uses include regular "Structure Packing"
+such as RGB pixel data extraction and reforming.
 
-REMAP, like all of SV, is abstracted out, meaning that unlike traditional Vector ISAs which would typically only have a limited set of instructions that can be structure-packed (LD/ST typically), REMAP may be applied to literally any instruction: CRs, Arithmetic, Logical, LD/ST, anything.
+REMAP, like all of SV, is abstracted out, meaning that unlike traditional
+Vector ISAs which would typically only have a limited set of instructions
+that can be structure-packed (LD/ST typically), REMAP may be applied to
+literally any instruction: CRs, Arithmetic, Logical, LD/ST, anything.
 
-Note that REMAP does not apply to sub-vector elements: that is what swizzle is for.  Swizzle *can* however be applied to the same instruction as REMAP.
+Note that REMAP does not apply to sub-vector elements: that is what
+swizzle is for.  Swizzle *can* however be applied to the same instruction
+as REMAP.
 
-REMAP is quite expensive to set up, and on some implementations introduce latency, so should realistically be used only where it is worthwhile
+REMAP is quite expensive to set up, and on some implementations introduce
+latency, so should realistically be used only where it is worthwhile
 
 # SHAPE 1D/2D/3D vector-matrix remapping SPRs
 
@@ -100,18 +111,26 @@ DSP-style SIMD micro-architectures.
 
 # 4x4 Matrix to vec4 Multiply Example
 
-The following settings will allow a 4x4 matrix (starting at f8), expressed as a sequence of 16 numbers first by row then by column, to be multiplied by a vector of length 4 (starting at f0), using a single FMAC instruction.
+The following settings will allow a 4x4 matrix (starting at f8), expressed
+as a sequence of 16 numbers first by row then by column, to be multiplied
+by a vector of length 4 (starting at f0), using a single FMAC instruction.
 
 * SHAPE0: xdim=4, ydim=4, permute=yx, applied to f0
 * SHAPE1: xdim=4, ydim=1, permute=xy, applied to f4
 * VL=16, f4=vec, f0=vec, f8=vec
 * FMAC f4, f0, f8, f4
 
-The permutation on SHAPE0 will use f0 as a vec4 source. On the first four iterations through the hardware loop, the REMAPed index will not increment. On the second four, the index will increase by one. Likewise on each subsequent group of four.
+The permutation on SHAPE0 will use f0 as a vec4 source. On the first
+four iterations through the hardware loop, the REMAPed index will not
+increment. On the second four, the index will increase by one. Likewise
+on each subsequent group of four.
 
-The permutation on SHAPE1 will increment f4 continuously cycling through f4-f7 every four iterations of the hardware loop.
+The permutation on SHAPE1 will increment f4 continuously cycling through
+f4-f7 every four iterations of the hardware loop.
 
-At the same time, VL will, because there is no SHAPE on f8, increment straight sequentially through the 16 values f8-f23 in the Matrix. The equivalent sequence thus is issued:
+At the same time, VL will, because there is no SHAPE on f8, increment
+straight sequentially through the 16 values f8-f23 in the Matrix. The
+equivalent sequence thus is issued:
 
     fmac f4, f0, f8, f4
     fmac f5, f0, f9, f5
@@ -130,13 +149,21 @@ At the same time, VL will, because there is no SHAPE on f8, increment straight s
     fmac f6, f3, f22, f6
     fmac f7, f3, f23, f7
 
-The only other instruction required is to ensure that f4-f7 are initialised (usually to zero).
+The only other instruction required is to ensure that f4-f7 are
+initialised (usually to zero).
 
-It should be clear that a 4x4 by 4x4 Matrix Multiply, being effectively the same technique applied to four independent vectors, can be done by setting VL=64, using an extra dimension on the SHAPE0 and SHAPE1 SPRs, and applying a rotating 1D SHAPE SPR of xdim=16 to f8 in order to get it to apply four times to compute the four columns worth of vectors.
+It should be clear that a 4x4 by 4x4 Matrix Multiply, being effectively
+the same technique applied to four independent vectors, can be done by
+setting VL=64, using an extra dimension on the SHAPE0 and SHAPE1 SPRs,
+and applying a rotating 1D SHAPE SPR of xdim=16 to f8 in order to get
+it to apply four times to compute the four columns worth of vectors.
 
 # SUBVL Remap
 
-Remapping even of SUBVL (vec2/3/4) elements is permitted, as if the sub-vectir elements were simply part of the main VL loop.  This is the *complete opposite* of predication which **only** applies to the whole vec2/3/4.  In pseudocode this would be:
+Remapping even of SUBVL (vec2/3/4) elements is permitted, as if the
+sub-vectir elements were simply part of the main VL loop.  This is the
+*complete opposite* of predication which **only** applies to the whole
+vec2/3/4.  In pseudocode this would be:
 
       for (i = 0; i < VL; i++)
         if (predval & 1<<i) # apply to VL not SUBVL
@@ -144,9 +171,13 @@ Remapping even of SUBVL (vec2/3/4) elements is permitted, as if the sub-vectir e
              id = i*SUBVL + j # not, "id=i".
              ireg[RT+remap1(id)] ...
 
-The reason for allowing SUBVL Remaps is that some regular patterns using Swizzle which would otherwise require multiple explicit instructions with 12 bit swizzles encoded in them may be efficently encoded with Remap instead.  Not however that Swizzle is *still permitted to be applied*.
+The reason for allowing SUBVL Remaps is that some regular patterns using
+Swizzle which would otherwise require multiple explicit instructions
+with 12 bit swizzles encoded in them may be efficently encoded with Remap
+instead.  Not however that Swizzle is *still permitted to be applied*.
 
-An example where SUBVL Remap is appropriate is the Rijndael MixColumns stage:
+An example where SUBVL Remap is appropriate is the Rijndael MixColumns
+stage:
 
 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/AES-MixColumns.svg/600px-AES-MixColumns.svg.png" width="400px" />
 
@@ -190,11 +221,20 @@ void gmix_column(unsigned char *r) {
 }
 ```
 
-With the assumption made by the above code that the column bytes have already been turned around (vertical rather than horizontal) SUBVL.REMAP may transparently fill that role, in-place, without a complex byte-level mv operation.
+With the assumption made by the above code that the column bytes have
+already been turned around (vertical rather than horizontal) SUBVL.REMAP
+may transparently fill that role, in-place, without a complex byte-level
+mv operation.
 
-The application of the swizzles allows the remapped vec4 a, b and r variables to perform four straight linear 32 bit XOR operations where a scalar processor would be required to perform 16 byte-level individual operations.  Given wide enough SIMD backends in hardware these 3 bit XORs may be done as single-cycle operations across the entire 128 bit Rijndael Matrix.
+The application of the swizzles allows the remapped vec4 a, b and r
+variables to perform four straight linear 32 bit XOR operations where a
+scalar processor would be required to perform 16 byte-level individual
+operations.  Given wide enough SIMD backends in hardware these 3 bit
+XORs may be done as single-cycle operations across the entire 128 bit
+Rijndael Matrix.
 
-The other alternative is to simply perform the actual 4x4 GF(256) Matrix Multiply using the MDS Matrix.
+The other alternative is to simply perform the actual 4x4 GF(256) Matrix
+Multiply using the MDS Matrix.
 
 # TODO
 
