@@ -7,9 +7,9 @@ disabled: the register's elements are a linear (1D) vector.
 
 mode sets different behaviours (straight matrix multiply, FFT, DCT).
 
-* **mode=0b00** sets matrix multiply
-* **mode=0b01** sets FFT
-* **mode=0b10** is reserved
+* **mode=0b00** sets straight permute
+* **mode=0b01** sets "skip 2nd dimension"
+* **mode=0b10** sets "skip 1st dimension"
 * **mode=0b11** is reserved
 
 invxyz will invert the start index of each of x, y or z. If invxyz[0] is

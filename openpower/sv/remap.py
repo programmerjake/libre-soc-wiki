@@ -10,6 +10,7 @@ VL = xdim * ydim * zdim # set total (can repeat, e.g. VL=x*y*z*4)
 
 lims = [xdim, ydim, zdim]
 idxs = [0,0,0]   # starting indices
+applydim = [1, 1]   # apply lower dims
 order = [1,0,2]  # experiment with different permutations, here
 offset = 0       # experiment with different offsetet, here
 invxyz = [0,1,0] # inversion allowed
@@ -33,7 +34,11 @@ for idx in range(VL):
         ix[i] = idxs[i]
         if invxyz[i]:
             ix[i] = lims[i] - 1 - ix[i]
-    new_idx = ix[0] + ix[1] * xdim + ix[2] * xdim * ydim
+    new_idx = ix[2]
+    if applydim[1]:
+        new_idx = new_idx * ydim + ix[1]
+    if applydim[0]:
+        new_idx = new_idx * xdim + ix[0]
     print ("%d->%d" % (idx, new_idx)),
     break_count += 1
     if break_count == lims[order[0]]:

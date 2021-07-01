@@ -27,7 +27,22 @@ def iterate_indices(SVSHAPE):
                         skip += 1
                         continue
                     # construct the (up to) 3D remap schedule
-                    yield (x + y * xd + z * xd * yd)
+                    if SVSHAPE.mode == 0b00:
+                        result = z
+                        result += y * zd
+                        result += x * zd * yd
+                    elif SVSHAPE.mode == 0b01:
+                        result = z
+                        result += x * zd
+                        #result = z
+                        #result = result * xd + x
+                        #result = result * yd + y
+                    elif SVSHAPE.mode == 0b10:
+                        result = x
+                        result += y * xd
+                        #result += z * xd * yd
+
+                    yield result
 
 def demo():
     # set the dimension sizes here
@@ -43,10 +58,10 @@ def demo():
         pass
     SVSHAPE0 = SVSHAPE()
     SVSHAPE0.lims = [xdim, ydim, zdim]
-    SVSHAPE0.idxs = [0,0,0]   # starting indices
     SVSHAPE0.order = [1,0,2]  # experiment with different permutations, here
+    SVSHAPE0.mode = 0b00
     SVSHAPE0.offset = 0       # experiment with different offset, here
-    SVSHAPE0.invxyz = [0,1,0] # inversion if desired
+    SVSHAPE0.invxyz = [0,0,0] # inversion if desired
 
     # enumerate over the iterator function, getting new indices
     for idx, new_idx in enumerate(iterate_indices(SVSHAPE0)):
