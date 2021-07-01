@@ -116,6 +116,26 @@ pipeline overlaps.  Out-of-order / Superscalar micro-architectures with
 register-renaming will have an easier time dealing with this than
 DSP-style SIMD micro-architectures.
 
+## TEMPORARY HELPER
+
+Please note: this is **not** intended for production.  It sets up
+(overwrites) all required SVSHAPE SPRs and indicates that the
+*next instruction* shall have those REMAP shapes applied to it,
+assuming that instruction is of the form FRT,FRA,FRC,FRB.
+
+Form: SVM-Form SV "Matrix" Form (see [[isatables/fields.text]])
+
+| 0.5|6.10  |11.15  |16..20  | 21..30 |31|  name    |
+| -- | --   | ---   | ------ | ------ |--| -------- |
+|OPCD| SVxd | SVyd  | SVRM   | XO     |/ | svremap  |
+
+Fields:
+
+* **SVxd** - SV REMAP "xdim"
+* **SVyd** - SV REMAP "ydim"
+* **SVMM** - SV REMAP Mode (currently 0b00000 only)
+* **XO** - standard 10-bit XO field
+
 # 4x4 Matrix to vec4 Multiply Example
 
 The following settings will allow a 4x4 matrix (starting at f8), expressed
