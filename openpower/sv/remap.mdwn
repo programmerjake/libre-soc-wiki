@@ -41,6 +41,11 @@ executed as a python program:
 [[!inline quick="yes" raw="yes" pages="openpower/sv/remap.py" ]]
 ```
 
+An easier-to-read version (using python iterators) shows the loop nesting:
+```
+[[!inline quick="yes" raw="yes" pages="openpower/sv/remapyield.py" ]]
+```
+
 Each element index from the for-loop `0..VL-1`
 is run through the above algorithm to work out the **actual** element
 index, instead.  Given that there are four possible SHAPE entries, up to
