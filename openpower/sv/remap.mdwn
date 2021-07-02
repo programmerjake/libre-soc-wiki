@@ -185,6 +185,22 @@ setting VL=64, using an extra dimension on the SHAPE0 and SHAPE1 SPRs,
 and applying a rotating 1D SHAPE SPR of xdim=16 to f8 in order to get
 it to apply four times to compute the four columns worth of vectors.
 
+# Warshall transitive closure algorithm
+
+> Just a note:  interpreting + as 'or', and * as 'and',
+> operating on Boolean matrices, 
+> and having result, X, and Y be the exact same matrix,
+> updated while being used,
+> gives the traditional Warshall transitive-closure
+> algorithm, if the loops are nested exactly in thie order.
+
+this can be done with the ternary instruction which has
+an in-place triple boolean input:
+
+    RT = RT | (RA & RB)
+
+and also has a CR Field variant of the same
+
 # SUBVL Remap
 
 Remapping even of SUBVL (vec2/3/4) elements is permitted, as if the
