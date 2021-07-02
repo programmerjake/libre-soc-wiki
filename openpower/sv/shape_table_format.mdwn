@@ -4,13 +4,22 @@ disabled: the register's elements are a linear (1D) vector.
 | 31..30   | 29..24 | 23..21  | 20..18  | 17..12  | 11..6   | 5..0    |
 | -------- | ------ | ------- | ------- | ------- | ------- | ------- |
 | mode     | offset | invxyz  | permute | zdimsz  | ydimsz  | xdimsz  |
+| 0b11     | offset | invxyz  | submode | rsvd    | rsvd    | xdimsz  |
 
 mode sets different behaviours (straight matrix multiply, FFT, DCT).
 
 * **mode=0b00** sets straight permute
 * **mode=0b01** sets "skip 2nd dimension"
 * **mode=0b10** sets "skip 1st dimension"
-* **mode=0b11** is reserved
+* **mode=0b11** sets further sub-modes including "FFT / DCT" mode
+
+submode further selects schedules for FFT and DCT.
+
+* **submode=0b000** selects the ``j`` offset of the innermost for-loop
+  of Tukey-Cooley
+* **submode=0b010** selects the ``j+halfsize`` offset of the innermost for-loop
+  of Tukey-Cooley
+* **submode=0b011** selects the ``k`` of exptable (which coefficient)
 
 invxyz will invert the start index of each of x, y or z. If invxyz[0] is
 zero then x-dimensional counting begins from 0 and increments, otherwise
