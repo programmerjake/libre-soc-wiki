@@ -36,6 +36,9 @@ def iterate_indices(SVSHAPE):
     # invert order if requested
     if SVSHAPE.invxyz[SVSHAPE.order[0]]: x_r.reverse()
 
+    if len(x_r) == 0:
+        return
+
     # start an infinite (wrapping) loop
     skip = 0
     while True:

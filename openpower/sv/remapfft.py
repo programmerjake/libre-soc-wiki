@@ -21,6 +21,8 @@
 #
 
 import cmath, math, random
+from copy import deepcopy
+from remap_fft_yield import iterate_indices
 
 
 #
@@ -66,19 +68,72 @@ def transform_radix2(vec, inverse, generators_mode):
     # Copy with bit-reversed permutation
     vec = [vec[reverse_bits(i, levels)] for i in range(n)]
 
+    #
     # Radix-2 decimation-in-time FFT
-    size = 2
-    while size <= n:
-        halfsize = size // 2
-        tablestep = n // size
-        for i in range(0, n, size):
-            k = 0
-            for j in range(i, i + halfsize):
-                temp = vec[j + halfsize] * exptable[k]
-                vec[j + halfsize] = vec[j] - temp
-                vec[j] += temp
-                k += tablestep
-        size *= 2
+    #
+    if generators_mode:
+        # loop using SVP64 REMAP "generators"
+        # set the dimension sizes here
+
+        # set total. err don't know how to calculate how many there are...
+        # do it manually for now
+        VL = 0
+        size = 2
+        while size <= n:
+            halfsize = size // 2
+            tablestep = n // size
+            for i in range(0, n, size):
+                for j in range(i, i + halfsize):
+                    VL += 1
+            size *= 2
+
+        # set up an SVSHAPE
+        class SVSHAPE:
+            pass
+        # j schedule
+        SVSHAPE0 = SVSHAPE()
+        SVSHAPE0.lims = [n, 0, 0]
+        SVSHAPE0.order = [0,1,2]
+        SVSHAPE0.mode = 0b00
+        SVSHAPE0.offset = 0
+        SVSHAPE0.invxyz = [0,0,0] # inversion if desired
+        # j+halfstep schedule
+        SVSHAPE1 = deepcopy(SVSHAPE0)
+        SVSHAPE1.mode = 0b01
+        # k schedule
+        SVSHAPE2 = deepcopy(SVSHAPE0)
+        SVSHAPE2.mode = 0b10
+
+        # enumerate over the iterator function, getting 3 *different* indices
+        for idx, (jl, jh, k) in enumerate(zip(iterate_indices(SVSHAPE0),
+                                              iterate_indices(SVSHAPE1),
+                                              iterate_indices(SVSHAPE2))):
+            if idx >= VL:
+                break
+            # exact same actual computation, just embedded in a single
+            # for-loop but using triple generators to create the schedule
+            temp1 = vec[jh] * exptable[k]
+            temp2 = vec[jl]
+            vec[jh] = temp2 - temp1
+            vec[jl] = temp2 + temp1
+    else:
+        # loop using standard python nested for-loops
+        size = 2
+        while size <= n:
+            halfsize = size // 2
+            tablestep = n // size
+            for i in range(0, n, size):
+                k = 0
+                for j in range(i, i + halfsize):
+                    # exact same actual computation, just embedded in
+                    # triple-nested for-loops
+                    jl, jh = j, j+halfsize
+                    temp1 = vec[jh] * exptable[k]
+                    temp2 = vec[jl]
+                    vec[jh] = temp2 - temp1
+                    vec[jl] = temp2 + temp1
+                    k += tablestep
+            size *= 2
     return vec
 
 
@@ -126,13 +181,17 @@ def main():
 def _test_fft(size):
     input = _random_vector(size)
     expect = _naive_dft(input, False)
-    actual = transform(input, False)
+    actual = transform(input, False, False)
+    actual_generated = transform(input, False, True)
+    assert actual == actual_generated # check generator-version is identical
+
+    err_gen = _log10_rms_err(actual, actual_generated) # superfluous but hey
     err = _log10_rms_err(expect, actual)
 
     actual = [(x / size) for x in expect]
     actual = transform(actual, True)
     err = max(_log10_rms_err(input, actual), err)
-    print(f"fftsize={size:4d}  logerr={err:5.1f}")
+    print(f"fftsize={size:4d}  logerr={err:5.1f} generr={err_gen:5.1f}")
 
 
 def _test_convolution(size):
