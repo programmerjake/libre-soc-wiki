@@ -1,7 +1,10 @@
-# FFT and convolution test (Python)
+# FFT and convolution test (Python), "generators" version
 #
 # Copyright (c) 2020 Project Nayuki. (MIT License)
 # https://www.nayuki.io/page/free-small-fft-in-multiple-languages
+#
+# Copyright (C) 2021 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
+# https://libre-soc.org/openpower/sv/remap/
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -160,7 +163,10 @@ def convolve(xvec, yvec, realoutput=True):
     else:
         return [(val / n) for val in xvec]
 
+
+###################################
 # ---- Main and test functions ----
+###################################
 
 def main():
     global _maxlogerr
