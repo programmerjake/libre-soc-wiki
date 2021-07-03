@@ -87,6 +87,8 @@ def matrix_demo():
     # now create the schedule. we use three generators, zipped
     # together
 
+    print ("ydim2 xdim2 ydim1", ydim2, xdim2, ydim1)
+
     class SVSHAPE:
         pass
     # result uses SVSHAPE0
