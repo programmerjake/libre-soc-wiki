@@ -1,17 +1,15 @@
 Shape is 32-bits.  When SHAPE is set entirely to zeros, remapping is
 disabled: the register's elements are a linear (1D) vector.
 
-| 31..30   | 29..24 | 23..21  | 20..18  | 17..12  | 11..6   | 5..0    |
-| -------- | ------ | ------- | ------- | ------- | ------- | ------- |
-| mode     | offset | invxyz  | permute | zdimsz  | ydimsz  | xdimsz  |
-| 0b11     | offset | invxyz  | submode | rsvd    | rsvd    | xdimsz  |
+| 31..30 | 29..28 | 27..24 | 23..21 | 20..18  | 17..12  | 11..6   | 5..0    |
+| ------ | ------ | ------ | ------ | ------- | ------- | ------- | ------- |
+| mode   | skip   | offset | invxyz | permute | zdimsz  | ydimsz  | xdimsz  |
+| 0b11   | skip   | offset | invxyz | submode | rsvd    | rsvd    | xdimsz  |
 
 mode sets different behaviours (straight matrix multiply, FFT, DCT).
 
-* **mode=0b00** sets straight permute
-* **mode=0b01** sets "skip 2nd dimension"
-* **mode=0b10** sets "skip 1st dimension"
-* **mode=0b11** sets further sub-modes including "FFT / DCT" mode
+* **mode=0b00** sets straight permute/skip, for matrices
+* **mode=0b01** sets further sub-modes including "FFT / DCT" mode
 
 submode further selects schedules for FFT and DCT.
 
@@ -21,15 +19,26 @@ submode further selects schedules for FFT and DCT.
   of Tukey-Cooley
 * **submode=0b011** selects the ``k`` of exptable (which coefficient)
 
+skip allows dimensions to be skipped from being included in the resultant
+output index.  this allows sequences to be repeated: ```0 0 0 1 1 1 2 2 2 ...``` or in the case of skip=0b11 this results in modulo ```0 1 2 0 1 2 ...```
+
+* **skip=0b00** indicates no dimensions to be skipped
+* **skip=0b01** sets "skip 1st dimension"
+* **skip=0b10** sets "skip 2nd dimension"
+* **skip=0b11** sets "skip 3rd dimension"
+
 invxyz will invert the start index of each of x, y or z. If invxyz[0] is
 zero then x-dimensional counting begins from 0 and increments, otherwise
 it begins from xdimsz-1 and iterates down to zero. Likewise for y and z.
 
-offset will have the effect equivalent to the sequential element loop
-to appear to run for offset (additional) iterations prior to actually
-generating output.  in pseudo-code the loop would be:
+offset will have the effect of offsetting the result by ```offset``` elements:
 
-    for index in offset to (offset+VL-1)
+    for i in 0..VL-1:
+        GPR(RT + remap(i) + SVSHAPE.offset) = ....
+
+this appears redundant because the register RT could simply be changed by a compiler, until element width overrides are introduced.  also
+bear in mind that unlike a static compiler SVSHAPE.offset may
+be set dynamically at runtime.
 
 xdimsz, ydimsz and zdimsz are offset by 1, such that a value of 0 indicates
 that the array dimensionality for that dimension is 1. any dimension
