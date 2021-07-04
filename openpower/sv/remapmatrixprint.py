@@ -53,22 +53,22 @@ def matrixscheduledemo():
         pass
     # result uses SVSHAPE0
     SVSHAPE0 = SVSHAPE()
-    SVSHAPE0.lims = [ydim2, xdim2, 1]
-    SVSHAPE0.order = [0,2,1]  # result iterates through i and j (modulo)
+    SVSHAPE0.lims = [xdim2, ydim2, 1]
+    SVSHAPE0.order = [0,1,2]  # result iterates through i and j (modulo)
     SVSHAPE0.mode = 0b00
     SVSHAPE0.offset = 0       # no offset
     SVSHAPE0.invxyz = [0,0,0] # no inversion
     # X uses SVSHAPE1
     SVSHAPE1 = SVSHAPE()
-    SVSHAPE1.lims = [ydim2, xdim2, ydim1]
-    SVSHAPE1.order = [1,2,0]  # X iterates through i and k
+    SVSHAPE1.lims = [xdim2, ydim2, ydim1]
+    SVSHAPE1.order = [0,2,1]  # X iterates through i and k
     SVSHAPE1.mode = 0b10
     SVSHAPE1.offset = 0       # no offset
     SVSHAPE1.invxyz = [0,0,0] # no inversion
     # y-selector uses SHAPE2
     SVSHAPE2 = SVSHAPE()
-    SVSHAPE2.lims = [ydim2, xdim2, ydim1]
-    SVSHAPE2.order = [1,2,0]  # Y iterates through k and j
+    SVSHAPE2.lims = [xdim2, ydim2, ydim1]
+    SVSHAPE2.order = [0,2,1]  # X iterates through i and k
     SVSHAPE2.mode = 0b01
     SVSHAPE2.offset = 0       # no offset
     SVSHAPE2.invxyz = [0,0,0] # no inversion
@@ -83,7 +83,7 @@ def matrixscheduledemo():
 
         if i == VL:
             break
-        print ("(", i, ",", idxs, "),")
+        print ("(", i, ",", idxs, "),", "expected", expected[i])
         if expected[i] != (i, idxs):
             print ("row incorrect")
 
