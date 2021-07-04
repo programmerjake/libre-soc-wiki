@@ -6,7 +6,7 @@
 
 A concept present in processors such as Texas Instruments DSPs and in the Mill Architecture to an advanced level, register "tags" allow the meaning and behaviour of instructions to change, polymorphically.
 
-This for allows instructions originally designed to only be IEEE754 FP64 fir example to become IEEE754 FP128 or even complex mumbers.  With SVP64 supporting [[sv/remap]] it is not conceptually that much of a leap to support complex numbers, given that the hardware to do so is already in place.
+This for allows instructions originally designed to only be IEEE754 FP64 for example to become IEEE754 FP128 or even complex mumbers.  With SVP64 supporting [[sv/remap]] it is not conceptually that much of a leap to support complex numbers, given that the hardware to do so is already in place.
 
 It is however extremely important to keep the tag context down to a bare minimum size, because, like SVSTATE, it has to be added to the interrupt context alongside SRR0 and SRR1.
 
