@@ -8,6 +8,13 @@ A concept present in processors such as Texas Instruments DSPs and in the Mill A
 
 This for allows instructions originally designed to only be IEEE754 FP64 fir example to become IEEE754 FP128 or even complex mumbers.  With SVP64 supporting [[sv/remap]] it is not conceptually that much of a leap to support complex numbers, given that the hardware to do so is already in place.
 
+It is however extremely important to keep the tag context down to a bare minimum size, because, like SVSTATE, it has to be added to the interrupt context alongside SRR0 and SRR1.
+
+Interestingly due to the size of complex numbers (and FP128) there is not much point having large tags.  It is quite likely therefore that a 64 bit SPR of 2 bits per register, covering 128 registers, would be sufficient.  Groups of 4 registers would be tagged:
+
+* SVTAG[0:1] marks all of FPR[0..3] and GPR[0..3]
+
+
 Links:
 
 * <http://lists.libre-soc.org/pipermail/libre-soc-dev/2021-June/003256.html>
