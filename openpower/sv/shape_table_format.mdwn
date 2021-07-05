@@ -3,13 +3,13 @@ disabled: the register's elements are a linear (1D) vector.
 
 | 31..30 | 29..28 | 27..24 | 23..21 | 20..18  | 17..12  | 11..6   | 5..0    |
 | ------ | ------ | ------ | ------ | ------- | ------- | ------- | ------- |
-| mode   | skip   | offset | invxyz | permute | zdimsz  | ydimsz  | xdimsz  |
-| 0b11   | skip   | offset | invxyz | submode | rsvd    | rsvd    | xdimsz  |
+| 0b00   | skip   | offset | invxyz | permute | zdimsz  | ydimsz  | xdimsz  |
+| 0b01   | submode| offset | invxyz | rsvd    | rsvd    | rsvd    | xdimsz  |
 
 mode sets different behaviours (straight matrix multiply, FFT, DCT).
 
-* **mode=0b00** sets straight permute/skip, for matrices
-* **mode=0b01** sets further sub-modes including "FFT / DCT" mode
+* **mode=0b00** sets straight Matrix Mode
+* **mode=0b01** sets "FFT / DCT" mode and activates submodes
 
 submode further selects schedules for FFT and DCT.
 

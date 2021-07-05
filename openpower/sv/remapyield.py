@@ -28,23 +28,31 @@ def iterate_indices(SVSHAPE):
                             (SVSHAPE.lims[1], y, "y"),
                             (SVSHAPE.lims[2], z, "z")
                            ]
-                    # now select those by order:
+                    # now select those by order.  this allows us to
+                    # create schedules for [z][x], [x][y], or [y][z]
+                    # for matrix multiply.
                     vals = [vals[SVSHAPE.order[0]],
                             vals[SVSHAPE.order[1]],
                             vals[SVSHAPE.order[2]]
                            ]
-                    # ok now we can construct the result, using bits of
-                    # "order" to say which ones get stacked on
+                    # some of the dimensions can be "skipped".  the order
+                    # was actually selected above on all 3 dimensions,
+                    # e.g. [z][x][y] or [y][z][x].  "skip" allows one of
+                    # those to be knocked out
+                    if SVSHAPE.skip == 0b00:
+                        select = 0b111
+                    elif SVSHAPE.skip == 0b11:
+                        select = 0b011
+                    elif SVSHAPE.skip == 0b01:
+                        select = 0b110
+                    elif SVSHAPE.skip == 0b10:
+                        select = 0b101
+                    else:
+                        select = 0b111
                     result = 0
                     mult = 1
-                    if SVSHAPE.mode == 0b00:
-                        permute = 0b111
-                    elif SVSHAPE.mode == 0b01:
-                        permute = 0b011
-                    elif SVSHAPE.mode == 0b10:
-                        permute = 0b110
-                    else:
-                        permute = 0b111
+                    # ok now we can construct the result, using bits of
+                    # "order" to say which ones get stacked on
                     for i in range(3):
                         lim, idx, dbg = vals[i]
                         if permute & (1<<i):

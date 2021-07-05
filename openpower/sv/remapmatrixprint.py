@@ -56,20 +56,23 @@ def matrixscheduledemo():
     SVSHAPE0.lims = [xdim2, ydim2, 1]
     SVSHAPE0.order = [0,1,2]  # result iterates through i and j (modulo)
     SVSHAPE0.mode = 0b00
+    SVSHAPE0.skip = 0b00
     SVSHAPE0.offset = 0       # no offset
     SVSHAPE0.invxyz = [0,0,0] # no inversion
     # X uses SVSHAPE1
     SVSHAPE1 = SVSHAPE()
     SVSHAPE1.lims = [xdim2, ydim2, ydim1]
     SVSHAPE1.order = [0,2,1]  # X iterates through i and k
-    SVSHAPE1.mode = 0b10
+    SVSHAPE1.mode = 0b00
+    SVSHAPE1.skip = 0b01
     SVSHAPE1.offset = 0       # no offset
     SVSHAPE1.invxyz = [0,0,0] # no inversion
     # y-selector uses SHAPE2
     SVSHAPE2 = SVSHAPE()
     SVSHAPE2.lims = [xdim2, ydim2, ydim1]
     SVSHAPE2.order = [0,2,1]  # X iterates through i and k
-    SVSHAPE2.mode = 0b01
+    SVSHAPE2.mode = 0b00
+    SVSHAPE2.skip = 0b11
     SVSHAPE2.offset = 0       # no offset
     SVSHAPE2.invxyz = [0,0,0] # no inversion
 
