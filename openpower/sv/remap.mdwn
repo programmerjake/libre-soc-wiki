@@ -201,6 +201,42 @@ an in-place triple boolean input:
 
 and also has a CR Field variant of the same
 
+notes from conversations:
+
+> > for y in y_r:
+> >  for x in x_r:
+> >    for z in z_r:
+> >      result[y][x] +=
+> >         a[y][z] *
+> >         b[z][x]
+
+> This nesting of loops works for matrix multiply, but not for transitive
+> closure. 
+
+> > it can be done:
+> >
+> >   for z in z_r:
+> >    for y in y_r:
+> >     for x in x_r:
+> >       result[y][x] +=
+> >          a[y][z] *
+> >          b[z][x]
+>
+> And this ordering of loops *does* work for transitive closure, when a,
+> b, and result are the very same matrix, updated while being used.
+>
+> By the way, I believe there is a graph algorithm that does the
+> transitive closure thing, but instead of using boolean, "and", and "or",
+> they use real numbers, addition, and minimum.  I think that one computes
+> shortest paths between vertices.
+>
+> By the time the z'th iteration of the z loop begins, the algorithm has
+> already peocessed paths that go through vertices numbered < z, and it
+> adds paths that go through vertices numbered z.
+>
+> For this to work, the outer loop has to be the one on teh subscript that
+> bridges a and b (which in this case are teh same matrix, of course).
+
 # SUBVL Remap
 
 Remapping even of SUBVL (vec2/3/4) elements is permitted, as if the
