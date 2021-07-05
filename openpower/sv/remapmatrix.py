@@ -14,24 +14,40 @@ def iterate_triple(SVSHAPE0, SVSHAPE1, SVSHAPE2):
 def matrix_demo():
     #### test matrices 1
     # 3x2 matrix
-    X = [[1, 2, 3],
+    X1 = [[1, 2, 3],
           [3, 4, 5],
          ]
     # 2x3 matrix
-    Y = [[6, 7],
+    Y1 = [[6, 7],
           [8, 9],
           [10, 11],
          ]
 
     #### test matrices 2
     # 3x3 matrix
-    X = [[12,7,3],
+    X2 = [[12,7,3],
         [4 ,5,6],
-        [7 ,8,9]]
+        [7 ,8,9],
+        ]
     # 3x4 matrix
-    Y = [[5,8,1,2],
+    Y2 = [[5,8,1,2],
         [6,7,3,0],
         [4,5,9,1]]
+
+    #### test matrices 3
+    # 3x4 matrix
+    X3 = [[12,7,3],
+        [4 ,5,6],
+        [7 ,8,9],
+        [2 ,0,1]]
+    # 3x5 matrix
+    Y3 = [[5,8,1,2,3],
+        [6,7,3,0,9],
+        [4,5,9,1,2]]
+
+    # pick one of the above (crude, non-automated, but it works, hey)
+    X = X3
+    Y = Y3
 
     # get the dimensions of the 2 matrices
     xdim1 = len(X[0])
@@ -53,16 +69,19 @@ def matrix_demo():
     for _ in range(ydim1):
         result.append([0]*xdim2)
     # iterate through rows of Y
+    count = 0
     for k in range(len(Y)):       # ydim2
         # iterate through rows of X
         for i in range(len(X)):              # ydim1
-           # iterate through columns of Y
-           for j in range(len(Y[0])):        # xdim2
-               print ("order res %d   X %d   Y %d" % \
-                        ((i*xdim2)+j, # result linear array index
+            # iterate through columns of Y
+            for j in range(len(Y[0])):        # xdim2
+                print ("order %d    res %d   X %d   Y %d" % \
+                        (count,
+                         (i*xdim2)+j, # result linear array index
                          (i*xdim1)+k,  # X linear array index
                          (k*xdim2)+j))   # Y linear array index
-               result[i][j] += X[i][k] * Y[k][j]
+                result[i][j] += X[i][k] * Y[k][j]
+                count += 1
     print ("expected result")
     for r in result:
         print ("\t", r)
@@ -93,25 +112,29 @@ def matrix_demo():
         pass
     # result uses SVSHAPE0
     SVSHAPE0 = SVSHAPE()
-    SVSHAPE0.lims = [ydim2, xdim2, 1]
-    SVSHAPE0.order = [0,2,1]  # result iterates through i and j (modulo)
+    SVSHAPE0.lims = [xdim2, ydim1, ydim2]
+    SVSHAPE0.order = [0,1,2]  # result iterates through i and j (modulo)
     SVSHAPE0.mode = 0b00
+    SVSHAPE0.skip = 0b11      # select 1st 2 dimensions (skip 3rd)
     SVSHAPE0.offset = 0       # no offset
     SVSHAPE0.invxyz = [0,0,0] # no inversion
     # X uses SVSHAPE1
     SVSHAPE1 = SVSHAPE()
-    SVSHAPE1.lims = [ydim2, xdim2, ydim1]
-    SVSHAPE1.order = [1,2,0]  # X iterates through i and k
-    SVSHAPE1.mode = 0b10
+    SVSHAPE1.lims = [xdim2, ydim1, ydim2]
+    SVSHAPE1.order = [0,2,1]  # X iterates through i and k
+    SVSHAPE1.mode = 0b00
+    SVSHAPE1.skip = 0b01      # skip middle dimension
     SVSHAPE1.offset = 0       # no offset
     SVSHAPE1.invxyz = [0,0,0] # no inversion
     # y-selector uses SHAPE2
     SVSHAPE2 = SVSHAPE()
-    SVSHAPE2.lims = [ydim2, xdim2, ydim1]
-    SVSHAPE2.order = [1,2,0]  # Y iterates through k and j
-    SVSHAPE2.mode = 0b01
+    SVSHAPE2.lims = [xdim2, ydim1, ydim2]
+    SVSHAPE2.order = [0,2,1]  # X iterates through i and k
+    SVSHAPE2.mode = 0b00
+    SVSHAPE2.skip = 0b11      # select 1st 2 dimensions (skip 3rd)
     SVSHAPE2.offset = 0       # no offset
     SVSHAPE2.invxyz = [0,0,0] # no inversion
+
 
     # perform the iteration over the *linear* arrays using the
     # schedules
@@ -120,7 +143,7 @@ def matrix_demo():
     for i, idxs in enumerate(iterate_triple(SVSHAPE0, SVSHAPE1, SVSHAPE2)):
         if i == VL:
             break
-        print ("idxs", idxs, len(result2), len(xf), len(yf))
+        print ("idxs", i, idxs, len(result2), len(xf), len(yf))
         r_idx, x_idx, y_idx = idxs
         result2[r_idx] += xf[x_idx] * yf[y_idx]
 

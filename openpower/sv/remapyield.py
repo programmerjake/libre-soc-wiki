@@ -55,7 +55,7 @@ def iterate_indices(SVSHAPE):
                     # "order" to say which ones get stacked on
                     for i in range(3):
                         lim, idx, dbg = vals[i]
-                        if permute & (1<<i):
+                        if select & (1<<i):
                             #print ("select %d %s" % (i, dbg))
                             idx *= mult   # shifts up by previous dimension(s)
                             result += idx # adds on this dimension
