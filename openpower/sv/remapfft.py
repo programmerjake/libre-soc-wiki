@@ -97,15 +97,16 @@ def transform_radix2(vec, inverse, generators_mode):
         SVSHAPE0 = SVSHAPE()
         SVSHAPE0.lims = [n, 0, 0]
         SVSHAPE0.order = [0,1,2]
-        SVSHAPE0.mode = 0b00
+        SVSHAPE0.mode = 0b01      # FFT mode
+        SVSHAPE0.skip = 0b00
         SVSHAPE0.offset = 0
         SVSHAPE0.invxyz = [0,0,0] # inversion if desired
         # j+halfstep schedule
         SVSHAPE1 = deepcopy(SVSHAPE0)
-        SVSHAPE1.mode = 0b01
+        SVSHAPE1.skip = 0b01
         # k schedule
         SVSHAPE2 = deepcopy(SVSHAPE0)
-        SVSHAPE2.mode = 0b10
+        SVSHAPE2.skip = 0b10
 
         # enumerate over the iterator function, getting 3 *different* indices
         for idx, (jl, jh, k) in enumerate(zip(iterate_indices(SVSHAPE0),
