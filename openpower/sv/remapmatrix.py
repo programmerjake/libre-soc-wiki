@@ -46,8 +46,8 @@ def matrix_demo():
         [4,5,9,1,2]]
 
     # pick one of the above (crude, non-automated, but it works, hey)
-    X = X3
-    Y = Y3
+    X = X2
+    Y = Y2
 
     # get the dimensions of the 2 matrices
     xdim1 = len(X[0])
@@ -106,7 +106,7 @@ def matrix_demo():
     # now create the schedule. we use three generators, zipped
     # together
 
-    print ("ydim2 xdim2 ydim1", ydim2, xdim2, ydim1)
+    print ("xdim2 ydim1 ydim2", xdim2, ydim1, ydim2)
 
     class SVSHAPE:
         pass
@@ -143,9 +143,11 @@ def matrix_demo():
     for i, idxs in enumerate(iterate_triple(SVSHAPE0, SVSHAPE1, SVSHAPE2)):
         if i == VL:
             break
-        print ("idxs", i, idxs, len(result2), len(xf), len(yf))
         r_idx, x_idx, y_idx = idxs
-        result2[r_idx] += xf[x_idx] * yf[y_idx]
+        new_result = result2[r_idx] + xf[x_idx] * yf[y_idx]
+        print ("idxs", i, idxs, len(result2), len(xf), len(yf),
+               "  results  ", result2[r_idx], xf[x_idx], yf[y_idx], new_result)
+        result2[r_idx] = new_result
 
     # now print out sections of result array, assuming elements of a "row"
     # are in sequence (inner loop), columns are outer
