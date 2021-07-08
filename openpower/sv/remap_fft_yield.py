@@ -79,7 +79,7 @@ def iterate_indices(SVSHAPE):
 
 def demo():
     # set the dimension sizes here
-    xdim = 16
+    xdim = 8
     ydim = 0 # not needed
     zdim = 0 # again, not needed
 
@@ -103,7 +103,8 @@ def demo():
     SVSHAPE0 = SVSHAPE()
     SVSHAPE0.lims = [xdim, ydim, zdim]
     SVSHAPE0.order = [0,1,2]  # experiment with different permutations, here
-    SVSHAPE0.mode = 0b00
+    SVSHAPE0.mode = 0b01
+    SVSHAPE0.skip = 0b00
     SVSHAPE0.offset = 0       # experiment with different offset, here
     SVSHAPE0.invxyz = [0,0,0] # inversion if desired
     # j+halfstep schedule
@@ -111,13 +112,15 @@ def demo():
     SVSHAPE1.lims = [xdim, ydim, zdim]
     SVSHAPE1.order = [0,1,2]  # experiment with different permutations, here
     SVSHAPE1.mode = 0b01
+    SVSHAPE1.skip = 0b01
     SVSHAPE1.offset = 0       # experiment with different offset, here
     SVSHAPE1.invxyz = [0,0,0] # inversion if desired
     # k schedule
     SVSHAPE2 = SVSHAPE()
     SVSHAPE2.lims = [xdim, ydim, zdim]
     SVSHAPE2.order = [0,1,2]  # experiment with different permutations, here
-    SVSHAPE2.mode = 0b10
+    SVSHAPE2.mode = 0b01
+    SVSHAPE2.skip = 0b10
     SVSHAPE2.offset = 0       # experiment with different offset, here
     SVSHAPE2.invxyz = [0,0,0] # inversion if desired
 
