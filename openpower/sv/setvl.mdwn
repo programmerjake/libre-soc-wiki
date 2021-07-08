@@ -22,25 +22,45 @@ unlike RVV, SV does not have hard-coded "Lanes".  The relevant parameter
 in RVV is "MAXVL" and this is architecturally hard-coded into RVV systems,
 anywhere from 1 to tens of thousands of Lanes in supercomputers.
 
-SV is more like how MMX used to sit on top of the x86 FP regfile.  Therefore
-when Vector operations are performed, the question has to be asked, "well,
-how much of the regfile do you want to allocate to this operation?" because if it is too small an amount performance may be affected, and if too large then other registers would overlap and cause data  corruption, or even if allocated correctly would require spill to memory.
+SV is more like how MMX used to sit on top of the x86 FP regfile.
+Therefore when Vector operations are performed, the question has to
+be asked, "well, how much of the regfile do you want to allocate to
+this operation?" because if it is too small an amount performance may
+be affected, and if too large then other registers would overlap and
+cause data  corruption, or even if allocated correctly would require
+spill to memory.
 
-The answer effectively needs to be parameterised.  Hence: MAXVL
-(MVL) is set from an immediate, so that the compiler may decide, statically, a guaranteed resource allocation according to the needs of the application.
+The answer effectively needs to be parameterised.  Hence: MAXVL (MVL)
+is set from an immediate, so that the compiler may decide, statically, a
+guaranteed resource allocation according to the needs of the application.
 
-While RVV's MAXVL was a hw limit, SV's MVL is simply a loop optimization. It does not carry
-side-effects for the arch, though for a specific cpu it may affect hw unit usage.
+While RVV's MAXVL was a hw limit, SV's MVL is simply a loop
+optimization. It does not carry side-effects for the arch, though for
+a specific cpu it may affect hw unit usage.
 
-Other than being able to set MVL, SV's VL (Vector Length) works just like RVV's VL, with one minor twist.  RVV permits the `setvl` instruction to set VL to an arbitrary value.  Given that RVV only works on Vector Loops, this is fine and part of its value and design.  However, SV sits on top of the standard register files.  When MVL=VL=2, a Vector Add on `r3` will perform two Scalar Adds: one on `r3` and one on `r4`.
+Other than being able to set MVL, SV's VL (Vector Length) works just like
+RVV's VL, with one minor twist.  RVV permits the `setvl` instruction to
+set VL to an arbitrary value.  Given that RVV only works on Vector Loops,
+this is fine and part of its value and design.  However, SV sits on top
+of the standard register files.  When MVL=VL=2, a Vector Add on `r3`
+will perform two Scalar Adds: one on `r3` and one on `r4`.
 
-Thus there is the opportunity to set VL to an explicit value (within the limits of MVL) with the reasonable expectation that if two operations are requested (by setting VL=2) then two operations are guaranteed.  This avoids the need for a loop (with not-insignificant use of the regfiles for counters), simply two
-instructions:
+Thus there is the opportunity to set VL to an explicit value (within the
+limits of MVL) with the reasonable expectation that if two operations
+are requested (by setting VL=2) then two operations are guaranteed.
+This avoids the need for a loop (with not-insignificant use of the
+regfiles for counters), simply two instructions:
 
     setvli r0, MVL=64, VL=64
     ld r0.v, 0(r30) # load exactly 64 registers from memory
 
-Page Faults etc. aside this is *guaranteed* 100% without fail to perform 64 unit-strided LDs starting from the address pointed to by r30 and put the contents into r0 through r63.  Thus it becomes a "LOAD-MULTI". Twin Predication could even be used to only load relevant registers from the stack.  This *only works if VL is set to the requested value* rather than, as in RVV, allowing the hardware to set VL to an arbitrary value (caveat being, limited to not exceed MVL)
+Page Faults etc. aside this is *guaranteed* 100% without fail to perform
+64 unit-strided LDs starting from the address pointed to by r30 and put
+the contents into r0 through r63.  Thus it becomes a "LOAD-MULTI". Twin
+Predication could even be used to only load relevant registers from
+the stack.  This *only works if VL is set to the requested value* rather
+than, as in RVV, allowing the hardware to set VL to an arbitrary value
+(caveat being, limited to not exceed MVL)
 
 # Format
 
@@ -50,16 +70,23 @@ using EXT22 temporarily and fitting into the
 
 Form: SVL-Form (see [[isatables/fields.text]])
 
-| 0.5|6.10|11.15|16..23  | 24.25  | 26.30 |31|  name   |
-| -- | -- | --- | ------ | ------ | ----- |--| ------- |
-|OPCD| RT | RA  | SVi /  | vs ms  | 11110 |Rc| setvl   |
+| 0.5|6.10|11.15|16..21|22| 23...25  | 26.30 |31|  name   |
+| -- | -- | --- | ---- |--| -------- | ----- |--| ------- |
+|OPCD| RT | RA  | SVi  |/ | vm vs ms | 11110 |Rc| setvl   |
 
-Note that the immediate (`SVi`) spans 7 bits (16 to 22), and that bit 23 is reserved and must be zero.  Setting bit 23 to 1 causes an illegal exception.
+Note that the immediate (`SVi`) spans 7 bits (16 to 22)
 
 `ms` - bit 25 - allows for setting of MVL.  `vs` - bit 24 - allows for
-setting of VL.
+setting of VL.  `vm` - bit 23 - sets "Vertical Mode" which is
+stored in `MSR` bit 6 (**TODO: needs approval**)
 
-Note that in immediate setting mode VL and MVL start from **one** i.e. that an immediate value of zero will result in VL/MVL being set to 1.  0b111111 results in VL/MVL being set to 64. This is because setting VL/MVL to 1 results in "scalar identity" behaviour, where setting VL/MVL to 0 would result in all Vector operations becoming `nop`.  If this is truly desired (nop behaviour) then setting VL and MVL to zero is to be done via the [[SV SPRs|sv/sprs]]
+Note that in immediate setting mode VL and MVL start from **one**
+i.e. that an immediate value of zero will result in VL/MVL being set to 1.
+0b111111 results in VL/MVL being set to 64. This is because setting
+VL/MVL to 1 results in "scalar identity" behaviour, where setting VL/MVL
+to 0 would result in all Vector operations becoming `nop`.  If this is
+truly desired (nop behaviour) then setting VL and MVL to zero is to be
+done via the [[SV SPRs|sv/sprs]]
 
 Note that setmvli is a pseudo-op, based on RA/RT=0, and setvli likewise
 
@@ -70,61 +97,91 @@ Additional pseudo-op for obtaining VL without modifying it:
 
     getvl r5       : setvl r5, r0, vs=0, ms=0
 
-Note that whilst it is possible to set both MVL and VL from the same immediate, it is not possible to set them to different immediates in the same instruction.  That would require two instructions. 
+Note that whilst it is possible to set both MVL and VL from the same
+immediate, it is not possible to set them to different immediates in
+the same instruction.  That would require two instructions.
 
 # Pseudocode
 
     // instruction fields:
     rd = get_rt_field();         // bits 6..10
     ra = get_ra_field();         // bits 11..15
+    vf = get_vf_field();         // bit 23
     vs = get_vs_field();         // bit 24
     ms = get_ms_field();         // bit 25
     Rc = get_Rc_field();         // bit 31
-    // add one. MVL/VL=1..64 not 0..63
-    vlimmed = get_immed_field()+1; //  16..22
 
-    // set VL (or not).
-    // 3 options: from SPR, from immed, from ra
-    if vs {
-       // VL to be sourced from fields/regs
-       if ra != 0 {
-           VL = GPR[ra]  
-       } else {
-           VL = vlimmed
-       }
+    if vf and not vs and not ms {
+        // increment src/dest step mode
+        // NOTE! this is in no way complete! predication is not included
+        // and neither is SUB-VL mode
+        srcstep = SPR[SV].srcstep
+        dststep = SPR[SV].dststep
+        VL = SPR[SV].VL
+        srcstep++
+        dststep++
+        rollover = (srcstep == VL or dststep == VL)
+        if rollover:
+            srcstep = 0
+            dststep = 0
+        SPR[SV].srcstep = srcstep
+        SPR[SV].dststep = dststep
+
+        // write CR? helps for doing Vertical loops, detects end
+        // of Vector Elements
+        if Rc {
+            // update CR to indicate that srcstep/dststep "rolled over"
+            CR0.eq = rollover
+        }
     } else {
-       // VL not to change (except if MVL is reduced)
-       // read from SPRs
-       VL = SPR[SV_VL]
-    }
+        // add one. MVL/VL=1..64 not 0..63
+        vlimmed = get_immed_field()+1; //  16..22
 
-    // set MVL (or not).
-    // 2 options: from SPR, from immed
-    if ms {
-       MVL = vlimmed
-    } else {
-       // MVL not to change, read from SPRs
-       MVL = SPR[SV_MVL]
-    }
+        // set VL (or not).
+        // 3 options: from SPR, from immed, from ra
+        if vs {
+           // VL to be sourced from fields/regs
+           if ra != 0 {
+               VL = GPR[ra]
+           } else {
+               VL = vlimmed
+           }
+        } else {
+           // VL not to change (except if MVL is reduced)
+           // read from SPRs
+           VL = SPR[SV_VL]
+        }
 
-    // calculate (limit) VL
-    VL = min(VL, MVL)
+        // set MVL (or not).
+        // 2 options: from SPR, from immed
+        if ms {
+           MVL = vlimmed
+        } else {
+           // MVL not to change, read from SPRs
+           MVL = SPR[SV_MVL]
+        }
 
-    // store VL, MVL
-    SPR[SV_VL] = VL
-    SPR[SV_MVL] = MVL
+        // calculate (limit) VL
+        VL = min(VL, MVL)
 
-    // write rd
-    if rt != 0 {
-        // rt is not zero
-        regs[rt] = VL;
-    }
-    // write CR?
-    if Rc {
-        // update CR from VL (not rt)
-        CR0.eq = (VL == 0)
-        ...
-        ...
+        // store VL, MVL
+        SPR[SV_VL] = VL
+        SPR[SV_MVL] = MVL
+
+        // write rd
+        if rt != 0 {
+            // rt is not zero
+            regs[rt] = VL;
+        }
+        // write CR?
+        if Rc {
+            // update CR from VL (not rt)
+            CR0.eq = (VL == 0)
+            ...
+            ...
+        }
+        // write Vertical-First mode into MSR
+        MSR[6] = vf
     }
 
 # Examples
