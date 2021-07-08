@@ -122,8 +122,10 @@ the same instruction.  That would require two instructions.
         dststep++
         rollover = (srcstep == VL or dststep == VL)
         if rollover:
+            // Reset srcstep, dststep, and also exit "Vertical First" mode
             srcstep = 0
             dststep = 0
+            MSR[6] = 0
         SPR[SV].srcstep = srcstep
         SPR[SV].dststep = dststep
 

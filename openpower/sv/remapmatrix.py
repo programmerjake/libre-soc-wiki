@@ -46,8 +46,8 @@ def matrix_demo():
         [4,5,9,1,2]]
 
     # pick one of the above (crude, non-automated, but it works, hey)
-    X = X2
-    Y = Y2
+    X = X1
+    Y = Y1
 
     # get the dimensions of the 2 matrices
     xdim1 = len(X[0])
