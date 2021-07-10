@@ -49,8 +49,8 @@ swizzle. Their format is as follows when stored in SPRs:
 | 0000 | 0000   | `RM[0:23]`  |  [[sv/svp64]] RM |
 | 0000 | 0001   |`setvl[0:23]`|  [[sv/setvl]] VL |
 | 0001 | 0 mask | swiz1 swiz2 |  swizzle  |
-| 0010 | brev   | sh0-3 ms0-3 |  [Remap](sv/remap)    |
-| 0011 | brev   | sh0-3 ms0-3 |  [SubVL Remap](sv/remap)    |
+| 0010 | brev   | sh0-4 ms0-5 |  [Remap](sv/remap)    |
+| 0011 | brev   | sh0-4 ms0-4 |  [SubVL Remap](sv/remap)    |
 
 There are 4 64 bit SPRs used for storing Context, and the data is stored
 as follows:
@@ -208,9 +208,9 @@ vec2/3/4, that would be handled by swizzle reordering):
 
 Again it is the 24 bit `RM` that is interpreted differently:
 
-| 0...7 | 8....23 |
-| ----- | ------- |
-| sh0-3 | mask0-3 |
+| 0...4 | 5.7 | 8  | 10 | 12 | 14 | 16 | 18..23 |
+| ----- | --- | -- | -- | -- | -- | -- | ------ |
+| en0-4 | rsv |mi0 |mi1 |mi2 |mo0 |mo1 | rsv    |
 
 The shape indices 0-3 are numbered 0-3 whilst the masks are bitmasks
 that indicate src or dest to which the associated shape (0-3) is to
