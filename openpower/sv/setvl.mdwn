@@ -72,12 +72,12 @@ Form: SVL-Form (see [[isatables/fields.text]])
 
 | 0.5|6.10|11.15|16..21|22| 23...25  | 26.30 |31|  name   |
 | -- | -- | --- | ---- |--| -------- | ----- |--| ------- |
-|OPCD| RT | RA  | SVi  |/ | vm vs ms | 11110 |Rc| setvl   |
+|OPCD| RT | RA  | SVi  |/ | ms vs vf | 11110 |Rc| setvl   |
 
 Note that the immediate (`SVi`) spans 7 bits (16 to 22)
 
-`ms` - bit 25 - allows for setting of MVL.  `vs` - bit 24 - allows for
-setting of VL.  `vm` - bit 23 - sets "Vertical Mode" which is
+`ms` - bit 23 - allows for setting of MVL.  `vs` - bit 24 - allows for
+setting of VL.  `vf` - bit 23 - sets "Vertical First Mode" which is
 stored in `MSR` bit 6 (**TODO: needs approval**)
 
 Note that in immediate setting mode VL and MVL start from **one**
