@@ -599,6 +599,16 @@ Alternatively, the .ssh/config can be skipped and this used:
 
      git clone ssh://gitolite3@git.libre-soc.org:922/REPONAME.git
 
+Note: **DO NOT ATTEMPT TO LOG IN TO THE SERVER WITH A PERSONAL ACCOUNT**.
+fail2ban is running and, due to repeated persistent port-scanning spammers
+is set up to instantly ban any unauthorised ssh access for up to two weeks.
+This keeps log file sizes down on the server (which is resource-constrained).
+If you are wondering why this is done, it's a *lot* of port-scans.
+
+Therefore, *only* ssh in to server with the gitolite3 account, *only*
+on port 922, and *only* once the systems administrator has given you
+the all-clear that the ssh key has been added.
+
 # git configuration
 
 Although there are methods online which describe how (and why) these
