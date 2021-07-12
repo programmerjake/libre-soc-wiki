@@ -1,8 +1,16 @@
 # Dev setup scripts
 
-Setting up the dependencies and repositories for Libre-SOC is big enough that it is just much easier to do in an automated fashion.  Follow these steps after making sure that you review the scripts line by line because they run as root and it is your responsibility to check them, not ours.
+Setting up the dependencies and repositories for Libre-SOC is big enough
+that it is just much easier to do in an automated fashion.  Follow these
+steps after making sure that you review the scripts line by line because
+they run as root and it is your responsibility to check them, not ours.
 
-Note the reason for entering the chroot as a user (not root) and then running sudo bash again is due to this procedure setting the SUDO_USER environment, on which the scripts critically rely.  Also: the dev-env-setup repository is cloned twice, once to get the chroot script and a second time to use scripts *inside* the chroot. Feel free to simply copy the repository into the chroot to save bandwidth.
+Note the reason for entering the chroot as a user (not root) and
+then running sudo bash again is due to this procedure setting the
+SUDO_USER environment, on which the scripts critically rely.  Also:
+the dev-env-setup repository is cloned twice, once to get the chroot
+script and a second time to use scripts *inside* the chroot. Feel free
+to simply copy the repository into the chroot to save bandwidth.
 
     $ git clone https://git.libre-soc.org/git/dev-env-setup.git
     $ cd dev-env-setup
@@ -20,4 +28,9 @@ Note the reason for entering the chroot as a user (not root) and then running su
 
 <https://git.libre-soc.org/?p=dev-env-setup.git;a=blob;f=hdl-dev-repos;hb=HEAD>
 
-Additional scripts in the dev-env-setup repository will install yosys, verilator, coriolis2, ghdl, gdb and so on: from the above it is pretty straightforward and obvious to work out what to do (just run them).  There is an accompanying walkthrough video which goes through the above <https://m.youtube.com/watch?v=1-4eJKTNrEk> and includes running some unit tests, explaining some of the background, and also files some bugs.
+Additional scripts in the dev-env-setup repository will install yosys,
+verilator, coriolis2, ghdl, gdb and so on: from the above it is pretty
+straightforward and obvious to work out what to do (just run them).
+There is an accompanying walkthrough video which goes through the above
+<https://m.youtube.com/watch?v=1-4eJKTNrEk> and includes running some
+unit tests, explaining some of the background, and also files some bugs.
