@@ -28,6 +28,44 @@ as REMAP.
 REMAP is quite expensive to set up, and on some implementations introduce
 latency, so should realistically be used only where it is worthwhile
 
+# Principle
+
+* normal vector element read/write as operands would be sequential
+  (0 1 2 3 ....)
+* this is not appropriate for (e.g.) Matrix multiply which requires
+  accessing elements in alternative sequences (0 3 6 1 4 7 ...)
+* normal Vector ISAs use either Indexed-MV or Indexed-LD/ST to "cope"
+  with this.  both are expensive (copy large vectors, spill through memory)
+* REMAP **redefines** the order of access according to set "Schedules"
+
+Only the most commonly-used algorithms in computer science have REMAP
+support, due to the high cost in both the ISA and in hardware.
+
+# REMAP SPR
+
+| 0  | 2  | 4  | 6  | 8  | 10.14 | 15..23 |
+| -- | -- | -- | -- | -- | ----- | ------ |
+|mi0 |mi1 |mi2 |mo0 |mo1 | SVme  | rsv    |
+
+mi0-2 and mo0-1 each select SVSHAPE0-3 to apply to a given register.
+mi0-2 apply to RA, RB, RC respectively, as input registers, and
+likewise mo0-1 apply to output registers (FRT, FRS respectively).
+SVme is 5 bits, and indicates indicate whether the
+SVSHAPE is actively applied or not.
+
+* bit 0 of SVme indicates if mi0 is applied to RA / FRA
+* bit 1 of SVme indicates if mi1 is applied to RB / FRB
+* bit 2 of SVme indicates if mi2 is applied to RC / FRC
+* bit 3 of SVme indicates if mo0 is applied to RT / FRT
+* bit 4 of SVme indicates if mo1 is applied to Effective Address / FRS
+  (LD/ST-with-update has an implicit 2nd write register, RA)
+
+There is also a corresponding SVRM-Form for the svremap
+instruction which matches the above SPR:
+
+    |0     |6     |11  |13   |15   |17   |19   |21    |26     |31 |
+    | PO   | SVme |mi0 | mi1 | mi2 | mo0 | mo1 | rsvd | XO    | / |
+
 # SHAPE 1D/2D/3D vector-matrix remapping SPRs
 
 There are four "shape" SPRs, SHAPE0-3, 32-bits in each,
