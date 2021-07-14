@@ -78,6 +78,10 @@ The format of the SVSTATE SPR is as follows:
 | 21:27 | dststep  | for dststep = 0..VL-1 |
 | 28:29 | subvl    | Sub-vector length     |
 | 30:31 | svstep   | for svstep = 0..SUBVL-1  |
+| 32:36 | SVRen    | REMAP enable          |
+| 37:61 | rsvd     | reserved              |
+| 62    | RMpst    | REMAP persistence     |
+| 63    | vfirst   | Vertical First mode   |
 
 The relationship between SUBVL and the subvl field is:
 
