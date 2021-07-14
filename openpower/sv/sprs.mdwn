@@ -78,8 +78,13 @@ The format of the SVSTATE SPR is as follows:
 | 21:27 | dststep  | for dststep = 0..VL-1 |
 | 28:29 | subvl    | Sub-vector length     |
 | 30:31 | svstep   | for svstep = 0..SUBVL-1  |
-| 32:36 | SVRen    | REMAP enable          |
-| 37:61 | rsvd     | reserved              |
+| 32:33 | mi0      | REMAP RA SVSHAPE0-3    |
+| 34:35 | mi1      | REMAP RB SVSHAPE0-3    |
+| 36:37 | mi2      | REMAP RC SVSHAPE0-3    |
+| 38:39 | mo0      | REMAP RT SVSHAPE0-3    |
+| 40:41 | mo1      | REMAP EA SVSHAPE0-3    |
+| 42:46 | SVme     | REMAP enable (RA-RT)  |
+| 47:61 | rsvd     | reserved              |
 | 62    | RMpst    | REMAP persistence     |
 | 63    | vfirst   | Vertical First mode   |
 
