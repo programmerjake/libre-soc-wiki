@@ -154,7 +154,7 @@ pipeline overlaps.  Out-of-order / Superscalar micro-architectures with
 register-renaming will have an easier time dealing with this than
 DSP-style SIMD micro-architectures.
 
-## TEMPORARY HELPER
+## svstate instruction
 
 Please note: this is **not** intended for production.  It sets up
 (overwrites) all required SVSHAPE SPRs and indicates that the
@@ -163,16 +163,18 @@ assuming that instruction is of the form FRT,FRA,FRC,FRB.
 
 Form: SVM-Form SV "Matrix" Form (see [[isatables/fields.text]])
 
-| 0.5|6.10  |11.15  |16..20 | 21..25 | 26..30 |31|  name    |
-| -- | --   | ---   | ----- | ------ | ------ |--| -------- |
-|OPCD| SVxd | SVyd  | SVzd  | SVRM   | XO     |/ | svremap  |
+| 0.5|6.10  |11.15  |16..20 | 21..25 | 25 | 26..30 |31|  name    |
+| -- | --   | ---   | ----- | ------ | -- | ------ |--| -------- |
+|OPCD| SVxd | SVyd  | SVzd  | SVRM   | vf | XO     |/ | svstate  |
+
 
 Fields:
 
 * **SVxd** - SV REMAP "xdim"
 * **SVyd** - SV REMAP "ydim"
-* **SVMM** - SV REMAP Mode (currently 0b00000 only)
-* **XO** - standard 10-bit XO field
+* **SVMM** - SV REMAP Mode (0b00000 for Matrix, 0b00001 for FFT)
+* **vf** - sets "Vertical-First" mode
+* **XO** - standard 5-bit XO field
 
 # 4x4 Matrix to vec4 Multiply Example
 
