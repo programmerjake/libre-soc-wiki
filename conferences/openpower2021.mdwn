@@ -3,3 +3,35 @@
 Links
 
 * <https://cfp.openpower.foundation/summit2021/cfp>
+* <https://cfp.openpower.foundation/summit2021/talk/review/CA7XEWT9ZKMJ3D7NRXXEK9SYPXBAHPCD>
+
+# Abstract
+
+*Draft SVP64 in-place Matrix Multiply and FFT / DCT for OpenPOWER*
+
+Advanced Cray-style Vectors are being developed for the Power ISA, as a
+Draft Extension for submission to the new OpenPOWER ISA Working Group,
+named SVP64.  Whilst in-place Matrix Multiply was planned for a much
+later advanced version of SVP64, an investigation into putting FFMPEG's
+MP3 CODEC inner loop into Vectorised Assembler resulted in such a large
+drop in code size (over 4x reduction) that it warranted priority
+investigation.
+
+Discrete Cosine Transform (DCT), Discrete Fourier Transform (DFT)
+and Number-Theory Transform (NTT) form the basis of too numerous
+high-priority algorithms to count.  Normal SIMD Processors and even
+normal Vector Processors have a hard time dealing with them: inspecting
+FFMPEG's source code reveals that heavily optimised inline assembler (no
+loops, just hundreds to thousands of lines of assembler) is not uncommon.
+
+The focus of this NLnet-sponsored research is therefore to create enhancements
+to SVP64 to be able to cover DFT, DCT, NTT and Matrix-Multiply entirely
+in-place.  In-place is crucially important for many applications (3D, Video)
+to keep power consumption down by avoiding register spill as well as L1/L2
+cache strip-mining.  General-purpose RADIX-2 DCT and complex DFT will be
+shown and explained, as well as the in-place Matrix Multiply which does
+not require transposing or register spill for any sized Matrices up to
+128 FMACs.  The basics of SVP64, covered in the Overview [1], will also
+be briefly described.
+
+[1] https://libre-soc.org/openpower/sv/overview/
