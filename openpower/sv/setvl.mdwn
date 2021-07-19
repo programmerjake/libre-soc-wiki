@@ -115,9 +115,9 @@ increment, and the Program Counter progresses **immediately* to
 the next instruction just as it would for any standard scalar v3.0B
 instruction.
 
-An explicit instruction is called which can move srcstep and
+An explicit mode of setvl is called which can move srcstep and
 dststep on to the next element, still respecting predicate
-masks.
+masks.  
 
 In other words, where normal SVP64 Vectorisation acts "horizontally"
 by looping first through 0 to VL-1 and only then moving the PC
@@ -127,6 +127,20 @@ srcstep and dststep**, then an explict instruction used to
 advance srcstep/dststep, and an outer loop is expected to be
 used (branch instruction) which completes a series of
 Vector operations.
+
+```svstep``` mode is enabled when vf=1, vs=0 and ms=0. 
+When Rc=1 it is possible to determine when any level of
+loops reach an end condition, or if VL has been reached. The immediate can
+be reinterpreted as indicating which SVSTATE (0-3)
+should be tested and placed into CR0.
+
+* setvl immediate = 1: only VL testing is enabled. CR0.SO is set
+  to 1 when either srcstep or dststep reach VL
+* setvl immediate = 2: also include inner middle and outer
+  loop end conditions from SVSTATE0 into CR.EQ CR.LE CR.GT
+* setvl immediate = 3: test SVSTATE1
+* setvl immediate = 4: test SVSTATE2
+* setvl immediate = 5: test SVSTATE3
 
 # Pseudocode
 
