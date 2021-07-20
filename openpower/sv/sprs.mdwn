@@ -67,6 +67,27 @@ full context save/restore (see SVSRR0).  It contains (and permits setting of):
 * SUBVL
 * svstep - the subvector element offset of the current
   parallel instruction being executed
+* vfirst - Vertical First mode.  srcstep, dststep and substep
+    **do not advance** unless explicitly requested to do so with
+    pseudo-op svstep (a mode of setvl)
+* hphint - Horizontal Parallelism Hint. In Vertical First Mode
+   hardware **MAY** perform up to this many elements in parallel
+   per instruction. Set to zero to indicate "no hint".
+
+For hphint, the number chosen must be consistently
+executed **every time**. Hardware is not permitted to execute five
+computations for one instruction then three on the next.
+hphint is a hint from the compiler to hardware that up to this
+many elements may be safely executed in parallel.
+Interestingly, when hphint is set equal to VL, it is in effect
+as if Vertical First mode were not set, because the hardware is
+given the option to run through all elements in an instruction.
+This is exactly what Horizontal-First is: a for-loop from 0 to VL-1
+except that the hardware may *choose* the number of elements.
+
+*Note to programmers: changing VL during the middle of such modes
+should be done only with due care and respect for the fact that SVSTATE
+has exactly the same peer-level status as a Program Counter.*
 
 The format of the SVSTATE SPR is as follows:
 
@@ -84,7 +105,8 @@ The format of the SVSTATE SPR is as follows:
 | 38:39 | mo0      | REMAP RT SVSHAPE0-3    |
 | 40:41 | mo1      | REMAP EA SVSHAPE0-3    |
 | 42:46 | SVme     | REMAP enable (RA-RT)  |
-| 47:61 | rsvd     | reserved              |
+| 47:t4 | rsvd     | reserved              |
+| 55:61 | hphint   | horizontal parallelism hint  |
 | 62    | RMpst    | REMAP persistence     |
 | 63    | vfirst   | Vertical First mode   |
 
