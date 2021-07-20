@@ -18,7 +18,9 @@ Use of setvl results in changes to the MVL, VL and STATE SPRs. see [[sv/sprs]]â™
 SV's Vector Engine is based on Cray-style Variable-length Vectorisation,
 just like RVV.  However unlike RVV, SV sits on top of the standard Scalar
 regfiles: there is no separate Vector register numbering.  Therefore, also
-unlike RVV, SV does not have hard-coded "Lanes".  The relevant parameter
+unlike RVV, SV does not have hard-coded "Lanes": microarchitects
+may use *ordinary* in-order, out-of-order, or superscalar designs
+as the basis for SV. By contrast, the relevant parameter
 in RVV is "MAXVL" and this is architecturally hard-coded into RVV systems,
 anywhere from 1 to tens of thousands of Lanes in supercomputers.
 
@@ -40,7 +42,8 @@ a specific cpu it may affect hw unit usage.
 
 Other than being able to set MVL, SV's VL (Vector Length) works just like
 RVV's VL, with one minor twist.  RVV permits the `setvl` instruction to
-set VL to an arbitrary value.  Given that RVV only works on Vector Loops,
+set VL to an arbitrary explicit value.  Within the limit of MVL, VL
+**MUST** be set to the requested value. Given that RVV only works on Vector Loops,
 this is fine and part of its value and design.  However, SV sits on top
 of the standard register files.  When MVL=VL=2, a Vector Add on `r3`
 will perform two Scalar Adds: one on `r3` and one on `r4`.
@@ -142,7 +145,11 @@ should be tested and placed into CR0.
 * setvl immediate = 4: test SVSTATE2
 * setvl immediate = 5: test SVSTATE3
 
-Testing any end condition of any loop of any REMAP state allows branches to be used to create loops. Programmers should be aware that VL, srcstep and dststep are global in nature 
+Testing any end condition of any loop of any REMAP state allows branches to be used to create loops.
+
+*Programmers should be aware that VL, srcstep and dststep are global in nature.
+Nested looping with different schedules is perfectly possible, as is
+calling of functions, however SVSTATE (and any associated SVSTATE) should be stored on the stack.*
 
 # Pseudocode
 
