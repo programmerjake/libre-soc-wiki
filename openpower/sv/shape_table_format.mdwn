@@ -4,23 +4,45 @@ disabled: the register's elements are a linear (1D) vector.
 | 31..30 | 29..28 | 27..24 | 23..21 | 20..18  | 17..12  | 11..6   | 5..0    |
 | ------ | ------ | ------ | ------ | ------- | ------- | ------- | ------- |
 | 0b00   | skip   | offset | invxyz | permute | zdimsz  | ydimsz  | xdimsz  |
-| 0b01   | submode| offset | invxyz | rsvd    | rsvd    | rsvd    | xdimsz  |
+| 0b01   | submode| offset | invxyz | submode2| rsvd    | rsvd    | xdimsz  |
 
 mode sets different behaviours (straight matrix multiply, FFT, DCT).
 
 * **mode=0b00** sets straight Matrix Mode
-* **mode=0b01** sets "FFT / DCT" mode and activates submodes
+* **mode=0b01** sets "FFT/DCT" mode and activates submodes
 
-submode further selects schedules for FFT and DCT.
+When submode2 is 0, for FFT submode the following schedules may be selected:
 
-* **submode=0b000** selects the ``j`` offset of the innermost for-loop
+* **submode=0b00** selects the ``j`` offset of the innermost for-loop
   of Tukey-Cooley
-* **submode=0b010** selects the ``j+halfsize`` offset of the innermost for-loop
+* **submode=0b10** selects the ``j+halfsize`` offset of the innermost for-loop
   of Tukey-Cooley
-* **submode=0b011** selects the ``k`` of exptable (which coefficient)
+* **submode=0b11** selects the ``k`` of exptable (which coefficient)
 
-skip allows dimensions to be skipped from being included in the resultant
-output index.  this allows sequences to be repeated: ```0 0 0 1 1 1 2 2 2 ...``` or in the case of skip=0b11 this results in modulo ```0 1 2 0 1 2 ...```
+When submode2 is 1 or 2, for DCT inner butterfly submode the following
+schedules may be selected.  When submode2 is 1, additional bit-reversing
+is also performed.
+
+* **submode=0b00** selects the ``j`` offset of the innermost for-loop,
+    in-place
+* **submode=0b010** selects the ``j+halfsize`` offset of the innermost for-loop,
+  in reverse-order, in-place
+* **submode=0b10** selects the ``j`` offset of the innermost for-loop,
+    in non-in-place mode
+* **submode=0b11** selects the ``j+halfsize`` offset of the innermost for-loop,
+  in reverse-order, in non-in-place mode.
+
+When submode2 is 3 or 4, for DCT outer butterfly submode the following
+schedules may be selected.  When submode is 3, additional bit-reversing
+is also performed.
+
+* **submode=0b00** selects the ``j`` offset of the innermost for-loop,
+* **submode=0b01** selects the ``j+1`` offset of the innermost for-loop,
+
+in Matrix Mode, skip allows dimensions to be skipped from being included
+in the resultant output index.  this allows sequences to be repeated:
+```0 0 0 1 1 1 2 2 2 ...``` or in the case of skip=0b11 this results in
+modulo ```0 1 2 0 1 2 ...```
 
 * **skip=0b00** indicates no dimensions to be skipped
 * **skip=0b01** sets "skip 1st dimension"
