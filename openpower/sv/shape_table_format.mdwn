@@ -27,10 +27,10 @@ is also performed.
     in-place
 * **submode=0b010** selects the ``j+halfsize`` offset of the innermost for-loop,
   in reverse-order, in-place
-* **submode=0b10** selects the ``j`` offset of the innermost for-loop,
-    in non-in-place mode
-* **submode=0b11** selects the ``j+halfsize`` offset of the innermost for-loop,
-  in reverse-order, in non-in-place mode.
+* **submode=0b10** selects the ``ci`` count of the innermost for-loop,
+  useful for calculating the cosine coefficient
+* **submode=0b11** selects the ``size`` offset of the outermost for-loop,
+  useful for the cosine coefficient ``cos(ci + 0.5) * pi / size``
 
 When submode2 is 3 or 4, for DCT outer butterfly submode the following
 schedules may be selected.  When submode is 3, additional bit-reversing
