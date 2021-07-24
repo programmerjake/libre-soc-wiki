@@ -439,20 +439,27 @@ It should print out `Posit8(1.3125)`
 
 As we are doing POWER ISA, POWER ISA compilers, toolchains and
 emulators are required.
+Again, if you want to save yourself some typing, use the dev scripts.
+[install-hdl-apt-reqs](https://git.libre-soc.org/?p=dev-env-setup.git;a=blob;f=install-hdl-apt-reqs;hb=HEAD)
+script will install the qemu;
+[ppc64-gdb-gcc](https://git.libre-soc.org/?p=dev-env-setup.git;a=blob;f=ppc64-gdb-gcc;hb=HEAD)
+script will install the toolchain and the corresponding debugger.
+The steps are provided below only for reference; when in doubts,
+consider checking and running the scripts.
 
 Install powerpc64 gcc:
 
-    apt-get install gcc-9-powerpc64-linux-gnu
+    apt-get install gcc-8-powerpc64-linux-gnu
 
 Install qemu:
 
     apt-get install qemu-system-ppc
 
 Install gdb from source.  Obtain the required tarball matching
-the version of gcc (9.1) from here <https://ftp.gnu.org/gnu/gdb/>,
+the version of gcc (8.3) from here <https://ftp.gnu.org/gnu/gdb/>,
 unpack it, then:
 
-    cd gdb-9.1 (or other location)
+    cd gdb-8.3 (or other location)
     mkdir build
     cd build
      ../configure --srcdir=.. --host=x86_64-linux --target=powerpc64-linux-gnu
