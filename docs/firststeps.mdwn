@@ -1,0 +1,154 @@
+[[!toc ]]
+
+---
+
+# Introduction
+
+This tutorial intends to sched some light at the first steps for a newcomer.
+Note that this tutorial is a work in progress; feel free to update it.
+This tutorial assumes that the environment and and repositories are set.
+The information on environment can be found at
+[HDL workflow](https://libre-soc.org/HDL_workflow/) page.
+
+In this tutorial, we will perform these steps:
+
+0. Checking we're all ready and set.
+1. Running the first test and observing its results.
+2. Updating the test so that it enables/disables some functions.
+
+Note that this tutorial is ISA-centric, since the idea of adding it
+was born by the times there were several newcomer-oriented tasks around
+the decoder. Many of key concepts, however, are not ISA-specific, so
+there is a hope that this guide can be helpful for other tasks.
+
+# Checking we're all ready and set
+
+Once we established the environment and cloned openpower-isa repository,
+we can run the first test we'll use as an example to observe.
+Since we're starting from decoder, we will work with openpower-isa
+repository. If you followed the HDL guidelines strictly, you can chroot
+into libresoc environment and work with the repository immediately,
+by changing the directory to `${HOME}/src/openpower-isa`.
+
+    schroot -c libresoc /bin/bash
+    cd "${HOME}/src/openpower-isa"
+
+If for some reason `openpower-isa` repository is not yet in your `src`
+subdirectory, you need to clone the relevant repository. The recommended
+way to do it is to use
+[hdl-dev-repos](https://git.libre-soc.org/?p=dev-env-setup.git;a=blob;f=hdl-dev-repos;hb=HEAD)
+script.
+
+The environment is quite newcomer-friendly: the test we intend to dissect
+is implemented in pure Python, so there is no need to build anything before
+running the test. All we need is a good ol' Python; however, before proceeding,
+make sure that Python is at least of version 3.7.2.
+
+    python3 --version
+
+If the version is less than 3.7.2, consider re-visiting the
+[HDL workflow](https://libre-soc.org/HDL_workflow/) page and checking that all
+preparations are done correctly. Again, the preferred way is using simple
+scripts to keep the life easy. In this case, the script of interest is
+[install-hdl-apt-reqs](https://git.libre-soc.org/?p=dev-env-setup.git;a=blob;f=install-hdl-apt-reqs;hb=HEAD).
+
+# Running the very first test
+
+Once we have the repository and the needed Python version, we can launch
+our first test suite (assuming we're already inside openpower-isa
+repository):
+
+    python3 src/openpower/decoder/isa/test_caller.py > /tmp/log
+
+The test takes a while to complete; once it's ready, you should observe that
+it exits with success, and all tests from suite report no errors. In case
+some tests report failures, consider raising a question in #libre-soc on
+irc.libera.chat, or in
+[mailing list](https://lists.libre-soc.org/mailman/listinfo/libre-soc-dev).
+If you choose the latter, again, consider visiting
+[HDL workflow](https://libre-soc.org/HDL_workflow/) page, to be aware
+of mailing lists etiquette and preferences. Note, however, that some tests
+can be skipped; this is acceptable.
+
+If everything works fine, that's a good sign; let's proceed to the first
+routine we'd like to dissect.
+
+# Dissecting the test of interest
+
+The script we launched contained several tests; amongst others, it checks
+that addition instruction works correctly. Since we're going to look through
+this instruction, let's for this time disable other tests so that we would
+run only test related to addition.
+Let's edit the test_caller.py script and mark all tests except addition one
+as those which must be skipped. This goal can be achieved by two ways.
+
+1. The first option is to rename all methods in `DecoderTestCase` class
+so that the names start with prefix other than `test_`.
+2. Alternatively, and this is the recommended way, tests can be temporarily
+disabled via @unittest.skip decorator applied to the method. This method
+is mentioned in HDL workflow as well (section 10.4).
+
+Regardless of the option considered, `test_add`, which we're looking at,
+should be kept intact. Once all tests but `test_add` are renamed or skipped,
+re-run the test:
+
+    python3 src/openpower/decoder/isa/test_caller.py > /tmp/log
+
+This time the suite should complete much faster. Let's observe the log and
+look for a line `call add add`. This line comes from
+`src/openpower/decoder/isa/caller.py`, and gives us an important information:
+we're calling an `add` instruction, and its assembly mnemonic is `add` as well.
+
+So far so good; we dropped other tests, and now look at the test for `add`
+instruction. Now we're ready to check how the instruction behaves.
+
+# A quick look at ADD instruction test
+
+Let's return to the test and the logs. What the test for `add` instruction does?
+For reader's convenience, the overall `test_add` code is duplicated here:
+
+```
+    def test_add(self):
+        lst = ["add 1, 3, 2"]
+        initial_regs = [0] * 32
+        initial_regs[3] = 0x1234
+        initial_regs[2] = 0x4321
+        with Program(lst, bigendian=False) as program:
+            sim = self.run_tst_program(program, initial_regs)
+            self.assertEqual(sim.gpr(1), SelectableInt(0x5555, 64))
+```
+
+What do we see here? First of all, we have an assembly listing, consisting of
+exactly one command, `"add 1, 3, 2"`. Then we establish the initial values
+for registers we're going to work with. After that, we instantiate the program
+with the assembly listing, execute the program, and compare the state of the
+first general-purpose register (aka GPR) with some predefined value (64-bit
+integer with value 0x5555).
+
+Now let's turn to logs to see how they correspond to what we see.
+The lines of interest are `reading reg RA 3 0` and `reading reg RB 2 0`.
+These, unsurprisingly, are two registers (`3` and `2`) which act as
+input parameters to `add` instruction; the result is then placed as
+an output into register `1`.
+
+Note that the initial values for registers `3` and `2` are `0x1234` and `0x4321`
+respectively, and this matches to the input parameters in the logs:
+```
+inputs [SelectableInt(value=0x1234, bits=64), SelectableInt(value=0x4321, bits=64)]
+```
+
+The simulator performs the actual computation, obtaining the result, and then
+updates the general-purpose register we used as an output parameter:
+```
+results (SelectableInt(value=0x5555, bits=64),)
+writing gpr 1 SelectableInt(value=0x5555, bits=64) 0
+```
+
+In the end, we see that our assertion indeed passes:
+```
+__eq__ SelectableInt(value=0x5555, bits=64) SelectableInt(value=0x5555, bits=64)
+```
+
+You can play around the test, e.g. modify the input/output registers (there are
+32 GPRs, so there's a plethora of combinations possible). In the next chapter,
+we're going to take a deeper look and cover some bits of implementation.
