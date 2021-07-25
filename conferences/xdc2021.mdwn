@@ -4,6 +4,9 @@
 
 # Abstract
 
+Author:
+Luke Leighton
+The Libre-SOC Project is an initiative to
 create an entirely Libre Hybrid 3D CPU-VPU-GPU. Critical to that is to have decent Vectorisation support. Most GPUs use predicated SIMD: SIMD has been demonstrated multiple times to be harmful, and with Libre-SOC also needing to run standard CPU workloads as well, designing an ISA and associated compilers and toolcgains was impractical. Therefore a Vector ISA has been designed which, in effect, uses the x86-style "REP" instruction on top of the scalar Power ISA v3.0.
 
 The key motivation here is that by reducing executable size, power consumption and latency are reduced, which is important given that the three separate workloads for CPU, VPU and 3D GPU will all be covered by the same core.
