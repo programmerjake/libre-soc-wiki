@@ -1,0 +1,9 @@
+# Abstract
+
+create an entirely Libre Hybrid 3D CPU-VPU-GPU. Critical to that is to have decent Vectorisation support. Most GPUs use predicated SIMD: SIMD has been demonstrated multiple times to be harmful, and with Libre-SOC also needing to run standard CPU workloads as well, designing an ISA and associated compilers and toolcgains was impractical. Therefore a Vector ISA has been designed which, in effect, uses the x86-style "REP" instruction on top of the scalar Power ISA v3.0.
+
+The key motivation here is that by reducing executable size, power consumption and latency are reduced, which is important given that the three separate workloads for CPU, VPU and 3D GPU will all be covered by the same core.
+
+Whilst the basic principle is "REP-like", the more advanced features include FFT and DCT in-place triple-loop schedules, Matrix Multiply schedules and a "Vertical First" mode. This means that DCT and Complex DFT can be done in around 12 instructions: Matrix Multiply is three. By contrast, the TMS320 and the Hexagon DSP can only cover the inner loop.
+
+This talk will go over these innovations, explaining why they are significant and how they work. Also covered will be future work including Galois Field arithmetic and how in combination with the FFT Schedule it will likely be possible to do Reed Solomon NTT in around 18 instructions.
