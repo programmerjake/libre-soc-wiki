@@ -133,18 +133,21 @@ an output into register `1`.
 
 Note that the initial values for registers `3` and `2` are `0x1234` and `0x4321`
 respectively, and this matches to the input parameters in the logs:
+
 ```
 inputs [SelectableInt(value=0x1234, bits=64), SelectableInt(value=0x4321, bits=64)]
 ```
 
 The simulator performs the actual computation, obtaining the result, and then
 updates the general-purpose register we used as an output parameter:
+
 ```
 results (SelectableInt(value=0x5555, bits=64),)
 writing gpr 1 SelectableInt(value=0x5555, bits=64) 0
 ```
 
 In the end, we see that our assertion indeed passes:
+
 ```
 __eq__ SelectableInt(value=0x5555, bits=64) SelectableInt(value=0x5555, bits=64)
 ```
