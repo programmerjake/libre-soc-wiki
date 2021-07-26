@@ -166,7 +166,7 @@ method called `run_tst_program`. This method, in turn, calls `run_tst`,
 and this is the place where the magic happens. In `process` nested function,
 we actually simulate that our instructions are executed one-by-one, literally
 calling `yield from simulator.execute_one()`. And this method inside the
-simulator instance belongs to `src/openpower/decoder/isa/caller.py` script.
+simulator instance belongs to [`src/openpower/decoder/isa/caller.py`](https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=src/openpower/decoder/isa/caller.py;hb=HEAD) script.
 Inside `execute_one` method, the most crucial part is
 `yield from self.call(opname)` call; and, if we take a look inside of the
 `call` method, we will see that, aside of the aforementioned log
