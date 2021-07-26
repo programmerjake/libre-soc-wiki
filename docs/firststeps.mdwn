@@ -188,3 +188,36 @@ instruction, but the crucial part is quite simple:
 
 The part of the most interest is `info.func` call; we'll take a look at it
 in the next chapter.
+
+# TODO info.func
+
+about info.func, info.form etc.
+
+# TODO Modifying the pseudocode
+
+TODO.  search for the [Add section](https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=openpower/isa/fixedarith.mdwn;hb=HEAD) with pseudocode:
+
+```
+Pseudo-code:
+
+    RT <- (RA) + (RB)
+```
+
+and modify it to:
+
+
+```
+Pseudo-code:
+
+    RT <- (RA) - (RB)
+```
+
+Then re-run the unit test.  Nothing happens (no change, test passes).  then run
+`pywriter noall fixedarith` and re-run the test, and it should **fail**.
+Inspect logs, it shows a different result.
+
+Work out by hand what 0x1234 - 0x4321 in 64-bit unsigned arithmetic is, and
+change the assert in the unit test to match.  re-run: the test should now
+**pass**.
+
+TODO: expand.
