@@ -152,3 +152,33 @@ __eq__ SelectableInt(value=0x5555, bits=64) SelectableInt(value=0x5555, bits=64)
 You can play around the test, e.g. modify the input/output registers (there are
 32 GPRs, so there's a plethora of combinations possible). In the next chapter,
 we're going to take a deeper look and cover some bits of implementation.
+
+# Diving into the instruction execution
+
+One of interesting aspects we saw in the previous chapters is that whenever
+the test executes (or, more precisely, simulates) some instructions, there's
+some logic beneath these actions. Let's take a look at execution flow; for
+now, we won't dive into that many details, but rather take a quick look.
+We already saw that there are some logs coming from the
+`src/openpower/decoder/isa/caller.py` script; but how do we end up there?
+By the time of writing, all tests inside `test_caller.py` use internal
+method called `run_tst_program`. This method, in turn, calls `run_tst`,
+and this is the place where the magic happens. In `process` nested function,
+we actually simulate that our instructions are executed one-by-one, literally
+calling `yield from simulator.execute_one()`. And this method inside the
+simulator instance belongs to `src/openpower/decoder/isa/caller.py` script.
+Inside `execute_one` method, the most crucial part is
+`yield from self.call(opname)` call; and, if we take a look inside of the
+`call` method, we will see that, aside of the aforementioned log
+(`log("call", ins_name, asmop)`), this function also takes care of the rest
+of the magic. This includes a lot of manipulations before and after executing
+instruction, but the crucial part is quite simple:
+```
+        # execute actual instruction here (finally)
+        log("inputs", inputs)
+        results = info.func(self, *inputs)
+        log("results", results)
+```
+
+The part of the most interest is `info.func` call; we'll take a look at it
+in the next chapter.
