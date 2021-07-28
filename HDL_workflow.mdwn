@@ -470,37 +470,25 @@ unpack it, then:
 programs.  [qemu](https://www.qemu.org/) emulates processors, you can
 run programs under qemu.
 
-## power_instruction_analyzer (pia)
+## power-instruction-analyzer (pia)
 
-We have a custom tool built in rust by programmerjake to help analyze
-the power instructions execution on *actual* hardware.
+We have a custom tool built in Rust by programmerjake to help analyze
+the OpenPower instructions' execution on *actual* hardware.
 
-Note: a very recent version of pip3 is required for this to work.
-
-Install rust:
+Install Rust:
 
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
-Make sure we have the correct and up-to-date rust compiler (rustc):
+Make sure we have the correct and up-to-date rust compiler (rustc & cargo):
 
     rustup default stable
     rustup update
 
-Use rust's package manager *cargo* to install the rust-python build
-tool maturin:
-
-    cargo install maturin
-
-Install from git source by doing the following:
+Install the Python extension from git source by doing the following:
 
     git clone https://salsa.debian.org/Kazan-team/power-instruction-analyzer.git pia
     cd pia
-    maturin build --cargo-extra-args=--features=python-extension
-    python3 -m pip install --user target/wheels/*.whl
-
-Note: an ongoing bug in maturin interferes with successful installation.
-This can be worked around by explicitly installing only the `.whl`
-files needed rather than installing everything (`\*.whl`).
+    ./libre-soc-install.sh
 
 ## Chips4Makers JTAG
 
