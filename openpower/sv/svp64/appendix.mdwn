@@ -760,11 +760,4 @@ pub fn reduce(  vl,  input_vec, temp_vec, input_pred, temp_pred,):
             else if other_pred
                 temp_vec[i] = temp_vec[other];
             temp_pred[i] |= other_pred;
-    if vl != 0 && temp_pred[0] {
-        // return the result
-        temp_vec[0]
-    } else {
-        todo!("there weren't any enabled input elements, pick a default?")
-    }
-}
 ```
