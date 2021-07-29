@@ -17,11 +17,23 @@ if you need any HTML to make your point please include this as attachment.
 
 ## Abstract: Can you explain the whole project and its expected outcome(s).
 
-
+Cavatools is currently a high performance user-operated simulator of
+the RISC-V ISA. The primary objective of the project is to extend it to
+implement the scalar Power ISA and the Libre-SOC Draft SVP64
+Extensions. This will allow rapid prototyping of Extensions to the
+Power ISA long before they reach silicon (which is very costly).
+In turn this helps Libre-SOC to deliver on its commitment to provide
+user-trustable processors for use in Internet routers, desktop,
+smartphone and other user-operated devices where security and transparency
+is expected.
 
 # Have you been involved with projects or organisations relevant to this project before? And if so, can you tell us a bit about your contributions?
 
-
+3mdeb is currently helping Libre-SOC with the (horribly slow,
+easy-to-read) Libre-SOC Power ISA Simulator which is 20,000 times
+slower than cavatools. 3mdeb is also helping with ISA level unit tests in
+Libre-SOC's code base that will be used to cross-validate a huge range of
+Power ISA simulators and actual silicon implementations.
 
 # Requested Amount    
 
@@ -29,9 +41,28 @@ EUR $50,000.
 
 # Explain what the requested budget will be used for? 
 
+* To create a compiler which takes Libre-SOC Machine-readable
+  Power ISA specification files and generate c code
+* To extend cavatools to include support for the Scalar
+  parts of the Power ISA
+* To then add support for Libre-SOC's Draft SVP64 Extensions
+* To enhance it to include gdb "remote" machine interface
+  support
+* To add Power ISA RADIX MMU emulation
+* To extend cavatools to run a very basic linux
+  initramfs in-memory with basic serial console access
+* To demonstrate running first a single core linux kernel
+  and later a SMP one, with busybox
+* To use the exact same Spec c compiler to create
+  an "illegal instruction trap" emulator, integrated
+  into the linux kernel for emulating SIMD instructions.
+
 # Does the project have other funding sources, both past and present?
 
-
+Although there is NLnet funding for the Libre-SOC Simulator
+(written in python) and associayed unit tests, cavatools, which is
+written in c by Peter Hsu, does not have funding for the Power ISA
+aditions.
 
 # Compare your own project with existing or historical efforts.
 
