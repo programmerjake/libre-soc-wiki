@@ -53,9 +53,11 @@ EUR $50,000.
   initramfs in-memory with basic serial console access
 * To demonstrate running first a single core linux kernel
   and later a SMP one, with busybox
-* To use the exact same Spec c compiler to create
+* To use the exact same Specification c compiler to create
   an "illegal instruction trap" emulator, integrated
-  into the linux kernel for emulating SIMD instructions.
+  into the linux kernel, for emulating Power ISA SIMD instructions
+  (extending the existing trap-and-emulate code already present
+   in ppc64 linux kernel source code)
 
 # Does the project have other funding sources, both past and present?
 
@@ -66,9 +68,33 @@ aditions.
 
 # Compare your own project with existing or historical efforts.
 
+Although there are quite a few Power ISA simulators, none of them
+are up-to-date or are suited to high performance, like cavatools.
+cavatools is multi-process and extremely fast, using relatively little
+memory, where power-gem5, which has a different focus, uses vast amounts
+of memory and is much slower.
+DolphinPC and pearpc are over 15 years old and were targetted at 32 bit
+emulation of much older Power ISA processors. Libre-SOC's python-based
+simulator only achieves aroubd 2,000 instructions per second on
+high performance hardware whereas
+cavatools achieves 200,000 instructions per second per processor
+on modest hardware.
+IBM's own Power ISA simulator is proprietary and, because it contains
+confidential experimentation internal to IBM, may not be made public.
+
 ## What are significant technical challenges you expect to solve during the project, if any?
 
+This is at its heart a compiler project, which can be a challenging
+area. However the language being implemented is quite small and limited,
+so the project is relatively straightforward.
 
 ## Describe the ecosystem of the project, and how you will engage with relevant actors and promote the outcomes?
+
+The project will be developed entirely publicly and transparently,
+using Libre-SOC Project Resources which are already set up for trustable
+auditability and transparency.
+
+Online conferences and talks will be given as progress
+is made, as well as 
 
 # Extra info to be submitted
