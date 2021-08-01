@@ -738,26 +738,43 @@ For modes:
 ```
 /// reference implementation of proposed SimpleV reduction semantics.
 ///
+                // reduction operation -- we still use this algorithm even
+                // if the reduction operation isn't associative or
+                // commutative.
 /// `temp_pred` is a user-visible Vector Condition register 
 ///
 /// all input arrays have length `vl`
-def reduce(  vl,  input_vec, temp_vec, input_pred, temp_pred,):
-    for i in 0..vl
-        temp_pred[i] = input_pred[i];
-        if temp_pred[i]
-            temp_vec[i] = input_vec[i]
+def reduce(  vl,  vec, pred, pred,):
     step = 1;
     while step < vl
         step *= 2;
         for i in (0..vl).step_by(step)
             other = i + step / 2;
-            other_pred = other < vl && temp_pred[other];
-            if temp_pred[i] && other_pred
-                // reduction operation -- we still use this algorithm even
-                // if the reduction operation isn't associative or
-                // commutative.
-                temp_vec[i] += temp_vec[other];
+            other_pred = other < vl && pred[other];
+            if pred[i] && other_pred
+                vec[i] += vec[other];
             else if other_pred
-                temp_vec[i] = temp_vec[other];
-            temp_pred[i] |= other_pred;
+                vec[i] = vec[other];
+            pred[i] |= other_pred;
+
+def reduce(  vl,  vec, pred, pred,):
+    j = 0
+    vi = [] # array of lookup indices to skip nonpredicated
+    for i, pbit in enumerate(pred):
+       if pbit:
+           vi[j] = i
+           j += 1
+    step = 1
+    while step < vl
+        step *= 2
+        for i in (0..vl).step_by(step)
+            other = vi[i + step / 2]
+            i = vi[i]
+            other_pred = other < vl && pred[other]
+            if pred[i] && other_pred
+                vec[i] += vec[other]
+            pred[i] |= other_pred
+
+
+
 ```
