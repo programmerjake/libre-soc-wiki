@@ -764,17 +764,16 @@ def reduce(  vl,  vec, pred, pred,):
        if pbit:
            vi[j] = i
            j += 1
-    step = 1
-    while step < vl
-        step *= 2
+    step = 2
+    while step <= vl
+        halfstep = step // 2
         for i in (0..vl).step_by(step)
-            other = vi[i + step / 2]
+            other = vi[i + halfstep]
             i = vi[i]
             other_pred = other < vl && pred[other]
             if pred[i] && other_pred
                 vec[i] += vec[other]
             pred[i] |= other_pred
-
-
+         step *= 2
 
 ```
