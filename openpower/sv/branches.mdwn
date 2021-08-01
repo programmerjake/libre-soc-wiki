@@ -6,10 +6,13 @@ Links
 * <http://lists.libre-soc.org/pipermail/libre-soc-dev/2021-August/003416.html>
 
 TODO
+
 | 0-1 |  2  |  3   4  |  description              |
 | --- | --- |---------|-------------------------- |
 | 00  |   0 |  ALL sz | normal mode                      |
 | 01  | VLI |  ALL sz | VLSET mode                      |
+| 10  |   0 |  ALL sz | svstep mode                      |
+| 11  | VLI |  ALL sz | svstep VLSET mode                      |
 
 Fields:
 
@@ -18,4 +21,11 @@ Fields:
 the branch to succeed.
 * **VLI** In VLSET mode, VL is set equal (truncated) to the first branch
 which succeeds.  If VLI (Vector Length Inclusive) is clear, VL is truncated
-to *exclude* the current element, otherwise it is included.
+to *exclude* the current element, otherwise it is included. SVSTATE.MVL is not changed.
+
+svstep mode will run an increment of SVSTATE srcstep and dststep
+(only meaningful in Vertical First Mode).  Unlike `svstep.` however
+which updates only CR0 with the testing of REMAP loop progress,
+the CR Field is taken from the branch `BI` field, and updated
+prior to proceeding to branch conditional testing.
+
