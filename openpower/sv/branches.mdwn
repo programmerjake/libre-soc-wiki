@@ -5,18 +5,51 @@ Links
 * <https://bugs.libre-soc.org/show_bug.cgi?id=664>
 * <http://lists.libre-soc.org/pipermail/libre-soc-dev/2021-August/003416.html>
 
-TODO
+Branch Conditional operations, `bc`, `bctar` etc. test a Condition Register.
+When doing so, it is quite reasonable and logical to test a *Vector* of
+CR Fields. In 3D Shader binaries, which are inherently parallelised
+and predicated, testing all or some results and branching based on
+multiple tests is extremely common.
+Therefore, `sv.bc` and other Branch Conditional instructions are worth
+including.
+
+The `BI` field of Branch Conditional operations is five bits,
+in scalar v3.0B this would select one bit of the 32 bit CR.
+In SVP64 there are 16 32 bit CRs, containing 128 4-bit CR Fields.
+Therefore, the 2 LSBs of `BI` select the bit from the CR, and the
+top 3 bits are extended to either scalar or vector and to
+select CR Fields 0..127 as specified
+in SVP64 [[sv/svp64/appendix]]
+
+When considering an "array" of branches, there are two useful modes:
+
+* Branch takes place on the first CR test to succeed.
+* Branch takes place only if **all** CR tests succeed
+  (including those where the predicate is masked out
+   and the corresponding CR Field is considered to be
+   set to `SNZ`)
+
+In Vertical-First Mode, the `ALL` bit should
+not be used.  If set, behaviour is `UNDEFINED`.
+The reason is that Vertical-First hints may permit
+multiple elements up to hint length to be executed
+in parallel, however the number is entirely up to
+implementors.  Attempting to test an arbitrary
+indeterminate number of Conditional tests is impossible
+to define.
+
+SVP64 RM `MODE` for Branch Conditional
 
 | 0-1 |  2  |  3   4  |  description              |
 | --- | --- |---------|-------------------------- |
-| 00  |   0 |  ALL sz | normal mode                      |
+| 00  | SNZ |  ALL sz | normal mode                      |
 | 01  | VLI |  ALL sz | VLSET mode                      |
-| 10  |   0 |  ALL sz | svstep mode                      |
+| 10  | SNZ |  ALL sz | svstep mode                      |
 | 11  | VLI |  ALL sz | svstep VLSET mode                      |
 
 Fields:
 
-* **sz**  if predication is enabled will put zeros into the src CR when the predicate bit is zero.  otherwise the element is ignored or skipped, depending on context.
+* **sz**  if predication is enabled will put 4 copies of `SNZ` in place of the src CR Field when the predicate bit is zero.  otherwise the element is ignored or skipped, depending on context.
 * **ALL** when set, all branch conditional tests must pass in order for
 the branch to succeed.
 * **VLI** In VLSET mode, VL is set equal (truncated) to the first branch
