@@ -741,12 +741,12 @@ For modes:
 /// `temp_pred` is a user-visible Vector Condition register 
 ///
 /// all input arrays have length `vl`
-pub fn reduce(  vl,  input_vec, temp_vec, input_pred, temp_pred,):
+def reduce(  vl,  input_vec, temp_vec, input_pred, temp_pred,):
     for i in 0..vl
         temp_pred[i] = input_pred[i];
         if temp_pred[i]
             temp_vec[i] = input_vec[i]
-    mut step = 1;
+    step = 1;
     while step < vl
         step *= 2;
         for i in (0..vl).step_by(step)
