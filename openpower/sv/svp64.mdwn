@@ -198,7 +198,8 @@ These are the modes:
 
 Note that ffirst and reduce modes are not anticipated to be high-performance in some implementations.  ffirst due to interactions with VL, and reduce due to it requiring additional operations to produce a result.  normal, saturate and pred-result are however inter-element independent and may easily be parallelised to give high performance, regardless of the value of VL.
 
-The Mode table for operations except LD/ST is laid out as follows:
+The Mode table for operations except LD/ST and Branch Conditional
+ is laid out as follows:
 
 | 0-1 |  2  |  3   4  |  description              |
 | --- | --- |---------|-------------------------- |
