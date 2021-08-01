@@ -38,6 +38,16 @@ implementors.  Attempting to test an arbitrary
 indeterminate number of Conditional tests is impossible
 to define.
 
+`svstep` mode is only meaningful in Vertical-First Mode.
+The CR Field selected by `BI` is updated based on
+incrementing srcstep and dststep, and performing the
+same tests as [[sv/svstep]], following which the Branch
+Conditional instruction proceeds as normal (reading
+and testing the CR bit just updated, if the relevant
+`BO` bit is set).  Note that the SVSTATE fields
+are still updated, and the CR field still updated,
+even if the `BO` bits do not require CR testing.
+
 SVP64 RM `MODE` for Branch Conditional
 
 | 0-1 |  2  |  3   4  |  description              |
