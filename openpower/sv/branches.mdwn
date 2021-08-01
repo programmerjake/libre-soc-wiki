@@ -6,3 +6,16 @@ Links
 * <http://lists.libre-soc.org/pipermail/libre-soc-dev/2021-August/003416.html>
 
 TODO
+| 0-1 |  2  |  3   4  |  description              |
+| --- | --- |---------|-------------------------- |
+| 00  |   0 |  ALL sz | normal mode                      |
+| 01  | VLI |  ALL sz | VLSET mode                      |
+
+Fields:
+
+* **sz**  if predication is enabled will put zeros into the src CR when the predicate bit is zero.  otherwise the element is ignored or skipped, depending on context.
+* **ALL** when set, all branch conditional tests must pass in order for
+the branch to succeed.
+* **VLI** In VLSET mode, VL is set equal (truncated) to the first branch
+which succeeds.  If VLI (Vector Length Inclusive) is clear, VL is truncated
+to *exclude* the current element, otherwise it is included.
