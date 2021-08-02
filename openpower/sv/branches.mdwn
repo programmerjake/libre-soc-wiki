@@ -99,3 +99,18 @@ Note that, interestingly, due to the useful side-effects of `VLSET` mode
 and `svstep` mode it is actually useful to use Branch Conditional even
 to perform no actual branch operation, i.e to point to the instruction
 after the branch.
+
+Available options to combine:
+
+* `BO` to select whether the CR bit being tested is zero or nonzero
+* `R30` and `~R30` and other predicate mask options including CR and
+  inverted CR bit testing
+* `sz` and `SNZ` to insert either zeros or ones in place of masked-out
+  predicate bits
+* `ALL` or `ANY` behaviour corresponding to `AND` of all tests and
+  `OR` of all tests, respectively.
+
+Pseudocode for Horizontal-First Mode:
+
+```
+```
