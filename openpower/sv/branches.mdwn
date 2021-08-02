@@ -24,8 +24,10 @@ in SVP64 [[sv/svp64/appendix]]
 
 When considering an "array" of branches, there are two useful modes:
 
-* Branch takes place on the first CR test to succeed.
-* Branch takes place only if **all** CR tests succeed
+* Branch takes place on the first CR test to succeed
+  (a Great Big OR of all condition tests)
+* Branch takes place only if **all** CR tests succeed:
+  a Great Big AND of all condition tests
   (including those where the predicate is masked out
    and the corresponding CR Field is considered to be
    set to `SNZ`)
