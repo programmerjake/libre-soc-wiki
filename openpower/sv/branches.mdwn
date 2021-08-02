@@ -118,9 +118,9 @@ Pseudocode for Horizontal-First Mode:
        cond_ok = 1
    else
        cond_ok = not SVRMmode.ALL
-       for i in range(VL):
+       for srcstep in range(VL):
            # select predicate bit or zero/one
-           if predicate[i]:
+           if predicate[srcstep]:
                testbit = CR[BI+32+srcstep*4]
            else if not SVRMmode.sz:
                continue
@@ -136,9 +136,9 @@ Pseudocode for Horizontal-First Mode:
            # test for VL to be set (and exit)
            if ~el_cond_ok and VLSET
                if SVRMmode.VLI
-                   SVSTATE.VL = i+1
+                   SVSTATE.VL = srcstep+1
                else
-                   SVSTATE.VL = i
+                   SVSTATE.VL = srcstep
                break
            # early exit? 
            if SVRMmode.ALL:
