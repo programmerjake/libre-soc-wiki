@@ -114,4 +114,23 @@ Available options to combine:
 Pseudocode for Horizontal-First Mode:
 
 ```
+   if BO[0]:
+       cond_ok = 1
+   else
+       cond_ok = not SVRMmode.ALL
+       for i in range(VL):
+           if predicate[i]:
+               testbit = CR[BI+32+srcstep*4]
+           else if not SVRMmode.sz:
+               continue
+           else testbit = SVRMmode.SNZ
+           el_cond_ok <- ¬(testbit ^ BO[1])
+           if SVRMmode.ALL:
+               if ~el_cond_ok:
+                   break
+               cond_ok &= el_cond_ok
+           else
+               if el_cond_ok:
+                   break
+               cond_ok |= el_cond_ok
 ```
