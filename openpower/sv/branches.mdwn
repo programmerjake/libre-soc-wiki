@@ -127,71 +127,66 @@ Available options to combine:
 Pseudocode for Horizontal-First Mode:
 
 ```
-   if BO[0]:
-       cond_ok = 1
-   else
-       cond_ok = not SVRMmode.ALL
-       for srcstep in range(VL):
-           new_srcstep, CRbits = SVSTATE_NEXT(srcstep)
-           # select predicate bit or zero/one
-           if predicate[srcstep]:
-               # get SVP64 extended CR field 0..127
-               SVCRf = SVP64EXTRA(BI>>2)
-               CR{SVCRf+srcstep} = CRbits
-               testbit = CRbits[BI & 0b11]
-               # testbit = CR[BI+32+srcstep*4]
-           else if not SVRMmode.sz:
-               continue
-           else
-               testbit = SVRMmode.SNZ
-           # actual element test here
-           el_cond_ok <- ¬(testbit ^ BO[1])
-           # merge in the test
-           if SVRMmode.ALL:
-               cond_ok &= el_cond_ok
-           else
-               cond_ok |= el_cond_ok
-           # test for VL to be set (and exit)
-           if ~el_cond_ok and VLSET
-               if SVRMmode.VLI
-                   SVSTATE.VL = srcstep+1
-               else
-                   SVSTATE.VL = srcstep
-               break
-           # early exit? 
-           if SVRMmode.ALL:
-               if ~el_cond_ok:
-                   break
-           else
-               if el_cond_ok:
-                   break
+   
+    cond_ok = not SVRMmode.ALL
+    for srcstep in range(VL):
+        new_srcstep, CRbits = SVSTATE_NEXT(srcstep)
+        # select predicate bit or zero/one
+        if predicate[srcstep]:
+            # get SVP64 extended CR field 0..127
+            SVCRf = SVP64EXTRA(BI>>2)
+            CR{SVCRf+srcstep} = CRbits
+            testbit = CRbits[BI & 0b11]
+            # testbit = CR[BI+32+srcstep*4]
+        else if not SVRMmode.sz:
+            continue
+        else
+            testbit = SVRMmode.SNZ
+        # actual element test here
+        el_cond_ok <- BO[0] | ¬(testbit ^ BO[1])
+        # merge in the test
+        if SVRMmode.ALL:
+            cond_ok &= el_cond_ok
+        else
+            cond_ok |= el_cond_ok
+        # test for VL to be set (and exit)
+        if ~el_cond_ok and VLSET
+            if SVRMmode.VLI
+                SVSTATE.VL = srcstep+1
+            else
+                SVSTATE.VL = srcstep
+            break
+        # early exit? 
+        if SVRMmode.ALL:
+            if ~el_cond_ok:
+                break
+        else
+            if el_cond_ok:
+                break
 ```
 
 Pseudocode for Vertical-First Mode:
 
 ```
-   new_srcstep, CRbits = SVSTATE_NEXT(srcstep)
-   if BO[0]:
-       cond_ok = 1
-   else
-       # select predicate bit or zero/one
-       if predicate[srcstep]:
-           # get SVP64 extended CR field 0..127
-           SVCRf = SVP64EXTRA(BI>>2)
-           CR{SVCRf+srcstep} = CRbits
-           testbit = CRbits[BI & 0b11]
-       else if not SVRMmode.sz:
-           SVSTATE.srcstep = new_srcstep
-           exit # no branch testing
-       else
-           testbit = SVRMmode.SNZ
-       # actual element test here
-       cond_ok <- ¬(testbit ^ BO[1])
-       # test for VL to be set (and exit)
-       if ~cond_ok and VLSET
-           if SVRMmode.VLI
-               SVSTATE.VL = new_srcstep+1
-           else
-               SVSTATE.VL = new_srcstep
+    new_srcstep, CRbits = SVSTATE_NEXT(srcstep)
+    # select predicate bit or zero/one
+    if predicate[srcstep]:
+        # get SVP64 extended CR field 0..127
+        SVCRf = SVP64EXTRA(BI>>2)
+        CR{SVCRf+srcstep} = CRbits
+        testbit = CRbits[BI & 0b11]
+    else if not SVRMmode.sz:
+        SVSTATE.srcstep = new_srcstep
+        exit # no branch testing
+    else
+        testbit = SVRMmode.SNZ
+    # actual element test here
+    cond_ok <- BO[0] | ¬(testbit ^ BO[1])
+    # test for VL to be set (and exit)
+    if ~cond_ok and VLSET
+        if SVRMmode.VLI
+            SVSTATE.VL = new_srcstep+1
+        else
+            SVSTATE.VL = new_srcstep
     SVSTATE.srcstep = new_srcstep
 ```
