@@ -32,6 +32,15 @@ When considering an "array" of branches, there are two useful modes:
    and the corresponding CR Field is considered to be
    set to `SNZ`)
 
+In SVP64 Horizontal-First Mode, the first failure
+in ALL mode (Great Big AND) results in early exit: no more updates to
+CTR occur (if requested); no branch occurs. Likewise
+for non-ALL mode (Great Big Or) on first success early
+exit also occurs, however this time with the Branch proceeding.
+In both cases the testing of the Vector of CRs should be
+done in linear sequential order (or in REMAP re-sequenced order):
+such that tests beyond the exit point are *not* carried out.
+
 In Vertical-First Mode, the `ALL` bit should
 not be used.  If set, behaviour is `UNDEFINED`.
 (*The reason is that Vertical-First hints may permit
