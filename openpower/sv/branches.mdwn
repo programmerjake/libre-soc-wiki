@@ -31,12 +31,13 @@ When considering an "array" of branches, there are two useful modes:
 
 In Vertical-First Mode, the `ALL` bit should
 not be used.  If set, behaviour is `UNDEFINED`.
-The reason is that Vertical-First hints may permit
+(*The reason is that Vertical-First hints may permit
 multiple elements up to hint length to be executed
 in parallel, however the number is entirely up to
 implementors.  Attempting to test an arbitrary
 indeterminate number of Conditional tests is impossible
-to define.
+to define, and efforts to enforce such defined behaviour
+interfere with Vertical-First mode parallel behaviour.*)
 
 `svstep` mode is only meaningful in Vertical-First Mode.
 The CR Field selected by `BI` is updated based on
@@ -48,7 +49,29 @@ and testing the CR bit just updated, if the relevant
 are still updated, and the CR field still updated,
 even if the `BO` bits do not require CR testing.
 
-SVP64 RM `MODE` for Branch Conditional
+Predication in both INT and CR modes may be applied to
+`sv.bc` and other SVP64 Branch Conditional operations,
+exactly as they may be applied to other SVP64 operations.
+When `sz` is zero, any masked-out Branch-element operations
+are masked-out (not executed), exactly like all other SVP64
+operations.
+
+However when `sz` is non-zero, this normally requests insertion
+of a zero in place of the input data, when the relevant predicate
+mask bit is zero.  This would mean that a zero is inserted in
+place of `CR[BI+32]` for testing against `BO`, which may not
+be desirable in all circumstances.  Therefore, an extra field
+is provided `SNZ`, which, if set, will insert a **one** in
+place of a masked-out element instead of a zero.
+
+(*Note: Both options are provided because it is useful to
+deliberately cause the Branch-Conditional Vector testing
+to fail at a specific point, controlled by the Predicate
+mask. This is particularly useful in `VLSET` mode, which
+will truncate SVSTATE.VL at the point of the first failed
+test.*)
+
+SVP64 RM `MODE` for Branch Conditional:
 
 | 0-1 |  2  |  3   4  |  description              |
 | --- | --- |---------|-------------------------- |
@@ -72,3 +95,7 @@ which updates only CR0 with the testing of REMAP loop progress,
 the CR Field is taken from the branch `BI` field, and updated
 prior to proceeding to branch conditional testing.
 
+Note that, interestingly, due to the useful side-effects of `VLSET` mode
+and `svstep` mode it is actually useful to use Branch Conditional even
+to perform no actual branch operation, i.e to point to the instruction
+after the branch.
