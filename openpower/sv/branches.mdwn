@@ -105,6 +105,7 @@ Note that, interestingly, due to the useful side-effects of `VLSET` mode
 and `svstep` mode it is actually useful to use Branch Conditional even
 to perform no actual branch operation, i.e to point to the instruction
 after the branch.
+
 In particular, svstep mode is still useful for Horizontal-First Mode
 particularly in combination with REMAP. All "loop end" conditions
 will be tested on a per-element basis and placed into a Vector of
@@ -114,8 +115,16 @@ Mask, and, furthermore, if VLSET mode was requested, VL will have
 been set to the length of one of the loop endpoints, again as specified
 by the bit from the Branch `BI` field.
 
+Also, the unconditional bit `BO[0]` is still relevant when Predication
+is applied to the Branch because in `ALL` mode all nonmasked bits have
+to be tested. Even when svstep mode or VLSET mode are not used, CTR
+may still be decremented by the total number of nonmasked elements.
+In short, Vectorised Branch becomes an extremely powerful tool.
+
 Available options to combine:
 
+* `BO[0]` to make an unconditional branch would seem irrelevant if
+  it were not for predication and for side-effects.
 * `BO[1]` to select whether the CR bit being tested is zero or nonzero
 * `R30` and `~R30` and other predicate mask options including CR and
   inverted CR bit testing
