@@ -38,10 +38,12 @@ in parallel, however the number is entirely up to
 implementors.  Attempting to test an arbitrary
 indeterminate number of Conditional tests is impossible
 to define, and efforts to enforce such defined behaviour
-interfere with Vertical-First mode parallel behaviour.*)
+interfere with Vertical-First mode parallel 
+opportunistic behaviour.*)
 
-`svstep` mode is only meaningful in Vertical-First Mode.
-The CR Field selected by `BI` is updated based on
+In `svstep` mode,
+the whole CR Field, part of which is
+selected by `BI` (top 3 bits) is updated based on
 incrementing srcstep and dststep, and performing the
 same tests as [[sv/svstep]], following which the Branch
 Conditional instruction proceeds as normal (reading
@@ -54,7 +56,7 @@ Predication in both INT and CR modes may be applied to
 `sv.bc` and other SVP64 Branch Conditional operations,
 exactly as they may be applied to other SVP64 operations.
 When `sz` is zero, any masked-out Branch-element operations
-are masked-out (not executed), exactly like all other SVP64
+are not executed, exactly like all other SVP64
 operations.
 
 However when `sz` is non-zero, this normally requests insertion
