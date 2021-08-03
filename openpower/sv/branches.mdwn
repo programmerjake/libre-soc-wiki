@@ -249,14 +249,20 @@ which will end up as:
    sv.crweird r30, CR60.GT # transfer GT vector to r30
 while_loop:
    sv.cmpi CR80.v, b.v, 5     # vector compare b into CR64 Vector
-   sv.crand CR80.v.SO, CR60.v.GT, CR80.V.LT
-   sv.bc/m=r30/~ALL/sz CR80.v.SO skip_f # skip when none
+   sv.bc/m=r30/~ALL/sz CR80.v.LT skip_f # skip when none
+   # only calculate loop_pred & pred_b because needed in f()
+   sv.crand CR80.v.SO, CR60.v.GT, CR80.V.LT # if = loop & pred_b
    f(CR80.v.SO)
 skip_f:
-   sv.crnegand CR80.v.SO, CR60.v.GT, CR80.V.LT
-   sv.bc/m=r30/~ALL/sz CR80.v.SO skip_g
+   # illustrate inversion of pred_b. invert r30, test ALL
+   # rather than SOME, but masked-out zero test would FAIL,
+   # therefore masked-out instead is tested against 1 not 0
+   sv.bc/m=~r30/ALL/SNZ CR80.v.LT skip_g
+   # else = loop & ~pred_b, need this because used in g()
+   sv.crternari(A&~B) CR80.v.SO, CR60.v.GT, CR80.V.LT
    g(CR80.v.SO)
 skip_g:
-   h(r30)
+   # conditionally call h(r30) if any loop pred set
+   sv.bclr/m=r30/~ALL/sz BO[1]=1 h()
    sv.bc/m=r30/~ALL/sz BO[1]=1 while_loop
 ```
