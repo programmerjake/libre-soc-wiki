@@ -209,3 +209,43 @@ Pseudocode for Vertical-First Mode:
             SVSTATE.VL = new_srcstep
     SVSTATE.srcstep = new_srcstep
 ```
+
+# Example Shader code
+
+```
+while(a > 2) {
+    if(b < 5)
+        f();
+    else
+        g();
+    h();
+}
+```
+
+which compiles to something like:
+
+```
+vec<i32> a, b;
+// ...
+pred loop_pred = a > 2;
+while(loop_pred.any()) {
+    pred if_pred = loop_pred & (b < 5);
+    if(if_pred.any()) {
+        f(if_pred);
+    }
+label1:
+    pred else_pred = loop_pred & ~if_pred;
+    if(else_pred.any()) {
+        g(else_pred);
+    }
+    h(loop_pred);
+}
+```
+
+which will end up as:
+
+```
+   sv.cmpi CR0, a, 2
+   sv.crweird r30, CR0.GT # transfer GT vector to r30
+while_loop:
+```
