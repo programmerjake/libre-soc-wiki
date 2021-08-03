@@ -18,7 +18,8 @@ including.
 The `BI` field of Branch Conditional operations is five bits,
 in scalar v3.0B this would select one bit of the 32 bit CR.
 In SVP64 there are 16 32 bit CRs, containing 128 4-bit CR Fields.
-Therefore, the 2 LSBs of `BI` select the bit from the CR Field, and the
+Therefore, the 2 LSBs of `BI` select the bit from the CR Field
+(EQ LT GT SO), and the
 top 3 bits are extended to either scalar or vector and to
 select CR Fields 0..127 as specified
 in SVP64 [[sv/svp64/appendix]]
@@ -35,13 +36,15 @@ When considering an "array" of branches, there are two useful modes:
 
 In SVP64 Horizontal-First Mode, the first failure
 in ALL mode (Great Big AND) results in early exit: no more updates to
-CTR occur (if requested); no branch occurs. Likewise
+CTR occur (if requested); no branch occurs, and LR is
+not updated (if requested). Likewise
 for non-ALL mode (Great Big Or) on first success early
 exit also occurs, however this time with the Branch proceeding.
 In both cases the testing of the Vector of CRs should be
 done in linear sequential order (or in REMAP re-sequenced order):
 such that tests that are sequentially beyond the exit point are *not*
-carried out.
+carried out. (*Note: is standard practice in Programming
+languages to exit early from conditional tests*)
 
 In Vertical-First Mode, the `ALL` bit should
 not be used.  If set, behaviour is `UNDEFINED`.
@@ -56,9 +59,11 @@ opportunistic behaviour.*)
 
 In `svstep` mode,
 the whole CR Field, part of which is
-selected by `BI` (top 3 bits) is updated based on
+selected by `BI` (top 3 bits), is updated based on
 incrementing srcstep and dststep, and performing the
-same tests as [[sv/svstep]], following which the Branch
+same tests as [[sv/svstep]]. Following the step
+update, which involved writing to the exact
+CR Field about to be tested, the Branch
 Conditional instruction proceeds as normal (reading
 and testing the CR bit just updated, if the relevant
 `BO` bit is set).  Note that the SVSTATE fields
