@@ -245,11 +245,18 @@ label1:
 which will end up as:
 
 ```
-   sv.cmpi CR0.v a.v, 2      # vector compare a into CR0 vector
-   sv.crweird r30, CR0.GT # transfer GT vector to r30
+   sv.cmpi CR60.v a.v, 2      # vector compare a into CR60 vector
+   sv.crweird r30, CR60.GT # transfer GT vector to r30
 while_loop:
-   sv.cmpi CR64.v, b.v, 5     # vector compare b into CR64 Vector
-   sv.bc/m=r30/~ALL/sz CR64.v.LT skip_f # skip when none
-   f()
+   sv.cmpi CR80.v, b.v, 5     # vector compare b into CR64 Vector
+   sv.crand CR80.v.SO, CR60.v.GT, CR80.V.LT
+   sv.bc/m=r30/~ALL/sz CR80.v.SO skip_f # skip when none
+   f(CR80.v.SO)
 skip_f:
+   sv.crnegand CR80.v.SO, CR60.v.GT, CR80.V.LT
+   sv.bc/m=r30/~ALL/sz CR80.v.SO skip_g
+   g(CR80.v.SO)
+skip_g:
+   h(r30)
+   sv.bc/m=r30/~ALL/sz BO[1]=1 while_loop
 ```
