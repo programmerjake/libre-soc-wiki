@@ -40,7 +40,8 @@ for non-ALL mode (Great Big Or) on first success early
 exit also occurs, however this time with the Branch proceeding.
 In both cases the testing of the Vector of CRs should be
 done in linear sequential order (or in REMAP re-sequenced order):
-such that tests beyond the exit point are *not* carried out.
+such that tests that are sequentially beyond the exit point are *not*
+carried out.
 
 In Vertical-First Mode, the `ALL` bit should
 not be used.  If set, behaviour is `UNDEFINED`.
@@ -146,7 +147,6 @@ Available options to combine:
 Pseudocode for Horizontal-First Mode:
 
 ```
-   
     cond_ok = not SVRMmode.ALL
     for srcstep in range(VL):
         new_srcstep, CRbits = SVSTATE_NEXT(srcstep)
