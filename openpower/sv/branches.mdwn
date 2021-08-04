@@ -17,11 +17,13 @@ Links
 
 Scalar 3.0B Branch Conditional operations, `bc`, `bctar` etc. test a
 Condition Register.  When doing so in a Vector Context, it is quite
-reasonable and logical to test a *Vector* of CR Fields. In 3D Shader
+reasonable and logical to test and Branch on a *Vector* of CR Fields
+which have just been calculated from a *Vector* of results. In 3D Shader
 binaries, which are inherently parallelised and predicated, testing all or
 some results and branching based on multiple tests is extremely common,
 and a fundamental part of Shader Compilers.  Therefore, `sv.bc` and
-other Vector-aware Branch Conditional instructions are worth including.
+other Vector-aware Branch Conditional instructions are a high priority
+for 3D GPUs.
 
 The `BI` field of Branch Conditional operations is five bits, in scalar
 v3.0B this would select one bit of the 32 bit CR.  In SVP64 there are
