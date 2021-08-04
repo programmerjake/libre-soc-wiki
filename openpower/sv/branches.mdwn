@@ -32,7 +32,10 @@ v3.0B this would select one bit of the 32 bit CR.  In SVP64 there are
 are extended to either scalar or vector and to select CR Fields 0..127
 as specified in SVP64 [[sv/svp64/appendix]]
 
-When considering an "array" of branches, there are two useful modes:
+When considering an "array" of branches, there are four useful modes:
+AND, OR, NAND and NOR of all Conditions, which typically have names
+ALL, ANY/SOME, ??? and NONE.  NAND and NOR may be synthesised by
+inverting `BO[2]` which just leaves two modes:
 
 * Branch takes place on the first CR test to succeed
   (a Great Big OR of all condition tests)
