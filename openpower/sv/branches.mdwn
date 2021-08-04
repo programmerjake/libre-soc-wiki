@@ -6,23 +6,20 @@ Links
 * <http://lists.libre-soc.org/pipermail/libre-soc-dev/2021-August/003416.html>
 * [[openpower/isa/branch]]
 
-Scalar 3.0B Branch Conditional operations, `bc`, `bctar` etc. test a Condition Register.
-When doing so in a Vector Context, it is quite reasonable and logical to test a *Vector* of
-CR Fields. In 3D Shader binaries, which are inherently parallelised
-and predicated, testing all or some results and branching based on
-multiple tests is extremely common, and a fundamental part of
-Shader Compilers.
-Therefore, `sv.bc` and other Vector-aware Branch Conditional instructions are worth
-including.
+Scalar 3.0B Branch Conditional operations, `bc`, `bctar` etc. test a
+Condition Register.  When doing so in a Vector Context, it is quite
+reasonable and logical to test a *Vector* of CR Fields. In 3D Shader
+binaries, which are inherently parallelised and predicated, testing all or
+some results and branching based on multiple tests is extremely common,
+and a fundamental part of Shader Compilers.  Therefore, `sv.bc` and
+other Vector-aware Branch Conditional instructions are worth including.
 
-The `BI` field of Branch Conditional operations is five bits,
-in scalar v3.0B this would select one bit of the 32 bit CR.
-In SVP64 there are 16 32 bit CRs, containing 128 4-bit CR Fields.
-Therefore, the 2 LSBs of `BI` select the bit from the CR Field
-(EQ LT GT SO), and the
-top 3 bits are extended to either scalar or vector and to
-select CR Fields 0..127 as specified
-in SVP64 [[sv/svp64/appendix]]
+The `BI` field of Branch Conditional operations is five bits, in scalar
+v3.0B this would select one bit of the 32 bit CR.  In SVP64 there are
+16 32 bit CRs, containing 128 4-bit CR Fields.  Therefore, the 2 LSBs of
+`BI` select the bit from the CR Field (EQ LT GT SO), and the top 3 bits
+are extended to either scalar or vector and to select CR Fields 0..127
+as specified in SVP64 [[sv/svp64/appendix]]
 
 When considering an "array" of branches, there are two useful modes:
 
@@ -34,62 +31,49 @@ When considering an "array" of branches, there are two useful modes:
    and the corresponding CR Field is considered to be
    set to `SNZ`)
 
-In SVP64 Horizontal-First Mode, the first failure
-in ALL mode (Great Big AND) results in early exit: no more updates to
-CTR occur (if requested); no branch occurs, and LR is
-not updated (if requested). Likewise
-for non-ALL mode (Great Big Or) on first success early
-exit also occurs, however this time with the Branch proceeding.
-In both cases the testing of the Vector of CRs should be
-done in linear sequential order (or in REMAP re-sequenced order):
-such that tests that are sequentially beyond the exit point are *not*
-carried out. (*Note: is standard practice in Programming
-languages to exit early from conditional tests*)
+In SVP64 Horizontal-First Mode, the first failure in ALL mode (Great Big
+AND) results in early exit: no more updates to CTR occur (if requested);
+no branch occurs, and LR is not updated (if requested). Likewise for
+non-ALL mode (Great Big Or) on first success early exit also occurs,
+however this time with the Branch proceeding.  In both cases the testing
+of the Vector of CRs should be done in linear sequential order (or in
+REMAP re-sequenced order): such that tests that are sequentially beyond
+the exit point are *not* carried out. (*Note: is standard practice in
+Programming languages to exit early from conditional tests*)
 
-In Vertical-First Mode, the `ALL` bit should
-not be used.  If set, behaviour is `UNDEFINED`.
-(*The reason is that Vertical-First hints may permit
-multiple elements up to hint length to be executed
-in parallel, however the number is entirely up to
-implementors.  Attempting to test an arbitrary
-indeterminate number of Conditional tests is impossible
-to define, and efforts to enforce such defined behaviour
-interfere with Vertical-First mode parallel 
-opportunistic behaviour.*)
+In Vertical-First Mode, the `ALL` bit should not be used.  If set,
+behaviour is `UNDEFINED`.  (*The reason is that Vertical-First hints may
+permit multiple elements up to hint length to be executed in parallel,
+however the number is entirely up to implementors.  Attempting to test
+an arbitrary indeterminate number of Conditional tests is impossible
+to define, and efforts to enforce such defined behaviour interfere with
+Vertical-First mode parallel opportunistic behaviour.*)
 
-In `svstep` mode,
-the whole CR Field, part of which is
-selected by `BI` (top 3 bits), is updated based on
-incrementing srcstep and dststep, and performing the
-same tests as [[sv/svstep]]. Following the step
-update, which involved writing to the exact
-CR Field about to be tested, the Branch
-Conditional instruction proceeds as normal (reading
-and testing the CR bit just updated, if the relevant
-`BO` bit is set).  Note that the SVSTATE fields
-are still updated, and the CR field still updated,
+In `svstep` mode, the whole CR Field, part of which is selected by `BI`
+(top 3 bits), is updated based on incrementing srcstep and dststep, and
+performing the same tests as [[sv/svstep]]. Following the step update,
+which involved writing to the exact CR Field about to be tested, the
+Branch Conditional instruction proceeds as normal (reading and testing
+the CR bit just updated, if the relevant `BO` bit is set).  Note that
+the SVSTATE fields are still updated, and the CR field still updated,
 even if the `BO` bits do not require CR testing.
 
-Predication in both INT and CR modes may be applied to
-`sv.bc` and other SVP64 Branch Conditional operations,
-exactly as they may be applied to other SVP64 operations.
-When `sz` is zero, any masked-out Branch-element operations
-are not executed, exactly like all other SVP64
-operations.
+Predication in both INT and CR modes may be applied to `sv.bc` and other
+SVP64 Branch Conditional operations, exactly as they may be applied to
+other SVP64 operations.  When `sz` is zero, any masked-out Branch-element
+operations are not executed, exactly like all other SVP64 operations.
 
-However when `sz` is non-zero, this normally requests insertion
-of a zero in place of the input data, when the relevant predicate
-mask bit is zero.  This would mean that a zero is inserted in
-place of `CR[BI+32]` for testing against `BO`, which may not
-be desirable in all circumstances.  Therefore, an extra field
-is provided `SNZ`, which, if set, will insert a **one** in
-place of a masked-out element instead of a zero.
+However when `sz` is non-zero, this normally requests insertion of a zero
+in place of the input data, when the relevant predicate mask bit is zero.
+This would mean that a zero is inserted in place of `CR[BI+32]` for
+testing against `BO`, which may not be desirable in all circumstances.
+Therefore, an extra field is provided `SNZ`, which, if set, will insert
+a **one** in place of a masked-out element instead of a zero.
 
-(*Note: Both options are provided because it is useful to
-deliberately cause the Branch-Conditional Vector testing
-to fail at a specific point, controlled by the Predicate
-mask. This is particularly useful in `VLSET` mode, which
-will truncate SVSTATE.VL at the point of the first failed
+(*Note: Both options are provided because it is useful to deliberately
+cause the Branch-Conditional Vector testing to fail at a specific point,
+controlled by the Predicate mask. This is particularly useful in `VLSET`
+mode, which will truncate SVSTATE.VL at the point of the first failed
 test.*)
 
 SVP64 RM `MODE` for Branch Conditional:
@@ -104,18 +88,21 @@ SVP64 RM `MODE` for Branch Conditional:
 
 Fields:
 
-* **sz**  if predication is enabled will put 4 copies of `SNZ` in place of the src CR Field when the predicate bit is zero.  otherwise the element is ignored or skipped, depending on context.
+* **sz**  if predication is enabled will put 4 copies of `SNZ` in place of
+  the src CR Field when the predicate bit is zero.  otherwise the element
+  is ignored or skipped, depending on context.
 * **ALL** when set, all branch conditional tests must pass in order for
-the branch to succeed.
-* **VLI** In VLSET mode, VL is set equal (truncated) to the first branch
-which succeeds.  If VLI (Vector Length Inclusive) is clear, VL is truncated
-to *exclude* the current element, otherwise it is included. SVSTATE.MVL is not changed.
+  the branch to succeed.
+* **VLI** In VLSET mode, VL is set equal (truncated) to the first
+  branch which succeeds.  If VLI (Vector Length Inclusive) is clear,
+  VL is truncated to *exclude* the current element, otherwise it is
+  included. SVSTATE.MVL is not changed.
 
 svstep mode will run an increment of SVSTATE srcstep and dststep
-(which is still useful in Horizontal First Mode).  Unlike `svstep.` however
-which updates only CR0 with the testing of REMAP loop progress,
-the CR Field is taken from the branch `BI` field, and updated
-prior to proceeding to each element branch conditional testing.
+(which is still useful in Horizontal First Mode).  Unlike `svstep.`
+however which updates only CR0 with the testing of REMAP loop progress,
+the CR Field is taken from the branch `BI` field, and updated prior to
+proceeding to each element branch conditional testing.
 
 Note that, interestingly, due to the useful side-effects of `VLSET` mode
 and `svstep` mode it is actually useful to use Branch Conditional even
@@ -124,12 +111,12 @@ after the branch.
 
 In particular, svstep mode is still useful for Horizontal-First Mode
 particularly in combination with REMAP. All "loop end" conditions
-will be tested on a per-element basis and placed into a Vector of
-CRs starting from the point specified by the Branch `BI` field.
-This Vector of CR Fields may then be subsequently used as a Predicate
-Mask, and, furthermore, if VLSET mode was requested, VL will have
-been set to the length of one of the loop endpoints, again as specified
-by the bit from the Branch `BI` field.
+will be tested on a per-element basis and placed into a Vector of CRs
+starting from the point specified by the Branch `BI` field.  This Vector
+of CR Fields may then be subsequently used as a Predicate Mask, and,
+furthermore, if VLSET mode was requested, VL will have been set to the
+length of one of the loop endpoints, again as specified by the bit from
+the Branch `BI` field.
 
 Also, the unconditional bit `BO[0]` is still relevant when Predication
 is applied to the Branch because in `ALL` mode all nonmasked bits have
@@ -166,69 +153,69 @@ Rc = instr[16]
 Pseudocode for Horizontal-First Mode:
 
 ```
-    cond_ok = not SVRMmode.ALL
-    for srcstep in range(VL):
-        new_srcstep, CRbits = SVSTATE_NEXT(srcstep)
-        # select predicate bit or zero/one
-        if predicate[srcstep]:
-            # get SVP64 extended CR field 0..127
-            SVCRf = SVP64EXTRA(BI>>2)
-            if Rc = 1 then # CR0 Vectorised
-                CR{0+srcstep} = CRbits
-            testbit = CRbits[BI & 0b11]
-            # testbit = CR[BI+32+srcstep*4]
-        else if not SVRMmode.sz:
-            continue
-        else
-            testbit = SVRMmode.SNZ
-        # actual element test here
-        el_cond_ok <- BO[0] | ¬(testbit ^ BO[1])
-        # merge in the test
-        if SVRMmode.ALL:
-            cond_ok &= el_cond_ok
-        else
-            cond_ok |= el_cond_ok
-        # test for VL to be set (and exit)
-        if ~el_cond_ok and VLSET
-            if SVRMmode.VLI
-                SVSTATE.VL = srcstep+1
-            else
-                SVSTATE.VL = srcstep
-            break
-        # early exit? 
-        if SVRMmode.ALL:
-            if ~el_cond_ok:
-                break
-        else
-            if el_cond_ok:
-                break
-```
-
-Pseudocode for Vertical-First Mode:
-
-```
+cond_ok = not SVRMmode.ALL
+for srcstep in range(VL):
     new_srcstep, CRbits = SVSTATE_NEXT(srcstep)
     # select predicate bit or zero/one
     if predicate[srcstep]:
         # get SVP64 extended CR field 0..127
         SVCRf = SVP64EXTRA(BI>>2)
-        if Rc = 1 then # CR0 vectorised
+        if Rc = 1 then # CR0 Vectorised
             CR{0+srcstep} = CRbits
         testbit = CRbits[BI & 0b11]
+        # testbit = CR[BI+32+srcstep*4]
     else if not SVRMmode.sz:
-        SVSTATE.srcstep = new_srcstep
-        exit # no branch testing
+        continue
     else
         testbit = SVRMmode.SNZ
     # actual element test here
-    cond_ok <- BO[0] | ¬(testbit ^ BO[1])
+    el_cond_ok <- BO[0] | ¬(testbit ^ BO[1])
+    # merge in the test
+    if SVRMmode.ALL:
+        cond_ok &= el_cond_ok
+    else
+        cond_ok |= el_cond_ok
     # test for VL to be set (and exit)
-    if ~cond_ok and VLSET
+    if ~el_cond_ok and VLSET
         if SVRMmode.VLI
-            SVSTATE.VL = new_srcstep+1
+            SVSTATE.VL = srcstep+1
         else
-            SVSTATE.VL = new_srcstep
+            SVSTATE.VL = srcstep
+        break
+    # early exit? 
+    if SVRMmode.ALL:
+        if ~el_cond_ok:
+            break
+    else
+        if el_cond_ok:
+            break
+```
+
+Pseudocode for Vertical-First Mode:
+
+```
+new_srcstep, CRbits = SVSTATE_NEXT(srcstep)
+# select predicate bit or zero/one
+if predicate[srcstep]:
+    # get SVP64 extended CR field 0..127
+    SVCRf = SVP64EXTRA(BI>>2)
+    if Rc = 1 then # CR0 vectorised
+        CR{0+srcstep} = CRbits
+    testbit = CRbits[BI & 0b11]
+else if not SVRMmode.sz:
     SVSTATE.srcstep = new_srcstep
+    exit # no branch testing
+else
+    testbit = SVRMmode.SNZ
+# actual element test here
+cond_ok <- BO[0] | ¬(testbit ^ BO[1])
+# test for VL to be set (and exit)
+if ~cond_ok and VLSET
+    if SVRMmode.VLI
+        SVSTATE.VL = new_srcstep+1
+    else
+        SVSTATE.VL = new_srcstep
+SVSTATE.srcstep = new_srcstep
 ```
 
 # Example Shader code
