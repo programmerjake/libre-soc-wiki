@@ -62,13 +62,13 @@ to define, and efforts to enforce such defined behaviour interfere with
 Vertical-First mode parallel opportunistic behaviour.*)
 
 In `svstep` mode, the whole CR Field, part of which is selected by `BI`
-(top 3 bits), is updated based on incrementing srcstep and dststep, and
+(top 3 bits), is tested based on incrementing srcstep and dststep, and
 performing the same tests as [[sv/svstep]]. Following the step update,
-which involved writing to the exact CR Field about to be tested, the
+(which when Rc=1 involved writing to the exact CR Field about to be tested), the
 Branch Conditional instruction proceeds as normal (reading and testing
 the CR bit just updated, if the relevant `BO` bit is set).  Note that
 the SVSTATE fields are still updated, and the CR field still updated,
-even if the `BO` bits do not require CR testing.
+even if `BO[0]` is set.
 
 Predication in both INT and CR modes may be applied to `sv.bc` and other
 SVP64 Branch Conditional operations, exactly as they may be applied to
