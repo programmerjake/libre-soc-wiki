@@ -111,6 +111,26 @@ the same instruction.  That would require two instructions.
 
 # setmvlhi
 
+In Vertical-First Mode the minimum expectation is that one scalar
+element may be executed by each instruction. There are however
+circumstances where it may be possible to execute more than one:
+determining a "safe minimum amount" may not be practical.
+
+Therefore, setmvlhi may specify, as determined by the compiler,
+exactly what that quantity is.  Unlike VL, which is an amount
+that, when requested, **must** be executed, VFhint may be set
+to an amount that the hardware is capable of.
+
+Critical to note are two things:
+
+1. VFhint must not be set by hardware to an amount that
+exceeds either MVL or the requested amount, and must set
+VFhint to at least 1 element.
+2. svstep will increment srcstep and dststep by VFhint,
+therefore when hardware says it can perform N element
+operations, hardware **MUST** perform N operations
+for every single instruction. 
+
 Form: SVL-Form (see [[isatables/fields.text]])
 
 | 0.5|6.10|11.15|16..21|22 | 23...25  | 26.30 |31|  name    |
