@@ -159,7 +159,8 @@ Pseudocode for Horizontal-First Mode:
         if predicate[srcstep]:
             # get SVP64 extended CR field 0..127
             SVCRf = SVP64EXTRA(BI>>2)
-            CR{SVCRf+srcstep} = CRbits
+            if Rc = 1 then # CR0 Vectorised
+                CR{0+srcstep} = CRbits
             testbit = CRbits[BI & 0b11]
             # testbit = CR[BI+32+srcstep*4]
         else if not SVRMmode.sz:
@@ -197,7 +198,8 @@ Pseudocode for Vertical-First Mode:
     if predicate[srcstep]:
         # get SVP64 extended CR field 0..127
         SVCRf = SVP64EXTRA(BI>>2)
-        CR{SVCRf+srcstep} = CRbits
+        if Rc = 1 then # CR0 vectorised
+            CR{0+srcstep} = CRbits
         testbit = CRbits[BI & 0b11]
     else if not SVRMmode.sz:
         SVSTATE.srcstep = new_srcstep
