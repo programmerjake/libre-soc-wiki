@@ -909,6 +909,18 @@ implementations may cause pipeline stalls.  This was one of the reasons
 why CR-based pred-result analysis was added, because that at least is
 entirely paralleliseable.
 
+# Vertical-First Mode
+
+This is a relatively new addition to SVP64 under development as of
+July 2021.  Where Horizontal-First is the standard Cray-style for-loop,
+Vertical-First typically executes just the **one** scalar element
+in each Vectorised operation. That element is selected by srcstep
+and dststep *neither of which are changed as a side-effect of execution*.
+
+To create loops, either a new instruction `svstep` must be called,
+explicitly, or [[sv/branches]] must be given a mode bit to request
+explicit incrementation of srcstep and dststep.
+
 # Instruction format
 
 Whilst this overview shows the internals, it does not go into detail
