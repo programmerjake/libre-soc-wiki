@@ -921,6 +921,17 @@ To create loops, either a new instruction `svstep` must be called,
 explicitly, or [[sv/branches]] must be given a mode bit to request
 explicit incrementation of srcstep and dststep.
 
+Now that such explicit loops can increment inexorably towards VL,
+of course we now need a way to test if srcstep or dststep have reached
+VL. This is achieved in one of two ways: [[sv/svstep]] has an Rc=1 mode
+where CR0 will be updated if VL is reached. A standard v3.0B Branch
+Conditional may rely on that.  Alternatively, the number of elements
+may be transferred into CTR, as is standard practice in Power ISA.
+The other method is to use SVP64 augmented [[sv/branches]] where the
+stepping updates the CR Field referenced by `BI` before proceeding
+with the Branch Condition test.
+
+
 # Instruction format
 
 Whilst this overview shows the internals, it does not go into detail
