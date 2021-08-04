@@ -149,20 +149,6 @@ Available options to combine:
 * `ALL` or `ANY` behaviour corresponding to `AND` of all tests and
   `OR` of all tests, respectively.
 
-Pseudocode for Rc in sv.bc
-
-```
-# Use bit 30, disable AA
-Rc = AA
-AA = 0
-```
-
-Pseudocode for Rc in sv.bclr
-
-```
-Rc = instr[16]
-```
-
 Pseudocode for Horizontal-First Mode:
 
 ```
@@ -173,8 +159,7 @@ Pseudocode for Horizontal-First Mode:
         if predicate[srcstep]:
             # get SVP64 extended CR field 0..127
             SVCRf = SVP64EXTRA(BI>>2)
-            if Rc = 1 then # CR0 Vectorised
-                CR{0+srcstep} = CRbits
+            CR{SVCRf+srcstep} = CRbits
             testbit = CRbits[BI & 0b11]
             # testbit = CR[BI+32+srcstep*4]
         else if not SVRMmode.sz:
@@ -212,8 +197,7 @@ Pseudocode for Vertical-First Mode:
     if predicate[srcstep]:
         # get SVP64 extended CR field 0..127
         SVCRf = SVP64EXTRA(BI>>2)
-        if Rc = 1 then # CR0 vectorised
-            CR{0+srcstep} = CRbits
+        CR{SVCRf+srcstep} = CRbits
         testbit = CRbits[BI & 0b11]
     else if not SVRMmode.sz:
         SVSTATE.srcstep = new_srcstep
