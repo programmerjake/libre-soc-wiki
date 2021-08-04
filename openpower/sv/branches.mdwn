@@ -158,6 +158,14 @@ available for Power ISA v3.0B** i.e. only when embedded in an SVP64
 Prefix Context do these and all other parts of this specification
 apply.
 
+Form: SVL-Form (see [[isatables/fields.text]])
+
+| 0.5|6.10|11.15|16..21|22| 23...25  | 30 |31|  name   |
+| -- | -- | --- | ---- |--| -------- | -- |--| ------- |
+|16  | RT | RA  | SVi  |/ | ms vs vf | Rc |LR| bc      |
+
+
+
 Pseudocode for Rc in sv.bc
 
 ```
