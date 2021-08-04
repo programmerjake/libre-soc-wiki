@@ -139,7 +139,7 @@ Available options to combine:
 Pseudocode for Rc in sv.bc
 
 ```
-# Use bit 30, disable AA
+# Use bit 30 as Rc, disable AA
 Rc = AA
 AA = 0
 ```
@@ -147,6 +147,7 @@ AA = 0
 Pseudocode for Rc in sv.bclr
 
 ```
+# use bit 16 of opcode as Rc
 Rc = instr[16]
 ```
 
@@ -155,11 +156,14 @@ Pseudocode for Horizontal-First Mode:
 ```
 cond_ok = not SVRMmode.ALL
 for srcstep in range(VL):
-    new_srcstep, CRbits = SVSTATE_NEXT(srcstep)
     # select predicate bit or zero/one
     if predicate[srcstep]:
         # get SVP64 extended CR field 0..127
         SVCRf = SVP64EXTRA(BI>>2)
+        if svstep_mode then
+            new_srcstep, CRbits = SVSTATE_NEXT(srcstep)
+        else
+            CRbits = CR{SVCRf}
         if Rc = 1 then # CR0 Vectorised
             CR{0+srcstep} = CRbits
         testbit = CRbits[BI & 0b11]
@@ -182,23 +186,28 @@ for srcstep in range(VL):
         else
             SVSTATE.VL = srcstep
         break
-    # early exit? 
+    # early exit?
     if SVRMmode.ALL:
         if ~el_cond_ok:
             break
     else
         if el_cond_ok:
             break
+    if svstep_mode then
+        SVSTATE.srcstep = new_srcstep
 ```
 
 Pseudocode for Vertical-First Mode:
 
 ```
-new_srcstep, CRbits = SVSTATE_NEXT(srcstep)
+# get SVP64 extended CR field 0..127
+SVCRf = SVP64EXTRA(BI>>2)
+if svstep_mode then
+    new_srcstep, CRbits = SVSTATE_NEXT(srcstep)
+else
+    CRbits = CR{SVCRf}
 # select predicate bit or zero/one
 if predicate[srcstep]:
-    # get SVP64 extended CR field 0..127
-    SVCRf = SVP64EXTRA(BI>>2)
     if Rc = 1 then # CR0 vectorised
         CR{0+srcstep} = CRbits
     testbit = CRbits[BI & 0b11]
@@ -215,7 +224,8 @@ if ~cond_ok and VLSET
         SVSTATE.VL = new_srcstep+1
     else
         SVSTATE.VL = new_srcstep
-SVSTATE.srcstep = new_srcstep
+if svstep_mode then
+    SVSTATE.srcstep = new_srcstep
 ```
 
 # Example Shader code
