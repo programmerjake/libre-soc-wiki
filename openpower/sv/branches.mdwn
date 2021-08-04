@@ -47,8 +47,11 @@ non-ALL mode (Great Big Or) on first success early exit also occurs,
 however this time with the Branch proceeding.  In both cases the testing
 of the Vector of CRs should be done in linear sequential order (or in
 REMAP re-sequenced order): such that tests that are sequentially beyond
-the exit point are *not* carried out. (*Note: is standard practice in
-Programming languages to exit early from conditional tests*)
+the exit point are *not* carried out. (*Note: it is standard practice in
+Programming languages to exit early from conditional tests, however
+a little unusual to consider in an ISA that is designed for Parallel
+Vector Processing. The reason is to have strictly-defined guaranteed
+behaviour*)
 
 In Vertical-First Mode, the `ALL` bit should not be used.  If set,
 behaviour is `UNDEFINED`.  (*The reason is that Vertical-First hints may
