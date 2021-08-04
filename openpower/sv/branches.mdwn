@@ -149,6 +149,20 @@ Available options to combine:
 * `ALL` or `ANY` behaviour corresponding to `AND` of all tests and
   `OR` of all tests, respectively.
 
+Pseudocode for Rc in sv.bc
+
+```
+# Use bit 30, disable AA
+Rc = AA
+AA = 0
+```
+
+Pseudocode for Rc in sv.bclr
+
+```
+Rc = instr[16]
+```
+
 Pseudocode for Horizontal-First Mode:
 
 ```
