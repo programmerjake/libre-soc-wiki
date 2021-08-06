@@ -58,13 +58,9 @@ a little unusual to consider in an ISA that is designed for Parallel
 Vector Processing. The reason is to have strictly-defined guaranteed
 behaviour*)
 
-In Vertical-First Mode, the `ALL` bit should not be used.  If set,
-behaviour is `UNDEFINED`.  (*The reason is that Vertical-First hints may
-permit multiple elements up to hint length to be executed in parallel,
-however the number is entirely up to implementors.  Attempting to test
-an arbitrary indeterminate number of Conditional tests is impossible
-to define, and efforts to enforce such defined behaviour interfere with
-Vertical-First mode parallel opportunistic behaviour.*)
+In Vertical-First Mode, the `ALL` bit still applies, but to the elements
+that are executed up to the Hint length, in parallel batches. See
+[[sv/setvl]] for the definition of Vertical-First Hint.
 
 In `svstep` mode, srcstep and dststep are incremented, and then
 tested exactly as in  [[sv/svstep]]. When Rc=1 the test results
