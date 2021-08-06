@@ -94,14 +94,14 @@ controlled by the Predicate mask. This is particularly useful in `VLSET`
 mode, which will truncate SVSTATE.VL at the point of the first failed
 test.*)
 
-SVP64 RM `MODE` (includes `ELWIDTH` bits) for Branch Conditional:
+SVP64 RM `MODE` (includes `ELWIDTH` and `ELWIDTH_SRC` bits) for Branch Conditional:
 
-| 4 | 5 | 19 | 20 |  21 |  22   23  |  description              |
-| - | - | -- | -- | --- |---------|-------------------------- |
-|ALL|LRu| 0  | 0  | /   |  SNZ sz | normal mode                      |
-|ALL|LRu| 0  | 1  | VLI |  SNZ sz | VLSET mode                      |
-|ALL|LRu| 1  | 0  | /   |  SNZ sz | svstep mode                      |
-|ALL|LRu| 1  | 1  | VLI |  SNZ sz | svstep+VLSET mode    |
+| 4 | 5 | 6 | 7 | 19 | 20 |  21 | 22   23 |  description              |
+| - | - | - | - | -- | -- | --- |---------|-------------------------- |
+|ALL|LRu|BRc| / | 0  | 0  | /   |  SNZ sz | normal mode               |
+|ALL|LRu|BRc| / | 0  | 1  | VLI |  SNZ sz | VLSET mode               |
+|ALL|LRu|BRc| / | 1  | 0  | /   |  SNZ sz | svstep mode            |
+|ALL|LRu|BRc| / | 1  | 1  | VLI |  SNZ sz | svstep+VLSET mode    |
 
 Fields:
 
@@ -117,6 +117,8 @@ Fields:
 * **LRu**: Link Register Update. When set, Link Register will
   only be updated if the Branch Condition succeeds. This avoids
   destruction of LR during loops.
+* **BRc** Branch variant of Rc. Instructs svstep testing to overwrite
+  the CR Field about to be tested
 
 svstep mode will run an increment of SVSTATE srcstep and dststep
 (which is still useful in Horizontal First Mode).  Unlike `svstep.`
