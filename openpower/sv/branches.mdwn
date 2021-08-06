@@ -141,14 +141,6 @@ and `svstep` mode it is actually useful to use Branch Conditional even
 to perform no actual branch operation, i.e to point to the instruction
 after the branch.
 
-`VLSET` mode with Vertical-First is particularly unusual. Vertical-First
-is used for explicit looping, where the looping is to terminate if
-the end of the Vector, VL, is reached. If however that loop is terminated
-early because VL is truncated, VLSET with Vertical-First becomes
-meaningless.  Therefore, the option to decide whether truncation should
-occur if the branch succeeds *or* if the branch condition fails allows
-for flexibility required.
-
 In particular, svstep mode is still useful for Horizontal-First Mode
 particularly in combination with REMAP. All "loop end" conditions
 will be tested on a per-element basis and placed into a Vector of CRs
@@ -163,6 +155,18 @@ is applied to the Branch because in `ALL` mode all nonmasked bits have
 to be tested. Even when svstep mode or VLSET mode are not used, CTR
 may still be decremented by the total number of nonmasked elements.
 In short, Vectorised Branch becomes an extremely powerful tool.
+
+`VLSET` mode with Vertical-First is particularly unusual. Vertical-First
+is used for explicit looping, where the looping is to terminate if
+the end of the Vector, VL, is reached. If however that loop is terminated
+early because VL is truncated, VLSET with Vertical-First becomes
+meaningless.  Therefore, the option to decide whether truncation should
+occur if the branch succeeds *or* if the branch condition fails allows
+for flexibility required.
+
+`VLSET` mode with Horizontal-First when `VSb` is clear is still useful,
+because it can be used to truncate VL to the first predicated (non-masked-out)
+element.
 
 Available options to combine:
 
