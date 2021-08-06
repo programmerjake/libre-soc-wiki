@@ -98,10 +98,10 @@ SVP64 RM `MODE` (includes `ELWIDTH` bits) for Branch Conditional:
 
 | 4 | 5 | 19 | 20 |  21 |  22   23  |  description              |
 | - | - | -- | -- | --- |---------|-------------------------- |
-|ALL| / | 0  | 0  | /   |  SNZ sz | normal mode                      |
-|ALL| / | 0  | 1  | VLI |  SNZ sz | VLSET mode                      |
-|ALL| / | 1  | 0  | /   |  SNZ sz | svstep mode                      |
-|ALL| / | 1  | 1  | VLI |  SNZ sz | svstep+VLSET mode    |
+|ALL|LRu| 0  | 0  | /   |  SNZ sz | normal mode                      |
+|ALL|LRu| 0  | 1  | VLI |  SNZ sz | VLSET mode                      |
+|ALL|LRu| 1  | 0  | /   |  SNZ sz | svstep mode                      |
+|ALL|LRu| 1  | 1  | VLI |  SNZ sz | svstep+VLSET mode    |
 
 Fields:
 
@@ -114,6 +114,9 @@ Fields:
   branch which succeeds.  If VLI (Vector Length Inclusive) is clear,
   VL is truncated to *exclude* the current element, otherwise it is
   included. SVSTATE.MVL is not changed.
+* **LRu**: Link Register Update. When set, Link Register will
+  only be updated if the Branch Condition succeeds. This avoids
+  destruction of LR during loops.
 
 svstep mode will run an increment of SVSTATE srcstep and dststep
 (which is still useful in Horizontal First Mode).  Unlike `svstep.`
