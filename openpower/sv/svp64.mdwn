@@ -186,7 +186,7 @@ Note that if ELWIDTH != ELWIDTH_SRC this may result in reduced performance or in
 
 Mode is an augmentation of SV behaviour.  Some of these alterations are element-based (saturation), others involve post-analysis (predicate result) and others are Vector-based (mapreduce, fail-on-first).
 
-These are the modes:
+These are the modes for everything except [[sv/ldst]] and [[sv/branches]]:
 
 * **normal** mode is straight vectorisation.  no augmentations: the vector comprises an array of independently created results.
 * **ffirst** or data-dependent fail-on-first: see separate section.  the vector may be truncated depending on certain criteria.
