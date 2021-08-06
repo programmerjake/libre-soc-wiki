@@ -96,12 +96,12 @@ test.*)
 
 SVP64 RM `MODE` (includes `ELWIDTH` and `ELWIDTH_SRC` bits) for Branch Conditional:
 
-| 4 | 5 | 6 | 7 | 19 | 20 |  21 | 22   23 |  description              |
-| - | - | - | - | -- | -- | --- |---------|-------------------------- |
-|ALL|LRu| / | / | 0  | 0  | /   |  SNZ sz | normal mode               |
-|ALL|LRu| / | / | 0  | 1  | VLI |  SNZ sz | VLSET mode               |
-|ALL|LRu|BRc| / | 1  | 0  | /   |  SNZ sz | svstep mode            |
-|ALL|LRu|BRc| / | 1  | 1  | VLI |  SNZ sz | svstep+VLSET mode    |
+| 4 | 5 | 6 | 7 | 19 | 20 |  21 | 22   23 |  description        |
+| - | - | - | - | -- | -- | --- |---------|-------------------- |
+|ALL|LRu| / | / | 0  | 0  | /   |  SNZ sz | normal mode         |
+|ALL|LRu| / | / | 0  | 1  | VLI |  SNZ sz | VLSET mode          |
+|ALL|LRu|BRc| / | 1  | 0  | /   |  SNZ sz | svstep mode         |
+|ALL|LRu|BRc| / | 1  | 1  | VLI |  SNZ sz | svstep+VLSET mode   |
 
 Fields:
 
@@ -123,8 +123,11 @@ Fields:
 svstep mode will run an increment of SVSTATE srcstep and dststep
 (which is still useful in Horizontal First Mode).  Unlike `svstep.`
 however which updates only CR0 with the testing of REMAP loop progress,
-the CR Field is taken from the branch `BI` field, and updated prior to
+the CR Field is taken from the branch `BI` field, and, if `BRc`
+is set, updated prior to
 proceeding to each element branch conditional testing.
+* This implies that the prior contents of the CR Vector are ignored*
+when `BRc` is set.
 
 Note that, interestingly, due to the useful side-effects of `VLSET` mode
 and `svstep` mode it is actually useful to use Branch Conditional even
@@ -161,12 +164,6 @@ Available options to combine:
 In addition to the above, it is necessary to select whether, in `svstep`
 mode, the Vector CR Field is to be overwritten or not: in some cases
 it is useful to know but in others all that is needed is the branch itself.
-
-**These interpretations are only available for sv.bc, they are NOT
-available for Power ISA v3.0B** i.e. only when embedded in an SVP64
-Prefix Context do these and all other parts of this specification
-apply.
-
 
 Pseudocode for Horizontal-First Mode:
 
