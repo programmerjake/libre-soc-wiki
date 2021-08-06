@@ -142,18 +142,16 @@ an alternative table meaning for [[sv/svp64]] mode.  The following modes make se
 
 Also, given that FFT, DCT and other related algorithms
 are of such high importance in so many areas of Computer
-Science, a special "bit-reverse" mode has been added which
-allows the immediate offset to be multiplied by an element sequence such as ```0 4 2 6 1 5 3 7``` rather than ```0 1 2 .... 7```.
-This is generated
-automatically rather than needing to be created programmatically
-using Vectorised Indexed Mode.
+Science, a special "shift" mode has been added which
+allows part of the immediate to be used instead as RC, a register
+which shifts the immediate `DS << GPR(RC)`.
 
 The table for [[sv/svp64]] for `immed(RA)` is:
 
 | 0-1 |  2  |  3   4  |  description               |
 | --- | --- |---------|--------------------------- |
 | 00  | 0   |  dz els | normal mode                |
-| 00  | 1   |  dz rsv | bitreverse mode (FFT, DCT) |
+| 00  | 1   |  dz shf | shift mode                 |
 | 01  | inv | CR-bit  | Rc=1: ffirst CR sel        |
 | 01  | inv | els RC1 |  Rc=0: ffirst z/nonz       |
 | 10  |   N | dz  els |  sat mode: N=0/1 u/s       |
