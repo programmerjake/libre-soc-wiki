@@ -161,42 +161,12 @@ Available options to combine:
 In addition to the above, it is necessary to select whether, in `svstep`
 mode, the Vector CR Field is to be overwritten or not: in some cases
 it is useful to know but in others all that is needed is the branch itself.
-In the case of `sv.bc` there is no additional bitspace, so on the
-basis that it is rarely used, the `AA`
-field is re-interpreted instead to be `Rc`. For `sv.bclr`, there is free
-bitspace and so bit 16 has been chosen as `Rc`.
 
 **These interpretations are only available for sv.bc, they are NOT
 available for Power ISA v3.0B** i.e. only when embedded in an SVP64
 Prefix Context do these and all other parts of this specification
 apply.
 
-Form: B-Form (see [[isatables/fields.text]])
-
-| 0.5|6.10|11.15|16..29| 30 |31|  name   |
-| -- | -- | --- | ---- | -- |--| ------- |
-|16  | BO | BI  | BD   | Rc |LK| sv.bc   |
-
-Form: XL-Form (see [[isatables/fields.text]])
-
-| 0.5|6.10|11.15|16|17.18|19.20|21..30|31|  name   |
-| -- | -- | --- |--|---- |-----|------|--| ------- |
-|19  | BO | BI  |Rc| //  | BH  | 19   |LK| sv.bclr |
-
-Pseudocode for Rc in sv.bc
-
-```
-# Use bit 30 as Rc, disable AA
-Rc = AA
-AA = 0
-```
-
-Pseudocode for Rc in sv.bclr
-
-```
-# use bit 16 of opcode as Rc
-Rc = instr[16]
-```
 
 Pseudocode for Horizontal-First Mode:
 
@@ -209,10 +179,10 @@ for srcstep in range(VL):
         SVCRf = SVP64EXTRA(BI>>2)
         if svstep_mode then
             new_srcstep, CRbits = SVSTATE_NEXT(srcstep)
+            if BRc = 1 then # CR Vectorised overwritr
+                CR{SVCRf+srcstep} = CRbits
         else
             CRbits = CR{SVCRf}
-        if Rc = 1 then # CR0 Vectorised
-            CR{0+srcstep} = CRbits
         testbit = CRbits[BI & 0b11]
         # testbit = CR[BI+32+srcstep*4]
     else if not SVRMmode.sz:
@@ -255,8 +225,8 @@ else
     CRbits = CR{SVCRf}
 # select predicate bit or zero/one
 if predicate[srcstep]:
-    if Rc = 1 then # CR0 vectorised
-        CR{0+srcstep} = CRbits
+    if BRc = 1 then # CR0 vectorised
+        CR{SVCRf+srcstep} = CRbits
     testbit = CRbits[BI & 0b11]
 else if not SVRMmode.sz:
     SVSTATE.srcstep = new_srcstep
