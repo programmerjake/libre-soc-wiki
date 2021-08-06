@@ -119,9 +119,10 @@ Fields:
   included. SVSTATE.MVL is not changed: only VL.
 * **LRu**: Link Register Update. When set, Link Register will
   only be updated if the Branch Condition succeeds. This avoids
-  destruction of LR during loops.
+  destruction of LR during loops (particularly Vertical-First
+  ones).
 * **BRc** Branch variant of Rc. Instructs svstep testing to overwrite
-  the CR Field about to be tested
+  the CR Field about to be tested. Only takes effect in svstep mode
 * **VSb** is most relevant for Vertical-First VLSET Mode. After testing,
   if VSb is set, VL is truncated if the branch succeeds.  If VSb is clear,
   VL is truncated if the branch did **not** take place.
