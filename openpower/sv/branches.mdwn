@@ -208,7 +208,7 @@ for srcstep in range(VL):
     else
         cond_ok |= el_cond_ok
     # test for VL to be set (and exit)
-    if ~el_cond_ok and VLSET
+    if VLSET and VSb = el_cond_ok then
         if SVRMmode.VLI
             SVSTATE.VL = srcstep+1
         else
@@ -247,7 +247,7 @@ else
 # actual element test here
 cond_ok <- BO[0] | ¬(testbit ^ BO[1])
 # test for VL to be set (and exit)
-if ~cond_ok and VLSET
+if VLSET and cond_ok = VSb then
     if SVRMmode.VLI
         SVSTATE.VL = new_srcstep+1
     else
