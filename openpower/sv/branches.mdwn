@@ -110,10 +110,12 @@ Fields:
   is ignored or skipped, depending on context.
 * **ALL** when set, all branch conditional tests must pass in order for
   the branch to succeed.
-* **VLI** In VLSET mode, VL is set equal (truncated) to the first
-  branch which succeeds.  If VLI (Vector Length Inclusive) is clear,
+* **VLI** Identical to Data-dependent Fail-First mode.
+  In VLSET mode, VL is set equal (truncated) to the first point
+  where, assuming Conditions are tested sequentially, the  branch succeeds
+  *or fails*.  If VLI (Vector Length Inclusive) is clear,
   VL is truncated to *exclude* the current element, otherwise it is
-  included. SVSTATE.MVL is not changed.
+  included. SVSTATE.MVL is not changed: only VL.
 * **LRu**: Link Register Update. When set, Link Register will
   only be updated if the Branch Condition succeeds. This avoids
   destruction of LR during loops.
@@ -133,6 +135,9 @@ Note that, interestingly, due to the useful side-effects of `VLSET` mode
 and `svstep` mode it is actually useful to use Branch Conditional even
 to perform no actual branch operation, i.e to point to the instruction
 after the branch.
+
+`VLSET` mode with Vertical-First is particularly unusual. TODO
+investigate svstep index checks.
 
 In particular, svstep mode is still useful for Horizontal-First Mode
 particularly in combination with REMAP. All "loop end" conditions
