@@ -30,7 +30,7 @@ v3.0B this would select one bit of the 32 bit CR.  In SVP64 there are
 16 32 bit CRs, containing 128 4-bit CR Fields.  Therefore, the 2 LSBs of
 `BI` select the bit from the CR Field (EQ LT GT SO), and the top 3 bits
 are extended to either scalar or vector and to select CR Fields 0..127
-as specified in SVP64 [[sv/svp64/appendix]]
+as specified in SVP64 [[sv/svp64/appendix]].
 
 When considering an "array" of branches, there are four useful modes:
 AND, OR, NAND and NOR of all Conditions.
@@ -44,6 +44,12 @@ inverting `BO[2]` which just leaves two modes:
   (including those where the predicate is masked out
    and the corresponding CR Field is considered to be
    set to `SNZ`)
+
+When the CR Fields selected by SVP64 Augmented `BI` is marked as scalar,
+then as usual the loop ends at the first element tested, after taking
+predication into consideration. Thus, as usual, when `sz` is zero, srcstep
+skips forward to the first non-zero predicated element, and only that
+one element is tested.
 
 In SVP64 Horizontal-First Mode, the first failure in ALL mode (Great Big
 AND) results in early exit: no more updates to CTR occur (if requested);
@@ -224,6 +230,8 @@ for srcstep in range(VL):
             break
     if svstep_mode then
         SVSTATE.srcstep = new_srcstep
+    if SVCRf.scalar:
+       break
 ```
 
 Pseudocode for Vertical-First Mode:
