@@ -113,10 +113,11 @@ Fields:
   the src CR Field when the predicate bit is zero.  otherwise the element
   is ignored or skipped, depending on context.
 * **ALL** when set, all branch conditional tests must pass in order for
-  the branch to succeed.
-* **VLI** Identical to Data-dependent Fail-First mode.
+  the branch to succeed. When clear, it is the first sequentially
+  encountered successful test that causes the branch to succeed.
+* **VLI** VLSET is identical to Data-dependent Fail-First mode.
   In VLSET mode, VL is set equal (truncated) to the first point
-  where, assuming Conditions are tested sequentially, the  branch succeeds
+  where, assuming Conditions are tested sequentially, the branch succeeds
   *or fails* depending if VSb is set.
   If VLI (Vector Length Inclusive) is clear,
   VL is truncated to *exclude* the current element, otherwise it is
