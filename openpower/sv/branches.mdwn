@@ -81,14 +81,16 @@ and the CR field still updated, even if `BO[0]` is set.
 Predication in both INT and CR modes may be applied to `sv.bc` and other
 SVP64 Branch Conditional operations, exactly as they may be applied to
 other SVP64 operations.  When `sz` is zero, any masked-out Branch-element
-operations are not executed, exactly like all other SVP64 operations.
+operations are not included in condition testing, exactly like all other SVP64 operations. This *includes* side-effects such as decrementing
+of CTR, which is also skipped on masked-out CR Field elements,
+when `sz` is zero.
 
 However when `sz` is non-zero, this normally requests insertion of a zero
 in place of the input data, when the relevant predicate mask bit is zero.
 This would mean that a zero is inserted in place of `CR[BI+32]` for
 testing against `BO`, which may not be desirable in all circumstances.
 Therefore, an extra field is provided `SNZ`, which, if set, will insert
-a **one** in place of a masked-out element instead of a zero.
+a **one** in place of a masked-out element, instead of a zero.
 
 (*Note: Both options are provided because it is useful to deliberately
 cause the Branch-Conditional Vector testing to fail at a specific point,
