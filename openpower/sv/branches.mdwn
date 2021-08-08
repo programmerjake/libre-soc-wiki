@@ -138,8 +138,9 @@ however which updates only CR0 with the testing of REMAP loop progress,
 the CR Field is taken from the branch `BI` field, and, if `BRc`
 is set, updated prior to
 proceeding to each element branch conditional testing.
-* This implies that the prior contents of the CR Vector are ignored*
-when `BRc` is set.
+This implies that the *prior contents of the CR Vector are entirely ignored*
+when `BRc` is set, which implies an opportunity to save on CR file
+reads.
 
 Note that, interestingly, due to the useful side-effects of `VLSET` mode
 and `svstep` mode it is actually useful to use Branch Conditional even
