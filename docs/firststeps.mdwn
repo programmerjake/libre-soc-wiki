@@ -189,13 +189,58 @@ instruction, but the crucial part is quite simple:
 The part of the most interest is `info.func` call; we'll take a look at it
 in the next chapter.
 
-# TODO info.func
+# Markdown enters the scene
 
-about info.func, info.form etc.
+If we investigate the `info.func` object, we'll discover that, in case of our
+`add` instruction, it is actually `fixedarith.op_add` function. Where does it
+come from?
 
-# TODO Modifying the pseudocode
+This function is defined inside `fixedarith.py`, which is generated from the
+corresponding Markdown file, `fixedarith.mdwn`. On the first glance, one can
+find an idea to generate the code from the documentation somewhat surprising;
+however, this is perfectly reasonable, since we try to stay as close to the
+documentation as possible. Some Markdown files, like `fixedarith.mdwn`,
+contain the pseudocode in exactly the same form as it is present in the ISA
+docs. Let's take a look at `fixedarith.mdwn` and find our instruction.
 
-TODO.  search for the [Add section](https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=openpower/isa/fixedarith.mdwn;hb=HEAD) with pseudocode:
+As we can see in `# Add` section, there are four `add` variants:
+
+* add RT,RA,RB (OE=0 Rc=0)
+* add.  RT,RA,RB (OE=0 Rc=1)
+* addo RT,RA,RB (OE=1 Rc=0)
+* addo.  RT,RA,RB (OE=1 Rc=1)
+
+All variants are covered in the relevant OpenPOWER ISA. As of time of writing,
+the most recent edition is 3.0C, and it is available here:
+
+https://ftp.libre-soc.org/PowerISA_public.v3.0C.pdf
+
+The instructions of our interest can be found exactly where we'd expect them
+to be found, at chapter `3.3: Fixed-Point Facility Instructions`. We can see
+here the instruction encoding, as well as its form (XO) and all information
+we already found in `fixedarith.mdwn` file.
+
+All these details are available in some form as part of `info` variable we
+observed before (at `caller.py` file). The `info` variable is, actually,
+a simple instance of named tuple; the overall structure of this named tuple
+is left as an exercise for the reader.
+
+# Modifying the pseudocode
+
+We won't dive into all gory details of the decoder, at least for now. What
+is important for us at this stage is, how can we affect the generated code?
+As we saw recently, the markdown file is somehow converted into the Python
+code; but how is the conversion done?
+
+This is done by the script called pywriter. Again, we omit the exact details,
+since this script clearly deserves its own documentation; the only crucial
+information that pywriter script uses PLY (hint: Python-Lex-Yacc) in order
+to get the work done, and, thanks to PLY magic, it is able to convert ISA
+pseudocode into something more Pythonic.
+
+For illustrative purposes, let's modify the pseudocode so that, instead of
+addition, it performs a subtraction. Let's find the pseudocode for `add`
+instructions inside `fixedarith.mdwn`...
 
 ```
 Pseudo-code:
@@ -212,12 +257,18 @@ Pseudo-code:
     RT <- (RA) - (RB)
 ```
 
-Then re-run the unit test.  Nothing happens (no change, test passes).  then run
-`pywriter noall fixedarith` and re-run the test, and it should **fail**.
-Inspect logs, it shows a different result.
+OK, we changed the pseudocode inside the Markdown, but it hasn't yet changed
+a word inside the corresponding Python file (`fixedarith.py`). If we attempt
+to re-run the unit test, nothing happens, since Python code is kept intact.
+
+In order to force the source code re-generation, `pywriter noall fixedarith`
+command is used. Once `pywriter` completes its task, we can re-run the test,
+and it should **fail**. The logs show a different result.
 
 Work out by hand what 0x1234 - 0x4321 in 64-bit unsigned arithmetic is, and
-change the assert in the unit test to match.  re-run: the test should now
-**pass**.
+change the assert in the unit test to match. Re-run: the test should now
+**pass**. These manipulations, again, are left as an exercise for the reader.
 
-TODO: expand.
+This chapter concludes the First Steps tutorial. We'll take a deeper look
+at pseudocode generation when we will dive into an example of modifying
+BCD instructions.
