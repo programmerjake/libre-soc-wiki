@@ -65,6 +65,10 @@ the stack.  This *only works if VL is set to the requested value* rather
 than, as in RVV, allowing the hardware to set VL to an arbitrary value
 (caveat being, limited to not exceed MVL)
 
+Also available is the option to set VL from CTR (`VL = MIN(CTR, MVL)`.
+In combination with SVP64 [[sv/branches]] this can save one instruction
+inside critical inner loops.
+
 # Format
 
 *(Allocation of opcode TBD pending OPF ISA WG approval)*,
@@ -73,12 +77,13 @@ using EXT22 temporarily and fitting into the
 
 Form: SVL-Form (see [[isatables/fields.text]])
 
-| 0.5|6.10|11.15|16..21|22| 23...25  | 26.30 |31|  name   |
-| -- | -- | --- | ---- |--| -------- | ----- |--| ------- |
-|OPCD| RT | RA  | SVi  |/ | ms vs vf | 11110 |Rc| setvl   |
+| 0.5|6.10|11.15|16..21| 22...25    | 26.30 |31|  name   |
+| -- | -- | --- | ---- |----------- | ----- |--| ------- |
+|OPCD| RT | RA  | SVi  |cv ms vs vf | 11110 |Rc| setvl   |
 
 Note that the immediate (`SVi`) spans 7 bits (16 to 22)
 
+* `cv` - bit 22 - reads CTR instead of RA 
 * `ms` - bit 23 - allows for setting of MVL.
 * `vs` - bit 24 - allows for setting of VL.
 * `vf` - bit 25 - sets "Vertical First Mode".
@@ -89,7 +94,7 @@ i.e. that an immediate value of zero will result in VL/MVL being set to 1.
 VL/MVL to 1 results in "scalar identity" behaviour, where setting VL/MVL
 to 0 would result in all Vector operations becoming `nop`.  If this is
 truly desired (nop behaviour) then setting VL and MVL to zero is to be
-done via the [[SV SPRs|sv/sprs]]
+done via the [[SVSTATE SPR|sv/sprs]]
 
 Note that setmvli is a pseudo-op, based on RA/RT=0, and setvli likewise
 
@@ -184,6 +189,7 @@ calling of functions, however SVSTATE (and any associated SVSTATE) should be sto
     // instruction fields:
     rd = get_rt_field();         // bits 6..10
     ra = get_ra_field();         // bits 11..15
+    vc = get_vc_field();         // bit 22
     vf = get_vf_field();         // bit 23
     vs = get_vs_field();         // bit 24
     ms = get_ms_field();         // bit 25
@@ -218,10 +224,12 @@ calling of functions, however SVSTATE (and any associated SVSTATE) should be sto
         vlimmed = get_immed_field()+1; //  16..22
 
         // set VL (or not).
-        // 3 options: from SPR, from immed, from ra
+        // 4 options: from SPR, from immed, from ra, from CTR
         if vs {
            // VL to be sourced from fields/regs
-           if ra != 0 {
+           if vc {
+               VL = CTR
+           } else if ra != 0 {
                VL = GPR[ra]
            } else {
                VL = vlimmed
@@ -245,8 +253,8 @@ calling of functions, however SVSTATE (and any associated SVSTATE) should be sto
         VL = min(VL, MVL)
 
         // store VL, MVL
-        SPR[SV_VL] = VL
-        SPR[SV_MVL] = MVL
+        SVSTATE.VL = VL
+        SVSTATE.MVL = MVL
 
         // write rd
         if rt != 0 {
@@ -260,15 +268,16 @@ calling of functions, however SVSTATE (and any associated SVSTATE) should be sto
             ...
             ...
         }
-        // write Vertical-First mode into MSR
-        MSR[6] = vf
+        // write Vertical-First mode
+        SVSTATE.vf = vf
     }
 
 # Examples
 
 ## Core concept loop
 
-    loop:
+```
+loop:
     setvl a3, a0, MVL=8    #  update a3 with vl
                            # (# of elements this iteration)
                            # set MVL to 8
@@ -276,6 +285,7 @@ calling of functions, however SVSTATE (and any associated SVSTATE) should be sto
     # ...
     sub a0, a0, a3   # Decrement count by vl
     bnez a0, loop    # Any more?
+```
 
 ## Loop using Rc=1
 
