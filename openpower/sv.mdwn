@@ -14,8 +14,8 @@ Fundamental design principles:
   (termed "preserving Program Order")
 * Augments ("tags") existing instructions, providing Vectorisation "context" rather than adding new ones.
 * Does not modify or deviate from the underlying scalar OpenPOWER ISA unless it provides significant performance or other advantage to do so in the Vector space (dropping XER.SO and OE=1 for example)
-* Avoids creating significant dependency hazards, allowing high performance
-superscalar microarchitectures to be deployed.
+* Designed for Supercomputing: avoids creating significant sequential
+dependency hazards, allowing high performance superscalar microarchitectures to be deployed.
 
 Advantages of these design principles:
 
