@@ -932,6 +932,9 @@ loop:
 Three examples are illustrated of different types of Scalar-Vector
 operations. Note that in its simplest form  **only one** element is
 executed per instruction **not** multiple elements per instruction.
+(The more advanced version of Vertical-First mode may execute multiple
+elements per instruction, however the number executed **must** remain
+a fixed quantity.)
 
 Now that such explicit loops can increment inexorably towards VL,
 of course we now need a way to test if srcstep or dststep have reached
