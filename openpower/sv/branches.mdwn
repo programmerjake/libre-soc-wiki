@@ -79,7 +79,9 @@ Vector Processing. The reason is to have strictly-defined guaranteed
 behaviour*)
 
 In Vertical-First Mode, the `ALL` bit still applies, but to the elements
-that are executed up to the Hint length, in parallel batches. See
+that are executed up to the Hint length, in parallel batches. Contrast
+this with Horizontal-First Mode which tests elements from
+`0..VL-1`, Vertical-First tests elements `srcstep..MIN(srcstep+VFHint,VL-1)` See
 [[sv/setvl]] for the definition of Vertical-First Hint.
 
 Predication in both INT and CR modes may be applied to `sv.bc` and other
