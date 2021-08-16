@@ -124,7 +124,19 @@ determining a "safe minimum amount" may not be practical.
 Therefore, setmvlhi may specify, as determined by the compiler,
 exactly what that quantity is.  Unlike VL, which is an amount
 that, when requested, **must** be executed, VFhint may be set
-to an amount that the hardware is capable of.
+by the hardware to an amount that the hardware is capable of.
+In other words: setmvlhi requests a hint size, bur hardware chooses
+the actual hint.
+
+The reason for this cooperative negotiation between hardware and
+software is that whilst the compiler may have information about
+memory hazards that must be avoided which hardware cannot
+know about, the hardware knows the maximum batch size
+it can execute in parallel but the compiler is unaware of
+the variance in that batch size on different implementations.
+Thus, hardware sets VLHint to the minimum of the requested
+amount and the hardware limit. Simple implementations always
+set VLHint to 1.
 
 Critical to note are two things:
 
