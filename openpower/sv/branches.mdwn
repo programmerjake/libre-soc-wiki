@@ -22,10 +22,19 @@ cannot branch to multiple destinations based on multiple conditions.
 The best that can be done is
 to test multiple Conditions and make a decision of a *single* branch,
 based on analysis of a *Vector* of CR Fields
-which have just been calculated from a *Vector* of results. In 3D Shader
+which have just been calculated from a *Vector* of results.
+
+In 3D Shader
 binaries, which are inherently parallelised and predicated, testing all or
 some results and branching based on multiple tests is extremely common,
-and a fundamental part of Shader Compilers.  Therefore, `sv.bc` and
+and a fundamental part of Shader Compilers.  Example:
+without such multi-condition
+test-and-branch, if a predicate mask is all zeros a large batch of
+instructions may be masked out to `nop`, and it would waste
+CPU cycles not only to run them but also to load the predicate
+mask repeatedly for each one.  3D GPU ISAs can test for this scenario
+and jump over the masked-out operations.
+Therefore, in order to be commercially competitive, `sv.bc` and
 other Vector-aware Branch Conditional instructions are a high priority
 for 3D GPU workloads.
 
