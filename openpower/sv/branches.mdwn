@@ -33,7 +33,8 @@ test-and-branch, if a predicate mask is all zeros a large batch of
 instructions may be masked out to `nop`, and it would waste
 CPU cycles not only to run them but also to load the predicate
 mask repeatedly for each one.  3D GPU ISAs can test for this scenario
-and jump over the masked-out operations.
+and jump over the fully-masked-out operations, by spotting that
+all Conditions are zero.
 Therefore, in order to be commercially competitive, `sv.bc` and
 other Vector-aware Branch Conditional instructions are a high priority
 for 3D GPU workloads.
