@@ -315,3 +315,21 @@ loop:
       bne cr0, loop
     end:
       blr
+
+## setmvlhi double loop
+
+```
+   setmvlhi  8, 2 # MVL=8, VFHint=2
+loop:
+    setvl  r5, r3 # VL=r5=MAX(MVL, r3)
+loopinner:
+    sv.ld r20.v, r4(0) # load VLhint elements (max 2)
+    sv.addi r20.v, r20.v, 55 # add 55 to 2 elements
+    sv.st r20.v, r4(0) # store VLhint elements
+    svstep.            # srcstep += VLhint
+    bnz loopinner      # repeat until srcstep=VL
+    # now done VL elements, move to next batch
+    add r4, r4, r5 # move r4 pointer forward
+    sub. r3, r3, r5 # decrement total count by VL
+    bnz loop
+```
