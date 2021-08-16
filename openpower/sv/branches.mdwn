@@ -68,16 +68,6 @@ In Vertical-First Mode, the `ALL` bit still applies, but to the elements
 that are executed up to the Hint length, in parallel batches. See
 [[sv/setvl]] for the definition of Vertical-First Hint.
 
-In `svstep` mode, srcstep and dststep are incremented, and then
-tested exactly as in  [[sv/svstep]]. When Rc=1 the test results
-are wtitten into the whole CR Field (the exact same one
-about to be tested by the Branch Condition). Following the svstep
-update, the
-Branch Conditional instruction proceeds as normal (reading and testing
-the CR bit just updated, if the relevant `BO` bit is set).  Note that
-the SVSTATE srcstep and dststep fields are still updated
-and the CR field still updated, even if `BO[0]` is set.
-
 Predication in both INT and CR modes may be applied to `sv.bc` and other
 SVP64 Branch Conditional operations, exactly as they may be applied to
 other SVP64 operations.  When `sz` is zero, any masked-out Branch-element
@@ -106,8 +96,8 @@ Conditional:
 | - | - | - | - | -- | -- | --- |---------|-------------------- |
 |ALL|LRu| / | / | 0  | 0  | /   |  SNZ sz | normal mode         |
 |ALL|LRu| / |VSb| 0  | 1  | VLI |  SNZ sz | VLSET mode          |
-|ALL|LRu|BRc| / | 1  | 0  | /   |  SNZ sz | svstep mode         |
-|ALL|LRu|BRc|VSb| 1  | 1  | VLI |  SNZ sz | svstep+VLSET mode   |
+|ALL|LRu|CVh| / | 1  | 0  | /   |  SNZ sz | CTR mode         |
+|ALL|LRu|CVh|VSb| 1  | 1  | VLI |  SNZ sz | CTR+VLSET mode   |
 
 Fields:
 
@@ -128,32 +118,22 @@ Fields:
   only be updated if the Branch Condition succeeds. This avoids
   destruction of LR during loops (particularly Vertical-First
   ones).
-* **BRc** Branch variant of Rc. Instructs svstep testing to overwrite
-  the CR Field about to be tested. Only takes effect in svstep mode
 * **VSb** is most relevant for Vertical-First VLSET Mode. After testing,
   if VSb is set, VL is truncated if the branch succeeds.  If VSb is clear,
   VL is truncated if the branch did **not** take place.
 
-svstep mode will run an increment of SVSTATE srcstep and dststep (which is
-still useful in Horizontal First Mode).  Unlike `svstep.` however which
-updates only CR0 with the testing of REMAP loop progress, the CR Field
-is taken from the branch `BI` field, and, if `BRc` is set, updated prior
-to proceeding to each element branch conditional testing.  This implies
-that the *prior contents of the CR Vector are entirely ignored* when
-`BRc` is set, which implies an opportunity to save on CR file reads.
+CTR mode will subtract VL (or VLHint) from CTR rather than just decrement
+CTR by one.  Just as when v3.0B Branch-Conditional saves at
+least one instruction on tight inner loops through auto-decrementation
+of CTR, likewise it is also possible to save instruction count for
+SVP64 loops in both Vertical-First and Horizontal-First Mode.
 
 Note that, interestingly, due to the useful side-effects of `VLSET` mode
-and `svstep` mode it is actually useful to use Branch Conditional even
+it is actually useful to use Branch Conditional even
 to perform no actual branch operation, i.e to point to the instruction
 after the branch.
-
-In particular, svstep mode is still useful for Horizontal-First Mode
-particularly in combination with REMAP. All "loop end" conditions
-will be tested on a per-element basis and placed into a Vector of CRs
-starting from the point specified by the Branch `BI` field.  This Vector
-of CR Fields may then be subsequently used as a Predicate Mask, and,
-furthermore, if VLSET mode was requested, VL will have been set to the
-length of one of the loop endpoints, again as specified by the bit from
+If VLSET mode was requested with REMAP, VL will have been set to the
+length of one of the loop endpoints, as specified by the bit from
 the Branch `BI` field.
 
 Also, the unconditional bit `BO[0]` is still relevant when Predication
@@ -199,12 +179,7 @@ for srcstep in range(VL):
     if predicate[srcstep]:
         # get SVP64 extended CR field 0..127
         SVCRf = SVP64EXTRA(BI>>2)
-        if svstep_mode then
-            new_srcstep, CRbits = SVSTATE_NEXT(srcstep)
-            if BRc = 1 then # CR Vectorised overwritr
-                CR{SVCRf+srcstep} = CRbits
-        else
-            CRbits = CR{SVCRf}
+        CRbits = CR{SVCRf}
         testbit = CRbits[BI & 0b11]
         # testbit = CR[BI+32+srcstep*4]
     else if not SVRMmode.sz:
@@ -232,8 +207,6 @@ for srcstep in range(VL):
     else
         if el_cond_ok:
             break
-    if svstep_mode then
-        SVSTATE.srcstep = new_srcstep
     if SVCRf.scalar:
        break
 ```
@@ -243,10 +216,7 @@ Pseudocode for Vertical-First Mode:
 ```
 # get SVP64 extended CR field 0..127
 SVCRf = SVP64EXTRA(BI>>2)
-if svstep_mode then
-    new_srcstep, CRbits = SVSTATE_NEXT(srcstep)
-else
-    CRbits = CR{SVCRf}
+CRbits = CR{SVCRf}
 # select predicate bit or zero/one
 if predicate[srcstep]:
     if BRc = 1 then # CR0 vectorised
@@ -265,8 +235,6 @@ if VLSET and cond_ok = VSb then
         SVSTATE.VL = new_srcstep+1
     else
         SVSTATE.VL = new_srcstep
-if svstep_mode then
-    SVSTATE.srcstep = new_srcstep
 ```
 
 v3.0B branch pseudocode including LRu
