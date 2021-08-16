@@ -118,8 +118,11 @@ the same instruction.  That would require two instructions.
 
 In Vertical-First Mode the minimum expectation is that one scalar
 element may be executed by each instruction. There are however
-circumstances where it may be possible to execute more than one:
-determining a "safe minimum amount" may not be practical.
+circumstances where it may be possible to execute more than one
+element per instruction (srcstep elements 0-3 for example)
+but leaving it up to hardware to
+determine a "safe minimum amount" where memory corruption does
+not occur may not be practical (or is simply very costly).
 
 Therefore, setmvlhi may specify, as determined by the compiler,
 exactly what that quantity is.  Unlike VL, which is an amount
