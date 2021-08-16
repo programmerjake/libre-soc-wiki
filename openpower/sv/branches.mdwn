@@ -81,9 +81,10 @@ and the CR field still updated, even if `BO[0]` is set.
 Predication in both INT and CR modes may be applied to `sv.bc` and other
 SVP64 Branch Conditional operations, exactly as they may be applied to
 other SVP64 operations.  When `sz` is zero, any masked-out Branch-element
-operations are not included in condition testing, exactly like all other SVP64 operations. This *includes* side-effects such as decrementing
-of CTR, which is also skipped on masked-out CR Field elements,
-when `sz` is zero.
+operations are not included in condition testing, exactly like all other
+SVP64 operations. This *includes* side-effects such as decrementing of
+CTR, which is also skipped on masked-out CR Field elements, when `sz`
+is zero.
 
 However when `sz` is non-zero, this normally requests insertion of a zero
 in place of the input data, when the relevant predicate mask bit is zero.
@@ -98,7 +99,8 @@ controlled by the Predicate mask. This is particularly useful in `VLSET`
 mode, which will truncate SVSTATE.VL at the point of the first failed
 test.*)
 
-SVP64 RM `MODE` (includes `ELWIDTH` and `ELWIDTH_SRC` bits) for Branch Conditional:
+SVP64 RM `MODE` (includes `ELWIDTH` and `ELWIDTH_SRC` bits) for Branch
+Conditional:
 
 | 4 | 5 | 6 | 7 | 19 | 20 |  21 | 22   23 |  description        |
 | - | - | - | - | -- | -- | --- |---------|-------------------- |
@@ -132,15 +134,13 @@ Fields:
   if VSb is set, VL is truncated if the branch succeeds.  If VSb is clear,
   VL is truncated if the branch did **not** take place.
 
-svstep mode will run an increment of SVSTATE srcstep and dststep
-(which is still useful in Horizontal First Mode).  Unlike `svstep.`
-however which updates only CR0 with the testing of REMAP loop progress,
-the CR Field is taken from the branch `BI` field, and, if `BRc`
-is set, updated prior to
-proceeding to each element branch conditional testing.
-This implies that the *prior contents of the CR Vector are entirely ignored*
-when `BRc` is set, which implies an opportunity to save on CR file
-reads.
+svstep mode will run an increment of SVSTATE srcstep and dststep (which is
+still useful in Horizontal First Mode).  Unlike `svstep.` however which
+updates only CR0 with the testing of REMAP loop progress, the CR Field
+is taken from the branch `BI` field, and, if `BRc` is set, updated prior
+to proceeding to each element branch conditional testing.  This implies
+that the *prior contents of the CR Vector are entirely ignored* when
+`BRc` is set, which implies an opportunity to save on CR file reads.
 
 Note that, interestingly, due to the useful side-effects of `VLSET` mode
 and `svstep` mode it is actually useful to use Branch Conditional even
@@ -163,16 +163,16 @@ may still be decremented by the total number of nonmasked elements.
 In short, Vectorised Branch becomes an extremely powerful tool.
 
 `VLSET` mode with Vertical-First is particularly unusual. Vertical-First
-is used for explicit looping, where the looping is to terminate if
-the end of the Vector, VL, is reached. If however that loop is terminated
-early because VL is truncated, VLSET with Vertical-First becomes
-meaningless.  Therefore, the option to decide whether truncation should
-occur if the branch succeeds *or* if the branch condition fails allows
-for flexibility required.
+is used for explicit looping, where the looping is to terminate if the end
+of the Vector, VL, is reached. If however that loop is terminated early
+because VL is truncated, VLSET with Vertical-First becomes meaningless.
+Therefore, the option to decide whether truncation should occur if the
+branch succeeds *or* if the branch condition fails allows for flexibility
+required.
 
-`VLSET` mode with Horizontal-First when `VSb` is clear is still useful,
-because it can be used to truncate VL to the first predicated (non-masked-out)
-element.
+`VLSET` mode with Horizontal-First when `VSb` is clear is still
+useful, because it can be used to truncate VL to the first predicated
+(non-masked-out) element.
 
 Available options to combine:
 
@@ -187,8 +187,8 @@ Available options to combine:
   `OR` of all tests, respectively.
 
 In addition to the above, it is necessary to select whether, in `svstep`
-mode, the Vector CR Field is to be overwritten or not: in some cases
-it is useful to know but in others all that is needed is the branch itself.
+mode, the Vector CR Field is to be overwritten or not: in some cases it
+is useful to know but in others all that is needed is the branch itself.
 
 Pseudocode for Horizontal-First Mode:
 
