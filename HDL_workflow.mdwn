@@ -584,6 +584,14 @@ Create a file `~/.ssh/config` with the following lines:
     Host git.libre-soc.org
     Port 922
 
+Test that you have access with this command:
+
+    ssh -v -p922 gitolite3@git.libre-soc.org
+
+Please note: **DO NOT TYPE A PASSWORD** - the server gets hit by a lot of
+port-scanning, and detection of password failures are used to instantly
+ban IP addresses.
+
 Wait for the Project Admin to confirm that the ssh key has been added
 to the required repositories.  Once confirmed, you can clone any of the
 repos at https://git.libre-soc.org/:
