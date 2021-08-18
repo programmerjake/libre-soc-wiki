@@ -73,6 +73,11 @@ full context save/restore (see SVSRR0).  It contains (and permits setting of):
 * hphint - Horizontal Parallelism Hint. In Vertical First Mode
    hardware **MAY** perform up to this many elements in parallel
    per instruction. Set to zero to indicate "no hint".
+* SVme - REMAP enable bits, indicating which register is to be
+ REMAPed.  RA, RB, RC, RT or EA.
+* mi0-mi4 - when the corresponding SVme bit is enabled, mi0-mi4
+  indicate the SVSHAPE (0-3) that the corresponding register (RA etc)
+  should use.
 
 For hphint, the number chosen must be consistently
 executed **every time**. Hardware is not permitted to execute five
