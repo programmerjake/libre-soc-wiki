@@ -340,3 +340,29 @@ in ~/.bash_profile if desired)
 
 Then, in the chroot, follow the cgt instructions above, or use "make view"
 in any of the soclayout experiments or alliance-check-toolkit bench tests
+
+# Libre-SOC 180nm ASIC reproducible build
+
+Follow these instructions to build the ls180 GDS-II files
+
+* clone the dev-env-setup repository
+* run the coriolis2-chroot script as root
+* drop into the schroot
+* navigate to the soclayout/experiments9 directory
+* run the ./build_full_4k_sram.sh script
+* run "make view" to see the results.
+
+The FreePDK45 Chips4Makers FlexLib variant is slightly
+different, in that it builds GDS-II rather than Alliance Symbolic
+and so requires klayout to view the GDS-II. Luckily,
+we have a build script for klayout, also in dev-env-setup.
+
+Please check these scripts before running them.
+**This is your responsibility**.  Also as explained in
+the [[HDL_workflow]] the standard OS for reproducible
+builds is debian/10.  It is just about possible to use
+ubuntu to run the debootstrap chroot setup but it is
+not recommended.
+
+```
+```
