@@ -343,6 +343,17 @@ in any of the soclayout experiments or alliance-check-toolkit bench tests
 
 # Libre-SOC 180nm ASIC reproducible build <a name="ls180_repro_build"> </a>
 
+Prerequisites:
+
+* machine with debian/10 (or if you absolutely must, ubuntu)
+* minimum 32 GB RAM
+* minimum XEON processor or Intel i9 or IBM POWER9
+* enough time to complete the build in full
+* around 50 GB free space (this is more than enough)
+
+**WARNING! DO NOT TRY RUNNING CORIOLIS2 IN QEMU OR OTHER VM!**
+VLSI builds are far too CPU and memory intensive.
+
 Follow these instructions to build the ls180 GDS-II files
 
 * clone the dev-env-setup repository
@@ -354,8 +365,10 @@ Follow these instructions to build the ls180 GDS-II files
 
 The FreePDK45 Chips4Makers FlexLib variant is slightly
 different, in that it builds GDS-II rather than Alliance Symbolic
-and so requires klayout to view the GDS-II. Luckily,
-we have a build script for klayout, also in dev-env-setup.
+and so requires klayout to view the GDS-II. We do not yet
+ have a build script for klayout, it will be in dev-env-setup
+when it is.  In the meantime you can follow instructions
+on the website <https://klayout.de/>
 
 Please check these scripts before running them.
 **This is your responsibility**.  Also as explained in
@@ -363,13 +376,6 @@ the [[HDL_workflow]] the standard OS for reproducible
 builds is debian/10.  It is just about possible to use
 ubuntu to run the debootstrap chroot setup but it is
 not recommended.
-
-Prerequisites:
-
-* machine with debian/10 (or if you absolutely must, ubuntu)
-* minimum 32 GB RAM
-* minimum XEON processor or Intel i9 or IBM POWER9
-* enough time to complete the build in full
 
 Commands to run:
 
