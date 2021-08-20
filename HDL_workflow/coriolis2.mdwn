@@ -364,6 +364,24 @@ builds is debian/10.  It is just about possible to use
 ubuntu to run the debootstrap chroot setup but it is
 not recommended.
 
+Prerequisites:
+
+* machine with debian/10 (or if you absolutely must, ubuntu)
+* minimum 32 GB RAM
+* minimum XEON processor or Intel i9 or IBM POWER9
+* enough time to complete the build in full
+
+Commands to run:
+
 ```
-git clone https://git.libre-soc.org
+$ git clone https://git.libre-soc.org/git/dev-env-setup.git
+$ cd dev-env-setup
+$ sudo bash
+# ./coriolis2-chroot
+# exit
+$ schroot -c cotiolis
+$ cd soclayout/experiments9
+$ ./build_full_4k_sram.sh
 ```
+(now do something else for the next 90 minutes)
+
