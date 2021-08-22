@@ -46,13 +46,10 @@ Also relevant is the [gdb gcc build](https://git.libre-soc.org/?p=dev-env-setup.
     git clone https://git.libre-soc.org/git/soc.git
     
     cd nmutil; make develop; cd ..
-    cd openpower-isa; make develop; cd ..
+    cd openpower-isa; make develop pywriter svanalysis pyfnwriter; cd ..
     cd c4m-jtag; make develop; cd ..
     cd ieee754fpu; make develop; cd ..
     cd soc; make gitupdate; make develop; cd ..
-    
-    python3 soc/src/soc/decoder/power_decoder.py
-    yosys -p "read_ilang decoder.il; show dec31" 
 
 ## Gtkwave Tutorial
 
