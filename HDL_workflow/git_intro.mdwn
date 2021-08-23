@@ -10,10 +10,13 @@
 In git you do this by:
 
 * *Cloning* a repository (aka downloading stuff)
-* *Committing* your local changes (aka you "take note" of what you did. e.g. modified some files, added new files, deleted some files and so on)
+* *Committing* your local changes (aka you "take note" of what you
+  did. e.g. modified some files, added new files, deleted some files and
+  so on)
 * *Pushing* your work online
 
 ## Cloning
+
 (optional) [[!template id=popup mouseover="`cd <somewhere in your disk>` (?)" popup="""'cd' stands for 'change directory'. <br>It let you change the working directory to another one.""" ]]  
 `git clone ` + repo url
 
@@ -23,7 +26,10 @@ In git you do this by:
 ## Committing
 `git add` + files you want to "take note" of.
 
-E.g. `git add test.png` will take note of the “test.png" file for when you will want to commit your work. (Committing your work is like saving in a videogame. When you are good with what you have done, you save the stage of the adventure).
+E.g. `git add test.png` will take note of the “test.png" file for when
+you will want to commit your work. (Committing your work is like saving
+in a videogame. When you are good with what you have done, you save the
+stage of the adventure).
 
 When committing you are required to add a comment to your "save file" (commit).  
 Like ~~"I added the test.png file"~~.  
@@ -33,7 +39,8 @@ Ahah, I was kidding. Remember:
 > not what ACTION was done on what file.
 
 ## Pushing
-When you are done committing all your stuff, you want to share it with other. So you push to the remote repository (directory).
+When you are done committing all your stuff, you want to share it with
+other. So you push to the remote repository (directory).
 
 So you just `git push`.
 
@@ -46,13 +53,17 @@ Pay attention to:
 * before pushing, what you are actually going to push
 
 ### Notes 2
-When doing `git commit` the quickest way to add the comment is by adding ` -m "<your comment here, without brackets>"`
+When doing `git commit` the quickest way to add the comment is by adding
+` -m "<your comment here, without brackets>"`
 
 Like this: `git commit -m "made a correction to the calculate_sum function"`.
 
-If you omit the -m option, a text editor will appear to let you insert a commit message. Sometimes it is useful to let git open the editor. e.g. for long comments or comments with quotes in it.
+If you omit the -m option, a text editor will appear to let you
+insert a commit message. Sometimes it is useful to let git open the
+editor. e.g. for long comments or comments with quotes in it.
 
-If `vim` editor opens (you get stuck into something you do not know how to exit from), remember:
+If `vim` editor opens (you get stuck into something you do not know how
+to exit from), remember:
 
 * type `i` to "insert text".
 * when you are done typing text, press the esc key on the keyboard
