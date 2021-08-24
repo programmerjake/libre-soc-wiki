@@ -78,12 +78,10 @@ a little unusual to consider in an ISA that is designed for Parallel
 Vector Processing. The reason is to have strictly-defined guaranteed
 behaviour*)
 
-In Vertical-First Mode, the `ALL` bit still applies, but to the elements
-that are executed up to the Hint length, in parallel batches. Contrast
-this with Horizontal-First Mode which tests elements from
-`0..VL-1`, Vertical-First tests elements
-`srcstep..MIN(srcstep+VFHint-1,VL-1)`. See
-[[sv/setvl]] for the definition of Vertical-First Hint.
+In Vertical-First Mode, setting the `ALL` bit results in `UNDEFINED` 
+behaviour. Given that only one element is being tested at a time
+in Vertical-First Mode, a test designed to be done on multiple
+bits is meaningless.
 
 Predication in both INT and CR modes may be applied to `sv.bc` and other
 SVP64 Branch Conditional operations, exactly as they may be applied to
@@ -109,12 +107,12 @@ test.*)
 SVP64 RM `MODE` (includes `ELWIDTH` and `ELWIDTH_SRC` bits) for Branch
 Conditional:
 
-| 4 | 5 | 6 | 7 | 19 | 20 |  21 | 22   23 |  description        |
-| - | - | - | - | -- | -- | --- |---------|-------------------- |
-|ALL|LRu| / | / | 0  | 0  | /   |  SNZ sz | normal mode         |
-|ALL|LRu| / |VSb| 0  | 1  | VLI |  SNZ sz | VLSET mode          |
-|ALL|LRu|CVh| / | 1  | 0  | /   |  SNZ sz | CTR mode         |
-|ALL|LRu|CVh|VSb| 1  | 1  | VLI |  SNZ sz | CTR+VLSET mode   |
+| 4 | 5 | 6 | 7 | 19 | 20 |  21 | 22   23 |  description     |
+| - | - | - | - | -- | -- | --- |---------|----------------- |
+|ALL|LRu| / | / | 0  | 0  | /   |  SNZ sz | normal mode      |
+|ALL|LRu| / |VSb| 0  | 1  | VLI |  SNZ sz | VLSET mode       |
+|ALL|LRu| / | / | 1  | 0  | /   |  SNZ sz | CTR mode         |
+|ALL|LRu| / |VSb| 1  | 1  | VLI |  SNZ sz | CTR+VLSET mode   |
 
 Fields:
 
@@ -139,11 +137,15 @@ Fields:
   if VSb is set, VL is truncated if the branch succeeds.  If VSb is clear,
   VL is truncated if the branch did **not** take place.
 
-CTR mode will subtract VL (or VLHint) from CTR rather than just decrement
+CTR mode will subtract VL from CTR rather than just decrement
 CTR by one.  Just as when v3.0B Branch-Conditional saves at
 least one instruction on tight inner loops through auto-decrementation
 of CTR, likewise it is also possible to save instruction count for
 SVP64 loops in both Vertical-First and Horizontal-First Mode.
+Setting CTR Mode in Vertical-First results in `UNDEFINED`
+behaviour. Given that Vertical-First steps through one element
+at a time, standard single (v3.0B) CTR decrementing should
+correspondingly be used.
 
 Note that, interestingly, due to the useful side-effects of `VLSET` mode
 it is actually useful to use Branch Conditional even
