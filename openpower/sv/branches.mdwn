@@ -147,6 +147,9 @@ behaviour. Given that Vertical-First steps through one element
 at a time, standard single (v3.0B) CTR decrementing should
 correspondingly be used.
 
+If CTR+VLSET Modes are requested, the amount that CTR is decremented
+by is the value of VL *after* truncation (should that occur).
+
 Note that, interestingly, due to the useful side-effects of `VLSET` mode
 it is actually useful to use Branch Conditional even
 to perform no actual branch operation, i.e to point to the instruction
