@@ -60,9 +60,10 @@ inverting `BO[2]` which just leaves two modes:
    and the corresponding CR Field is considered to be
    set to `SNZ`)
 
-When the CR Fields selected by SVP64 Augmented `BI` is marked as scalar,
+When the CR Fields selected by SVP64-Augmented `BI` is marked as scalar,
 then as usual the loop ends at the first element tested, after taking
-predication into consideration. Thus, as usual, when `sz` is zero, srcstep
+predication into consideration. Thus, also as usual, when a predicate mask is
+given, and `BI` marked as scalar, and `sz` is zero, srcstep
 skips forward to the first non-zero predicated element, and only that
 one element is tested.
 
