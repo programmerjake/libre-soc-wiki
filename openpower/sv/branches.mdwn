@@ -150,13 +150,11 @@ correspondingly be used instead.
 If CTR+VLSET Modes are requested, the amount that CTR is decremented
 by is the value of VL *after* truncation (should that occur).
 
-Note that, interestingly, due to the useful side-effects of `VLSET` mode
+Note that, interestingly, due to the side-effects of `VLSET` mode
 it is actually useful to use Branch Conditional even
 to perform no actual branch operation, i.e to point to the instruction
-after the branch.
-If VLSET mode was requested with REMAP, VL will have been set to the
-length of one of the loop endpoints, as specified by the bit from
-the Branch `BI` field.
+after the branch. Truncation of VL would thus conditionally occur yet control
+flow alteration would not.
 
 Also, the unconditional bit `BO[0]` is still relevant when Predication
 is applied to the Branch because in `ALL` mode all nonmasked bits have
@@ -191,6 +189,11 @@ Available options to combine:
 In addition to the above, it is necessary to select whether, in `svstep`
 mode, the Vector CR Field is to be overwritten or not: in some cases it
 is useful to know but in others all that is needed is the branch itself.
+
+*Programming note: One important point is that SVP64 instructions are 64 bit.
+(8 bytes not 4). This needs to be taken into consideration when computing
+branch offsets: the offset is relative to the start of the instruction,
+which includes the SVP64 Prefix*
 
 Pseudocode for Horizontal-First Mode:
 
