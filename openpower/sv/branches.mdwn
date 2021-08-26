@@ -161,18 +161,19 @@ Enabling CTR Skipping (Csk) has a number of options, which need explaining:
 * **Standard SVP64 CTR Mode** Csk=0, sz=0, no predicate specified.
   VL will be subtracted from CTR (as already explained above)
 * **Predicated CTR Mode** Csk=1, predicate is specified.
-  Masked-out elements are *not included* in the
+  Regardless of whether the Condition Test passes or fails,
+  masked-out elements are *not included* in the
   count subtracted from CTR. If VL=3 but the predicate mask
   is 0b101 and all CR Field Conditions are tested then CTR
   will be reduced by two, *not* three (because only 2 predicate
   mask bits are enabled). This includes when sz=1.
 * **Non-predicated CTR Skip Mode**, Csk=1, sz=0, no
   predicate specified.
-  Only those elements which pass the Condition Test (in
+  Only the number of elements which pass the Condition Test (in
   both ALL or ANY mode) will be subtracted from CTR
 * **Non-predicated CTR Skip inverted**, Csk=1, sz=1,
    no predicate specified.
-   Only those elements which **fail** the Condition
+   Only the number of elements which **fail** the Condition
    test will be subtracted from CTR
 
 Note that, interestingly, due to the side-effects of `VLSET` mode
