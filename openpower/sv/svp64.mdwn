@@ -210,7 +210,7 @@ The Mode table for operations except LD/ST and Branch Conditional
 | 00  |   1 | 1  CRM  | parallel reduce mode (mapreduce), SUBVL=1 |
 | 00  |   1 | SVM RG  | subvector reduce mode, SUBVL>1   |
 | 01  | inv | CR-bit  | Rc=1: ffirst CR sel              |
-| 01  | inv | dz  RC1 |  Rc=0: ffirst z/nonz |
+| 01  | inv | VLi RC1 |  Rc=0: ffirst z/nonz |
 | 10  |   N | dz   sz |  sat mode: N=0/1 u/s |
 | 11  | inv | CR-bit  |  Rc=1: pred-result CR sel |
 | 11  | inv | dz  RC1 |  Rc=0: pred-result z/nonz |
@@ -224,7 +224,10 @@ than the normal 0..VL-1
 * **CRM** affects the CR on reduce mode when Rc=1
 * **SVM** sets "subvector" reduce mode
 * **N** sets signed/unsigned saturation.
-**RC1** as if Rc=1, stores CRs *but not the result*
+* **RC1** as if Rc=1, stores CRs *but not the result*
+* **VLi** VL inclusive: in fail-first mode, the truncation of
+ VL *includes* the current element at the failure point rather
+ than excludes it from the count.
 
 For LD/ST Modes, see [[sv/ldst]].  For Branch modes, see [[sv/branches]] Immediate and Indexed LD/ST
 are both different, in order to support a large range of features
