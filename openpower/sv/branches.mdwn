@@ -89,10 +89,12 @@ bits is meaningless.
 
 Predication in both INT and CR modes may be applied to `sv.bc` and other
 SVP64 Branch Conditional operations, exactly as they may be applied to
-other SVP64 operations.  When `sz` is zero, any masked-out Branch-element
+other SVP64 operations.  With one exception, When `sz` is zero, any masked-out Branch-element
 operations are not included in condition testing, exactly like all other
 SVP64 operations. This *includes* side-effects such as potentially updating
-LR and CTR which will also be skipped.
+LR and CTR which will also be skipped. The exception here is when
+`BO[2]=0, `sz=0, CTR-test=0, CTi=1` and the predicate mask bit is also zero:
+under these special circumstances CTR will also decrement.
 
 When `sz` is non-zero, this normally requests insertion of a zero
 in place of the input data, when the relevant predicate mask bit is zero.
@@ -154,12 +156,21 @@ by will end up being VL *after* truncation (should that occur).
 
 CTR-test mode and CTi interaction is as follows: note that
 `BO[2]` is still required to be clear for decrements to be
-considered:
+considered.
 
 * **CTR-test=0, CTi=0**: CTR decrements on a per-element basis
-  if `BO[2]` is zero
-* **CTR-test=0, CTi=0**: CTR decrements on a per-element basis
-  if `BO[2]` is zero
+  if `BO[2]` is zero. Masked-out elements when `sz=0` are
+  skipped.
+* **CTR-test=0, CTi=1**: CTR decrements on a per-element basis
+  if `BO[2]` is zero and a masked-out element is skipped
+  (`sz=0` and predicate bit is zero). This one case is the
+  **opposite** of other combinations.
+* **CTR-test=1, CTi=0**: CTR decrements on a per-element basis
+  if `BO[2]` is zero and the Condition Test succeeds.
+  Masked-out elements when `sz=0` are skipped.
+* **CTR-test=1, CTi=1**: CTR decrements on a per-element basis
+  if `BO[2]` is zero and the Condition Test *fails*.
+  Masked-out elements when `sz=0` are skipped.
 
 Note that, interestingly, due to the side-effects of `VLSET` mode
 it is actually useful to use Branch Conditional even
