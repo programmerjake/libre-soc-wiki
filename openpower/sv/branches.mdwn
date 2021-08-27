@@ -91,11 +91,11 @@ Predication in both INT and CR modes may be applied to `sv.bc` and other
 SVP64 Branch Conditional operations, exactly as they may be applied to
 other SVP64 operations.  When `sz` is zero, any masked-out Branch-element
 operations are not included in condition testing, exactly like all other
-SVP64 operations. This *includes* side-effects such as decrementing of
-CTR, which is also skipped on masked-out CR Field elements, when `sz`
-is zero.
+SVP64 operations. However whilst side-effects such as updating
+LR may be skipped when `sz` is zero, side-effects such as decrementing of
+CTR are under much more explicit control.
 
-However when `sz` is non-zero, this normally requests insertion of a zero
+When `sz` is non-zero, this normally requests insertion of a zero
 in place of the input data, when the relevant predicate mask bit is zero.
 This would mean that a zero is inserted in place of `CR[BI+32]` for
 testing against `BO`, which may not be desirable in all circumstances.
@@ -115,8 +115,8 @@ Conditional:
 | - | - | - | - | -- | -- | --- |---------|----------------- |
 |ALL|LRu| / | / | 0  | 0  | /   |  SNZ sz | normal mode      |
 |ALL|LRu| / |VSb| 0  | 1  | VLI |  SNZ sz | VLSET mode       |
-|ALL|LRu|Csk| / | 1  | 0  | /   |  SNZ sz | CTR mode         |
-|ALL|LRu|Csk|VSb| 1  | 1  | VLI |  SNZ sz | CTR+VLSET mode   |
+|ALL|LRu|CTi| / | 1  | 0  | /   |  SNZ sz | CTR skip mode         |
+|ALL|LRu|CTi|VSb| 1  | 1  | VLI |  SNZ sz | CTR skip+VLSET mode   |
 
 Fields:
 
@@ -140,26 +140,25 @@ Fields:
 * **VSb** is most relevant for Vertical-First VLSET Mode. After testing,
   if VSb is set, VL is truncated if the branch succeeds.  If VSb is clear,
   VL is truncated if the branch did **not** take place.
-* **Csk** CTR skipping. CTR Mode normally subtracts VL from CTR.
-  Csk refines that further
+* **CTi** CTR inversion. CTR Mode normally decrements per element
+  tested. CTR inversion decrements if a test *fails*.
 
-Normally, CTR mode will subtract VL from CTR rather than just decrement
-CTR by one.  Just as when v3.0B Branch-Conditional saves at
+Normally, CTR mode will decrement once per Condition Test, resulting
+under normal circumstances that CTR reduces by up to VL.
+Just as when v3.0B Branch-Conditional saves at
 least one instruction on tight inner loops through auto-decrementation
 of CTR, likewise it is also possible to save instruction count for
 SVP64 loops in both Vertical-First and Horizontal-First Mode.
-Setting CTR Mode in Vertical-First results in `UNDEFINED`
-behaviour. Given that Vertical-First steps through one element
-at a time, standard single (v3.0B) CTR decrementing should
-correspondingly be used instead.
 
-If both CTR+VLSET Modes are requested, the amount that CTR is decremented
-by is the value of VL *after* truncation (should that occur).
+If both CTR+VLSET Modes are requested, then because the CTR decrement is
+per element tested, the total amount that CTR is decremented
+by will end up being VL *after* truncation (should that occur).
 
 Enabling CTR Skipping (Csk) has a number of options, which need explaining:
 
-* **Standard SVP64 CTR Mode** Csk=0, sz=0, no predicate specified.
-  VL will be subtracted from CTR (as already explained above)
+* **Standard SVP64 CTR Mode** Skip=0, CTi=0, sz=0, no predicate specified.
+  The number of elements tested end up being subtracted from CTR
+  (as already explained above)
 * **Predicated CTR Mode** Csk=1, predicate is specified.
   Regardless of whether the Condition Test passes or fails,
   masked-out elements are *not included* in the
