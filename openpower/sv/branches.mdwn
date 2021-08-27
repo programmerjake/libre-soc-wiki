@@ -230,6 +230,9 @@ for srcstep in range(VL):
         testbit = CRbits[BI & 0b11]
         # testbit = CR[BI+32+srcstep*4]
     else if not SVRMmode.sz:
+      # inverted CTR test skip mode
+      if ¬BO[2] & CTRtest & ¬CTI then
+         CTR = CTR - 1
         continue
     else
         testbit = SVRMmode.SNZ
@@ -270,6 +273,9 @@ if predicate[srcstep]:
         CR{SVCRf+srcstep} = CRbits
     testbit = CRbits[BI & 0b11]
 else if not SVRMmode.sz:
+    # inverted CTR test skip mode
+    if ¬BO[2] & CTRtest & ¬CTI then
+       CTR = CTR - 1
     SVSTATE.srcstep = new_srcstep
     exit # no branch testing
 else
@@ -291,7 +297,7 @@ if (mode_is_64bit) then M <- 0
 else M <- 32
 cond_ok <- BO[0] | ¬(CR[BI+32] ^ BO[1])
 ctrdec = ¬BO[2]
-if CSk & (cond_ok ^ CTi) then
+if CTRtest & (cond_ok ^ CTi) then
    ctrdec = 0b0
 if ctrdec then CTR <- CTR - 1
 ctr_ok <- BO[2] | ((CTR[M:63] != 0) ^ BO[3])
