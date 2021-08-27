@@ -287,14 +287,17 @@ if VLSET and cond_ok = VSb then
         SVSTATE.VL = new_srcstep
 ```
 
-v3.0B branch pseudocode including LRu
+v3.0B branch pseudocode including LRu and CTR skipping
 
 ```
 if (mode_is_64bit) then M <- 0
 else M <- 32
-if ¬BO[2] then CTR <- CTR - 1
-ctr_ok <- BO[2] | ((CTR[M:63] != 0) ^ BO[3])
 cond_ok <- BO[0] | ¬(CR[BI+32] ^ BO[1])
+ctrdec = ¬BO[2]
+if CSk & (cond_ok ^ CTi) then
+   ctrdec = 0b0
+if ctrdec then CTR <- CTR - 1
+ctr_ok <- BO[2] | ((CTR[M:63] != 0) ^ BO[3])
 lr_ok <- SVRMmode.LRu
 if ctr_ok & cond_ok then
   if AA then NIA <-iea EXTS(BD || 0b00)
