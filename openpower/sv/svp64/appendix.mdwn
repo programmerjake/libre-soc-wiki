@@ -156,7 +156,6 @@ This is equivalent to
 followed by
 `llvm.masked.expandload.*`
 
-
 # Rounding, clamp and saturate
 
 see  [[av_opcodes]].
@@ -400,9 +399,11 @@ SVE or RVV. It is extremely useful for reducing instruction count,
 however requires speculative execution involving modifications of VL
 to get high performance implementations.  An additional mode (RC1=1)
 effectively turns what would otherwise be an arithmetic operation
-into a type of `cmp`.  The CR is stored (and the CR.eq bit tested).
-If the CR.eq bit fails then the Vector is truncated and the loop ends.
-Note that when RC1=1 the result elements arw never stored, only the CRs.
+into a type of `cmp`.  The CR is stored (and the CR.eq bit tested
+against the `inv` field).
+If the CR.eq bit is equal to `inv` then the Vector is truncated and
+the loop ends.
+Note that when RC1=1 the result elements are never stored, only the CRs.
 
 In CR-based data-driven fail-on-first there is only the option to select
 and test one bit of each CR (just as with branch BO).  For more complex
