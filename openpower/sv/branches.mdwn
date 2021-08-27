@@ -91,9 +91,8 @@ Predication in both INT and CR modes may be applied to `sv.bc` and other
 SVP64 Branch Conditional operations, exactly as they may be applied to
 other SVP64 operations.  When `sz` is zero, any masked-out Branch-element
 operations are not included in condition testing, exactly like all other
-SVP64 operations. However whilst side-effects such as updating
-LR may be skipped when `sz` is zero, side-effects such as decrementing of
-CTR are under much more explicit control.
+SVP64 operations. This *includes* side-effects such as potentially updating
+LR and CTR which will also be skipped.
 
 When `sz` is non-zero, this normally requests insertion of a zero
 in place of the input data, when the relevant predicate mask bit is zero.
@@ -115,8 +114,8 @@ Conditional:
 | - | - | - | - | -- | -- | --- |---------|----------------- |
 |ALL|LRu| / | / | 0  | 0  | /   |  SNZ sz | normal mode      |
 |ALL|LRu| / |VSb| 0  | 1  | VLI |  SNZ sz | VLSET mode       |
-|ALL|LRu|CTi| / | 1  | 0  | /   |  SNZ sz | CTR skip mode         |
-|ALL|LRu|CTi|VSb| 1  | 1  | VLI |  SNZ sz | CTR skip+VLSET mode   |
+|ALL|LRu|CTi| / | 1  | 0  | /   |  SNZ sz | CTR test mode         |
+|ALL|LRu|CTi|VSb| 1  | 1  | VLI |  SNZ sz | CTR test+VLSET mode   |
 
 Fields:
 
@@ -150,30 +149,17 @@ least one instruction on tight inner loops through auto-decrementation
 of CTR, likewise it is also possible to save instruction count for
 SVP64 loops in both Vertical-First and Horizontal-First Mode.
 
-If both CTR+VLSET Modes are requested, then because the CTR decrement is
-per element tested, the total amount that CTR is decremented
+If both CTR-test and VLSET Modes are requested, then because the CTR decrement is on a per element basis, the total amount that CTR is decremented
 by will end up being VL *after* truncation (should that occur).
 
-Enabling CTR Skipping (Csk) has a number of options, which need explaining:
+CTR-test mode and CTi interaction is as follows: note that
+`BO[2]` is still required to be clear for decrements to be
+considered:
 
-* **Standard SVP64 CTR Mode** Skip=0, CTi=0, sz=0, no predicate specified.
-  The number of elements tested end up being subtracted from CTR
-  (as already explained above)
-* **Predicated CTR Mode** Csk=1, predicate is specified.
-  Regardless of whether the Condition Test passes or fails,
-  masked-out elements are *not included* in the
-  count subtracted from CTR. If VL=3 but the predicate mask
-  is 0b101 and all CR Field Conditions are tested then CTR
-  will be reduced by two, *not* three (because only 2 predicate
-  mask bits are enabled). This includes when sz=1.
-* **Non-predicated CTR Skip Mode**, Csk=1, sz=0, no
-  predicate specified.
-  Only the number of elements which pass the Condition Test (in
-  both ALL or ANY mode) will be subtracted from CTR
-* **Non-predicated CTR Skip inverted**, Csk=1, sz=1,
-   no predicate specified.
-   Only the number of elements which **fail** the Condition
-   test will be subtracted from CTR
+* **CTR-test=0, CTi=0**: CTR decrements on a per-element basis
+  if `BO[2]` is zero
+* **CTR-test=0, CTi=0**: CTR decrements on a per-element basis
+  if `BO[2]` is zero
 
 Note that, interestingly, due to the side-effects of `VLSET` mode
 it is actually useful to use Branch Conditional even
