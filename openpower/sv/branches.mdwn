@@ -89,11 +89,12 @@ bits is meaningless.
 
 Predication in both INT and CR modes may be applied to `sv.bc` and other
 SVP64 Branch Conditional operations, exactly as they may be applied to
-other SVP64 operations.  With one exception, When `sz` is zero, any masked-out Branch-element
+other SVP64 operations.  When `sz` is zero, any masked-out Branch-element
 operations are not included in condition testing, exactly like all other
-SVP64 operations. This *includes* side-effects such as potentially updating
+SVP64 operations. With one exception this *includes* side-effects such as potentially updating
 LR and CTR which will also be skipped. The exception here is when
-`BO[2]=0, `sz=0, CTR-test=0, CTi=1` and the predicate mask bit is also zero:
+`BO[2]=0, sz=0, CTR-test=0, CTi=1` and the relevant element
+predicate mask bit is also zero:
 under these special circumstances CTR will also decrement.
 
 When `sz` is non-zero, this normally requests insertion of a zero
@@ -116,8 +117,8 @@ Conditional:
 | - | - | - | - | -- | -- | --- |---------|----------------- |
 |ALL|LRu| / | / | 0  | 0  | /   |  SNZ sz | normal mode      |
 |ALL|LRu| / |VSb| 0  | 1  | VLI |  SNZ sz | VLSET mode       |
-|ALL|LRu|CTi| / | 1  | 0  | /   |  SNZ sz | CTR test mode         |
-|ALL|LRu|CTi|VSb| 1  | 1  | VLI |  SNZ sz | CTR test+VLSET mode   |
+|ALL|LRu|CTi| / | 1  | 0  | /   |  SNZ sz | CTR-test mode         |
+|ALL|LRu|CTi|VSb| 1  | 1  | VLI |  SNZ sz | CTR-test+VLSET mode   |
 
 Fields:
 
@@ -145,11 +146,15 @@ Fields:
   tested. CTR inversion decrements if a test *fails*.
 
 Normally, CTR mode will decrement once per Condition Test, resulting
-under normal circumstances that CTR reduces by up to VL.
-Just as when v3.0B Branch-Conditional saves at
+under normal circumstances that CTR reduces by up to VL in Horizontal-First
+Mode. Just as when v3.0B Branch-Conditional saves at
 least one instruction on tight inner loops through auto-decrementation
 of CTR, likewise it is also possible to save instruction count for
-SVP64 loops in both Vertical-First and Horizontal-First Mode.
+SVP64 loops in both Vertical-First and Horizontal-First Mode, particularly
+in circumstances where there is conditional interaction between the
+element computation and testing, and the continuation (or otherwise)
+of a given loop. The potential combinations of interactions is why CTR
+testing options have been added.
 
 If both CTR-test and VLSET Modes are requested, then because the CTR decrement is on a per element basis, the total amount that CTR is decremented
 by will end up being VL *after* truncation (should that occur).
