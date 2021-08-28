@@ -98,7 +98,19 @@ signed and unsigned, 8/16/32: these are all of the form:
     result = (src1 > src2) ? src1 : src2 # max
     result = (src1 < src2) ? src1 : src2 # min
 
-*These do not exist in the scalar INTEGER ISA and would need to be added*
+*These do not exist in the scalar INTEGER ISA and would need to be added*.
+There are additionally no scalar FP min/max, either. These also
+need to be added.
+
+Also it makes sense for both the integer and FP variants
+to have Rc=1 modes, where those modes are based on the
+respective cmp (or fsel / isel) behaviour. In other words,
+the Rc=1 setting is based on the *comparison* of the
+two inputs, rather than on which of the two results was
+returned by the min/max opcode.
+
+    result = (src1 > src2) ? src1 : src2 # max
+    CR0 = CR_computr(src2-src1) # not based on result
 
 ## vmerge operations
 
