@@ -508,7 +508,11 @@ Numbering relationships for CR fields are already complex due to being
 in BE format (*the relationship is not clearly explained in the v3.0B
 or v3.1B specification*).  However with some care and consideration
 the exact same mapping used for INT and FP regfiles may be applied,
-just to the upper bits, as explained below.
+just to the upper bits, as explained below.  The notation
+`CR{field number}` is used to indicate access to a particular
+Condition Register Field (as opposed to the notation `CR[bit]`
+which accesses one bit of the 32 bit Power ISA v3.0B
+Condition Register)
 
 In OpenPOWER v3.0/1, BF/BT/BA/BB are all 5 bits.  The top 3 bits (0:2)
 select one of the 8 CRs; the bottom 2 bits (3:4) select one of 4 bits
