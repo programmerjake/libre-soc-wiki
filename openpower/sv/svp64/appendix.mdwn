@@ -54,8 +54,8 @@ be predicated as well, making them far better suited to use in function
 calls and context-switching.
 
 Additionally, some v3.0/1 instructions simply make no sense at all in a
-Vector context: `twi` and `tdi` fall into this category, as do branch
-operations as well as `sc` and `scv`.  Here there is simply no point
+Vector context: `rfid` falls into this category,
+as well as `sc` and `scv`.  Here there is simply no point
 trying to Vectorise them: the standard OpenPOWER v3.0/1 instructions
 should be called instead.
 
