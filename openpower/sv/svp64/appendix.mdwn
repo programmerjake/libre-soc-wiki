@@ -390,9 +390,12 @@ executed in sequential Program Order, element 0 being the first.
   CR-creating operation produces a result (including cmp).  Similar to
   branch, an analysis of the CR is performed and if the test fails, the
   vector operation terminates and discards all element operations at and
-  above the current one, and VL is truncated to the *previous* element.
-  Thus the new VL comprises a contiguous vector of results, all of which
-  pass the testing criteria (equal to zero, less than zero).
+  above the current one, and VL is truncated to either
+  the *previous* element or the current one, depending on whether
+  VLi (VL "inclusive") is set.
+
+Thus the new VL comprises a contiguous vector of results, 
+all of which pass the testing criteria (equal to zero, less than zero).
 
 The CR-based data-driven fail-on-first is new and not found in ARM
 SVE or RVV. It is extremely useful for reducing instruction count,
@@ -404,6 +407,13 @@ against the `inv` field).
 If the CR.eq bit is equal to `inv` then the Vector is truncated and
 the loop ends.
 Note that when RC1=1 the result elements are never stored, only the CRs.
+
+VLi is only available as an option when `Rc=0` (or for instructions
+which do not have Rc). When set, the current element is always
+also included in the count (the new length that VL will be set to).
+This may be useful in combination with "inv" to truncate the Vector
+to `exclude` elements that fail a test, or, in the case of implementations
+of strncpy, to include the terminating zero.
 
 In CR-based data-driven fail-on-first there is only the option to select
 and test one bit of each CR (just as with branch BO).  For more complex
