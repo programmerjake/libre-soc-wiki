@@ -91,7 +91,7 @@ Table 9: Primary Opcode Map (opcode bits 0:5)
     111 |  lq    | EXT57 | EXT58 | EXT59 | EXT60 | EXT61  | EXT62 | EXT63 | 111
         |  000   |   001 |   010 |  011  |   100 |   101  | 110   |  111
 
-## Suitable for svp64
+## Suitable for svp64-only
 
 This is the same table containing v3.0B Primary Opcodes except those that
 make no sense in a Vectorisation Context have been removed.  These removed
@@ -112,6 +112,10 @@ retain their v3.0B / v3.1B OpenPOWER Standard compliant meaning.
     110 |  lfs   | lfsu  | lfd   | lfdu  | stfs  | stfsu  | stfd  | stfdu | 110
     111 |        |       | EXT58 | EXT59 |       | EXT61  |       | EXT63 | 111
         |  000   |   001 |   010 |  011  |   100 |   101  | 110   |  111
+
+It is important to note that having a different v3.0B Scalar opcode
+that is different from an SVP64 one is highly undesirable: the complexity
+in the decoder is greatly increased.
 
 # Single Predication
 
