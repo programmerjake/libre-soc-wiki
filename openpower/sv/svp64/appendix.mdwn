@@ -119,9 +119,9 @@ in the decoder is greatly increased.
 
 # Single Predication
 
-This is a standard mode normally found in Vector ISAs.  every element in rvery source Vector and in the destination uses the same bit of one single predicate mask.
+This is a standard mode normally found in Vector ISAs.  every element in every source Vector and in the destination uses the same bit of one single predicate mask.
 
-Note however that in SVSTATE, implementors MUST increment both srcstep and dststep, and that the two must be equal at all times.
+In SVSTATE, for Single-predication, implementors MUST increment both srcstep and dststep: unlike Twin-Predication the two must be equal at all times.
 
 # Twin Predication
 
