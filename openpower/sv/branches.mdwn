@@ -157,7 +157,15 @@ of a given loop. The potential combinations of interactions is why CTR
 testing options have been added.
 
 If both CTR-test and VLSET Modes are requested, then because the CTR decrement is on a per element basis, the total amount that CTR is decremented
-by will end up being VL *after* truncation (should that occur).
+by will end up being VL *after* truncation (should that occur). In
+other words, the order is (as can be seen in pseudocode, below):
+
+1. compute the test
+2. (optionally) decrement CTR
+3. (optionally) truncate VL
+4. decide (based on step 1) whether to terminate looping
+   (including not executing step 5)
+5. decide whether to branch.
 
 CTR-test mode and CTi interaction is as follows: note that
 `BO[2]` is still required to be clear for decrements to be
