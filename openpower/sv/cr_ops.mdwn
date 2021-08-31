@@ -3,16 +3,15 @@
 Data-dependent SVP64 Vectorised Operations involving the creation or
 modification of a CR require an extra two bits, which are not available
 in the compact space of the `MODE` Field. With the concept of element
-width overrides being meaningless for CR Fields it is possible
-to use the `ELWIDTH` field for extra fields.
+width overrides being meaningless for CR Fields it is possible to use the
+`ELWIDTH` field for extra fields.
 
-Condition Register based operations such as `mfcr` and `crand`
-can thus be made more flexible.  However the rules that apply in
-this section also apply to future CR-based instructions.  Note
-that these rules and the alternative mapping **only** applies
-to instructions that **only** reference a CR Field or CR bit as
-the sole exclusive result. This section **does not** apply
-to instructions... TODO
+Condition Register based operations such as `mfcr` and `crand` can thus
+be made more flexible.  However the rules that apply in this section
+also apply to future CR-based instructions.  Note that these rules and
+the alternative mapping **only** applies to instructions that **only**
+reference a CR Field or CR bit as the sole exclusive result. This section
+**does not** apply to instructions... TODO
 
 SVP64 RM `MODE` (includes `ELWIDTH` bits) for CR-based operations:
 
@@ -21,11 +20,10 @@ SVP64 RM `MODE` (includes `ELWIDTH` bits) for CR-based operations:
 |dz |VLi| 01    | inv |  CR-bit | normal mode      |
 |sz |VLi| 01    | inv |  dz Rc1 | VLSET mode       |
 
-Operations that actually produce or alter CR Field as a result
-do not also in turn have an Rc=1 mode.  However it makes no
-sense to try to test the 4 bits of a CR Field for being equal
-or not equal to zero. Moreover, the result is already in the
-form that is desired: it is a CR field.
+Operations that actually produce or alter CR Field as a result do not
+also in turn have an Rc=1 mode.  However it makes no sense to try to test
+the 4 bits of a CR Field for being equal or not equal to zero. Moreover,
+the result is already in the form that is desired: it is a CR field.
 
 There are two primary different types of CR operations:
 
@@ -33,10 +31,10 @@ There are two primary different types of CR operations:
 * Those which have a 5-bit operand (referring to a bit within the
    whole 32-bit CR)
 
-Examining these two as has already been done it is observed that
-the difference may be considered to be that the 5-bit variant
-provides additional information about which CR Field bit
-(EQ, GE, LT, SO) is to be operated on by the instruction.
+Examining these two as has already been done it is observed that the
+difference may be considered to be that the 5-bit variant provides
+additional information about which CR Field bit (EQ, GE, LT, SO) is to
+be operated on by the instruction.
 
 Thus, logically, we may set the following rule:
 
