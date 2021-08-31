@@ -1,3 +1,15 @@
+# TODO
+
+SVP64 RM `MODE` (includes `ELWIDTH` and `ELWIDTH_SRC` bits) for Branch
+Conditional:
+
+| 4 | 5 | 6 | 7 | 19 | 20 |  21 | 22   23 |  description     |
+| - | - | - | - | -- | -- | --- |---------|----------------- |
+|ALL|LRu| / | / | 0  | 0  | /   |  SNZ sz | normal mode      |
+|ALL|LRu| / |VSb| 0  | 1  | VLI |  SNZ sz | VLSET mode       |
+|ALL|LRu|CTi| / | 1  | 0  | /   |  SNZ sz | CTR-test mode         |
+|ALL|LRu|CTi|VSb| 1  | 1  | VLI |  SNZ sz | CTR-test+VLSET mode   |
+
 # Data-dependent fail-first on CR operations (crand etc)
 
 Operations that actually produce or alter CR Field as a result
