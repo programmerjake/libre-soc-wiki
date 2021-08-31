@@ -1,5 +1,19 @@
 # Data-dependent fail-first on CR operations
 
+Data-dependent SVP64 Vectorised Operations involving the creation or
+modification of a CR require an extra two bits, which are not available
+in the compact space of the `MODE` Field. With the concept of element
+width overrides being meaningless for CR Fields it is possible
+to use the `ELWIDTH` field for extra fields.
+
+Condition Register based operations such as `mfcr` and `crand`
+can thus be made more flexible.  However the rules that apply in
+this section also apply to future CR-based instructions.  Note
+that these rules and the alternative mapping **only** applies
+to instructions that **only** reference a CR Field or CR bit as
+the sole exclusive result. This section **does not** apply
+to instructions... TODO
+
 SVP64 RM `MODE` (includes `ELWIDTH` bits) for CR-based operations:
 
 | 4 | 5 | 19-20 |  21 | 22   23 |  description     |
