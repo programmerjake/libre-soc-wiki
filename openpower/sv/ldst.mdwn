@@ -218,7 +218,7 @@ cache-inhibited LD should be performed, followed by a VSPLAT-augmented mv.
 
 ffirst LD/ST to multiple pages via a Vectorised base is considered a security risk due to the abuse of probing multiple pages in rapid succession and getting feedback on which pages would fail.  Therefore in these special circumstances requesting ffirst with a vector base is instead interpreted as element-strided LD/ST.  See <https://bugs.libre-soc.org/show_bug.cgi?id=561>
 
-# LOAD/STORE Elwidths <a name="ldst"></a>
+# LOAD/STORE Elwidths <a name="elwidth"></a>
 
 Loads and Stores are almost unique in that the OpenPOWER Scalar ISA
 provides a width for the operation (lb, lh, lw, ld).  Only `extsb` and
@@ -245,6 +245,17 @@ In order to respect OpenPOWER v3.0B Scalar behaviour the memory side
 is treated effectively as completely separate and distinct from SV
 augmentation.  This is primarily down to quirks surrounding LE/BE and
 byte-reversal in OpenPOWER.
+
+It is unfortubately possible to request an elwidth override on the memory side which
+does not mesh with the operation width: these result in `UNDEFINED`
+behaviour.  The reason is that the effect of attempting a 64-bit `sv.ld`
+operation with a source elwidth override of 8/16/32 would result in
+overlapping memory requests, particularly on unit and element strided
+operations.  Thus it is `UNDEFINED` when the elwidth is smaller than
+the memory operation width. Examples include `sv.lw/sw=16/els` which
+requests (overlapping) 4-byte memory reads offset from
+each other at 2-byte intervals.  Store likewise is also `UNDEFINED`
+where the dest elwidth override is less than the operation width.
 
 Note the following regarding the pseudocode to follow:
 
