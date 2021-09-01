@@ -212,10 +212,10 @@ A summary of the effect of Vectorisation of src or dest:
      imm(RA)  RT.s   RA.v   no stride allowed
      imm(RA)  RT.v   RA.s   stride-select allowed
      imm(RA)  RT.s   RA.s   not vectorised
-     RA,RB    RT.v  RA/RB.v ffirst banned
-     RA,RB    RT.s  RA/RB.v ffirst banned
-     RA,RB    RT.v  RA/RB.s VSPLAT possible
-     RA,RB    RT.s  RA/RB.s not vectorised
+     RA,RB    RT.v  {RA|RB}.v ffirst banned
+     RA,RB    RT.s  {RA|RB}.v ffirst banned
+     RA,RB    RT.v  {RA&RB}.s VSPLAT possible
+     RA,RB    RT.s  {RA&RB}.s not vectorised
 
 Signed Effective Address computation is only relevant for
 Vector Indexed Mode, when elwidth overrides are applied.
