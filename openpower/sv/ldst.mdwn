@@ -177,13 +177,20 @@ in reading from the exact same memory location.
 For `LD-VSPLAT`, on non-cache-inhibited Loads, the read can occur
 just the once and be copied, rather than hitting the Data Cache
 multiple times with the same memory read at the same location.
+This would allow for memory-mapped peripherals to have multiple
+data values read in quick succession and stored in sequentially
+numbered registers.
 
-For ST from a vector source onto a scalar destination: with the Vector
+For non-cache-inhibited ST from a vector source onto a scalar
+destination: with the Vector
 loop effectively creating multiple memory writes to the same location,
 we can deduce that the last of these will be the "successful" one. Thus,
 implementations are free and clear to optimise out the overwriting STs,
 leaving just the last one as the "winner".  Bear in mind that predicate
 masks will skip some elements (in source non-zeroing mode).
+Cache-inhibited ST operations on the other hand **MUST** write out
+a Vector source multiple successive times to the exact same Scalar
+destination.
 
 Note that there are no immediate versions of cache-inhibited LD/ST.
 
