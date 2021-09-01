@@ -269,6 +269,9 @@ Note:
 [`bf16`](https://en.wikipedia.org/wiki/Bfloat16_floating-point_format)
 is reserved for a future implementation of SV
 
+Note that any operation in Power ISA ending in "s" (`fadds`) shall
+perform its operation at **half** the ELWIDTH.  `sv.fadds/ew=f32` shall perform an IEEE754 FP16 operation that is then "padded" to fill out to an IEEE754 FP32.
+
 ## Elwidth for CRs:
 
 TODO, important, particularly for crops, mfcr and mtcr, what elwidth
