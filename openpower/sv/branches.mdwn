@@ -45,7 +45,9 @@ for 3D GPU workloads.
 Given that Power ISA v3.0B is already quite powerful, particularly
 the Condition Registers and their interaction with Branches, there
 are opportunities to create an extremely flexible and compact
-Vectorised Branch behaviour.
+Vectorised Branch behaviour.  In addition, the side-effects (updating
+of CTR, truncation of VL) make it a useful instruction even if
+the branch points to the next instruction (no actual branch).
 
 # Overview
 
@@ -62,8 +64,22 @@ inverting `BO[2]` which just leaves two modes:
    and the corresponding CR Field is considered to be
    set to `SNZ`)
 
+Early-exit is enacted such that the Vectorised Branch does not
+perform needless extra tests, which will help reduce reads on
+the Condition Register file.
+
 Additional useful behaviour involves two primary Modes (both of
-which may be enabled):
+which may be enabled and combined):
+
+* **VLSET Mode**: identical to Data-Dependent Fail-First Mode, with more
+  flexibility and a close interaction and integration into the
+  underlying base Scalar v3.0B Branch instruction.
+* **CTR-test Mode**: gives much more flexibility over when and why
+  CTR is decremented, including options to decrement if a Condition
+  test succeeds *or if it fails*.
+
+It is also important to note that Vectorised Branches can be used
+in either SVP64 Horizontal-First or Vertical-First Mode.
 
 # Format and fields
 
