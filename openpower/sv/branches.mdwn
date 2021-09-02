@@ -129,7 +129,12 @@ Brief description of fields:
   tested. CTR inversion decrements if a test *fails*. Only relevant
   in CTR-test Mode.
 
-# Description and Modes
+# Vectorised CR Field numbering, and Scalar behaviour
+
+It is important to keep in mind that just like all SVP64 instructions,
+the `BI` field of the base v3.0B Branch Conditional instruction
+may be extended by SVP64 EXTRA augmentation, as well as be marked
+as either Scalar or Vector.
 
 The `BI` field of Branch Conditional operations is five bits, in scalar
 v3.0B this would select one bit of the 32 bit CR,
@@ -140,12 +145,20 @@ are extended to either scalar or vector and to select CR Fields 0..127
 as specified in SVP64 [[sv/svp64/appendix]].
 
 When the CR Fields selected by SVP64-Augmented `BI` is marked as scalar,
-then as the usual SVP64 rules apply,
+then as the usual SVP64 rules apply:
 the loop ends at the first element tested, after taking
 predication into consideration. Thus, also as usual, when a predicate mask is
 given, and `BI` marked as scalar, and `sz` is zero, srcstep
 skips forward to the first non-zero predicated element, and only that
 one element is tested.
+
+In other words, the fact that this is a Branch
+Operation (instead of an arithmetic one) does not result, ultimately,
+in significant changes as to
+how SVP64 is fundamentally applied, except with respect to early-out
+opportunities and CTR-testing, which are outlined below.
+
+# Description and Modes
 
 In SVP64 Horizontal-First Mode, the first failure in ALL mode (Great Big
 AND) results in early exit: no more updates to CTR occur (if requested);
