@@ -79,9 +79,17 @@ which may be enabled and combined):
   CTR is decremented, including options to decrement if a Condition
   test succeeds *or if it fails*.
 
+With these side-effects, basic Boolean Logic Analysis advises thay
+it is important to provide a means
+to enact them each based on whether testing succeeds *or fails*. This
+results in a not-insignificant number of additional Mode Augmentation bits,
+accompanying VLSET and CTR-test Modes respectively.
+
 It is also important to note that Vectorised Branches can be used
 in either SVP64 Horizontal-First or Vertical-First Mode. Essentially
-the behaviour is identical in both Modes.  It is also important
+the behaviour is identical in both Modes.
+
+It is also important
 to bear in mind that, fundamentally, Vectorised Branch-Conditional
 is still extremely close to the Scalar v3.0B Branch-Conditional
 instructions, and that the same v3.0B Scalar Branch-Conditional
