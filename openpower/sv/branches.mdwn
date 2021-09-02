@@ -194,7 +194,7 @@ testing options have been added.
 
 If both CTR-test and VLSET Modes are requested, then because the CTR decrement is on a per element basis, the total amount that CTR is decremented
 by will end up being VL *after* truncation (should that occur). In
-other words, the order is (as can be seen in pseudocode, below):
+other words, the order is strictly (as can be seen in pseudocode, below):
 
 1. compute the test
 2. (optionally) decrement CTR
@@ -265,6 +265,8 @@ is useful to know but in others all that is needed is the branch itself.
 (8 bytes not 4). This needs to be taken into consideration when computing
 branch offsets: the offset is relative to the start of the instruction,
 which includes the SVP64 Prefix*
+
+# Pseudocode and examples
 
 Pseudocode for Horizontal-First Mode:
 
