@@ -81,7 +81,13 @@ which may be enabled and combined):
 
 It is also important to note that Vectorised Branches can be used
 in either SVP64 Horizontal-First or Vertical-First Mode. Essentially
-the behaviour is identical in both Modes.
+the behaviour is identical in both Modes.  It is also important
+to bear in mind that, fundamentally, Vectorised Branch-Conditional
+is still extremely close to the Scalar v3.0B Branch-Conditional
+instructions, and that the same v3.0B Scalar Branch-Conditional
+instructions are still
+*completely separate and independent*, being unaltered and
+ubaffected by their SVP64 variants in every conceivable way.
 
 # Format and fields
 
