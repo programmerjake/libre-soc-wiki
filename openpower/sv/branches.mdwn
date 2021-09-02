@@ -166,7 +166,7 @@ in significant changes as to
 how SVP64 is fundamentally applied, except with respect to early-out
 opportunities and CTR-testing, which are outlined below.
 
-# Description and Modes
+# Horizontal-First and Vertical-First Modes
 
 In SVP64 Horizontal-First Mode, the first failure in ALL mode (Great Big
 AND) results in early exit: no more updates to CTR occur (if requested);
@@ -185,6 +185,8 @@ In Vertical-First Mode, setting the `ALL` bit results in `UNDEFINED`
 behaviour. Given that only one element is being tested at a time
 in Vertical-First Mode, a test designed to be done on multiple
 bits is meaningless.
+
+# Description and Modes
 
 Predication in both INT and CR modes may be applied to `sv.bc` and other
 SVP64 Branch Conditional operations, exactly as they may be applied to
