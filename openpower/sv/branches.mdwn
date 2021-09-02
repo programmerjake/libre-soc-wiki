@@ -37,7 +37,7 @@ CPU cycles not only to run them but also to load the predicate
 mask repeatedly for each one.  3D GPU ISAs can test for this scenario
 and jump over the fully-masked-out operations, by spotting that
 *all* Conditions are false. Or, conversely, they only call the function if at least
-one Condition) is set.
+one Condition is set.
 Therefore, in order to be commercially competitive, `sv.bc` and
 other Vector-aware Branch Conditional instructions are a high priority
 for 3D GPU workloads.
@@ -46,8 +46,8 @@ Given that Power ISA v3.0B is already quite powerful, particularly
 the Condition Registers and their interaction with Branches, there
 are opportunities to create an extremely flexible and compact
 Vectorised Branch behaviour.  In addition, the side-effects (updating
-of CTR, truncation of VL) make it a useful instruction even if
-the branch points to the next instruction (no actual branch).
+of CTR, truncation of VL, described below) make it a useful instruction
+even if the branch points to the next instruction (no actual branch).
 
 # Overview
 
@@ -71,7 +71,8 @@ the Condition Register file.
 Additional useful behaviour involves two primary Modes (both of
 which may be enabled and combined):
 
-* **VLSET Mode**: identical to Data-Dependent Fail-First Mode, with more
+* **VLSET Mode**: identical to Data-Dependent Fail-First Mode
+  for Arithmetic SVP64 operations, with more
   flexibility and a close interaction and integration into the
   underlying base Scalar v3.0B Branch instruction.
 * **CTR-test Mode**: gives much more flexibility over when and why
@@ -79,7 +80,8 @@ which may be enabled and combined):
   test succeeds *or if it fails*.
 
 It is also important to note that Vectorised Branches can be used
-in either SVP64 Horizontal-First or Vertical-First Mode.
+in either SVP64 Horizontal-First or Vertical-First Mode. Essentially
+the behaviour is identical in both Modes.
 
 # Format and fields
 
@@ -117,8 +119,9 @@ Brief description of fields:
 * **VSb** is most relevant for Vertical-First VLSET Mode. After testing,
   if VSb is set, VL is truncated if the branch succeeds.  If VSb is clear,
   VL is truncated if the branch did **not** take place.
-* **CTi** CTR inversion. CTR Mode normally decrements per element
-  tested. CTR inversion decrements if a test *fails*.
+* **CTi** CTR inversion. CTR-test Mode normally decrements per element
+  tested. CTR inversion decrements if a test *fails*. Only relevant
+  in CTR-test Mode.
 
 # Description and Modes
 
