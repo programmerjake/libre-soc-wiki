@@ -15,6 +15,8 @@ Links
 * <http://lists.libre-soc.org/pipermail/libre-soc-dev/2021-August/003416.html>
 * [[openpower/isa/branch]]
 
+# Rationale
+
 Scalar 3.0B Branch Conditional operations, `bc`, `bctar` etc. test a
 Condition Register.  However for parallel processing it is simply impossible
 to perform multiple independent branches: the Program Counter simply
@@ -40,13 +42,12 @@ Therefore, in order to be commercially competitive, `sv.bc` and
 other Vector-aware Branch Conditional instructions are a high priority
 for 3D GPU workloads.
 
-The `BI` field of Branch Conditional operations is five bits, in scalar
-v3.0B this would select one bit of the 32 bit CR,
-comprising eight CR Fields of 4 bits each.  In SVP64 there are
-16 32 bit CRs, containing 128 4-bit CR Fields.  Therefore, the 2 LSBs of
-`BI` select the bit from the CR Field (EQ LT GT SO), and the top 3 bits
-are extended to either scalar or vector and to select CR Fields 0..127
-as specified in SVP64 [[sv/svp64/appendix]].
+Given that Power ISA v3.0B is already quite powerful, particularly
+the Condition Registers and their interaction with Branches, there
+are opportunities to create an extremely flexible and compact
+Vectorised Branch behaviour.
+
+# Overview
 
 When considering an "array" of branch-tests, there are four useful modes:
 AND, OR, NAND and NOR of all Conditions.
@@ -60,6 +61,58 @@ inverting `BO[2]` which just leaves two modes:
   (including those where the predicate is masked out
    and the corresponding CR Field is considered to be
    set to `SNZ`)
+
+Additional useful behaviour involves two primary Modes (both of
+which may be enabled):
+
+# Format and fields
+
+SVP64 RM `MODE` (includes `ELWIDTH` and `ELWIDTH_SRC` bits) for Branch
+Conditional:
+
+| 4 | 5 | 6 | 7 | 19 | 20 |  21 | 22   23 |  description     |
+| - | - | - | - | -- | -- | --- |---------|----------------- |
+|ALL|LRu| / | / | 0  | 0  | /   |  SNZ sz | normal mode      |
+|ALL|LRu| / |VSb| 0  | 1  | VLI |  SNZ sz | VLSET mode       |
+|ALL|LRu|CTi| / | 1  | 0  | /   |  SNZ sz | CTR-test mode         |
+|ALL|LRu|CTi|VSb| 1  | 1  | VLI |  SNZ sz | CTR-test+VLSET mode   |
+
+Brief description of fields:
+
+* **sz**  if predication is enabled will put 4 copies of `SNZ` in place of
+  the src CR Field when the predicate bit is zero.  otherwise the element
+  is ignored or skipped, depending on context.
+* **ALL** when set, all branch conditional tests must pass in order for
+  the branch to succeed. When clear, it is the first sequentially
+  encountered successful test that causes the branch to succeed.
+  This is identical behaviour to how programming languages perform
+  early-exit on Boolean Logic chains.
+* **VLI** VLSET is identical to Data-dependent Fail-First mode.
+  In VLSET mode, VL is set equal (truncated) to the first point
+  where, assuming Conditions are tested sequentially, the branch succeeds
+  *or fails* depending if VSb is set.
+  If VLI (Vector Length Inclusive) is clear,
+  VL is truncated to *exclude* the current element, otherwise it is
+  included. SVSTATE.MVL is not changed: only VL.
+* **LRu**: Link Register Update. When set, Link Register will
+  only be updated if the Branch Condition succeeds. This avoids
+  destruction of LR during loops (particularly Vertical-First
+  ones).
+* **VSb** is most relevant for Vertical-First VLSET Mode. After testing,
+  if VSb is set, VL is truncated if the branch succeeds.  If VSb is clear,
+  VL is truncated if the branch did **not** take place.
+* **CTi** CTR inversion. CTR Mode normally decrements per element
+  tested. CTR inversion decrements if a test *fails*.
+
+# Description and Modes
+
+The `BI` field of Branch Conditional operations is five bits, in scalar
+v3.0B this would select one bit of the 32 bit CR,
+comprising eight CR Fields of 4 bits each.  In SVP64 there are
+16 32 bit CRs, containing 128 4-bit CR Fields.  Therefore, the 2 LSBs of
+`BI` select the bit from the CR Field (EQ LT GT SO), and the top 3 bits
+are extended to either scalar or vector and to select CR Fields 0..127
+as specified in SVP64 [[sv/svp64/appendix]].
 
 When the CR Fields selected by SVP64-Augmented `BI` is marked as scalar,
 then as the usual SVP64 rules apply,
@@ -111,42 +164,6 @@ controlled by the Predicate mask. This is particularly useful in `VLSET`
 mode, which will truncate SVSTATE.VL at the point of the first failed
 test.*)
 
-SVP64 RM `MODE` (includes `ELWIDTH` and `ELWIDTH_SRC` bits) for Branch
-Conditional:
-
-| 4 | 5 | 6 | 7 | 19 | 20 |  21 | 22   23 |  description     |
-| - | - | - | - | -- | -- | --- |---------|----------------- |
-|ALL|LRu| / | / | 0  | 0  | /   |  SNZ sz | normal mode      |
-|ALL|LRu| / |VSb| 0  | 1  | VLI |  SNZ sz | VLSET mode       |
-|ALL|LRu|CTi| / | 1  | 0  | /   |  SNZ sz | CTR-test mode         |
-|ALL|LRu|CTi|VSb| 1  | 1  | VLI |  SNZ sz | CTR-test+VLSET mode   |
-
-Fields:
-
-* **sz**  if predication is enabled will put 4 copies of `SNZ` in place of
-  the src CR Field when the predicate bit is zero.  otherwise the element
-  is ignored or skipped, depending on context.
-* **ALL** when set, all branch conditional tests must pass in order for
-  the branch to succeed. When clear, it is the first sequentially
-  encountered successful test that causes the branch to succeed.
-  This is identical behaviour to how programming languages perform
-  early-exit on Boolean Logic chains.
-* **VLI** VLSET is identical to Data-dependent Fail-First mode.
-  In VLSET mode, VL is set equal (truncated) to the first point
-  where, assuming Conditions are tested sequentially, the branch succeeds
-  *or fails* depending if VSb is set.
-  If VLI (Vector Length Inclusive) is clear,
-  VL is truncated to *exclude* the current element, otherwise it is
-  included. SVSTATE.MVL is not changed: only VL.
-* **LRu**: Link Register Update. When set, Link Register will
-  only be updated if the Branch Condition succeeds. This avoids
-  destruction of LR during loops (particularly Vertical-First
-  ones).
-* **VSb** is most relevant for Vertical-First VLSET Mode. After testing,
-  if VSb is set, VL is truncated if the branch succeeds.  If VSb is clear,
-  VL is truncated if the branch did **not** take place.
-* **CTi** CTR inversion. CTR Mode normally decrements per element
-  tested. CTR inversion decrements if a test *fails*.
 
 Normally, CTR mode will decrement once per Condition Test, resulting
 under normal circumstances that CTR reduces by up to VL in Horizontal-First
