@@ -233,6 +233,14 @@ cache-inhibited LD should be performed, followed by a VSPLAT-augmented mv.
 
 ffirst LD/ST to multiple pages via a Vectorised base is considered a security risk due to the abuse of probing multiple pages in rapid succession and getting feedback on which pages would fail.  Therefore in these special circumstances requesting ffirst with a vector base is instead interpreted as element-strided LD/ST.  See <https://bugs.libre-soc.org/show_bug.cgi?id=561>
 
+High security implementations where any kind of speculative probing
+of memory pages is considered a risk should take advantage of the fact that
+implementations may truncate VL at any point, without requiring software
+to be rewritten and made non-portable. Such implementations may choose
+to *always* set VL=1 which will have the effect of terminating any
+speculative probing (and also adversely affect performance), but will
+at least not require applications to be rewritten.
+
 # LOAD/STORE Elwidths <a name="elwidth"></a>
 
 Loads and Stores are almost unique in that the OpenPOWER Scalar ISA
@@ -261,7 +269,7 @@ is treated effectively as completely separate and distinct from SV
 augmentation.  This is primarily down to quirks surrounding LE/BE and
 byte-reversal in OpenPOWER.
 
-It is unfortubately possible to request an elwidth override on the memory side which
+It is unfortunately possible to request an elwidth override on the memory side which
 does not mesh with the operation width: these result in `UNDEFINED`
 behaviour.  The reason is that the effect of attempting a 64-bit `sv.ld`
 operation with a source elwidth override of 8/16/32 would result in
@@ -314,7 +322,6 @@ and other modes have all been removed, for clarity and simplicity:
         # optionally performs byteswap at op width
         if (bytereverse):
             memread = byteswap(memread, op_width)
-
 
         # check saturation.
         if svpctx.saturation_mode:
