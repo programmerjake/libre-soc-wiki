@@ -91,8 +91,9 @@ Predication in both INT and CR modes may be applied to `sv.bc` and other
 SVP64 Branch Conditional operations, exactly as they may be applied to
 other SVP64 operations.  When `sz` is zero, any masked-out Branch-element
 operations are not included in condition testing, exactly like all other
-SVP64 operations. With one exception this *includes* side-effects such as potentially updating
-LR and CTR which will also be skipped. The exception here is when
+SVP64 operations, *including* side-effects such as potentially updating
+LR or CTR, which will also be skipped. There is *one* exception here,
+which is when
 `BO[2]=0, sz=0, CTR-test=0, CTi=1` and the relevant element
 predicate mask bit is also zero:
 under these special circumstances CTR will also decrement.
