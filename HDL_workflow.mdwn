@@ -40,9 +40,6 @@ The main message here: **use the right tool for the right job**.
 * ftp server (<https://ftp.libre-soc.org/>): large (temporary,
   auto-generated) file store.
 
-We will add an IRC channel at some point when there are enough people
-to warrant having one (and it will be publicly archived)
-
 Note also the lack of a "forum" in the above list.  this is very
 deliberate.  forums are a serious distraction when it comes to technical
 heavily goal-orientated development. recent internet users may enjoy
@@ -285,6 +282,11 @@ access to ultra-high resolution screens.
 
 # Software prerequisites<a name="software-prerequisites"></a>
 
+**Please make sure if you install manually that you install dependencies
+in strict order.  Failing to adhere to this will result in pip3 downloading
+unauthorised older software versions.  See
+<http://lists.libre-soc.org/pipermail/libre-soc-dev/2021-September/003666.html>**
+
 Whilst many resources online advocate "`sudo`" in front of all root-level
 commands below, this quickly becomes tiresome. run "`sudo bash`", get a
 root prompt, and save yourself some typing.
@@ -335,6 +337,9 @@ relevant unit tests pass 100%.  This ensures that people's work does not
 get "lost" or isolated and out of touch due to major branch diversion,
 and that people communicate and coordinate with each other.
 
+This is not a hard rule: under special cirmstances branches can be useful.
+They should not however be considered "routine".
+
 ## yosys
 
 Follow the source code (git clone) instructions here, do **not** use
@@ -374,7 +379,11 @@ flows.
 
 ## nmigen
 
-[nmigen](https://m-labs.hk/gateware/nmigen/) may be installed as follows:
+**PLEASE NOTE: it is critical to install nmigen as the first dependency
+prior to installing any further python-based Libre-SOC HDL repositories.
+If "pip3 list" shows that nmigen has been auto-installed please remove it**
+
+[nmigen](https://nmigen.info/) may be installed as follows:
 
 * mkdir ~/src
 * cd !$
