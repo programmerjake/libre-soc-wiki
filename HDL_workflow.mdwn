@@ -655,6 +655,10 @@ Before running the following, install the
 dependencies.  This is easiest done with this script
 <https://git.libre-soc.org/?p=dev-env-setup.git;a=blob;f=install-hdl-apt-reqs;hb=HEAD>
 
+**It is critically important to install these in STRICT order, otherwise
+pip3 interferes and performs unauthorised downloads without informing
+you of what it is doing**.
+
 * mkdir ~/src
 * cd !$
 * git clone gitolite3@git.libre-soc.org:nmigen.git
@@ -665,7 +669,7 @@ dependencies.  This is easiest done with this script
 * git clone gitolite3@git.libre-soc.org:nmigen-soc.git
 * git clone gitolite3@git.libre-soc.org:soc.git
 
-In each of these directories, in the order listed, track down the
+In each of these directories, **in the order listed***, track down the
 `setup.py` file, then, as root (`sudo bash`), run the following:
 
 * python3 setup.py develop
@@ -676,7 +680,9 @@ for multi-user machine use however it is often just easier to get your
 own machine these days.
 
 The reason for the order is because soc depends on ieee754fpu, and
-ieee754fpu depends on nmutil
+ieee754fpu depends on nmutil.  If you do not follow the listed order
+pip3 will go off and download an arbitrary version without your
+consent.
 
 If "`python3 setup.py install`" is used it is a pain: edit, then
 install. edit, then install. It gets extremely tedious, hence why
