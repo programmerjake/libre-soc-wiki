@@ -259,7 +259,7 @@ The source override applies to RB, and before adding to
 RA in order to calculate the Effective Address, if SEA is
 set RB is sign-extended from elwidth bits to the full 64
 bits.  For other Modes (ffirst, saturate),
-all EA computation is unsigned.
+all EA computation with elwidth overrides is unsigned.
 
 Note that cache-inhibited LD/ST (`ldcix`) when VSPLAT is activated will perform **multiple** LD/ST operations, sequentially.  `ldcix` even with scalar src will read the same memory location *multiple times*, storing the result in successive Vector destination registers.  This because the cache-inhibit instructions are used to read and write memory-mapped peripherals.
 If a genuine cache-inhibited LD-VSPLAT is required then a *scalar*
