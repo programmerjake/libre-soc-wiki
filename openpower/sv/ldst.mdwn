@@ -41,8 +41,17 @@ a number of different modes:
 * fixed stride (contiguous sequence with no gaps) aka "unit" stride
 * element strided (sequential but regularly offset, with gaps)
 * vector indexed (vector of base addresses and vector of offsets)
-* fail-first on the same (where it makes sense to do so)
+* Speculative fail-first (where it makes sense to do so)
 * Structure Packing (covered in SV by [[sv/remap]]).
+
+Also included in SVP64 LD/ST is both signed and unsigned Saturation,
+as well as Eement-width overrides and Twin-Predication.
+
+*Missing* from Scalar Power ISA v3.0B is a scalar [[mv.x] instruction
+on top of which any good Vector ISA provides Vector Scatter-Gather.
+Due to the way that SVP64 is desigbed, this needs to be added separately
+(to Scalar Power ISA) before the
+Vectorised variant can also be made available.
 
 # Vectorisation of Scalar Power ISA v3.0B
 
