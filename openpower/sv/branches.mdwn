@@ -292,21 +292,28 @@ useful, because it can be used to truncate VL to the first predicated
 branch offsets: the offset is relative to the start of the instruction,
 which includes the SVP64 Prefix*
 
+# Boolean Logic combinations
+
+There are an extraordinary number of different combinations which
+provide completely different and useful behaviour.
 Available options to combine:
 
 * `BO[0]` to make an unconditional branch would seem irrelevant if
-  it were not for predication and for side-effects.
+  it were not for predication and for side-effects (CTR Mode
+  for example)
+* Enabling CTR-test Mode and setting `BO[2]` can still result in the
+  Branch
+  taking place, not because the Condition Test itself failed, but
+  because CTR reached zero **because**, as required by CTR-test mode,
+  CTR was decremented as a  **result** of Condition Tests failing.
 * `BO[1]` to select whether the CR bit being tested is zero or nonzero
 * `R30` and `~R30` and other predicate mask options including CR and
   inverted CR bit testing
 * `sz` and `SNZ` to insert either zeros or ones in place of masked-out
   predicate bits
 * `ALL` or `ANY` behaviour corresponding to `AND` of all tests and
-  `OR` of all tests, respectively.
+  `OR` of all tests, respectively. 
 
-In addition to the above, it is necessary to select whether, in `svstep`
-mode, the Vector CR Field is to be overwritten or not: in some cases it
-is useful to know but in others all that is needed is the branch itself.
 
 # Pseudocode and examples
 
