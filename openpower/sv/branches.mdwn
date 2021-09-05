@@ -76,6 +76,12 @@ Early-exit is enacted such that the Vectorised Branch does not
 perform needless extra tests, which will help reduce reads on
 the Condition Register file.
 
+*Note: Early-exit is **MANDATORY** (required) behaviour.
+Branches **MUST** exit at the first failure point, for
+exactly the same reasons for which it us mandatory in
+programming languages doing early-exit: to avoid
+damaging side-effects.*
+
 Additional useful behaviour involves two primary Modes (both of
 which may be enabled and combined):
 
