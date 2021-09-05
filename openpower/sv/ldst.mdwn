@@ -208,6 +208,11 @@ The modes for `RA+RB` indexed version are slightly different:
 | 11  | inv | CR-bit  |  Rc=1: pred-result CR sel |
 | 11  | inv | dz  RC1 |  Rc=0: pred-result z/nonz |
 
+Vector Indexed Strided Mode is qualified as follows:
+
+    if mode = 0b01 and !RA.isvec and !RB.isvec:
+        svctx.ldstmode = elementstride
+
 A summary of the effect of Vectorisation of src or dest:
  
      imm(RA)  RT.v   RA.v   no stride allowed
