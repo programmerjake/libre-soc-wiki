@@ -78,9 +78,12 @@ the Condition Register file.
 
 *Note: Early-exit is **MANDATORY** (required) behaviour.
 Branches **MUST** exit at the first failure point, for
-exactly the same reasons for which it us mandatory in
+exactly the same reasons for which it is mandatory in
 programming languages doing early-exit: to avoid
-damaging side-effects.*
+damaging side-effects. Speculative testing of Contition
+Register Fields is permitted, as is speculative updating
+of CTR, as long as, as usual in any Out-of-Order microarchitecture,
+that speculative testing is cancelled should an early-exit occur.*
 
 Additional useful behaviour involves two primary Modes (both of
 which may be enabled and combined):
