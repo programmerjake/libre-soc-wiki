@@ -100,9 +100,10 @@ to enact them each based on whether testing succeeds *or fails*. This
 results in a not-insignificant number of additional Mode Augmentation bits,
 accompanying VLSET and CTR-test Modes respectively.
 
-It is also important to note that Vectorised Branches can be used
-in either SVP64 Horizontal-First or Vertical-First Mode. Essentially
-the behaviour is identical in both Modes.
+Vectorised Branches can be used
+in either SVP64 Horizontal-First or Vertical-First Mode. Essentially,
+at an element level, the behaviour is identical in both Modes,
+although the `ALL` bit is meaningless in Vertical-First Mode.
 
 It is also important
 to bear in mind that, fundamentally, Vectorised Branch-Conditional
