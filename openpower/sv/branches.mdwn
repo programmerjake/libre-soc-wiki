@@ -320,6 +320,14 @@ Available options to combine:
 * `ALL` or `ANY` behaviour corresponding to `AND` of all tests and
   `OR` of all tests, respectively. 
 
+The most obviously useful combinations here are to set `BO[1]` to zero
+in order to turn `ALL` into Great-Big-NAND and `ANY` into
+Great-Big-NOR.  Other Mode bits which perform behavioural inversion then
+have to work round the fact that the Condition Testing is NOR or NAND.
+The alternative to not having additional behavioural inversion
+(`SNZ`, `VSb`, `CTi`) would be to have a second (unconditional)
+branch directly after the first, which the first branch jumps over.
+This contrived construct is avoided by the behavioural inversion bits.
 
 # Pseudocode and examples
 
