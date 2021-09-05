@@ -341,7 +341,13 @@ Available options to combine:
 * `sz` and `SNZ` to insert either zeros or ones in place of masked-out
   predicate bits
 * `ALL` or `ANY` behaviour corresponding to `AND` of all tests and
-  `OR` of all tests, respectively. 
+  `OR` of all tests, respectively.
+* Predicate Mask bits, which combine in effect with the CR being
+  tested.
+* Inversion of Predicate Masks (`~r3` instead of `r3`, or using
+  `NE` rather than `EQ`) which results in an additional
+  level of possible ANDing, ORing etc. that would otherwise
+  need explicit instructions.
 
 The most obviously useful combinations here are to set `BO[1]` to zero
 in order to turn `ALL` into Great-Big-NAND and `ANY` into
