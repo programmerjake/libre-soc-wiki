@@ -287,6 +287,11 @@ required.
 useful, because it can be used to truncate VL to the first predicated
 (non-masked-out) element.
 
+*Programming note: One important point is that SVP64 instructions are 64 bit.
+(8 bytes not 4). This needs to be taken into consideration when computing
+branch offsets: the offset is relative to the start of the instruction,
+which includes the SVP64 Prefix*
+
 Available options to combine:
 
 * `BO[0]` to make an unconditional branch would seem irrelevant if
@@ -302,11 +307,6 @@ Available options to combine:
 In addition to the above, it is necessary to select whether, in `svstep`
 mode, the Vector CR Field is to be overwritten or not: in some cases it
 is useful to know but in others all that is needed is the branch itself.
-
-*Programming note: One important point is that SVP64 instructions are 64 bit.
-(8 bytes not 4). This needs to be taken into consideration when computing
-branch offsets: the offset is relative to the start of the instruction,
-which includes the SVP64 Prefix*
 
 # Pseudocode and examples
 
