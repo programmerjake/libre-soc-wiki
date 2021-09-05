@@ -121,7 +121,9 @@ Brief description of fields:
 
 * **sz**  if predication is enabled will put 4 copies of `SNZ` in place of
   the src CR Field when the predicate bit is zero.  otherwise the element
-  is ignored or skipped, depending on context.
+  is ignored or skipped, depending on context. Contrast this with
+  normal SVP64 zeroing behaviour, where *only* a zero is put in
+  place of masked-out predicate bits.
 * **ALL** when set, all branch conditional tests must pass in order for
   the branch to succeed. When clear, it is the first sequentially
   encountered successful test that causes the branch to succeed.
