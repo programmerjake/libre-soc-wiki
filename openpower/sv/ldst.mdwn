@@ -109,7 +109,10 @@ Indexed LD is:
         if (RAupdate.isvec) while (!(ps & 1<<u)) u++;
         if (RB.isvec) while (!(ps & 1<<k)) k++;
         if (RT.isvec) while (!(pd & 1<<j)) j++;
-        EA = ireg[RA+i] + ireg[RB+k] # indexed address
+        if svctx.ldstmode == elementstride:
+            EA = ireg[RA] + ireg[RB]*j   # register-strided
+        else
+            EA = ireg[RA+i] + ireg[RB+k] # indexed address
         if RAupdate: ireg[RAupdate+u] = EA
         ireg[RT+j] <= MEM[EA];
         if (!RT.isvec)
@@ -128,7 +131,7 @@ Note in both cases that [[sv/svp64]] allows RA-as-a-dest in "update" mode (`ldux
 A minor complication (caused by the retro-fitting of modern Vector
 features to a Scalar ISA) is that certain features do not exactly make
 sense or are considered a security risk.  Fail-first on Vector Indexed
-allows attackers to probe large numbers of pages from userspace, where
+would allow attackers to probe large numbers of pages from userspace, where
 strided fail-first (by creating contiguous sequential LDs) does not.
 
 In addition, reduce mode makes no sense, and for LD/ST with immediates
