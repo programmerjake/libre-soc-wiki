@@ -238,7 +238,7 @@ cache-inhibited LD should be performed, followed by a VSPLAT-augmented mv.
 
 ## LD/ST ffirst
 
-ffirst LD/ST to multiple pages via a Vectorised Index base is considered a security risk due to the abuse of probing multiple pages in rapid succession and getting feedback on which pages would fail.  Therefore in these special circumstances requesting ffirst on Indexed LD/ST is instead interpreted as element-strided LD/ST.  See <https://bugs.libre-soc.org/show_bug.cgi?id=561>
+ffirst LD/ST to multiple pages via a Vectorised Index base is considered a security risk due to the abuse of probing multiple pages in rapid succession and getting feedback on which pages would fail.  Therefore Vector Indexed LD/ST is prohibited entirely, and the Mode bit instead used for element-strided LD/ST.  See <https://bugs.libre-soc.org/show_bug.cgi?id=561>
 
     for(i = 0; i < VL; i++)
         reg[rt + i] = mem[reg[ra] + i * reg[rb]];
@@ -250,6 +250,12 @@ to be rewritten and made non-portable. Such implementations may choose
 to *always* set VL=1 which will have the effect of terminating any
 speculative probing (and also adversely affect performance), but will
 at least not require applications to be rewritten.
+
+Low-performance simpler hardware implementations may
+choose to also set VL=1 as the bare minimum compliant implementation of
+LD/ST Fail-First. It is however critically important to remember that
+the first element LD/ST **MUST** be treated as an ordinary LD/ST, i.e.
+**MUST** raise exceptions exactly like an ordinary LD/ST.
 
 # LOAD/STORE Elwidths <a name="elwidth"></a>
 
