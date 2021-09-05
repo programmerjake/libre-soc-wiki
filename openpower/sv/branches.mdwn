@@ -135,8 +135,9 @@ Brief description of fields:
   normal SVP64 `sz=1` behaviour, where *only* a zero is put in
   place of masked-out predicate bits.
 * **sz=0** When `sz=0` skipping occurs as usual, but unlike all
-  other SVP64 behaviour, there are certain exceptional
-  special circunstances where CTR
+  other SVP64 behaviour which entirely skips an element with
+  no related side-effects at all, there are certain
+  special circumstances where CTR
   may be decremented.  See CTR-test Mode, below.
 * **ALL** when set, all branch conditional tests must pass in order for
   the branch to succeed. When clear, it is the first sequentially
