@@ -128,11 +128,16 @@ Conditional:
 
 Brief description of fields:
 
-* **sz**  if predication is enabled will put 4 copies of `SNZ` in place of
-  the src CR Field when the predicate bit is zero.  otherwise the element
-  is ignored or skipped, depending on context. Contrast this with
-  normal SVP64 zeroing behaviour, where *only* a zero is put in
+* **sz=1** if predication is enabled and `sz=1` and a predicate
+  element bit is zero, `SNZ` will
+  be substituted in place of the CR bit selected by `BI`.
+  the src CR Field when the predicate bit is zero. Contrast this with
+  normal SVP64 `sz=1` behaviour, where *only* a zero is put in
   place of masked-out predicate bits.
+* **sz=0** When `sz=0` skipping occurs as usual, but unlike all
+  other SVP64 behaviour, there are certain exceptional
+  special circunstances where CTR
+  may be decremented.  See CTR-test Mode, below.
 * **ALL** when set, all branch conditional tests must pass in order for
   the branch to succeed. When clear, it is the first sequentially
   encountered successful test that causes the branch to succeed.
