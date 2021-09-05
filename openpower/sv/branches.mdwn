@@ -38,13 +38,21 @@ mask repeatedly for each one.  3D GPU ISAs can test for this scenario
 and jump over the fully-masked-out operations, by spotting that
 *all* Conditions are false. Or, conversely, they only call the function if at least
 one Condition is set.
+
+Unless Branches are aware and capable of such analysis, additional
+instructions are required which perform Horizontal Cumulative
+analysis of Vectorised Condition Register Fields, in order to
+reduce the Vector of CR Fields down to one single yes or no
+decision that the Scalar Branch-Conditional can cope with.
+Such instructions would be unavoidable, required, and costly
+by comparison to a Vector-aware Branch.
 Therefore, in order to be commercially competitive, `sv.bc` and
 other Vector-aware Branch Conditional instructions are a high priority
 for 3D GPU workloads.
 
 Given that Power ISA v3.0B is already quite powerful, particularly
 the Condition Registers and their interaction with Branches, there
-are opportunities to create an extremely flexible and compact
+are opportunities to create extremely flexible and compact
 Vectorised Branch behaviour.  In addition, the side-effects (updating
 of CTR, truncation of VL, described below) make it a useful instruction
 even if the branch points to the next instruction (no actual branch).
