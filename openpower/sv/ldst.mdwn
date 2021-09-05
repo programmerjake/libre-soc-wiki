@@ -138,7 +138,7 @@ an alternative table meaning for [[sv/svp64]] mode.  The following modes make se
 * saturation
 * predicate-result (mostly for cache-inhibited LD/ST)
 * normal
-* fail-first, where a vector source on RA or RB is banned
+* fail-first (where Vector Indexed is banned)
 * Signed Effective Address computation (Vector Indexed only)
 
 Also, given that FFT, DCT and other related algorithms
@@ -199,9 +199,8 @@ The modes for `RA+RB` indexed version are slightly different:
 
 | 0-1 |  2  |  3   4  |  description              |
 | --- | --- |---------|-------------------------- |
-| 00  | SEA |  dz  sz | Signed Effective Address         |
-| 01  | inv | CR-bit  | Rc=1: ffirst CR sel              |
-| 01  | inv | dz  RC1 |  Rc=0: ffirst z/nonz |
+| 00  | SEA |  dz  sz | normal mode        |
+| 01  | SEA | dz sz  | Strided (scalar only source)   |
 | 10  |   N | dz   sz |  sat mode: N=0/1 u/s |
 | 11  | inv | CR-bit  |  Rc=1: pred-result CR sel |
 | 11  | inv | dz  RC1 |  Rc=0: pred-result z/nonz |
@@ -212,9 +211,9 @@ A summary of the effect of Vectorisation of src or dest:
      imm(RA)  RT.s   RA.v   no stride allowed
      imm(RA)  RT.v   RA.s   stride-select allowed
      imm(RA)  RT.s   RA.s   not vectorised
-     RA,RB    RT.v  {RA|RB}.v ffirst banned
-     RA,RB    RT.s  {RA|RB}.v ffirst banned
-     RA,RB    RT.v  {RA&RB}.s VSPLAT possible
+     RA,RB    RT.v  {RA|RB}.v UNDEFINED
+     RA,RB    RT.s  {RA|RB}.v UNDEFINED
+     RA,RB    RT.v  {RA&RB}.s VSPLAT possible. stride selectable
      RA,RB    RT.s  {RA&RB}.s not vectorised
 
 Signed Effective Address computation is only relevant for
