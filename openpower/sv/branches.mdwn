@@ -33,19 +33,17 @@ and a fundamental part of Shader Compilers.  Example:
 without such multi-condition
 test-and-branch, if a predicate mask is all zeros a large batch of
 instructions may be masked out to `nop`, and it would waste
-CPU cycles not only to run them but also to load the predicate
-mask repeatedly for each one.  3D GPU ISAs can test for this scenario
-and jump over the fully-masked-out operations, by spotting that
-*all* Conditions are false. Or, conversely, they only call the function if at least
-one Condition is set.
+CPU cycles to run them.  3D GPU ISAs can test for this scenario
+and jump over fully-masked-out operations, by spotting that
+*all* Conditions are false.
 
 Unless Branches are aware and capable of such analysis, additional
-instructions are required which perform Horizontal Cumulative
+instructions would be required which perform Horizontal Cumulative
 analysis of Vectorised Condition Register Fields, in order to
 reduce the Vector of CR Fields down to one single yes or no
 decision that a Scalar-only v3.0B Branch-Conditional could cope with.
 Such instructions would be unavoidable, required, and costly
-by comparison to a Vector-aware Branch.
+by comparison to a single Vector-aware Branch.
 Therefore, in order to be commercially competitive, `sv.bc` and
 other Vector-aware Branch Conditional instructions are a high priority
 for 3D GPU workloads.
