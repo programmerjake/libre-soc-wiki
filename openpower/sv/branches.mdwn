@@ -277,10 +277,12 @@ considered.
   completely different from normal SVP64 `sz=0` behaviour)
 * **CTR-test=1, CTi=0**: CTR decrements on a per-element basis
   if `BO[2]` is zero and the Condition Test succeeds.
-  Masked-out elements when `sz=0` are skipped.
+  Masked-out elements when `sz=0` are skipped (including
+  not decrementing CTR)
 * **CTR-test=1, CTi=1**: CTR decrements on a per-element basis
   if `BO[2]` is zero and the Condition Test *fails*.
-  Masked-out elements when `sz=0` are skipped.
+  Masked-out elements when `sz=0` are skipped (including
+  not decrementing CTR)
 
 `CTR-test=0, CTi=1, sz=0` requires special emphasis because it is the
 only time in the entirety of SVP64 that has side-effects when
