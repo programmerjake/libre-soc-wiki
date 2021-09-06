@@ -11,7 +11,8 @@ be made more flexible.  However the rules that apply in this section
 also apply to future CR-based instructions.  Note that these rules and
 the alternative mapping **only** applies to instructions that **only**
 reference a CR Field or CR bit as the sole exclusive result. This section
-**does not** apply to instructions... TODO
+**does not** apply to instructions which primarily produce arithmetic
+results that also produce a CR Field (such as when Rc=1).
 
 SVP64 RM `MODE` (includes `ELWIDTH` bits) for CR-based operations:
 
