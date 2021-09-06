@@ -146,8 +146,9 @@ Indexed LD is:
         ireg[RT+j] <= MEM[EA];
         if (!RT.isvec)
             break # destination scalar, end immediately
-        if (!RA.isvec && !RB.isvec)
-            break # scalar-scalar
+        if svctx.ldstmode != elementstride:
+            if (!RA.isvec && !RB.isvec)
+                break # scalar-scalar
         if (RA.isvec) i++;
         if (RAupdate.isvec) u++;
         if (RB.isvec) k++;
