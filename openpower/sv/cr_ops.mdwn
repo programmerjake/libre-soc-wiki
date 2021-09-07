@@ -101,15 +101,18 @@ of the operation.
 
     for i in range(VL):
         # predication test, skip all masked out elements.
+        # skips when sz=0
         if predicate_masked_out(i):
              continue
+        # result is to go into CR. may be a 4-bit CR Field
+        # (3-bit mode) or just a single bit (5-bit mode)
         result = op(...)
-        CRnew = analyse(result) # calculates eq/lt/gt
-        # Rc=1 always stores the CR
-        if Rc=1 or RC1:
-            crregs[offs+i] = CRnew
+        # obtain CRbit from BA result operand field,
+        # if this CR op has 5-bit CR result operands
+        if 5bit mode:
+           CRbit = BA[3:4] 
         # now test CR, similar to branch
-        if RC1 or CRnew[BO[0:1]] != BO[2]:
+        if CRnew[CRbit] != inv:
             continue # test failed: cancel store
-        # result optionally stored but CR always is
-        iregs[RT+i] = result
+        # result optionally stored
+        update_CR(result)
