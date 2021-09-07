@@ -39,7 +39,7 @@ SVP64 RM `MODE` (includes `ELWIDTH` bits) for CR-based operations:
 Fields:
 
 
-# Data-dependent fail-first and Pred-result on CR operations
+# Data-dependent fail-first on CR operations
 
 Data-dependent SVP64 Vectorised Operations involving the creation or
 modification of a CR require an extra two bits, which are not available
@@ -90,3 +90,26 @@ This limits sv.mcrf in that it may not use the `VLi` (VL inclusive)
 Mode. This is unfortunste but unavoidable due to encoding pressure
 on SVP64.
 
+# Predicate-result Condition Register operations
+
+These are again slightly different compared to SVP64 arithmetic
+pred-result (described in [[svp64/appendix]]). The reason is that,
+again, for arithmetic operations the production of a CR Field when
+Rc=1 is a *co-result* accompanying the main arithmetic result, whereas
+for CR-based operations the CR Field or CR bit *is* itself the result
+of the operation.
+
+    for i in range(VL):
+        # predication test, skip all masked out elements.
+        if predicate_masked_out(i):
+             continue
+        result = op(...)
+        CRnew = analyse(result) # calculates eq/lt/gt
+        # Rc=1 always stores the CR
+        if Rc=1 or RC1:
+            crregs[offs+i] = CRnew
+        # now test CR, similar to branch
+        if RC1 or CRnew[BO[0:1]] != BO[2]:
+            continue # test failed: cancel store
+        # result optionally stored but CR always is
+        iregs[RT+i] = result
