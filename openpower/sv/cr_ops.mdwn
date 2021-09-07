@@ -20,6 +20,13 @@ SVP64 RM `MODE` (includes `ELWIDTH` bits) for CR-based operations:
 | - | - | ----- | --- |---------|----------------- |
 |dz |VLi| 01    | inv |  CR-bit | normal mode      |
 |sz |VLi| 01    | inv |  dz Rc1 | VLSET mode       |
+| / | / | 00    |   0 |  dz  sz | normal mode                      |
+| / | / | 00    |   1 | 0  RG   | scalar reduce mode (mapreduce), SUBVL=1 |
+| / | / | 00    |   1 | 1  CRM  | parallel reduce mode (mapreduce), SUBVL=1 |
+| / | / | 00    |   1 | SVM RG  | subvector reduce mode, SUBVL>1   |
+| / | / | 10    |   / | /   /   |  RESERVED |
+|dz | / | 11    | inv | CR-bit  |  Rc=1: pred-result CR sel |
+|sz | / | 11    | inv | dz  RC1 |  Rc=0: pred-result z/nonz |
 
 Fields:
 
