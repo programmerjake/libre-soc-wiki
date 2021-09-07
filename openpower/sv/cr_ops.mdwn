@@ -42,7 +42,14 @@ Thus, logically, we may set the following rule:
   the one that has just been modified by the operation.
 * When a 3-bit CR Result field is used the `inv CRbit` variant
   must be used in order to select which CR Field bit shall
-  be tested (EQ, LE, GE, SO).
+  be tested (EQ, LE, GE, SO)
+
+The reason why the 3-bit CR variant needs the additional CR-bit
+field should be obvious from the fact that the 3-bit CR Field
+from the base Power ISA v3.0B operation clearly does not contain
+and is missing the two CR Field Selector bits. Thus, these two
+bits (to select EQ, LE, GE or SO) must be provided in another
+way.
 
 Examples of the former type:
 
