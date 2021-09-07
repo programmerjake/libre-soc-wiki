@@ -22,6 +22,15 @@ Other modes are still applicable and include:
 * Scalar and parallel reduction
 * Predicate-result
 
+Data-dependent Fail-first is useful to truncate VL based on
+analysis of a Condition Register result bit.  Reduction is useful
+for turning a Vector of Condition Register Fields into one
+single Condition Register. Predicate-result is equivalent
+to python "filter", in that only elements which pass a test
+will end up actually being modified. This is in effect the same
+as ANDing the Condition Test with the destination predicate
+mask (hence the name, "predicate-result").
+
 SVP64 RM `MODE` (includes `ELWIDTH` bits) for CR-based operations:
 
 | 4 | 5 | 19-20 |  21 | 22   23 |  description     |
@@ -34,10 +43,11 @@ SVP64 RM `MODE` (includes `ELWIDTH` bits) for CR-based operations:
 | / | / | 00    |   1 | SVM RG  | subvector reduce mode, SUBVL>1   |
 | / | / | 10    |   / | /   /   |  RESERVED |
 |dz | / | 11    | inv | CR-bit  |  3-bit pred-result CR sel |
-|sz | / | 11    | inv | dz  RC1 |  5-bit pred-result z/nonz |
+| / | / | 11    | inv | dz  sz  |  5-bit pred-result z/nonz |
 
 Fields:
 
+TODO
 
 # Data-dependent fail-first on CR operations
 
