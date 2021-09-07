@@ -1,18 +1,16 @@
-# Data-dependent fail-first on CR operations
+# Condition Register SVP64 Operations
 
-Data-dependent SVP64 Vectorised Operations involving the creation or
-modification of a CR require an extra two bits, which are not available
-in the compact space of the `MODE` Field. With the concept of element
-width overrides being meaningless for CR Fields it is possible to use the
-`ELWIDTH` field for extra fields.
+Condition Register Fields are only 4 bits wide: this presents some
+interesting conceptual challenges for SVP64, with respect to element
+width (which is clearly meaningless).
 
-Condition Register based operations such as `mfcr` and `crand` can thus
-be made more flexible.  However the rules that apply in this section
-also apply to future CR-based instructions.  Note that these rules and
+
+Note that these rules and
 the alternative mapping **only** applies to instructions that **only**
 reference a CR Field or CR bit as the sole exclusive result. This section
 **does not** apply to instructions which primarily produce arithmetic
 results that also produce a CR Field (such as when Rc=1).
+
 
 SVP64 RM `MODE` (includes `ELWIDTH` bits) for CR-based operations:
 
@@ -29,6 +27,19 @@ SVP64 RM `MODE` (includes `ELWIDTH` bits) for CR-based operations:
 |sz | / | 11    | inv | dz  RC1 |  Rc=0: pred-result z/nonz |
 
 Fields:
+
+
+# Data-dependent fail-first and Pred-result on CR operations
+
+Data-dependent SVP64 Vectorised Operations involving the creation or
+modification of a CR require an extra two bits, which are not available
+in the compact space of the `MODE` Field. With the concept of element
+width overrides being meaningless for CR Fields it is possible to use the
+`ELWIDTH` field for extra fields.
+
+Condition Register based operations such as `mfcr` and `crand` can thus
+be made more flexible.  However the rules that apply in this section
+also apply to future CR-based instructions.
 
 There are two primary different types of CR operations:
 
