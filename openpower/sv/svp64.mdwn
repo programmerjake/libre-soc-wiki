@@ -196,7 +196,7 @@ and FP.
 * **reduce mode**. a mapreduce is performed.  the result is a scalar.  a result vector however is required, as the upper elements may be used to store intermediary computations.  the result of the mapreduce is in the first element with a nonzero predicate bit.  see [[appendix]]
   note that there are comprehensive caveats when using this mode.
 * **pred-result** will test the result (CR testing selects a bit of CR and inverts it, just like branch testing) and if the test fails it is as if the 
-*destination* predicate bit was zero.  When Rc=1 the CR element however is still stored in the CR regfile, even if the test failed.  This scheme does not apply to crops (crand, cror).  See appendix for details.
+*destination* predicate bit was zero.  When Rc=1 the CR element however is still stored in the CR regfile, even if the test failed.  See appendix for details.
 
 Note that ffirst and reduce modes are not anticipated to be high-performance in some implementations.  ffirst due to interactions with VL, and reduce due to it requiring additional operations to produce a result.  normal, saturate and pred-result are however inter-element independent and may easily be parallelised to give high performance, regardless of the value of VL.
 
