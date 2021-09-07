@@ -494,7 +494,7 @@ on SVP64.
 
 This mode merges common CR testing with predication, saving on instruction
 count. Below is the pseudocode excluding predicate zeroing and elwidth
-overrides.
+overrides. Note that the paeudocode for [[sv/cr_ops]] is slightly different.
 
     for i in range(VL):
         # predication test, skip all masked out elements.
