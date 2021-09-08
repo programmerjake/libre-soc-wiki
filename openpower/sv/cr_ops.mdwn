@@ -85,11 +85,12 @@ be operated on by the instruction.
 Thus, logically, we may set the following rule:
 
 * When a 5-bit CR Result field is used in an instruction, the
-  `inv, VLi and RC1` variant of Data-Dependent Fail-First
+  5-bit variant of Data-Dependent Fail-First
   must be used. i.e. the bit of the CR field to be tested is
-  the one that has just been modified by the operation.
-* When a 3-bit CR Result field is used the `inv CRbit` variant
-  must be used in order to select which CR Field bit shall
+  the one that has just been modified (created) by the operation.
+* When a 3-bit CR Result field is used the 3-bit variant
+  must be used, providing as it does the missing `CRbit`
+  in order to select which CR Field bit of the result shall
   be tested (EQ, LE, GE, SO)
 
 The reason why the 3-bit CR variant needs the additional CR-bit
