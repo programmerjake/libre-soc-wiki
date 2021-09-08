@@ -118,17 +118,29 @@ test the co-resultant CR when Rc=1.
     for i in range(VL):
         # predication test, skip all masked out elements.
         # skips when sz=0
-        if predicate_masked_out(i):
+        if sz=0 and predicate_masked_out(i):
              continue
-        # result is to go into CR. may be a 4-bit CR Field
-        # (3-bit mode) or just a single bit (5-bit mode)
-        result = op(...)
-        # obtain CRbit from BA result operand field,
-        # if this CR op has 5-bit CR result operands
+        if predicate_masked_out(i):
+           if 5bit mode:
+              # only one bit of CR to update
+              result = SNZ
+           else
+              # four copies of SNZ
+              result = SNZ || SNZ || SNZ || SNZ
+        else
+           # result is to go into CR. may be a 4-bit CR Field
+           # (3-bit mode) or just a single bit (5-bit mode)
+           result = op(...)
         if 5bit mode:
-           CRbit = BA[3:4] 
+           # if this CR op has 5-bit CR result operands
+           # the single bit result is what must be tested
+           to_test = result
+        else
+           # if however this is a 3-bit CR *field* result
+           # then the bit to be tested must be selected
+           to_test = result[CRbit]
         # now test CR, similar to branch
-        if CRnew[CRbit] != inv:
+        if to_test != inv:
             continue # test failed: cancel store
         # result optionally stored
         update_CR(result)
