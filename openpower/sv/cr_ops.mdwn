@@ -105,7 +105,9 @@ Examples of the former type:
 * crand, cror, crnor. These all are 5-bit (BA, BB, BT). The bit
   to be tested against `inv` is the one selected by `BT`
 * mcrf. This has only 3-bit (BF, BFA). In order to select the
-  bit to be tested, the alternative FFirst encoding must be used.
+  bit to be tested, the alternative encoding must be used.
+  With `CRbit` coming from the SVP64 RM bits 22-23 the bit
+  of BF to be tested is identified.
 
 This limits sv.mcrf in that it may not use the `VLi` (VL inclusive)
 Mode. This is unfortunste but unavoidable due to encoding pressure
