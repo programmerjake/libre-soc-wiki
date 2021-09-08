@@ -111,6 +111,10 @@ Rc=1 is a *co-result* accompanying the main arithmetic result, whereas
 for CR-based operations the CR Field or CR bit *is* itself the result
 of the operation.
 
+Therefore, logically, Predicate-result needs to be adapted to
+test the actual result of the CR-based instruction, rather than
+test the co-resultant CR when Rc=1.
+
     for i in range(VL):
         # predication test, skip all masked out elements.
         # skips when sz=0
