@@ -108,8 +108,9 @@ These are again slightly different compared to SVP64 arithmetic
 pred-result (described in [[svp64/appendix]]). The reason is that,
 again, for arithmetic operations the production of a CR Field when
 Rc=1 is a *co-result* accompanying the main arithmetic result, whereas
-for CR-based operations the CR Field or CR bit *is* itself the result
-of the operation.
+for CR-based operations the CR Field (referred to by a 3-bit
+v3.0B base operand from e.g. `mfcr`) or CR bit (referred to by a 5-bit operand from e.g. `crnor`)
+*is* itself the explicit and sole result of the operation.
 
 Therefore, logically, Predicate-result needs to be adapted to
 test the actual result of the CR-based instruction, rather than
