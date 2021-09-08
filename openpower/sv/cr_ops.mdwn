@@ -4,7 +4,8 @@ Condition Register Fields are only 4 bits wide: this presents some
 interesting conceptual challenges for SVP64, particularly with respect to element
 width (which is clearly meaningless). Likewise, arithmetic saturation
 (an important part of Arithmetic SVP64)
-has no meaning. Consequently an alternative Mode Format is required.
+has no meaning. Additionally, extra modes are required that only make
+sense for Vectorised CR Operations. Consequently an alternative Mode Format is required.
 
 This alternative mapping **only** applies to instructions that **only**
 reference a CR Field or CR bit as the sole exclusive result. This section
