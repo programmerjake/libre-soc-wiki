@@ -19,14 +19,15 @@ this section.
 
 Other modes are still applicable and include:
 
-* Data-dependent fail-first
-* Scalar and parallel reduction
-* Predicate-result
-
-Data-dependent Fail-first is useful to truncate VL based on
-analysis of a Condition Register result bit.  Reduction is useful
+* **Data-dependent fail-first**.
+  useful to truncate VL based on
+  analysis of a Condition Register result bit.
+* **Scalar and parallel reduction**.
+  Reduction is useful
 for turning a Vector of Condition Register Fields into one
-single Condition Register. Predicate-result is equivalent
+single Condition Register. 
+* **Predicate-result**.
+  Equivalent
 to python "filter", in that only elements which pass a test
 will end up actually being modified. This is in effect the same
 as ANDing the Condition Test with the destination predicate
