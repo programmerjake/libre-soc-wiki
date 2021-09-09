@@ -69,14 +69,13 @@ The principle of data-dependent fail-first is that if a Condition Test
 fails then VL (Vector Length) is truncated at that point. In the case
 of Arithmetic SVP64 Operations the Condition Register Field generated from
 Rc=1 is used, however with CR-based operations that CR result is provided
-by the operation itself.  In some cases however, CR-based operations
-operate on entire CR fields, not just one bit.
+by the operation itself.
 
 Data-dependent SVP64 Vectorised Operations involving the creation or
 modification of a CR can require an extra two bits, which are not available
-in the compact space of the `MODE` Field. With the concept of element
+in the compact space of the SVP64 RM `MODE` Field. With the concept of element
 width overrides being meaningless for CR Fields it is possible to use the
-`ELWIDTH` field for extra fields.
+`ELWIDTH` field for alternative purposes.
 
 Condition Register based operations such as `sv.mfcr` and `sv.crand` can thus
 be made more flexible.  However the rules that apply in this section
