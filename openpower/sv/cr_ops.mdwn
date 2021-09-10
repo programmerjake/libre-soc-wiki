@@ -45,6 +45,14 @@ will end up actually being modified. This is in effect the same
 as ANDing the Condition Test with the destination predicate
 mask (hence the name, "predicate-result").
 
+Predicate-result is a particularly powerful strategic mode
+in that it is the interaction of a source predicate, destination predicate,
+input operands *and* the output result, all combining to influence
+what actually goes into the Condition Register File. Given that
+predicates may themselves be Condition Registers it can be seen that
+there could potentially be up to **six** CR Fields involved in
+the execution of Predicate-result Mode.
+
 SVP64 RM `MODE` (includes `ELWIDTH` bits) for CR-based operations:
 
 | 4 | 5 | 19-20 |  21 | 22   23 |  description     |
