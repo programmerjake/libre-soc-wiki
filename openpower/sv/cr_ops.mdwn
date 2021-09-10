@@ -19,15 +19,15 @@ results that also, as an aside, produce a corresponding
 CR Field (such as when Rc=1).
 Instructions that involve Rc=1 are definitively arithmetic in nature,
 where the corresponding Condition Register Field can be considered to
-be a "co-result". Thus, if the arithmetic result is Vectorised, so
-is the CR Field "co-result", which puts both firmly out of scope for
+be a "co-result". Such CR Field "co-result" arithmeric operations
+are firmly out of scope for
 this section.
 
-Examples of v3.0B instructions to which this section does
-apply is `mfcr` (3 bit operands) and `crnor` (5 bit operands).
-Examples to which this section does **not** apply include
-`fadds.` and `subf.` which both produce arithmetic results
-(and a CR Field co-result).
+* Examples of v3.0B instructions to which this section does
+  apply is `mfcr` (3 bit operands) and `crnor` (5 bit operands).
+* Examples to which this section does **not** apply include
+  `fadds.` and `subf.` which both produce arithmetic results
+  (and a CR Field co-result).
 
 Other modes are still applicable and include:
 
