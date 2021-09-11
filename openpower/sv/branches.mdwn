@@ -257,17 +257,6 @@ element computation and testing, and the continuation (or otherwise)
 of a given loop. The potential combinations of interactions is why CTR
 testing options have been added.
 
-If both CTR-test and VLSET Modes are requested, it's important to
-observe the correct order: testing the Condition and
-decrementing of CTR is done *before* truncation of VL. In
-other words, the order is strictly (as can be seen in pseudocode, below):
-
-1. compute the test
-2. (optionally) decrement CTR
-3. (optionally) truncate VL
-4. decide (based on step 1) whether to terminate looping
-   (including not executing step 5)
-5. decide whether to branch.
 
 CTR-test mode and CTi interaction is as follows: note that
 `BO[2]` is still required to be clear for decrements to be
@@ -332,6 +321,29 @@ types of decision-making.
 `VLSET` mode with Horizontal-First when `VSb` is clear is still
 useful, because it can be used to truncate VL to the first predicated
 (non-masked-out) element.
+
+If both CTR-test and VLSET Modes are requested, it's important to
+observe the correct order. What occurs depends on whether VLi
+is enabled, because VLi affects the length, VL.
+
+If VLi (VL truncate inclusive) is set:
+
+1. compute the test
+2. (optionally) decrement CTR
+3. (optionally) truncate VL
+4. decide (based on step 1) whether to terminate looping
+   (including not executing step 5)
+5. decide whether to branch.
+
+If VLi is clear, then when a test fails that element
+and any following it
+should **not** be considered part of the Vector. Consequently:
+
+1) compute the test.
+2) if the test failed, truncate VL to the *previous*
+   element, and terminate looping. No further steps executed.
+3) (optionally) decrement CTR
+4) decide whether to branch.
 
 *Programming note: One important point is that SVP64 instructions are 64 bit.
 (8 bytes not 4). This needs to be taken into consideration when computing
