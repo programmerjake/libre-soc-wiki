@@ -242,7 +242,6 @@ controlled by the Predicate mask. This is particularly useful in `VLSET`
 mode, which will truncate SVSTATE.VL at the point of the first failed
 test.*)
 
-
 Normally, CTR mode will decrement once per Condition Test, resulting
 under normal circumstances that CTR reduces by up to VL in Horizontal-First
 Mode. Just as when v3.0B Branch-Conditional saves at
@@ -271,7 +270,8 @@ considered.
 
 * **CTR-test=0, CTi=0**: CTR decrements on a per-element basis
   if `BO[2]` is zero. Masked-out elements when `sz=0` are
-  skipped.
+  skipped (i.e. CTR is *not* decremented when the predicate
+  bit is zero).
 * **CTR-test=0, CTi=1**: CTR decrements on a per-element basis
   if `BO[2]` is zero and a masked-out element is skipped
   (`sz=0` and predicate bit is zero). This one special case is the
@@ -299,7 +299,7 @@ flow alteration would not.
 
 Also, the unconditional bit `BO[0]` is still relevant when Predication
 is applied to the Branch because in `ALL` mode all nonmasked bits have
-to be tested. Even when svstep mode or VLSET mode are not used, CTR
+to be tested. Even when VLSET mode is not used, CTR
 may still be decremented by the total number of nonmasked elements.
 In short, Vectorised Branch becomes an extremely powerful tool.
 
