@@ -257,8 +257,9 @@ element computation and testing, and the continuation (or otherwise)
 of a given loop. The potential combinations of interactions is why CTR
 testing options have been added.
 
-If both CTR-test and VLSET Modes are requested, then because the CTR decrement is on a per element basis, the total amount that CTR is decremented
-by will end up being VL *after* truncation (should that occur). In
+If both CTR-test and VLSET Modes are requested, it's important to
+observe the correct order: testing the Condition and
+decrementing of CTR is done *before* truncation of VL. In
 other words, the order is strictly (as can be seen in pseudocode, below):
 
 1. compute the test
