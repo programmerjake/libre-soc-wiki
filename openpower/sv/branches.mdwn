@@ -304,12 +304,16 @@ may still be decremented by the total number of nonmasked elements.
 In short, Vectorised Branch becomes an extremely powerful tool.
 
 `VLSET` mode with Vertical-First is particularly unusual. Vertical-First
-is dedigned to be used for explicit looping, where an explicit call to
+is designed to be used for explicit looping, where an explicit call to
 `svstep` is required to move both srcstep and dststep on to
-the next element, until VL (or other condition)is reached.
+the next element, until VL (or other condition) is reached.
 Vertical-First Looping is expected (required) to terminate if the end
 of the Vector, VL, is reached. If however that loop is terminated early
 because VL is truncated, VLSET with Vertical-First becomes meaningless.
+Resolving this would require two branches: one Conditional, the other
+branching unconditionally to create the loop, where the Conditional
+one jumps over it.
+
 Therefore, with `VSb`, the option to decide whether truncation should occur if the
 branch succeeds *or* if the branch condition fails allows for the flexibility
 required.  This allows a Vertical-First Branch to *either* be used as
