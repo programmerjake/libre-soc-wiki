@@ -304,8 +304,11 @@ flow alteration would not.
 
 Also, the unconditional bit `BO[0]` is still relevant when Predication
 is applied to the Branch because in `ALL` mode all nonmasked bits have
-to be tested. Even when VLSET mode is not used, CTR
-may still be decremented by the total number of nonmasked elements.
+to be tested, and when `sz=0` skipping occurs.
+Even when VLSET mode is not used, CTR
+may still be decremented by the total number of nonmasked elements,
+acting in effect as either a popcount or cntlz depending on which
+mode bits are set.
 In short, Vectorised Branch becomes an extremely powerful tool.
 
 `VLSET` mode with Vertical-First is particularly unusual. Vertical-First
