@@ -276,7 +276,7 @@ considered.
 * **CTR-test=0, CTi=0**: CTR decrements on a per-element basis
   if `BO[2]` is zero. Masked-out elements when `sz=0` are
   skipped (i.e. CTR is *not* decremented when the predicate
-  bit is zero).
+  bit is zero and `sz=0`).
 * **CTR-test=0, CTi=1**: CTR decrements on a per-element basis
   if `BO[2]` is zero and a masked-out element is skipped
   (`sz=0` and predicate bit is zero). This one special case is the
