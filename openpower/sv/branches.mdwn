@@ -34,7 +34,8 @@ without such multi-condition
 test-and-branch, if a predicate mask is all zeros a large batch of
 instructions may be masked out to `nop`, and it would waste
 CPU cycles to run them.  3D GPU ISAs can test for this scenario
-and jump over fully-masked-out operations, by spotting that
+and, with the appropriate predicate-analysis instruction,
+jump over fully-masked-out operations, by spotting that
 *all* Conditions are false.
 
 Unless Branches are aware and capable of such analysis, additional
