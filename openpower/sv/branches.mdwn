@@ -135,7 +135,8 @@ Brief description of fields:
   Contrast this with
   normal SVP64 `sz=1` behaviour, where *only* a zero is put in
   place of masked-out predicate bits.
-* **sz=0** When `sz=0` skipping occurs as usual, but unlike all
+* **sz=0** When `sz=0` skipping occurs as usual on
+  masked-out elements, but unlike all
   other SVP64 behaviour which entirely skips an element with
   no related side-effects at all, there are certain
   special circumstances where CTR
