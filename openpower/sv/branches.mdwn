@@ -264,10 +264,20 @@ element computation and testing, and the continuation (or otherwise)
 of a given loop. The potential combinations of interactions is why CTR
 testing options have been added.
 
+Also, the unconditional bit `BO[0]` is still relevant when Predication
+is applied to the Branch because in `ALL` mode all nonmasked bits have
+to be tested, and when `sz=0` skipping occurs.
+Even when VLSET mode is not used, CTR
+may still be decremented by the total number of nonmasked elements,
+acting in effect as either a popcount or cntlz depending on which
+mode bits are set.
+In short, Vectorised Branch becomes an extremely powerful tool.
+
+## CTR-test
 
 CTR-test mode and CTi interaction is as follows: note that
-`BO[2]` is still required to be clear for decrements to be
-considered.
+`BO[2]` is still required to be clear for CTR decrements to be
+considered, exactly as is the case in Scalar Power ISA v3.0B
 
 * **CTR-test=0, CTi=0**: CTR decrements on a per-element basis
   if `BO[2]` is zero. Masked-out elements when `sz=0` are
@@ -292,20 +302,13 @@ only time in the entirety of SVP64 that has side-effects when
 a predicate mask bit is clear.  **All** other SVP64 operations
 entirely skip an element when sz=0 and a predicate mask bit is zero.
 
+# VLSET Mode
+
 Interestingly, due to the side-effects of `VLSET` mode
 it is actually useful to use Branch Conditional even
 to perform no actual branch operation, i.e to point to the instruction
 after the branch. Truncation of VL would thus conditionally occur yet control
 flow alteration would not.
-
-Also, the unconditional bit `BO[0]` is still relevant when Predication
-is applied to the Branch because in `ALL` mode all nonmasked bits have
-to be tested, and when `sz=0` skipping occurs.
-Even when VLSET mode is not used, CTR
-may still be decremented by the total number of nonmasked elements,
-acting in effect as either a popcount or cntlz depending on which
-mode bits are set.
-In short, Vectorised Branch becomes an extremely powerful tool.
 
 `VLSET` mode with Vertical-First is particularly unusual. Vertical-First
 is designed to be used for explicit looping, where an explicit call to
@@ -329,6 +332,27 @@ types of decision-making.
 useful, because it can be used to truncate VL to the first predicated
 (non-masked-out) element.
 
+The truncation point for VL, when VLi is clear, must not include skipped
+elements that preceded the current element being tested.
+Example: `sz=0, VLi=0, predicate mask = 0b110010` and the Condition
+failure point is at element 4.
+
+* Testing at element 0 is skipped because its predicate bit is zero
+* Testing at element 1 passed
+* Testing elements 2 and 3 are skipped because their
+  respective predicate mask bits are zero
+* Testing element 4 fails  therefore VL is truncated to **2**
+  not 4 due to elements 2 and 3 being skipped.
+
+If `sz=1` in the above example *then* VL would have been set to 4 because
+in non-zeroing mode the zero'd elements are still effectively part of the
+Vector (with their respective elements set to `SNZ`)
+
+If `VLI=1` then VL would be set to 5 regardless of sz, due to being inclusive
+of the element actually being tested.
+
+## VLSET and CTR-test combined
+
 If both CTR-test and VLSET Modes are requested, it's important to
 observe the correct order. What occurs depends on whether VLi
 is enabled, because VLi affects the length, VL.
@@ -339,36 +363,18 @@ If VLi (VL truncate inclusive) is set:
 2. (optionally) decrement CTR
 3. (optionally) truncate VL (VSb inverts the decision)
 4. decide (based on step 1) whether to terminate looping
-   (including not executing further steps)
+   (including not executing step 5)
 5. decide whether to branch.
 
 If VLi is clear, then when a test fails that element
 and any following it
 should **not** be considered part of the Vector. Consequently:
 
-1) compute the branch test including whether CTR triggers
-2) if the test fails against VSb, truncate VL to the *previous*
+1. compute the branch test including whether CTR triggers
+2. if the test fails against VSb, truncate VL to the *previous*
    element, and terminate looping. No further steps executed.
-3) (optionally) decrement CTR
-4) decide whether to branch.
-
-The truncation point for VL, when VLi is clear, must not include skipped
-elements.  Example: `sz=0, VLi=0, predicate mask = 0b110010` and the failure
-point is at element 4.
-
-* Testing at element 0 is skipped because its predicate bit is zero
-* Testing at element 1 passed
-* Testing elements 2 and 3 are skipped because their
-  respective predicate mask bits are zero
-* Testing element 4 fails therefore VL is truncated to **2**
-  not 4 due to elements 2 and 3 being skipped.
-
-If `sz=1` in the above example *then* VL would have been set to 4 because
-in non-zeroing mode the zero'd elements are still effectively part of the
-Vector.
-
-If `VLI=1` then VL would be set to 5 regardless of sz, due to being inclusive
-of the element actually being tested.
+3. (optionally) decrement CTR
+4. decide whether to branch.
 
 # Boolean Logic combinations
 
