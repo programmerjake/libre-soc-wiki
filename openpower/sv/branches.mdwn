@@ -90,7 +90,8 @@ which may be enabled and combined):
 * **VLSET Mode**: identical to Data-Dependent Fail-First Mode
   for Arithmetic SVP64 operations, with more
   flexibility and a close interaction and integration into the
-  underlying base Scalar v3.0B Branch instruction.
+  underlying base Scalar v3.0B Branch instruction, truncating
+  VL at the early-exit point.
 * **CTR-test Mode**: gives much more flexibility over when and why
   CTR is decremented, including options to decrement if a Condition
   test succeeds *or if it fails*.
@@ -152,8 +153,9 @@ Brief description of fields:
   early-exit on Boolean Logic chains.
 * **VLI** VLSET is identical to Data-dependent Fail-First mode.
   In VLSET mode, VL is set equal (truncated) to the first point
-  where, assuming Conditions are tested sequentially, the branch succeeds
-  *or fails* depending if VSb is set.
+  where, assuming Conditions are tested sequentially, the branch
+  proceeds
+  *or does not take place* depending if VSb is set.
   If VLI (Vector Length Inclusive) is clear,
   VL is truncated to *exclude* the current element, otherwise it is
   included. SVSTATE.MVL is not changed: only VL.
@@ -161,7 +163,7 @@ Brief description of fields:
   only be updated if the Branch Condition succeeds. This avoids
   destruction of LR during loops (particularly Vertical-First
   ones).
-* **VSb** is most relevant for Vertical-First VLSET Mode. After testing,
+* **VSb** In VLSET Mode, after testing,
   if VSb is set, VL is truncated if the branch succeeds.  If VSb is clear,
   VL is truncated if the branch did **not** take place.
 * **CTi** CTR inversion. CTR-test Mode normally decrements per element
@@ -328,22 +330,40 @@ is enabled, because VLi affects the length, VL.
 
 If VLi (VL truncate inclusive) is set:
 
-1. compute the test
+1. compute the test including whether CTR triggers
 2. (optionally) decrement CTR
-3. (optionally) truncate VL
+3. (optionally) truncate VL (VSb inverts the decision)
 4. decide (based on step 1) whether to terminate looping
-   (including not executing step 5)
+   (including not executing further steps)
 5. decide whether to branch.
 
 If VLi is clear, then when a test fails that element
 and any following it
 should **not** be considered part of the Vector. Consequently:
 
-1) compute the test.
-2) if the test failed, truncate VL to the *previous*
+1) compute the branch test including whether CTR triggers
+2) if the test fails against VSb, truncate VL to the *previous*
    element, and terminate looping. No further steps executed.
 3) (optionally) decrement CTR
 4) decide whether to branch.
+
+The truncation point for VL, when VLi is clear, must not include skipped
+elements.  Example: `sz=0, VLi=0, predicate mask = 0b110010` and the failure
+point is at element 4.
+
+* Testing at element 0 is skipped because its predicate bit is zero
+* Testing at element 1 passed
+* Testing elements 2 and 3 are skipped because their
+  respective predicate mask bits are zero
+* Testing element 4 fails therefore VL is truncated to **2**
+  not 4 due to elements 2 and 3 being skipped.
+
+If `sz=1` in the above example *then* VL would have been set to 4 because
+in non-zeroing mode the zero'd elements are still effectively part of the
+Vector.
+
+If `VLI=1` then VL would be set to 5 regardless of sz, due to being inclusive
+of the element actually being tested.
 
 *Programming note: One important point is that SVP64 instructions are 64 bit.
 (8 bytes not 4). This needs to be taken into consideration when computing
