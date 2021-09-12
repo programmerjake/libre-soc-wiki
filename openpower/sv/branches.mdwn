@@ -115,6 +115,11 @@ instructions are still
 *completely separate and independent*, being unaltered and
 unaffected by their SVP64 variants in every conceivable way.
 
+*Programming note: One important point is that SVP64 instructions are 64 bit.
+(8 bytes not 4). This needs to be taken into consideration when computing
+branch offsets: the offset is relative to the start of the instruction,
+which **includes** the SVP64 Prefix*
+
 # Format and fields
 
 With element-width overrides being meaningless for Condition
@@ -364,11 +369,6 @@ Vector.
 
 If `VLI=1` then VL would be set to 5 regardless of sz, due to being inclusive
 of the element actually being tested.
-
-*Programming note: One important point is that SVP64 instructions are 64 bit.
-(8 bytes not 4). This needs to be taken into consideration when computing
-branch offsets: the offset is relative to the start of the instruction,
-which includes the SVP64 Prefix*
 
 # Boolean Logic combinations
 
