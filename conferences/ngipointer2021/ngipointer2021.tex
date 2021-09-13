@@ -1,0 +1,98 @@
+\documentclass[slidestop]{beamer}
+\usepackage{beamerthemesplit}
+\usepackage{graphics}
+\usepackage{pstricks}
+
+\graphicspath{{./}}
+
+\title{The Libre-SOC Gigabit Router ASIC}
+\author{Luke Kenneth Casson Leighton}
+
+
+\begin{document}
+
+\frame{
+   \begin{center}
+    \huge{The Libre-SOC Gigabit Router ASIC}\\
+    \vspace{32pt}
+    \Large{An entirely Libre-Licensed ASIC}\\
+    \Large{with Gigabit Ethernet ports and USB2}\\
+    \Large{and full Libre Firmware}\\
+    \vspace{24pt}
+    \Large{NGI POINTER 2021}\\
+    \vspace{16pt}
+    \large{Sponsored by NGI POINTER}\\
+    \vspace{6pt}
+    \large{\today}
+  \end{center}
+}
+
+
+\frame{\frametitle{Why a Libre Gigabit Router?}
+
+ \begin{itemize}
+   \item Most Router ASICs are proprietary\vspace{6pt}
+   \item Persistent GPL violations \vspace{6pt}
+   \item Could contain unknown spying back-doors\\
+         nobody can tell\vspace{6pt}
+   \item Full HDL and Firmware means it's fully-auditable \vspace{6pt}
+  \end{itemize}
+}
+
+
+\frame{\frametitle{Who?}
+
+\vspace{15pt}
+
+ \begin{itemize}
+   \item Luke Leighton (Libre-SOC)\\
+   		 Lead developer \vspace{10pt}
+   \item Jacob Lifshay (Libre-SOC)\\
+   		 Senior developer \vspace{10pt}
+   \item Jean-Paul Chaput\\
+   		 LIP6.fr, Sorbonne University\\
+   		 Developer of Coriolis2 VLSI \vspace{10pt}
+   \item Staf Verhaegen\\
+   		 Chips4Makers.io Belgium\\
+   		 Developer of FlexLib Cell Libraries \vspace{10pt}
+  \end{itemize}
+}
+
+\frame{\frametitle{What?}
+
+\vspace{5pt}
+
+ \begin{itemize}
+   \item Vector Processor based on the Power ISA, (Draft) SVP64
+         Cray Vectors and efficient packet processing instructions
+   \item Gigabit Ethernet Ports (RGMII) USB2 ports (USB-ULPI),
+         GPIO, I2C, QSPI etc.
+   \item DMA Engine to handle fast transfer between Ethernet Ports
+   \item Analog PLL (Libre-Licensed, no NDA)
+   \item Lots of simulations and FPGA testing
+   \item Put it all together: MPW Shuttle Runs\\
+         to be tested, report published
+   \item All entirely Libre-Licensed\\
+         as best we can comply with Foundry NDAs
+  \end{itemize}
+}
+
+\frame{
+  \begin{center}
+    {\Large The end\vspace{12pt}\\
+		   Thank you\vspace{12pt}\\
+		   Questions?\vspace{12pt}
+	}
+  \end{center}
+
+  \begin{itemize}
+	\item Discussion: http://lists.libre-soc.org
+	\item Libera IRC \#libre-soc
+	\item http://libre-soc.org/
+	\item http://coriolis.lip6.fr
+	\item http://chips4makers.io
+  \end{itemize}
+}
+
+
+\end{document}
