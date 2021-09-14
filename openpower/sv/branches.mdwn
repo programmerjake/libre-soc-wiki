@@ -272,6 +272,11 @@ In short, Vectorised Branch becomes an extremely powerful tool.
 
 ## CTR-test
 
+Where a standard Scalar v3.0B branch unconditionally decrements
+CTR when `BO[2]` is clear, CTR-test Mode introduces more flexibility
+which allows CTR to be used for many more types of Vector loops
+constructs.
+
 CTR-test mode and CTi interaction is as follows: note that
 `BO[2]` is still required to be clear for CTR decrements to be
 considered, exactly as is the case in Scalar Power ISA v3.0B
