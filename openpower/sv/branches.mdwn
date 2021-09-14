@@ -306,6 +306,11 @@ entirely skip an element when sz=0 and a predicate mask bit is zero.
 
 # VLSET Mode
 
+VLSET Mode truncates the Vector Length so that subsequent instructions
+operate on a reduced Vector Length. This is similar to
+Data-dependent Fail-First and LD/ST Fail-First, where for VLSET the
+truncation occurs at the Branch decision-point.
+
 Interestingly, due to the side-effects of `VLSET` mode
 it is actually useful to use Branch Conditional even
 to perform no actual branch operation, i.e to point to the instruction
@@ -330,12 +335,12 @@ a branch-back (loop) *or* as part of a conditional exit or function
 call from *inside* a loop, and for VLSET to be integrated into both
 types of decision-making.  
 
-In the case of a branch-back (loop), with VSb=0 the branch takes
+In the case of a Vertical-First branch-back (loop), with `VSb=0` the branch takes
 place if success conditions are met, but on exit from that loop
 (branch condition fails), VL will be truncated. This is extremely
 useful.
 
-`VLSET` mode with Horizontal-First when `VSb` is clear is still
+`VLSET` mode with Horizontal-First when `VSb=0` is still
 useful, because it can be used to truncate VL to the first predicated
 (non-masked-out) element.
 
