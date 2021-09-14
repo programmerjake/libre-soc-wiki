@@ -157,13 +157,10 @@ Brief description of fields:
   This is identical behaviour to how programming languages perform
   early-exit on Boolean Logic chains.
 * **VLI** VLSET is identical to Data-dependent Fail-First mode.
-  In VLSET mode, VL is set equal (truncated) to the first point
-  where, assuming Conditions are tested sequentially, the branch
-  proceeds
-  *or does not take place* depending if VSb is set.
+  In VLSET mode, VL *may* (depending on `VSb`) be truncated.
   If VLI (Vector Length Inclusive) is clear,
   VL is truncated to *exclude* the current element, otherwise it is
-  included. SVSTATE.MVL is not changed: only VL.
+  included. SVSTATE.MVL is not altered: only VL.
 * **LRu**: Link Register Update. When set, Link Register will
   only be updated if the Branch Condition succeeds. This avoids
   destruction of LR during loops (particularly Vertical-First
