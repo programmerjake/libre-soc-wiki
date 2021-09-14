@@ -323,7 +323,12 @@ branch succeeds *or* if the branch condition fails allows for the flexibility
 required.  This allows a Vertical-First Branch to *either* be used as
 a branch-back (loop) *or* as part of a conditional exit or function
 call from *inside* a loop, and for VLSET to be integrated into both
-types of decision-making.
+types of decision-making.  
+
+In the case of a branch-back (loop), with VSb=0 the branch takes
+place if success conditions are met, but on exit from that loop
+(branch condition fails), VL will be truncated. This is extremely
+useful.
 
 `VLSET` mode with Horizontal-First when `VSb` is clear is still
 useful, because it can be used to truncate VL to the first predicated
