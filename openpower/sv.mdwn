@@ -70,6 +70,98 @@ Additional links:
 * [[simple_v_extension]] old (deprecated) version
 * [[openpower/sv/llvm]]
 
+===
+
+Required Background Reading:
+============================
+
+These are all, deep breath, basically... required reading, *as well as and in addition* to a full and comprehensive deep technical understanding of the Power ISA, in order to understand the depth and background on SVP64 as a 3D GPU and VPU Extension.
+
+I am keenly aware that each of them is 300 to 1,000 pages (just like the Power ISA itself).
+
+This is just how it is.
+
+Given the sheer overwhelming size and scope of SVP64 we have gone to CONSIDERABLE LENGTHS to provide justification and rationalisation for adding the various sub-extensions to the Base Scalar Power ISA.
+
+* Scalar bitmanipulation is justifiable for the exact same reasons the extensions are justifiable for other ISAs.  The additional justification for their inclusion where some instructions are already (sort-of) present in VSX is that VSX is not mandatory, and the complexity of implementation of VSX is too high a price to pay at the Embedded SFFS Compliancy Level.
+
+* Scalar FP-to-INT conversions, likewise.  ARM has a javascript conversion instruction, Power ISA does not (and it costs a ridiculous 45 instructions to implement, including 6 branches!)
+
+* Scalar Transcendentals (SIN, COS, ATAN2, LOG) are easily justifiable for High-Performance Compute workloads.
+
+It also has to be pointed out that normally this work would be covered by multiple separate full-time Workgroups with multiple Members contributing their time and resources!
+
+Overall the contributions that we are developing take the Power ISA out of the specialist highly-focussed market it is presently best known for, and expands it into areas with much wider general adoption and broader uses.
+
+
+---
+
+OpenCL specifications are linked here, these are relevant when we get to a 3D GPU / High Performance Compute ISA WG RFC:
+[[openpower/transcendentals]]
+
+(Failure to add Transcendentals to a 3D GPU is directly equivalent to *willfully* designing a product that is 100% destined for commercial failure.)
+
+I mention these because they will be encountered in every single commercial GPU ISA, but they're not part of the "Base" (core design) of a Vector Processor. Transcendentals can be added as a sub-RFC.
+
+---
+
+Actual 3D GPU Architectures and ISAs (where such scant information is available):
+---------------------------------------------------------------------------------
+
+* Broadcom Videocore
+  <https://github.com/hermanhermitage/videocoreiv>
+
+* Etnaviv
+  <https://github.com/etnaviv/etna_viv/tree/master/doc>
+
+* Nyuzi
+  <http://www.cs.binghamton.edu/~millerti/nyuziraster.pdf>
+
+* MALI
+  <https://github.com/cwabbott0/mali-isa-docs>
+
+* AMD
+  <https://developer.amd.com/wp-content/resources/RDNA_Shader_ISA.pdf>  
+  <https://developer.amd.com/wp-content/resources/Vega_Shader_ISA_28July2017.pdf>
+
+* MIAOW which is *NOT* a 3D GPU, it is a processor which happens to implement a subset of the AMDGPU ISA (Southern Islands), aka a "GPGPU"
+  <https://miaowgpu.org/>
+
+
+Actual Vector Processor Architectures and ISAs:
+-----------------------------------------------
+
+* NEC SX Aurora
+  <https://www.hpc.nec/documents/guide/pdfs/Aurora_ISA_guide.pdf>
+
+* Cray ISA
+  <http://www.bitsavers.org/pdf/cray/CRAY_Y-MP/HR-04001-0C_Cray_Y-MP_Computer_Systems_Functional_Description_Jun90.pdf>
+
+* RISK5 RVV
+  <https://github.com/riscv/riscv-v-spec>
+
+* MRISC32 ISA Manual (under active development)
+  <https://github.com/mrisc32/mrisc32/tree/master/isa-manual>
+
+* Mitch Alsup's MyISA 66000 Vector Processor ISA Manual is available from Mitch on direct contact with him.  It is a different approach from the others, which may be termed "Cray-Style Horizontal-First" Vectorisation.  66000 is a *Vertical-First* Vector ISA.
+
+The term Horizontal or Vertical alludes to the Matrix "Row-First" or "Column-First" technique, where:
+
+* Horizontal-First processes all elements in a Vector before moving on to the next instruction
+* Vertical-First processes *ONE* element per instruction, and requires loop constructs to explicitly step to the next element.
+
+Vector-type Support by Architecture
+[[!table  data="""
+Architecture | Horizontal | Vertical
+MyISA        |            | X
+Cray         | X          |
+SX Aurora    | X          |
+RVV          | X          |
+SVP64        | X          | X
+"""]]
+
+===
+
 Obligatory Dilbert:
 
 <img src="https://assets.amuniversal.com/7fada35026ca01393d3d005056a9545d" width="600" />
