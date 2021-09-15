@@ -1,0 +1,364 @@
+# Appendix
+
+* <https://bugs.libre-soc.org/show_bug.cgi?id=574>
+* <https://bugs.libre-soc.org/show_bug.cgi?id=558#c47>
+
+Table of contents:
+
+[[!toc]]
+
+
+# Rounding, clamp and saturate
+
+see  [[av_opcodes]].
+
+To help ensure that audio quality is not compromised by overflow,
+"saturation" is provided, as well as a way to detect when saturation
+occurred if desired (Rc=1). When Rc=1 there will be a *vector* of CRs,
+one CR per element in the result (Note: this is different from VSX which
+has a single CR per block).
+
+When N=0 the result is saturated to within the maximum range of an
+unsigned value.  For integer ops this will be 0 to 2^elwidth-1. Similar
+logic applies to FP operations, with the result being saturated to
+maximum rather than returning INF, and the minimum to +0.0
+
+When N=1 the same occurs except that the result is saturated to the min
+or max of a signed result, and for FP to the min and max value rather
+than returning +/- INF.
+
+When Rc=1, the CR "overflow" bit is set on the CR associated with the
+element, to indicate whether saturation occurred.  Note that due to
+the hugely detrimental effect it has on parallel processing, XER.SO is
+**ignored** completely and is **not** brought into play here.  The CR
+overflow bit is therefore simply set to zero if saturation did not occur,
+and to one if it did.
+
+Note also that saturate on operations that produce a carry output are
+prohibited due to the conflicting use of the CR.so bit for storing if
+saturation occurred.
+
+Post-analysis of the Vector of CRs to find out if any given element hit
+saturation may be done using a mapreduced CR op (cror), or by using the
+new crweird instruction, transferring the relevant CR bits to a scalar
+integer and testing it for nonzero.  see [[sv/cr_int_predication]]
+
+Note that the operation takes place at the maximum bitwidth (max of
+src and dest elwidth) and that truncation occurs to the range of the
+dest elwidth.
+
+# Reduce mode
+
+Reduction in SVP64 is deterministic and somewhat of a misnomer.  A normal
+Vector ISA would have explicit Reduce opcodes with defibed characteristics
+per operation: in SX Aurora there is even an additional scalar argument
+containing the initial reduction value. SVP64 fundamentally has to
+utilise *existing* Scalar Power ISA v3.0B operations, which presents some
+unique challenges.
+
+The solution turns out to be to simply define reduction as permitting
+deterministic element-based schedules to be issued using the base Scalar
+operations, and to rely on the underlying microarchitecture to resolve
+Register Hazards at the element level.  This goes back to
+the fundamental principle that SV is nothing more than a Sub-Program-Counter
+sitting between Decode and Issue phases.
+
+Microarchitectures *may* take opportunities to parallelise the reduction
+but only if in doing so they preserve Program Order at the Element Level.
+Opportunities where this is possible include an `OR` operation
+or a MIN/MAX operation: it may be possible to parallelise the reduction,
+but for Floating Point it is not permitted due to different results
+being obtained if the reduction is not executed in strict sequential
+order.
+
+## Scalar result reduce mode
+
+In this mode, which is suited to operations involving carry or overflow,
+one register must be identified by the programmer as being the "accumulator".
+Scalar reduction is thus categorised by:
+
+* One of the sources is a Vector
+* the destination is a scalar
+* optionally but most usefully when one source register is also the destination
+* That the source register type is the same as the destination register
+  type identified as the "accumulator".  scalar reduction on `cmp`,
+  `setb` or `isel` makes no sense for example because of the mixture
+  between CRs and GPRs.
+
+Typical applications include simple operations such as `ADD r3, r10.v,
+r3` where, clearly, r3 is being used to accumulate the addition of all
+elements is the vector starting at r10.
+
+     # add RT, RA,RB but when RT==RA
+     for i in range(VL):
+          iregs[RA] += iregs[RB+i] # RT==RA
+
+However, *unless* the operation is marked as "mapreduce", SV ordinarily
+**terminates** at the first scalar operation.  Only by marking the
+operation as "mapreduce" will it continue to issue multiple sub-looped
+(element) instructions in `Program Order`.
+
+To.perform the loop in reverse order, the ```RG``` (reverse gear) bit must be set.  This is useful for leaving a cumulative suffix sum in reverse order:
+
+    for i in (VL-1 downto 0):
+        # RT-1 = RA gives a suffix sum
+        iregs[RT+i] = iregs[RA+i] - iregs[RB+i]
+
+Other examples include shift-mask operations where a Vector of inserts
+into a single destination register is required, as a way to construct
+a value quickly from multiple arbitrary bit-ranges and bit-offsets.
+Using the same register as both the source and destination, with Vectors
+of different offsets masks and values to be inserted has multiple
+applications including Video, cryptography and JIT compilation.
+
+Subtract and Divide are still permitted to be executed in this mode,
+although from an algorithmic perspective it is strongly discouraged.
+It would be better to use addition followed by one final subtract,
+or in the case of divide, to get better accuracy, to perform a multiply
+cascade followed by a final divide.
+
+Note that single-operand or three-operand scalar-dest reduce is perfectly
+well permitted: both still meet the qualifying characteristics that one
+source operand can also be the destination, which allows the "accumulator"
+to be identified.
+
+If the "accumulator" cannot be identified (one of the sources is also
+a destination) the results are **UNDEFINED**.  This permits implementations
+to not have to have complex decoding analysis of register fields: it
+is thus up to the programmer to ensure that one of the source registers
+is also a destination register in order to take advantage of Scalar
+Reduce Mode.
+
+If an interrupt or exception occurs in the middle of the scalar mapreduce,
+the scalar destination register **MUST** be updated with the current
+(intermediate) result, because this is how ```Program Order``` is
+preserved (Vector Loops are to be considered to be just another way of issuing instructions
+in Program Order).  In this way, after return from interrupt,
+the scalar mapreduce may continue where it left off.  This provides
+"precise" exception behaviour.
+
+Note that hardware is perfectly permitted to perform multi-issue
+parallel optimisation of the scalar reduce operation: it's just that
+as far as the user is concerned, all exceptions and interrupts **MUST**
+be precise.
+
+## Vector result reduce mode
+
+Vector result reduce mode may utilise the destination vector for
+the purposes of storing intermediary results.  Interrupts and exceptions
+can therefore also be precise.  The result will be in the first
+non-predicate-masked-out destination element.  Note that unlike
+Scalar reduce mode, Vector reduce
+mode is *not* suited to operations which involve carry or overflow.
+
+Programs **MUST NOT** rely on the contents of the intermediate results:
+they may change from hardware implementation to hardware implementation.
+Some implementations may perform an incremental update, whilst others
+may choose to use the available Vector space for a binary tree reduction.
+If an incremental Vector is required (```x[i] = x[i-1] + y[i]```) then
+a *straight* SVP64 Vector instruction can be issued, where the source and
+destination registers overlap: ```sv.add 1.v, 9.v, 2.v```. Due to
+respecting ```Program Order``` being mandatory in SVP64, hardware should
+and must detect this case and issue an incremental sequence of scalar
+element instructions.
+
+1. limited to single predicated dual src operations (add RT, RA, RB).
+   triple source operations are prohibited (such as fma).
+2. limited to operations that make sense.  divide is excluded, as is
+   subtract (X - Y - Z produces different answers depending on the order)
+   and asymmetric CRops (crandc, crorc). sane  operations:
+   multiply, min/max, add, logical bitwise OR, most other CR ops.
+   operations that do have the same source and dest register type are
+   also excluded (isel, cmp). operations involving carry or overflow
+   (XER.CA / OV) are also prohibited.
+3. the destination is a vector but the result is stored, ultimately,
+   in the first nonzero predicated element.  all other nonzero predicated
+   elements are undefined. *this includes the CR vector* when Rc=1
+4. implementations may use any ordering and any algorithm to reduce
+   down to a single result.  However it must be equivalent to a straight
+   application of mapreduce.  The destination vector (except masked out
+   elements) may be used for storing any intermediate results. these may
+   be left in the vector (undefined).
+5. CRM applies when Rc=1.  When CRM is zero, the CR associated with
+   the result is regarded as a "some results met standard CR result
+   criteria". When CRM is one, this changes to "all results met standard
+   CR criteria".
+6. implementations MAY use destoffs as well as srcoffs (see [[sv/sprs]])
+   in order to store sufficient state to resume operation should an
+   interrupt occur. this is also why implementations are permitted to use
+   the destination vector to store intermediary computations
+7. *Predication may be applied*.  zeroing mode is not an option.  masked-out
+   inputs are ignored; masked-out elements in the destination vector are
+   unaltered (not used for the purposes of intermediary storage); the
+   scalar result is placed in the first available unmasked element.
+
+Pseudocode for the case where RA==RB:
+
+    result = op(iregs[RA], iregs[RA+1])
+    CR = analyse(result)
+    for i in range(2, VL):
+        result = op(result, iregs[RA+i])
+        CRnew = analyse(result)
+        if Rc=1
+            if CRM:
+                 CR = CR bitwise or CRnew
+            else:
+                 CR = CR bitwise AND CRnew
+
+TODO: case where RA!=RB which involves first a vector of 2-operand
+results followed by a mapreduce on the intermediates.
+
+Note that when SVM is clear and SUBVL!=1 the sub-elements are
+*independent*, i.e. they are mapreduced per *sub-element* as a result.
+illustration with a vec2:
+
+    result.x = op(iregs[RA].x, iregs[RA+1].x)
+    result.y = op(iregs[RA].y, iregs[RA+1].y)
+    for i in range(2, VL):
+        result.x = op(result.x, iregs[RA+i].x)
+        result.y = op(result.y, iregs[RA+i].y)
+
+Note here that Rc=1 does not make sense when SVM is clear and SUBVL!=1.
+
+When SVM is set and SUBVL!=1, another variant is enabled: horizontal
+subvector mode.  Example for a vec3:
+
+    for i in range(VL):
+        result = op(iregs[RA+i].x, iregs[RA+i].x)
+        result = op(result, iregs[RA+i].y)
+        result = op(result, iregs[RA+i].z)
+        iregs[RT+i] = result
+
+In this mode, when Rc=1 the Vector of CRs is as normal: each result
+element creates a corresponding CR element.
+
+# Fail-on-first
+
+Data-dependent fail-on-first has two distinct variants: one for LD/ST,
+the other for arithmetic operations (actually, CR-driven).  Note in each
+case the assumption is that vector elements are required appear to be
+executed in sequential Program Order, element 0 being the first.
+
+* LD/ST ffirst treats the first LD/ST in a vector (element 0) as an
+  ordinary one.  Exceptions occur "as normal".  However for elements 1
+  and above, if an exception would occur, then VL is **truncated** to the
+  previous element.
+* Data-driven (CR-driven) fail-on-first activates when Rc=1 or other
+  CR-creating operation produces a result (including cmp).  Similar to
+  branch, an analysis of the CR is performed and if the test fails, the
+  vector operation terminates and discards all element operations at and
+  above the current one, and VL is truncated to either
+  the *previous* element or the current one, depending on whether
+  VLi (VL "inclusive") is set.
+
+Thus the new VL comprises a contiguous vector of results, 
+all of which pass the testing criteria (equal to zero, less than zero).
+
+The CR-based data-driven fail-on-first is new and not found in ARM
+SVE or RVV. It is extremely useful for reducing instruction count,
+however requires speculative execution involving modifications of VL
+to get high performance implementations.  An additional mode (RC1=1)
+effectively turns what would otherwise be an arithmetic operation
+into a type of `cmp`.  The CR is stored (and the CR.eq bit tested
+against the `inv` field).
+If the CR.eq bit is equal to `inv` then the Vector is truncated and
+the loop ends.
+Note that when RC1=1 the result elements are never stored, only the CRs.
+
+VLi is only available as an option when `Rc=0` (or for instructions
+which do not have Rc). When set, the current element is always
+also included in the count (the new length that VL will be set to).
+This may be useful in combination with "inv" to truncate the Vector
+to `exclude` elements that fail a test, or, in the case of implementations
+of strncpy, to include the terminating zero.
+
+In CR-based data-driven fail-on-first there is only the option to select
+and test one bit of each CR (just as with branch BO).  For more complex
+tests this may be insufficient.  If that is the case, a vectorised crops
+(crand, cror) may be used, and ffirst applied to the crop instead of to
+the arithmetic vector.
+
+One extremely important aspect of ffirst is:
+
+* LDST ffirst may never set VL equal to zero.  This because on the first
+  element an exception must be raised "as normal".
+* CR-based data-dependent ffirst on the other hand **can** set VL equal
+  to zero. This is the only means in the entirety of SV that VL may be set
+  to zero (with the exception of via the SV.STATE SPR).  When VL is set
+  zero due to the first element failing the CR bit-test, all subsequent
+  vectorised operations are effectively `nops` which is
+  *precisely the desired and intended behaviour*.
+
+Another aspect is that for ffirst LD/STs, VL may be truncated arbitrarily
+to a nonzero value for any implementation-specific reason.  For example:
+it is perfectly reasonable for implementations to alter VL when ffirst
+LD or ST operations are initiated on a nonaligned boundary, such that
+within a loop the subsequent iteration of that loop begins subsequent
+ffirst LD/ST operations on an aligned boundary.  Likewise, to reduce
+workloads or balance resources.
+
+CR-based data-dependent first on the other hand MUST not truncate VL
+arbitrarily to a length decided by the hardware: VL MUST only be
+truncated based explicitly on whether a test fails.
+This because it is a precise test on which algorithms
+will rely.
+
+## Data-dependent fail-first on CR operations (crand etc)
+
+Operations that actually produce or alter CR Field as a result
+do not also in turn have an Rc=1 mode.  However it makes no
+sense to try to test the 4 bits of a CR Field for being equal
+or not equal to zero. Moreover, the result is already in the
+form that is desired: it is a CR field.  Therefore,
+CR-based operations have their own SVP64 Mode, described
+in [[sv/cr_ops]]
+
+There are two primary different types of CR operations:
+
+* Those which have a 3-bit operand field (referring to a CR Field)
+* Those which have a 5-bit operand (referring to a bit within the
+   whole 32-bit CR)
+
+More details can be found in [[sv/cr_ops]].
+
+# pred-result mode
+
+This mode merges common CR testing with predication, saving on instruction
+count. Below is the pseudocode excluding predicate zeroing and elwidth
+overrides. Note that the paeudocode for [[sv/cr_ops]] is slightly different.
+
+    for i in range(VL):
+        # predication test, skip all masked out elements.
+        if predicate_masked_out(i):
+             continue
+        result = op(iregs[RA+i], iregs[RB+i])
+        CRnew = analyse(result) # calculates eq/lt/gt
+        # Rc=1 always stores the CR
+        if Rc=1 or RC1:
+            crregs[offs+i] = CRnew
+        # now test CR, similar to branch
+        if RC1 or CRnew[BO[0:1]] != BO[2]:
+            continue # test failed: cancel store
+        # result optionally stored but CR always is
+        iregs[RT+i] = result
+
+The reason for allowing the CR element to be stored is so that
+post-analysis of the CR Vector may be carried out.  For example:
+Saturation may have occurred (and been prevented from updating, by the
+test) but it is desirable to know *which* elements fail saturation.
+
+Note that RC1 Mode basically turns all operations into `cmp`.  The
+calculation is performed but it is only the CR that is written. The
+element result is *always* discarded, never written (just like `cmp`).
+
+Note that predication is still respected: predicate zeroing is slightly
+different: elements that fail the CR test *or* are masked out are zero'd.
+
+## pred-result mode on CR ops
+
+CR operations (mtcr, crand, cror) may be Vectorised,
+predicated, and also pred-result mode applied to it.  
+Vectorisation applies to 4-bit CR Fields which are treated as
+elements, not the individual bits of the 32-bit CR.
+CR ops and how to identify them is described in [[sv/cr_ops]]
+
