@@ -3,17 +3,22 @@
 * <https://bugs.libre-soc.org/show_bug.cgi?id=574>
 * <https://bugs.libre-soc.org/show_bug.cgi?id=558#c47>
 
+Normal SVP64 Mode covers Arithmetic and Logical operations
+to provide suitable additional behaviour.
+
 Table of contents:
 
 [[!toc]]
 
+
 # Mode
 
 Mode is an augmentation of SV behaviour, providing additional
-functionslity.  Some of these alterations are element-based (saturation), others involve post-analysis (predicate result) and others are Vector-based (mapreduce, fail-on-first).
+functionality.  Some of these alterations are element-based (saturation), others involve post-analysis (predicate result) and others are Vector-based (mapreduce, fail-on-first).
 
-These are the modes for everything except [[sv/ldst]],
-[[sv/cr_ops]] and [[sv/branches]] which are covered separately:
+[[sv/ldst]],
+[[sv/cr_ops]] and [[sv/branches]] are covered separately: the following
+Modes apply to Arithmetic and Logical SVP64 operations:
 
 * **normal** mode is straight vectorisation.  no augmentations: the vector comprises an array of independently created results.
 * **ffirst** or data-dependent fail-on-first: see separate section.  the vector may be truncated depending on certain criteria.
@@ -58,13 +63,11 @@ than the normal 0..VL-1
 
 For LD/ST Modes, see [[sv/ldst]].  For Condition Registers
 see [[sv/cr_ops]].
-For Branch modes, see [[sv/branches]] Immediate and Indexed LD/ST
-are both different, in order to support a large range of features
-normally found in Vector ISAs.
+For Branch modes, see [[sv/branches]].
 
 # Rounding, clamp and saturate
 
-see [[av_opcodes]].
+See [[av_opcodes]] for relevant opcodes and use-cases.
 
 To help ensure that audio quality is not compromised by overflow,
 "saturation" is provided, as well as a way to detect when saturation
