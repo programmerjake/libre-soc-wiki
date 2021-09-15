@@ -287,6 +287,8 @@ LD/ST Fail-First. It is however critically important to remember that
 the first element LD/ST **MUST** be treated as an ordinary LD/ST, i.e.
 **MUST** raise exceptions exactly like an ordinary LD/ST.
 
+For ffirst LD/STs, VL may be truncated arbitrarily to a nonzero value for any implementation-specific reason. For example: it is perfectly reasonable for implementations to alter VL when ffirst LD or ST operations are initiated on a nonaligned boundary, such that within a loop the subsequent iteration of that loop begins subsequent ffirst LD/ST operations on an aligned boundary. Likewise, to reduce workloads or balance resources.
+
 # LOAD/STORE Elwidths <a name="elwidth"></a>
 
 Loads and Stores are almost unique in that the OpenPOWER Scalar ISA
