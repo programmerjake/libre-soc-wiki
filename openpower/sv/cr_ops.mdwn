@@ -101,7 +101,8 @@ than the normal 0..VL-1
 The principle of data-dependent fail-first is that if a Condition Test
 fails then VL (Vector Length) is truncated at that point. In the case
 of Arithmetic SVP64 Operations the Condition Register Field generated from
-Rc=1 is used, however with CR-based operations that CR result is provided
+Rc=1 is used as the basis for the truncation decision,
+however with CR-based operations that CR result is provided
 by the operation itself.
 
 Data-dependent SVP64 Vectorised Operations involving the creation or
