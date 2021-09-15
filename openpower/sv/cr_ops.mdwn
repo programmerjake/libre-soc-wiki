@@ -121,8 +121,9 @@ There are two primary different types of CR operations:
    whole 32-bit CR)
 
 Examining these two types it is observed that the
-difference may be considered to be that the 5-bit variant provides
-additional information about which CR Field bit (EQ, GE, LT, SO) is to
+difference may be considered to be that the 5-bit variant 
+*already* provides the
+prerequisite information about which CR Field bit (EQ, GE, LT, SO) is to
 be operated on by the instruction.
 Thus, logically, we may set the following rule:
 
@@ -131,7 +132,7 @@ Thus, logically, we may set the following rule:
   must be used. i.e. the bit of the CR field to be tested is
   the one that has just been modified (created) by the operation.
 * When a 3-bit CR Result field is used the 3-bit variant
-  must be used, providing as it does the missing `CRbit`
+  must be used, providing as it does the missing `CRbit` field
   in order to select which CR Field bit of the result shall
   be tested (EQ, LE, GE, SO)
 
