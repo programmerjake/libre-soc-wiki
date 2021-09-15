@@ -1,4 +1,4 @@
-# Appendix
+# Normal Mode for SVP64
 
 * <https://bugs.libre-soc.org/show_bug.cgi?id=574>
 * <https://bugs.libre-soc.org/show_bug.cgi?id=558#c47>
@@ -7,10 +7,10 @@ Table of contents:
 
 [[!toc]]
 
-
 # Mode
 
-Mode is an augmentation of SV behaviour.  Some of these alterations are element-based (saturation), others involve post-analysis (predicate result) and others are Vector-based (mapreduce, fail-on-first).
+Mode is an augmentation of SV behaviour, providing additional
+functionslity.  Some of these alterations are element-based (saturation), others involve post-analysis (predicate result) and others are Vector-based (mapreduce, fail-on-first).
 
 These are the modes for everything except [[sv/ldst]],
 [[sv/cr_ops]] and [[sv/branches]] which are covered separately:
@@ -27,7 +27,7 @@ and FP.
 
 Note that ffirst and reduce modes are not anticipated to be high-performance in some implementations.  ffirst due to interactions with VL, and reduce due to it requiring additional operations to produce a result.  normal, saturate and pred-result are however inter-element independent and may easily be parallelised to give high performance, regardless of the value of VL.
 
-The Mode table for operations except LD/ST and Branch Conditional
+The Mode table for Arithmetic and Logical operations
  is laid out as follows:
 
 | 0-1 |  2  |  3   4  |  description              |
@@ -56,13 +56,15 @@ than the normal 0..VL-1
   VL *includes* the current element at the failure point rather
   than excludes it from the count.
 
-For LD/ST Modes, see [[sv/ldst]].  For Branch modes, see [[sv/branches]] Immediate and Indexed LD/ST
+For LD/ST Modes, see [[sv/ldst]].  For Condition Registers
+see [[sv/cr_ops]].
+For Branch modes, see [[sv/branches]] Immediate and Indexed LD/ST
 are both different, in order to support a large range of features
 normally found in Vector ISAs.
 
 # Rounding, clamp and saturate
 
-see  [[av_opcodes]].
+see [[av_opcodes]].
 
 To help ensure that audio quality is not compromised by overflow,
 "saturation" is provided, as well as a way to detect when saturation
@@ -101,188 +103,11 @@ dest elwidth.
 
 # Reduce mode
 
-Reduction in SVP64 is deterministic and somewhat of a misnomer.  A normal
-Vector ISA would have explicit Reduce opcodes with defibed characteristics
-per operation: in SX Aurora there is even an additional scalar argument
-containing the initial reduction value. SVP64 fundamentally has to
-utilise *existing* Scalar Power ISA v3.0B operations, which presents some
-unique challenges.
-
-The solution turns out to be to simply define reduction as permitting
-deterministic element-based schedules to be issued using the base Scalar
-operations, and to rely on the underlying microarchitecture to resolve
-Register Hazards at the element level.  This goes back to
-the fundamental principle that SV is nothing more than a Sub-Program-Counter
-sitting between Decode and Issue phases.
-
-Microarchitectures *may* take opportunities to parallelise the reduction
-but only if in doing so they preserve Program Order at the Element Level.
-Opportunities where this is possible include an `OR` operation
-or a MIN/MAX operation: it may be possible to parallelise the reduction,
-but for Floating Point it is not permitted due to different results
-being obtained if the reduction is not executed in strict sequential
-order.
-
-## Scalar result reduce mode
-
-In this mode, which is suited to operations involving carry or overflow,
-one register must be identified by the programmer as being the "accumulator".
-Scalar reduction is thus categorised by:
-
-* One of the sources is a Vector
-* the destination is a scalar
-* optionally but most usefully when one source register is also the destination
-* That the source register type is the same as the destination register
-  type identified as the "accumulator".  scalar reduction on `cmp`,
-  `setb` or `isel` makes no sense for example because of the mixture
-  between CRs and GPRs.
-
-Typical applications include simple operations such as `ADD r3, r10.v,
-r3` where, clearly, r3 is being used to accumulate the addition of all
-elements is the vector starting at r10.
-
-     # add RT, RA,RB but when RT==RA
-     for i in range(VL):
-          iregs[RA] += iregs[RB+i] # RT==RA
-
-However, *unless* the operation is marked as "mapreduce", SV ordinarily
-**terminates** at the first scalar operation.  Only by marking the
-operation as "mapreduce" will it continue to issue multiple sub-looped
-(element) instructions in `Program Order`.
-
-To.perform the loop in reverse order, the ```RG``` (reverse gear) bit must be set.  This is useful for leaving a cumulative suffix sum in reverse order:
-
-    for i in (VL-1 downto 0):
-        # RT-1 = RA gives a suffix sum
-        iregs[RT+i] = iregs[RA+i] - iregs[RB+i]
-
-Other examples include shift-mask operations where a Vector of inserts
-into a single destination register is required, as a way to construct
-a value quickly from multiple arbitrary bit-ranges and bit-offsets.
-Using the same register as both the source and destination, with Vectors
-of different offsets masks and values to be inserted has multiple
-applications including Video, cryptography and JIT compilation.
-
-Subtract and Divide are still permitted to be executed in this mode,
-although from an algorithmic perspective it is strongly discouraged.
-It would be better to use addition followed by one final subtract,
-or in the case of divide, to get better accuracy, to perform a multiply
-cascade followed by a final divide.
-
-Note that single-operand or three-operand scalar-dest reduce is perfectly
-well permitted: both still meet the qualifying characteristics that one
-source operand can also be the destination, which allows the "accumulator"
-to be identified.
-
-If the "accumulator" cannot be identified (one of the sources is also
-a destination) the results are **UNDEFINED**.  This permits implementations
-to not have to have complex decoding analysis of register fields: it
-is thus up to the programmer to ensure that one of the source registers
-is also a destination register in order to take advantage of Scalar
-Reduce Mode.
-
-If an interrupt or exception occurs in the middle of the scalar mapreduce,
-the scalar destination register **MUST** be updated with the current
-(intermediate) result, because this is how ```Program Order``` is
-preserved (Vector Loops are to be considered to be just another way of issuing instructions
-in Program Order).  In this way, after return from interrupt,
-the scalar mapreduce may continue where it left off.  This provides
-"precise" exception behaviour.
-
-Note that hardware is perfectly permitted to perform multi-issue
-parallel optimisation of the scalar reduce operation: it's just that
-as far as the user is concerned, all exceptions and interrupts **MUST**
-be precise.
-
-## Vector result reduce mode
-
-Vector result reduce mode may utilise the destination vector for
-the purposes of storing intermediary results.  Interrupts and exceptions
-can therefore also be precise.  The result will be in the first
-non-predicate-masked-out destination element.  Note that unlike
-Scalar reduce mode, Vector reduce
-mode is *not* suited to operations which involve carry or overflow.
-
-Programs **MUST NOT** rely on the contents of the intermediate results:
-they may change from hardware implementation to hardware implementation.
-Some implementations may perform an incremental update, whilst others
-may choose to use the available Vector space for a binary tree reduction.
-If an incremental Vector is required (```x[i] = x[i-1] + y[i]```) then
-a *straight* SVP64 Vector instruction can be issued, where the source and
-destination registers overlap: ```sv.add 1.v, 9.v, 2.v```. Due to
-respecting ```Program Order``` being mandatory in SVP64, hardware should
-and must detect this case and issue an incremental sequence of scalar
-element instructions.
-
-1. limited to single predicated dual src operations (add RT, RA, RB).
-   triple source operations are prohibited (such as fma).
-2. limited to operations that make sense.  divide is excluded, as is
-   subtract (X - Y - Z produces different answers depending on the order)
-   and asymmetric CRops (crandc, crorc). sane  operations:
-   multiply, min/max, add, logical bitwise OR, most other CR ops.
-   operations that do have the same source and dest register type are
-   also excluded (isel, cmp). operations involving carry or overflow
-   (XER.CA / OV) are also prohibited.
-3. the destination is a vector but the result is stored, ultimately,
-   in the first nonzero predicated element.  all other nonzero predicated
-   elements are undefined. *this includes the CR vector* when Rc=1
-4. implementations may use any ordering and any algorithm to reduce
-   down to a single result.  However it must be equivalent to a straight
-   application of mapreduce.  The destination vector (except masked out
-   elements) may be used for storing any intermediate results. these may
-   be left in the vector (undefined).
-5. CRM applies when Rc=1.  When CRM is zero, the CR associated with
-   the result is regarded as a "some results met standard CR result
-   criteria". When CRM is one, this changes to "all results met standard
-   CR criteria".
-6. implementations MAY use destoffs as well as srcoffs (see [[sv/sprs]])
-   in order to store sufficient state to resume operation should an
-   interrupt occur. this is also why implementations are permitted to use
-   the destination vector to store intermediary computations
-7. *Predication may be applied*.  zeroing mode is not an option.  masked-out
-   inputs are ignored; masked-out elements in the destination vector are
-   unaltered (not used for the purposes of intermediary storage); the
-   scalar result is placed in the first available unmasked element.
-
-Pseudocode for the case where RA==RB:
-
-    result = op(iregs[RA], iregs[RA+1])
-    CR = analyse(result)
-    for i in range(2, VL):
-        result = op(result, iregs[RA+i])
-        CRnew = analyse(result)
-        if Rc=1
-            if CRM:
-                 CR = CR bitwise or CRnew
-            else:
-                 CR = CR bitwise AND CRnew
-
-TODO: case where RA!=RB which involves first a vector of 2-operand
-results followed by a mapreduce on the intermediates.
-
-Note that when SVM is clear and SUBVL!=1 the sub-elements are
-*independent*, i.e. they are mapreduced per *sub-element* as a result.
-illustration with a vec2:
-
-    result.x = op(iregs[RA].x, iregs[RA+1].x)
-    result.y = op(iregs[RA].y, iregs[RA+1].y)
-    for i in range(2, VL):
-        result.x = op(result.x, iregs[RA+i].x)
-        result.y = op(result.y, iregs[RA+i].y)
-
-Note here that Rc=1 does not make sense when SVM is clear and SUBVL!=1.
-
-When SVM is set and SUBVL!=1, another variant is enabled: horizontal
-subvector mode.  Example for a vec3:
-
-    for i in range(VL):
-        result = op(iregs[RA+i].x, iregs[RA+i].x)
-        result = op(result, iregs[RA+i].y)
-        result = op(result, iregs[RA+i].z)
-        iregs[RT+i] = result
-
-In this mode, when Rc=1 the Vector of CRs is as normal: each result
-element creates a corresponding CR element.
+Reduction in SVP64 is similar in essence to other Vector Processing
+ISAs, but leverages the underlying scalar Base v3.0B operations.
+Thus it is more a convention that the programmer may utilise to give
+the appearance and effect of a Horizontal Vector Reduction.
+Details are in the [[svp64/appendix]]
 
 # Fail-on-first
 
