@@ -160,45 +160,6 @@ This is equivalent to
 followed by
 `llvm.masked.expandload.*`
 
-# Rounding, clamp and saturate
-
-see  [[av_opcodes]].
-
-To help ensure that audio quality is not compromised by overflow,
-"saturation" is provided, as well as a way to detect when saturation
-occurred if desired (Rc=1). When Rc=1 there will be a *vector* of CRs,
-one CR per element in the result (Note: this is different from VSX which
-has a single CR per block).
-
-When N=0 the result is saturated to within the maximum range of an
-unsigned value.  For integer ops this will be 0 to 2^elwidth-1. Similar
-logic applies to FP operations, with the result being saturated to
-maximum rather than returning INF, and the minimum to +0.0
-
-When N=1 the same occurs except that the result is saturated to the min
-or max of a signed result, and for FP to the min and max value rather
-than returning +/- INF.
-
-When Rc=1, the CR "overflow" bit is set on the CR associated with the
-element, to indicate whether saturation occurred.  Note that due to
-the hugely detrimental effect it has on parallel processing, XER.SO is
-**ignored** completely and is **not** brought into play here.  The CR
-overflow bit is therefore simply set to zero if saturation did not occur,
-and to one if it did.
-
-Note also that saturate on operations that produce a carry output are
-prohibited due to the conflicting use of the CR.so bit for storing if
-saturation occurred.
-
-Post-analysis of the Vector of CRs to find out if any given element hit
-saturation may be done using a mapreduced CR op (cror), or by using the
-new crweird instruction, transferring the relevant CR bits to a scalar
-integer and testing it for nonzero.  see [[sv/cr_int_predication]]
-
-Note that the operation takes place at the maximum bitwidth (max of
-src and dest elwidth) and that truncation occurs to the range of the
-dest elwidth.
-
 # Reduce mode
 
 Reduction in SVP64 is deterministic and somewhat of a misnomer.  A normal
