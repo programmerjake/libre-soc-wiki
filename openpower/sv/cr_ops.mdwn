@@ -82,7 +82,18 @@ SVP64 RM `MODE` (includes `ELWIDTH` bits) for CR-based operations:
 
 Fields:
 
-TODO
+* **sz / dz**  if predication is enabled will put zeros into the dest (or as src in the case of twin pred) when the predicate bit is zero.  otherwise the element is ignored or skipped, depending on context.
+* **SNZ** when sz=1 and SNZ=1 a value "1" is put in place of zeros when
+  the predicate bit is clear.
+* **inv CR bit** just as in branches (BO) these bits allow testing of a CR bit and whether it is set (inv=0) or unset (inv=1)
+* **RG** inverts the Vector Loop order (VL-1 downto 0) rather
+than the normal 0..VL-1
+* **CRM** affects the CR on reduce mode when Rc=1
+* **SVM** sets "subvector" reduce mode
+* **VLi** VL inclusive: in fail-first mode, the truncation of
+  VL *includes* the current element at the failure point rather
+  than excludes it from the count.
+
 
 # Data-dependent fail-first on CR operations
 
