@@ -456,7 +456,9 @@ Operations that actually produce or alter CR Field as a result
 do not also in turn have an Rc=1 mode.  However it makes no
 sense to try to test the 4 bits of a CR Field for being equal
 or not equal to zero. Moreover, the result is already in the
-form that is desired: it is a CR field.
+form that is desired: it is a CR field.  Therefore,
+CR-based operations have their own SVP64 Mode, described
+in [[sv/cr_ops]]
 
 There are two primary different types of CR operations:
 
@@ -464,31 +466,7 @@ There are two primary different types of CR operations:
 * Those which have a 5-bit operand (referring to a bit within the
    whole 32-bit CR)
 
-Examining these two as has already been done it is observed that
-the difference may be considered to be that the 5-bit variant
-provides additional information about which CR Field bit
-(EQ, GE, LT, SO) is to be operated on by the instruction.
-
-Thus, logically, we may set the following rule:
-
-* When a 5-bit CR Result field is used in an instruction, the
-  `inv, VLi and RC1` variant of Data-Dependent Fail-First
-  must be used. i.e. the bit of the CR field to be tested is
-  the one that has just been modified by the operation.
-* When a 3-bit CR Result field is used the `inv CRbit` variant
-  must be used in order to select which CR Field bit shall
-  be tested (EQ, LE, GE, SO).
-
-Examples of the former type:
-
-* crand, cror, crnor. These all are 5-bit (BA, BB, BT). The bit
-  to be tested against `inv` is the one selected by `BT`
-* mcrf. This has only 3-bit (BF, BFA). In order to select the
-  bit to be tested, the alternative FFirst encoding must be used.
-
-This limits sv.mcrf in that it may not use the `VLi` (VL inclusive)
-Mode. This is unfortunste but unavoidable due to encoding pressure
-on SVP64.
+More details can be found in [[sv/cr_ops]].
 
 # pred-result mode
 
@@ -525,20 +503,11 @@ different: elements that fail the CR test *or* are masked out are zero'd.
 
 ## pred-result mode on CR ops
 
-Yes, really: CR operations (mtcr, crand, cror) may be Vectorised,
-predicated, and also pred-result mode applied to it.  In this case,
-the Vectorisation applies to the batch of 4 bits, i.e. it is not the CR
-individual bits that are treated as the Vector, but the CRs themselves
-(CR0, CR8, CR9...).
-
-Put another way: Vectorised crand uses the higher bits of BA BB BC
-to select the CR Field: these will increment sequentially as the Vector
-loop progresses, whereas the lower 2 bits (selecting one of eq, ge, le, ov) 
-remain the same.
-
-Thus after each Vectorised operation (crand) a test of the CR result
-can in fact be performed. However the only meaningful comparision will
-be "eq" or "ne", given that the result is only one bit.
+CR operations (mtcr, crand, cror) may be Vectorised,
+predicated, and also pred-result mode applied to it.  
+Vectorisation applies to 4-bit CR Fields which are treated as
+elements, not the individual bits of the 32-bit CR.
+CR ops and how to identify them is described in [[sv/cr_ops]]
 
 # CR Operations
 
@@ -633,7 +602,7 @@ EXTRA field the *standard* v3.0B behaviour applies: the accompanying
 CR when Rc=1 is written to.  This is CR0 for integer operations and CR1
 for FP operations.
 
-Note that yes, the CRs are genuinely Vectorised.  Unlike in SIMD VSX which
+Note that yes, the CR Fields are genuinely Vectorised.  Unlike in SIMD VSX which
 has a single CR (CR6) for a given SIMD result, SV Vectorised OpenPOWER
 v3.0B scalar operations produce a **tuple** of element results: the
 result of the operation as one part of that element *and a corresponding
@@ -646,7 +615,7 @@ CR element*.  Greatly simplified pseudocode:
 
 If a "cumulated" CR based analysis of results is desired (a la VSX CR6)
 then a followup instruction must be performed, setting "reduce" mode on
-the Vector of CRs, using cr ops (crand, crnor)to do so.  This provides far
+the Vector of CRs, using cr ops (crand, crnor) to do so.  This provides far
 more flexibility in analysing vectors than standard Vector ISAs.  Normal
 Vector ISAs are typically restricted to "were all results nonzero" and
 "were some results nonzero". The application of mapreduce to Vectorised
@@ -658,18 +627,23 @@ ensures that high performance multi-issue OoO inplementations do not
 have the computation of the cumulative analysis CR as a bottleneck and
 hindrance, regardless of the length of VL.
 
+Additionally,
+SVP64 [[sv/branches]] may be used, even when the branch itself is to
+the following instruction.  The combined side-effects of CTR reduction
+and VL truncation provide several benefits.
+
 (see [[discussion]].  some alternative schemes are described there)
 
 ## Rc=1 when SUBVL!=1
 
-sub-vectors are effectively a form of SIMD (length 2 to 4). Only 1 bit of
+sub-vectors are effectively a form of Packed SIMD (length 2 to 4). Only 1 bit of
 predicate is allocated per subvector; likewise only one CR is allocated
 per subvector.
 
 This leaves a conundrum as to how to apply CR computation per subvector,
 when normally Rc=1 is exclusively applied to scalar elements.  A solution
 is to perform a bitwise OR or AND of the subvector tests.  Given that
-OE is ignored, rhis field may (when available) be used to select OR or
+OE is ignored in SVP64, this field may (when available) be used to select OR or
 AND behavior.
 
 ### Table of CR fields
