@@ -186,6 +186,14 @@ order.
 
 ## Scalar result reduce mode
 
+Scalar Reduction per se does not exist, instead is implemented in SVP64
+as a simple and natural relaxation of the usual restriction on the Vector
+Looping which would terminate if the destination was marked as a Scalar.
+Scalar Reduction by contrast *keeps issuing Vector Element Operations*
+even though the destination register is marked as scalar.
+Thus it is up to the programmer to be aware of this and observe some
+conventions.
+
 In this mode, which is suited to operations involving carry or overflow,
 one register must be identified by the programmer as being the "accumulator".
 Scalar reduction is thus categorised by:
@@ -254,6 +262,13 @@ Note that hardware is perfectly permitted to perform multi-issue
 parallel optimisation of the scalar reduce operation: it's just that
 as far as the user is concerned, all exceptions and interrupts **MUST**
 be precise.
+
+It is also possible, using this mode, to perform iterative computations.
+Setting the source register to be one greater or one less than the
+destination will result in a cumulative cascade of element-based
+operations being issued to the underlying hardware, where standard
+Register Hazard observance is expected and required.  "Reverse Gear"
+may prove useful in some circumstances.
 
 ## Vector result reduce mode
 
