@@ -192,7 +192,11 @@ Looping which would terminate if the destination was marked as a Scalar.
 Scalar Reduction by contrast *keeps issuing Vector Element Operations*
 even though the destination register is marked as scalar.
 Thus it is up to the programmer to be aware of this and observe some
-conventions.
+conventions.  It is also important to appreciate that there is no
+actual imposition or restriction on how this mode is utilised: there
+will therefore be several valuable uses (including Vector Iteration)
+and it is up to the programmer to make best use of the capability
+provided.
 
 In this mode, which is suited to operations involving carry or overflow,
 one register must be identified by the programmer as being the "accumulator".
