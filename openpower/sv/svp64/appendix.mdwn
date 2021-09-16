@@ -160,7 +160,7 @@ This is equivalent to
 followed by
 `llvm.masked.expandload.*`
 
-# Reduce mode
+# Reduce modes
 
 Reduction in SVP64 is deterministic and somewhat of a misnomer.  A normal
 Vector ISA would have explicit Reduce opcodes with defined characteristics
@@ -293,9 +293,7 @@ When Rc=1 a corresponding Vector of co-resultant CRs is also
 created.  No special action is taken: the result and its CR Field
 are stored "as usual" exactly as all other SVP64 Rc=1 operations.
 
-
-TODO: case where RA!=RB which involves first a vector of 2-operand
-results followed by a mapreduce on the intermediates.
+## Sub-Vector Horizontal Reduction
 
 Note that when SVM is clear and SUBVL!=1 the sub-elements are
 *independent*, i.e. they are mapreduced per *sub-element* as a result.
@@ -313,13 +311,13 @@ When SVM is set and SUBVL!=1, another variant is enabled: horizontal
 subvector mode.  Example for a vec3:
 
     for i in range(VL):
-        result = op(iregs[RA+i].x, iregs[RA+i].x)
+        result = iregs[RA+i].x
         result = op(result, iregs[RA+i].y)
         result = op(result, iregs[RA+i].z)
         iregs[RT+i] = result
 
 In this mode, when Rc=1 the Vector of CRs is as normal: each result
-element creates a corresponding CR element.
+element creates a corresponding CR element (for the final, reduced, result).
 
 # Fail-on-first
 
