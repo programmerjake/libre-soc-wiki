@@ -210,6 +210,20 @@ Scalar reduction is thus categorised by:
   `setb` or `isel` makes no sense for example because of the mixture
   between CRs and GPRs.
 
+*Note that issuing instructions in Scalar reduce mode such as `setb`
+are neither `UNDEFINED` nor prohibited, despite them not making much
+sense at first glance.
+Scalar reduce is strictly defined behaviour, and the cost in
+hardware terms of prohibition of seemingly non-sensical operations is too great.
+Therefore it is permitted and required to be executed successfully.
+Implementors **MAY** choose to optimise such instructions in instances
+where their use results in "extraneous execution", i.e. where it is clear
+that the sequence of operations, comprising multiple overwrites to
+a scalar destination **without** cumulative, iterative, or reductive
+behaviour, may discard all but the last element operation.  Identification
+of such is trivial to do for `setb` and `cmp`: the source register type is
+a completely different register file from the destination*
+
 Typical applications include simple operations such as `ADD r3, r10.v,
 r3` where, clearly, r3 is being used to accumulate the addition of all
 elements is the vector starting at r10.
