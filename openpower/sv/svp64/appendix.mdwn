@@ -278,66 +278,21 @@ be precise.
 
 ## Vector result reduce mode
 
-Vector result reduce mode may utilise the destination vector for
-the purposes of storing intermediary results.  Interrupts and exceptions
-can therefore also be precise.  The result will be in the first
-non-predicate-masked-out destination element.  Note that unlike
-Scalar reduce mode, Vector reduce
-mode is *not* suited to operations which involve carry or overflow.
+Vector Reduce Mode issues a deterministic tree-reduction schedule to the underlying micro-architecture.  Like Scalar reduction, the "Scalar Base"
+(Power ISA v3.0B) operation is leveraged, unmodified, to give the
+*appearance* and *effect* of Reduction.
 
-Programs **MUST NOT** rely on the contents of the intermediate results:
-they may change from hardware implementation to hardware implementation.
-Some implementations may perform an incremental update, whilst others
-may choose to use the available Vector space for a binary tree reduction.
-If an incremental Vector is required (```x[i] = x[i-1] + y[i]```) then
-a *straight* SVP64 Vector instruction can be issued, where the source and
-destination registers overlap: ```sv.add 1.v, 9.v, 2.v```. Due to
-respecting ```Program Order``` being mandatory in SVP64, hardware should
-and must detect this case and issue an incremental sequence of scalar
-element instructions.
+Given that the tree-reduction schedule is deterministic,
+Interrupts and exceptions
+can therefore also be precise.  The final result will be in the first
+non-predicate-masked-out destination element, but due again to
+the deterministic schedule programmers may find uses for the intermediate
+results.
 
-1. limited to single predicated dual src operations (add RT, RA, RB).
-   triple source operations are prohibited (such as fma).
-2. limited to operations that make sense.  divide is excluded, as is
-   subtract (X - Y - Z produces different answers depending on the order)
-   and asymmetric CRops (crandc, crorc). sane  operations:
-   multiply, min/max, add, logical bitwise OR, most other CR ops.
-   operations that do have the same source and dest register type are
-   also excluded (isel, cmp). operations involving carry or overflow
-   (XER.CA / OV) are also prohibited.
-3. the destination is a vector but the result is stored, ultimately,
-   in the first nonzero predicated element.  all other nonzero predicated
-   elements are undefined. *this includes the CR vector* when Rc=1
-4. implementations may use any ordering and any algorithm to reduce
-   down to a single result.  However it must be equivalent to a straight
-   application of mapreduce.  The destination vector (except masked out
-   elements) may be used for storing any intermediate results. these may
-   be left in the vector (undefined).
-5. CRM applies when Rc=1.  When CRM is zero, the CR associated with
-   the result is regarded as a "some results met standard CR result
-   criteria". When CRM is one, this changes to "all results met standard
-   CR criteria".
-6. implementations MAY use destoffs as well as srcoffs (see [[sv/sprs]])
-   in order to store sufficient state to resume operation should an
-   interrupt occur. this is also why implementations are permitted to use
-   the destination vector to store intermediary computations
-7. *Predication may be applied*.  zeroing mode is not an option.  masked-out
-   inputs are ignored; masked-out elements in the destination vector are
-   unaltered (not used for the purposes of intermediary storage); the
-   scalar result is placed in the first available unmasked element.
+When Rc=1 a corresponding Vector of co-resultant CRs is also
+created.  No special action is taken: the result and its CR Field
+are stored "as usual" exactly as all other SVP64 Rc=1 operations.
 
-Pseudocode for the case where RA==RB:
-
-    result = op(iregs[RA], iregs[RA+1])
-    CR = analyse(result)
-    for i in range(2, VL):
-        result = op(result, iregs[RA+i])
-        CRnew = analyse(result)
-        if Rc=1
-            if CRM:
-                 CR = CR bitwise or CRnew
-            else:
-                 CR = CR bitwise AND CRnew
 
 TODO: case where RA!=RB which involves first a vector of 2-operand
 results followed by a mapreduce on the intermediates.
