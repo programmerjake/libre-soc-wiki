@@ -190,7 +190,7 @@ order.
 In essence it becomes the programmer's responsibility to leverage the
 pre-determined schedules to desired effect.
 
-## Scalar result reduce mode
+## Scalar result reduction and iteration
 
 Scalar Reduction per se does not exist, instead is implemented in SVP64
 as a simple and natural relaxation of the usual restriction on the Vector
@@ -209,8 +209,8 @@ and it is up to the programmer to make best use of the
 provided.
 
 In this mode, which is suited to operations involving carry or overflow,
-one register must be identified by the programmer as being the "accumulator".
-Scalar reduction is thus categorised by:
+one register must be assigned, by convention by the programmer to be the
+"accumulator".  Scalar reduction is thus categorised by:
 
 * One of the sources is a Vector
 * the destination is a scalar
@@ -218,7 +218,7 @@ Scalar reduction is thus categorised by:
   also the scalar destination (which may be informally termed
   the "accumulator")
 * That the source register type is the same as the destination register
-  type identified as the "accumulator".  scalar reduction on `cmp`,
+  type identified as the "accumulator".  Scalar reduction on `cmp`,
   `setb` or `isel` makes no sense for example because of the mixture
   between CRs and GPRs.
 
@@ -245,7 +245,8 @@ elements is the vector starting at r10.
      for i in range(VL):
           iregs[RA] += iregs[RB+i] # RT==RA
 
-However, *unless* the operation is marked as "mapreduce", SV ordinarily
+However, *unless* the operation is marked as "mapreduce" (`sv.add/mr`)
+SV ordinarily
 **terminates** at the first scalar operation.  Only by marking the
 operation as "mapreduce" will it continue to issue multiple sub-looped
 (element) instructions in `Program Order`.
