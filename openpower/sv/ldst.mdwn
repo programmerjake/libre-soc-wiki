@@ -268,6 +268,12 @@ cache-inhibited LD should be performed, followed by a VSPLAT-augmented mv.
 
 ## LD/ST ffirst
 
+LD/ST ffirst treats the first LD/ST in a vector (element 0) as an
+ordinary one.  Exceptions occur "as normal".  However for elements 1
+and above, if an exception would occur, then VL is **truncated** to the
+previous element: the exception is **not** then raised because the
+LD/ST was effectively speculative.
+
 ffirst LD/ST to multiple pages via a Vectorised Index base is considered a security risk due to the abuse of probing multiple pages in rapid succession and getting feedback on which pages would fail.  Therefore Vector Indexed LD/ST is prohibited entirely, and the Mode bit instead used for element-strided LD/ST.  See <https://bugs.libre-soc.org/show_bug.cgi?id=561>
 
     for(i = 0; i < VL; i++)
@@ -282,12 +288,19 @@ speculative probing (and also adversely affect performance), but will
 at least not require applications to be rewritten.
 
 Low-performance simpler hardware implementations may
-choose to also set VL=1 as the bare minimum compliant implementation of
+choose (always) to also set VL=1 as the bare minimum compliant implementation of
 LD/ST Fail-First. It is however critically important to remember that
 the first element LD/ST **MUST** be treated as an ordinary LD/ST, i.e.
 **MUST** raise exceptions exactly like an ordinary LD/ST.
 
 For ffirst LD/STs, VL may be truncated arbitrarily to a nonzero value for any implementation-specific reason. For example: it is perfectly reasonable for implementations to alter VL when ffirst LD or ST operations are initiated on a nonaligned boundary, such that within a loop the subsequent iteration of that loop begins subsequent ffirst LD/ST operations on an aligned boundary. Likewise, to reduce workloads or balance resources.
+
+Vertical-First Mode is slightly strange in that only one element
+at a time is ever executed anyway.  Given that programmers may
+legitimately choose to alter srcstep and dststep in non-sequential
+order as part of explicit loops, it is neither possible nor
+safe to make speculative assumptions about future LD/STs.
+Therefore, Fail-First LD/ST in Vertical-First is `UNDEFINED`.
 
 # LOAD/STORE Elwidths <a name="elwidth"></a>
 
