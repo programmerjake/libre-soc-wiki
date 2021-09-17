@@ -199,7 +199,7 @@ More details can be found in [[sv/cr_ops]].
 
 This mode merges common CR testing with predication, saving on instruction
 count. Below is the pseudocode excluding predicate zeroing and elwidth
-overrides. Note that the paeudocode for [[sv/cr_ops]] is slightly different.
+overrides. Note that the pseudocode for [[sv/cr_ops]] is slightly different.
 
     for i in range(VL):
         # predication test, skip all masked out elements.
@@ -227,13 +227,4 @@ element result is *always* discarded, never written (just like `cmp`).
 
 Note that predication is still respected: predicate zeroing is slightly
 different: elements that fail the CR test *or* are masked out are zero'd.
-
-## pred-result mode on CR ops
-
-CR operations (mtcr, crand, cror) may be Vectorised,
-predicated, and also pred-result mode applied to it.  
-Vectorisation applies to 4-bit CR Fields which are treated as
-elements, not the individual bits of the 32-bit CR.
-CR ops and how to identify them is described in [[sv/cr_ops]]
-
 
