@@ -301,6 +301,8 @@ legitimately choose to alter srcstep and dststep in non-sequential
 order as part of explicit loops, it is neither possible nor
 safe to make speculative assumptions about future LD/STs.
 Therefore, Fail-First LD/ST in Vertical-First is `UNDEFINED`.
+This is very different from Arithmetic (Data-dependent) FFirst
+where Vertical-First Mode is deterministic, not speculative.
 
 # LOAD/STORE Elwidths <a name="elwidth"></a>
 
