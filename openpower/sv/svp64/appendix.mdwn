@@ -429,36 +429,11 @@ More details can be found in [[sv/cr_ops]].
 
 # pred-result mode
 
-This mode merges common CR testing with predication, saving on instruction
-count. Below is the pseudocode excluding predicate zeroing and elwidth
-overrides. Note that the paeudocode for [[sv/cr_ops]] is slightly different.
-
-    for i in range(VL):
-        # predication test, skip all masked out elements.
-        if predicate_masked_out(i):
-             continue
-        result = op(iregs[RA+i], iregs[RB+i])
-        CRnew = analyse(result) # calculates eq/lt/gt
-        # Rc=1 always stores the CR
-        if Rc=1 or RC1:
-            crregs[offs+i] = CRnew
-        # now test CR, similar to branch
-        if RC1 or CRnew[BO[0:1]] != BO[2]:
-            continue # test failed: cancel store
-        # result optionally stored but CR always is
-        iregs[RT+i] = result
-
-The reason for allowing the CR element to be stored is so that
-post-analysis of the CR Vector may be carried out.  For example:
-Saturation may have occurred (and been prevented from updating, by the
-test) but it is desirable to know *which* elements fail saturation.
-
-Note that RC1 Mode basically turns all operations into `cmp`.  The
-calculation is performed but it is only the CR that is written. The
-element result is *always* discarded, never written (just like `cmp`).
-
-Note that predication is still respected: predicate zeroing is slightly
-different: elements that fail the CR test *or* are masked out are zero'd.
+Predicate-result merges common CR testing with predication, saving on
+instruction count.  In essence, a Condition Register Field test
+is performed, and if it fails it is considered to have been
+*as if* the destination predicate bit was zero.
+Arithmetic and Logical Pred-result is covered in [[sv/normal]]
 
 ## pred-result mode on CR ops
 
