@@ -316,6 +316,9 @@ considered, exactly as is the case in Scalar Power ISA v3.0B
 only time in the entirety of SVP64 that has side-effects when
 a predicate mask bit is clear.  **All** other SVP64 operations
 entirely skip an element when sz=0 and a predicate mask bit is zero.
+It is also critical to emphasise that in this unusual mode, 
+no other side-effects occur: **only** CTR is decremented, i.e. the
+rest of the Branch operation iss skipped.
 
 # VLSET Mode
 
