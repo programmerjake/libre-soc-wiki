@@ -64,13 +64,10 @@ AND, OR, NAND and NOR of all Conditions.
 NAND and NOR may be synthesised from AND and OR by
 inverting `BO[1]` which just leaves two modes:
 
-* Branch takes place on the first CR Field test to succeed
+* Branch takes place on the **first** CR Field test to succeed
   (a Great Big OR of all condition tests)
 * Branch takes place only if **all** CR field tests succeed:
   a Great Big AND of all condition tests
-  (including those where the predicate is masked out
-   and the corresponding CR Field is considered to be
-   set to `SNZ`)
 
 Early-exit is enacted such that the Vectorised Branch does not
 perform needless extra tests, which will help reduce reads on
@@ -102,6 +99,17 @@ it is important to provide a means
 to enact them each based on whether testing succeeds *or fails*. This
 results in a not-insignificant number of additional Mode Augmentation bits,
 accompanying VLSET and CTR-test Modes respectively.
+
+Predicate skipping or zeroing may, as usual with SVP64, be controlled
+by `sz`.
+Where the predicate is masked out and
+zeroing is enabled, then in such circumstances
+the same Boolean Logic Analysis dictates that
+rather than testing only against zero, the option to test
+against one is also prudent. This introduces a new
+immediate field, `SNZ`, which works in conjunction with
+`sz`.
+
 
 Vectorised Branches can be used
 in either SVP64 Horizontal-First or Vertical-First Mode. Essentially,
