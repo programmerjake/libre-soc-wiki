@@ -121,10 +121,7 @@ the other for arithmetic operations (actually, CR-driven).  Note in each
 case the assumption is that vector elements are required appear to be
 executed in sequential Program Order, element 0 being the first.
 
-* LD/ST ffirst treats the first LD/ST in a vector (element 0) as an
-  ordinary one.  Exceptions occur "as normal".  However for elements 1
-  and above, if an exception would occur, then VL is **truncated** to the
-  previous element.
+
 * Data-driven (CR-driven) fail-on-first activates when Rc=1 or other
   CR-creating operation produces a result (including cmp).  Similar to
   branch, an analysis of the CR is performed and if the test fails, the
