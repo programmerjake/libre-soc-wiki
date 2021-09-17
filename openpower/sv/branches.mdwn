@@ -207,11 +207,15 @@ one element is tested.
 In other words, the fact that this is a Branch
 Operation (instead of an arithmetic one) does not result, ultimately,
 in significant changes as to
-how SVP64 is fundamentally applied, except with respect to 
-the unique properties associated with conditionally
+how SVP64 is fundamentally applied, except with respect to:
+
+* the unique properties associated with conditionally
  changing the Program
 Counter (aka "a Branch"), resulting in early-out
-opportunities and CTR-testing, which are outlined below.
+opportunities
+* CTR-testing
+
+Both are outlined below.
 
 # Horizontal-First and Vertical-First Modes
 
