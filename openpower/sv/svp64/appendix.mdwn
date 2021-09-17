@@ -313,18 +313,21 @@ are stored "as usual" exactly as all other SVP64 Rc=1 operations.
 
 Note that when SVM is clear and SUBVL!=1 the sub-elements are
 *independent*, i.e. they are mapreduced per *sub-element* as a result.
-illustration with a vec2:
+illustration with a vec2, assuming RA==RT, e.g `sv.add/mr/vec2 r4, r4, r16`
 
-    result.x = op(iregs[RA].x, iregs[RA+1].x)
-    result.y = op(iregs[RA].y, iregs[RA+1].y)
-    for i in range(2, VL):
-        result.x = op(result.x, iregs[RA+i].x)
-        result.y = op(result.y, iregs[RA+i].y)
+    for i in range(0, VL):
+        # RA==RT in the instruction. does not have to be
+        iregs[RT].x = op(iregs[RT].x, iregs[RB+i].x)
+        iregs[RT].y = op(iregs[RT].y, iregs[RB+i].y)
 
-Note here that Rc=1 does not make sense when SVM is clear and SUBVL!=1.
+Thus logically there is nothing special or unanticipated about
+`SVM=0`: it is expected behaviour according to standard SVP64
+Sub-Vector rules.
 
-When SVM is set and SUBVL!=1, another variant is enabled: horizontal
-subvector mode.  Example for a vec3:
+By contrast, when SVM is set and SUBVL!=1, a Horizontal
+Subvector mode is enabled, which behaves very much more
+like a traditional Vector Processor Reduction instruction.
+Example for a vec3:
 
     for i in range(VL):
         result = iregs[RA+i].x
