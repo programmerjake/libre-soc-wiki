@@ -543,9 +543,12 @@ result of the operation as one part of that element *and a corresponding
 CR element*.  Greatly simplified pseudocode:
 
     for i in range(VL):
-         # calculate the vector result of an add iregs[RT+i] = iregs[RA+i]
-         + iregs[RB+i] # now calculate CR bits CRs{8+i}.eq = iregs[RT+i]
-         == 0 CRs{8+i}.gt = iregs[RT+i] > 0 ... etc
+         # calculate the vector result of an add
+         iregs[RT+i] = iregs[RA+i] + iregs[RB+i]
+         # now calculate CR bits
+         CRs{8+i}.eq = iregs[RT+i] == 0
+         CRs{8+i}.gt = iregs[RT+i] > 0
+         ... etc
 
 If a "cumulated" CR based analysis of results is desired (a la VSX CR6)
 then a followup instruction must be performed, setting "reduce" mode on
