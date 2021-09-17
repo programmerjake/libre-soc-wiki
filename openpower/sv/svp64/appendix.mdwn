@@ -166,7 +166,9 @@ followed by
 Reduction in SVP64 is deterministic and somewhat of a misnomer.  A normal
 Vector ISA would have explicit Reduce opcodes with defined characteristics
 per operation: in SX Aurora there is even an additional scalar argument
-containing the initial reduction value. SVP64 fundamentally has to
+containing the initial reduction value, and the default is either 0
+or 1 depending on the specifics of the explicit opcode.
+SVP64 fundamentally has to
 utilise *existing* Scalar Power ISA v3.0B operations, which presents some
 unique challenges.
 
@@ -185,6 +187,9 @@ but for Floating Point it is not permitted due to different results
 being obtained if the reduction is not executed in strict sequential
 order.
 
+In essence it becomes the programmer's responsibility to leverage the
+pre-determined schedules to desired effect.
+
 ## Scalar result reduce mode
 
 Scalar Reduction per se does not exist, instead is implemented in SVP64
@@ -193,9 +198,12 @@ Looping which would terminate if the destination was marked as a Scalar.
 Scalar Reduction by contrast *keeps issuing Vector Element Operations*
 even though the destination register is marked as scalar.
 Thus it is up to the programmer to be aware of this and observe some
-conventions.  It is also important to appreciate that there is no
+conventions.
+
+It is also important to appreciate that there is no
 actual imposition or restriction on how this mode is utilised: there
-will therefore be several valuable uses (including Vector Iteration)
+will therefore be several valuable uses (including Vector Iteration
+and "Reverse-Gear")
 and it is up to the programmer to make best use of the capability
 provided.
 
@@ -205,7 +213,9 @@ Scalar reduction is thus categorised by:
 
 * One of the sources is a Vector
 * the destination is a scalar
-* optionally but most usefully when one source register is also the destination
+* optionally but most usefully when one source scalar register is
+  also the scalar destination (which may be informally termed
+  the "accumulator")
 * That the source register type is the same as the destination register
   type identified as the "accumulator".  scalar reduction on `cmp`,
   `setb` or `isel` makes no sense for example because of the mixture
@@ -221,7 +231,8 @@ Implementors **MAY** choose to optimise such instructions in instances
 where their use results in "extraneous execution", i.e. where it is clear
 that the sequence of operations, comprising multiple overwrites to
 a scalar destination **without** cumulative, iterative, or reductive
-behaviour, may discard all but the last element operation.  Identification
+behaviour (no "accumulator"), may discard all but the last element
+operation.  Identification
 of such is trivial to do for `setb` and `cmp`: the source register type is
 a completely different register file from the destination*
 
@@ -238,11 +249,14 @@ However, *unless* the operation is marked as "mapreduce", SV ordinarily
 operation as "mapreduce" will it continue to issue multiple sub-looped
 (element) instructions in `Program Order`.
 
-To.perform the loop in reverse order, the ```RG``` (reverse gear) bit must be set.  This is useful for leaving a cumulative suffix sum in reverse order:
-
-    for i in (VL-1 downto 0):
-        # RT-1 = RA gives a suffix sum
-        iregs[RT+i] = iregs[RA+i] - iregs[RB+i]
+To perform the loop in reverse order, the ```RG``` (reverse gear) bit must be set.  This may be useful in situations where the results may be different
+(floating-point) if executed in a different order.  Given that there is
+no actual prohibition on Reduce Mode being applied when the destination
+is a Vector, the "Reverse Gear" bit turns out to be a way to apply Iterative
+or Cumulative Vector operations in reverse. `sv.add/rg r3.v, r4.v, r4.v`
+for example will start at the opposite end of the Vector and push
+a cumulative series of overlapping add operations into the Execution units of
+the underlying hardware.
 
 Other examples include shift-mask operations where a Vector of inserts
 into a single destination register is required, as a way to construct
