@@ -341,8 +341,11 @@ element creates a corresponding CR element (for the final, reduced, result).
 
 # Fail-on-first
 
-Data-dependent fail-on-first has two distinct variants: one for LD/ST,
-the other for arithmetic operations (actually, CR-driven).  Note in each
+Data-dependent fail-on-first has two distinct variants: one for LD/ST
+(see [[sv/ldst]],
+the other for arithmetic operations (actually, CR-driven)
+([[sv/normal]]) and CR operations ([[sv/cr_ops]]).
+Note in each
 case the assumption is that vector elements are required appear to be
 executed in sequential Program Order, element 0 being the first.
 
