@@ -159,6 +159,33 @@ Just as with SVP64 [[sv/branches]] there is the option to truncate
 VL to include the element being tested (`VLi=1`) and to exclude it
 (`VLi=0`).
 
+# Reduction and Iteration
+
+Bearing in mind as described in the [[svp64/appendix]] SVP64 Horizontal
+Reduction is a deterministic schedule on top of base Scalar v3.0 operations,
+the same rules apply to CR Operations, i.e. that programmers must
+follow certain conventions in order for an *end result* of a
+reduction to be achieved.  *There are no explicit reduction opcodes*
+in SVP64.
+
+Due to these conventions only reduction on operations such as `crand`
+and `cror` are meaningful because these have Condition Register Fields
+as both input and output.
+
+Also bear in mind that 'Reverse Gear' may be enabled, which can be
+used in combination with overlapping CR operations to iteratively accumulate
+results.  Issuing a `sv.crand` operation for example with `BA`
+differing from `BB` by one Condition Register Field would
+result in a cascade effect, where the first-encountered CR Field
+would set the result to zero, and also all subsequent CR Field
+elements thereafter:
+
+    # sv.crand/mr/rg CR4.ge.v, CR5.ge.v, CR4.ge.v
+    for i in VL-1 downto 0 # reverse gear
+         CR[4+i].ge &= CR[5+i].ge
+
+
+
 # Predicate-result Condition Register operations
 
 These are again slightly different compared to SVP64 arithmetic
