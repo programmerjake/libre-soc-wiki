@@ -70,6 +70,10 @@ full context save/restore (see SVSRR0).  It contains (and permits setting of):
 * vfirst - Vertical First mode.  srcstep, dststep and substep
     **do not advance** unless explicitly requested to do so with
     pseudo-op svstep (a mode of setvl)
+* RMpst - REMAP persistence.  REMAP will apply only to the following
+  instruction unless this bit is set, in which case REMAP "persists".
+  Reset (cleared) on use of the `setvl` instruction if used to
+  alter VL or MVL.
 * hphint - Horizontal Parallelism Hint. In Vertical First Mode
    hardware **MAY** perform up to this many elements in parallel
    per instruction. Set to zero to indicate "no hint".
