@@ -19,5 +19,19 @@ When the partitions are 32-bit, the output is:
     partition:           p         p         p           (3 bits)
     out      :  AAA3 AAA2 AAA1 AAA0 BBB3 BBB2 BBB1 BBB0  (64 bits)
 
-When 2x16:
+When 2x16, the top 2 halves of A and B are Catted together,
+and likewise the lower:
 
+    partition:           p         p         p           (3 bits)
+    out      :  AAA3 AAA2 BBB3 BBB2 AAA1 AAA0 BBB1 BBB0  (64 bits)
+
+Finally when 4x8, each byte is concatenated:
+
+    partition:           p         p         p           (3 bits)
+    out      :  AAA3 BBB3 AAA2 BBB2 AAA1 BBB1 AAA0 BBB0  (64 bits)
+
+This then generalises regardless of the number of PartitionedSignals
+being Concatenated, and, also, regardless of the actual length of
+each individual PartitionedSignal.
+
+To confirm that et us assume that A is 16-bit and B is 32-bit:
