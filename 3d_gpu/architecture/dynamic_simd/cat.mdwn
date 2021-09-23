@@ -1,0 +1,9 @@
+# PartitionedSignal nmigen-aware Cat
+
+* <https://bugs.libre-soc.org/show_bug.cgi?id=707>
+
+Concatenation of Signals is ordinarily straightforward: reduce to the bitlevel and create a sequence.  The contributors to that sequence may be of arbitrary length.
+
+However for a PartitionedSignal unless *all* contributors are also
+PartitionedSignals, the results cannot be guaranteed to match, at all
+partition sizes.
