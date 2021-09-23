@@ -31,7 +31,38 @@ Finally when 4x8, each byte is concatenated:
     out      :  AAA3 BBB3 AAA2 BBB2 AAA1 BBB1 AAA0 BBB0  (64 bits)
 
 This then generalises regardless of the number of PartitionedSignals
-being Concatenated, and, also, regardless of the actual length of
-each individual PartitionedSignal.
+being Concatenated, and regardless of whether the length of
+any individual PartitionedSignal is of differing length.
+Bearing in mind that Partitions may **only** be on
+equal sized points (4x 4-bit, not 3x 3-bit plus one 5-bit):
 
-To confirm that et us assume that A is 16-bit and B is 32-bit:
+To confirm that let us assume that A is 16-bit and B is 32-bit:
+
+    partition:      p    p    p       (3 bits)
+    a        :    A3   A2   A1   A0  (16 bits)
+    b        :  BBB3 BBB2 BBB1 BBB0  (32 bits)
+
+When the partitions are x, the output is:
+
+    partition:          p       p       p           (3 bits)
+    out      :  A3 A2 A1 A0 BBB3 BBB2 BBB1 BBB0  (64 bits)
+
+When 2x:
+
+    partition:          p      p        p           (3 bits)
+    out      :  A3 A2 BBB3 BBB2 A1 A0 BBB1 BBB0  (64 bits)
+
+Finally when 4x:
+
+    partition:         p       p       p           (3 bits)
+    out      :  A3 BBB3 A2 BBB2 A1 BBB1 A0 BBB0  (48 bits)
+
+By a lucky coincidence the lengths match up.  In the 1x case,
+the result is a single 48-bit quantity.  In the 2x case,
+the result is two 24-bit quantities. Finally in the 4x case,
+the rwsult is four 12-bit quantities.
+
+The reason this works is down to the requirement that Partitions be
+of equal sizes.  4x 4-bit to be Concatenated with 4x 8-bit, in
+the last example.
+
