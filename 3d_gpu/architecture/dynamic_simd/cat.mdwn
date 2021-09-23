@@ -10,4 +10,14 @@ partition sizes.
 
 Take two PartitionedSignals:
 
-   
+    partition:      p    p    p       (3 bits)
+    a        :  AAA3 AAA2 AAA1 AAA0  (32 bits)
+    b        :  BBB3 BBB2 BBB1 BBB0  (32 bits)
+
+When the partitions are 32-bit, the output is:
+
+    partition:           p         p         p           (3 bits)
+    out      :  AAA3 AAA2 AAA1 AAA0 BBB3 BBB2 BBB1 BBB0  (64 bits)
+
+When 2x16:
+
