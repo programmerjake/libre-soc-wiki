@@ -60,9 +60,14 @@ Finally when 4x:
 By a lucky coincidence the lengths match up.  In the 1x case,
 the result is a single 48-bit quantity.  In the 2x case,
 the result is two 24-bit quantities. Finally in the 4x case,
-the rwsult is four 12-bit quantities.
+the result is four 12-bit quantities.
 
 The reason this works is down to the requirement that Partitions be
 of equal sizes.  4x 4-bit to be Concatenated with 4x 8-bit, in
 the last example.
 
+Table for 3-way concatenation, divided by partition:
+
+| partition | o3       | o2       | o1       | o0       |
+| 000       | a3 a2 a1 | a0 b3 b2 | b1 b0 c3 | c2 c1 c0 |
+| 111       | a3 b3 c3 | a2 b2 c2 | a1 b1 c1 | a0 b0 c0 |
