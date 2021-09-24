@@ -19,12 +19,15 @@ For all partition settings this copies verbatim.  However if A
 is shorter than B:
 
     partition:      p    p    p       (3 bits)
-    a        :    A3   A2   A1   A0  (16 bits)
-    b        :  BBB3 BBB2 BBB1 BBB0  (32 bits)
+    a        :  A7A6 A5A4 A3A2 A1A0  (8 bits)
+    b        :  BBB3 BBB2 BBB1 BBB0  (16 bits)
 
 then it matters what the partition settings are:
 
-| partition | o3      | o2      | o1      | o0     |
-| --------- | --      | --      | --      | --     |
-| 000       | [MA3]*4 | [MA3]*4 | A3 A2   | A1 A0  |
+| partition | o3         | o2         | o1         | o0         |
+| --------- | --         | --         | --         | --         |
+| 000       | [A7A7A7A7] | [A7A7A7A7] | A7A6A5A4   | A3A2A1A0   |
+| 111       | [A7A7]A7A6 | [A5A5]A5A4 | [A3A3]A3A2 | [A1A1]A1A0 |
 
+where square brackets are zero if A is unsigned, and contains
+the specified bits if signed.
