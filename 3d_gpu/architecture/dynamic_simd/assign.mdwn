@@ -1,0 +1,18 @@
+# PartitionedSignal nmigen-aware eq (assign)
+
+* <https://bugs.libre-soc.org/show_bug.cgi?id=709>
+
+For copying (assigning) PartitionedSignal to PartitionedSignal
+of equal size there is no issue.  However if the source has a
+greater width than the target, *partition-aware* truncation
+must occur.  For the opposite, sign/zero extension must occur.
+Finally for a Signal or Const, duplication across all Partitions
+must occur, again, following the rules of zero, sign or unsigned.
+
+Take two PartitionedSignals (source a, dest b) of 32 bit:
+
+    partition:      p    p    p       (3 bits)
+    a        :  AAA3 AAA2 AAA1 AAA0  (32 bits)
+    b        :  BBB3 BBB2 BBB1 BBB0  (32 bits)
+
+For all partition settings this copies verbatim.
