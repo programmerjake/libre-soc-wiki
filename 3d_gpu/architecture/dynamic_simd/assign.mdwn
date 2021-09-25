@@ -15,7 +15,10 @@ Take two PartitionedSignals (source a, dest b) of 32 bit:
     a        :  AAA3 AAA2 AAA1 AAA0  (32 bits)
     b        :  BBB3 BBB2 BBB1 BBB0  (32 bits)
 
-For all partition settings this copies verbatim.  However if A
+For all partition settings this copies verbatim.  Also,
+when A is longer, a truncated version of A is always
+copied verbatim, regardless of partition settings.
+However if A
 is shorter than B:
 
     partition:      p    p    p       (3 bits)
