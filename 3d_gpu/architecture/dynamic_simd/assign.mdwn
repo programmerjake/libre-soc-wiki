@@ -44,6 +44,8 @@ smaller value (A) into the larger partition (B) then, depending
 on whether A is signed or unsigned, sign-extends or zero-extends
 *on a per-partition basis*.
 
+# Scalar source
+
 When the source A is scalar and is equal or larger than
 the destination it requires copying across multiple
 partitions:
@@ -59,5 +61,16 @@ The partition options are:
 | 000       | A7A6 | A5A4 | A3A2 | A1A0   |
 | 001       | A5A4 | A3A2 | A1A0 | A1A0   |
 | 010       | A3A2 | A1A0 | A3A2 | A1A0   |
+| 011       | A3A2 | A1A0 | A1A0 | A1A0   |
 | 100       | A1A0 | A5A4 | A3A2 | A1A0   |
+| 101       | A1A0 | A3A2 | A1A0 | A1A0   |
+| 110       | A1A0 | A1A0 | A3A2 | A1A0   |
 | 111       | A1A0 | A1A0 | A1A0 | A1A0   |
+
+When the partitions are all open (1x) only the bits that will fit across
+the whole of the target are copied.  In this example, B is 8 bits so only
+8 bits of A are copied.
+
+When the partitions are all closed (4x SIMD) each partition of B is
+2 bits wide, therefore only the *first two* bits of A are copied into
+*each* of the four 2-bit partitions in B.
