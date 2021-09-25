@@ -33,3 +33,12 @@ then it matters what the partition settings are:
 
 where square brackets are zero if A is unsigned, and contains
 the specified bits if signed.
+
+When the source A is larger width than B, truncation
+always occurs: it is a matter of how much truncation
+in each partition
+
+    partition:      p    p    p       (3 bits)
+    a        :  AAAA AAAA AAAA AAAA  (16 bits)
+    b        :  B7B6 B5B4 B3B2 B1B0  (8 bits)
+
