@@ -85,4 +85,13 @@ where behind the scenes the above laborious for-loops (conceptually) are created
 
 This means that nmigen needs to "understand" the partitioning, in m.If, m.Else and m.Switch, at the bare minimum.
 
-Analysis of the internals of nmigen shows that m.If, m.Else and m.Switch are all redirected to `Value.cases`.  Within that function Mux and other "global" functions (similar to python operator functions).  The hypothesis is therefore proposed that if `Value.mux` is added in an identical way to how `operator.add` calls `__add__` this may turn out to be all that (or most of what) is needed.
+Analysis of the internals of nmigen shows that m.If, m.Else and m.Switch are all redirected to ast.py `Switch`.  Within that function Mux and other "global" functions (similar to python operator functions).  The hypothesis is therefore proposed that if `Value.mux` is added in an identical way to how `operator.add` calls `__add__` this may turn out to be all that (or most of what) is needed.
+
+<https://github.com/nmigen/nmigen/blob/59ef6e6a1c4e389a41148554f2dd492328820ecd/nmigen/hdl/dsl.py#L447>
+
+m.If and m.Else work by constructing a series of Switch cases, each case test being one of "--1---" or "-----1-" where the binary tests themselves are concatenated together as the "Switch" statement.  With switch statements being order-dependent, the first match will succeed which will stop subsequent "Else" or "Elif" statements from being executed.
+
+For a parallel variant each partition column may be assumed to be independent. A mask of 3 bits subdivides Signals down into four separate partitions.  Therefore what was previously a single-bit binary test is, just like for Partitioned Mux, actually four separate and distinct partition-column-specific single-bit binary tests.
+
+Therefore, a Parallel Switch statement is as simple as taking the relevant column of each Switch case and creating one independent Switch per Partition column.
+
