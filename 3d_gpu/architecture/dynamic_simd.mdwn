@@ -93,5 +93,12 @@ m.If and m.Else work by constructing a series of Switch cases, each case test be
 
 For a parallel variant each partition column may be assumed to be independent. A mask of 3 bits subdivides Signals down into four separate partitions.  Therefore what was previously a single-bit binary test is, just like for Partitioned Mux, actually four separate and distinct partition-column-specific single-bit binary tests.
 
-Therefore, a Parallel Switch statement is as simple as taking the relevant column of each Switch case and creating one independent Switch per Partition column.
+Therefore, a Parallel Switch statement is as simple as taking the relevant column of each Switch case and creating one independent Switch per Partition column.  Take the following example:
+
+     mask = Signal(3) # creates four partitions
+     a = PartitionedSignal(mask, 4) # creates a 4-bit partitioned signal
+     b = PartitionedSignal(mask, 4) # likewise
+     c = PartitionedSignal(mask, 32)
+     d = PartitionedSignal(mask, 32)
+ 
 
