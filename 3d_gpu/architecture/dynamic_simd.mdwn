@@ -115,3 +115,16 @@ If these were ordinary Signals, they would be translated to a Switch where:
   respectively.
 * the first case would be "1-" to activate `o.eq(c)
 * the second case would be "-1" to activate o.eq(d)
+
+A parallel variant may thus perform a for-loop, creating four
+**independent** Switches:
+
+* take a[0] and b[0] and Cat them together `Cat(a[0], b[0])`
+* take the output of each case result `o[0].eq[c[0])` and
+  so on
+* create the first independent Switch
+* take a[1] and b[1] etc.
+
+There are several ways in which the parts of each case, when
+activated, can be split up: temporary Signals, analysing
+the AST, or using PartitionedMux.
