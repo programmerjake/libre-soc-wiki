@@ -100,5 +100,11 @@ Therefore, a Parallel Switch statement is as simple as taking the relevant colum
      b = PartitionedSignal(mask, 4) # likewise
      c = PartitionedSignal(mask, 32)
      d = PartitionedSignal(mask, 32)
- 
+     o = PartitionedSignal(mask, 32)
+
+     with m.If(a):
+         comb += o.eq(c)
+     with m.Elif(b):
+         comb += o eq(d)
+
 
