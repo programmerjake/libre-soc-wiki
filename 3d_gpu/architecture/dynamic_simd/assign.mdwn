@@ -54,6 +54,13 @@ partitions:
     a        :  AAAA AAAA AAAA AAAA  (16 bits)
     b        :  B7B6 B5B4 B3B2 B1B0  (8 bits)
 
+As the source is Scalar, it must be copied (broadcast) into each
+partition of the output, B, starting at the beginning of each
+partition. With each partition being smaller than A (except
+in one case) truncation is guaranteed. The exception is when
+all pattitions are open (1x) and the length of A and B are
+the same.
+
 The partition options are:
 
 | partition | o3   | o2   | o1   | o0     |
