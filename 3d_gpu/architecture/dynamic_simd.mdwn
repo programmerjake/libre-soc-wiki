@@ -105,6 +105,13 @@ Therefore, a Parallel Switch statement is as simple as taking the relevant colum
      with m.If(a):
          comb += o.eq(c)
      with m.Elif(b):
-         comb += o eq(d)
+         comb += o.eq(d)
 
+If these were ordinary Signals, they would be translated to a Switch where:
 
+* if_tests would be Cat(a, b) i.e. a 2 bit quantity
+* cases would be (quantity 2) "1-" and "-1" in order to match
+  against the first binary test bit of Cat(a, b) and the second,
+  respectively.
+* the first case would be "1-" to activate `o.eq(c)
+* the second case would be "-1" to activate o.eq(d)
