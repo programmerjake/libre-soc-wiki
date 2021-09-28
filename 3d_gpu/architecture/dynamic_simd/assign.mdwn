@@ -15,10 +15,10 @@ Take two PartitionedSignals (source a, dest b) of 32 bit:
     a        :  AAA3 AAA2 AAA1 AAA0  (32 bits)
     b        :  BBB3 BBB2 BBB1 BBB0  (32 bits)
 
-For all partition settings this copies verbatim.  Also,
-when A is longer, a truncated version of A is always
-copied verbatim, regardless of partition settings.
-However if A
+For all partition settings this copies verbatim.
+However when A is either shorter or longer, different
+behaviour occurs.
+If A
 is shorter than B:
 
     partition:      p    p    p       (3 bits)
@@ -43,6 +43,28 @@ the specified bits if signed.  Here, each partition copies the
 smaller value (A) into the larger partition (B) then, depending
 on whether A is signed or unsigned, sign-extends or zero-extends
 *on a per-partition basis*.
+
+For A longer than B:
+
+    partition:      p    p    p       (3 bits)
+    a        :  AAAA AAAA AAAA AAAA  (16 bits)
+    b        :  B7B6 B5B4 B3B2 B1B0  (8 bits)
+
+truncation occurs at different points depending on partitions:
+
+| partition | o3     | o2   | o1   | o0     |
+| --------- | --     | --   | --   | --     |
+| 000       | A7A6   | A5A4 | A3A2 | A1A0   |
+| 001       | A9A8   | A7A6 | A5A4 | A1A0   |
+| 010       | A11A10 | A9A8 | A3A2 | A1A0   |
+| 011       | A11A10 | A9A8 | A5A4 | A1A0   |
+| 100       | A13A12 | A5A4 | A3A2 | A1A0   |
+| 101       | A13A12 | A7A6 | A5A4 | A1A0   |
+| 110       | A13A12 | A9A8 | A3A2 | A1A0   |
+| 111       | A13A12 | A9A8 | A5A4 | A1A0   |
+
+In effect, copying starts from the beginning of a partition,
+ending when a closed partition point is found.
 
 # Scalar source
 
