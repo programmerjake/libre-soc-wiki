@@ -28,8 +28,91 @@ into all 8 possible combinations of the 3 Partition bits:
     exp-a    : ....1....1....0.... 2x 8-bit, 1x 16-bit
     exp-a    : ....1....1....1.... 4x 8-bit
 
+A simple example, a "min" function:
 
-Links:
+    # declare x, y and out as 16-bit scalar Signals
+    x = Signal(16)
+    y = Signal(16)
+    out = Signal(16)
+
+    # compare x against y and set output accordingly
+    with m.If(x < y):
+        comb += out.eq(x)
+    with m.Else():
+        comb += out.eq(y)
+
+This is very straightforward and obvious, that the 16-bit output is the
+lesser of the x and y inputs.  We require the exact same obviousness
+and under no circumstances any change of any kind to any nmigen language
+construct:
+
+    # a mask of length 3 indicates a desire to partition Signals at
+    # 3 points into 4 equally-spaced SIMD "partitions".
+    mask = Signal(3)
+    # x y and out are all 16-bit so are subdivided at:
+    # |      mask[0]     mask[1]     mask[3]         |
+    # |  0-3    |    4-7    |   8-11    |   12-15    |
+
+    x = PartitionedSignal(mask, 16)    # identical except for mask
+    y = PartitionedSignal(mask, 16)    # identical except for mask
+    out = PartitionedSignal(mask, 16)  # identical except for mask
+
+    # all code here is required to be absolutely identical to the
+    # scalar case, and identical in nmigen language behaviour in
+    # every way.  no changes to the nmigen language or its use
+    # are permitted
+
+    with m.If(x < y):
+        comb += out.eq(x)
+    with m.Else():
+        comb += out.eq(y)
+
+The purpose of PartitionedSignal is therefore to provide full 100%
+transparent SIMD run-time dynamic behaviour as far as end-usage is
+concerned.
+
+The alternative is absolutely awful and completely unacceptable
+for both maintenance cost and development cost:
+
+    # declare x, y and out as 16-bit scalar Signals
+    x = Signal(16)
+    y = Signal(16)
+    out = Signal(16)
+
+    # start an absolutely awful unmaintainable duplication of
+    # SIMD behaviour.
+    with m.If(mask == 0b111): # 1x 16-bit
+       # compare x against y and set output accordingly
+       with m.If(x < y):
+           comb += out.eq(x)
+       with m.Else():
+           comb += out.eq(y)
+    with m.ElIf(mask == 0b101): # 2x 8-bit
+       for i in range(2):
+           xh = x[i*8:(i+1)*8]
+           yh = y[i*8:(i+1)*8]
+           outh = out[i*8:(i+1)*8]
+           # compare halves of x against halves y and set
+           # halves of output accordingly
+           with m.If(xh < yh):
+               comb += outh.eq(xh)
+           with m.Else():
+               comb += outh.eq(yh)
+    with m.ElIf(mask == 0b000): # 4x 4-bit
+        ....
+    with m.ElIf(mask == 0b100): # 1x 8-bit followed by 2x 4-bit
+        ....
+    with m.ElIf(....)
+        ....
+    with m.ElIf(....)
+        ....
+    with m.ElIf(....)
+        ....
+
+
+
+
+# Links
 
 * <https://bugs.libre-soc.org/show_bug.cgi?id=458> m.If/Switch 
 * <https://bugs.libre-soc.org/show_bug.cgi?id=115> top level SIMD
@@ -38,6 +121,7 @@ Links:
 * <https://bugs.libre-soc.org/show_bug.cgi?id=565> Formal proof of PartitionedSignal
 * <https://bugs.libre-soc.org/show_bug.cgi?id=596> Formal proof of PartitionedSignal nmigen interaction
 
+# Rationale / Introduction
 
 To save hugely on gate count the normal practice of having separate scalar ALUs and separate SIMD ALUs is not followed.
 
