@@ -16,6 +16,9 @@ they are instead SIMD versions of:
      for i in range(64):
          result = result xor a[i] # one operand
 
+Each of the logic ops, "some bool any all xor" are a single bit for
+scalar, but for Partitioned SIMD produce one bit per lane.
+
 # Requirements
 
 Given a signal width (typically 64) and given an array of "Partition Points" (typically 7) that break the signal down into an arbitrary permutaion of 8 bit to 64 bit independent SIMD results, compute the following: 
