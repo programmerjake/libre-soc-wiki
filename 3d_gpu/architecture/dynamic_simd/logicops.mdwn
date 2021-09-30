@@ -10,13 +10,15 @@ These are **not** the same as bitwise logical operations equivalent to:
      for i in range(64):
          result[i] = a[i] xor b[i] # 2 operands
 
+The above returns a 64 bit result for 64 bit inputs.
+
 they are instead SIMD versions of:
 
      result = 0 # initial value (single bit)
      for i in range(64):
          result = result xor a[i] # one operand
 
-Each of the logic ops, "some bool any all xor" are a single bit for
+Each of the logic ops, "some bool any all xor" are a **single bit** for
 scalar, but for Partitioned SIMD produce one bit per lane.
 
 # Requirements
