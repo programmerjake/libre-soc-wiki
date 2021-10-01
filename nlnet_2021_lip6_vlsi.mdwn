@@ -98,10 +98,18 @@ with the Libre-SOC Team to promote milestones and developments.
 
 we estimate the rates based on LIP6 University hiring an additional engineer in France, at commercial rates, to be around EUR 3000 to 4000 a month.
 
-* training an Engineer on coriolis2 c++/python internals: estimated 2 months
+* training a new Engineer on coriolis2 c++/python internals: estimated
+  2 months
 * porting to python3 estimated 2 months (some libraries have to be removed and rewritten) including re-running several designs and checking they are still the same.
-* researching Logical Equivalence algorithms and Academic papers to ensure good knowledge before proceeding: 4 to 5 weeks
+* porting and updating of older (Alliance) layout extractor tools
+  (solstice, equinox) to newer (c++/python) coriolis2 as pure
+  netlist extractor: 2 months
+* adding limited electrical information extraction (wire resistance
+  and capacitance) to the new layout extractor: 4-6 weeks
+* researching Logical Equivalence algorithms and Academic papers to ensure good knowledge before proceeding: 4 to 5 weeks.
 * implementation of Logical Equivalence checker: 10 to 14 weeks.
+  this is **not** the same as an **extraction** tool (above). the LEQ tool
+  **uses** (checks) the extracted database.
 * validation of Logical Equivalence checker against simulations and other (proprietary) checkers: 5 to 7 weeks
 * Identifying locations in 150,00 lines of code which can be parallelised by "divide and conquer", and those which can be "threaded": 3 weeks
 * separation of code into separate processes ("divide and conquer"): 2 months
@@ -109,14 +117,22 @@ we estimate the rates based on LIP6 University hiring an additional engineer in 
 * debugging and stabilising of both of the above: 2 months.
 * alternative file formats and data structures which support case-sensitive net names: 2 months
 * HITAS/YAGLE integration into coriolis2, updating license and documentation: 2 months
-* porting and updating of older (Alliance) layout extractor tools
-  (solstice, equinox) to newer (c++/python) coriolis2 as pure
-  netlist extractor: 2 months
-* adding limited electrical information extraction (wire resistance
-  and capacitance) to the new layout extractor: 4-6 weeks
 
 **You mention you will be able to perform Logical Validation.
 Can you expand a bit on that, what assurances could that bring?**
+
+Short summary:
+
+there are two main ways to check that the HDL matches (is "equivalent") with the transistor layout, which has many changes made:
+
+1) simulation.  for large designs this requires supercomputers for months and sometimes years to complete the simulation.  realistically, only a
+very small number of cycles can be run (several days to run one "clock" cycle).
+
+2) Formal Mathematical "Logical equivalence".  this performs boolean logic analysis and takes only hours (or days for very large designs).
+
+it is extremely important for a professional VLSI toolchain to have this capability.
+
+Longer version:
 
 As I assume you are not familiar with making ASIC, I will try to
 explain with sufficient details while not being too long.
@@ -136,7 +152,7 @@ explain with sufficient details while not being too long.
   one coming from the layout. Of course, they must be identical...
   This is a "simple" graph comparison.
 * BUT, during the P&R, to meet electrical constraints like timing or
-  good power supply, the specification netlist *is modificated*.
+  good power supply, the specification netlist *is modified*.
   For example, the clock is split into a clock-tree to ensure
   synchronicity all over the design or some very long wire is
   broken into smaller ones. In some cases, more drastic operations
