@@ -53,9 +53,10 @@ construct:
     # |      mask[0]     mask[1]     mask[3]         |
     # |  0-3    |    4-7    |   8-11    |   12-15    |
 
-    x = PartitionedSignal(mask, 16)    # identical except for mask
-    y = PartitionedSignal(mask, 16)    # identical except for mask
-    out = PartitionedSignal(mask, 16)  # identical except for mask
+    with mask:
+        x = PartitionedSignal(16)    # identical except for mask
+        y = PartitionedSignal(16)    # identical except for mask
+        out = PartitionedSignal(16)  # identical except for mask
 
     # all code here is required to be absolutely identical to the
     # scalar case, and identical in nmigen language behaviour in
