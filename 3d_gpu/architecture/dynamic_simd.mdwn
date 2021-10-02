@@ -142,6 +142,84 @@ Pages below describe the basic features of each and track the relevant bugreport
 * [[dynamic_simd/shift]]
 * [[dynamic_simd/logicops]] some all xor bool
 
+# Integration with nmigen
+
+Dynamic partitioning of signals is not enough on its own. Normal nmigen programs involve conditional decisions, that means if statements and switch statements. 
+
+With the PartitionedSignal class, basic operations such as `x + y` are functional, producing results 1x64 bit, or 2x32 or 4x16 or 8x8 or anywhere in between, but what about control and decisions? Here is the "normal" way in which SIMD decisions are performed:
+
+    if partitions == 1x64
+         with m.If(x > y):
+              do something
+    elif partitions == 2x32:
+         with m.If(x[0:31] > y[0:31]):
+              do something on 1st half
+         elif ...
+    elif ...
+    # many more lines of repeated laborious hand written
+    # SIMD nonsense all exactly the same except for the
+    # for loop and sizes.
+
+Clearly this is a total unmaintainable nightmare of worthless crud which, if continued throughout a large project with 40,000 lines of code when written without SIMD, would completely destroy all chances of that project being successful by turning 40,000 lines into 400,000 lines of unreadable spaghetti.
+
+A much more intelligent approach is needed. What we actually want is:
+
+    with m.If(x > y): # do a partitioned compare here
+         do something dynamic here
+
+where behind the scenes the above laborious for-loops (conceptually) are created, hidden, looking to all intents and purposes that this is exactly like any other nmigen Signal.
+
+This means that nmigen needs to "understand" the partitioning, in m.If, m.Else and m.Switch, at the bare minimum.
+
+Analysis of the internals of nmigen shows that m.If, m.Else, m.FSM and m.Switch are all redirected to ast.py `Switch`.  Within that function Mux and other "global" functions (similar to python operator functions).  The hypothesis is therefore proposed that if `Value.mux` is added in an identical way to how `operator.add` calls `__add__` this may turn out to be all that (or most of what) is needed.
+
+<https://github.com/nmigen/nmigen/blob/59ef6e6a1c4e389a41148554f2dd492328820ecd/nmigen/hdl/dsl.py#L447>
+
+A deeper analysis shows that dsl.Module uses explicit Value.cast on its
+If, Elif, and Switch clauses. Overriding that and allowing a cast to
+a PartitionedSignal.cast (or, PartitionedBool.cast) would be sufficient
+to make Type 2 (dsl.Module) nmigen language constructs 100% abstracted from the Type 1 (ast) lower-level ones.
+
+m.If and m.Else work by constructing a series of Switch cases, each case test being one of "--1---" or "-----1-" where the binary tests themselves are concatenated together as the "Switch" statement.  With switch statements being order-dependent, the first match will succeed which will stop subsequent "Else" or "Elif" statements from being executed.
+
+For a parallel variant each partition column may be assumed to be independent. A mask of 3 bits subdivides Signals down into four separate partitions.  Therefore what was previously a single-bit binary test is, just like for Partitioned Mux, actually four separate and distinct partition-column-specific single-bit binary tests.
+
+Therefore, a Parallel Switch statement is as simple as taking the relevant column of each Switch case and creating one independent Switch per Partition column.  Take the following example:
+
+     mask = Signal(3) # creates four partitions
+     a = PartitionedSignal(mask, 4) # creates a 4-bit partitioned signal
+     b = PartitionedSignal(mask, 4) # likewise
+     c = PartitionedSignal(mask, 32)
+     d = PartitionedSignal(mask, 32)
+     o = PartitionedSignal(mask, 32)
+
+     with m.If(a):
+         comb += o.eq(c)
+     with m.Elif(b):
+         comb += o.eq(d)
+
+If these were ordinary Signals, they would be translated to a Switch where:
+
+* if_tests would be Cat(a, b) i.e. a 2 bit quantity
+* cases would be (quantity 2) "1-" and "-1" in order to match
+  against the first binary test bit of Cat(a, b) and the second,
+  respectively.
+* the first case would be "1-" to activate `o.eq(c)
+* the second case would be "-1" to activate o.eq(d)
+
+A parallel variant may thus perform a for-loop, creating four
+**independent** Switches:
+
+* take a[0] and b[0] and Cat them together `Cat(a[0], b[0])`
+* take the output of each case result `o[0].eq[c[0])` and
+  so on
+* create the first independent Switch
+* take a[1] and b[1] etc.
+
+There are several ways in which the parts of each case, when
+activated, can be split up: temporary Signals, analysing
+the AST, or using PartitionedMux.
+
 # Alternative implementation concepts
 
 Several alternative ideas have been proposed. They are listed here for
@@ -227,80 +305,3 @@ Bottom line is that all the alternatives are really quite harmful, costly,
 and unmaintainable, and in some cases actively damage nmigen's reputation
 as a stable, useful and powerful HDL.
 
-# Integration with nmigen
-
-Dynamic partitioning of signals is not enough on its own. Normal nmigen programs involve conditional decisions, that means if statements and switch statements. 
-
-With the PartitionedSignal class, basic operations such as `x + y` are functional, producing results 1x64 bit, or 2x32 or 4x16 or 8x8 or anywhere in between, but what about control and decisions? Here is the "normal" way in which SIMD decisions are performed:
-
-    if partitions == 1x64
-         with m.If(x > y):
-              do something
-    elif partitions == 2x32:
-         with m.If(x[0:31] > y[0:31]):
-              do something on 1st half
-         elif ...
-    elif ...
-    # many more lines of repeated laborious hand written
-    # SIMD nonsense all exactly the same except for the
-    # for loop and sizes.
-
-Clearly this is a total unmaintainable nightmare of worthless crud which, if continued throughout a large project with 40,000 lines of code when written without SIMD, would completely destroy all chances of that project being successful by turning 40,000 lines into 400,000 lines of unreadable spaghetti.
-
-A much more intelligent approach is needed. What we actually want is:
-
-    with m.If(x > y): # do a partitioned compare here
-         do something dynamic here
-
-where behind the scenes the above laborious for-loops (conceptually) are created, hidden, looking to all intents and purposes that this is exactly like any other nmigen Signal.
-
-This means that nmigen needs to "understand" the partitioning, in m.If, m.Else and m.Switch, at the bare minimum.
-
-Analysis of the internals of nmigen shows that m.If, m.Else, m.FSM and m.Switch are all redirected to ast.py `Switch`.  Within that function Mux and other "global" functions (similar to python operator functions).  The hypothesis is therefore proposed that if `Value.mux` is added in an identical way to how `operator.add` calls `__add__` this may turn out to be all that (or most of what) is needed.
-
-<https://github.com/nmigen/nmigen/blob/59ef6e6a1c4e389a41148554f2dd492328820ecd/nmigen/hdl/dsl.py#L447>
-
-A deeper analysis shows that dsl.Module uses explicit Value.cast on its
-If, Elif, and Switch clauses. Overriding that and allowing a cast to
-a PartitionedSignal.cast (or, PartitionedBool.cast) would be sufficient
-to make Type 2 (dsl.Module) nmigen language constructs 100% abstracted from the Type 1 (ast) lower-level ones.
-
-m.If and m.Else work by constructing a series of Switch cases, each case test being one of "--1---" or "-----1-" where the binary tests themselves are concatenated together as the "Switch" statement.  With switch statements being order-dependent, the first match will succeed which will stop subsequent "Else" or "Elif" statements from being executed.
-
-For a parallel variant each partition column may be assumed to be independent. A mask of 3 bits subdivides Signals down into four separate partitions.  Therefore what was previously a single-bit binary test is, just like for Partitioned Mux, actually four separate and distinct partition-column-specific single-bit binary tests.
-
-Therefore, a Parallel Switch statement is as simple as taking the relevant column of each Switch case and creating one independent Switch per Partition column.  Take the following example:
-
-     mask = Signal(3) # creates four partitions
-     a = PartitionedSignal(mask, 4) # creates a 4-bit partitioned signal
-     b = PartitionedSignal(mask, 4) # likewise
-     c = PartitionedSignal(mask, 32)
-     d = PartitionedSignal(mask, 32)
-     o = PartitionedSignal(mask, 32)
-
-     with m.If(a):
-         comb += o.eq(c)
-     with m.Elif(b):
-         comb += o.eq(d)
-
-If these were ordinary Signals, they would be translated to a Switch where:
-
-* if_tests would be Cat(a, b) i.e. a 2 bit quantity
-* cases would be (quantity 2) "1-" and "-1" in order to match
-  against the first binary test bit of Cat(a, b) and the second,
-  respectively.
-* the first case would be "1-" to activate `o.eq(c)
-* the second case would be "-1" to activate o.eq(d)
-
-A parallel variant may thus perform a for-loop, creating four
-**independent** Switches:
-
-* take a[0] and b[0] and Cat them together `Cat(a[0], b[0])`
-* take the output of each case result `o[0].eq[c[0])` and
-  so on
-* create the first independent Switch
-* take a[1] and b[1] etc.
-
-There are several ways in which the parts of each case, when
-activated, can be split up: temporary Signals, analysing
-the AST, or using PartitionedMux.
