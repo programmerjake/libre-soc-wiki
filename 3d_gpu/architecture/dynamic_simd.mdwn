@@ -123,6 +123,25 @@ basic HDL is literally an order of magnitude larger:
     with m.ElIf(....)
         ....
 
+# Rationale / Introduction
+
+To save hugely on gate count the normal practice of having separate scalar ALUs and separate SIMD ALUs is not followed.
+
+Instead a suite of "partition points" identical in fashion to the Aspex Microelectronics ASP (Array-String-Architecture) architecture is deployed.
+
+Basic principle: when all partition gates are open the ALU is subdivided into isolated and independent 8 bit SIMD ALUs.  Whenever any one gate is opened, the relevant 8 bit "part-results" are chained together in a downstream cascade to create 16 bit, 32 bit, 64 bit and 128 bit compound results.
+
+Pages below describe the basic features of each and track the relevant bugreports.
+
+* [[dynamic_simd/eq]] aka `__eq__` not to be confused with nmigen eq
+* [[dynamic_simd/assign]] nmigen eq (assignment)
+* [[dynamic_simd/gt]]
+* [[dynamic_simd/add]]
+* [[dynamic_simd/cat]] - limited capability
+* [[dynamic_simd/mul]]
+* [[dynamic_simd/shift]]
+* [[dynamic_simd/logicops]] some all xor bool
+
 # Alternative implementation concepts
 
 Several alternative ideas have been proposed. They are listed here for
@@ -207,25 +226,6 @@ All of these ideas, unfortunately, are extremely costly in many different ways:
 Bottom line is that all the alternatives are really quite harmful, costly,
 and unmaintainable, and in some cases actively damage nmigen's reputation
 as a stable, useful and powerful HDL.
-
-# Rationale / Introduction
-
-To save hugely on gate count the normal practice of having separate scalar ALUs and separate SIMD ALUs is not followed.
-
-Instead a suite of "partition points" identical in fashion to the Aspex Microelectronics ASP (Array-String-Architecture) architecture is deployed.
-
-Basic principle: when all partition gates are open the ALU is subdivided into isolated and independent 8 bit SIMD ALUs.  Whenever any one gate is opened, the relevant 8 bit "part-results" are chained together in a downstream cascade to create 16 bit, 32 bit, 64 bit and 128 bit compound results.
-
-Pages below describe the basic features of each and track the relevant bugreports.
-
-* [[dynamic_simd/eq]] aka `__eq__` not to be confused with nmigen eq
-* [[dynamic_simd/assign]] nmigen eq (assignment)
-* [[dynamic_simd/gt]]
-* [[dynamic_simd/add]]
-* [[dynamic_simd/cat]] - limited capability
-* [[dynamic_simd/mul]]
-* [[dynamic_simd/shift]]
-* [[dynamic_simd/logicops]] some all xor
 
 # Integration with nmigen
 
