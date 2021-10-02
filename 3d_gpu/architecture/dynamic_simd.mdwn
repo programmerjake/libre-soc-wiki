@@ -75,10 +75,10 @@ construct:
     # every way.  no changes to the nmigen language or its use
     # are permitted
 
-    with m.If(x < y):
-        comb += out.eq(x)
-    with m.Else():
-        comb += out.eq(y)
+    with m.If(x < y):       # exactly
+        comb += out.eq(x)   # the
+    with m.Else():          # same
+        comb += out.eq(y)   # code
 
 The purpose of PartitionedSignal is therefore to provide full 100%
 transparent SIMD run-time dynamic behaviour as far as end-usage is
