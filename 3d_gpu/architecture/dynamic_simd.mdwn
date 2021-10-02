@@ -161,11 +161,34 @@ All of these ideas, unfortunately, are extremely costly in many different ways:
   library itself, any update to the library being wrapped is a huge risk
   of breaking the wrapper.  Long-term this is completely unsustainable.
   Likewise monkey-patching.
-4. Wrapper classes introduce a huge performance degradation. Every function
+4. Wrapper classes introduce huge performance degradation. Every function
   requires one additional function call. Every object instantiated requires
   both the wrapper class to be instantiated and the object being wrapped,
   every single time.  Memory requirements double; performance degrades.
   Both are unacceptable.
+5. "Explicit coding" is actually more costly even than for-loop
+  code duplication.  It is "The Right Thing (tm)" in order to achieve
+  optimal gate-level design but requires hyper-aware and hyper-intelligent
+  developers, whom, if ever lost, take knowledge of the internal workings
+  of ultra-complex code with them.
+6. "Low-level classes" have in fact already been implemented: over a
+  dozen modules utilised and combined behind PartitionedSignal exist
+  and are already in use. PartitionedMux was one of the very first SIMD-aware
+  "Type 1" AST operators written.  The problem is that it's nowhere near
+  enough.  Conversion of 100,000 lines of readable nmigen HDL using
+  Type 2 (m.If/Elif) high-level constructs to **not** use those
+  constructs and return to AST Mux, Cat, and so on is a completely
+  unreasonable expectation.
+7. "Replacements for dsl.Module" aside from coming with the catastrophic
+  implication that they provide alternative behaviour from dsl.Module
+  are a heavy maintenance burden.  Not only that but there is the risk
+  that, unless actually included *in* nmigen, the underlying AST modules
+  that they use might change, or be deprecated, or have bugs fixed which
+  break the replacement.
+
+Bottom line is that all the alternatives are really quite harmful, costly,
+and unmaintainable, and in some cases actively damage nmigen's reputation
+as a stable, useful and powerful HDL.
 
 # Rationale / Introduction
 
