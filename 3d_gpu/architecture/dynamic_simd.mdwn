@@ -123,8 +123,40 @@ basic HDL is literally an order of magnitude larger:
     with m.ElIf(....)
         ....
 
-
 # Alternative implementation concepts
+
+Several alternative ideas have been proposed. They are listed here for
+completeness.
+
+* **Wrapper classes**. A dsl.Module wrapper class which duplicates the
+  entirety of the dsl.Module functionality with "redirection" functions
+  and a dsl.Module instance as a member variable.  In the rare instances
+  where the function is different it is expected to provide a replacement
+  rather than call the dsl.Module variant.
+* **Replacement for dsl.Module**. This idea is to implement a full total
+  replacement for dsl.Module, called dsl.SIMDModule (or other).
+* **Monkey-patching dsl.Module**. This idea intrusively modifies dsl.Module
+  with external functions.
+
+All of these ideas, unfortunately, are extremely costly in many different ways:
+
+1. Any overrides of any kind give a catastrophically fatal impression
+  that the high-level language behaviour might in some tiny way be different,
+  purely because of the very *existence* of an override class.
+2. Proponents of such override mechanisms (and there have been many)
+  fundemntally misunderstand the distinction between Type 1 (AST) low-level
+  and Type 2 (dsl.Module) high-level nmigen language constructs, and
+  miss the fact that dsl.Module (Type 2) is 100% implemented *in* AST
+  (Type 2) constructs.
+3. Wrapper classes are a maintenance nightmare. Unless included in the
+  library itself, any update to the library being wrapped is a huge risk
+  of breaking the wrapper.  Long-term this is completely unsustainable.
+  Likewise monkey-patching.
+4. Wrapper classes introduce a huge performance degradation. Every function
+  requires one additional function call. Every object instantiated requires
+  both the wrapper class to be instantiated and the object being wrapped,
+  every single time.  Memory requirements double; performance degrades.
+  Both are unacceptable.
 
 # Rationale / Introduction
 
