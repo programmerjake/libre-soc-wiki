@@ -150,7 +150,7 @@ raised.
   one technique for creating SIMD variants of the required code would be
   to use macro substitution or crude compilers to autogenerate the dynamic
   SIMD from VHDL / Verilog templates, why not do exactly the same thing.
-  Design a SIMD langusge, write python in that, and have it output
+  Design a SIMD HDL language, write python in that, and have it output
   nmigen HDL.
 
 All of these ideas, unfortunately, are extremely costly in many different ways:
@@ -191,6 +191,13 @@ All of these ideas, unfortunately, are extremely costly in many different ways:
   that, unless actually included *in* nmigen, the underlying AST modules
   that they use might change, or be deprecated, or have bugs fixed which
   break the replacement.
+8. "Compilers". It is very well known that any python program that outputs
+  another python program as an ASCII output may then immediately read that ASCII output
+  from within the very program that created it, `eval` it, and then
+  execute it.  That being the case, you might as well skip the
+  output to ASCII and the eval part, and create classes that
+  dynamically and directly instantiate the desired target behaviour.
+  This saves months of effort but is a common mistake, frequently made.
 
 Bottom line is that all the alternatives are really quite harmful, costly,
 and unmaintainable, and in some cases actively damage nmigen's reputation
