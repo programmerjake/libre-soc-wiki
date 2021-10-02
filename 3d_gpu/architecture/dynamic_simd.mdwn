@@ -126,8 +126,17 @@ basic HDL is literally an order of magnitude larger:
 # Alternative implementation concepts
 
 Several alternative ideas have been proposed. They are listed here for
-completeness.
+completeness.  The worst offender (use code-duplication) has already been
+raised.
 
+* **Explicit Code**. For every ALU, write code which is inherently
+  parallel, rather than duplicated with a series of Switch/Case or
+  an if-elif-elif chain based on what the partition mask is set to.
+* **Use a low-level class**.  Rather than tie in to nmigen, write a
+  class that performs all the equivalent (explicit coded) parallel
+  operations, as close to nmigen Type 1 (AST) constructs as possible.
+  Alternatives to Cat, called SIMDCat, and forego use of Type 2
+  (dsl.Module) nmigen language constructs entirely.
 * **Wrapper classes**. A dsl.Module wrapper class which duplicates the
   entirety of the dsl.Module functionality with "redirection" functions
   and a dsl.Module instance as a member variable.  In the rare instances
