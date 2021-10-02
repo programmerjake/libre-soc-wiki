@@ -9,7 +9,7 @@
 * <https://bugs.libre-soc.org/show_bug.cgi?id=596> Formal proof of PartitionedSignal nmigen interaction
 * <https://bugs.libre-soc.org/show_bug.cgi?id=713> Partition-context-sensitive length adjustment
 
-# Dynamic Partitioned SIMD
+# Rationale / Introduction
 
 The Dynamic Partitioned SIMD Signal is effectively a parallelisation
 of nmigen's Signal.  It is expected to work transparently as if it was
@@ -124,7 +124,7 @@ basic HDL is literally an order of magnitude larger:
     with m.ElIf(....)
         ....
 
-# Rationale / Introduction
+# Overview
 
 To save hugely on gate count the normal practice of having separate scalar ALUs and separate SIMD ALUs is not followed.
 
