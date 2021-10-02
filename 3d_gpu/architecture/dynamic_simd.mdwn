@@ -192,12 +192,17 @@ All of these ideas, unfortunately, are extremely costly in many different ways:
   that they use might change, or be deprecated, or have bugs fixed which
   break the replacement.
 8. "Compilers". It is very well known that any python program that outputs
-  another python program as an ASCII output may then immediately read that ASCII output
-  from within the very program that created it, `eval` it, and then
-  execute it.  That being the case, you might as well skip the
+  another python program as an ASCII output may then immediately read that
+  ASCII output from within the very program that created it, `eval` it,
+  and then execute it.  That being the case, you might as well skip the
   output to ASCII and the eval part, and create classes that
   dynamically and directly instantiate the desired target behaviour.
   This saves months of effort but is a common mistake, frequently made.
+  Any compiler risks losing information in between translations,
+  making debugging harder, and finding mistakes particularly difficult.
+  With nmigen already being a Language Translator, adding an extra layer
+  seems extremely unwise.  And, worse, again relies on nmigen remaining
+  stable, indefinitely.
 
 Bottom line is that all the alternatives are really quite harmful, costly,
 and unmaintainable, and in some cases actively damage nmigen's reputation
