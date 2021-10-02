@@ -132,18 +132,20 @@ Instead a suite of "partition points" identical in fashion to the Aspex Microele
 
 Basic principle: when all partition gates are open the ALU is subdivided into isolated and independent 8 bit SIMD ALUs.  Whenever any one gate is opened, the relevant 8 bit "part-results" are chained together in a downstream cascade to create 16 bit, 32 bit, 64 bit and 128 bit compound results.
 
-Pages below describe the basic features of each and track the relevant bugreports.
+Pages below describe the basic features of each and track the relevant bugreports.  These features here are the building blocks which lie behind
+PartitionedSignal, which in turn provides "Type 1 (ast.*)" nmigen language
+constructs.
 
 * [[dynamic_simd/eq]] aka `__eq__` not to be confused with nmigen eq
 * [[dynamic_simd/assign]] nmigen eq (assignment)
-* [[dynamic_simd/gt]]
+* [[dynamic_simd/gt]] aka `__gt__` in python operator terms
 * [[dynamic_simd/add]]
 * [[dynamic_simd/cat]] - limited capability
 * [[dynamic_simd/mul]]
 * [[dynamic_simd/shift]]
 * [[dynamic_simd/logicops]] some all xor bool
 
-# Integration with nmigen
+# Integration with nmigen: "Type 2" (dsl.Module)
 
 Dynamic partitioning of signals is not enough on its own. Normal nmigen programs involve conditional decisions, that means if statements and switch statements. 
 
@@ -168,7 +170,7 @@ A much more intelligent approach is needed. What we actually want is:
     with m.If(x > y): # do a partitioned compare here
          do something dynamic here
 
-where behind the scenes the above laborious for-loops (conceptually) are created, hidden, looking to all intents and purposes that this is exactly like any other nmigen Signal.
+where *behind the scenes* the above laborious for-loops (conceptually) are created, hidden, looking to all intents and purposes that this is exactly like any other nmigen Signal.
 
 This means one of two things:
 
