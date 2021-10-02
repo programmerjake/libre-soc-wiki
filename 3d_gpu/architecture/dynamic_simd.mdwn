@@ -169,7 +169,13 @@ A much more intelligent approach is needed. What we actually want is:
 
 where behind the scenes the above laborious for-loops (conceptually) are created, hidden, looking to all intents and purposes that this is exactly like any other nmigen Signal.
 
-This means that nmigen needs to "understand" the partitioning, in m.If, m.Else and m.Switch, at the bare minimum.
+This means one of two things:
+
+1. that nmigen needs to "understand" the partitioning, in a Type 2
+  construct (m.If, m.Else and m.Switch), at the bare minimum.
+2. that nmigen's "Type 2" language constructs be sufficiently abstract
+  that they *pass through* SIMD behaviour entirely to a lower level,
+  *completely intact*.
 
 Analysis of the internals of nmigen shows that m.If, m.Else, m.FSM and m.Switch are all redirected to ast.py `Switch`.  Within that function Mux and other "global" functions (similar to python operator functions).  The hypothesis is therefore proposed that if `Value.mux` is added in an identical way to how `operator.add` calls `__add__` this may turn out to be all that (or most of what) is needed.
 
