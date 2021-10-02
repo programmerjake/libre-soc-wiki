@@ -267,7 +267,13 @@ All of these ideas, unfortunately, are extremely costly in many different ways:
 4. Wrapper classes introduce huge performance degradation. Every function
   requires one additional function call. Every object instantiated requires
   both the wrapper class to be instantiated and the object being wrapped,
-  every single time.  Memory requirements double; performance degrades.
+  every single time.  A single wrapper class is never enough: the entire
+  class hierarchy, everything that is ever instantiated by a "wrapped"
+  class ibstance, typically also requires wrapping.  This quickly
+  gets completely out of hand and diverts developer time into a
+  nightmare time-sink that has actively harmful consequences *even
+  once completed*.
+  Memory requirements double; performance degrades.
   Both are unacceptable.
 5. "Explicit coding" is actually more costly even than for-loop
   code duplication.  It is "The Right Thing (tm)" in order to achieve
