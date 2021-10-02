@@ -1,3 +1,13 @@
+# Links
+
+* <https://bugs.libre-soc.org/show_bug.cgi?id=115> top level SIMD
+* <https://bugs.libre-soc.org/show_bug.cgi?id=458> m.If/Switch 
+* <https://bugs.libre-soc.org/show_bug.cgi?id=707> Limited Cat
+* <https://bugs.libre-soc.org/show_bug.cgi?id=594> RFC for nmigen integration
+* <https://bugs.libre-soc.org/show_bug.cgi?id=565> Formal proof of PartitionedSignal
+* <https://bugs.libre-soc.org/show_bug.cgi?id=596> Formal proof of PartitionedSignal nmigen interaction
+* <https://bugs.libre-soc.org/show_bug.cgi?id=713> Partition-context-sensitive length adjustment
+
 # Dynamic Partitioned SIMD
 
 The Dynamic Partitioned SIMD Signal is effectively a parallelisation
@@ -5,6 +15,8 @@ of nmigen's Signal.  It is expected to work transparently as if it was
 a nmigen Signal, in every way, as a full peer of a nmigen Signal, with
 no requirement on the part of the developer to even know that it is
 performing parallel dynamically-partitioned operations.
+All standard nmigen language constructs are both expected and required
+to behave exactly as they do for scalar Signals.
 
 nmigen 32-bit Signal:
 
@@ -112,17 +124,7 @@ basic HDL is literally an order of magnitude larger:
         ....
 
 
-
-
-# Links
-
-* <https://bugs.libre-soc.org/show_bug.cgi?id=115> top level SIMD
-* <https://bugs.libre-soc.org/show_bug.cgi?id=458> m.If/Switch 
-* <https://bugs.libre-soc.org/show_bug.cgi?id=707> Limited Cat
-* <https://bugs.libre-soc.org/show_bug.cgi?id=594> RFC for nmigen integration
-* <https://bugs.libre-soc.org/show_bug.cgi?id=565> Formal proof of PartitionedSignal
-* <https://bugs.libre-soc.org/show_bug.cgi?id=596> Formal proof of PartitionedSignal nmigen interaction
-* <https://bugs.libre-soc.org/show_bug.cgi?id=713> Partition-context-sensitive length adjustment
+# Alternative implementation concepts
 
 # Rationale / Introduction
 
