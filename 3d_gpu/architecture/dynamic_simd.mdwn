@@ -124,6 +124,33 @@ basic HDL is literally an order of magnitude larger:
     with m.ElIf(....)
         ....
 
+# Proposal
+
+The proposal is two-fold, and targetted at the two distinct types
+of nmigen language constructs:
+
+* Type 1 low-level AST.  implemented as nmigen.hdl.ast classes
+* Type 2 high-level DSL. Implemented as Module in nmigen.hdl.dsl
+
+The Type 1 AST low-level proposed modifications are mirrored on the
+existing long-established python `operator` module, which nmigen
+*already leverages* by providing `Value.__add__` and other operator
+overrides.
+
+* To extend nmigen "Type 1 (ast.*)" low-level language constructs
+  with `Value.__Cat__`, `Value.__Switch__`, `Value.__Repl__` etc.
+* To rename `ast.Cat` etc to `ast._InternalCat`
+* In an identical conceptual fashion as python `operator.add`
+  to redirect `ast.Cat` to `Value.__Cat__` etc.
+* To have `Value.__Cat__` etc call the now-renamed `ast._InternalCat`
+
+The second set of changes is targetted at Type 2 dsl.Module,
+to complete the 98% abstraction from Type 1 to a 100% level
+
+* To add a new parameter to Module which is the AST class type
+  to be used for "casting" of m.If and m.Elif condition tests,
+  and for m.Switch values
+
 # Overview
 
 To save hugely on gate count the normal practice of having separate scalar ALUs and separate SIMD ALUs is not followed.
