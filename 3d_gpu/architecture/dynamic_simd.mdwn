@@ -232,6 +232,12 @@ Several alternative ideas have been proposed. They are listed here for
 completeness.  The worst offender (use code-duplication) has already been
 raised.
 
+The fundamental common characteristic of all of these ideas, despite
+their disparate nature, is that absolutely every single one of them
+assumes that there is explicit action (or hard work) required to
+be taken. None of them - at all - leverage the fact that nmigen
+has two different inter-related abstraction levels.
+
 * **Explicit Code**. For every ALU, write code which is inherently
   parallel, rather than duplicated with a series of Switch/Case or
   an if-elif-elif chain based on what the partition mask is set to.
