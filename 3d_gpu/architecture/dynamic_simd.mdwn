@@ -61,11 +61,11 @@ construct:
     # a mask of length 3 indicates a desire to partition Signals at
     # 3 points into 4 equally-spaced SIMD "partitions".
     mask = Signal(3)
-    # x y and out are all 16-bit so are subdivided at:
-    # |      mask[0]     mask[1]     mask[3]         |
-    # |  0-3    |    4-7    |   8-11    |   12-15    |
 
     with mask:
+        # x y and out are all 16-bit so are subdivided at:
+        # |      mask[0]     mask[1]     mask[3]         |
+        # |  0-3    |    4-7    |   8-11    |   12-15    |
         x = PartitionedSignal(16)    # identical except for mask
         y = PartitionedSignal(16)    # identical except for mask
         out = PartitionedSignal(16)  # identical except for mask
