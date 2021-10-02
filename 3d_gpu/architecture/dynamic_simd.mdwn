@@ -146,6 +146,12 @@ raised.
   replacement for dsl.Module, called dsl.SIMDModule (or other).
 * **Monkey-patching dsl.Module**. This idea intrusively modifies dsl.Module
   with external functions.
+* **Compilers / Macros**. On the basis that if this was VHDL or Verilog
+  one technique for creating SIMD variants of the required code would be
+  to use macro substitution or crude compilers to autogenerate the dynamic
+  SIMD from VHDL / Verilog templates, why not do exactly the same thing.
+  Design a SIMD langusge, write python in that, and have it output
+  nmigen HDL.
 
 All of these ideas, unfortunately, are extremely costly in many different ways:
 
