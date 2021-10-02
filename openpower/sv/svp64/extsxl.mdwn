@@ -1,0 +1,44 @@
+# Implementation
+
+    class Helper:
+        def __init__(self, XLEN):
+            self.XLEN = XLEN
+
+        def EXTSXL(self, value, bits):
+            bits = min(bits, self.XLEN)
+            return SelectableInt(exts(value.value, bits) & ((1 << self.XLEN)-1), self.XLEN)
+
+# Table
+
+[[!table  data="""
+func |pcode              |
+extsb|RA <- EXTSX(RS, 8) |
+extsh|RA <- EXTSX(RS, 16)|
+extsw|RA <- EXTSX(RS, 32)|
+"""]]
+
+# Examples
+
+    for xlen in (8, 16, 32, 64):
+        helper = Helper(xlen)
+        REG = lambda v: SelectableInt(v, xlen)
+
+        assert helper.EXTSXL(REG(0xA000000090000A93), 64) == REG(0xA000000090000a93)
+        assert helper.EXTSXL(REG(0x0000000090000A93), 32) == REG(0xffffffff90000a93)
+        assert helper.EXTSXL(REG(0x000000000000F074), 16) == REG(0xfffffffffffff074)
+        assert helper.EXTSXL(REG(0x0000000000000091),  8) == REG(0xffffffffffffff91)
+
+        assert helper.EXTSXL(REG(0x7000000090000A93), 64) == REG(0x7000000090000a93)
+        assert helper.EXTSXL(REG(0x0000000050000A93), 32) == REG(0x50000a93)
+        assert helper.EXTSXL(REG(0x0000000000001074), 16) == REG(0x1074)
+        assert helper.EXTSXL(REG(0x0000000000000031),  8) == REG(0x31)
+
+        assert helper.EXTSXL(REG(0xA000000090000A93), 64) == REG(0xA000000090000a93)
+        assert helper.EXTSXL(REG(0x0000000090000A93), 64) == REG(0x90000a93)
+        assert helper.EXTSXL(REG(0x000000000000F074), 32) == REG(0xf074)
+        assert helper.EXTSXL(REG(0x0000000000000091), 16) == REG(0x91)
+
+        assert helper.EXTSXL(REG(0x9999999999999999), 64) == REG(0x9999999999999999)
+        assert helper.EXTSXL(REG(0x9999999999999999), 32) == REG(0xFFFFFFFF99999999)
+        assert helper.EXTSXL(REG(0x9999999999999999), 16) == REG(0xFFFFFFFFFFFF9999)
+        assert helper.EXTSXL(REG(0x9999999999999999),  8) == REG(0xFFFFFFFFFFFFFF99)
