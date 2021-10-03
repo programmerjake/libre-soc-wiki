@@ -6,7 +6,7 @@
 
         def EXTSXL(self, value, bits):
             bits = min(bits, self.XLEN)
-            return SelectableInt(exts(value.value, bits) & ((1 << self.XLEN)-1), self.XLEN)
+            return SelectableInt(exts(value.value, bits), self.XLEN)
 
 # Table
 
