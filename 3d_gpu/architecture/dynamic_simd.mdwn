@@ -61,6 +61,20 @@ constructs in full OO fashion, yet the high-level dsl.Module
 language concepts remain true to their intended characteristics
 and behaviour and need neither duplication nor alteration.
 
+Typical use-cases are, just as is the driving force behind PartitionedSignal,
+the sharing at the gate level of arithmetic primitives that would
+otherwise require costly duplication in a final product, or be too
+complex or costly to develop without such abstraction at the higher
+Type 2 (dsl.Module) level.
+
+Examples include an ALU that may dynamically
+at runtime switch between Complex (imaginary) arithmetic
+and Real (scalar) arithmetic, whilst *through the same
+datapath* automatically sharing the arithmetic logic
+gates between the two abstract concepts. Given that
+64 bit multipliers are 12,000 to 15,000 gates the savings
+can be enormous.
+
 # Rationale / Introduction
 
 The Dynamic Partitioned SIMD Signal is effectively a parallelisation
