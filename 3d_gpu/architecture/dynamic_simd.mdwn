@@ -18,15 +18,17 @@ of nmigen language constructs:
   Value, Cat, Repl, Mux, Switch etc.
 * Type 2 high-level DSL. Implemented as Module in nmigen.hdl.dsl
 
-The Type 1 AST low-level proposed modifications are mirrored on the
+The Type 1 AST low-level proposed modifications mirror and extend the
 existing long-established python `operator` module, which nmigen
 *already leverages* by providing `Value.__add__` and other operator
 overrides.
 
 * To extend nmigen "Type 1 (ast.*)" low-level language constructs
+  in the Value class
   with `Value.__Cat__`, `Value.__Switch__`, `Value.__Repl__` etc.
-* To rename existing old `ast.Cat` etc to new `ast._InternalCat`
-* In an identical conceptual fashion, just as
+* To rename existing old `ast.Cat` to new `ast._InternalCat`,
+  `ast.Repl` to `ast._InternalRepl` etc.
+* In an identical conceptual fashion, just
   as python `operator.add(x,y)` redirects to `x.__add__(y)`,
   to add a new `ast.Cat(x..)` which redirects to`x.__Cat__(...)` etc.
 * To add `Value.__Cat__` etc which call the now-renamed `ast._InternalCat`
@@ -53,7 +55,11 @@ flexible augmentation and capabilities in nmigen, far beyond
 its original intended design parameters.
 
 The benefits due to the abstraction extend far beyond this
-particular use-case (Partitioned Dynamic SIMD)
+particular use-case (Partitioned Dynamic SIMD). Other nmigen
+developers may leverage contextual overriding of the AST
+constructs in full OO fashion, yet the high-level dsl.Module
+language concepts remain true to their intended characteristics
+and behaviour and need neither duplication nor alteration.
 
 # Rationale / Introduction
 
