@@ -321,6 +321,11 @@ All of these ideas, unfortunately, are extremely costly in many different ways:
 1. Any overrides of any kind give a catastrophically fatal impression
   that the high-level language behaviour might in some tiny way be different,
   purely because of the very *existence* of an override class.
+  This in turn, if prevalent and commonly used, would quickly be
+  seen as a rather nasty indirect unspoken implication that nmigen
+  itself was badly designed, so much so that its users were forced
+  to engage in "unauthorised overrides" in order to achieve what they
+  want.
 2. Proponents of such override mechanisms (and there have been many)
   fundemntally misunderstand the distinction between Type 1 (AST) low-level
   and Type 2 (dsl.Module) high-level nmigen language constructs, and
