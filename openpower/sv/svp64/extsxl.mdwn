@@ -5,7 +5,7 @@
             self.XLEN = XLEN
 
         def EXTSXL(self, value, bits):
-            bits = min(bits, self.XLEN)
+            bits = min(bits, self.XLEN) # strangely this is redundant
             return SelectableInt(exts(value.value, bits), self.XLEN)
 
 # Table
