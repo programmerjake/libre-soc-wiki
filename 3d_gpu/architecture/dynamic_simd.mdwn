@@ -30,7 +30,7 @@ overrides.
   to add a new `ast.Cat(x..)` which redirects to`x.__Cat__(...)` etc.
 * To add `Value.__Cat__` etc which call the now-renamed `ast._InternalCat`
 * To allow all of the new underscore variants to be overridden without
-  limitation, restriction, or restraint.
+  limitation, restriction, or restraint, via UserValue (and ValueCastable)
 
 The second set of changes is targetted at Type 2 dsl.Module,
 to complete the 98% abstraction from Type 1 to a 100% level
