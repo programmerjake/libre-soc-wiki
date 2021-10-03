@@ -35,11 +35,11 @@ overrides.
 The second set of changes is targetted at Type 2 dsl.Module,
 to complete the 98% abstraction from Type 1 to a 100% level
 
-* To add a new parameter to Module's constructor,
+* To add a new parameter to `dsl.Module`'s constructor,
   `_astType`, which is the AST class type
   to be used for "casting" of m.If and m.Elif condition tests,
-  and for m.Switch values
-* To replace the two (2) calls to `Value.cast()` in Module
+  and for m.Switch's value.
+* To replace the two (2) calls to `Value.cast()` in `dsl.Module`
   with `self._astType.cast()`
 
 No further modifications beyond that are strictly necessary.
