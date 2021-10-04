@@ -269,9 +269,10 @@ Mathod (1) is an alarmingly large amount of work with severe to
 catastrophic implications in multiple areas.
 
 Method (2) by complete contrast allows the Liskov Substitution Principle to
-be put to surprisingly good effect. If that was possible to
+be put to surprisingly elegant effect. If that was possible to
 achieve then **almost no modifications to nmigen would
-be required**.
+be required** because dsl.Module is *already* 99% abstracted in terms
+of the lower-level Type 1 (ast.*) constructs.
 
 Analysis of the internals of nmigen shows that m.If, m.Else, m.FSM and m.Switch are all redirected to ast.py `Switch`.  Within that function Mux and other "global" functions (similar to python operator functions).  The hypothesis is therefore proposed that if `Value.mux` is added in an identical way to how `operator.add` calls `__add__` this may turn out to be all that (or most of what) is needed.
 
