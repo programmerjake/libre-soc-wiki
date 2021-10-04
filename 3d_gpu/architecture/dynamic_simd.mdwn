@@ -211,14 +211,15 @@ This proposal extends that concept naturally to allow further contextual
 overrides of the remaining nmigen Type 1 AST constructs: Cat, Repl,
 Mux, Switch, Part etc.
 
-Instead of these being defined as global functions which cannot comprehend
+Instead of these being defined exclusively as global functions which cannot comprehend Object-Oriented
 context, Cat, Switch and Mux etc are redefined to behave as analogues
 of the python `operator` module. `nmigen.hdl.ast.Mux(sel,val2,val1)`
 therefore calls `sel.__Mux__(val2,val1)` and so on.
 
-Pages below describe the basic features of each and track the relevant bugreports.  These features here are the building blocks which lie behind
+As an example of a fully-functioning use of this enhancement,
+pages below describe the basic features of each and track the relevant bugreports.  These features here are the building blocks which lie behind
 PartitionedSignal, which in turn provides "Type 1 (ast.*)" nmigen language
-constructs.
+constructs in the form described above.
 
 * [[dynamic_simd/eq]] aka `__eq__` not to be confused with nmigen eq
 * [[dynamic_simd/assign]] nmigen eq (assignment)
