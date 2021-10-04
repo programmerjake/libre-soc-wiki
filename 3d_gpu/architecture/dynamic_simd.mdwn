@@ -203,6 +203,19 @@ These "breaks" may be set at runtime at any time.
 
 Basic principle: when all partition gates are open the ALU is subdivided into isolated and independent 8 bit SIMD ALUs.  Whenever any one gate is opened, the relevant 8 bit "part-results" are chained together in a downstream cascade to create 16 bit, 32 bit, 64 bit and 128 bit compound results.
 
+# Type 1 (AST) nmigen constructs
+
+nmigen's `ast.Value` already provides operator overloads for arithmetic
+operations such that natural standard python syntax `(a+b)` may be used.
+This proposal extends that concept naturally to allow further contextual
+overrides of the remaining nmigen Type 1 AST constructs: Cat, Repl,
+Mux, Switch, Part etc.
+
+Instead of these being defined as global functions which cannot comprehend
+context, Cat, Switch and Mux etc are redefined to behave as analogues
+of the python `operator` module. `nmigen.hdl.ast.Mux(sel,val2,val1)`
+therefore calls `sel.__Mux__(val2,val1)` and so on.
+
 Pages below describe the basic features of each and track the relevant bugreports.  These features here are the building blocks which lie behind
 PartitionedSignal, which in turn provides "Type 1 (ast.*)" nmigen language
 constructs.
