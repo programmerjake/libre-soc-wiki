@@ -4,21 +4,24 @@ TODO: include tasyagle <https://www-soc.lip6.fr/en/team-cian/softwares/tasyagle/
 
 ## NEW IN PROGRESS - Automated Installation
 The new automated method of installing/setting coriolis2 is as follows:
+
 1. Clone the repo "dev-env-setup". Tutorial assumes the directory is located under your user's home.
-2. Run the script "mk-deb-chroot" to create a chroot environment. Tutorial assumes the name is "libresoc"
-3. Run the script "cp-scripts-to-chroot" to copy the dev-env-setup directory over to your new chroot environment.
-4. Login into the new scroot environment as a normal user (should be the same as your current user).
-5. Run the script "coriolis-install"
-6. Once cgt window appears, go to File, Open Cell, and type chip_r.
-7. You should now have a working Coriolis environment!
+1. Run the script "mk-deb-chroot" to create a chroot environment. Tutorial assumes the name is "libresoc"
+1. Run the script "cp-scripts-to-chroot" to copy the dev-env-setup directory over to your new chroot environment.
+1. Login into the new scroot environment as a normal user (should be the same as your current user).
+1. Run the script "coriolis-install"
+1. Once cgt window appears, go to File, Open Cell, and type chip_r.
+1. You should now have a working Coriolis environment!
 
 In a terminal:
+
     $ cd ~/dev-env-setup
     $ sudo bash
     # ./mk-deb-chroot libresoc
     # ./cp-scripts-to-chroot libresoc
 
 In a separate terminal as normal user:
+
     $ scroot -c libresoc
     (libresoc)$ cd ~/dev-env-setup
     (libresoc)$ ./coriolis-install
