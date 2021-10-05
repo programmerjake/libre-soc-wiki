@@ -2,7 +2,7 @@
 
 TODO: include tasyagle <https://www-soc.lip6.fr/en/team-cian/softwares/tasyagle/>
 
-## NEW IN PROGRESS - Automated Installation
+## Automated Installation
 The new automated method of installing/setting coriolis2 is as follows:
 
 1. Clone the repo "dev-env-setup". Tutorial assumes the directory is located under your user's home.
@@ -32,10 +32,12 @@ This is what the chip floorplan should look like:
 
 [[!img chip_r_flooplan.png ]]
 
-# Sections to be updated...
+# More Details
 
 
 ## debootstrap
+
+Perhaps this should be moved to [[devscripts]] as part of "mk-deb-chroot" script explanation?
 
 First set up an schroot debootstrap jail with debian 10.
 These instructions are based on information taken from here:
@@ -91,6 +93,8 @@ locales and keyboard, from the above-linked debian-admin HOWTO.
 bootloader, kernel, ssh access, are unnecessary. Do run "apt clean" to clear out /var/cache/apt/archives in the chroot.
 
 ## schroot
+
+Perhaps this should be moved to [[devscripts]] as part of "mk-deb-chroot" script explanation?
 
 Create an schroot file section for the coriolis chroot by
 editing /etc/schroot/schroot.conf:
@@ -154,8 +158,11 @@ Then, as the ordinary (non-root) user in the schroot:
     cd ~/coriolis-2.x/src
     git clone https://gitlab.lip6.fr/vlsi-eda/coriolis.git
     cd coriolis
-    git checkout devel
+    git checkout LS180_RC7_FINAL
     ./bootstrap/ccb.py --project=coriolis --make="-j$(nproc) install"
+
+Note: Instead of "devel", "LS180_RC7_FINAL" is used as it is more stable.
+Once Python3 support is added, can switch to using "devel".
 
 To set up the coriolis2 environment, run this:
 
@@ -164,9 +171,12 @@ To set up the coriolis2 environment, run this:
 For convenience that may be placed in a file and "sourced", to avoid
 having to look this page up every time
 
-    echo "`~/coriolis-2.x/src/coriolis/bootstrap/coriolisEnv.py`" > \
-            ~/coriolisenv
+    /bin/bash << EOF
+    /home/$USER/coriolis-2.x/src/coriolis/bootstrap/coriolisEnv.py > /home/$USER/coriolisenv
+    EOF
     source ~/coriolisenv
+
+For now a workaround must be used for coriolisEnv.py to correctly detect the shell (Bash in this case).
 
 ## Testing coriolis2
 
@@ -209,8 +219,11 @@ As the ordinary user, the following instructions can be followed
     cd ~
     git clone https://github.com/cliffordwolf/yosys.git
     cd yosys
+    git checkout 049e3abf9baf795e69b9ecb9c4f19de6131f8418
     make config-clang
     make -j$(nproc)
+
+Note: For now a stable version of yosys is used!
 
 As root, run:
 
@@ -267,9 +280,9 @@ You must create a configuration for your user in alliance-check-toolkit to defin
     export YOSYS_TOP=/home/$USERNAME/yosys
     EOF
 
-You can try the ARM in alliance-check-toolkit:
+You can try the user adder benchmark in alliance-check-toolkit:
 
-    cd alliance-check-toolkit/benchs/ARM/cmos/
+    cd alliance-check-toolkit/benchs/adder/cmos
     make lvx
 
 This should take about five minutes. It's symbolic, but should be a configuration compatible with 180nm. To actually see the results:
@@ -282,7 +295,7 @@ Then:
 
 Enter as the cell name (without the single quotation marks):
 
-    'arm_chip_cts_r'
+    'chip_r'
 
 As a very rough approximation, you can say that one lambda equals 180nm.
 
