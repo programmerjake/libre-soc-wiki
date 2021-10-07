@@ -2,128 +2,68 @@
 
 TODO: include tasyagle <https://www-soc.lip6.fr/en/team-cian/softwares/tasyagle/>
 
-## Automated Installation
-The new automated method of installing/setting coriolis2 is as follows:
+## Automated Installation - One-liner
+The new automated method of installing/setting up Coriolis2 is as follows:
 
-1. Clone the repo "dev-env-setup". Tutorial assumes the directory is located under your user's home.
-1. Run the script "mk-deb-chroot" to create a chroot environment. Tutorial assumes the name is "libresoc"
-1. Run the script "cp-scripts-to-chroot" to copy the dev-env-setup directory over to your new chroot environment.
-1. Login into the new scroot environment as a normal user (should be the same as your current user).
-1. Run the script "coriolis-install"
+1. Clone the repo "dev-env-setup".
+Tutorial assumes the directory is located under user's home.
+1. Run the script "coriolis2-chroot" to create a new chroot environment,
+and setup Coriolis2.
 1. Once cgt window appears, go to File, Open Cell, and type chip_r.
-1. You should now have a working Coriolis environment!
+1. You should now have a working Coriolis chroot!
 
 In a terminal:
 
     $ cd ~/dev-env-setup
     $ sudo bash
-    # ./mk-deb-chroot libresoc
-    # ./cp-scripts-to-chroot libresoc
+    # ./coriolis2-chroot
 
-In a separate terminal as normal user:
-
-    $ scroot -c libresoc
-    (libresoc)$ cd ~/dev-env-setup
-    (libresoc)$ ./coriolis-install
-
-And now you wait...I suggest occasionally checking the status messages, especially after apt finished updating the packages and the script moves on to compiling yosys, coriolis2, alliance, as well as when alliance-check-toolkit generates the floorplan for you.
+And now you wait... (about 30-45min, depends on your CPU). 
+I suggest occasionallly checking the status messages, 
+especially after apt finished updating the packages and the script moves on 
+to compiling yosys, coriolis2, alliance, as well as when 
+alliance-check-toolkit generates the floorplan for you.
 
 This is what the chip floorplan should look like:
 
-[[!img chip_r_flooplan.png ]]
+[[!img chip_r_floorplan.png ]]
 
-# More Details
+## Automated Installation - Separated Steps
+The steps performed by "coriolis2-chroot" can be done manually and are:
 
+1. Run the script "mk-deb-chroot" to create a chroot environment.
+Tutorial assumes the name is "coriolis"
+1. Run the script "cp-scripts-to-chroot" to copy the dev-env-setup directory 
+over to your new chroot environment.
+1. Login into the new scroot environment as a normal user 
+(should be the same as your current user).
+1. Run the script "coriolis-install"
 
-## debootstrap
+In a terminal:
 
-Perhaps this should be moved to [[devscripts]] as part of "mk-deb-chroot" script explanation?
+    $ cd ~/dev-env-setup
+    $ sudo bash
+    # ./mk-deb-chroot coriolis
+    # ./cp-scripts-to-chroot coriolis
 
-First set up an schroot debootstrap jail with debian 10.
-These instructions are based on information taken from here:
-<https://www.debian.org/releases/stretch/amd64/apds03.html.en>
+In a separate terminal as normal user:
 
-In advance, on the host system, edit /etc/fstab and add mount points:
+    $ scroot -c coriolis
+    (coriolis)$ cd ~/dev-env-setup
+    (coriolis)$ ./coriolis-install
 
-(edit: personally I prefer using mount --bind points.  however if doing
-that then after a reboot the chroot will lose the bind mountpoints
-and the commands need to be re-run, without which the chroot is
-unusable)
+# Further Details
 
-    /dev    /home/chroot/coriolis/dev   none    bind    0   0
-    /dev/pts /home/chroot/coriolis/dev/pts  none    bind    0   0
-    /proc   /home/chroot/coriolis/proc  none    bind    0   0
-    /sys    /home/chroot/coriolis/sys   none    bind    0   0
-    /tmp    /home/chroot/coriolis/tmp   none    bind    0   0
+## Python3 Coriolis Support
 
-Then run these commands:
+A separate script will be written to use the latest development version of Coriolis2. 
+For now however, a stable version is pulled in, which still uses Python2.
 
-    sudo bash
-    apt-get install debootstrap schroot
-    mkdir /opt/chroot/coriolis
-    /usr/sbin/debootstrap buster !$ http://ftp.us.debian.org/debian
-    mount /home/chroot/coriolis/dev
-    mount /home/chroot/coriolis/dev/pts
-    mount   /home/chroot/coriolis/proc
-    mount   /home/chroot/coriolis/sys
-    mount   /home/chroot/coriolis/tmp
-    echo "coriolis2" > /home/chroot/coriolis/etc/debian_chroot
+## Chroot/Jail Environment
 
-To do some preparation (users):
+See [[devscripts]] for explanation of the "mk-deb-chroot" script.
 
-    chroot /home/chroot/coriolis2 /bin/bash
-    adduser {yourpreferredusername}
-
-It is best to make the username the same as the first user that
-was added during the *main* (non-chroot) debian install, so that
-uid 1000 matches between both main and chroot.  You can check
-this by looking at /etc/passwd as root, or by typing "id".
-
-    lkcl@fizzy:~$ id
-    uid=1000(lkcl) gid=1000(lkcl) groups=1000(lkcl),5(tty),....
-
-Alternatively, /etc/passwd and /etc/group may
-be mount-bound as well as /home however if you later forget you did
-this and decide to delete the chroot, you will delete the entire /home
-of your main system, as well as /etc/passwd.
-
-You may wish to follow some of the other things such as configuring apt,
-locales and keyboard, from the above-linked debian-admin HOWTO.
-
-bootloader, kernel, ssh access, are unnecessary. Do run "apt clean" to clear out /var/cache/apt/archives in the chroot.
-
-## schroot
-
-Perhaps this should be moved to [[devscripts]] as part of "mk-deb-chroot" script explanation?
-
-Create an schroot file section for the coriolis chroot by
-editing /etc/schroot/schroot.conf:
-
-    [coriolis]
-    description=Debian Buster for Coriolis
-    directory=/home/chroot/coriolis
-    groups=sbuild-security,lkcl,users
-
-Now as an *ordinary* user - not as root - you may type:
-
-    lkcl@fizzy:~$ schroot -c coriolis
-
-and, due to the contents of /etc/debian\_chroot, and that you were in
-fact logged in as uid 1000 and did in fact add a user to the chroot
-as uid 1000, the prompt should become:
-
-    (coriolis2)lkcl@fizzy:~$
-
-If however you need to run as root, then from outside the chroot,
-as *root*, you run this:
-
-    lkcl@fizzy:~# schroot -c coriolis
-
-and you will see this as a result:
-
-    (coriolis2)lkcl@fizzy:~#
-
-## coriolis2
+## Coriolis2 Setup
 
 These are nominally taken from
 <https://www-soc.lip6.fr/equipe-cian/logiciels/coriolis/>
@@ -229,7 +169,7 @@ As root, run:
 
     make install
 
-## Check out alliance
+## Alliance
 
 Adapted from <https://www-soc.lip6.fr/en/team-cian/softwares/alliance/>
 

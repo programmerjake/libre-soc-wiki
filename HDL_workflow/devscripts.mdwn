@@ -42,3 +42,92 @@ straightforward and obvious to work out what to do (just run them).
 There is an accompanying walkthrough video which goes through the above
 <https://m.youtube.com/watch?v=1-4eJKTNrEk> and includes running some
 unit tests, explaining some of the background, and also files some bugs.
+
+## Script "mk-deb-chroot"
+
+The script sets up an schroot debootstrap jail with debian 10. 
+This chroot can then be used for nmigen, coriolis, or any other development. 
+These instructions are based on information taken from here:
+<https://www.debian.org/releases/stretch/amd64/apds03.html.en>
+
+The chroot name for this section is assumed to be "libresoc"
+
+In advance, on the host system, edit /etc/fstab and add mount points:
+
+(edit: personally I prefer using mount --bind points.  however if doing
+that then after a reboot the chroot will lose the bind mountpoints
+and the commands need to be re-run, without which the chroot is
+unusable)
+
+    /dev    /home/chroot/libresoc/dev   none    bind    0   0
+    /dev/pts /home/chroot/libresoc/dev/pts  none    bind    0   0
+    /proc   /home/chroot/libresoc/proc  none    bind    0   0
+    /sys    /home/chroot/libresoc/sys   none    bind    0   0
+    /tmp    /home/chroot/libresoc/tmp   none    bind    0   0
+
+Then run these commands:
+
+    sudo bash
+    apt-get install debootstrap schroot
+    mkdir /opt/chroot/libresoc
+    /usr/sbin/debootstrap buster !$ http://ftp.us.debian.org/debian
+    mount /home/chroot/libresoc/dev
+    mount /home/chroot/libresoc/dev/pts
+    mount   /home/chroot/libresoc/proc
+    mount   /home/chroot/libresoc/sys
+    mount   /home/chroot/libresoc/tmp
+    echo "libresoc" > /home/chroot/libresoc/etc/debian_chroot
+
+To do some preparation (users):
+
+    chroot -c libresoc /bin/bash
+    adduser {yourpreferredusername}
+
+It is best to make the username the same as the first user that
+was added during the *main* (non-chroot) debian install, so that
+uid 1000 matches between both main and chroot.  You can check
+this by looking at /etc/passwd as root, or by typing "id".
+
+    lkcl@fizzy:~$ id
+    uid=1000(lkcl) gid=1000(lkcl) groups=1000(lkcl),5(tty),....
+
+Alternatively, /etc/passwd and /etc/group may
+be mount-bound as well as /home however if you later forget you did
+this and decide to delete the chroot, you will delete the entire /home
+of your main system, as well as /etc/passwd.
+
+You may wish to follow some of the other things such as configuring apt,
+locales and keyboard, from the above-linked debian-admin HOWTO.
+
+bootloader, kernel, ssh access, are unnecessary. Do run "apt clean" 
+to clear out /var/cache/apt/archives in the chroot.
+
+
+
+
+Create an schroot file section for the libresoc chroot by
+editing /etc/schroot/schroot.conf:
+
+    [libresoc]
+    description=Debian Buster for Coriolis
+    directory=/home/chroot/libresoc
+    groups=sbuild-security,lkcl,users
+
+Now as an *ordinary* user - not as root - you may type:
+
+    lkcl@fizzy:~$ schroot -c libresoc
+
+and, due to the contents of /etc/debian\_chroot, and that you were in
+fact logged in as uid 1000 and did in fact add a user to the chroot
+as uid 1000, the prompt should become:
+
+    (libresoc)lkcl@fizzy:~$
+
+If however you need to run as root, then from outside the chroot,
+as *root*, you run this:
+
+    lkcl@fizzy:~# schroot -c libresoc
+
+and you will see this as a result:
+
+    (libresoc)lkcl@fizzy:~#
