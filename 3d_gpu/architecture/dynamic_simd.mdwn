@@ -26,8 +26,10 @@ overrides.
 * To extend nmigen "Type 1 (ast.*)" low-level language constructs
   in the Value class
   with `Value.__Cat__`, `Value.__Switch__`, `Value.__Repl__` etc.
-* To rename existing old `ast.Cat` to new `ast._InternalCat`,
-  `ast.Repl` to `ast._InternalRepl` etc.
+* To rename existing old
+  - `ast.Cat` to new `ast._InternalCat`,
+  - `ast.Repl` to `ast._InternalRepl`
+  - etc.
 * In an identical conceptual fashion, just
   as python `operator.add(x,y)` redirects to `x.__add__(y)`,
   to add a new `ast.Cat(x..)` which redirects to`x.__Cat__(...)` etc.
