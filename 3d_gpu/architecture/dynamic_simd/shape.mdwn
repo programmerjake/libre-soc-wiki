@@ -80,5 +80,10 @@ cases (32 bit, 16 bit, 8 bit) therefore only three sets of logic
 are required to construct the larger overall computational result
 from the "smaller chunks", rather than at first glance, with there
 being 9 actual partitions (28, 26, 24, 20, 16, 12, 10, 8, 4), it
-would appear that 2^9 (512!) cases were required.
+would appear that 2^9 (512!) cases were required, where in fact
+there are only three.
 
+These facts also need to be communicated to both the SimdSignal
+as well as the submodules implementing its core functionality:
+add operation and other arithmetic behaviour, as well as
+[[dynamic_simd/cat]] and others.
