@@ -104,16 +104,16 @@ occur on `Shape.width`.
 
 With this capability it becomes possible to use the Liskov Substitution
 Principle in dynamically compiling code that switches between scalar and
-SIMD:
+SIMD transparently:
 
     # scalar context
     scalarctx = scl = object()
     scl.XLEN = 64
-    scl.SigKls = Signal
+    scl.SigKls = Signal         # standard nmigen Signal
     # SIMD context
     simdctx = sdc = object()
     sdc = SimdShape(64, ....)
-    sdc.SigKls = SimdSignal
+    sdc.SigKls = SimdSignal     # advanced SIMD Signal
     sdc.elwidth = Signal(2)
     # select one 
     if compiletime_switch == 'SIMD':
@@ -126,4 +126,5 @@ SIMD:
     with ctx:
         x = ctx.SigKls(ctx.XLEN)
         ...
+    m.d.comb += x.eq(Const(3))
 
