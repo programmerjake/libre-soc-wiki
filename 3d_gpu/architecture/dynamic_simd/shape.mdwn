@@ -40,3 +40,31 @@ and naturally take place at **all** of these non-uniform
 widths, as if they were in fact scalar Signals *at* those
 widths.
 
+A minor wrinkle which emerges from deep analysis is that the overall
+available width (`Shape.width`) does in fact need to be explicitly
+declared, and
+the sub-partitions fit onto power-of-two boundaries, in order to allow
+straight wire-connections rather than allow the SimdSignal to be
+arbitrary-sized (compact).  Although on shallow inspection this
+initially would seem to imply that it would result in large unused
+sub-partitions (padding partitions) these gates can in fact be eliminated
+with a "blanking" mask, created from static analysis of the SimdShape
+context.
+
+Example:
+
+* all 32 and 16-bit values are actually to be truncated to 11 bit
+* all 8-bit values to 5-bit
+
+from these we can write out:
+ 
+          |31|  |  |     16|15|  |   8|7     0 |
+    32bit |  |  |  |       |  |  |10 ....    0 |
+    16bit |  |  |26 ... 16 |  |  |10 ....    0 |
+    8bit  |  |28.24|  20.16|  |12 .. 8|  4.. 0 |
+
+thus, we deduce, we *actually* need breakpoints at these positions,
+and that unused portions are at "x"
+
+            |28|26|24| |20|16| |12|10|8|   |4   0
+           x 
