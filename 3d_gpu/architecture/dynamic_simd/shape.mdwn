@@ -102,4 +102,28 @@ occur on `Shape.width`.
     >>> print(x2.signed)
     True
 
+With this capability it becomes possible to use the Liskov Substitution
+Principle in dynamically compiling code that switches between scalar and
+SIMD:
+
+    # scalar context
+    scalarctx = scl = object()
+    scl.XLEN = 64
+    scl.SigKls = Signal
+    # SIMD context
+    simdctx = sdc = object()
+    sdc = SimdShape(64, ....)
+    sdc.SigKls = SimdSignal
+    sdc.elwidth = Signal(2)
+    # select one 
+    if compiletime_switch == 'SIMD':
+        ctx = simdctx
+    else:
+        ctx = scalarctx
+
+    # exact same code switching context at compile time
+    m = Module():
+    with ctx:
+        x = ctx.SigKls(ctx.XLEN)
+        ...
 
