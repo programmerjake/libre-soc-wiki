@@ -43,7 +43,7 @@ widths.
 A minor wrinkle which emerges from deep analysis is that the overall
 available width (`Shape.width`) does in fact need to be explicitly
 declared, and
-the sub-partitions fit onto power-of-two boundaries, in order to allow
+the sub-partitions to fit onto power-of-two boundaries, in order to allow
 straight wire-connections rather than allow the SimdSignal to be
 arbitrary-sized (compact).  Although on shallow inspection this
 initially would seem to imply that it would result in large unused
@@ -87,3 +87,19 @@ These facts also need to be communicated to both the SimdSignal
 as well as the submodules implementing its core functionality:
 add operation and other arithmetic behaviour, as well as
 [[dynamic_simd/cat]] and others.
+
+In addition to that, there is a "convenience" that emerged
+from technical discussions as desirable
+to have, which is that it should be possible to perform
+rudimentary arithmetic operations *on a SimdShape* which preserves
+or adapts the Partition context, where the arithmetic operations
+occur on `Shape.width`.
+
+    >>> XLEN = SimdShape(64, signed=True, ...)
+    >>> x2 = XLEN // 2
+    >>> print(x2.width)
+    32
+    >>> print(x2.signed)
+    True
+
+
