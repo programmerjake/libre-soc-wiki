@@ -56,15 +56,18 @@ Example:
 * all 32 and 16-bit values are actually to be truncated to 11 bit
 * all 8-bit values to 5-bit
 
-from these we can write out:
+from these we can write out the allocations, bearing in mind that
+in each partition the sub-signal must start on a power-2 boundary,
+and that "x" marks unused (padding) portions:
  
           |31|  |  |     16|15|  |   8|7     0 |
-    32bit |  |  |  |       |  |  |10 ....    0 |
-    16bit |  |  |26 ... 16 |  |  |10 ....    0 |
-    8bit  |  |28.24|  20.16|  |12 .. 8|  4.. 0 |
+    32bit | x| x| x|      x| x| x|10 ....    0 |
+    16bit | x| x|26 ... 16 | x| x|10 ....    0 |
+    8bit  | x|28.24|  20.16| x|12 .. 8|x|4.. 0 |
 
 thus, we deduce, we *actually* need breakpoints at these positions,
-and that unused portions are at "x"
+and that unused portions common to **all** cases can be deduced
+and marked "x"
 
             |28|26|24| |20|16| |12|10|8|   |4   0
-           x 
+           x                  x
