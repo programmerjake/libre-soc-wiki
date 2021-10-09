@@ -5,3 +5,13 @@ provides sufficient context to both define overrides for individual lengths
 on a per-mask basis as well as sufficient information to "upcast"
 back to a SimdSignal, in exactly the same way that c++ virtual base
 class upcasting works when RTTI (Run Time Type Information) works.
+
+By deriving from `ast.Shape` both `width` and `signed` are provided
+already leaving the `SimdShape` class with the responsibility to
+additionally define lengths for each mask basis. This is best illustrated
+with an example.
+
+The Libre-SOC IEEE754 ALUs need to be converted to SIMD Partitioning
+but without massive disruptive code-duplication or intrusive explicit
+coding as outlined in the worst of the techniques documented in
+[[dynamic_simd]]
