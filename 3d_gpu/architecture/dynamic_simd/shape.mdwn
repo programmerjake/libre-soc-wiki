@@ -56,29 +56,29 @@ Example:
 * all 32 and 16-bit values are actually to be truncated to 11 bit
 * all 8-bit values to 5-bit
 
+from these we can write out the allocations, bearing in mind that
+in each partition the sub-signal must start on a power-2 boundary,
+
           |31|  |  |24|     16|15|  |   8|7     0 |
     32bit |           |          |  | 1.11        |
     16bit |     | 2.11        |  |  | 1.11        |
     8bit  |  |  4.5   | 3.5   |  | 2.5   | | 1.5  |
 
-from these we can write out the allocations, bearing in mind that
-in each partition the sub-signal must start on a power-2 boundary,
-and that "x" marks unused (padding) portions. We begin by marking
+Next we identify the start and end points, and note
+that "x" marks unused (padding) portions. We begin by marking
 the power-of-two boundaries (0-7 .. 24-31) and also including column
 guidelines to delineate the start and endpoints:
  
           |31|  |  |24|     16|15|  |   8|7     0 |
+          |31|28|26|24| |20|16|15|12|10|8| |4   0 |
     32bit | x| x| x|  |      x| x| x|10 ....    0 |
     16bit | x| x|26    ... 16 | x| x|10 ....    0 |
     8bit  | x|28 .. 24|  20.16| x|12 .. 8|x|4.. 0 |
+    unused  x                   x
 
-thus, we deduce, we *actually* need breakpoints at these positions,
+thus, we deduce, we *actually* need breakpoints at *nine* positions,
 and that unused portions common to **all** cases can be deduced
-and marked "x" by looking at the columns above which all contain "x":
-
-          |  |28|26|24| |20|16|  |12|10|8| |4     |
-            x                   x
-
+and marked "x" by looking at the columns above them.
 These 100% unused "x"s therefore define the "blanking" mask, and in
 these sub-portions it is unnecessary to allocate computational gates.
 
