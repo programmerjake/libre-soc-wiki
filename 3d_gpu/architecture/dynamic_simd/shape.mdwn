@@ -133,6 +133,7 @@ SIMD transparently:
     m = Module():
     with ctx:
         x = ctx.SigKls(ctx.XLEN)
+        y = ctx.SigKls(ctx.XLEN // 2)
         ...
     m.d.comb += x.eq(Const(3))
 
