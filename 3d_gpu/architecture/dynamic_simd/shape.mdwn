@@ -33,4 +33,10 @@ Exponent:
 * 4xFP16: 5 bits, four exponents
 * 4xBF16: 8 bits, four exponents
 
+`SimdShape` needs this information in addition to the normal
+information (width, sign) in order to create the partitions
+that allow standard nmigen operations to **transparently**
+and naturally take place at **all** of these non-uniform
+widths, as if they were in fact scalar Signals *at* those
+widths.
 
