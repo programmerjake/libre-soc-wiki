@@ -14,4 +14,15 @@ with an example.
 The Libre-SOC IEEE754 ALUs need to be converted to SIMD Partitioning
 but without massive disruptive code-duplication or intrusive explicit
 coding as outlined in the worst of the techniques documented in
-[[dynamic_simd]]
+[[dynamic_simd]].  This in turn implies that Signals need to be declared
+for both mantissa and exponent that **change width to non-power-of-two
+sizes** depending on Partition Mask Context.
+
+Mantissa:
+
+* when the context is 1xFP64 the mantissa is 54 bits (excluding guard
+  rounding and sticky)
+* when the context is 2xFP32 there are **two** mantissas of 23 bits
+* when the context is 4xFP16 there are **four** mantissas of 10 bits
+* when the context is 4xBF16 there are four mantissas of 5 bits.
+
