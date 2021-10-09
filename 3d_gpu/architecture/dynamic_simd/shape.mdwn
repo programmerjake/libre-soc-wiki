@@ -56,11 +56,18 @@ Example:
 * all 32 and 16-bit values are actually to be truncated to 11 bit
 * all 8-bit values to 5-bit
 
+          |31|  |  |24|     16|15|  |   8|7     0 |
+    32bit |           |          |  | 1.11        |
+    16bit |     | 2.11        |  |  | 1.11        |
+    8bit  |  |  4.5   | 3.5   |  | 2.5   | | 1.5  |
+
 from these we can write out the allocations, bearing in mind that
 in each partition the sub-signal must start on a power-2 boundary,
-and that "x" marks unused (padding) portions:
+and that "x" marks unused (padding) portions. We begin by marking
+the power-of-two boundaries (0-7 .. 24-31) and also including column
+guidelines to delineate the start and endpoints:
  
-          |31|  |  |  |     16|15|  |   8|7     0 |
+          |31|  |  |24|     16|15|  |   8|7     0 |
     32bit | x| x| x|  |      x| x| x|10 ....    0 |
     16bit | x| x|26    ... 16 | x| x|10 ....    0 |
     8bit  | x|28 .. 24|  20.16| x|12 .. 8|x|4.. 0 |
