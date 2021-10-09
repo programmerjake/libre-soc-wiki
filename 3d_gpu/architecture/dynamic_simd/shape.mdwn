@@ -69,5 +69,16 @@ thus, we deduce, we *actually* need breakpoints at these positions,
 and that unused portions common to **all** cases can be deduced
 and marked "x"
 
-          |  |28|26|24| |20|16|  |12|10|8| |4   0 |
+          |  |28|26|24| |20|16|  |12|10|8| |4     |
             x                   x
+
+These 100% unused "x"s therefore define the "blanking" mask, and in
+these sub-portions it is unnecessary to allocate computational gates.
+
+Also in order to save gates, in the example above there are only three
+cases (32 bit, 16 bit, 8 bit) therefore only three sets of logic
+are required to construct the larger overall computational result
+from the "smaller chunks", rather than at first glance, with there
+being 9 actual partitions (28, 26, 24, 20, 16, 12, 10, 8, 4), it
+would appear that 2^9 (512!) cases were required.
+
