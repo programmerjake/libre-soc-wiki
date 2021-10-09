@@ -119,7 +119,7 @@ SIMD transparently:
     scl.SigKls = Signal         # standard nmigen Signal
     # SIMD context
     simdctx = sdc = object()
-    sdc = SimdShape(64, ....)
+    sdc.XLEN = SimdShape(64, ....)
     sdc.SigKls = SimdSignal     # advanced SIMD Signal
     sdc.elwidth = Signal(2)
 
