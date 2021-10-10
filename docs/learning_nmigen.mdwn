@@ -32,9 +32,9 @@ nMigen code for counter and testbench here: <https://nmigen.info/nmigen/latest/s
 
 Commands:
 
-    $python3 tb_up_counter.py
-    $gtkwave up_counter.vcd &
-    $python3 conv_to_verilog.py
+    $ python3 tb_up_counter.py
+    $ gtkwave up_counter.vcd &
+    $ python3 conv_to_verilog.py
 
 ## Block Digram with Yosys
 
@@ -42,14 +42,14 @@ Commands:
 
 Yosys commands:
 
-    $yosys
+    $ yosys
     yosys> read_verilog up_counter.v
     yosys> show
 
 Outside of Yosys, commands for diagram (SVG format for static images also supported):
 
-    $xdot ~/.yosys_show.dot
-    $dot ~/.yosys_show.dot -Tpng -o up_counter.png
+    $ xdot ~/.yosys_show.dot
+    $ dot ~/.yosys_show.dot -Tpng -o up_counter.png
 
 Here's a sight to behold:
 
