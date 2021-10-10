@@ -20,43 +20,39 @@
 
 1. Create a file called "tb_up_counter.py" containing the testbench from "Testing a counter".
 
-1. To the testbench file, add the import statement for the counter module (better get used to separating your sim/stimulus and module classes from the beginning):
-
-```from up_counter import UpCounter```
+1. To the testbench file, add the import statement "from up_counter import UpCounter" for the counter module (better get used to separating your sim/stimulus and module classes from the beginning):
 
 1. Create a file called "conv_to_verilog.py" and copy the code from "Converting a counter" section. Also add the import statement as with the testbench.
 
-1. Generate GTKWave .vcd file by running:
+1. Generate GTKWave .vcd file by running the testbench script.
 
-```$python3 tb_up_counter.py```
-
-1. Launch GTKWave by calling:
-
-```$gtkwave up_counter.vcd```
-
-1. Now you should be able to inspect the signals and check counter behaviour (although the test bench also does this).
+1. Launch GTKWave. Now you should be able to inspect the signals and check counter behaviour (although the test bench also does this).
 
 1. To generate the verilog equivalent, call the file we created earlier. The script will create a up_counter.v verilog file.
 
-```$python3 conv_to_verilog.py```
+Commands:
+
+    $python3 tb_up_counter.py
+    $gtkwave up_counter.vcd &
+    $python3 conv_to_verilog.py
 
 ## Block Digram with Yosys
 
 1. Open yosys in interactive mode and load the generated verilog file. Calling "show" should generate the diagram .dot file (as a temp file "~/.yosys_show.dot") and open it using xdot. *You may need to install xdot separately with apt*. Xdot is **interactive** (you can click on blocks and nodes!).
 
-```$yosys
-yosys> read_verilog up_counter.v
-yosys> show
-```
+Yosys commands:
 
-1. Outside of Yosys, you can run xdot directly:
+    $yosys
+    yosys> read_verilog up_counter.v
+    yosys> show
 
-```$xdot ~/.yosys_show.dot```
+Outside of Yosys, commands for diagram (SVG format for static images also supported):
 
-1. If you want to generate a static image, you can use graphviz's "dot" command to generate an image (for example PNG).
+    $xdot ~/.yosys_show.dot
+    $dot ~/.yosys_show.dot -Tpng -o up_counter.png
 
-```$dot ~/.yosys_show.dot -Tpng -o up_counter.png```
-
-1. Now you can improve your understanding with the nMigen, verilog, and block diagram views side-by-side!
+Here's a sight to behold:
 
 [[!img nmigen_verilog_tb.png size="600x"]]
+
+Now you can improve your understanding with the nMigen, verilog, and block diagram views side-by-side!
