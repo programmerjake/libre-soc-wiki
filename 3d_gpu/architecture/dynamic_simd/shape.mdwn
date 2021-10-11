@@ -124,7 +124,7 @@ SIMD transparently:
     scl.SigKls = Signal         # standard nmigen Signal
     # SIMD context
     simdctx = sdc = object()
-    sdc.XLEN = SimdShape(64, ....)
+    sdc.XLEN = SimdShape({1x64, 2x32, 4x16, 8x8})
     sdc.SigKls = SimdSignal     # advanced SIMD Signal
     sdc.elwidth = Signal(2)
 
@@ -173,3 +173,27 @@ comparisons of 8 parallel SIMD 8-bit values), there correspondingly
 needs to be **eight** such element bits in order to store up to
 eight 8-bit comparisons.
 
+Another example would be a simple test of the first *nibble* of
+the data.
+
+    m = Module():
+    with ctx:
+        x = ctx.SigKls(ctx.XLEN)
+        y = ctx.SigKls(4)
+    m.d.comb += y.eq(x[0:3])
+    ....
+
+Here, we do not necessarily want to declare y to be 64-bit: we want
+only the first 4 bits of each element, after all, and when y is set
+to be QTY 8of 8-bit elements, then y will only need to store QTY 8of
+4-bit quantities, i.e. only a maximum of 32 bits total.
+
+If y was declared as 64 bit this would indicate that the actual
+elements were at least 8 bit long, and if that was then used as a
+shift input it might produce the wrong calculation because the
+actual shift amount was only supposed to be 4 bits.
+
+Thus not one method of setting widths is required but *two*:
+
+* at the element level
+* at the width of the entire SIMD signal
