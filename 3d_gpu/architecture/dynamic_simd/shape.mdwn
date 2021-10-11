@@ -210,6 +210,9 @@ SimdShape needs:
 * to derive from nmigen ast.Shape in order to provide the overall
   width and whether it is signed or unsigned.  However the
   overall width is not necessarily hard-set but may be calculated
+* provides a means to specify the number of partitions in each of
+  an arbitrarily-named set. for convenience and by convention
+  from SVP64 this set is called "elwidths".
 * to support a range of sub-signal divisions (element widths)
   and for there to be an option to either set each element width
   explicitly or to allow each width to be computed from the
@@ -217,3 +220,10 @@ SimdShape needs:
 * to provide rudimentary arithmetic operator capability
   that automatically computes a new SimdShape, adjusting width
   and element widths accordingly.
+
+Interfacing to SimdSignal requires an adapter that:
+
+* allows a switch-case set to be created
+* the switch statement is the elwidth parameter
+* the case statements are the PartitionPoints
+* identifies which partitions are "blank" (padding)
