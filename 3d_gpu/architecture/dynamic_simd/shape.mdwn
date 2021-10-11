@@ -162,7 +162,7 @@ Scalar (but an 8-bit quantity for SIMD):
         x = ctx.SigKls(ctx.XLEN)
         y = ctx.SigKls(ctx.XLEN)
         b = ctx.SigKls(1)
-    m.d.comb += b.eq(x > y)
+    m.d.comb += b.eq(x == y)
     with m.If(b):
         ....
 
@@ -171,7 +171,8 @@ the elwidths are declared as `1x64, 2x32, 4x16, 8x8` then whilst
 the *elements* are 1 bit (in order to make a total of QTY 8
 comparisons of 8 parallel SIMD 8-bit values), there correspondingly
 needs to be **eight** such element bits in order to store up to
-eight 8-bit comparisons.
+eight 8-bit comparisons.  Exactly how that comparison works
+is described in [[dynamic_simd/eq]]
 
 Another example would be a simple test of the first *nibble* of
 the data.
