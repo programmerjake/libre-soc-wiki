@@ -247,8 +247,12 @@ Note:
 [`bf16`](https://en.wikipedia.org/wiki/Bfloat16_floating-point_format)
 is reserved for a future implementation of SV
 
-Note that any operation in Power ISA ending in "s" (`fadds`) shall
-perform its operation at **half** the ELWIDTH.  `sv.fadds/ew=f32` shall perform an IEEE754 FP16 operation that is then "padded" to fill out to an IEEE754 FP32.
+Note that any IEEE754 FP operation in Power ISA ending in "s" (`fadds`) shall
+perform its operation at **half** the ELWIDTH then padded back out
+to ELWIDTH.  `sv.fadds/ew=f32` shall perform an IEEE754 FP16 operation that is then "padded" to fill out to an IEEE754 FP32. When ELWIDTH=DEFAULT
+clearly the behaviour of `sv.fadds` is performed at 32-bit accuracy
+then padded back out to fit in IEEE754 FP64, exactly as for Scalar
+v3.0B "single" FP.
 
 ## Elwidth for CRs:
 
