@@ -5,6 +5,8 @@ Links:
 * [layout experiment](https://git.libre-soc.org/?p=ieee754fpu.git;a=blob;f=src/ieee754/part/layout_experiment.py;h=2a31a57dbcb4cb075ec14b4799e521fca6aa509b;hb=0407d90ccaf7e0e42f40918c3fa5dc1d89cf0155)
 * <https://bugs.libre-soc.org/show_bug.cgi?id=713>
 
+# Requirements Analysis
+
 A logical extension of the nmigen `ast.Shape` concept, `SimdShape`
 provides sufficient context to both define overrides for individual lengths
 on a per-mask basis as well as sufficient information to "upcast"
@@ -199,5 +201,19 @@ Thus not one method of setting widths is required but *two*:
 * at the element level
 * at the width of the entire SIMD signal
 
+With this background and context in mind the requirements can be determined
+
 # Requirements
 
+SimdShape needs:
+
+* to derive from nmigen ast.Shape in order to provide the overall
+  width and whether it is signed or unsigned.  However the
+  overall width is not necessarily hard-set but may be calculated
+* to support a range of sub-signal divisions (element widths)
+  and for there to be an option to either set each element width
+  explicitly or to allow each width to be computed from the
+  overall width and the number of partitions.
+* to provide rudimentary arithmetic operator capability
+  that automatically computes a new SimdShape, adjusting width
+  and element widths accordingly.
