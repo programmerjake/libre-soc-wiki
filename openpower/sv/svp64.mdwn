@@ -256,21 +256,10 @@ v3.0B "single" FP.
 
 ## Elwidth for CRs:
 
-TODO, important, particularly for crops, mfcr and mtcr, what elwidth
-even means.  instead it may be possible to use the bits as extra indices
-(add to EXTRA2/3) to access the full 128 CRs at the bit level.  TBD, several ideas
+Element-width overrides for CR Fields has no meaning. The bits
+are therefore used for other purposes, or when Rc=1, the Elwidth
+applies to the result being tested, but not to the Vector of CR Fields.
 
-The actual width of the CRs cannot be altered: they are 4 bit.  Also,
-for Rc=1 operations that produce a result (in RT or FRT) and corresponding CR, it is
-the INT/FP result to which the elwidth override applies, *not* the CR.
-This therefore inherently places Rc=1 operations firmly out of scope as far as a "meaning" for elwidth on CRs is concerned.
-
-As mentioned TBD, this leaves crops etc. to have a meaning defined for
-elwidth, because these ops are pure explicit CR based.
-
-Examples: mfxm may take the extra bits and use them as extra mask bits.
-
-Example: hypothetically, operations could be modified to be considered 2-bit or 1-bit per CR.  This would need a very comprehensive review.
 
 # SUBVL Encoding
 
