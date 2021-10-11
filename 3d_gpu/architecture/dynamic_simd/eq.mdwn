@@ -8,6 +8,10 @@ is compared (eq'd), then, depending on the partitions, those partial
 results are ANDed together, on the basis that these chains will tell
 if *all* bits in a particular partition are equal.
 
+The end result is the *appearance* of having performed larger dynamic
+partitioned equality (==) operator comparisons, but actually those
+larger comparisons were constructed from smaller parts.
+
 Examples:
 
 * p2p1p0 all zeros indicates that the partitions are all closed, turning our 4 input byte-level compares into a 32-bit compare.  by ANDing all 4 byte-level compares we get a 32-bit result
