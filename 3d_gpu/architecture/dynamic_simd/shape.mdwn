@@ -142,3 +142,34 @@ SIMD transparently:
         ...
     m.d.comb += x.eq(Const(3))
 
+An interesting practical requirement transpires from attempting to use
+SimdSignal, that affects the way that SimdShape works.  The register files
+are 64 bit, and are subdivided according to what wikipedia terms
+"SIMD Within A Register" (SWAR).  Therefore, the SIMD ALUs *have* to
+both accept and output 64-bit signals at that explicit width, with
+subdivisions for 1x64, 2x32, 4x16 and 8x8 SIMD capability.
+
+However when it comes to intermediary processing (partial computations)
+those intermediary Signals can and will be required to be a certain
+fixed width *regardless* and having nothing to do with the register
+file source or destination 64 bit fixed width.
+
+The simplest example here would be a boolean (1 bit) Signal for
+Scalar (but an 8-bit quantity for SIMD):
+
+    m = Module():
+    with ctx:
+        x = ctx.SigKls(ctx.XLEN)
+        y = ctx.SigKls(ctx.XLEN)
+        b = ctx.SigKls(1)
+    m.d.comb += b.eq(x > y)
+    with m.If(b):
+        ....
+
+This code is obvious for Scalar behaviour but for SIMD, because
+the elwidths are declared as `1x64, 2x32, 4x16, 8x8` then whilst
+the *elements* are 1 bit (in order to make a total of QTY 8
+comparisons of 8 parallel SIMD 8-bit values), there correspondingly
+needs to be **eight** such element bits in order to store up to
+eight 8-bit comparisons.
+
