@@ -29,6 +29,13 @@ already, leaving the `SimdShape` class with the responsibility to
 additionally define lengths for each mask basis. This is best illustrated
 with an example.
 
+Also by fitting on top of existing nmigen concepts, and defining the
+`SimdShape.width` equal to and synonymous with `Shape.width` then
+downcasting becomes possible and practical. *(An alternative proposal
+to redefine "width" to be in terms of the multiple options, i.e.
+context-dependent on the partition setting, is unworkable as it
+prevents downcasting to e.g. `Signal`)*
+
 The Libre-SOC IEEE754 ALUs need to be converted to SIMD Partitioning
 but without massive disruptive code-duplication or intrusive explicit
 coding as outlined in the worst of the techniques documented in
