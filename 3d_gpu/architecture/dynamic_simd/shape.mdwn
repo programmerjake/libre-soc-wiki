@@ -5,16 +5,18 @@ Links:
 * [layout experiment](https://git.libre-soc.org/?p=ieee754fpu.git;a=blob;f=src/ieee754/part/layout_experiment.py;h=2a31a57dbcb4cb075ec14b4799e521fca6aa509b;hb=0407d90ccaf7e0e42f40918c3fa5dc1d89cf0155)
 * <https://bugs.libre-soc.org/show_bug.cgi?id=713>
 
+# Requirements Analysis
+
 The dynamic partitioned SimdSignal class is based on the logical extension
 of the full capabilities to the nmigen language behavioural constructs to
 a parallel dimension, with zero changes in that behaviour as a result of
 that parallelism.
 
 Logically therefore even the concept of ast.Shape should be extended
-solely to express and define the extent of the parallelism and in no
-way attempt to change the expbehaviour of Shape.
-
-# Requirements Analysis
+solely to express and define the extent of the parallelism and
+SimdShape should in no
+way attempt to change the expected behaviour of the Shape
+class behaviour from which it derives.
 
 A logical extension of the nmigen `ast.Shape` concept, `SimdShape`
 provides sufficient context to both define overrides for individual lengths
