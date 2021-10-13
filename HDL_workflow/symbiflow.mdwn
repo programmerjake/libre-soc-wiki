@@ -447,28 +447,28 @@ auto-preparation script here:
 
 ### Build picosoc demo for arty_100
 
-TARGET="arty_100" make -C picosoc_demo
+    TARGET="arty_100" make -C picosoc_demo
 
     # Should produce top.bit bitstream
     # see file picosoc_demo/build/arty_100/top.bit
 
 ### Build picosoc demo for arty_35
 
-TARGET="arty_35" make -C picosoc_demo
+    TARGET="arty_35" make -C picosoc_demo
 
     # Should produce top.bit bitstream
     # see file picosoc_demo/build/arty_35/top.bit
 
 ### Build Linux Litex Demo for arty_100
 
-TARGET="arty_100" make -C linux_litex_demo
+    TARGET="arty_100" make -C linux_litex_demo
 
     # Should produce top.bit bitstream
     # see file linux_litex_demo/build/arty_100/top.bit
 
 ### Build Linux Litex Demo for arty_35
 
-TARGET="arty_35" make -C linux_litex_demo
+    TARGET="arty_35" make -C linux_litex_demo
 
     # Should produce top.bit bitstream
     # see file linux_litex_demo/build/arty_35/top.bit
@@ -512,7 +512,10 @@ TARGET="arty_35" make -C linux_litex_demo
     pythondata-cpu-vexriscv=c4eca1837ebca20b637a0a61e3a93d9446488459
     pythondata-software-picolibc=e27c8a7ef8a8e75b6474823aae338efb1a2ca1a9
 
-    for pkg in migen pythondata-software-compiler_rt litex litedram liteeth liteiclink litesdcard litespi litex-boards pythondata-cpu-picorv32 pythondata-cpu-vexriscv pythondata-software-picolibc; do
+    for pkg in migen pythondata-software-compiler_rt litex litedram \
+               liteeth liteiclink litesdcard litespi litex-boards \
+               pythondata-cpu-picorv32 pythondata-cpu-vexriscv \
+               pythondata-software-picolibc; do
      cd "$pkg"
      eval git checkout $`echo $pkg`
      pip3 install -e .
@@ -524,25 +527,33 @@ TARGET="arty_35" make -C linux_litex_demo
     cd litex-boards
 
     # Arty 100T Picorv32
-    ./litex_boards/targets/digilent_arty.py --toolchain=symbiflow --cpu-type=picorv32 --sys-clk-freq 80e6 --output-dir build/picorv32/arty_100 --variant a7-100 --build --no-compile-software
+    ./litex_boards/targets/digilent_arty.py --toolchain=symbiflow \
+      --cpu-type=picorv32 --sys-clk-freq 80e6 --variant a7-100 \
+      --output-dir build/picorv32/arty_100 --build --no-compile-software
     # see file build/picorv32/arty_100/gateware/digilent_arty.bit
     # this is the built bitstream
 
     # Arty 100T VexRiscv
 
-    ./litex_boards/targets/digilent_arty.py --toolchain=symbiflow --cpu-type=vexriscv --sys-clk-freq 80e6 --output-dir build/vexriscv/arty_100 --variant a7-100 --build --no-compile-software
+    ./litex_boards/targets/digilent_arty.py --toolchain=symbiflow \
+      --cpu-type=vexriscv --sys-clk-freq 80e6 --variant a7-100 \
+      --output-dir build/vexriscv/arty_100 --build --no-compile-software
     # see file build/vexriscv/arty_100/gateware/digilent_arty.bit
     # this is the built bitstream
 
     # Arty 35T Picorv32
 
-    ./litex_boards/targets/digilent_arty.py --toolchain=symbiflow --cpu-type=picorv32 --sys-clk-freq 80e6 --output-dir build/picorv32/arty_35 --variant a7-35 --build --no-compile-software
+    ./litex_boards/targets/digilent_arty.py --toolchain=symbiflow \
+      --cpu-type=picorv32 --sys-clk-freq 80e6 --variant a7-35 \
+      --output-dir build/picorv32/arty_35 --build --no-compile-software
     # see file build/picorv32/arty_35/gateware/digilent_arty.bit
     # this is the built bitstream
 
     # Arty 35T VexRiscv
 
-    ./litex_boards/targets/digilent_arty.py --toolchain=symbiflow --cpu-type=vexriscv --sys-clk-freq 80e6 --output-dir build/vexriscv/arty_35 --variant a7-35 --build --no-compile-software
+    ./litex_boards/targets/digilent_arty.py --toolchain=symbiflow \
+      --cpu-type=vexriscv --sys-clk-freq 80e6 --variant a7-35 \
+      --output-dir build/vexriscv/arty_35 --build --no-compile-software
     # see file build/vexriscv/arty_35/gateware/digilent_arty.bit
     # this is the built bitstream
 
