@@ -402,9 +402,9 @@ auto-preparation script here:
 
     mkdir build_artix7; cd build_artix7
     cmake -DUSE_CONDA=FALSE -DPRJXRAY_DB_DIR=/usr/local/symbiflow/prjxray-db \
-      -DINSTALL_FAMILIES=xc7 -DINSTALL_ARCHS=artix7_100t \
-      -DINSTALL_DEVICES=xc7a50t \
-      -DCMAKE_INSTALL_PREFIX=/usr/local/symbiflow ..
+    -DINSTALL_FAMILIES=xc7 -DINSTALL_ARCHS=artix7_100t \
+    -DINSTALL_DEVICES=xc7a50t \
+    -DCMAKE_INSTALL_PREFIX=/usr/local/symbiflow ..
     cd xc/xc7/archs/artix7
     make install
     cd ../..
