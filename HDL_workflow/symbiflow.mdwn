@@ -3,15 +3,9 @@
 * <https://symbiflow.github.io/>
 * <https://github.com/SymbiFlow>
 
-WORK IN PROGRESS
-
 ## Bugzilla page
 
 * <https://bugs.libre-soc.org/show_bug.cgi?id=654>
-
-## TODO
-
-* Installation with newest git commit of symbiflow-arch-defs
 
 ## Setting up new debootstrap and chroot into it
 
@@ -28,6 +22,28 @@ auto-preparation script here:
     mount -t devpts devpts $MY_CHROOT/dev/pts/
     chroot $MY_CHROOT /bin/bash
 
+## Add Buster Backports Repo and Update
+
+* buster backports is needed for cmake
+
+    cat << EOF > /etc/apt/sources.list.d/buster_backports.list
+    deb http://deb.debian.org/debian buster-backports main
+    EOF
+
+* oooo annoying, pin preferences for buster-backports
+
+    cat << EOF > /etc/apt/preferences.d/99buster-backports
+    Package: *
+    Pin: release a=buster-backports
+    Pin-Priority: 900
+    EOF
+
+* upgrade to buster-backports
+
+    apt-get update -y
+    apt-get upgrade -y
+
+
 ## Download neccessary softwares
 
     apt-get install git wget
@@ -35,20 +51,22 @@ auto-preparation script here:
     git clone https://github.com/steveicarus/iverilog.git
     git clone https://github.com/YosysHQ/yosys.git
     git clone https://github.com/YosysHQ/abc.git
+    git clone https://github.com/oneapi-src/oneTBB.git
     git clone https://github.com/verilog-to-routing/vtr-verilog-to-routing.git
     git clone https://github.com/cliffordwolf/icestorm.git
     git clone https://github.com/SymbiFlow/prjxray.git
+    git clone https://github.com/SymbiFlow/prjxray-db.git
     git clone https://github.com/SymbiFlow/yosys-symbiflow-plugins.git
     git clone https://github.com/SymbiFlow/symbiflow-examples.git
     git clone https://github.com/SymbiFlow/symbiflow-arch-defs.git
     git clone https://github.com/QuickLogic-Corp/quicklogic-fasm.git
-    git clone https://github.com/QuickLogic-Corp/quicklogic-fasm-utils
-    #git clone https://github.com/SymbiFlow/symbiflow-rr-graph.git
+    git clone https://github.com/QuickLogic-Corp/quicklogic-fasm-utils.git
+    git clone https://github.com/SymbiFlow/python-fpga-interchange.git
+    git clone https://github.com/capnproto/capnproto.git
+    git clone https://github.com/capnproto/pycapnp.git
 
     wget http://xmlsoft.org/sources/libxml2-2.9.12.tar.gz
-    wget https://anaconda.org/LiteX-Hub/prjxray-db/0.0_248_g2e51ad3/download/linux-64/prjxray-db-0.0_248_g2e51ad3-20210317_102909.tar.bz2
-
-    # get yosys-proc.patch from Bug attachment file.
+    wget http://xmlsoft.org/sources/libxslt-1.1.34.tar.gz
 
 ## Steps to compile Icarus Verilog
 
@@ -61,12 +79,12 @@ auto-preparation script here:
     cd iverilog
     git checkout v11_0
     sh autoconf.sh
-    ./configure --prefix=/usr/local/iverilog
+    ./configure --prefix=/usr/local/symbiflow/iverilog
     make -j$(nproc)
     make check
     make install
-
-Please adjust the install paths for iverilog.
+    export PATH=/usr/local/symbiflow/iverilog/bin:$PATH
+    cd ..
 
 ## Steps to compile Yosys
 
@@ -79,30 +97,80 @@ Please adjust the install paths for iverilog.
 
 ### Build Yosys
 
-    cd yosys
+    cd abc
+    git checkout 4f5f73d18b137930fb3048c0b385c82fa078db38
+    cd ../yosys
     ln -s ../abc .
-    make -j $(nproc) PREFIX=/usr/local/symbiflow
-    make PREFIX=/usr/local/symbiflow install
+    make -j $(nproc) PREFIX=/usr/local/symbiflow/yosys
+    make PREFIX=/usr/local/symbiflow/yosys install
+    install -d -m 0755 /usr/local/symbiflow/share
+    ln -s ../yosys/share/yosys /usr/local/symbiflow/share
+    export PATH=/usr/local/symbiflow/yosys/bin:$PATH
+    cd ..
 
-""Please adjust the install paths for Yosys.""
+## Steps to compile oneTBB
+
+* Note: TBB is needed for multi-threading VTR-Verilog-to-routing
+* If not need multi-threading do not build TBB and VTR with TBB
+
+### Necessary software to install
+
+    apt-get install libhwloc-dev
+
+### Build TBB
+
+    cd oneTBB
+    git checkout v2020.3
+    make tbb tbbmalloc tbbproxy tbbbind
+    install -d -m 0755 /usr/local/symbiflow/oneTBB/lib
+    cp -dpr include /usr/local/symbiflow/oneTBB
+    install -Dm755 build/linux_*/*.so* -t /usr/local/symbiflow/oneTBB/lib
+    cmake -DINSTALL_DIR=/usr/local/symbiflow/oneTBB/lib/cmake/TBB \
+      -DTBB_VERSION_FILE=/usr/local/symbiflow/oneTBB/include/tbb/tbb_stddef.h \ 
+      -DSYSTEM_NAME=Linux -P cmake/tbb_config_installer.cmake 
+    cd ..
 
 ## Steps to compile vtr-verilog-to-routing
 
 ### Necessary software to install
 
+    apt-get install -y libeigen3-dev    
+
     # Only if want GUI place and route
     #apt-get install libcairo2-dev libfontconfig1-dev libx11-dev libxft-dev \
     #libgtk-3-dev
 
-### Build vtr-verilog-to-routing
+### Build vtr
 
     cd vtr-verilog-to-routing
+    git checkout 77a3df829fdf509a76b9d7b941376f3835c2576a
     mkdir build; cd build
-    cmake -DBUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local/symbiflow ..
+    cmake -DCMAKE_INSTALL_PREFIX=/usr/local/symbiflow/vtr \
     make -j $(nproc)
     make install
+    install -d -m 0755 /usr/local/symbiflow/share/vtr
+    install -m 0644 ../libs/libvtrcapnproto/gen/rr_graph_uxsdcxx.capnp \
+      /usr/local/symbiflow/share/vtr
+    export PATH=/usr/local/symbiflow/vtr/bin:$PATH
+    cd ../..
 
-""Please adjust the install paths for vtr-verilog-to-routing.""
+### Build vtr-tbb
+
+    cd vtr-verilog-to-routing
+    git checkout 77a3df829fdf509a76b9d7b941376f3835c2576a
+    mkdir build-tbb; cd build-tbb
+    cmake -DCMAKE_INSTALL_PREFIX=/usr/local/symbiflow/vtr-tbb \
+      -DTBB_INCLUDE_DIR=/usr/local/symbiflow/oneTBB/include \
+      -DTBB_LIBRARY=/usr/local/symbiflow/oneTBB/lib -DBUILD_TYPE=Release ..
+    LIBRARY_PATH=/usr/local/symbiflow/oneTBB/lib make -j $(nproc)
+    LIBRARY_PATH=/usr/local/symbiflow/oneTBB/lib make install
+    install -d -m 0755 /usr/local/symbiflow/share/vtr
+    install -m 0644 ../libs/libvtrcapnproto/gen/rr_graph_uxsdcxx.capnp \
+      /usr/local/symbiflow/share/vtr
+    # Choose either one of path for vtr-binaries
+    # This one or above one
+    #export PATH=/usr/local/symbiflow/vtr-tbb/bin:$PATH
+    cd ../..
 
 ## Steps to compile libxml2
 
@@ -117,11 +185,34 @@ Please adjust the install paths for iverilog.
 
     tar -xf libxml2-2.9.12.tar.gz
     libxml2-2.9.12
-    ./configure --prefix=/usr/local/symbiflow --with-history --with-python=/usr/bin/python3
+    ./configure --prefix=/usr/local/symbiflow/libxml2 --with-history \
+      --with-python=/usr/bin/python3
     make -j $(nproc)
     make install
+    echo "/usr/local/symbiflow/libxml2/lib" > /etc/ld.so.conf.d/symbiflow.conf
+    ldconfig
+    export PATH=/usr/local/symbiflow/libxml2/bin:$PATH
+    cd ..
 
-""Please adjust the install paths for vtr-verilog-to-routing.""
+## Steps to compile libxslt
+
+* Needed by python3 lxml
+
+### Build libxslt
+
+    tar -xf libxslt-1.1.34.tar.gz
+    cd libxslt-1.1.34
+    sed -i s/3000/5000/ libxslt/transform.c doc/xsltproc.{1,xml}
+    sed -i -r '/max(Parser)?Depth/d' ./tests/fuzz/fuzz.c
+    ./configure --prefix=/usr/local/symbiflow/libxslt --disable-static \
+      --without-python \
+       PKG_CONFIG_PATH=/usr/local/symbiflow/libxml2/lib/pkgconfig
+    make -j $(nproc)
+    make install
+    echo "/usr/local/symbiflow/libxslt/lib" >> /etc/ld.so.conf.d/symbiflow.conf
+    ldconfig
+    export PATH=/usr/local/symbiflow/libxslt/bin:$PATH
+    cd ..
 
 ## Steps to compile prjxray
 
@@ -130,11 +221,14 @@ Please adjust the install paths for iverilog.
 ### Build prjxray
 
     cd prjxray
+    git checkout f7f06896ad26bb7c94680dc323d4b871eded1f4e
     git submodule update --init --recursive
     mkdir build; cd build
     cmake -DCMAKE_INSTALL_PREFIX=/usr/local/symbiflow ..
     make
     make install
+    export PATH=/usr/local/symbiflow/bin:$PATH
+    cd ../..
 
 ## Steps to compile yosys-symbiflow-plugins
 
@@ -142,10 +236,29 @@ Please adjust the install paths for iverilog.
 
 ### Build yosys-symbiflow-plugins
 
-    cd yosys-symbiflow-plugins/
-    sed -i -e 's@include third_party/make-env/conda.mk@#include third_party/make-env/conda.mk@' Makefile
+    cd yosys-symbiflow-plugins
+    git checkout b170f1d3575568d87901422f846b700169e299be
+    sed -i -e 's@-include third_party/make-env/conda.mk@#-include third_party/make-env/conda.mk@' Makefile
     make
     make install
+    cd ..
+
+## Steps to compile prjxray-db
+
+### Install prjxray-db
+
+    cd prjxray-db
+    git archive --format=tar --prefix=prjxray-db/ \
+      cd41f08a8a4d2a60053750a0fe10623b1e2e35da | \
+      tar -C /usr/local/symbiflow -xf -
+    
+    cat > /usr/local/symbiflow/bin/prjxray-config << EOF
+    #!/bin/bash
+    echo /usr/local/symbiflow/prjxray-db
+    EOF
+    
+    chmod +x /usr/local/symbiflow/bin/prjxray-config
+    cd ..
 
 ## Steps to compile Icestorm
 
@@ -156,55 +269,94 @@ Please adjust the install paths for iverilog.
 ### Build Icestorm
 
     cd icestorm
+    git checkout 83b8ef947f77723f602b706eac16281e37de278c
     make -j $(nproc) PREFIX=/usr/local/symbiflow
+    make PREFIX=/usr/local/symbiflow/icestorm install
+    cd ..
+
+## Steps to compile capnproto
+
+### Necessary software to install
+
+    apt-get install -y automake autoconf libtool
+ 
+### Build capnproto
+   
+    cd capnproto
+    git checkout v0.8.0
+    cd c++
+    autoreconf -i
+    ./configure --prefix=/usr/local/symbiflow/capnproto
+    make -j $(nproc)
     make install
+    echo "/usr/local/symbiflow/capnproto/lib" >> /etc/ld.so.conf.d/symbiflow.conf
+    ldconfig
+    export PATH=/usr/local/symbiflow/capnproto/bin:$PATH
+    cd ../..
 
-## Steps to compile prjxray-db
+## Steps to compile pycapnp
 
-### Install prjxray-db
+### Necessary software to install
 
-    tar --strip-components=2 -xf prjxray-db-0.0_248_g2e51ad3-20210312_125539.tar.bz2 share/symbiflow/prjxray-db
+    apt-get install -y python3-pip cython3
 
-    #!!ATTENTION!!
+### Build pycapnp
 
-    cat > /usr/local/symbiflow/bin/prjxray-config <<EOF
-    #!/bin/bash
-    echo /path/to/prjxray-db
-    EOF
+    cd pycapnp
+    git checkout v1.0.0b1
+    export PATH=/usr/local/symbiflow/capnproto/bin:$PATH
+    pip3 install .
+    cd ..
 
-    chmod +x /usr/local/symbiflow/bin/prjxray-config
+##  Git checkout python-fpga-interchange
+
+    cd python-fpga-interchange
+    git checkout 1959b40e998db987c604c0a75664ccb209df13f7
+    cd ..
+
+##  Git checkout quicklogic-fasm-utils
+
+    cd quicklogic-fasm-utils
+    git checkout 3d6a375ddb6b55aaa5a59d99e44a207d4c18709f
+    cd ..
+
+##  Git checkout quicklogic-fasm
+
+    cd quicklogic-fasm
+    git checkout ee546ff09b2ee25894db3f419366afaf3c4bfe32
+    cd ..
 
 ## Steps to compile symbiflow-arch-defs
 
 ## Necessary software to install
 
-    apt-get install nodejs npm python3-pytest openocd flake8 python3-pip \
-    default-jre-headless libantlr4-runtime-dev cython3 python3-numpy \
-    python3-intervaltree python3-simplejson python3-intelhex \
-    python3-importlib-metadata python3-jsonschema python3-packaging \
-    python3-pyparsing python3-pyrsistent python3-tqdm python3-zipp \
-    python3-typing-extensions python3-ply
-
+    apt-get install -y nodejs npm python-pytest openocd flake8 \
+      default-jre-headless libantlr4-runtime-dev python3-numpy \
+      python3-intervaltree python3-simplejson python3-intelhex \
+      python3-importlib-metadata python3-jsonschema python3-packaging \
+      python3-pyparsing python3-pyrsistent python3-tqdm python3-zipp \
+      python3-typing-extensions python3-ply
+    
     pip3 install textx fasm pyjson5 pyyaml tinyfpgab tinyprog pyjson lxml \
-     progressbar2 hilbertcurve==1.0.5 pycapnp==1.0.0b1 python-constraint \
-     parameterized yapf==0.26.0
+      progressbar2 hilbertcurve==1.0.5 python-constraint parameterized \
+      yapf==0.26.0 python-sat
+
+### Build symbiflow
 
     cd symbiflow-arch-defs
+    git checkout c2c0f00960baf538eb31e4c42bf5d09dca87bad7
     git submodule init
     git submodule update --init --recursive
+    pip3 install ../python-fpga-interchange
     pip3 install -e third_party/prjxray
     pip3 install -e third_party/xc-fasm
     pip3 install ../quicklogic-fasm-utils
     pip3 install ../quicklogic-fasm
-    cd third_party/qlf-fasm; git checkout master; cd ../..;
     pip3 install -e third_party/qlf-fasm
-    cd quicklogic/common/utils/quicklogic-timings-importer;
-    git checkout master; cd ../../../../;
     pip3 install -e quicklogic/common/utils/quicklogic-timings-importer
     pip3 install -e third_party/vtr-xml-utils
     pip3 install -e third_party/python-symbiflow-v2x
     pip3 install -e third_party/python-sdf-timing
-    #pip3 install ../symbiflow-rr-graph
     pip3 install -e third_party/symbiflow-xc-fasm2bels
 
     export PATH=/usr/local/iverilog/bin:/usr/local/symbiflow/bin:$PATH
@@ -212,24 +364,24 @@ Please adjust the install paths for iverilog.
     mkdir -p env/conda/envs
     ln -s /usr/local/symbiflow env/conda/envs/symbiflow_arch_def_base
 
-    git checkout d5d69edeadcf28b36d75c1cb515b145fc6775c3c
+    sed -i -e 's@add_subdirectory(litex)@#add_subdirectory(litex)@g' \
+      -e 's@add_subdirectory(ibex)@#add_subdirectory(ibex)@g' \
+      xc/xc7/tests/soc/CMakeLists.txt
 
-    sed -i -e 's@add_subdirectory(litex)@#add_subdirectory(litex)@g' -e 's@add_subdirectory(ibex)@#add_subdirectory(ibex)@g' xc/xc7/tests/soc/CMakeLists.txt
+### Build symbiflow-arch-defs-xc7-artix7-100t
 
-    patch -p1 -i yosys-proc.patch
-
-### Build symbiflow-arch-defs-xc7-artix7_100t
+    VPR_NUM_WORKERS=$(nproc)
 
     mkdir build; cd build
-    #!!ATTENTION change path to prjxray-db
-    cmake -DUSE_CONDA=FALSE -DPRJXRAY_DB_DIR=/path/to/prjxray-db -DINSTALL_FAMILIES=xc7 -DINSTALL_ARCHS=artix7_100t -DCMAKE_INSTALL_PREFIX=/usr/local/symbiflow ..
+    cmake -DUSE_CONDA=FALSE -DPRJXRAY_DB_DIR=/usr/local/symbiflow/prjxray-db \
+      -DINSTALL_FAMILIES=xc7 -DINSTALL_ARCHS=artix7_100t \
+      -DCMAKE_INSTALL_PREFIX=/usr/local/symbiflow ..
     cd xc/xc7/archs/artix7_100t
     make install
-    make file_xc_xc7_archs_artix7_100t_channels_xc7a100tcsg324-1_channels.db
-    cd ../..;
+    cd ../..
     make PINMAP_INSTALL_arty100t-full_xc7a100t_test_arty100t-full_pinmap.csv
-    mkdir -p /usr/local/symbiflow/share/symbiflow/arch/xc7a100t_test/xc7a100tcsg324-1
-    cp arty100t-full_pinmap.csv /usr/local/symbiflow/share/symbiflow/arch/xc7a100t_test/xc7a100tcsg324-1
+    install -d -m 0755 /usr/local/symbiflow/share/symbiflow/arch/xc7a100t_test/xc7a100tcsg324-1
+    install -m 0644 arty100t-full_pinmap.csv /usr/local/symbiflow/share/symbiflow/arch/xc7a100t_test/xc7a100tcsg324-1/pinmap.csv
 
     # Now you can skip to symbiflow-examples.git for external test
 
@@ -237,34 +389,160 @@ Please adjust the install paths for iverilog.
     cd tests/counter
     make counter_arty100t_bit
 
-### Build symbiflow-arch-defs-xc7-artix7
+    # see file counter_arty100t/artix7_100t-xc7a100t-virt-xc7a100t-test/top.bit
+    # it is the bitstream file and if built then success
+
+    cd ../../../../..
+
+### Build symbiflow-arch-defs-xc7-artix7 (xc7a50t)
+
+* If you do not want this target skip
+
+    VPR_NUM_WORKERS=$(nproc)
 
     mkdir build_artix7; cd build_artix7
-    #!!ATTENTION change path to prjxray-db
-    cmake -DUSE_CONDA=FALSE -DPRJXRAY_DB_DIR=/path/to/prjxray-db -DINSTALL_FAMILIES=xc7 -DINSTALL_ARCHS=artix7_100t -DINSTALL_DEVICES=artix7 -DCMAKE_INSTALL_PREFIX=/usr/local/symbiflow ..
+    cmake -DUSE_CONDA=FALSE -DPRJXRAY_DB_DIR=/usr/local/symbiflow/prjxray-db \
+      -DINSTALL_FAMILIES=xc7 -DINSTALL_ARCHS=artix7_100t \
+      -DINSTALL_DEVICES=xc7a50t \
+      -DCMAKE_INSTALL_PREFIX=/usr/local/symbiflow ..
     cd xc/xc7/archs/artix7
     make install
-    mkdir -p /usr/local/symbiflow/share/symbiflow/arch/xc7a50t_test/xc7a50tfgg484-1
-
-    #!!ATTENTION!!
-    python3 ../../../common/utils/prjxray_create_pinmap_csv.py --output /usr/local/symbiflow/share/symbiflow/arch/xc7a50t_test/xc7a50tfgg484-1/pinmap.csv --connection_database channels/xc7a50tfgg484-1/channels.db --package_pins /path/to/prjxray-db/artix7/xc7a50tfgg484-1/package_pins.csv
+    cd ../..
+    make PINMAP_INSTALL_arty-full_xc7a50t_test_arty-full_pinmap.csv
+    install -d -m 0755 /usr/local/symbiflow/share/symbiflow/arch/xc7a50t_test/xc7a50tfgg484-1
+    install -m 0644 arty-full_pinmap.csv /usr/local/symbiflow/share/symbiflow/arch/xc7a50t_test/xc7a50tfgg484-1/pinmap.csv
+    install -d -m 0755 /usr/local/symbiflow/share/symbiflow/arch/xc7a50t_test/xc7a35tcsg324-1
+    ln -s ../xc7a50tfgg484-1/pinmap.csv /usr/local/symbiflow/share/symbiflow/arch/xc7a50t_test/xc7a35tcsg324-1
 
     # Now you can skip to symbiflow-examples.git for external test
-    # Currently I have to modify it to artix7_x50t
 
     # To do builtin counter test; it should build top.bit as final bitstream
-    # If the make target has not been built by cmake then you have to run
-    # cmake without -DINSTALL_DEVICES=artix7
-    cd ../..
     cd tests/counter
-    make counter_arty_bit
+    make counter_arty100t_bit
+
+    # see file counter_arty/artix7-xc7a50t-arty-swbut-roi-virt-xc7a50t-arty-swbut-test/top.bit
+    # it is the bitstream file and if built then success
+
+    cd ../../../../../..
 
 ## Steps to compile symbiflow-examples
 
-### Build symbiflow-arch-defs-xc7-artix7_100t
+### Build counter test for arty_100
 
     cd symbiflow-examples
+    git checkout 07a6353627e0b6083728d1022ce30f9093d4c2de
+
     cd xc7
     TARGET="arty_100" make -C counter_test
 
     # Should produce top.bit bitstream
+    # see file counter_test/build/arty_100/top.bit
+
+### Build counter test for arty_35
+
+    TARGET="arty_35" make -C counter_test
+
+    # Should produce top.bit bitstream
+    # see file counter_test/build/arty_/top.bit
+
+### Build picosoc demo for arty_100
+
+TARGET="arty_100" make -C picosoc_demo
+
+    # Should produce top.bit bitstream
+    # see file picosoc_demo/build/arty_100/top.bit
+
+### Build picosoc demo for arty_35
+
+TARGET="arty_35" make -C picosoc_demo
+
+    # Should produce top.bit bitstream
+    # see file picosoc_demo/build/arty_35/top.bit
+
+### Build Linux Litex Demo for arty_100
+
+TARGET="arty_100" make -C linux_litex_demo
+
+    # Should produce top.bit bitstream
+    # see file linux_litex_demo/build/arty_100/top.bit
+
+### Build Linux Litex Demo for arty_35
+
+TARGET="arty_35" make -C linux_litex_demo
+
+    # Should produce top.bit bitstream
+    # see file linux_litex_demo/build/arty_35/top.bit
+
+    cd ../..
+
+## Steps to compile symbiflow-examples Litex
+
+### Get Litex
+
+    mkdir litex
+    cd litex
+
+    git clone https://github.com/m-labs/migen
+    git clone https://github.com/litex-hub/pythondata-software-compiler_rt
+    git clone https://github.com/enjoy-digital/litex
+    git clone https://github.com/enjoy-digital/litedram
+    git clone https://github.com/enjoy-digital/liteeth
+    git clone https://github.com/enjoy-digital/liteiclink
+    git clone https://github.com/enjoy-digital/litesdcard
+    git clone https://github.com/litex-hub/litespi
+    git clone https://github.com/litex-hub/litex-boards
+    git clone https://github.com/litex-hub/pythondata-cpu-picorv32
+    git clone https://github.com/litex-hub/pythondata-cpu-vexriscv
+    git clone https://github.com/litex-hub/pythondata-software-picolibc.git
+
+### Build Litex
+
+* Git Commits
+
+    migen=6e3f8e565704b4293174aedfb15b3470d233f528
+    pythondata-software-compiler_rt=fcb03245613ccf3079cc833a701f13d0beaae09d
+    litex=db20cb172dc982c5879aa8080ec7aa18de181cc5
+    litedram=1d5192f572c2eb97bc85eb56667e25dc88d725f1
+    liteeth=8ecc3ca6d9476dd1a8b32b2b6bf3584cd6dcfc02
+    liteiclink=3d8ecdbcf9f0260292221ff63b0ad3f5e409a955
+    litesdcard=4edf05e627a8b5f03e632215accec8ab588737e3
+    litespi=4cb907881bb75999e4c6bb68e211dd5cfc301de9
+    litex-boards=9e18d9bc34bafb18839512a55dc66ba62e0d4824
+    pythondata-cpu-picorv32=2e8be513726fb6ffd960f7e18d24e3a86d895107
+    pythondata-cpu-vexriscv=c4eca1837ebca20b637a0a61e3a93d9446488459
+    pythondata-software-picolibc=e27c8a7ef8a8e75b6474823aae338efb1a2ca1a9
+
+    for pkg in migen pythondata-software-compiler_rt litex litedram liteeth liteiclink litesdcard litespi litex-boards pythondata-cpu-picorv32 pythondata-cpu-vexriscv pythondata-software-picolibc; do
+    cd "$pkg"
+    eval git checkout $`echo $pkg`
+    pip3 install -e .
+    cd ..
+    done
+
+#### Build Litex Demo
+
+    cd litex-boards
+
+    # Arty 100T Picorv32
+    ./litex_boards/targets/digilent_arty.py --toolchain=symbiflow --cpu-type=picorv32 --sys-clk-freq 80e6 --output-dir build/picorv32/arty_100 --variant a7-100 --build --no-compile-software
+    # see file build/picorv32/arty_100/gateware/digilent_arty.bit
+    # this is the built bitstream
+
+    # Arty 100T VexRiscv
+
+    ./litex_boards/targets/digilent_arty.py --toolchain=symbiflow --cpu-type=vexriscv --sys-clk-freq 80e6 --output-dir build/vexriscv/arty_100 --variant a7-100 --build --no-compile-software
+    # see file build/vexriscv/arty_100/gateware/digilent_arty.bit
+    # this is the built bitstream
+
+    # Arty 35T Picorv32
+
+    ./litex_boards/targets/digilent_arty.py --toolchain=symbiflow --cpu-type=picorv32 --sys-clk-freq 80e6 --output-dir build/picorv32/arty_35 --variant a7-35 --build --no-compile-software
+    # see file build/picorv32/arty_35/gateware/digilent_arty.bit
+    # this is the built bitstream
+
+    # Arty 35T VexRiscv
+
+    ./litex_boards/targets/digilent_arty.py --toolchain=symbiflow --cpu-type=vexriscv --sys-clk-freq 80e6 --output-dir build/vexriscv/arty_35 --variant a7-35 --build --no-compile-software
+    # see file build/vexriscv/arty_35/gateware/digilent_arty.bit
+    # this is the built bitstream
+
