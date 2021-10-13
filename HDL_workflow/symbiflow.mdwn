@@ -497,7 +497,7 @@ TARGET="arty_35" make -C linux_litex_demo
 
 ### Build Litex
 
-* Git Commits
+"Git Commits"
 
     migen=6e3f8e565704b4293174aedfb15b3470d233f528
     pythondata-software-compiler_rt=fcb03245613ccf3079cc833a701f13d0beaae09d
@@ -513,10 +513,10 @@ TARGET="arty_35" make -C linux_litex_demo
     pythondata-software-picolibc=e27c8a7ef8a8e75b6474823aae338efb1a2ca1a9
 
     for pkg in migen pythondata-software-compiler_rt litex litedram liteeth liteiclink litesdcard litespi litex-boards pythondata-cpu-picorv32 pythondata-cpu-vexriscv pythondata-software-picolibc; do
-    cd "$pkg"
-    eval git checkout $`echo $pkg`
-    pip3 install -e .
-    cd ..
+     cd "$pkg"
+     eval git checkout $`echo $pkg`
+     pip3 install -e .
+     cd ..
     done
 
 #### Build Litex Demo
