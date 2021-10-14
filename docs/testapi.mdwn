@@ -7,22 +7,22 @@ This API helps to define a standard way to collect and compare the results from 
 
 Basic workflow for using the Test API:
 
-1. ####Test Cases
+###Test Cases
 These are what you write to verify the functionality and correctness of a Power ISA implementation.
 
-2. ####Test Issuer
+###Test Issuer
 Once written, the Test Issuer submits the tests to the Test Runner with optional parameters.
 
-3. ####Test Runner
+###Test Runner
 The Test Runner runs the tests using testing parameters supplied by Test Issuer.
 
-4. ####Results Comparison
+###Results Comparison
 The results between the implementation objects are compared and failures are displayed.
 
 By increasing the number of tests and the number of different implemntations to compare, the probability for correctness increases.  The Test API helps to accomplish this by reducing the burden of the testing process.
 
 ##Test API components
-1. ####Objects and States
+###Objects and States
 The objects are what simulate the test.  In this document, we simulate tests using ISACaller and the nMigen HDL simulator and then capture their states for comparison.  An additional object, the ExpectedState class can also be used in testing.  In the future, additional objects to test with (such as qemu) can be added.  This API provides a means to compare them in a uniform fashion.
 
     States are a snapshot of registers and memory after the run of a simulation.  As of now, these include GPRs, control registers, program counter, XERs, and memory.
@@ -57,7 +57,7 @@ The objects are what simulate the test.  In this document, we simulate tests usi
 
     [ExpectedState](https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=src/openpower/test/state.py;h=7219919670cd1d3b9737d9c3cc91f1e2bf1181b5;hb=HEAD#l183), while somewhat sparse, serves a very useful function.  It allows one to manually define what a state should be after a test is run.  This is useful for both educational purposes, catching regressions, and ensuring correct behavior.  By default, ExpectedState will initialize everything to 0.  Therefore, any possible register changes that happens during a test must be set before comparing to another state object.  An example of using ExpectedState is provided in the Test Cases section below.
 
-2. ####Test Cases
+###Test Cases
 
     For this section, we will look at a set of test cases for [shift and rotate instructions](https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=src/openpower/test/shift_rot/shift_rot_cases2.py;h=2ab6a2ef52a9d04ca1fec63ea4609fbdc1b84c64;hb=HEAD) and focus on [case_srw_1](https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=src/openpower/test/shift_rot/shift_rot_cases2.py;h=2ab6a2ef52a9d04ca1fec63ea4609fbdc1b84c64;hb=HEAD#l23) since it is a fairly basic "shift right word" instruction.
 
@@ -66,19 +66,15 @@ The objects are what simulate the test.  In this document, we simulate tests usi
     Next comes the instruction(s) we are testing which in this case is "sraw 3, 1, 2". It will shift the contents of register 1 the number of bits specified in register 2 and store the result in register 3.  You can have a test run multiple instructions, such as [case_shift_once](https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=src/openpower/test/shift_rot/shift_rot_cases2.py;h=2ab6a2ef52a9d04ca1fec63ea4609fbdc1b84c64;hb=HEAD#l59).  Just know what is being tested is the final result of all the instructions, and not each one individually inside the test case.
 
     The following lines setup the initial registers for the test:
-```
-    25      initial_regs = [0] * 32         # Set all the GPRs to 0
 
-    26      initial_regs[1] = 0x12345678    # Set gpr1 to the value to shift
-
-    27      initial_regs[2] = 8             # Set gpr2 to number of bits to shift right
-```
-
+        25      initial_regs = [0] * 32         # Set all the GPRs to 0
+        26      initial_regs[1] = 0x12345678    # Set gpr1 to the value to shift
+        27      initial_regs[2] = 8             # Set gpr2 to number of bits to shift right
 
     With the testing items in place, we can move to what we expect the outcome of the test to be.  This is done by using the ExpectedState class:
 
-    28      e = ExpectedState(initial_regs, 4)  # Create an object 'e' from the above values
-    29      e.intregs[3] = 0x123456             # This is the expected result we are testing
+        28      e = ExpectedState(initial_regs, 4)  # Create an object 'e' from the above values
+        29      e.intregs[3] = 0x123456             # This is the expected result we are testing
 
     In the above lines, we are setting a blank expected state to what we think the results will be after the test.  On line 28 we are loading this expected state with the set of initial registers and setting the program counter (PC) to 4 because that is the location where we expect the next instruction (if there was one) to be located.
 
@@ -86,12 +82,12 @@ The objects are what simulate the test.  In this document, we simulate tests usi
 
     The final step is adding the test case with:
 
-    30      self.add_case(Program(lst, bigendian), initial_regs, expected=e)
+        30      self.add_case(Program(lst, bigendian), initial_regs, expected=e)
 
     Using an expected state is optional, although recommended.  You may see tests that use random values and loops.  These tests cannot use expected values because we obviously can't predict a random outcome!
 
 
-3. ####Test Issuer
+###Test Issuer
 
     [This is a basic TestIssuer](https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/simple/test/test_issuer.py;h=c01e8c68c5c68e4c107c18337f66fcdacf041194;hb=HEAD) that can either run all the tests listed or specific ones and calling TestRunner with the specified options.  You'll notice our shift_rot_cases2 we looked at previously appear here in the list of imported test cases.
 
@@ -101,14 +97,14 @@ The objects are what simulate the test.  In this document, we simulate tests usi
 
     which sets up the TestRunner with the test cases (including expected states if specified within the test case) and whether to use svp64.  By default, TestRunner will run both the ISACaller simulator and the nMigen HDL simulator.  The parameters run_sim and run_hdl can either be set to False to instruct TestRunner not to run those components.
 
-4. ####Test Runner and Verification
+###Test Runner and Verification
 
     TODO
 
 
 ## Additional Notes on Testing and the API
 
-* ####Start small
+* ###Start small
 
     Writing tests can be daunting at first.  It is helpful to start with easier instructions at first with simple values and work up from there.
 
@@ -117,15 +113,15 @@ The objects are what simulate the test.  In this document, we simulate tests usi
     While the Power ISA manual provides the pseudo code for how instructions work, the manual will sometimes give alternate instructions that give the equivalent result.  This can be helpful in
     understanding certain instructions as well.
 
-* ####Don't comment out tests
+* ###Don't comment out tests
 
     If a test needs to be skipped for some reason, use the @unittest.skip("the reason") decorator before the test.
 
-* ####You can test for expected failure
+* ###You can test for expected failure
 
     Sometimes a test can be useful when we expect it to fail and want to verify that it does.  This can be done using the @unittest.expectedFailure decorator.  Examples can be found in [test_state_class](https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=src/openpower/test/test_state_class.py;h=918958cfe4c43af4c0b22d08f22933b273805885;hb=HEAD).
 
-* ####API Modificatons and Additions
+* ###API Modificatons and Additions
 
     Great care must be taken when making potential changes to the API itself.  You will notice nearly every area contains logging events.  This helps verify that those parts are indeed being executed.  A misplaced and not utilized yield for example can cause sections not to execute.  Therefore it is prudent to redirect test_issuer output with > /tmp/something and look for messages where changed or added areas are in fact being executed.
 
