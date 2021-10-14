@@ -288,3 +288,19 @@ one of the Vector Element widths had 5 added to it. If the
 partition counts were 2x for 0b00 and 4x for 0b01 then this
 would create 2x 69-bit and 4x 37-bit Vector Elements.
 
+# Adapter API
+
+The Adapter API performs a specific job of letting SimdSignal
+know the relationship between the supported "configuration"
+options that a SimdSignal must have, and the actual PartitionPoints
+bits that must be set or cleared *in order* to have the SimdSignal
+cut itself into the required sub-sections. 
+
+    class PartType: # TODO decide name
+        def __init__(self, psig):
+            self.psig = psig
+        def get_mask(self):
+        def get_switch(self):
+        def get_cases(self):
+        @property
+        def blanklanes(self):
