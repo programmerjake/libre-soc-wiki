@@ -245,3 +245,26 @@ Interfacing to SimdSignal requires an adapter that:
 * the switch statement is the elwidth parameter
 * the case statements are the PartitionPoints
 * identifies which partitions are "blank" (padding)
+
+# SimdShape API
+
+SimdShape needs:
+
+* a constructor taking the following arguments:
+  - (optional) an integer vector width or a dictionary of vector widths
+    (the keys to be the "elwidth")
+  - (mandatory) a dictionary of "partition counts":
+    the keys to again be the "elwidth" and the values
+     to be the number of Vector Elements at that elwidth
+  - (optional) a "fixed width" which if given shall
+    auto-compute the dictionary of Vector Widths
+  - (mandatory) a "signed" boolean argument which defaults
+    to False
+* a suite of operators (`__add__`, etc) that shall take simple
+  integer arguments and perform the computations on *every*
+  one of the dictionary of Vector widths (examples below)
+* a "recalculate" function (currently known as layout() in
+  layout_experimeny.py) which 
+* a function which computes and returns a suite of PartitionPoints
+  as well as an "Adapter" instance, for use by PartitionedSignal
+
