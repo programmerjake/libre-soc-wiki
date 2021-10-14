@@ -261,6 +261,12 @@ SimdShape needs:
     auto-compute the dictionary of Vector Widths
   - (mandatory) a "signed" boolean argument which defaults
     to False
+* To derive from Shape, where the (above) constructor passes it
+  the following arguments:
+  - the signed argument.  this is simply passed in, unmodified.
+  - a width argument.  this will be **either** the fixed_width
+    parameter from the constructor (if given) **or** it will
+    be the **calculated** value sufficient to store all partitions.
 * a suite of operators (`__add__`, etc) that shall take simple
   integer arguments and perform the computations on *every*
   one of the dictionary of Vector widths (examples below)
