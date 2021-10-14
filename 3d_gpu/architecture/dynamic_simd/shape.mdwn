@@ -294,7 +294,10 @@ The Adapter API performs a specific job of letting SimdSignal
 know the relationship between the supported "configuration"
 options that a SimdSignal must have, and the actual PartitionPoints
 bits that must be set or cleared *in order* to have the SimdSignal
-cut itself into the required sub-sections. 
+cut itself into the required sub-sections.  This information
+comes *from* SimdShape but the adapter is not part *of* SimdShape
+because there can be more than one type of Adapter Mode, depending
+on SimdShape input parameters.
 
     class PartType: # TODO decide name
         def __init__(self, psig):
