@@ -1,6 +1,7 @@
 # Learning nmigen
 
-* links to community <https://nmigen.info/nmigen/latest/tutorial.html>
+* Link to the mail thread: <http://lists.libre-soc.org/pipermail/libre-soc-dev/2021-October/003858.html>
+* Links to community <https://nmigen.info/nmigen/latest/tutorial.html>
 * Useful counter tutorial (gtkwave and verilog) for latest nmigen <https://nmigen.info/nmigen/latest/start.html>
 * Robert Baruch's nmigen tutorials are really good:
   <https://github.com/RobertBaruch/nmigen-tutorial>
@@ -38,7 +39,9 @@ Commands:
 
 ## Block Digram with Yosys
 
-1. Open yosys in interactive mode and load the generated verilog file. Calling "show" should generate the diagram .dot file (as a temp file "~/.yosys_show.dot") and open it using xdot. *You may need to install xdot separately with apt*. Xdot is **interactive** (you can click on blocks and nodes!).
+Open yosys in interactive mode and load the generated verilog file. Calling "show" should generate the diagram .dot file (as a temp file "~/.yosys_show.dot") and open it using xdot. For multi-level modules, you can specify the level of hierarchy by specifying the name of the module. For example "show top" will display the diagram of the top-level (without the underlying the details of the sub-modules).
+
+*You may need to install xdot separately with apt*. Xdot is **interactive** (you can click on blocks and nodes!).
 
 Yosys commands:
 
