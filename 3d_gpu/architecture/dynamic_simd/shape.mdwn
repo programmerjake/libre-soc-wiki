@@ -272,4 +272,13 @@ SimdShape needs:
 
 Examples of the operator usage:
 
-    x = SimdShape(
+    x = SimdShape(vec_op_widths={0b00: 64, 0b01:32, 0b10: 16})
+    y = x + 5
+    print(y.vec_op_widths)
+    {0b00: 69, 0b01: 37, 0b10: 21}
+
+In other words, when requesting 5 to be added to x, every single
+one of the Vector Element widths had 5 added to it. If the
+partition counts were 2x for 0b00 and 4x for 0b01 then this
+would create 2x 69-bit and 4x 37-bit Vector Elements.
+
