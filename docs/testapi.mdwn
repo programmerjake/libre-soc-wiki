@@ -25,77 +25,78 @@ By increasing the number of tests and the number of different implemntations to 
 ###Objects and States
 The objects are what simulate the test.  In this document, we simulate tests using ISACaller and the nMigen HDL simulator and then capture their states for comparison.  An additional object, the ExpectedState class can also be used in testing.  In the future, additional objects to test with (such as qemu) can be added.  This API provides a means to compare them in a uniform fashion.
 
-    States are a snapshot of registers and memory after the run of a simulation.  As of now, these include GPRs, control registers, program counter, XERs, and memory.
+States are a snapshot of registers and memory after the run of a simulation.  As of now, these include GPRs, control registers, program counter, XERs, and memory.
 
-    The [base state class](https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=src/openpower/test/state.py;h=7219919670cd1d3b9737d9c3cc91f1e2bf1181b5;hb=HEAD#l60) gives the methods that are required under the get_state() method to obtain the values from an implementation object.
-    * get_intregs()
+The [base state class](https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=src/openpower/test/state.py;h=7219919670cd1d3b9737d9c3cc91f1e2bf1181b5;hb=HEAD#l60) gives the methods that are required under the get_state() method to obtain the values from an implementation object.
+* get_intregs()
 
-        Retrieves the integer GPRs (0-31).  Stored as a list.
-    * get_crregs()
+Retrieves the integer GPRs (0-31).  Stored as a list.
 
-       Retrieves the control registers (0-7).  Stored as a list.
+* get_crregs()
 
-    * get_xregs()
+Retrieves the control registers (0-7).  Stored as a list.
 
-        Retrieves the XPERs.  Stored as individual members.
+* get_xregs()
 
-    * get_pc()
+Retrieves the XPERs.  Stored as individual members.
 
-        Retrieves the program counter.  Stored as an individual member.
+* get_pc()
 
-    * get_mem()
+Retrieves the program counter.  Stored as an individual member.
 
-        Retrieves the memory.  Stored as a dictionary {location: data}
+* get_mem()
 
-        The [compare and compare_mem methods](https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=src/openpower/test/state.py;h=7219919670cd1d3b9737d9c3cc91f1e2bf1181b5;hb=HEAD#l78) are provided within the class.  They do simple asserts against another state to verify they are equal.  If one of them fails, the test will fail.  Compare_mem will also pad memory when needed before the compare.  For example, one object may store only the few scattered memory locations used instead of another object storing memory as a continuous range.
+Retrieves the memory.  Stored as a dictionary {location: data}
 
-    [SimState](https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=src/openpower/test/state.py;h=7219919670cd1d3b9737d9c3cc91f1e2bf1181b5;hb=HEAD#l123) implements the methods to retrieve registers and memory from a passed in ISACaller object.
+The [compare and compare_mem methods](https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=src/openpower/test/state.py;h=7219919670cd1d3b9737d9c3cc91f1e2bf1181b5;hb=HEAD#l78) are provided within the class.  They do simple asserts against another state to verify they are equal.  If one of them fails, the test will fail.  Compare_mem will also pad memory when needed before the compare.  For example, one object may store only the few scattered memory locations used instead of another object storing memory as a continuous range.
 
-    [HDLState](https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/simple/test/teststate.py;h=d2f4b51ff74b865c0e758c34e49db1f92f094634;hb=HEAD) implements the methods to retrieve registers and memory from a passed in nmigen simulator object.
+[SimState](https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=src/openpower/test/state.py;h=7219919670cd1d3b9737d9c3cc91f1e2bf1181b5;hb=HEAD#l123) implements the methods to retrieve registers and memory from a passed in ISACaller object.
 
-    You will notice that between the two different types of states, the methods to gather the underlying registers and memory are quite different.  However, they are stored in their respective states in the same format allowing comparisons to be straight forward.  Also, if implementing your own state class, the use of yields in the methods are required.
+[HDLState](https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/simple/test/teststate.py;h=d2f4b51ff74b865c0e758c34e49db1f92f094634;hb=HEAD) implements the methods to retrieve registers and memory from a passed in nmigen simulator object.
 
-    [ExpectedState](https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=src/openpower/test/state.py;h=7219919670cd1d3b9737d9c3cc91f1e2bf1181b5;hb=HEAD#l183), while somewhat sparse, serves a very useful function.  It allows one to manually define what a state should be after a test is run.  This is useful for both educational purposes, catching regressions, and ensuring correct behavior.  By default, ExpectedState will initialize everything to 0.  Therefore, any possible register changes that happens during a test must be set before comparing to another state object.  An example of using ExpectedState is provided in the Test Cases section below.
+You will notice that between the two different types of states, the methods to gather the underlying registers and memory are quite different.  However, they are stored in their respective states in the same format allowing comparisons to be straight forward.  Also, if implementing your own state class, the use of yields in the methods are required.
+
+[ExpectedState](https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=src/openpower/test/state.py;h=7219919670cd1d3b9737d9c3cc91f1e2bf1181b5;hb=HEAD#l183), while somewhat sparse, serves a very useful function.  It allows one to manually define what a state should be after a test is run.  This is useful for both educational purposes, catching regressions, and ensuring correct behavior.  By default, ExpectedState will initialize everything to 0.  Therefore, any possible register changes that happens during a test must be set before comparing to another state object.  An example of using ExpectedState is provided in the Test Cases section below.
 
 ###Test Cases
 
-    For this section, we will look at a set of test cases for [shift and rotate instructions](https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=src/openpower/test/shift_rot/shift_rot_cases2.py;h=2ab6a2ef52a9d04ca1fec63ea4609fbdc1b84c64;hb=HEAD) and focus on [case_srw_1](https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=src/openpower/test/shift_rot/shift_rot_cases2.py;h=2ab6a2ef52a9d04ca1fec63ea4609fbdc1b84c64;hb=HEAD#l23) since it is a fairly basic "shift right word" instruction.
+For this section, we will look at a set of test cases for [shift and rotate instructions](https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=src/openpower/test/shift_rot/shift_rot_cases2.py;h=2ab6a2ef52a9d04ca1fec63ea4609fbdc1b84c64;hb=HEAD) and focus on [case_srw_1](https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=src/openpower/test/shift_rot/shift_rot_cases2.py;h=2ab6a2ef52a9d04ca1fec63ea4609fbdc1b84c64;hb=HEAD#l23) since it is a fairly basic "shift right word" instruction.
 
-    First off is the case name itself.  It should be somewhat short and descriptive, but also needs to have "case_" as the prefix otherwise Test Issuer will ignore it completely.
+First off is the case name itself.  It should be somewhat short and descriptive, but also needs to have "case_" as the prefix otherwise Test Issuer will ignore it completely.
 
-    Next comes the instruction(s) we are testing which in this case is "sraw 3, 1, 2". It will shift the contents of register 1 the number of bits specified in register 2 and store the result in register 3.  You can have a test run multiple instructions, such as [case_shift_once](https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=src/openpower/test/shift_rot/shift_rot_cases2.py;h=2ab6a2ef52a9d04ca1fec63ea4609fbdc1b84c64;hb=HEAD#l59).  Just know what is being tested is the final result of all the instructions, and not each one individually inside the test case.
+Next comes the instruction(s) we are testing which in this case is "sraw 3, 1, 2". It will shift the contents of register 1 the number of bits specified in register 2 and store the result in register 3.  You can have a test run multiple instructions, such as [case_shift_once](https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=src/openpower/test/shift_rot/shift_rot_cases2.py;h=2ab6a2ef52a9d04ca1fec63ea4609fbdc1b84c64;hb=HEAD#l59).  Just know what is being tested is the final result of all the instructions, and not each one individually inside the test case.
 
-    The following lines setup the initial registers for the test:
+The following lines setup the initial registers for the test:
 
         25      initial_regs = [0] * 32         # Set all the GPRs to 0
         26      initial_regs[1] = 0x12345678    # Set gpr1 to the value to shift
         27      initial_regs[2] = 8             # Set gpr2 to number of bits to shift right
 
-    With the testing items in place, we can move to what we expect the outcome of the test to be.  This is done by using the ExpectedState class:
+With the testing items in place, we can move to what we expect the outcome of the test to be.  This is done by using the ExpectedState class:
 
         28      e = ExpectedState(initial_regs, 4)  # Create an object 'e' from the above values
         29      e.intregs[3] = 0x123456             # This is the expected result we are testing
 
-    In the above lines, we are setting a blank expected state to what we think the results will be after the test.  On line 28 we are loading this expected state with the set of initial registers and setting the program counter (PC) to 4 because that is the location where we expect the next instruction (if there was one) to be located.
+In the above lines, we are setting a blank expected state to what we think the results will be after the test.  On line 28 we are loading this expected state with the set of initial registers and setting the program counter (PC) to 4 because that is the location where we expect the next instruction (if there was one) to be located.
 
-    Line 29 is setting register 3 to our expected result from the instruction provided.  Remember, we are shifting 0x12345678 8 bytes to the right and storing the result in register 3.  The result after simulation should be 0x123456 in register 3.
+Line 29 is setting register 3 to our expected result from the instruction provided.  Remember, we are shifting 0x12345678 8 bytes to the right and storing the result in register 3.  The result after simulation should be 0x123456 in register 3.
 
-    The final step is adding the test case with:
+The final step is adding the test case with:
 
         30      self.add_case(Program(lst, bigendian), initial_regs, expected=e)
 
-    Using an expected state is optional, although recommended.  You may see tests that use random values and loops.  These tests cannot use expected values because we obviously can't predict a random outcome!
+Using an expected state is optional, although recommended.  You may see tests that use random values and loops.  These tests cannot use expected values because we obviously can't predict a random outcome!
 
 
 ###Test Issuer
 
-    [This is a basic TestIssuer](https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/simple/test/test_issuer.py;h=c01e8c68c5c68e4c107c18337f66fcdacf041194;hb=HEAD) that can either run all the tests listed or specific ones and calling TestRunner with the specified options.  You'll notice our shift_rot_cases2 we looked at previously appear here in the list of imported test cases.
+[This is a basic TestIssuer](https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/simple/test/test_issuer.py;h=c01e8c68c5c68e4c107c18337f66fcdacf041194;hb=HEAD) that can either run all the tests listed or specific ones and calling TestRunner with the specified options.  You'll notice our shift_rot_cases2 we looked at previously appear here in the list of imported test cases.
 
-    In this Test Issuer, we see the line:
+In this Test Issuer, we see the line:
 
-    suite.addTest(TestRunner(data, svp64=svp64))
+suite.addTest(TestRunner(data, svp64=svp64))
 
-    which sets up the TestRunner with the test cases (including expected states if specified within the test case) and whether to use svp64.  By default, TestRunner will run both the ISACaller simulator and the nMigen HDL simulator.  The parameters run_sim and run_hdl can either be set to False to instruct TestRunner not to run those components.
+which sets up the TestRunner with the test cases (including expected states if specified within the test case) and whether to use svp64.  By default, TestRunner will run both the ISACaller simulator and the nMigen HDL simulator.  The parameters run_sim and run_hdl can either be set to False to instruct TestRunner not to run those components.
 
 ###Test Runner and Verification
 
@@ -106,26 +107,25 @@ The objects are what simulate the test.  In this document, we simulate tests usi
 
 * ###Start small
 
-    Writing tests can be daunting at first.  It is helpful to start with easier instructions at first with simple values and work up from there.
+Writing tests can be daunting at first.  It is helpful to start with easier instructions at first with simple values and work up from there.
 
-    For example, in the Test Cases section we looked at case_srw_1 which is a simple shift.  The test case_srw_2 which follows it doesn't look much different however produces quite a different outcome since it causes carry and sign extension because the value of the register exceeds 0x7fffffff.
+For example, in the Test Cases section we looked at case_srw_1 which is a simple shift.  The test case_srw_2 which follows it doesn't look much different however produces quite a different outcome since it causes carry and sign extension because the value of the register exceeds 0x7fffffff.
 
-    While the Power ISA manual provides the pseudo code for how instructions work, the manual will sometimes give alternate instructions that give the equivalent result.  This can be helpful in
-    understanding certain instructions as well.
+While the Power ISA manual provides the pseudo code for how instructions work, the manual will sometimes give alternate instructions that give the equivalent result.  This can be helpful in    understanding certain instructions as well.
 
 * ###Don't comment out tests
 
-    If a test needs to be skipped for some reason, use the @unittest.skip("the reason") decorator before the test.
+If a test needs to be skipped for some reason, use the @unittest.skip("the reason") decorator before the test.
 
 * ###You can test for expected failure
 
-    Sometimes a test can be useful when we expect it to fail and want to verify that it does.  This can be done using the @unittest.expectedFailure decorator.  Examples can be found in [test_state_class](https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=src/openpower/test/test_state_class.py;h=918958cfe4c43af4c0b22d08f22933b273805885;hb=HEAD).
+Sometimes a test can be useful when we expect it to fail and want to verify that it does.  This can be done using the @unittest.expectedFailure decorator.  Examples can be found in [test_state_class](https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=src/openpower/test/test_state_class.py;h=918958cfe4c43af4c0b22d08f22933b273805885;hb=HEAD).
 
 * ###API Modificatons and Additions
 
-    Great care must be taken when making potential changes to the API itself.  You will notice nearly every area contains logging events.  This helps verify that those parts are indeed being executed.  A misplaced and not utilized yield for example can cause sections not to execute.  Therefore it is prudent to redirect test_issuer output with > /tmp/something and look for messages where changed or added areas are in fact being executed.
+Great care must be taken when making potential changes to the API itself.  You will notice nearly every area contains logging events.  This helps verify that those parts are indeed being executed.  A misplaced and not utilized yield for example can cause sections not to execute.  Therefore it is prudent to redirect test_issuer output with > /tmp/something and look for messages where changed or added areas are in fact being executed.
 
-    **Make small and incremental changes and test often.**
+**Make small and incremental changes and test often.**
 
 
 Links:
