@@ -251,6 +251,7 @@ Interfacing to SimdSignal requires an adapter that:
 SimdShape needs:
 
 * a constructor taking the following arguments:
+  - (mandatory) an elwidth Signal
   - (optional) an integer vector width or a dictionary of vector widths
     (the keys to be the "elwidth")
   - (mandatory) a dictionary of "partition counts":
@@ -264,7 +265,11 @@ SimdShape needs:
   integer arguments and perform the computations on *every*
   one of the dictionary of Vector widths (examples below)
 * a "recalculate" function (currently known as layout() in
-  layout_experimeny.py) which 
+  layout_experiment.py) which creates information required
+  by PartitionedSignal.
 * a function which computes and returns a suite of PartitionPoints
   as well as an "Adapter" instance, for use by PartitionedSignal
 
+Examples of the operator usage:
+
+    x = SimdShape(
