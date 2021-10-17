@@ -46,7 +46,7 @@ auto-preparation script here:
 
 ## Download neccessary softwares
 
-    apt-get install git wget
+    apt-get install -y libcurl3-gnutls/buster git/buster wget
 
     git clone https://github.com/steveicarus/iverilog.git
     git clone https://github.com/YosysHQ/yosys.git
@@ -72,7 +72,8 @@ auto-preparation script here:
 
 ### Necessary software to install
 
-    apt-get install build-essential autoconf make g++ bison flex gperf libreadline6-dev
+    apt-get install -y build-essential autoconf make g++ bison flex gperf \
+      libreadline6-dev
 
 ### Build Icarus Verilog
 
@@ -90,8 +91,8 @@ auto-preparation script here:
 
 ### Necessary software to install
 
-    apt-get install -t buster_backports cmake
-    apt-get install python3 clang libreadline-dev gawk tcl-dev \
+    apt-get install -y cmake
+    apt-get install -y python3 clang libreadline-dev gawk tcl-dev \
     libffi-dev pkg-config libboost-system-dev libboost-python-dev \
     libboost-filesystem-dev zlib1g-dev
 
@@ -100,6 +101,7 @@ auto-preparation script here:
     cd abc
     git checkout 4f5f73d18b137930fb3048c0b385c82fa078db38
     cd ../yosys
+    git checkout f44110c62561b21fa673f44d8e115c3ee70d2900
     ln -s ../abc .
     make -j $(nproc) PREFIX=/usr/local/symbiflow/yosys
     make PREFIX=/usr/local/symbiflow/yosys install
@@ -115,19 +117,21 @@ auto-preparation script here:
 
 ### Necessary software to install
 
-    apt-get install libhwloc-dev
+    apt-get install -y libhwloc-dev
 
 ### Build TBB
 
     cd oneTBB
     git checkout v2020.3
-    make tbb tbbmalloc tbbproxy tbbbind
+    make -j$(nproc) tbb tbbmalloc tbbproxy tbbbind
     install -d -m 0755 /usr/local/symbiflow/oneTBB/lib
     cp -dpr include /usr/local/symbiflow/oneTBB
     install -Dm755 build/linux_*/*.so* -t /usr/local/symbiflow/oneTBB/lib
     cmake -DINSTALL_DIR=/usr/local/symbiflow/oneTBB/lib/cmake/TBB \
       -DTBB_VERSION_FILE=/usr/local/symbiflow/oneTBB/include/tbb/tbb_stddef.h \ 
-      -DSYSTEM_NAME=Linux -P cmake/tbb_config_installer.cmake 
+      -DSYSTEM_NAME=Linux -P cmake/tbb_config_installer.cmake
+    echo "/usr/local/symbiflow/oneTBB/lib" > /etc/ld.so.conf.d/symbiflow.conf
+    ldconfig
     cd ..
 
 ## Steps to compile vtr-verilog-to-routing
@@ -145,7 +149,7 @@ auto-preparation script here:
     cd vtr-verilog-to-routing
     git checkout 77a3df829fdf509a76b9d7b941376f3835c2576a
     mkdir build; cd build
-    cmake -DCMAKE_INSTALL_PREFIX=/usr/local/symbiflow/vtr \
+    cmake -DCMAKE_INSTALL_PREFIX=/usr/local/symbiflow/vtr ..
     make -j $(nproc)
     make install
     install -d -m 0755 /usr/local/symbiflow/share/vtr
@@ -179,17 +183,17 @@ auto-preparation script here:
 
 ### Necessary software to install
 
-    apt-get install python3-dev
+    apt-get install -y python3-dev
 
 ### Build libxml2
 
     tar -xf libxml2-2.9.12.tar.gz
-    libxml2-2.9.12
+    cd libxml2-2.9.12
     ./configure --prefix=/usr/local/symbiflow/libxml2 --with-history \
       --with-python=/usr/bin/python3
     make -j $(nproc)
     make install
-    echo "/usr/local/symbiflow/libxml2/lib" > /etc/ld.so.conf.d/symbiflow.conf
+    echo "/usr/local/symbiflow/libxml2/lib" >> /etc/ld.so.conf.d/symbiflow.conf
     ldconfig
     export PATH=/usr/local/symbiflow/libxml2/bin:$PATH
     cd ..
@@ -225,7 +229,7 @@ auto-preparation script here:
     git submodule update --init --recursive
     mkdir build; cd build
     cmake -DCMAKE_INSTALL_PREFIX=/usr/local/symbiflow ..
-    make
+    make -j$(nproc)
     make install
     export PATH=/usr/local/symbiflow/bin:$PATH
     cd ../..
@@ -239,7 +243,7 @@ auto-preparation script here:
     cd yosys-symbiflow-plugins
     git checkout b170f1d3575568d87901422f846b700169e299be
     sed -i -e 's@-include third_party/make-env/conda.mk@#-include third_party/make-env/conda.mk@' Makefile
-    make
+    make -j$(nproc)
     make install
     cd ..
 
@@ -264,13 +268,13 @@ auto-preparation script here:
 
 ### Necessary software to install
 
-    apt-get install libftdi-dev
+    apt-get install -y libftdi-dev
 
 ### Build Icestorm
 
     cd icestorm
     git checkout 83b8ef947f77723f602b706eac16281e37de278c
-    make -j $(nproc) PREFIX=/usr/local/symbiflow
+    make -j $(nproc) PREFIX=/usr/local/symbiflow/icestorm
     make PREFIX=/usr/local/symbiflow/icestorm install
     cd ..
 
@@ -304,7 +308,6 @@ auto-preparation script here:
 
     cd pycapnp
     git checkout v1.0.0b1
-    export PATH=/usr/local/symbiflow/capnproto/bin:$PATH
     pip3 install .
     cd ..
 
@@ -330,8 +333,7 @@ auto-preparation script here:
 
 ## Necessary software to install
 
-    apt-get install -y nodejs npm python-pytest openocd flake8 \
-      default-jre-headless libantlr4-runtime-dev python3-numpy \
+    apt-get install -y nodejs npm python-pytest openocd flake8 python3-numpy \
       python3-intervaltree python3-simplejson python3-intelhex \
       python3-importlib-metadata python3-jsonschema python3-packaging \
       python3-pyparsing python3-pyrsistent python3-tqdm python3-zipp \
@@ -359,8 +361,6 @@ auto-preparation script here:
     pip3 install -e third_party/python-sdf-timing
     pip3 install -e third_party/symbiflow-xc-fasm2bels
 
-    export PATH=/usr/local/iverilog/bin:/usr/local/symbiflow/bin:$PATH
-
     mkdir -p env/conda/envs
     ln -s /usr/local/symbiflow env/conda/envs/symbiflow_arch_def_base
 
@@ -370,12 +370,12 @@ auto-preparation script here:
 
 ### Build symbiflow-arch-defs-xc7-artix7-100t
 
-    VPR_NUM_WORKERS=$(nproc)
+    export VPR_NUM_WORKERS=$(nproc)
 
     mkdir build; cd build
     cmake -DUSE_CONDA=FALSE -DPRJXRAY_DB_DIR=/usr/local/symbiflow/prjxray-db \
       -DINSTALL_FAMILIES=xc7 -DINSTALL_ARCHS=artix7_100t \
-      -DCMAKE_INSTALL_PREFIX=/usr/local/symbiflow ..
+      -DINSTALL_DEVICES=xc7a100t -DCMAKE_INSTALL_PREFIX=/usr/local/symbiflow ..
     cd xc/xc7/archs/artix7_100t
     make install
     cd ../..
