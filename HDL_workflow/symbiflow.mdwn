@@ -24,13 +24,13 @@ auto-preparation script here:
 
 ## Add Buster Backports Repo and Update
 
-* buster backports is needed for cmake
+""buster backports is needed for cmake""
 
     cat << EOF > /etc/apt/sources.list.d/buster_backports.list
     deb http://deb.debian.org/debian buster-backports main
     EOF
 
-* oooo annoying, pin preferences for buster-backports
+""oooo annoying, pin preferences for buster-backports""
 
     cat << EOF > /etc/apt/preferences.d/99buster-backports
     Package: *
@@ -38,7 +38,7 @@ auto-preparation script here:
     Pin-Priority: 900
     EOF
 
-* upgrade to buster-backports
+""upgrade to buster-backports""
 
     apt-get update -y
     apt-get upgrade -y
@@ -398,7 +398,7 @@ auto-preparation script here:
 
 "If you do not want this target skip"
 
-    VPR_NUM_WORKERS=$(nproc)
+    export VPR_NUM_WORKERS=$(nproc)
 
     mkdir build_artix7; cd build_artix7
     cmake -DUSE_CONDA=FALSE -DPRJXRAY_DB_DIR=/usr/local/symbiflow/prjxray-db \
