@@ -209,9 +209,9 @@ these critical Libraries, using Libre-SOC Cores as a "proving-ground".
 https://europractice-ic.com/wp-content/uploads/2021/01/Pricelist-EUROPRACTICE-General-MPW_8.pdf
 
 
-To put all of this to practical use, HELIX Technologies, by defining
+To put all of this to practical use, Helix Technologies, by defining
 an advanced GPS Correlator, will set a Computational capability objective
-for the core technology and be a Reference test-bed. HELIX will then
+for the core technology and be a Reference test-bed. Helix will then
 be able to carry out the comparative studies which show that the core
 technology meets significant performance/watt improvements. The ultimate
 destination for some of these devices will be Satellites (Space).
@@ -230,7 +230,7 @@ Summary of why our work is pertinent to Call HORIZON-CL4-2021-DIGITAL-EMERGING-0
 
 
 * High-performance energy-efficient computing: SVP64 is a Cray-style Vector ISA. Cray-style Vector ISAs are known to produce smaller and more compact programs. Smaller programs means less L1 Cache misses, and overall, smaller L1 Caches are needed.  This results inherently in greatly-reduced power consumption, whilst also remaining practical and general-purpose programmable.
-* Targeted applications: We are developing a general-purpose Hybrid Architecture suitable for 3D, Video, Digital Signal Processing, Cryptographic applications, AI and many more.  As it is general-purpose it covers all these areas.  However in certain areas "specialist" instructions are needed (particularly 3D) and we seek additional funding to complete them.  This includes HELIX's high-accuracy GPS application which qualifies as a step-improvement in "Sensor fusion".
+* Targeted applications: We are developing a general-purpose Hybrid Architecture suitable for 3D, Video, Digital Signal Processing, Cryptographic applications, AI and many more.  As it is general-purpose it covers all these areas.  However in certain areas "specialist" instructions are needed (particularly 3D) and we seek additional funding to complete them.  This includes Helix's high-accuracy GPS application which qualifies as a step-improvement in "Sensor fusion".
 * Hardware-software co-design and Libre/Open Hardware-Software: as all participants are trained as Software Engineers, we inherently and automatically bring Software Engineering practices and techniques to Hardware design, and consequently achieve a far greater effectiveness and flexibility. Additionally, all participants are long-term contributors to Libre/Open Software and Hardware Projects. This shall continue throughout this Grant proposal.  The involvement of RED Semiconductor Ltd brings further semiconductor hardware experience, bringing balance to the overall team.
 * Moore's Law and changing Economics: as a general-purpose Cray-style Vector Supercomputer ISA, what we are designing may deploy either "Fast and Narrow" back-end (internal) micro-architecture, or "Slow and Wide": huge numbers of SIMD ALUs running at a much slower clock rate.  The beauty and elegance of a Vector ISA is that, unlike SIMD ISAs such as AVX-512, NEON and to a partial extend SVE2, is that the programmer doesn't need to know about the internal micro-architecture, but their programs achieve the same throughput, even on larger geometries.
 * Hardware-based security: We consider it deeply unwise to follow the false practice of "adding more complexity to achieve more security".  Security is achieved through simplicity and transparency.  Simplicity: we studied historic Supercomputer designs dating back to 1965 (CDC 6600) where pure pragmatism required simpler and more elegant designs.  Transparency: Fully Libre/Open designs that customers can themselves verify by running Formal Correctness Proofs (where those tools are also Libre/Open Source). Fully Libre/Open VLSI toolchains and Cell Libraries (no possibility of insertion of spying at the Silicon level). "Tripwires" embedded into the silicon to gauge area-local EMF "Signatures". Additionally, we already have work underway into Out-of-Order Execution and seek to explore Speculative Execution Mitigation techniques at the hardware level, to increase security. These are practical achievable demonstrable ways to achieve Hardware-based trust.
@@ -261,7 +261,7 @@ Grant numbers:
 * LIP6's toolkit containing existing large-geometry Cell Libraries and test benches at https://gitlab.lip6.fr/vlsi-eda/alliance-check-toolkit.
 * CNRS's HITAS/YAGLE is also Open Source https://www-soc.lip6.fr/equipe-cian/logiciels/tasyagle/.
 * Symbiyosys and its subcomponents for Formal Correctness Proofs are Libre/Open https://symbiyosys.readthedocs.io/.
-* GPS GNSS-SDR is also Open Source https://gnss-sdr.org/ and can be adapted for HELIX's requirement
+* GPS GNSS-SDR is also Open Source https://gnss-sdr.org/ and can be adapted for Helix's requirement
 * Chips4Makers FlexLib is also Open Source https://gitlab.com/Chips4Makers but the NDA'd "ports"  are not.
 * To solve the above problem, all Libre/Open Developers will work with an Academic "Ghost" version, called C4M-FreePDK45 https://gitlab.com/Chips4Makers/c4m-pdk-freepdk45. This "ghost" version will allow full (parallel-track) collaboration between Libre/Open Developers and those Participants creating "real" GDS-II Files, without violating Foundry NDAs.
 
@@ -567,7 +567,7 @@ Work Packages:
 8. Improve Coriolis2 for smaller geometries
 9. VLSI Layout, Tape-outs and ASIC testing
 10. Project Management
-11. HELIX GPS Application
+11. Helix GPS Application
 
 
 #       3.1        Work plan and resources
@@ -590,7 +590,7 @@ Table 3.1a:         List of work packages
 |8        |Coriolis2                |3        |3/SU                |338        |1        |36        |
 |9        |Layout                        |3        |3/SU                |220        |8        |36        |
 |10        |Mgmt, Fin, Legal        |1        |RED                |185        |1        |36        |
-|11        |HELIX GPS Cor.        |6        |HELIX                |248        |1        |36        |
+|11        |Helix GPS Cor.        |6        |Helix                |248        |1        |36        |
 |        |                        |        |Total months        |1512        |        |        |
 
 ## 1. NLnet
@@ -1084,10 +1084,10 @@ Table 3.1b(11)
 
 |Work Package Number                |11                                                                |
 | ----                              | --------                                |
-|Lead beneficiary                |HELIX                                                                |
+|Lead beneficiary                |Helix                                                                |
 |Title                                |                                                                |
 |Participant Number                |1        |6                |                                        |
-|Short name of participant        |RED        |HELIX                |                                        |
+|Short name of participant        |RED        |Helix                |                                        |
 |Person months per participant        |136        |112                |                                        |
 |Start month                        |1                                                                |
 |End month                        |36                                                                |
@@ -1098,7 +1098,7 @@ Objectives:
 
 To focus the Libre-SOC 2-core ASIC onto a real-word customer
 requirement: GPS. To integrate both an FPGA as an early prototype and
-the final ASIC into a Demonstrator connecting to HELIX's high-accuracy
+the final ASIC into a Demonstrator connecting to Helix's high-accuracy
 GPS Antenna Arrays. To confirm functionality, and confirm energy savings
 (performance/watt) compared to other solutions.
 
@@ -1121,8 +1121,8 @@ million units per year.
 Description of work:
 
 
-1. Scoping Report by HELIX to research a Technical Architecture and the full Mathematical Requirements
-2. Creating from Scoping an agreed definition of the GPS ASIC requirement, by HELIX, to be given to Libre-SOC and RED.
+1. Scoping Report by Helix to research a Technical Architecture and the full Mathematical Requirements
+2. Creating from Scoping an agreed definition of the GPS ASIC requirement, by Helix, to be given to Libre-SOC and RED.
 3. Software, Hardware, Documentation, FPGA Prototypes, Test and QA for the Libre-SOC 2-core to be focussed on GPS as a real-word customer Application.
 4. Software Development and Hardware compatibility design through the GPS Antenna Arrays, and testing to confirm functionality in both FPGA and ASIC. To confirm reduction in performance/watt of the ASIC.
 5. Reporting
@@ -1162,8 +1162,8 @@ Essential deliverables for effective project monitoring.
 |9.2        |2-core GDS-II                |9        |3/SU                |OTHER|PU        |26                |
 |9.4        |Academic Papers        |9        |3/SU                |R        |PU        |36                |
 |10.2        |Reporting                |10        |1/RED                |R        |PU        |12/24/36        |
-|11.2        |Requirements                |11        |6/HELIX        |R        |PU        |12                |
-|11.5        |Reporting                |11        |6/HELIX        |R        |PU        |12/24/36        |
+|11.2        |Requirements                |11        |6/Helix        |R        |PU        |12                |
+|11.5        |Reporting                |11        |6/Helix        |R        |PU        |12/24/36        |
 
 ## Table 3.1d:        List of milestones
 
@@ -1424,7 +1424,7 @@ particularly with the Draft SVP64 ISA Extension.  They are both going
 out of their way to regularly advise us on how to go about a successful
 RFC Process for SVP64, and we deeply appreciate their support.
 
-HELIX Technology's involvement, as a potential customer and potential
+Helix Technology's involvement, as a potential customer and potential
 user of the Libre-SOC technology, will give focus to the deliverable of
 the project.  They have world-leading expertise in Antenna Technology,
 and in the mathematics behind the Signal Processing required for
