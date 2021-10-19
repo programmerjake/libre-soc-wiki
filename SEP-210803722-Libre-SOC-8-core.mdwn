@@ -1,0 +1,1096 @@
+﻿# Libre-SOC 8 core
+
+
+List of participants
+
+
+| 1    |David Calderwood        |RED Semiconductor Ltd                |UK                |1/RED                |
+| 2    |Luke Leighton        |The Libre-SOC Project                        |Netherlands        |2/Libre-SOC        |
+| 3    |Céline Ghibaudo        |Sorbonne Université (LIP6 Lab)        |France                |3/SU                |
+| 4    |Céline Ghibaudo        |Sorbonne Université (CNRS Lab)        |France                |4/CNRS        |
+| 5    |Michiel Lenaars        |NLnet                                        |Netherlands        |5/NLnet        |
+| 6    |James Lewis        |Helix Technology Ltd                        |UK                |6/Helix                |
+
+
+Please note: CNRS is an "Affiliated Entity" of Sorbonne Université
+
+
+#        1 Excellence
+
+
+##            1.1 Objectives and ambition
+
+
+Throughout this Grant Proposal, you will note that we are making significant use of ideas from the early days of Computing.  Due to the limitations of physical technology at that time, these ideas were categorised into "technology that was beyond delivery".  Industry-standard computing from then to today missed many of those opportunities and has consequently ploughed narrow "technological ruts" in an incremental fashion that has detrimentally impacted and constrained all world-wide Computing end-users as a result.  Modern hardware technology performance is now allowing us to revisit the best of the "Sea of ideas" from the history of the past 60 years of computing.  Our Grant Application is therefore based on firm, practical proven foundations, backed up by a real-world customer requirement: Advanced high-accuracy GPS Sensor-Fusion, to prove the core's capabilities and energy efficiency.
+
+
+We have chosen to evolve core technology to develop a Next-Generation Supercomputer-scale Microprocessor family based on an existing 2-decades-proven base (the Power ISA), with Advanced Cray-style Vectors, providing energy-efficient advanced computational power by a unique methodology not currently being achieved by any current general-purpose computing device.  We have been working on this strategy for over three years and our grant application is now evolutionary but was revolutionary.
+
+
+Libre-SOC has, for over three years, been backed by EU Funding through NLnet and now NGI POINTER, and at the core of our work we have been developing a novel Draft Vector ISA Extension to the OpenPOWER ISA, called SVP64.  https://libre-soc.org/openpower/sv/svp64/ and an enhanced processor core architecture on which it will run.
+
+
+As an aside we must acknowledge the research work of IBM labs who designed and then Open-Licensed their Power ISA: the foundation on which we have been building.  Standing on the shoulders of greatness is never a bad place to start.
+
+
+SVP64 contains features and capabilities never seen in any Instruction Set Architecture (ISA) of the past sixty years.  With NLnet's help we have TRL (3) implementations and simulations demonstrating a 75% reduction in the program size of core algorithms for Video and Audio DSP Processing (FFT, DCT, Matrix Multiply), and these still need optimized, which if successfully expanded to general-purpose algorithms would result in huge power savings if deployed in mass-volume end-user products.
+
+
+Why we are leveraging the Power ISA as the fundamental basis instead of "completely novel non-standard computing architecture" requires some explanation, best illustrated by reference to other historic high capability designs.  Aspex Microelectronics ASP was a 4096-wide SIMD Array of 2-bit processors. It could be programmed at a rate of one instruction per 5-10 days.  Elixent also had a similar 2D Grid Array of 4-bit processors.  Both were ultra-power-efficient (2 orders of magnitude for certain specialist tasks) but were impossible to program even for the best programming minds and required critical assistance from a severely limited pool of specialists for best exploitation. The Industry-standard rate for general-purpose High-Level programming (C, C++) is around 150 lines of code per day, not 5-10 days per line of assembler. We seek to deliver a much more accessible "general-purpose" Microprocessor that contains Supercomputing elements and consequently stands a much more realistic chance of general world-wide adoption (including Europe).
+
+
+An additional insight: OpenRISC 1200 took 12 years to reach maturity.  The team developed the entire processor architecture, low-level software and compiler technology, entirely from scratch.  We considered this approach and, due to the long timescales, rejected it, choosing instead to leverage and be compatible with a pre-existing Open ISA: OpenPOWER. We also considered RISC-V however it turns out to be too simplistic (https://news.ycombinator.com/item?id=24459041) and it is far too late to retrospectively add Supercomputer-grade power-efficient functionality to its design or instruction set.  With the IBM-inspired Power ISA already being a Supercomputer-grade ISA, it is a natural fit for an energy-efficient Cray-style Vector upgrade, and comes with 25 years of pre-existing software, libraries, compilers and customers.  By being backwards-compatible with the existing Power ISA 3.0 (which is now an Open ISA managed by the OpenPOWER Foundation), European businesses will benefit from that pre-existing decades-established stability and pedigree.
+
+
+As hinted at, above: Great hardware is nothing without the corresponding compiler technology and support libraries. Consequently we need to engage with Compiler Service Companies (Embecosm Gmbh, Vrull.eu) to evaluate the feasibility of adding Vectorisation support to gcc, llvm and low-level standard libraries. Whilst Libre-SOC has already demonstrated TRL (3) successful assembly-level SVP64 algorithms (MP3 CODEC in particular), assembler is far too low-level for general-purpose compute. C, C++ and other programming language support is required to be evaluated and developed.  Also given that the Libre-SOC Core is being long-term designed for energy-efficient 3D GPU and Video Processing workloads, two 3D Vulkan Drivers (Kazan and MESA3D) need to be taken beyond proof-of-concept (TRL 2/3).
+
+
+We consider it strategically critical to develop processors in an entirely transparent fashion. The current Silicon Industry chooses secrecy to mask technology shortcuts and restrictive cross licencing, which inevitably and systematically fails to provide trustable hardware: Intel's Management Engine; Qualcomm making 40% of the world's smartphones vulnerable to hacking; Apple drive-by Zero-day Wireless exploits; Super-Micro being delisted from NASDAQ for failing to be able to prove the provenance of all hardware and software components.  We consider Libre / Open Hardware ASICs and the full Libre/Open VLSI toolchain itself to be fundamental to end-user trust and security as well as Digital Sovereignty.
+
+
+In addition to this, Libre-SOC has already been developing Mathematical Formal Correctness Proofs for the HDL of its early prototype designs, which, in combination with unrestricted access to the HDL Source Code, allow third parties including customers to perform their own verification of the ASIC's purpose (as opposed to the customer having to trust a manufacture that inherently has a direct conflict-of-interest in the form of its Shareholders and profits).  Furthermore, we aim to experiment with built-in "tamper-checking" circuits that, on running a test programme on our evaluation test bed, will provide an Electro-Magnetic "signature".  By publishing this "signature" and the test programs, customers can verify that their purchased ASICs have the same EMF "signature" and can detect immediately if the ASIC has been tampered with.  In addition we will continue existing (TRL 2) research into Hardware-level Speculative Execution mitigation techniques.  We feel that the full combination of these objectives meets the Hardware Security requirements of this Call.
+
+
+This strategy does not end with just the HDL: thanks (again) to NLnet we have been collaborating already with Chips4Makers, LIP6 and CNRS (all funded by EU Grants), to advance the state-of-the-art for European VLSI Tool Technology, which we deeply appreciate is important to European Silicon Sovereignty.
+
+
+https://www.europarl.europa.eu/RegData/etudes/BRIE/2020/651992/EPRS_BRI(2020)651992_EN.pdf
+
+
+We are however significantly concerned that the LIP6 Department, as an Academic body, is inevitably underfunded, particularly when it is the sole provider of Libre/Open VLSI Silicon-proven software in the whole of Europe. This is why we have included an Engineering Supplement for LIP6 and CNRS in the Libre-SOC budget, to contract engineering support for them and to avoid employment complications due to the French Civil Service Regulations, which lack the flexibility needed.  These engineers, who are in high demand, will work for Libre-SOC/RED Semiconductor Ltd but be fully available to assist in the development work covered by the grant being done by LIP6 and CNRS.
+
+
+The consequential effect of this tool development will be to help create VLSI tools that can be directly substituted for the existing commercial (and geopolitically constrained) tools from companies such as Cadence and Mentor, giving a Euro-centric independence from “technology constraining” acts.
+
+
+We are currently awaiting the return of our first 180 nm architecture test ASIC (TRL 4) from TSMC, through IMEC.  It is the first major silicon in Europe of its size (5.1 x 5.9 mm^2 and 130,000 cells) to be entirely developed using a Libre-Licensed VLSI ASIC toolchain, and the world's first Power ISA 3.0 outside of IBM to reach Silicon in over 12 years. We have already started to push (drive) the evolution of Europe's only silicon-proven Libre/Open VLSI toolchain, something this Grant application will support and will allow LIP6 and CNRS to enhance it to lower geometries and larger ASIC sizes which will be critical to European businesses' Digital and Silicon Sovereignty.
+
+
+For the avoidance of confusion the use of the word "Cell" refers to a bounded piece of electronic design that when used together, like bricks, form larger more complicated electrical functions.
+
+
+To help advance Digital Sovereignty, LIP6 and CNRS need to once again push the boundaries of the Libre/Open VLSI toolchain, coriolis2 Place-and-Route, https://coriolis2.lip6.fr and HITAS/YAGLE Static Timing Analyser https://www-soc.lip6.fr/equipe-cian/logiciels/tasyagle/ both of which are, at the lower 360 and 180 nm geometries, at TRL 9, but are at TRL 2 for lower geometries 90, 65, 45 nm and below.
+
+
+Chips4Makers (also NLnet funded) created FlexLib Libre/Open Cell Libraries which allows porting of Standard Cell Libraries to any geometry.  An NDA'd TSMC 180nm version of FlexLib was created for the Libre-SOC 180nm test ASIC.  To achieve our objectives, LIP6 and CNRS will need to create smaller geometry ports of FlexLib.  These Cell Libraries need to be tested in actual Silicon, and consequently we will be working with IMEC as a sub-contractor and partner to deliver MPW Shuttle Runs for these critical Libraries, using Libre-SOC Cores as a "proving-ground".
+https://europractice-ic.com/wp-content/uploads/2021/01/Pricelist-EUROPRACTICE-General-MPW_8.pdf
+
+
+To put all of this to practical use, HELIX Technologies, by defining an advanced GPS Correlator, will set a Computational capability objective for the core technology and be a Reference test-bed. HELIX will then be able to carry out the comparative studies which show that the core technology meets significant performance/watt improvements. The ultimate destination for some of these devices will be Satellites (Space).
+
+
+In addition, NLnet, a Stichting / Foundation, has been so successful in supporting "Works for the Public Good" that we feel that their approach and service fulfilment are extremely relevant to this Call. During the 36 month duration of the proposal, NLnet is in a position to engage with Libre/Open Hardware and Software developers which, for our team, will mitigate the risk of unanticipated issues requiring specialist but small-scope funding, that yet still meets the well-defined objectives of this Call.
+
+
+Summary of why our work is pertinent to Call HORIZON-CL4-2021-DIGITAL-EMERGING-01-01:
+
+
+* High-performance energy-efficient computing: SVP64 is a Cray-style Vector ISA. Cray-style Vector ISAs are known to produce smaller and more compact programs. Smaller programs means less L1 Cache misses, and overall, smaller L1 Caches are needed.  This results inherently in greatly-reduced power consumption, whilst also remaining practical and general-purpose programmable.
+* Targeted applications: We are developing a general-purpose Hybrid Architecture suitable for 3D, Video, Digital Signal Processing, Cryptographic applications, AI and many more.  As it is general-purpose it covers all these areas.  However in certain areas "specialist" instructions are needed (particularly 3D) and we seek additional funding to complete them.  This includes HELIX's high-accuracy GPS application which qualifies as a step-improvement in "Sensor fusion".
+* Hardware-software co-design and Libre/Open Hardware-Software: as all participants are trained as Software Engineers, we inherently and automatically bring Software Engineering practices and techniques to Hardware design, and consequently achieve a far greater effectiveness and flexibility. Additionally, all participants are long-term contributors to Libre/Open Software and Hardware Projects. This shall continue throughout this Grant proposal.  The involvement of RED Semiconductor Ltd brings further semiconductor hardware experience, bringing balance to the overall team.
+* Moore's Law and changing Economics: as a general-purpose Cray-style Vector Supercomputer ISA, what we are designing may deploy either "Fast and Narrow" back-end (internal) micro-architecture, or "Slow and Wide": huge numbers of SIMD ALUs running at a much slower clock rate.  The beauty and elegance of a Vector ISA is that, unlike SIMD ISAs such as AVX-512, NEON and to a partial extend SVE2, is that the programmer doesn't need to know about the internal micro-architecture, but their programs achieve the same throughput, even on larger geometries.
+* Hardware-based security: We consider it deeply unwise to follow the false practice of "adding more complexity to achieve more security".  Security is achieved through simplicity and transparency.  Simplicity: we studied historic Supercomputer designs dating back to 1965 (CDC 6600) where pure pragmatism required simpler and more elegant designs.  Transparency: Fully Libre/Open designs that customers can themselves verify by running Formal Correctness Proofs (where those tools are also Libre/Open Source). Fully Libre/Open VLSI toolchains and Cell Libraries (no possibility of insertion of spying at the Silicon level). "Tripwires" embedded into the silicon to gauge area-local EMF "Signatures". Additionally, we already have work underway into Out-of-Order Execution and seek to explore Speculative Execution Mitigation techniques at the hardware level, to increase security. These are practical achievable demonstrable ways to achieve Hardware-based trust.
+* Security and Safety-critical Guidelines: Due to our overall approach, although potentially inherently achievable by others utilising our work as the basis for ongoing Research, the main participants consider it out of scope due to practical time constraints.  Security Certification typically takes 5 to 7 years: The scope of this project is only 3.  NLnet however may fund work that does indeed take into account these criteria.
+* ASIC (Chip) prototyping: We are developing RTL including High-Level (core designs) as well as Low-Level (Cell Libraries).  Nobody in any European Company will use a Cell Library if it has not been demonstrated as Silicon-Proven.  As we already did with the 180nm ASIC, the best way to prove that a Cell Library (and an innovative approach - using Libre/Open VLSI toolchains) works is to do an actual ASIC.
+
+
+Additional notes:
+
+
+1) With regard to "Improve by two orders of magnitude the performance/watt for targeted Edge Applications", subject to Moore's Law and other limitations, such as geometry of devices we are moving in this direction, and whether we can achieve it will be subject to the available manufacturing processes we can afford during the scope of this Grant.  We have already achieved one magnitude of improvement in simulation (TRL 3) of FFT, DCT and other DSP calculations. As already indicated above, the output of our design can be run on many different geometries of significantly-different performances.
+
+
+2) You will note that a significant number of our technology collaborators and the technology and services that we rely on are already funded by EU Grants.  Through RED Semiconductor Ltd, we are going to be the conduit to commercial realisation of value for this investment, with subsequent commercial benefits of employment and tax revenues across the EU.  We know not to lose sight of the fact all EU funding is fundamentally focused on future commercial success.
+
+
+* Fed4Fire.eu Grant Agreement No: 732638
+* NLnet Grant Agreements No: 825310 and 825322
+* NGI-POINTER. Grant agreement No: 871528
+* StandICT.eu Grant agreement No: 951972.
+* Sorbonne Université: 163 FP7 projects and 195 H2020 projects
+
+
+##            1.2        Methodology 
+
+
+* Everything that Libre-SOC does is published as Libre/Open Information at https://libre-soc.org/ - source code (https://git.libre-soc.org)  is open and available under the LGPLv3+ License and other appropriate Libre/Open Licenses.
+* LIP6 likewise discloses all source code at https://gitlab.lip6.fr/vlsi-eda
+* LIP6's toolkit containing existing large-geometry Cell Libraries and test benches at https://gitlab.lip6.fr/vlsi-eda/alliance-check-toolkit.
+* CNRS's HITAS/YAGLE is also Open Source https://www-soc.lip6.fr/equipe-cian/logiciels/tasyagle/.
+* Symbiyosys and its subcomponents for Formal Correctness Proofs are Libre/Open https://symbiyosys.readthedocs.io/.
+* GPS GNSS-SDR is also Open Source https://gnss-sdr.org/ and can be adapted for HELIX's requirement
+* Chips4Makers FlexLib is also Open Source https://gitlab.com/Chips4Makers but the NDA'd "ports"  are not.
+* To solve the above problem, all Libre/Open Developers will work with an Academic "Ghost" version, called C4M-FreePDK45 https://gitlab.com/Chips4Makers/c4m-pdk-freepdk45. This "ghost" version will allow full (parallel-track) collaboration between Libre/Open Developers and those Participants creating "real" GDS-II Files, without violating Foundry NDAs.  
+
+
+This methodology is based on an established process that has already allowed us to deliver demonstrable software and hardware results, the manifestation of which is our 180nm architecture test chip now in manufacture.  This has involved a significant amount of cooperative development among the applicants, and others beyond, and the development of core supporting technology that this grant application can now efficiently build upon.  
+
+
+We refer to other supporting technology sources further in this application and whilst they are not the core team they will critically contribute to the overall success.  In particular, these groups can be supported by NLnet, whose "Works for the Public Good" remit is 100% compatible with the full transparency objectives (that the project's participants are already committed to) which will help by providing additional non-core-team development on an on-demand basis, on the back of NLnet's already-trusted commitment to fulfil European Union objectives under Grant Agreements No 825310 and 825322.
+
+
+Additionally, Libre-SOC is working closely with the OpenPOWER Foundation ISA Working Group Chair, having attended regular bi-weekly meetings for over 18 months. As mentioned above, the entirety of our work of greater than 3 years on this Vector Extension, SVP64, is entirely transparent and open: https://libre-soc.org/openpower/sv/svp64/.  Both NLnet (and StandICT.eu through a proposal under consideration at the time of writing) are supporting our efforts to submit the Draft SVP64 and its subcomponents through the RFC (Request for Change) process being developed by the OpenPOWER Foundation.  For long-term stability and impact it is a necessary prerequisite that Draft SVP64 become an official part of the Power ISA: this decision is however down to the OpenPOWER Foundation and requires considerable preparation and planning, which this Grant will help support.
+
+
+One huge benefit of Libre-SOC's core being Power ISA 3.0 Compliant is that IBM contributed a huge patent pool through the OpenPOWER EULA. Compliant Designs enjoy the protection of this patent pool.  By contributing SVP64 to the Power ISA it falls under this same umbrella.  Libre-SOC shall be entering into an agreement with the OpenPOWER Foundation, here, as part of the ISA RFC process.  European businesses clearly benefit from the long-term stability of this arrangement.
+
+
+Whilst we clearly need, ultimately, to prove our design's power-efficiency in silicon, we would however consider it unwise and extremely costly to tape-out to Silicon without having gone through a proper early-evaluation process, weeding out ineffective strategies and designs.  To that end, we learned from Jeff Bush's work on the Nyuzi 3D core to perform estimates on power consumption and clock cycles.  This is a highly-effective feedback process that allows identification and targeting of the most urgent (inefficient) areas, and we have taken it on-board and adopted it throughout the project.
+
+
+Part of that involves Peter Hsu's cavatools (another NLnet Grant) which is (at present) a cycle-accurate Simulator for RISC-V.  A (new) NLnet Grant (not yet approved at the time of writing) is targeted at porting cavatools to the Power ISA. This proposal would allow NLnet-funded work to be extended into 3D, Video, DSP and other areas, to simulate (test) out the feasibility, power-efficiency and effectiveness of different Custom SVP64 Extensions to the Power ISA, long before they reach actual Silicon.
+
+
+#           2 Impact
+
+
+##         2.1 Project’s pathways towards impact
+
+
+The core of modern computing is the capability of the computational element of the systems and the microprocessors they are based around.  Every twenty years there has been a significant evolutionary step in the technical concepts employed by these microprocessor devices.  For example the last big step was the concept of RISC (Reduced Instruction Set) processors.  These developments have been driven by many forces from cost of devices to limitations of the available technology of the time.  
+
+
+The Libre-SOC core is capable of becoming the next significant step change in microprocessor speed, technology, and reduction in equivalent computational power (Watts).
+
+
+To illustrate this, we need to go back in history to early computing.  The first microprocessors were reliant on expensive core then bipolar memory and even with the advent of DRAMS (Dynamic Random-Access Memories) the primary focus of microprocessor processor core designs was to optimise the minimal use of memory and focus on the power of the core.  Over time, memory became cheaper and reliance on memory to improve processing increased with techniques like RAMdisk stores were developed.  This cheap memory also resulted in the evolution of RISC and similar computing technology concepts.  Today the problem is epitomized by speed, where microprocessors have evolved to be much faster than the fastest memories, and to increase performance, the state of the art computing requires coming full-circle: once again minimising the use of memory, which is now a log jam, and looking again at the core optimisation solutions devised in the 1960’s by luminaries such as Seymour Cray.  The Libre-SOC core is an optimal adoption of this category of core processor performance enhancement.
+
+
+Libre-SOC has the benefit that its development relies on fundamental research that has been known and proven for nearly 60 years.  SVP64 has input from and takes on-board lessons learned from NEC SX-Aurora, Cray-I, Mitch Alsup's MyISA 66000, RISC-V RVV Vectors, MRISC32, AVX-512, ARM SVE2, Qualcomm Hexagon and TI's DSP range, as well as other more esoteric Micro-architectures such as Aspex's Array-String Processor and Elixent's 2D Grid design.
+
+
+As a Hybrid (merged) CPU-VPU-GPU Micro-architecture (similar to ICubeCorp's IC3128) there is a huge reduction in the complexity of 3D Graphics and Video Driver and overall hardware.  NVidia, ARM (MALI), AMD, PowerVR, Vivante: these are all dual (ISA-incompatible) architectures with staggering levels of hardware-software complexity.  Like ICubeCorp's design, Libre-SOC 3D and Video binaries are executed directly on the actual main (one) core.
+
+
+The end-result here is, if deployed in mass-volume products world-wide including for European end-users of ubiquitous Computing devices, a significant energy saving results on a massive scale, particularly in battery-operated (mobile, tablet, laptop) appliances.  Demonstrating this however requires, ultimately, that we actually create real silicon, and measure its performance and power consumption.
+
+
+##         2.2        Measures to maximise impact - Dissemination, exploitation and communication
+
+
+As the Libre-SOC core is the result of a Libre/Open Source project by default all of our development work has been published for the last four years.  This was also a requirement of our EU funding through NLnet.  In addition we have undertaken a full program of conference presentations, technology awareness activities and cooperation with key bodies such as the OpenPOWER Foundation and OpenPOWER Members (Libre-SOC is participating in a world-wide Open University Course about the OpenPOWER ISA, an activity led by IBM). Examples:
+
+
+* https://openpowerfoundation.org/events/openpower-summit-2020-north-america/ 
+* https://openpowerfoundation.org/libre-soc-180nm-power-isa-asic-submitted-to-imec-for-fabrication/
+
+
+Both Marie-Minerve Louerat (CNRS) and Jean-Paul Chaput's (Sorbonne Université LIP6 Lab) Academic Publications will continue https://www.lip6.fr/actualite/personnes-fiche.php?ident=P109 https://www.lip6.fr/actualite/personnes-fiche.php?ident=P98 as will their continued Conference participation (example: FOSDEM 2021 coriolis2 https://av.tib.eu/media/52401?hl=coriolis2)
+
+
+Luke Leighton also releases videos of his Libre-SOC talks on youtube https://www.youtube.com/user/lkcl and a full list of all conferences (past and present) are maintained on the Libre-SOC website https://libre-soc.org/conferences/
+
+
+The Libre-SOC bugtracker (where we track our TODO actions) is public access (https://bugs.libre-soc.org), and the Mailing lists are also public access (https://lists.libre-soc.org).  LIP6's alliance/coriolis2 mailing lists are also public access (https://www-soc.lip6.fr/wws/info/alliance-users)
+
+
+These are ongoing activities that actively encourage world-wide Open Participation, and shall remain so indefinitely.  We will continue to grow these activities along with a commercial thread of publicity by RED Semiconductor Ltd to publicise and determine product family opportunities where RED Semiconductor Ltd will focus on potential product and market development built upon the Libre-SOC core technology.
+
+
+##       2.3 Summary 
+
+
+### Specific needs
+
+
+Modern computing technology is designed in secrecy and released to the market without the ability of the user base to vet or validate.  When problems arise it is usually due to “discovery” and usually driven by technical curiosity or malice.  What is clear is that to those on the inside these problems were visible from the outset, however time resource and unwillingness to explore (and unethical Commercial pragmatism) has left these vulnerabilities open to be exploited.  As a general principle we have taken the view that any new design should be open to review and able to be corrected (every design has some bugs) before mass adoption and the inevitable loss and crisis.
+
+
+In practical terms: as indicated in sections above there have been a number of security incidents involving ubiquitous computing devices, impacting millions to hundreds of millions of end-users, world-wide. Qualcomm failed last year to provide adequate secure firmware, leaving 40% of the entire world's Android smartphones vulnerable to attack. With the majority of smartphones being "fire-and-forget" products with non-upgradeable firmware, the end-user's only solution is to throw away a perfectly good electronics product and purchase a new one.  For Intel products - all Intel products - the exact same thing has occurred (Master Firmware Key, Spectre, Meltdown), but at an unfixable hardware level, and there are no replacement Intel products that can be purchased in the market to "fix" their fundamental design flaws.
+
+
+Not only that, but all of the ubiquitous Computing products (Apple, Intel, IBM, NVidia, AMD being the most well-known) are 100% non-EU-based.  As far as EU Digital Sovereignty is concerned, this is an extremely serious and alarming situation, compounded by critical Foundries and know-how to run those Foundries also not being part of a Sovereign European remit.
+
+
+If that was not enough, Foundries and the Semiconductor Industry requires NDAs that at the minimum prohibit full publication of Academic results, stifling innovation and research, in turn driving up the cost for EU businesses of the cost of ASIC products by creating artificial cost, overhead and knowledge barriers. 
+
+
+The entire Computing and Semiconductor Industry needs a new approach.
+
+
+Taking the initiative, the end goal of the Libre-SOC/RED Semiconductor Ltd project is therefore to deliver high performance, security auditable, supercomputer class computing devices to the market.  As this is not currently available it will prompt a step change in low power (Watts) high performance computing. This will be achieved through:
+
+
+* Energy/Power consumption measurement: we need to verify that performance/watt is lowered
+* Draft SVP64 inclusion in Power ISA: this is needed to indicate "Official long-term Status"
+* Auditability and Transparency: needed for end-users and EU businesses to trust the hardware.
+* Power ISA 3.0 Interoperability: to leverage over 2 decades of existing business software tools.
+* FPGA and Simulator demonstrators: to demonstrate feasibility of the HDL and the ISA
+* VLSI toolchain and Cell Library: MPW Shuttle runs are needed to reach "Silicon-proven" status
+* NLnet mini-grants: Effectively this is a "Reserve" budget for the Project, managed by NLnet
+
+
+### Dissemination, exploitation and Communication
+
+
+Energy/Power consumption measurement:
+
+
+Just as Jeff Bush showed by publishing Nyuzi Research at Conferences we shall follow the same proven incremental performance/watt measures and procedures, and publish the results.
+https://ieeexplore.ieee.org/document/7095803/
+
+
+Draft SVP64 inclusion in Power ISA:
+
+
+We are already working with the OpenPOWER ISA Working Group, and have already begun publishing the Draft SVP64 Specification as it is being developed.  This will become official RFCs (Request for Changes) leading to adoption.  This includes development of Compliance Test Suites, low-level libraries, compilers etc. which shall be announced through Conferences, Press Releases (by RED Semiconductor Ltd, NLnet and the OpenPOWER Foundation) and standard Libre/Open development practices (Mailing list Announcements).
+
+
+Auditability and Transparency:
+
+
+Using symbiyosys we have already established a number of Formal Correctness Proofs for the TRL 3 HDL used in the 180nm ASIC: This needs to be extended right the way throughout all future work and be published for other OpenPOWER Foundation Members and European businesses to be able to independently verify the correct functionality of not just Libre-SOC ASIC designs but other Power ISA 3.0 compliant designs as well.  Libre-SOC HDL and the associated Formal Correctness Proofs are published as-they-are-developed in real-time and consequently dissemination is implicit and automatic.
+
+
+For the Silicon-level "EMF signature" measurement system Libre-SOC will define and publish Reference Standards, test applications and methodology documentation.  RED Semiconductor Ltd will establish and make available a "expected results" database for its commercial products, as part of its Product Application Documentation, so that European Businesses may independently verify that their commercial off-the-shelf RED Semiconductor Ltd products have not been tampered with at the Silicon level.  (It is beyond the scope of this Grant however RED Semiconductor Ltd will publish its overall Quality Standards Strategy).  In concept, the "EMF Signature" strategy is very similar to Hewlett Packard's "Signature Analysis Strategy" that has been around since 1949. https://www.hpl.hp.com/hpjournal/pdfs/IssuePDFs/1977-05.pdf
+
+
+Power ISA 3.0 Interoperability:
+
+
+Standing on the shoulders of Giants (IBM and other OPF Members in this case) is always a good starting point.  The familiarity and decades-long-term stability of the existing Power ISA 3.0 gives us a vast existing-established user audience to whom we can provide training and experience upgrades from an existing high-level of knowledge.  In this we already have the cooperation of IBM (through the OpenPOWER University Education Course that Libre-SOC has helped to create - to be first run from 18th-29th October 2021).
+
+
+We will take the Interoperability further at a practical level by developing a Libre/Open Power ISA 3.0 "Compliance Test Suite" that meets the OpenPOWER Foundation documented standards (https://openpowerfoundation.org/openpower-isa-compliance-definition/) and make it entirely public and available to all without limit, and invite other OpenPOWER Foundation Members to participate in its development and use.  This will then be, again, announced through Press Releases and Mailing List as well as Conference Presentations.
+
+
+FPGA and Simulator demonstrators:
+
+
+Again: all new software tools created, and existing ones used and modified to both develop and use resultant devices will be published as an inherent part of the OpenSource real time publishing strategy.
+
+
+VLSI Toolchain and Cell Library verification:
+
+
+Again: the results of the development are, to date and in the future, part of Libre/Open Source projects, and are therefore fully-visible, even though they are Hardware-related we treat them as Open Source Software.  Conference presentations shall therefore be given, announcements on Mailing Lists, as part of the overall communications strategy.
+
+
+In this particular case however, the communication has to involve the results of the MPW Shuttle runs, testing the actual ASICs, because it is critical to demonstrate and communicate that the Cell Libraries are Silicon-Proven and that the VLSI tools were capable of successfully creating that Silicon-Proven layout.  However the caveat here: anything involving NDA'd material as required by the Foundry has to remain confidential (note that this is not something that can be addressed within the funding scope of this Call)
+
+
+NLnet mini-grants:
+
+
+NLnet's website has already been established with communication facilities for around 19 years.  NLnet are experienced in the effective evaluation and management of small-scale Grants.  They are also extremely familiar with the work that we are doing, and with the detail of EU Grant Procedures. Following those procedures they will add a new section to the website for Grant Proposals that inherently meet the objectives of this Call, and will use their existing communications infrastructure to maximum benefit.
+
+
+### Expected results
+
+
+Energy/Power consumption measurement:
+
+
+We anticipate in the actual ASIC a significant measurable reduction in performance/watt.  Early predictions shall be based on Instruction-level Simulations, but these need to be validated against the "real thing".  Due to the iterative process (outlined by Jeff Bush) we simply cannot state exactly in advance the full magnitude of improvement that will occur. The process itself, and how it was successfully applied, however, will be considered to be part of the results themselves as part of publications online and at Conferences.
+
+
+Draft SVP64 inclusion in Power ISA:
+
+
+The ultimate outcome here is that SVP64 becomes an officially-adopted part of the OpenPOWER ISA, including a full compliance test suite, documentation in a future revision of the official Power ISA Technical Reference Manual.  This process is, however, by necessity and being an extremely important responsibility of the OpenPOWER Foundation (not of any of the Participants), very slow and outside of our control, and may take longer than the 36 month duration of the Grant to complete.
+
+
+Therefore, the critical Milestone shall be our submission to the OpenPOWER Foundation's ISA Working Group, as well as the development of the required Compliance Test Suites.  Both of these shall be published under appropriate Libre/Open Licenses.
+
+
+Auditability and Transparency:
+
+
+We will have completed the Formal Correctness Proofs and published them and the results of running them against the Libre-SOC HDL.   We will also have received the ASICs back from MPW Shuttle runs, which will contain "EMF detection" wires routed strategically throughout it, and run the pre-arranged unit tests that will create "Signatures" that shall be recorded and published.  This task is another critical reason why we need actual Silicon, because only with an ASIC can we demonstrate the viability of Signature Analysis (and similar) Strategies for ASICs.
+
+
+Power ISA 3.0 Interoperability:
+
+
+We will have completed an implementation of the Compliance Test Suite as a Libre-Licensed application that can test multiple different implementations: FPGA, Simulators (including our own as well as qemu), and actual Silicon implementations including IBM POWER9, POWER10, Microwatt.  In addition we will have extended our own interoperability "Test API" that allows comparisons of any arbitrary user-generated application against any other arbitrary Power ISA compliant devices (whether FPGA, Simulator, or Silicon): the OpenPOWER Compliance Test Suite implementation shall simply be one of those applications.
+
+
+We expect the Libre-SOC core to pass the full OpenPOWER ISA 3.0 Test Suite, and the results to be published.  We will also communicate with OpenPOWER Foundation Members and make them aware of the existence of the Test Suite and document how it may be used to test their own Power ISA 3.0 implementations for Compliance.
+
+
+FPGA and Simulator demonstrators:
+
+
+Successful software simulation (emulation) of the augmented Power 3.0 ISA with the Draft SVP64 Extensions, and successful demonstration of the HDL of a multi-core SMP processor implementing the same, running in a large FPGA (the size of the commercially-available FPGAs constraining what is possible, here).  Each shall help verify the other's correctness.  This will be a rapid iterative cycle of development and shall always produce early results, feeding back to continued improvement.
+
+
+VLSI Toolchain and Cell Library verification:
+
+
+Multiple demonstrator 2-core ASICs and a proven path to an 8-core ASIC (as we anticipate that the 8-core is likely to be beyond the scope of the Grant due to Silicon costs).  Where the 2-core ASIC MPW is multi-purpose (proving the HDL, proving the VLSI toolchain, proving the Cell Library) and shall use the FPGA and Simulations to check its correctness before proceeding, the 8-core shall remain in FPGA only, due to cost, but a VLSI Layout for the 8-core will still be attempted, in order to "test the limits" of the VLSI tools.  If funding was available we could take the 8-core to full MPW rather than just to FPGA and GDS-II.  As the 8 core Layout develops, if it (and the coriolis2 toolchain)  progresses to viability in the 36 months one option might be for RED Semiconductor to apply for a EUR 500,000 NLnet mini-grant, payment terms to meet requirements set by IMEC, from their budget allocated under this proposal.
+
+
+NLnet mini-grants:
+
+
+NLnet will receive and review potentially hundreds of small Grant Proposals to ensure that they meet both the Call's Objectives and meet NLnet's responsibilities as a Stichting / Foundation to fund "Works for the Public Good".  They shall request that the successful Grant Applicant create Milestones and that Grant Applicant communicate those results, thus requiring that it is the Grant Applicant that fulfils the requirement herein.  This process is already established and already in effect under Grant Agreements No 825310 and 825322.
+
+
+In the case of the Participants, if we need "reserve" budgets for unforseen activities, we commit to following that exact same procedure and thus also shall meet the Objectives of this Call (examples include the MPW 8-core, above).  We are aware that new technology beneficial to the project may not be currently apparent but will be available within the 36 months duration, and the methodology of funding it through NLnet may prove optimal and a cost-effective use of EU funds, as NLnet would (as they do now) only draw the budget down as needed.
+
+
+### Target groups
+
+
+Due to our Open real time publishing of the Libre-SOC project, our work can be forked by anyone at any time as a starting point or as a building block for new projects, potentially taking the ideas and concepts in any direction.  These can be individuals or teams and they can be academics or industrialists, the point being that if we trigger a step change in the technology everyone should be able to benefit.  
+
+
+This is in addition to our own commercialisation plans.
+
+
+Open Source methodology leads to Open standards which leads to Open understanding and rapid adoption of new ideas in academia and industry.  The Eurocentric nature and benefit of the work should not be overlooked either.
+
+
+### Outcomes
+
+
+As the development chain includes elements of commercialisation, beyond the immediate benefit to similar projects by the enhancement of the Libre/Open Source tool chain and the educational uplift provided directly and by example to other groups and European businesses and Educational Establishments planning Software-to-Silicon projects, the most direct outcome will be the availability, as devices in the market through RED Semiconductor Ltd, of a new concept in supercomputing power that is also completely security auditable and transparent.  
+
+
+We are already aware of a commercial venture formed recently, who are aware and already benefiting from our work over the last three years to improve the Software-to-Silicon toolchain, that is now focusing on the finessing of the toolchain and its human interface to widen access to the methodology and IMEC are using our architectural test chip, currently in production, to validate and test their new cloud based chip design suite.  The outcomes are already happening and are bound to magnify.
+
+
+### Impacts
+
+
+We believe the market demand for our step change in core architecture thinking is so great it will force the world's leading microprocessor companies to follow.  The result will be a greater step change in the performance and security of computer hardware across the world.
+
+
+Additionally the confirmation of Silicon-proven Cell Libraries and a European-led functional Libre-Licensed VLSI toolchain in lower geometries will significantly reduce the cost of ASIC development for European businesses and reduce to zero the risk of critical dependence on non-Sovereign (geo-politically constrained) Commercial VLSI tools and Cell Libraries.
+
+
+#      3 Quality and efficiency of the implementation
+
+
+https://online.visual-paradigm.com/diagrams/tutorials/pert-chart-tutorial/
+
+
+Work Packages:
+
+
+1. NLnet
+2. SVP64 Standards
+3. Power ISA Simulator and Compliance Test Suite
+4. Compilers and Libraries
+5. Enhancement of Libre-SOC HDL
+6. EMF Signature Hardware security
+7. Cell Libraries
+8. Improve Coriolis2 for smaller geometries
+9. VLSI Layout, Tape-outs and ASIC testing
+10. Project Management
+11. HELIX GPS Application
+
+
+#       3.1        Work plan and resources
+
+
+  
+
+
+
+Tables for section 3.1
+
+
+Table 3.1a:         List of work packages
+
+
+|Wp#        |Wp Name                |Lead  #        |Lead Part#  Name        |Pe Months|Start        |End        |
+|1        |NLnet                        |5        |NLnet                |18        |1        |36        |
+|2        |SVP64                        |2        |Libre-SOC        |21        |1        |36        |
+|3        |Sim/Test                |2        |Libre-SOC        |64        |1        |18        |
+|4        |Compilers                |1        |RED                |32        |1        |36        |
+|5        |HDL                        |2        |Libre-SOC        |193        |1        |36        |
+|6        |EMF Sig                |4        |4/CNRS        |84        |1        |18        |
+|7        |Cells                        |2        |Libre-SOC        |109        |1        |24        |
+|8        |Coriolis2                |3        |3/SU                |338        |1        |36        |
+|9        |Layout                        |3        |3/SU                |220        |8        |36        |
+|10        |Mgmt, Fin, Legal        |1        |RED                |185        |1        |36        |
+|11        |HELIX GPS Cor.        |6        |HELIX                |248        |1        |36        |
+|        |                        |        |Total months        |1512        |        |        |
+
+
+## 1. NLnet
+
+
+Table 3.1b(1)
+
+
+|Work Package Number                |1                                        |
+|Lead beneficiary                |NLnet                                        |
+|Title                                |NLnet mini-grants                        |
+|Participant Number                |5                                        |
+|Short name of participant        |NLnet                                        |
+|Person months per participant        |18                                        |
+|Start month                        |1                                        |
+|End month                        |36                                        |
+
+
+Objectives:
+
+
+To manage the people who put in supplementary (by timescale) proposals intended to support the core objectives of our proposal, ensuring that those proposals also honour and meet the objectives outlined in the original call:
+https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/horizon-cl4-2021-digital-emerging-01-01
+
+
+This will allow us to address and deploy new ideas and concepts not immediately available to us at the time of this submission, and have them properly vetted by an Organisation both familiar with our work, and already trusted by the EU to fulfil the same role for other EU Grants. 
+
+
+Description of work:
+
+
+These descriptions effectively mirror the light-weight grant mechanism NLnet manages for the NGI research and development calls (EU Grants 825310 and 825322) and does not deviate from those pre-established procedures except to define the context of the work to be carried out by the Grant Recipient to fall within the criteria defined by this call (HORIZON-CL4-2021-DIGITAL-EMERGING-01-01) not those of the previous Grants
+
+
+* To include on the NLnet website a dedicated Call for mini-grant (EUR 50,000) Proposals, meeting the criteria of this existing Call (HORIZON-CL4-2021-DIGITAL-EMERGING-01-01) where the wording shall be written by NLnet and approved by the EU.
+* To analyse and vet the Proposals to ensure that they match the criteria, through a multi-stage process including validating appropriateness to the Libre-SOC Project and running each application through an Independent Review by the EU.
+* To notify successful Applicants, to ensure that they sign a Memorandum of Understanding with attached pre-agreed Milestones, and to fulfil Requests for Payment on 100% successful completion of those same pre-agreed Milestones.
+* To produce Audit and Transparency Reports and to engage the services of Auditors to ensure compliance.
+
+
+Deliverables:
+
+
+Again these deliverables are no different from NLnet's existing deliverables to the EU under Grant Agreements  825310 and 825322
+
+
+1.1. A functioning Call-for-Proposals on the NLnet website.
+1.2. Inclusion of the new CfP within the existing NLnet infrastructure
+1.3. Progress Reports and Independent Audit Reports to the EU
+
+
+## 2. SVP64 Standards, RFC submission to OPF ISA WG
+
+
+Table 3.1b(2)
+
+
+|Work Package Number                |2                                                        |
+|Lead beneficiary                |Libre-SOC                                                |
+|Title                                |SVP64 Standards, RFC submission to OPF ISA WG        |
+|Participant Number                |2                                                        |
+|Short name of participant        |Libre-SOC                                                |
+|Person months per participant        |21                                                        |
+|Start month                        |1                                                        |
+|End month                        |36                                                        |
+
+
+Objectives:
+
+
+To advance Draft SVP64 Standards, to work with the OpenPOWER Foundation ISA Working Group to comply with deliverable requirements as defined by the OPF ISA WG within their Request For Change (RFC) Process, and to deliver them.
+
+
+Description of work:
+
+
+* Extend Draft SVP64 into other areas necessary for fulfilment of this Call (including Zero-Overhead Loop Control)
+* Prepare SVP64 Standards Documentation for RFC Submission, including identifying appropriate subdivisions of work.
+* Create presentations and explanatory material for OpenPOWER Foundation ISA WG Members to help with their Review Process
+* Complete OPF ISA WG RFC submission requirements and submit the RFCs (Note: Compliance Test Suites are also required but are part of Work Package 3)
+* Publish the results of the decision by the ISA WG (whether accepted or not) and adapt to feedback if necessary
+* Repeat for all portions of all SVP64 Standards.
+
+
+Deliverables:
+
+
+Note: some of these deliverables may not yet be determined due to the OpenPOWER Foundation having not yet finalised and published its procedures, having not yet completed their Legal Review.  In addition, although we can advise and consult with them, it will be the OPF ISA WG who decides what final subdivisions of SVP64 are appropriate (not the Participants). This directly impacts and determines what the actual Deliverables will be: They will however fit the following template:
+
+
+2.1. Publish report on appropriate subdivisions of SVP64 subdivisions into multiple distinct OPF RFCs
+2.2. Publish presentations and explanatory materials to aid in the understanding of SVP64 and its value
+2.3. Attend Conferences to promote SVP64 and its benefits
+2.4. Complete the documentation and all tasks required for each SVP64 RFC and submit them to the OPF
+2.5. For each RFC, publish a report on the decision and all other permitted information that does not fall within the Commercial Confidentiality Requirements set by the OpenPOWER Foundation (these conditions are outside of our control).
+
+
+## 3. Power ISA Simulator and Compliance Test Suite
+
+
+Table 3.1b(3)
+
+
+|Work Package Number                |3                                                        |
+|Lead beneficiary                |Libre-SOC                                                |
+|Title                                |Power ISA Simulator and Compliance Test Suite        |
+|Participant Number                |2                |1                                        |
+|Short name of participant        |Libre-SOC        |RED                                        |
+|Person months per participant        |32                |32                                        |
+|Start month                        |1                                                        |
+|End month                        |18                                                        |
+
+
+Objectives:
+
+
+To advance the state-of-the-art in high-speed (near-real-time) hardware-cycle-accurate ISA Simulators to include the Power ISA and the SVP64 Draft Vector Extensions, and to create Test Suites and Compliance Test Suites with a view to aiding and assisting OpenPOWER Foundation Members including other European businesses and Academic Institutions to be able to check the interoperability and compliance of their Power ISA designs, and to have a stable base from which to accurately and cost-effectively test out experimental energy-efficient and performance advancements in computing, in close to real-time, before committing to actual Silicon.
+
+
+Description of work:
+
+
+1. Supplement the work under NLnet "Assure" Grant No 2021-08-071 (part of EU Grant no 957073) to further advance a cavatools port to the Power ISA 3 with newer Draft SVP64 features not already covered by NLnet 2021-08-071 (Note: this particular NLnet Grant has not yet been approved at the time of writing)
+2. Advancement of the Hardware-Cycle-Accuracy for Out-of-Order Execution simulation in cavatools, and the addition of other appropriate Hardware models.
+3. Addition of other relevant Libre-SOC Draft Power ISA Extensions in cavatools for 3D, Video, Cryptography and other relevant Extensions.
+4. Advancement of the Libre-SOC (TRL 3/4) "Test API" to other Simulators, HDL Simulators and existing ASICs (IBM POWER 9/10) and designs (Microwatt)
+5. Implement Compliance Test Suite suitable for Libre-SOC according to OpenPOWER Foundation requirements (for Work Package 2: SVP64 Standards)
+6. Develop an SVP64 Compliance Test Suite suitable for submission to the relevant OpenPOWER Workgroup, to a level that meets their requirements.
+
+
+Deliverables:
+
+
+3.1. Delivery of an updated version of cavatools with new Draft SVP64 features
+3.2. Delivery of a version of cavatools with hardware-accurate models including Out-of-Order Execution
+3.3. Delivery of additional co-simulation and co-execution options to the Libre-SOC "Test API" including at least IBM POWER 9 (and POWER 10 if access can be obtained), and Microwatt.
+3.4. Delivery of an implementation of a Compliance Test Suite that meets the OpenPOWER Foundation's criteria 
+3.5. Delivery of the documentation and an implementation of a Compliance Test Suite for Draft SVP64 Extensions for submission to the relevant OpenPOWER Foundation Workgroup.
+3.6. Public reports on all of the above at Conferences and on the Libre-SOC website.
+
+
+## 4. Compilers and Software Libraries
+
+
+Table 3.1b(4)
+|Work Package Number                |4                                        |
+|Lead beneficiary                |RED Semiconductor Ltd                |
+|Title                                |Compilers and Software Libraries        |
+|Participant Number                |1        |2                                |
+|Short name of participant        |RED        |Libre-SOC                        |
+|Person months per participant        |20        |12                                |
+|Start month                        |1                                        |
+|End month                        |36                                        |
+
+
+Objectives:
+
+
+To create usable prototype compilers including the advanced Draft SVP64 Vector features suitable for programmers using C, C++ and other High-level Languages, and to provide the base for the 3D Vulkan Drivers (IR - Intermediate Representation).  To advance the 3D Vulkan Drivers with Draft SVP64 support.  To add support for SVP64 Vectors into low-level software such as libc6, u-boot, the Linux Kernel and other critical infrastructure necessary for general-purpose computing software development.
+
+
+Description of work:
+
+
+* Feasibility Study of each of the Compilers and Libraries
+* Draft SVP64 Vector support in the gcc compiler
+* Draft SVP64 Vector support in the llvm compiler
+* Advancement of the Kazan 3D Vulkan Driver including using Draft SVP64
+* Advancement of the MESA3D Vulkan Driver including using Draft SVP64
+* Draft SVP64 Vector and Libre-SOC core support in low-level software including: libc6, u-boot, Linux Kernel.
+
+
+Deliverables:
+
+
+4.1. Feasibility report on the viability and scope of achievable work within the available respective budgets for each deliverable 
+4.2. Prototype compilers for each of gcc, llvm, Kazan and MESA3D meeting the scope of achievable work defined in the Feasibility study, delivered in source code form under appropriate Libre-Licenses and including unit test bench source code demonstrating successfully meeting the objectives
+4.3. Prototype ports of libc6, u-boot, Linux Kernel and other software demonstrated to meet the scope of achievable work, delivered in source code form under appropriate Libre-Licenses with unit tests.
+4.4. Public reports on the above and presentations at suitable Conferences
+
+
+## 5. Enhancement of Libre-SOC HDL
+
+
+Table 3.1b(5)
+
+
+|Work Package Number                |5                                                                |
+|Lead beneficiary                |Libre-SOC                                                        |
+|Title                                |Enhancement of Libre-SOC HDL                                |
+|Participant Number                |2                |1                |3                                |
+|Short name of participant        |Libre-SOC        |RED                |3/SU                                |
+|Person months per participant        |94                |83                |27                                |
+|Start month                        |1                                                                |
+|End month                        |36                                                                |
+
+
+Objectives:
+
+
+To create progressively larger processor designs, implementing the Power ISA 3, augmented by Draft SVP64 Cray-style Vectors, in order to act as real-world test cases for coriolis2 VLSI.
+
+
+Description of work:
+
+
+1. Review and potentially revise the existing Libre-SOC SIMD ALU HDL library, for optimisation and gate-level efficiency.
+2. Review and revise the existing Libre-SOC IEEE754 Floating-Point HDL Library, for the same, to scale up to meet commercial performance/watt in targeted 3D GPU workloads.
+3. Implement Out-of-order Multi-issue Execution Engine using Mitch Alsup's advanced Scoreboard design
+4. Implement Speculative Execution Models and Checkers to ensure resistance from Spectre, Meltdown and other hardware security attacks
+5. Implement advanced 3D and Video Execution Engines and Pipelines (Texture caches, Z-Buffers etc.)
+6. Integrate advanced "Zero-Overhead-Loop-Control" (TRL9) features deployed successfully by STMicroelectronics into the Libre-SOC Core
+7. Implement fully-automated "Pinmux" and Peripheral / IRQ Fabric Generator suitable for System-on-a-Chip semi-automated HDL.
+8. Implement large-scale Memory Management Unit (MMU), IOMMU, SMP-aware L1 Caches and L2 Cache suitable for multi-core high-performance Vector throughput
+9. Formal Correctness Proofs and Modular Unit Tests for all HDL.
+10. Implement Verification, Validation and Simulations for HDL
+
+
+Deliverables:
+
+
+5.1. Advanced HDL SIMD Library with appropriate documentation, unit tests and Formal Correctness Proofs, suitable for general-purpose wide adoption outside of Libre-SOC's use-case, under appropriate Libre Licenses
+5.2. Advanced HDL IEEE754 Library with appropriate documentation, unit tests and Formal Correctness Proofs, , suitable for general-purpose wide adoption outside of Libre-SOC's use-case, under appropriate Libre Licenses
+5.3. Advanced Libre-SOC SMP-capable Core, capable of multi-issue Out-of-Order Execution and implementing the Power ISA and Draft SVP64 Custom Extensions, with full unit tests and appropriate Formal Correctness Proofs.
+5.4. "Peripheral" HDL including PHYs+Controllers  including Pinmux / Fabric Inter-connect Autogenerator
+5.5. Verification, Validation and Simulation of HDL
+5.6. Appropriate publications and reports on all of the above at Conferences and on the Libre-SOC website.
+
+
+## 6. EMF Signature Hardware security
+
+
+Table 3.1b(6)
+
+
+|Work Package Number                |6                                                        |
+|Lead beneficiary                |CNRS                                                        |
+|Title                                |EMF Signature Hardware security                        |
+|Participant Number                |3                |4                |2                |1        |
+|Short name of participant        |3/SU                |4/CNRS        |Libre-SOC        |RED        |
+|Person months per participant        |35                |11                |13                |25        |
+|Start month                        |1                                                        |
+|End month                        |18                                                        |
+
+
+Objectives:
+
+
+To create a Electro-Magnetic "Signature" system that threads all the way through an ASIC VLSI layout that is sensitive to localised signal conditions, without adversely impacting the ASIC's behavioural integrity.  For the "Signature" system to be sufficiently sensitive to change its output depending what program the ASIC is running at the time, in real time.  To integrate the "threading" into the coriolis2 VLSI toolchain such that the "Signature" system's deployment is fully automatic.  To demonstrate its successful functionality through a small (low-cost, large geometry) MPW test runs prior to deployment in the larger ASIC at lower geometries.
+
+
+Description of work:
+
+
+* Feasibility study of different types of EMF "Signature" systems (including Hewlett Packard's 1949 technique) and the design of the test methodology.
+* Design the Mixed Analog / Digital Cells required
+* Design and implement an automated integration and layout module in coriolis2 to deploy the Signature System on any ASIC.
+* Create a suitable VLSI layout with an existing small example alliance-check-toolkit HDL design, with the Signature System threaded through it, and test the resultant MPW ASIC
+* Work with the Libre-SOC and VLSI Layout team to deploy the "Signature" system in the smaller geometry layout, ensuring for security reasons that only authorised access to the System is allowed, and help test the resultant MPW ASIC.
+* Publish the results in an Academic Paper as well as present at Conferences
+
+
+Deliverables:
+
+
+6.1. Feasibility and test methodology Report
+6.2. Mixed Analog / Digital Cells for the Signature System
+6.3. SPICE Simulation report on the expected behaviour of the "Signature" system
+6.4. coriolis2 module for automated deployment of Signature System within any ASIC
+6.5. small ASIC in large geometry and test report on the results
+6.6. large Libre-SOC ASIC in small geometry with Signature System and test report on its behaviour
+6.7. Academic Paper on the whole system.
+
+
+## 7. Cell Libraries
+
+
+Table 3.1b(7)
+
+
+|Work Package Number                |7                                                        |
+|Lead beneficiary                |Libre-SOC                                                |
+|Title                                |Cell Libraries for smaller geometries                        |
+|Participant Number                |3                |2                |1                        |
+|Short name of participant        |3/SU                |Libre-SOC        |Red                        |
+|Person months per participant        |33                |13                |63                        |
+|Start month                        |1                                                        |
+|End month                        |24                                                        |
+
+
+Objectives:
+
+
+To create, simulate, and test in actual silicon the low-level Cell Libraries in multiple geometries needed for advancing Libre/Open VLSI, using this proposals' other Work Packages as a test and proving platform, with a view to significantly reducing the cost for European Businesses in the creation of ASICs, for European Businesses and Academic Institutions to be able to publish the results of Security Research in full without impediment of Foundry NDAs, and to aid and assist in meeting the Digital Sovereignty Objectives outlined in EPRS PE 651,992 of July 2020.
+
+
+Description of work:
+
+
+Please Note: Work Packages 7, 8 and 9 are highly interdependent and will cross fertilise their results in an iterative manner as the design complexity increases, starting from smaller rapid-prototype test ASIC layouts and progressing to full designs.
+
+
+* Analog PLL, ADC and DAC Cells
+* Differential-pair Transmit / Receiver Cell
+* LVDS (current-driven) Transmit / Receiver Cell
+* Advanced GPIO IO Pad Cell (w/ Schottky etc.)
+* Clock Gating Cell
+* SR NAND Latch Cell
+* Standard Cells (MUX, DFF, XOR, etc)
+* SERDES Transmit / Receiver Cell (Gigabit / Multi-Gigabit)
+* Other Cells to be developed as required for other Work Packages
+
+
+Deliverables:
+
+
+7.1. Design of all Cells needed
+7.2. SPICE Model Simulations of all Cells
+7.3. Creation of Test ASIC Layouts and submission for MPW Shuttles in various geometries
+7.4. Generate and publish reports (Academic and others) and disseminate results
+
+
+## 8. Improve Coriolis2 for smaller geometries
+
+
+Table 3.1b(8)
+
+
+|Work Package Number                |8                                                        |
+|Lead beneficiary                |Sorbonne Université        (LIP6 Lab)                        |
+|Title                                |Improve Coriolis2 for smaller geometries                |
+|Participant Number                |3                |2                |1                        |
+|Short name of participant        |3/SU                |Libre-SOC        |RED                        |
+|Person months per participant        |112                |128                |98                        |
+|Start month                        |1                                                        |
+|End month                        |36                                                        |
+
+
+Objectives:
+
+
+To improve coriolis2 for lower geometries (to be decided on evaluation) such that it performs 100% DRC-clean (Design Rule Check) GDS-II files at the chosen geometry for the chosen Foundry, for each ASIC.
+
+
+Note: Commercial "DRC" will confirm that the GDS-II layout meets timing, electrical characteristics, ESD, spacing between tracks, sizes of vias etc. and confirms that the layout will not damage the Foundry's equipment during Manufacture.
+
+
+Description of work:
+
+
+Please Note: Work Packages 7, 8 and 9 are highly interdependent and will cross fertilise their results in an iterative manner as the design complexity increases, starting from smaller rapid-prototype test ASIC layouts and progressing to full designs.
+
+
+* The main focus (absolute priority) should be put on timing closure
+    that becomes critical in the lower nodes. And if we can only achieve
+    this alone, it will be a great success. That entails:
+    - Improve the clock tree (change from H-Tree to a dynamically
+      balanced one).
+    - Improve High Fanout Net Synthesis.
+    - Prevent hold violations.
+    - Resizing of the gates (adjust power).
+    - Logical resynthesis along the critical path, if needed.
+    - Add a whole timing graph infrastructure.
+*  To be able to implement those features has deep consequences on P&R:
+    - We must have an "estimator" of the timing in the wires
+      (first guess: Elmore).
+    - The placer algorithm SimPL needs to be upgraded/rewritten
+      to take on more additional constraints (adding and resizing
+      gates on the fly).
+* Better power supply. Control of IR-drop.
+* Protection against cross-coupling.
+* During all that process, we must work on a stable database.
+    So correct speed bottleneck only in algorithms built upon it,
+    not the DB itself. For this kind of design, it is acceptable
+    to run a full day on a high end computer.
+* Start a parallel project about to redesign the database (providing a backward
+    compatibility API to Hurricane).  But we must not make depend the timing closure
+    on the database Rewrite.
+
+
+Deliverables:
+
+
+The key deliverables are measured by the successful passing of DRC (Design Rule Checks) against Commercial VLSI tools (Mentor, Synopsis), and is so critically inter-dependent on all components working 100% together that there can only be one deliverable, here, per ASIC Layout. Completion of sub- and sub-sub-tasks shall however be recorded in an easily-auditable Standard Libre/Open Task Tracking Database (gitlab, bugzilla) and appropriate structured progress reports created.  As is the case with all Libre/Open Projects, "continuous" delivery is inherent through the ongoing publication of all source code in real-time. Full delivery is expected around 30 months.
+
+
+8.1. Coriolis2 VLSI improvements
+8.2. multiple small test ASIC layouts, to be added to LIP6 alliance-check-toolkit, potentially to be taped out and act as a preliminary test of prototype Cell Libraries
+8.3. large 2-core ASIC layout to be specifically taped-out in an MPW Shuttle Run
+8.4. Very large 8-core ASIC layout, not necessarily to be taped-out (MPW) due to size and cost, designed to push the limits.
+8.5. Academic and other reports
+
+
+## 9. VLSI Layout, Tape-outs and ASIC testing
+
+
+Table 3.1b(9)
+
+
+|Work Package Number                |9                                                                |
+|Lead beneficiary                |Sorbonne Université (LIP6 Lab)                                |
+|Title                                |VLSI Layout, Tape-outs and ASIC testing                        |
+|Participant Number                |3                |2                |1                                |
+|Short name of participant        |3/SU                |Libre-SOC        |RED                                |
+|Person months per participant        |64                |94                |62                                |
+|Start month                        |8                                                                |
+|End month                        |36                                                                |
+
+
+Objectives:
+
+
+To create 100% DRC-clean VLSI Layouts, to perform the necessary Validation of HDL as to its correctness at the transistor level, to submit them for MPW Shuttle Runs at the appropriate geometry through IMEC, and to test the resultant ASICs.  This to confirm that the advancements to the entire coriolis2 VLSI Toolchain is in fact capable of correctly producing ASICs at both smaller geometries than it can already do, and at much larger sizes than it can already handle. To publish reports that serve to inform European Businesses and Academic Institutions of the results such that, if successful, those Businesses will potentially save hugely on the cost of development of ASICs, and the dependence on geo-political commercial tools is mitigated and the EU's Digital Sovereignty Objectives met.
+
+
+Description of work:
+
+
+Please Note: Work Packages 7, 8 and 9 are highly interdependent and will cross fertilise their results in an iterative manner as the design complexity increases, starting from smaller rapid-prototype test ASIC layouts and progressing to full designs.
+
+
+* To create VLSI Layouts using Libre-SOC HDL 
+* To prepare and submit GDS-II Files to IMEC under appropriate MPW Shuttle Runs
+* To develop a Test jig, including custom test socket and supporting test software for each ASIC and to produce an appropriate report
+* To publish Academic Papers and other materials, on websites and at Conferences, on the results of each Tape-out.
+
+
+Deliverables:
+
+
+Note that due to the strong inter-dependence, these are the same Deliverables as Work Package 8.
+
+
+9.1. Multiple small test ASIC layouts, to be added to LIP6 alliance-check-toolkit, potentially to be taped out and act as a preliminary test of prototype Cell Libraries
+9.2. Large 2-core ASIC layout to be specifically taped-out in an MPW Shuttle Run
+9.3. Very large 8-core ASIC layout, not to be taped-out due to size and cost, designed to push the limits.
+9.4. Academic and other reports
+
+
+## 10. Management
+
+
+Table 3.1b(10)
+
+
+|Work Package Number                |10                                                                |
+|Lead beneficiary                |RED                                                                |
+|Title                                |VLSI Layout, Tape-outs and ASIC testing                        |
+|Participant Number                |1        |3                |2                |5                        |
+|Short name of participant        |RED        |3/SU                |Libre-SOC        |NLnet                        |
+|Person months per participant        |116        |12                |15                |42                        |
+|Start month                        |1                                                                |
+|End month                        |36                                                                |
+
+
+Objectives:
+
+
+*  Achieve competent management and control of the project
+*  Account for activities and spending, and generate reports
+*  Oversee legal relationships within the group and with external organisations
+
+
+Description of work:
+
+
+With a multi discipline project across five organisations it is essential that there is management and direction, as well as adequate training of new individuals introduced within each team.  Each individual organisation will be responsible for their own activities with a central focus being maintained by RED Semiconductor Ltd and Libre-SOC jointly.
+
+
+Deliverables:
+
+
+10.1.  Management, Administration and Training team
+10.2.  Reporting
+
+
+## 11. Helix GPS Correlator
+
+
+Table 3.1b(11)
+
+
+|Work Package Number                |11                                                                |
+|Lead beneficiary                |HELIX                                                                |
+|Title                                |                                                                |
+|Participant Number                |1        |6                |                                        |
+|Short name of participant        |RED        |HELIX                |                                        |
+|Person months per participant        |136        |112                |                                        |
+|Start month                        |1                                                                |
+|End month                        |36                                                                |
+
+
+Objectives:
+
+
+To focus the Libre-SOC 2-core ASIC onto a real-word customer requirement: GPS. To integrate both an FPGA as an early prototype and the final ASIC into a Demonstrator connecting to HELIX's high-accuracy GPS Antenna Arrays. To confirm functionality, and confirm energy savings (performance/watt) compared to other solutions.
+
+
+Description of work:
+
+
+1. Scoping Report by HELIX to research a Technical Architecture and the full Mathematical Requirements
+2. Creating from Scoping an agreed definition of the GPS ASIC requirement, by HELIX, to be given to Libre-SOC and RED.
+3. Software, Hardware, Documentation, FPGA Prototypes, Test and QA for the Libre-SOC 2-core to be focussed on GPS as a real-word customer Application.
+4. Software Development and Hardware compatibility design through the GPS Antenna Arrays, and testing to confirm functionality in both FPGA and ASIC. To confirm reduction in performance/watt of the ASIC.
+5. Reporting
+
+
+Deliverables:
+
+
+11.1 Scoping Report
+11.2 NRE: Adapt 2-core to working demonstrator GPS Application
+11.3 Helix Management of NRE
+11.4 Helix Internal Engineering for GPS Antenna connectivity and testing.
+11.5 Reports
+
+
+## Table 3.1c List of Deliverables
+ 
+Essential deliverables for effective project monitoring.
+ 
+|Deliv. #|Deliverable name        |Wp #        | Lead name        |Type        |Diss.        |Del Mon        |
+|1.3        |Reports                |1        |5/NLnet        |R        |PU        |12/24/36        |
+|2.4        |SVP64 RFCs                |2        |2/Libre-SOC        |R        |PU        |multiple        |
+|3.4        |Compliance                |3        |1/RED                |R        |PU        |24                |
+|3.6        |Reports                |3        |1/RED                |R        |PU        |24/36                |
+|4.1        |Feasibility                |4        |1/RED                |R        |PU        |3                |
+|4.4        |Reports                |4        |1/RED                |R        |PU        |12/24/36        |
+|5.3        |Libre-SOC Core        |5        |2/Libre-SOC        |OTHER|PU        |18                |
+|5.5        |HDL Validation        |5        |2/Libre-SOC        |R        |PU        |18                |
+|5.6        |Reports                |5        |2/Libre-SOC        |R        |PU        |12/24/36        |
+|6.1        |Feasibility                |6        |4/CNRS        |R        |PU        |3                |
+|6.7        |Academic Paper        |6        |4/CNRS        |R        |PU        |36                |
+|7.2        |SPICE Models                |7        |4/CNRS        |DATA        |PU        |12                |
+|7.4        |Academic Papers        |7        |4/CNRS        |R        |PU        |36                |
+|8.3        |2-core readiness        |8        |3/SU                |R        |PU        |15                |
+|8.5        |Academic Papers        |8        |3/SU                |R        |PU        |36                |
+|9.2        |2-core GDS-II                |9        |3/SU                |OTHER|PU        |26                |
+|9.4        |Academic Papers        |9        |3/SU                |R        |PU        |36                |
+|10.2        |Reporting                |10        |1/RED                |R        |PU        |12/24/36        |
+|11.2        |Requirements                |11        |6/HELIX        |R        |PU        |12                |
+|11.5        |Reporting                |11        |6/HELIX        |R        |PU        |12/24/36        |
+
+
+
+
+## Table 3.1d:        List of milestones 
+
+
+|M/stone #|Milestone name        |WP#        |Due date        |Means of verification        |
+|2.4        |SVP64 RFCs        |2        |multiple        |OpenPOWER Foundation ISA WG        |
+|3.1        |cavatools/SVP64        |3        |12        |Deliverable 3.5 (Compliance tests)                |
+|4.2        |compilers        |4        |24        |Deliverable 4.3 (software tests)                |
+|5.3        |Libre-SOC Core        |5        |18        |Deliverable 5.5 (HDL Validation)                |
+|6.2        |Signature Cells        |6        |12        |Deliverable 6.3 / 6.5(SPICE, ASIC)        |
+|7.1        |Cell designs        |7        |12        |Deliverable 7.2 / 7.3 (SPICE, ASIC)        |
+|8.1        |coriolis2        |8        |18        |Deliverables 8.2-8.4                        |
+|9.1        |coriolis2 ongoing|9        |12        |Deliverables 9.2-9.3 (ASICs)                |
+|6.7        |Academic report        |6        |36        |self-verifying (peer review)                |
+|7.4        |Academic report        |7        |36        |self-verifying (peer review)                |
+|8.5        |Academic report        |8        |36        |self-verifying (peer review)                |
+
+
+## Table 3.1e:        Critical risks for implementation
+
+
+Risk level:  (i) likelihood L/M/H,(ii) severity: Low/Medium/High
+
+
+|Description of risk        |Wp#                |Proposed risk-mitigation measures                        |
+|loss of personnel        |1-11                |L/H key-man insurance                                        |
+|4/CNRS availability        |7                |H/H Additional personnel from 1/RED, at market rates        |
+|Unforeseen Technical        |2-11                |L/H 5/NLnet "reserve" mini-grant budget (Wp#1)        |
+|Geopolitical adversity        |4,6-9,11        |M/H Use lower geometries, or switch Foundry (IMEC)        |
+|Pandemic                |1-11                |L/H current mitigation continued (isolation of teams)        |
+|                        |                |                                                        |
+
+
+
+
+Table 3.1f:         Summary of staff effort
+
+
+|Part # / name        |Wp1        |Wp2        |Wp3        |Wp4        |Wp5        |Wp6        |Wp7        |Wp8        |Wp9        |Wp10        |Wp11        |Total        |
+|1 / RED                |        |        |32        |20        |94        |25        |63        |98        |62        |116        |136        |598        |
+|2 / Libre-SOC        |        |21        |32        |12        |72        |13        |13        |128        |94        |15        |        |230        |
+|3 / SU                |        |        |        |        |27        |26        |33        |112        |64        |12        |        |273        |
+|4 / CNRS                |        |        |        |        |        |24        |        |        |        |        |        |237        |
+|5 / NLnet                |18        |        |        |        |        |        |        |        |        |42        |        |60        |
+|5 / Helix                |        |        |        |        |        |        |        |        |        |        |112        |112        |
+|Totals                |18        |21        |64        |32        |193        |84        |109        |338        |220        |185        |248        |1512        |
+
+
+## 3.1g Subcontracting
+
+
+### Table 3.1g:        1/RED ‘Subcontracting costs’ items 
+
+
+|Cost EUR        |description and justification                        |
+|60000                |feasibility and scope studies for compilers        |
+|1500000        |gcc compiler                                        |
+|1500000        |llvm compiler                                        |
+|500000                |Kazan Vulkan 3D compiler                        |
+|500000                |MESA 3D Vulkan compiler                        |
+|400000                |libc6, u-boot, linux kernel software                |
+|50000                |smaller (180/130 nm) ASIC MPWs (IMEC)        |
+|280000                |larger (low geometry) ASIC MPWs (IMEC)        |
+|4790000        | total                                                |
+
+
+### Table 3.1g:        5/NLnet ‘Subcontracting / Sub-Grant costs’ items 
+
+
+|Cost EUR        |description and justification                        |
+|5000000        |NLnet "mini-grants"                                |
+
+
+## Purchase costs
+
+
+### Table 3.1h:        1/RED Purchase Costs
+
+
+|                        |Cost EUR        |Justification                                                        |
+|travel / subst                |48000                |3yr World-wide travel to conferences/meetings/interviews        |
+|equipment                |140000                |High-end Servers for Layouts, High-end FPGAs for testing        |
+|Other/Good/work/Svc.        |90000                |Legal/Accountancy/Insurance +prof. business services                |
+|remaining purch. cst.        |                |                                                                |
+|Total                        |278000                |                                                                |
+
+
+### Table 3.1h:        2/Libre-SOC Purchase costs
+
+
+|                        |Cost EUR        |Justification                                                |
+|travel / subst                |48000                |                                                        |
+|equipment                |90000                |High-end Servers for Layouts, FPGA Boards for testing        |
+|Other/Good/work/Svc.        |12000                |I.T. Management of Libre-SOC Server                        |
+|remaining purch. cst.        |                |                                                        |
+|Total                        |150000                |                                                        |
+
+
+### Table 3.1h:        3/SU Purchase costs
+
+
+|                        |Cost EUR        |Justification                                        |
+|travel / subst                |                |                                                |
+|equipment                |100000                |High-end Servers for Layouts, Simulations        |
+|Other/Good/work/Svc.        |10500                |Office Administration                                |
+|remaining purch. cst.        |                |                                                |
+|Total                        |                |                                                |
+
+
+### Table 3.1h:        5/NLnet 
+
+
+|                        |Cost EUR        |Justification                                        |
+|travel / subst                |48000                |3yr EU-wide travel to conferences and meetings        |
+|equipment                |                |                                                |
+|Other/Good/work/Svc.        |                |                                                |
+|remaining purch. cst.        |                |                                                |
+|Total                        |48000                |                                                |
+
+
+#        3.2        Capacity of participants and consortium as a whole
+
+
+The majority of the consortium have been working together for over three years on the precursor technical development of the Libre-SOC core project,  the evolution of which is the lynch-pin and "proving-ground" of this grant application.  The public record of their achievements and team involvement can be found in their public Open Source record https://libre-soc.org/. 
+The Libre-SOC team are internationally experienced software professionals who have strong familiarity with state of the art software to silicon technologies.  They have been supported by two of the co-applicants labs CNRS and LIP6 (The applicants being Sorbonne Université and Affiliated Entity, CNRS), and many other European based technology development groups, which each provide key elements of the project from specialist programs such as coriolis2, alliance, HITAS, YAGLE and more, and the manufacturing expertise of Imec. Their versatility and experience with Libre/Open Source Software also means that they can adapt to unforeseen circumstances and can navigate the ever-changing and constantly-evolving FOSS landscape with confidence.
+The above is critically important in light of the requirement to demonstrate access to critical infrastructure, resources and the ability to fulfil: with the sole exception of NDA'd Foundry PDKs (Physical Design Kits), the entirety of this project is Libre/Open Source, both in the tools it utilises, components that it uses, and the results that are generated.  With there being no restriction on the availability of Libre/Open Source software needed to complete the project, the Participants correspondingly have no impediment.  We also have a proven strategy to deal with the NDA's: a "parallel track" where at least one Participant (Sorbonne Université, LIP6 Lab) has signed TSMC Foundry NDAs, and consequently there is no impediment there, either.
+Sorbonne Université (SU) is a multidisciplinary, research-intensive and world class academic institution. It was created on January 1st 2018 as the merger of two first-class research intensive universities, UPMC (University Pierre and Marie Curie) and Paris-Sorbonne. Sorbonne Université is now organized with three faculties: humanities, medicine and science each with the wide-ranging autonomy necessary to conduct its ambitious programs in both research and education. SU counts 53,500 students, 3,400 professor-researchers and 3,600 administrative and technical staff members. SU is intensively engaged in European research projects (163 FP7 projects and 195 H2020 projects).
+Its computer science laboratory, LIP6, is internationally recognized as a leading research institute. 
+LIP6 is a Joint Research Unit of both SU (Sorbonne Université) and CNRS. Both entities invest resources within LIP6 so CNRS is then an Affiliated Entity linked to SU.  According to SU-CNRS agreement regarding LIP6, SU, as a full partner, manages the grant for its Affiliated Entity, CNRS. 
+RED Semiconductor Ltd has been established as a commercialisation vehicle, sharing the Libre principles of the core Libre-SOC team and bringing Semiconductor industry commercial management and technology experience.  This includes the founders of two successful semiconductor companies and a public company chairman.  There is also a cross directorship of Luke Leighton (of Libre-SOC) giving the company an extensive technology market and leadership experience.
+NLnet is a Netherlands based public benefit organisation that brings to the table over 35 years of European internet history and well over two decades of unique real-world experience in funding and supporting bottom up internet infrastructure projects around the world - engaging some of the best independent researchers and developers. NLnet has funded essential work on important infrastructure parts of the internet, from the technologies with which the answers from the DNS root of the internet can now be trusted, all the way up to key standards for email security, transport layer security, email authenticity, and a lot more - on virtually every layer of the internet, from securing core routing protocols to browser security plugins, from firmware security to open source LTE networks.
+Most recently NLnet is hosting the NGI0 Discovery, NGI0 PET and NGI Assure open calls as part of the Next Generation Internet research and development initiative, of which NLnet supports 300+ open source software, open hardware and open standards projects to build a more resilient, sustainable and trustworthy internet.
+NLnet, a Stichting / Foundation, has been Libre-SOC’s funding source from the beginning and fundamentally understands our technology and direction of travel.  As well as providing augmentation under existing EU Grants funding for technology opportunities that we will benefit from but are yet to be identified, they are a fundamental sounding board that will be invaluable to the project moving forward.
+Regarding the extreme high-end computing resources necessary to complete the exceptionally-demanding task of VLSI development and Layout, we find that high-end modern laptops and desktop computers (with 64 to 256 GB of RAM) are perfectly adequate.  However in the event that our immediately-accessible computing resources are not adequate, both Sorbonne Université (LIP6 and CNRS) and Libre-SOC qualify for access to Fed4Fire (https://www.fed4fire.eu/- grant agreement No 732638) which gives us direct access to large clusters (100+) high-end servers.  Additionally, we are specifying some of these high-end computers in our budget, and the software to run on them is entirely Libre-Licensed and within our combined experience to deploy.
+We have established that Embecosm Gmbh and Vrull.eu are some of the world's leading experts in Compiler Technology.  We will put out to tender a Contract with an initial evaluation phase, followed by a TRL 4/5 Research phase for the prerequisite compilers (gcc, llvm, Kazan, MESA3D) necessary to support the core design work.
+The OpenPOWER Foundation is a part of the Linux Foundation, and is directly responsible for the long-term protection and evolution of the Power ISA.  Members include IBM, Google, NVidia, Raptor Engineering, University of Oregon and many more. 
+https://openpowerfoundation.org/membership/current-members/. 
+The Chair of the newly-formed ISA Working Group is Paul Mackerras, and the Technical Chair is Toshaan Bharvani.  Both of these people have been kindly attending bi-weekly meetings with the Libre-SOC Team for over 18 months, and we have kept them apprised of ongoing developments, particularly with the Draft SVP64 ISA Extension.  They are both going out of their way to regularly advise us on how to go about a successful RFC Process for SVP64, and we deeply appreciate their support.
+HELIX Technology's involvement, as a potential customer and potential user of the Libre-SOC technology, will give focus to the deliverable of the project.  They have world-leading expertise in Antenna Technology, and in the mathematics behind the Signal Processing required for GNSS/GPS. We have deliberately selected them to ensure the ambition of our overall project. 
+We therefore have a cohesive cooperative team of experience from concept to customer product and a supporting cast of specialist technical support that are an established practiced team.
+As a last point: the creation of the teams for this project is critical for RED Semiconductors Limited and Libre-SOC.  We have the benefit of having the core of an International Technology Headhunter Research Team amongst the directors of RED Semiconductor Limited, giving us the capability to ensure the project is fully manned in the required timescales without the need to externally resource recruitment services, and this is included in RED’s management manpower.
