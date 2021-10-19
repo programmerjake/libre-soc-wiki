@@ -23,65 +23,207 @@ Please note: CNRS is an "Affiliated Entity" of Sorbonne Université
 ##            1.1 Objectives and ambition
 
 
-Throughout this Grant Proposal, you will note that we are making significant use of ideas from the early days of Computing.  Due to the limitations of physical technology at that time, these ideas were categorised into "technology that was beyond delivery".  Industry-standard computing from then to today missed many of those opportunities and has consequently ploughed narrow "technological ruts" in an incremental fashion that has detrimentally impacted and constrained all world-wide Computing end-users as a result.  Modern hardware technology performance is now allowing us to revisit the best of the "Sea of ideas" from the history of the past 60 years of computing.  Our Grant Application is therefore based on firm, practical proven foundations, backed up by a real-world customer requirement: Advanced high-accuracy GPS Sensor-Fusion, to prove the core's capabilities and energy efficiency.
+Throughout this Grant Proposal, you will note that we are making
+significant use of ideas from the early days of Computing.  Due to
+the limitations of physical technology at that time, these ideas were
+categorised into "technology that was beyond delivery".  Industry-standard
+computing from then to today missed many of those opportunities and
+has consequently ploughed narrow "technological ruts" in an incremental
+fashion that has detrimentally impacted and constrained all world-wide
+Computing end-users as a result.  Modern hardware technology performance
+is now allowing us to revisit the best of the "Sea of ideas" from the
+history of the past 60 years of computing.  Our Grant Application is
+therefore based on firm, practical proven foundations, backed up by a
+real-world customer requirement: Advanced high-accuracy GPS Sensor-Fusion,
+to prove the core's capabilities and energy efficiency.
 
 
-We have chosen to evolve core technology to develop a Next-Generation Supercomputer-scale Microprocessor family based on an existing 2-decades-proven base (the Power ISA), with Advanced Cray-style Vectors, providing energy-efficient advanced computational power by a unique methodology not currently being achieved by any current general-purpose computing device.  We have been working on this strategy for over three years and our grant application is now evolutionary but was revolutionary.
+We have chosen to evolve core technology to develop a Next-Generation
+Supercomputer-scale Microprocessor family based on an existing
+2-decades-proven base (the Power ISA), with Advanced Cray-style Vectors,
+providing energy-efficient advanced computational power by a unique
+methodology not currently being achieved by any current general-purpose
+computing device.  We have been working on this strategy for over three
+years and our grant application is now evolutionary but was revolutionary.
 
 
-Libre-SOC has, for over three years, been backed by EU Funding through NLnet and now NGI POINTER, and at the core of our work we have been developing a novel Draft Vector ISA Extension to the OpenPOWER ISA, called SVP64.  https://libre-soc.org/openpower/sv/svp64/ and an enhanced processor core architecture on which it will run.
+Libre-SOC has, for over three years, been backed by EU Funding through
+NLnet and now NGI POINTER, and at the core of our work we have been
+developing a novel Draft Vector ISA Extension to the OpenPOWER ISA,
+called SVP64.  https://libre-soc.org/openpower/sv/svp64/ and an enhanced
+processor core architecture on which it will run.
 
 
-As an aside we must acknowledge the research work of IBM labs who designed and then Open-Licensed their Power ISA: the foundation on which we have been building.  Standing on the shoulders of greatness is never a bad place to start.
+As an aside we must acknowledge the research work of IBM labs who designed
+and then Open-Licensed their Power ISA: the foundation on which we have
+been building.  Standing on the shoulders of greatness is never a bad
+place to start.
 
 
-SVP64 contains features and capabilities never seen in any Instruction Set Architecture (ISA) of the past sixty years.  With NLnet's help we have TRL (3) implementations and simulations demonstrating a 75% reduction in the program size of core algorithms for Video and Audio DSP Processing (FFT, DCT, Matrix Multiply), and these still need optimized, which if successfully expanded to general-purpose algorithms would result in huge power savings if deployed in mass-volume end-user products.
+SVP64 contains features and capabilities never seen in any Instruction
+Set Architecture (ISA) of the past sixty years.  With NLnet's help we have
+TRL (3) implementations and simulations demonstrating a 75% reduction in
+the program size of core algorithms for Video and Audio DSP Processing
+(FFT, DCT, Matrix Multiply), and these still need optimized, which if
+successfully expanded to general-purpose algorithms would result in huge
+power savings if deployed in mass-volume end-user products.
 
 
-Why we are leveraging the Power ISA as the fundamental basis instead of "completely novel non-standard computing architecture" requires some explanation, best illustrated by reference to other historic high capability designs.  Aspex Microelectronics ASP was a 4096-wide SIMD Array of 2-bit processors. It could be programmed at a rate of one instruction per 5-10 days.  Elixent also had a similar 2D Grid Array of 4-bit processors.  Both were ultra-power-efficient (2 orders of magnitude for certain specialist tasks) but were impossible to program even for the best programming minds and required critical assistance from a severely limited pool of specialists for best exploitation. The Industry-standard rate for general-purpose High-Level programming (C, C++) is around 150 lines of code per day, not 5-10 days per line of assembler. We seek to deliver a much more accessible "general-purpose" Microprocessor that contains Supercomputing elements and consequently stands a much more realistic chance of general world-wide adoption (including Europe).
+Why we are leveraging the Power ISA as the fundamental basis instead of
+"completely novel non-standard computing architecture" requires some
+explanation, best illustrated by reference to other historic high
+capability designs.  Aspex Microelectronics ASP was a 4096-wide SIMD
+Array of 2-bit processors. It could be programmed at a rate of one
+instruction per 5-10 days.  Elixent also had a similar 2D Grid Array of
+4-bit processors.  Both were ultra-power-efficient (2 orders of magnitude
+for certain specialist tasks) but were impossible to program even for the
+best programming minds and required critical assistance from a severely
+limited pool of specialists for best exploitation. The Industry-standard
+rate for general-purpose High-Level programming (C, C++) is around 150
+lines of code per day, not 5-10 days per line of assembler. We seek to
+deliver a much more accessible "general-purpose" Microprocessor that
+contains Supercomputing elements and consequently stands a much more
+realistic chance of general world-wide adoption (including Europe).
 
 
-An additional insight: OpenRISC 1200 took 12 years to reach maturity.  The team developed the entire processor architecture, low-level software and compiler technology, entirely from scratch.  We considered this approach and, due to the long timescales, rejected it, choosing instead to leverage and be compatible with a pre-existing Open ISA: OpenPOWER. We also considered RISC-V however it turns out to be too simplistic (https://news.ycombinator.com/item?id=24459041) and it is far too late to retrospectively add Supercomputer-grade power-efficient functionality to its design or instruction set.  With the IBM-inspired Power ISA already being a Supercomputer-grade ISA, it is a natural fit for an energy-efficient Cray-style Vector upgrade, and comes with 25 years of pre-existing software, libraries, compilers and customers.  By being backwards-compatible with the existing Power ISA 3.0 (which is now an Open ISA managed by the OpenPOWER Foundation), European businesses will benefit from that pre-existing decades-established stability and pedigree.
+An additional insight: OpenRISC 1200 took 12 years to reach maturity.
+The team developed the entire processor architecture, low-level software
+and compiler technology, entirely from scratch.  We considered this
+approach and, due to the long timescales, rejected it, choosing
+instead to leverage and be compatible with a pre-existing Open ISA:
+OpenPOWER. We also considered RISC-V however it turns out to be too
+simplistic (https://news.ycombinator.com/item?id=24459041) and it is
+far too late to retrospectively add Supercomputer-grade power-efficient
+functionality to its design or instruction set.  With the IBM-inspired
+Power ISA already being a Supercomputer-grade ISA, it is a natural fit for
+an energy-efficient Cray-style Vector upgrade, and comes with 25 years
+of pre-existing software, libraries, compilers and customers.  By being
+backwards-compatible with the existing Power ISA 3.0 (which is now an
+Open ISA managed by the OpenPOWER Foundation), European businesses will
+benefit from that pre-existing decades-established stability and pedigree.
 
 
-As hinted at, above: Great hardware is nothing without the corresponding compiler technology and support libraries. Consequently we need to engage with Compiler Service Companies (Embecosm Gmbh, Vrull.eu) to evaluate the feasibility of adding Vectorisation support to gcc, llvm and low-level standard libraries. Whilst Libre-SOC has already demonstrated TRL (3) successful assembly-level SVP64 algorithms (MP3 CODEC in particular), assembler is far too low-level for general-purpose compute. C, C++ and other programming language support is required to be evaluated and developed.  Also given that the Libre-SOC Core is being long-term designed for energy-efficient 3D GPU and Video Processing workloads, two 3D Vulkan Drivers (Kazan and MESA3D) need to be taken beyond proof-of-concept (TRL 2/3).
+As hinted at, above: Great hardware is nothing without the corresponding
+compiler technology and support libraries. Consequently we need to engage
+with Compiler Service Companies (Embecosm Gmbh, Vrull.eu) to evaluate the
+feasibility of adding Vectorisation support to gcc, llvm and low-level
+standard libraries. Whilst Libre-SOC has already demonstrated TRL (3)
+successful assembly-level SVP64 algorithms (MP3 CODEC in particular),
+assembler is far too low-level for general-purpose compute. C, C++
+and other programming language support is required to be evaluated
+and developed.  Also given that the Libre-SOC Core is being long-term
+designed for energy-efficient 3D GPU and Video Processing workloads,
+two 3D Vulkan Drivers (Kazan and MESA3D) need to be taken beyond
+proof-of-concept (TRL 2/3).
 
 
-We consider it strategically critical to develop processors in an entirely transparent fashion. The current Silicon Industry chooses secrecy to mask technology shortcuts and restrictive cross licencing, which inevitably and systematically fails to provide trustable hardware: Intel's Management Engine; Qualcomm making 40% of the world's smartphones vulnerable to hacking; Apple drive-by Zero-day Wireless exploits; Super-Micro being delisted from NASDAQ for failing to be able to prove the provenance of all hardware and software components.  We consider Libre / Open Hardware ASICs and the full Libre/Open VLSI toolchain itself to be fundamental to end-user trust and security as well as Digital Sovereignty.
+We consider it strategically critical to develop processors in an entirely
+transparent fashion. The current Silicon Industry chooses secrecy to mask
+technology shortcuts and restrictive cross licencing, which inevitably and
+systematically fails to provide trustable hardware: Intel's Management
+Engine; Qualcomm making 40% of the world's smartphones vulnerable to
+hacking; Apple drive-by Zero-day Wireless exploits; Super-Micro being
+delisted from NASDAQ for failing to be able to prove the provenance of
+all hardware and software components.  We consider Libre / Open Hardware
+ASICs and the full Libre/Open VLSI toolchain itself to be fundamental
+to end-user trust and security as well as Digital Sovereignty.
 
 
-In addition to this, Libre-SOC has already been developing Mathematical Formal Correctness Proofs for the HDL of its early prototype designs, which, in combination with unrestricted access to the HDL Source Code, allow third parties including customers to perform their own verification of the ASIC's purpose (as opposed to the customer having to trust a manufacture that inherently has a direct conflict-of-interest in the form of its Shareholders and profits).  Furthermore, we aim to experiment with built-in "tamper-checking" circuits that, on running a test programme on our evaluation test bed, will provide an Electro-Magnetic "signature".  By publishing this "signature" and the test programs, customers can verify that their purchased ASICs have the same EMF "signature" and can detect immediately if the ASIC has been tampered with.  In addition we will continue existing (TRL 2) research into Hardware-level Speculative Execution mitigation techniques.  We feel that the full combination of these objectives meets the Hardware Security requirements of this Call.
+In addition to this, Libre-SOC has already been developing Mathematical
+Formal Correctness Proofs for the HDL of its early prototype designs,
+which, in combination with unrestricted access to the HDL Source Code,
+allow third parties including customers to perform their own verification
+of the ASIC's purpose (as opposed to the customer having to trust a
+manufacture that inherently has a direct conflict-of-interest in the form
+of its Shareholders and profits).  Furthermore, we aim to experiment with
+built-in "tamper-checking" circuits that, on running a test programme on
+our evaluation test bed, will provide an Electro-Magnetic "signature".
+By publishing this "signature" and the test programs, customers can
+verify that their purchased ASICs have the same EMF "signature" and can
+detect immediately if the ASIC has been tampered with.  In addition we
+will continue existing (TRL 2) research into Hardware-level Speculative
+Execution mitigation techniques.  We feel that the full combination of
+these objectives meets the Hardware Security requirements of this Call.
 
 
-This strategy does not end with just the HDL: thanks (again) to NLnet we have been collaborating already with Chips4Makers, LIP6 and CNRS (all funded by EU Grants), to advance the state-of-the-art for European VLSI Tool Technology, which is important to European Silicon Sovereignty.
+This strategy does not end with just the HDL: thanks (again) to NLnet
+we have been collaborating already with Chips4Makers, LIP6 and CNRS
+(all funded by EU Grants), to advance the state-of-the-art for European
+VLSI Tool Technology, which is important to European Silicon Sovereignty.
 
 
 https://www.europarl.europa.eu/RegData/etudes/BRIE/2020/651992/EPRS_BRI(2020)651992_EN.pdf
 
 
-We are however significantly concerned that the LIP6 Department, as an Academic body, is inevitably underfunded, particularly when it is the sole provider of Libre/Open VLSI Silicon-proven software in the whole of Europe. This is why we have included an Engineering Supplement for LIP6 and CNRS in the Libre-SOC budget, to contract engineering support for them and to avoid employment complications due to the French Civil Service Regulations, which lack the flexibility needed.  These engineers, who are in high demand, will work for Libre-SOC/RED Semiconductor Ltd but be fully available to assist in the development work covered by the grant being done by LIP6 and CNRS.
+We are however significantly concerned that the LIP6 Department, as
+an Academic body, is inevitably underfunded, particularly when it is the
+sole provider of Libre/Open VLSI Silicon-proven software in the whole
+of Europe. This is why we have included an Engineering Supplement for
+LIP6 and CNRS in the Libre-SOC budget, to contract engineering support
+for them and to avoid employment complications due to the French Civil
+Service Regulations, which lack the flexibility needed.  These engineers,
+who are in high demand, will work for Libre-SOC/RED Semiconductor Ltd
+but be fully available to assist in the development work covered by the
+grant being done by LIP6 and CNRS.
 
 
-The consequential effect of this tool development will be to help create VLSI tools that can be directly substituted for the existing commercial (and geopolitically constrained) tools from companies such as Cadence and Mentor, giving a Euro-centric independence from “technology constraining” acts.
+The consequential effect of this tool development will be to help
+create VLSI tools that can be directly substituted for the existing
+commercial (and geopolitically constrained) tools from companies such as
+Cadence and Mentor, giving a Euro-centric independence from “technology
+constraining” acts.
 
 
-We are currently awaiting the return of our first 180 nm architecture test ASIC (TRL 4) from TSMC, through IMEC.  It is the first major silicon in Europe of its size (5.1 x 5.9 mm^2 and 130,000 cells) to be entirely developed using a Libre-Licensed VLSI ASIC toolchain, and the world's first Power ISA 3.0 outside of IBM to reach Silicon in over 12 years. We have already started to push (drive) the evolution of Europe's only silicon-proven Libre/Open VLSI toolchain, something this Grant application will support and will allow LIP6 and CNRS to enhance it to lower geometries and larger ASIC sizes which will be critical to European businesses' Digital and Silicon Sovereignty.
+We are currently awaiting the return of our first 180 nm architecture
+test ASIC (TRL 4) from TSMC, through IMEC.  It is the first major
+silicon in Europe of its size (5.1 x 5.9 mm^2 and 130,000 cells)
+to be entirely developed using a Libre-Licensed VLSI ASIC toolchain,
+and the world's first Power ISA 3.0 outside of IBM to reach Silicon in
+over 12 years. We have already started to push (drive) the evolution of
+Europe's only silicon-proven Libre/Open VLSI toolchain, something this
+Grant application will support and will allow LIP6 and CNRS to enhance
+it to lower geometries and larger ASIC sizes which will be critical to
+European businesses' Digital and Silicon Sovereignty.
+
+ For the avoidance of confusion the use of the word "Cell" refers to a
+bounded piece of electronic design that when used together, like bricks,
+form larger more complicated electrical functions.
+
+ To help advance Digital Sovereignty, LIP6 and CNRS need to once
+again push the boundaries of the Libre/Open VLSI toolchain, coriolis2
+Place-and-Route, https://coriolis2.lip6.fr and HITAS/YAGLE Static Timing
+Analyser https://www-soc.lip6.fr/equipe-cian/logiciels/tasyagle/ both
+of which are, at the lower 360 and 180 nm geometries, at TRL 9, but are
+at TRL 2 for lower geometries 90, 65, 45 nm and below.
 
 
-For the avoidance of confusion the use of the word "Cell" refers to a bounded piece of electronic design that when used together, like bricks, form larger more complicated electrical functions.
+Chips4Makers (also NLnet funded) created FlexLib Libre/Open Cell
+Libraries which allows porting of Standard Cell Libraries to any geometry.
+An NDA'd TSMC 180nm version of FlexLib was created for the Libre-SOC
+180nm test ASIC.  To achieve our objectives, LIP6 and CNRS will need to
+create smaller geometry ports of FlexLib.  These Cell Libraries need to
+be tested in actual Silicon, and consequently we will be working with
+IMEC as a sub-contractor and partner to deliver MPW Shuttle Runs for
+these critical Libraries, using Libre-SOC Cores as a "proving-ground".
 
-
-To help advance Digital Sovereignty, LIP6 and CNRS need to once again push the boundaries of the Libre/Open VLSI toolchain, coriolis2 Place-and-Route, https://coriolis2.lip6.fr and HITAS/YAGLE Static Timing Analyser https://www-soc.lip6.fr/equipe-cian/logiciels/tasyagle/ both of which are, at the lower 360 and 180 nm geometries, at TRL 9, but are at TRL 2 for lower geometries 90, 65, 45 nm and below.
-
-
-Chips4Makers (also NLnet funded) created FlexLib Libre/Open Cell Libraries which allows porting of Standard Cell Libraries to any geometry.  An NDA'd TSMC 180nm version of FlexLib was created for the Libre-SOC 180nm test ASIC.  To achieve our objectives, LIP6 and CNRS will need to create smaller geometry ports of FlexLib.  These Cell Libraries need to be tested in actual Silicon, and consequently we will be working with IMEC as a sub-contractor and partner to deliver MPW Shuttle Runs for these critical Libraries, using Libre-SOC Cores as a "proving-ground".
 https://europractice-ic.com/wp-content/uploads/2021/01/Pricelist-EUROPRACTICE-General-MPW_8.pdf
 
 
-To put all of this to practical use, HELIX Technologies, by defining an advanced GPS Correlator, will set a Computational capability objective for the core technology and be a Reference test-bed. HELIX will then be able to carry out the comparative studies which show that the core technology meets significant performance/watt improvements. The ultimate destination for some of these devices will be Satellites (Space).
+To put all of this to practical use, HELIX Technologies, by defining
+an advanced GPS Correlator, will set a Computational capability objective
+for the core technology and be a Reference test-bed. HELIX will then
+be able to carry out the comparative studies which show that the core
+technology meets significant performance/watt improvements. The ultimate
+destination for some of these devices will be Satellites (Space).
 
-
-In addition, NLnet, a Stichting / Foundation, has been so successful in supporting "Works for the Public Good" that we feel that their approach and service fulfilment are extremely relevant to this Call. During the 36 month duration of the proposal, NLnet is in a position to engage with Libre/Open Hardware and Software developers which, for our team, will mitigate the risk of unanticipated issues requiring specialist but small-scope funding, that yet still meets the well-defined objectives of this Call.
+In addition, NLnet, a Stichting / Foundation, has been so successful
+in supporting "Works for the Public Good" that we feel that their approach
+and service fulfilment are extremely relevant to this Call. During the
+36 month duration of the proposal, NLnet is in a position to engage
+with Libre/Open Hardware and Software developers which, for our team,
+will mitigate the risk of unanticipated issues requiring specialist but
+small-scope funding, that yet still meets the well-defined objectives
+of this Call.
 
 
 Summary of why our work is pertinent to Call HORIZON-CL4-2021-DIGITAL-EMERGING-01-01:
@@ -124,22 +266,68 @@ Grant numbers:
 * To solve the above problem, all Libre/Open Developers will work with an Academic "Ghost" version, called C4M-FreePDK45 https://gitlab.com/Chips4Makers/c4m-pdk-freepdk45. This "ghost" version will allow full (parallel-track) collaboration between Libre/Open Developers and those Participants creating "real" GDS-II Files, without violating Foundry NDAs.
 
 
-This methodology is based on an established process that has already allowed us to deliver demonstrable software and hardware results, the manifestation of which is our 180nm architecture test chip now in manufacture.  This has involved a significant amount of cooperative development among the applicants, and others beyond, and the development of core supporting technology that this grant application can now efficiently build upon.
+This methodology is based on an established process that has already
+allowed us to deliver demonstrable software and hardware results,
+the manifestation of which is our 180nm architecture test chip now
+in manufacture.  This has involved a significant amount of cooperative
+development among the applicants, and others beyond, and the development
+of core supporting technology that this grant application can now
+efficiently build upon.
 
 
-We refer to other supporting technology sources further in this application and whilst they are not the core team they will critically contribute to the overall success.  In particular, these groups can be supported by NLnet, whose "Works for the Public Good" remit is 100% compatible with the full transparency objectives (that the project's participants are already committed to) which will help by providing additional non-core-team development on an on-demand basis, on the back of NLnet's already-trusted commitment to fulfil European Union objectives under Grant Agreements No 825310 and 825322.
+We refer to other supporting technology sources further in this
+application and whilst they are not the core team they will critically
+contribute to the overall success.  In particular, these groups can be
+supported by NLnet, whose "Works for the Public Good" remit is 100%
+compatible with the full transparency objectives (that the project's
+participants are already committed to) which will help by providing
+additional non-core-team development on an on-demand basis, on the back
+of NLnet's already-trusted commitment to fulfil European Union objectives
+under Grant Agreements No 825310 and 825322.
 
 
-Additionally, Libre-SOC is working closely with the OpenPOWER Foundation ISA Working Group Chair, having attended regular bi-weekly meetings for over 18 months. As mentioned above, the entirety of our work of greater than 3 years on this Vector Extension, SVP64, is entirely transparent and open: https://libre-soc.org/openpower/sv/svp64/.  Both NLnet (and StandICT.eu through a proposal under consideration at the time of writing) are supporting our efforts to submit the Draft SVP64 and its subcomponents through the RFC (Request for Change) process being developed by the OpenPOWER Foundation.  For long-term stability and impact it is a necessary prerequisite that Draft SVP64 become an official part of the Power ISA: this decision is however down to the OpenPOWER Foundation and requires considerable preparation and planning, which this Grant will help support.
+Additionally, Libre-SOC is working closely with the OpenPOWER Foundation
+ISA Working Group Chair, having attended regular bi-weekly meetings for
+over 18 months. As mentioned above, the entirety of our work of greater
+than 3 years on this Vector Extension, SVP64, is entirely transparent
+and open: https://libre-soc.org/openpower/sv/svp64/.  Both NLnet
+(and StandICT.eu through a proposal under consideration at the time of
+writing) are supporting our efforts to submit the Draft SVP64 and its
+subcomponents through the RFC (Request for Change) process being developed
+by the OpenPOWER Foundation.  For long-term stability and impact it is a
+necessary prerequisite that Draft SVP64 become an official part of the
+Power ISA: this decision is however down to the OpenPOWER Foundation
+and requires considerable preparation and planning, which this Grant
+will help support.
 
 
-One huge benefit of Libre-SOC's core being Power ISA 3.0 Compliant is that IBM contributed a huge patent pool through the OpenPOWER EULA. Compliant Designs enjoy the protection of this patent pool.  By contributing SVP64 to the Power ISA it falls under this same umbrella.  Libre-SOC shall be entering into an agreement with the OpenPOWER Foundation, here, as part of the ISA RFC process.  European businesses clearly benefit from the long-term stability of this arrangement.
+One huge benefit of Libre-SOC's core being Power ISA 3.0 Compliant is that
+IBM contributed a huge patent pool through the OpenPOWER EULA. Compliant
+Designs enjoy the protection of this patent pool.  By contributing SVP64
+to the Power ISA it falls under this same umbrella.  Libre-SOC shall be
+entering into an agreement with the OpenPOWER Foundation, here, as part
+of the ISA RFC process.  European businesses clearly benefit from the
+long-term stability of this arrangement.
 
 
-Whilst we clearly need, ultimately, to prove our design's power-efficiency in silicon, we would however consider it unwise and extremely costly to tape-out to Silicon without having gone through a proper early-evaluation process, weeding out ineffective strategies and designs.  To that end, we learned from Jeff Bush's work on the Nyuzi 3D core to perform estimates on power consumption and clock cycles.  This is a highly-effective feedback process that allows identification and targeting of the most urgent (inefficient) areas, and we have taken it on-board and adopted it throughout the project.
+Whilst we clearly need, ultimately, to prove our design's power-efficiency
+in silicon, we would however consider it unwise and extremely costly to
+tape-out to Silicon without having gone through a proper early-evaluation
+process, weeding out ineffective strategies and designs.  To that end, we
+learned from Jeff Bush's work on the Nyuzi 3D core to perform estimates
+on power consumption and clock cycles.  This is a highly-effective
+feedback process that allows identification and targeting of the most
+urgent (inefficient) areas, and we have taken it on-board and adopted
+it throughout the project.
 
 
-Part of that involves Peter Hsu's cavatools (another NLnet Grant) which is (at present) a cycle-accurate Simulator for RISC-V.  A (new) NLnet Grant (not yet approved at the time of writing) is targeted at porting cavatools to the Power ISA. This proposal would allow NLnet-funded work to be extended into 3D, Video, DSP and other areas, to simulate (test) out the feasibility, power-efficiency and effectiveness of different Custom SVP64 Extensions to the Power ISA, long before they reach actual Silicon.
+Part of that involves Peter Hsu's cavatools (another NLnet Grant) which
+is (at present) a cycle-accurate Simulator for RISC-V.  A (new) NLnet
+Grant (not yet approved at the time of writing) is targeted at porting
+cavatools to the Power ISA. This proposal would allow NLnet-funded work to
+be extended into 3D, Video, DSP and other areas, to simulate (test) out
+the feasibility, power-efficiency and effectiveness of different Custom
+SVP64 Extensions to the Power ISA, long before they reach actual Silicon.
 
 
 #           2 Impact
