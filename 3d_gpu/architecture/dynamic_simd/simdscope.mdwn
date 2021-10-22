@@ -22,4 +22,20 @@ SimdScope is used as follows:
 
     m = Module()
     elwid = Signal(2)
-    vec_el_counts = { 0b00: 64, 0b01: 32
+    vec_el_counts = { 0b00: 64, 0b01: 32, 0b10: 16, 0b11: 8}
+    with SimdScope(m, elwid, vec_el_counts, scalar=pspec.scalar) as s:
+        a = s.Signal(64)
+        b = s.Signal(32)
+
+    m.d.comb += b.eq(a[:32])
+
+Note that the scalar parameter is selected from a runtime/compiletime
+configuration parameter which can alter the context between scalar and
+SIMD.
+
+When set to scalar, SimdScope.Signal simply re-routes directly
+to nmigen.ast.Signal and in this way sets the mandatory expectation
+that **under no circumstances** shall SimdScope or SimdSignal alter
+the fundamental language behavioural characteristics of Type 1 (AST)
+or Type 2 (dsl.Module)
+        
