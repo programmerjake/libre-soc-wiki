@@ -6,10 +6,10 @@ exactly the same `Shape` as the result of slicing the input `SimdSignal`'s corre
 ## Example code:
 
 ```python
-a = SimdSignal(...)
-a_s = a.sig # shorthand to make table smaller
-b = a[3:6]
-b_s = a.sig # shorthand to make table smaller
+a_s = SimdSignal(...)
+a = a_s.sig # shorthand to make table smaller
+b_s = a_s[3:6]
+b = b_s.sig # shorthand to make table smaller
 ```
 
 ## `a`'s Elements:
@@ -28,30 +28,30 @@ b_s = a.sig # shorthand to make table smaller
     </tr>
     <tr class="text-right">
         <th scope="row" class="text-left">ElWid: 8-bit</th>
-        <td><code>a_s[56:64]</code></td>
-        <td><code>a_s[48:56]</code></td>
-        <td><code>a_s[40:48]</code></td>
-        <td><code>a_s[32:40]</code></td>
-        <td><code>a_s[24:32]</code></td>
-        <td><code>a_s[16:24]</code></td>
-        <td><code>a_s[8:16]</code></td>
-        <td><code>a_s[0:8]</code></td>
+        <td><code>a[56:64]</code></td>
+        <td><code>a[48:56]</code></td>
+        <td><code>a[40:48]</code></td>
+        <td><code>a[32:40]</code></td>
+        <td><code>a[24:32]</code></td>
+        <td><code>a[16:24]</code></td>
+        <td><code>a[8:16]</code></td>
+        <td><code>a[0:8]</code></td>
     </tr>
     <tr class="text-right">
         <th scope="row" class="text-left">ElWid: 16-bit</th>
-        <td colspan="2"><code>a_s[48:64]</code></td>
-        <td colspan="2"><code>a_s[32:48]</code></td>
-        <td colspan="2"><code>a_s[16:32]</code></td>
-        <td colspan="2"><code>a_s[0:16]</code></td>
+        <td colspan="2"><code>a[48:64]</code></td>
+        <td colspan="2"><code>a[32:48]</code></td>
+        <td colspan="2"><code>a[16:32]</code></td>
+        <td colspan="2"><code>a[0:16]</code></td>
     </tr>
     <tr class="text-right">
         <th scope="row" class="text-left">ElWid: 32-bit</th>
-        <td colspan="4"><code>a_s[32:64]</code></td>
-        <td colspan="4"><code>a_s[0:32]</code></td>
+        <td colspan="4"><code>a[32:64]</code></td>
+        <td colspan="4"><code>a[0:32]</code></td>
     </tr>
     <tr class="text-right">
         <th scope="row" class="text-left">ElWid: 64-bit</th>
-        <td colspan="8"><code>a_s[0:64]</code></td>
+        <td colspan="8"><code>a[0:64]</code></td>
     </tr>
 </table>
 
@@ -73,37 +73,37 @@ So, slicing bits `3:6` of a 32-bit element of `a` must, because we have to match
     </tr>
     <tr class="text-right">
         <th scope="row" class="text-left">ElWid: 8-bit</th>
-        <td><code>b_s[21:24]</code></td>
-        <td><code>b_s[18:21]</code></td>
-        <td><code>b_s[15:18]</code></td>
-        <td><code>b_s[12:15]</code></td>
-        <td><code>b_s[9:12]</code></td>
-        <td><code>b_s[6:9]</code></td>
-        <td><code>b_s[3:6]</code></td>
-        <td><code>b_s[0:3]</code></td>
+        <td><code>b[21:24]</code></td>
+        <td><code>b[18:21]</code></td>
+        <td><code>b[15:18]</code></td>
+        <td><code>b[12:15]</code></td>
+        <td><code>b[9:12]</code></td>
+        <td><code>b[6:9]</code></td>
+        <td><code>b[3:6]</code></td>
+        <td><code>b[0:3]</code></td>
     </tr>
     <tr class="text-right">
         <th scope="row" class="text-left">ElWid: 16-bit</th>
         <td class="text-center"><i>Padding</i></td>
-        <td><code>b_s[18:21]</code></td>
+        <td><code>b[18:21]</code></td>
         <td class="text-center"><i>Padding</i></td>
-        <td><code>b_s[12:15]</code></td>
+        <td><code>b[12:15]</code></td>
         <td class="text-center"><i>Padding</i></td>
-        <td><code>b_s[6:9]</code></td>
+        <td><code>b[6:9]</code></td>
         <td class="text-center"><i>Padding</i></td>
-        <td><code>b_s[0:3]</code></td>
+        <td><code>b[0:3]</code></td>
     </tr>
     <tr class="text-right">
         <th scope="row" class="text-left">ElWid: 32-bit</th>
         <td colspan="3" class="text-center"><i>Padding</i></td>
-        <td><code>b_s[12:15]</code></td>
+        <td><code>b[12:15]</code></td>
         <td colspan="3" class="text-center"><i>Padding</i></td>
-        <td><code>b_s[0:3]</code></td>
+        <td><code>b[0:3]</code></td>
     </tr>
     <tr class="text-right">
         <th scope="row" class="text-left">ElWid: 64-bit</th>
         <td colspan="7" class="text-center"><i>Padding</i></td>
-        <td><code>b_s[0:3]</code></td>
+        <td><code>b[0:3]</code></td>
     </tr>
 </table>
 
