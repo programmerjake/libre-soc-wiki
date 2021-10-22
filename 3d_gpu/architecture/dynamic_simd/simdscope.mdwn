@@ -59,8 +59,9 @@ Here, because SimdShape derives from Shape, things still work
 because SimdShape works out that its maximum scalar size is
 11, and sets Shape.width to 11 when SimdScope is set in
 scalar mode.  When scalar=False, full SIMD is activated and
-the resultant HDL combines vec_el_counts with expshape to create
-1xFP64, 2xFP32, 4xFP16, 4xBF16 where the exponents are 11, 8, 5, 8
+the resultant HDL combines vec_el_counts with expshape as part
+of an ALU with inputs that can be
+1xFP64, 2xFP32, 4xFP16, 4xBF16, where the exponents are 1x11, 2x8, 4x5, 4x8
 respectively.
 
 Behind the scenes, when calling SimdShape.Signal in SIMD mode,
