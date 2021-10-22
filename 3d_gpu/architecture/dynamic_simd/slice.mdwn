@@ -14,6 +14,8 @@ b = b_s.sig # shorthand to make table smaller
 
 ## `a`'s Elements:
 
+(TODO 1: shrink to only 4 partitions.  TODO 2: convert to markdown)
+
 <table>
     <tr class="text-right">
         <th scope="row" class="text-left">Bit #</th>
@@ -58,6 +60,8 @@ b = b_s.sig # shorthand to make table smaller
 So, slicing bits `3:6` of a 32-bit element of `a` must, because we have to match nmigen, produce a 3-bit element, which might seem like no problem, however, slicing bits `3:6` of a 16-bit element of a 64-bit `SimdSignal` must *also* produce a 3-bit element, so, in order to get a `SimdSignal` where *all* elements are 3-bit elements, as required by `SimdSlice`'s output, we have to introduce padding:
 
 ## `b`'s Elements:
+
+(TODO 1: shrink to only 4 partitions.  TODO 2: convert to markdown)
 
 <table>
     <tr class="text-right">
@@ -106,6 +110,9 @@ So, slicing bits `3:6` of a 32-bit element of `a` must, because we have to match
         <td><code>b[0:3]</code></td>
     </tr>
 </table>
+
+(TODO: add an example of how this would then do e.g. an add (to another
+SimdSignal of only 8 bits in length or so)
 
 <style>
     /* duplicated from bootstrap so text editors can see it
