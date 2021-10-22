@@ -27,7 +27,8 @@ SimdScope is used as follows:
         a = s.Signal(64)
         b = s.Signal(32)
 
-    m.d.comb += b.eq(a[:32])
+    with m.If(a > Const(2)):
+        m.d.comb += b.eq(a[:32])
 
 Note that the scalar parameter is selected from a runtime/compiletime
 configuration parameter which can alter the context between scalar and
