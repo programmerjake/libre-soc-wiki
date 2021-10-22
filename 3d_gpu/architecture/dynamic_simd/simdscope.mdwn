@@ -22,7 +22,7 @@ SimdScope is used as follows:
 
     m = Module()
     elwid = Signal(2)
-    vec_el_counts = { 0b00: 64, 0b01: 32, 0b10: 16, 0b11: 8}
+    vec_el_counts = { 0b00: 1, 0b01: 2, 0b10: 4, 0b11: 8}
     with SimdScope(m, elwid, vec_el_counts, scalar=pspec.scalar) as s:
         a = s.Signal(64)
         b = s.Signal(32)
@@ -45,12 +45,20 @@ results, it may be necessary to introduce explicit SimdShape instances
 containing elwid-specific element widths.  Relevant examples here include
 exponent and mantissa for IEEE754FP
 
+    m = Module()
+    elwid = Signal(2)
+    vec_el_counts = { 0b00: 1, 0b01: 2, 0b10: 4, 0b11: 4}
+    with SimdScope(m, elwid, vec_el_counts, scalar=pspec.scalar) as s:
         expshape = SimdShape(part_shape={0b00: 11, # FP64
                                          0b01: 8,  # FP32
                                          0b10: 5,  # FP16
                                          0b01: 8}  # BF16
+        exp = s.Signal(expshape)
 
-here, because SimdShape derives from Shape, things still work
+Here, because SimdShape derives from Shape, things still work
 because SimdShape works out that its maximum scalar size is
 11, and sets Shape.width to 11 when SimdScope is set in
-scalar mode
+scalar mode.  When scalar=False, full SIMD is activated and
+the resultant HDL combines vec_el_counts with expshape to create
+1xFP64, 2xFP32, 4xFP16, 4xBF16 where the exponents are 11, 8, 5, 8
+respectively.0
