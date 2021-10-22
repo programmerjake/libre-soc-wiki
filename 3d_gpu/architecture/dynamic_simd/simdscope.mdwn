@@ -65,7 +65,8 @@ respectively.
 
 Behind the scenes, when calling SimdShape.Signal in SIMD mode,
 the elwid and vec_el_counts parameters from the context are combined
-with the SimdShape as inputs to create a layout that is "Element-width
+with the SimdShape passed in to SimdScope.Signsl,
+as inputs to create a layout() that is "Element-width
 aware" (ElwidPartType).  With the full information being passed in to
 SimdSignals, the actual use of the SimdSignals need not be inside
 the Context Manager.
