@@ -111,9 +111,6 @@ So, slicing bits `3:6` of a 32-bit element of `a` must, because we have to match
     </tr>
 </table>
 
-(TODO: add an example of how this would then do e.g. an add (to another
-SimdSignal of only 8 bits in length or so)
-
 <style>
     /* duplicated from bootstrap so text editors can see it
         -- ignored by ikiwiki */
@@ -139,4 +136,12 @@ element widths adapt to completely fill the entire underlying Signal.
 
 Given that this new width context is then passed through to other SimdSignals,
 the entire SimdSignal suite has to adapt to this change in requirements.
-It is however not as big an adaptation as it first seems.
+It is however not as big an adaptation as it first seems, because ultimately
+SimdSignals use PartitionPoints (and a PartType) to decide what to do.
+Illustrating that SimdSignal uses PartitionPoints to make its decisions
+at the low level, an add example using `b` and a new SimdSignal `c` of
+an overall 8-bit width (with fixed element widths of size 2):
+
+(TODO: add an example of how this would then do e.g. an add (to another
+SimdSignal of only 8 bits in length or so)
+
