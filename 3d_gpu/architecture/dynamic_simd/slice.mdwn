@@ -145,3 +145,13 @@ an overall 8-bit width (with fixed element widths of size 2):
 (TODO: add an example of how this would then do e.g. an add (to another
 SimdSignal of only 8 bits in length or so)
 
+Questions raised by the add example:
+
+* after performing a Slice, which creates an entirely new
+  (padded) set of PartitionPoints, where does c's PartitionPoints
+  come from?
+* how should a SimdSignal that does not contain the same
+  padding be add()ed to a Sliced()'d SimdSignal that does *not*
+  contain padding, having a completely different set of PartitionPoints?
+
+
