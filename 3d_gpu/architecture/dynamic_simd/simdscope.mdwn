@@ -61,4 +61,11 @@ because SimdShape works out that its maximum scalar size is
 scalar mode.  When scalar=False, full SIMD is activated and
 the resultant HDL combines vec_el_counts with expshape to create
 1xFP64, 2xFP32, 4xFP16, 4xBF16 where the exponents are 11, 8, 5, 8
-respectively.0
+respectively.
+
+Behind the scenes, when calling SimdShape.Signal in SIMD mode,
+the elwid and vec_el_counts parameters from the context are combined
+with the SimdShape as inputs to create a layout that is "Element-width
+aware" (ElwidPartType).  With the full information being passed in to
+SimdSignals, the actual use of the SimdSignals need not be inside
+the Context Manager.
