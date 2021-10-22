@@ -134,6 +134,11 @@ SimdSignal that requires (and propagates) fixed element widths.  All other
 sub-modules have up until this point been a fixed *overall* width where the
 element widths adapt to completely fill the entire underlying Signal.
 
+(**This includes for [[dynamic_simd/eq]] and other comparators and the
+[[dynamic_simd/logicops]] which very deliberately propagate the LSB boolean
+value in each partition throughout the entire partition on a per-element
+basis in order to make Mux and Switch function correctly**)
+
 Given that this new width context is then passed through to other SimdSignals,
 the entire SimdSignal suite has to adapt to this change in requirements.
 It is however not as big an adaptation as it first seems, because ultimately
