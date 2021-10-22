@@ -1,0 +1,25 @@
+# SimdScope
+
+Links:
+
+* <https://bugs.libre-soc.org/show_bug.cgi?id=734>
+
+TODO
+
+SimdScope is the user-facing "front" behind which SimdSignal
+is entirely and transparently hidden.  Aside from using it,
+the goal and its purpose is that
+developers should under no circumstances have to know
+that their HDL, which was initially written as scalar
+nmigen HDL, is behaving entirely transparently as full
+SIMD capable HDL.  There are a few caveats to that: some
+capabilities such as LHS assignment to an ast.Part are so
+complex in a SIMD context that SimdSignal in its first
+version does not implement it.  Array is out at the moment
+as well.  Over time this may change.
+
+SimdScope is used as follows:
+
+    m = Module()
+    elwid = Signal(2)
+    vec_el_counts = { 0b00: 64, 0b01: 32
