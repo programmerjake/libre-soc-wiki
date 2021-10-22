@@ -1,0 +1,124 @@
+# Dynamic Partitioned Slice (`SimdSlice`)
+
+In order to match the semantics of nmigen's `Slice` class, `SimdSlice` has to have each element of the result have
+exactly the same `Shape` as the result of slicing the input `SimdSignal`'s corresponding element.
+
+## Example code:
+
+```python
+a = SimdSignal(...)
+a_s = a.sig # shorthand to make table smaller
+b = a[3:6]
+b_s = a.sig # shorthand to make table smaller
+```
+
+## `a`'s Elements:
+
+<table>
+    <tr class="text-right">
+        <th scope="row" class="text-left">Bit #</th>
+        <td>63&#8288;&hellip;&#8288;56</td>
+        <td>55&#8288;&hellip;&#8288;48</td>
+        <td>47&#8288;&hellip;&#8288;40</td>
+        <td>39&#8288;&hellip;&#8288;32</td>
+        <td>31&#8288;&hellip;&#8288;24</td>
+        <td>23&#8288;&hellip;&#8288;16</td>
+        <td>15&#8288;&hellip;&#8288;8</td>
+        <td>7&#8288;&hellip;&#8288;0</td>
+    </tr>
+    <tr class="text-right">
+        <th scope="row" class="text-left">ElWid: 8-bit</th>
+        <td><code>a_s[56:64]</code></td>
+        <td><code>a_s[48:56]</code></td>
+        <td><code>a_s[40:48]</code></td>
+        <td><code>a_s[32:40]</code></td>
+        <td><code>a_s[24:32]</code></td>
+        <td><code>a_s[16:24]</code></td>
+        <td><code>a_s[8:16]</code></td>
+        <td><code>a_s[0:8]</code></td>
+    </tr>
+    <tr class="text-right">
+        <th scope="row" class="text-left">ElWid: 16-bit</th>
+        <td colspan="2"><code>a_s[48:64]</code></td>
+        <td colspan="2"><code>a_s[32:48]</code></td>
+        <td colspan="2"><code>a_s[16:32]</code></td>
+        <td colspan="2"><code>a_s[0:16]</code></td>
+    </tr>
+    <tr class="text-right">
+        <th scope="row" class="text-left">ElWid: 32-bit</th>
+        <td colspan="4"><code>a_s[32:64]</code></td>
+        <td colspan="4"><code>a_s[0:32]</code></td>
+    </tr>
+    <tr class="text-right">
+        <th scope="row" class="text-left">ElWid: 64-bit</th>
+        <td colspan="8"><code>a_s[0:64]</code></td>
+    </tr>
+</table>
+
+So, slicing bits `3:6` of a 32-bit element of `a` must, because we have to match nmigen, produce a 3-bit element, which might seem like no problem, however, slicing bits `3:6` of a 16-bit element of a 64-bit `SimdSignal` must *also* produce a 3-bit element, so, in order to get a `SimdSignal` where *all* elements are 3-bit elements, as required by `SimdSlice`'s output, we have to introduce padding:
+
+## `b`'s Elements:
+
+<table>
+    <tr class="text-right">
+        <th scope="row" class="text-left">Bit #</th>
+        <td>23&#8288;&hellip;&#8288;21</td>
+        <td>20&#8288;&hellip;&#8288;18</td>
+        <td>17&#8288;&hellip;&#8288;15</td>
+        <td>14&#8288;&hellip;&#8288;12</td>
+        <td>11&#8288;&hellip;&#8288;9</td>
+        <td>8&#8288;&hellip;&#8288;6</td>
+        <td>5&#8288;&hellip;&#8288;3</td>
+        <td>2&#8288;&hellip;&#8288;0</td>
+    </tr>
+    <tr class="text-right">
+        <th scope="row" class="text-left">ElWid: 8-bit</th>
+        <td><code>b_s[21:24]</code></td>
+        <td><code>b_s[18:21]</code></td>
+        <td><code>b_s[15:18]</code></td>
+        <td><code>b_s[12:15]</code></td>
+        <td><code>b_s[9:12]</code></td>
+        <td><code>b_s[6:9]</code></td>
+        <td><code>b_s[3:6]</code></td>
+        <td><code>b_s[0:3]</code></td>
+    </tr>
+    <tr class="text-right">
+        <th scope="row" class="text-left">ElWid: 16-bit</th>
+        <td class="text-center"><i>Padding</i></td>
+        <td><code>b_s[18:21]</code></td>
+        <td class="text-center"><i>Padding</i></td>
+        <td><code>b_s[12:15]</code></td>
+        <td class="text-center"><i>Padding</i></td>
+        <td><code>b_s[6:9]</code></td>
+        <td class="text-center"><i>Padding</i></td>
+        <td><code>b_s[0:3]</code></td>
+    </tr>
+    <tr class="text-right">
+        <th scope="row" class="text-left">ElWid: 32-bit</th>
+        <td colspan="3" class="text-center"><i>Padding</i></td>
+        <td><code>b_s[12:15]</code></td>
+        <td colspan="3" class="text-center"><i>Padding</i></td>
+        <td><code>b_s[0:3]</code></td>
+    </tr>
+    <tr class="text-right">
+        <th scope="row" class="text-left">ElWid: 64-bit</th>
+        <td colspan="7" class="text-center"><i>Padding</i></td>
+        <td><code>b_s[0:3]</code></td>
+    </tr>
+</table>
+
+<style>
+    /* duplicated from bootstrap so text editors can see it
+        -- ignored by ikiwiki */
+    .text-left {
+        text-align: left !important
+    }
+
+    .text-right {
+        text-align: right !important
+    }
+
+    .text-center {
+        text-align: center !important
+    }
+</style>
