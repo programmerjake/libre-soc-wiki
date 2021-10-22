@@ -27,7 +27,7 @@ SimdScope is used as follows:
         a = s.Signal(64)
         b = s.Signal(32)
 
-    with m.If(a > Const(2)):
+    with m.If(a > 2):
         m.d.comb += b.eq(a[:32])
 
 Note that the scalar parameter is selected from a runtime/compiletime
@@ -40,3 +40,17 @@ that **under no circumstances** shall SimdScope or SimdSignal alter
 the fundamental language behavioural characteristics of Type 1 (AST)
 or Type 2 (dsl.Module)
         
+Note that under some circumstances, particularly temporary intermediate
+results, it may be necessary to introduce explicit SimdShape instances
+containing elwid-specific element widths.  Relevant examples here include
+exponent and mantissa for IEEE754FP
+
+        expshape = SimdShape(part_shape={0b00: 11, # FP64
+                                         0b01: 8,  # FP32
+                                         0b10: 5,  # FP16
+                                         0b01: 8}  # BF16
+
+here, because SimdShape derives from Shape, things still work
+because SimdShape works out that its maximum scalar size is
+11, and sets Shape.width to 11 when SimdScope is set in
+scalar mode
