@@ -143,7 +143,8 @@ at the low level, an add example using `b` and a new SimdSignal `c` of
 an overall 8-bit width (with fixed element widths of size 2):
 
 (TODO: add an example of how this would then do e.g. an add (to another
-SimdSignal of only 8 bits in length or so)
+SimdSignal of only 8 bits in length or so - all element widths being
+2 in all partitions, but having the exact same PartitionPoints)
 
 Questions raised by the add example:
 
@@ -151,7 +152,21 @@ Questions raised by the add example:
   (padded) set of PartitionPoints, where does c's PartitionPoints
   come from?
 * how should a SimdSignal that does not contain the same
-  padding be add()ed to a Sliced()'d SimdSignal that does *not*
+  padding be add()ed to a Slice()d SimdSignal that does *not*
   contain padding, having a completely different set of PartitionPoints?
+* what happens when a fixed element width Slice()d source `b` is
+  add()ed to a fixed *overall* width SimdSignal of width 8 that
+  permits variable-length (max available space) elements?
 
+Illustrating the case of adding a SimdSignal with padding to one that
+does not:
 
+(TODO: add a second example of how this would then do e.g. an add (to another
+SimdSignal of only 8 bits in length or so, but having a **different**
+style of PartitionPoints, with no padding this time)
+
+Illustrating the case where a Sliced (fixed element width) SimdSignal
+is added to one which has variable-length elements that take up the
+entirety of the partition (overall fixed width):
+
+(TODO: third example)
