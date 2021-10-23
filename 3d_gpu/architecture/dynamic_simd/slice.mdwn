@@ -230,7 +230,13 @@ by noting that even the padding sections may be Cat()ed together.
 
 Illustrating the case where a Sliced (fixed element width) SimdSignal
 is added to one which has variable-length elements that take up the
-entirety of the partition (overall fixed width):
+entirety of the partition (overall fixed width).
+
+* For elwid=0b00, b is 1x 8bit
+* for elwid=0b01, b is 2x 4bit
+* for elwid=0b10, b is 4x 2bit
+
+Thus, the partition subdivisions are:
 
     elwid     |    |    |
     0b00  B7B6 B5B4 B3B2 B1B0
