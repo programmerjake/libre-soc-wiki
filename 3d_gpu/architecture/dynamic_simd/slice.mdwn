@@ -183,6 +183,24 @@ specified by "x", at each elwid:
     0b01 x x x x  x AaA9A8 x x x x  x A2A1A0
     0b10 x AeAdAc x AaA9A8 x A6A5A4 x A2A1A0
 
+The presence of "x" unused portions actually requires some additional
+partition points:
+
+    elwid |      | |      | |      | |
+    0b00 x x x x  x x x x  x x x x  x A2A1A0
+    0b01 x x x x  x AaA9A8 x x x x  x A2A1A0
+    0b10 x AeAdAc x AaA9A8 x A6A5A4 x A2A1A0
+
+Now let us take a signal, b, of 2-bit, and the same number of
+PartitionPoints,
+and perform an add operation:
+
+
+    elwid |    | |    | |    | |
+    0b00 x x x  x x x  x x x  x B1B0
+    0b01 x x x  x A9A8 x x x  x A1A0
+    0b10 x AdAc x A9A8 x A5A4 x A1A0
+
 Illustrating the case where a Sliced (fixed element width) SimdSignal
 is added to one which has variable-length elements that take up the
 entirety of the partition (overall fixed width):
