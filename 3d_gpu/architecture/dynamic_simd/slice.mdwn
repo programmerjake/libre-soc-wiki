@@ -170,6 +170,17 @@ does not:
 SimdSignal of only 8 bits in length or so, but having a **different**
 style of PartitionPoints, with no padding this time)
 
+take signal a, of 16 bits, each bit being numbered in hexadecimal:
+
+            |        |        |
+    AfAeAdAc AbAaA9A8 A7A6A5A4 A3A2A1A0
+
+and take a slice a[0:2] to create 3-bit values, where padding is
+specified by "x", at each elwid:
+
+    elwid        |        |        |
+    0b00 AfAeAdAc AbAaA9A8 A7A6A5A4 A3A2A1A0
+
 Illustrating the case where a Sliced (fixed element width) SimdSignal
 is added to one which has variable-length elements that take up the
 entirety of the partition (overall fixed width):
