@@ -194,17 +194,19 @@ partition points:
 Now let us take a signal, b, of 2-bit lengths,
 and attempt to perform an add operation:
 
-             |    |    |
-    b    B7B6 B5B3 B3B2 B1B0
+    elwid     |    |    |
+    0b00  x x  x x  x x  B1B0
+    0b01  x x  B5B4 x x  B1B0
+    0b10  B7B6 B5B4 B3B2 B1B0
 
 This is not immediately possible (at least not
 obviously so) and consequently b needs expanding
 to the same padding and PartitionPoints:
   
-    elwid |      | |      | |      | |
-    0b00 x x x x  x x x x  x x x x  x 0 B1B0
-    0b01 x x x x  x 0 B5B4 x 0 x x  x 0 B1B0
-    0b10 x 0 B7B6 x 0 B5B4 x 0 B3B2 x 0 B1B0
+    elwid  |      | |      | |      | |
+    0b00  x x x x  x x x x  x x x x  x 0 B1B0
+    0b01  x x x x  x 0 B5B4 x 0 x x  x 0 B1B0
+    0b10  x 0 B7B6 x 0 B5B4 x 0 B3B2 x 0 B1B0
 
 Note here that zero-extension also had to occur to
 bring b up to the same element width in each partition,
