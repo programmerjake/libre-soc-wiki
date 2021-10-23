@@ -237,6 +237,14 @@ entirety of the partition (overall fixed width):
     0b01  B7B6 B5B4|B3B2 B1B0
     0b10  B7B6|B5B4|B3B2|B1B0
 
-This gwts interesting. First, the simpler case: Cat() with a 3-bit slice.
+This gets interesting. First, the simpler case: Cat() with a 3-bit slice.
 The end result (assuming `Cat(a[0:3], b)`) is:
 
+* one 11-bit result for elwid=0b00
+* two 7-bit results for elwid=0b01
+* four 5-bit results for elwid=0b10
+
+    elwid       |    |        |  |      |    |   
+    0b00                      |B7 B6B5B4 B3B2 B1B0A2A1A0
+    0b01        |B7B6 B5B4AaA9 A8|       B3B2 B1B0A2A1A0
+    0b10  B7B6Ae AdAc|B5B4AaA9 A8|B3B2A6 A5A4|B1B0A2A1A0
