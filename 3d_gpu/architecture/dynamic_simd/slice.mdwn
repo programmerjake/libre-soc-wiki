@@ -175,7 +175,7 @@ take signal a, of 16 bits, each bit being numbered in hexadecimal:
             |        |        |
     AfAeAdAc AbAaA9A8 A7A6A5A4 A3A2A1A0
 
-and take a slice a[0:1] to create 3-bit values, where padding is
+and take a slice a[0:2] to create 3-bit values, where padding is
 specified by "x", at each elwid:
 
     elwid        |        |        |
@@ -187,17 +187,17 @@ The presence of "x" unused portions actually requires some additional
 partition points:
 
     elwid |      | |      | |      | |
-    0b00 x x x x  x x x x  x x x x  x A2A1A0
-    0b01 x x x x  x AaA9A8 x x x x  x A2A1A0
-    0b10 x AeAdAc x AaA9A8 x A6A5A4 x A2A1A0
+    0b00 x x x x  x x x x  x x x x  x|A2A1A0
+    0b01 x x x x |x|AaA9A8|x x x x  x|A2A1A0
+    0b10 x|AeAdAc|x|AaA9A8|x|A6A5A4|x|A2A1A0
 
 Now let us take a signal, b, of 2-bit lengths,
 and attempt to perform an add operation:
 
     elwid     |    |    |
-    0b00  x x  x x  x x  B1B0
-    0b01  x x  B5B4 x x  B1B0
-    0b10  B7B6 B5B4 B3B2 B1B0
+    0b00  x x  x x  x x |B1B0
+    0b01  x x |B5B4|x x |B1B0
+    0b10  B7B6|B5B4|B3B2 B1B0
 
 This is not immediately possible (at least not
 obviously so) and consequently b needs expanding
@@ -232,4 +232,8 @@ Illustrating the case where a Sliced (fixed element width) SimdSignal
 is added to one which has variable-length elements that take up the
 entirety of the partition (overall fixed width):
 
-(TODO: third example)
+    elwid     |    |    |
+    0b00  B7B6 B5B4 B3B2 B1B0
+    0b01  B7B6 B5B4|B3B2 B1B0
+    0b10  B7B6|B5B4|B3B2|B1B0
+
