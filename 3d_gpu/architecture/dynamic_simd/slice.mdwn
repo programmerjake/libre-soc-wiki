@@ -215,6 +215,15 @@ PartitionedAdd may be deployed because both the overall
 width and the positions of the PartitionPoints are exactly
 matched.
 
+Another example: Cat() on the same 2 signals: here at least we
+know that the end-result is elements of 5 bits each, because
+all "a" slices are 3 bit and all "b" elements are 2 bit:
+
+    elwid |          | |          | |          | |
+    0b00 x x x x x x  x x x x x x  x x x x x x  x x x A2A1A0
+    0b01 x x x x x x  x B5B4AaA9A8 x x x x x x  x x x A2A1A0
+    0b10 x B7B6AeAdAc x B5B4AaA9A8 x B3B2A6A5A4 x B1B0A2A1A0
+
 
 Illustrating the case where a Sliced (fixed element width) SimdSignal
 is added to one which has variable-length elements that take up the
