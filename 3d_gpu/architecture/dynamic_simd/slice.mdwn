@@ -224,6 +224,9 @@ all "a" slices are 3 bit and all "b" elements are 2 bit:
     0b01 x x x x x x  x B5B4AaA9A8 x x x x x x  x x x A2A1A0
     0b10 x B7B6AeAdAc x B5B4AaA9A8 x B3B2A6A5A4 x B1B0A2A1A0
 
+From this result we inductively determine that it is ok to Cat()
+these two SimdSignals only if the PartitionPoints were the same,
+by noting that even the padding sections may be Cat()ed together.
 
 Illustrating the case where a Sliced (fixed element width) SimdSignal
 is added to one which has variable-length elements that take up the
