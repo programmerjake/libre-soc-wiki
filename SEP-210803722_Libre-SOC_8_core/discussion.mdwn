@@ -2,4 +2,6 @@
 
 <http://lists.libre-soc.org/pipermail/libre-soc-dev/2021-October/003932.html>
 a core which appears to use the same "Vertical-first" technique
-and shows a 3x reduction in power consumption.
+and shows at least a 2x reduction in power consumption and a 3.5x reduction
+in completion time.  the technique appears to be a combination of DSP-style "Zero Overhead Loop Control" (ZOLC) combined with CISC-like "auto-load-and-increment" that is, unlike CISC, a hidden (context-sensitive, tagged) activity.
+
