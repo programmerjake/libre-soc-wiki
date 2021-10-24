@@ -258,4 +258,7 @@ Combining a slice and b at each elwidth gives:
     0b10  B7B6Ae AdAc|B5B4AaA9 A8|B3B2A6 A5A4|B1B0A2A1A0
 
 This complex-looking result is quite straightforward: SimdShape
-is capable of expressing it.  
+is capable of expressing it.  The issue is, however: how
+to convert (adapt) the two inputs so that they fit this resultant
+PartitionPoint layout, given that neither input was in this
+format?
