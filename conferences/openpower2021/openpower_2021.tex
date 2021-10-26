@@ -242,19 +242,33 @@ sv.fmadds: uses fp0 as accumulator
   \end{itemize}
 }
 
-\frame{\frametitle{nmigen PowerISA Decoder}
+
+\frame{\frametitle{Discrete Cosine Transform (DCT): Basics}
 
  \begin{itemize}
    \item Standard DCT Schedule (messy, impossible for SIMD)
    \item Output is in bit-reversed order\\
          0b000 = 0b000 (in: 0   out: 0)\\
-         0b001 = 0b100 (in: 1   out: 4)\\
-         0b110 = 0b011 (in: 7   out: 3)
+         0b001 = 0b100 (in: 1   out: 4) ...\\
+         0b110 = 0b011 (in: 6   out: 3)\\
          0b111 = 0b111 (in: 7   out: 7)
   \end{itemize}
 
 \begin{center}
 \includegraphics[width=0.75\textwidth]{plonka_dct1.png}
+\end{center}
+
+}
+
+\frame{\frametitle{Fast Fourier Transform (FFT/DFT): Butterfly Basics}
+
+ \begin{itemize}
+   \item Standard Butterfly Schedule (again: messy, but less so)
+   \item Output, again, is in bit-reversed order
+  \end{itemize}
+
+\begin{center}
+\includegraphics[width=0.70\textwidth]{fft_butterfly.png}
 \end{center}
 
 }
