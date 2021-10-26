@@ -243,6 +243,26 @@ sv.fmadds: uses fp0 as accumulator
 }
 
 
+\frame{\frametitle{DCT / FFT / DFT / NTT: what if we could REMAP?}
+
+\vspace{6pt}
+
+ \begin{itemize}
+   \item Can we create a REMAP Schedule for FFT (etc)? YES\\
+        - More complicated than Matrix Schedules but same principle\\
+        - Again: issues Scalar instructions into back-end micro-arch\\
+        - Requires 5-operand (3-in, 2-out) new Scalar Instructions\\
+        - Any operand width (8/16/32/64)\vspace{8pt}
+   \item Limited to in-place registers and Power-of-Two.  Future?\\
+        - Again: CISC-like auto-load/store-and-increment\\
+        - https://arxiv.org/abs/2002.10143\\
+        - Again: still power-efficient (no I-Cache usage in loops)\vspace{8pt}
+   \item Again: can be investigated as part of EUR 22.6m EU Grant\\
+        https://libre-soc.org/SEP-210803722-Libre-SOC-8-core/\vspace{15pt}
+  \end{itemize}
+}
+
+
 \frame{\frametitle{Discrete Cosine Transform (DCT): Basics}
 
  \begin{itemize}
@@ -273,6 +293,118 @@ sv.fmadds: uses fp0 as accumulator
 
 }
 
+\frame{\frametitle{FFT/DFT: 3-in, 2-out butterfly}
+
+ \begin{itemize}
+   \item One multiply (by coefficient), one add, one subtract
+   \item inputs: X[0] X[1] C(oeff) outputs: X[0] X[1]
+  \end{itemize}
+
+\begin{center}
+\includegraphics[width=0.90\textwidth]{2-point-dft.png}
+\end{center}
+
+}
+
+
+\begin{frame}[fragile]
+\frametitle{DFT: Project Nayuki Radix-2 Cooley-Tukey DIT (1)}
+
+\begin{semiverbatim}
+coef = (2 if inverse else -2) * cmath.pi / n
+exptable = [cmath.rect(1, i*coef) for i in range(n // 2)]
+vec = [vec[reverse_bits(i, levels)] for i in range(n)]
+size = 2
+while size <= n:
+    halfsize, tablestep = size // 2, n // size
+    for i in range(0, n, size):
+        k = 0
+        for j in range(i, i + halfsize):
+            temp = vec[j + halfsize] * exptable[k]
+            vec[j + halfsize] = vec[j] - temp
+            vec[j] += temp
+            k += tablestep
+    size *= 2
+\end{semiverbatim}
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{DFT: Project Nayuki Radix-2 Cooley-Tukey DIT (2)}
+
+\begin{semiverbatim}
+coef = (2 if inverse else -2) * cmath.pi / n
+exptable = [cmath.rect(1, i*coef) for i in range(n // 2)]
+vec = [vec[reverse_bits(i, levels)] for i in range(n)]
+size = 2
+while size <= n:
+    hs, tablestep = size // 2, n // size
+    for i in range(0, n, size):
+        k = 0
+        for j in range(i, i+hs):
+            # Twin-Butterfly 3-in 2-out: one instruction
+            C = exptable[k]
+            vec[j+hs], vec[j] = 2B(vec[j+hs], vec[j], C)
+            k += tablestep
+    size *= 2
+\end{semiverbatim}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{DFT: Project Nayuki Radix-2 Cooley-Tukey DIT (3)}
+
+ \begin{itemize}
+    \item What if the Triple Loop could be done with REMAP?
+    \item Register Offsets j, j+hs, k created automatically?
+    \item Only one actual inner loop instruction (Twin-butterfly)
+    \item 3-in (X0/X1/C) 2-out (X0/X1) allows for in-place FFT
+    \item Hardware FSM (like ZOLC) creates offset triplet\\
+        - Technically not that hard to implement (for Radix-2)\\
+        - Exact same principle as Triple-loop for Matrices
+  \end{itemize}
+
+\begin{semiverbatim}
+for j,k,hs in REMAP_TRIPLE_LOOP_GENERATOR():
+            # Twin-Butterfly 3-in 2-out: one instruction
+            C = exptable[k]
+            vec[j+hs], vec[j] = 2B(vec[j+hs], vec[j], C)
+\end{semiverbatim}
+
+\end{frame}
+
+\frame{\frametitle{DCT: pre-arrange (pre-load) data}
+
+ \begin{itemize}
+   \item Arrange input data such that output falls into place
+   \item (another) Twin 3-in 2-out Mul-Add in-place instruction
+  \end{itemize}
+
+\begin{center}
+\includegraphics[width=0.70\textwidth]{dct_butterfly.png}
+\end{center}
+
+}
+
+
+\frame{\frametitle{FFT (Complex numbers) and DCT coefficients?}
+
+ \begin{itemize}
+   \item Problem (DCT): DCT Cosine Coefficients change (cos + 0.5)
+         depending on the layer.  Cannot do as single instruction
+   \item Problem (FFT): Complex number butterfly multiplication involves
+         4 multiplies.  Cannot do in-place as single instruction\vspace{12pt}
+   \item Solution: "Vertical-First" style Vectors\vspace{12pt}
+   \item Understanding of SVP64 "Vertical-First"\\
+         30min explanatory video https://youtube.com/watch?v=fn2KJvWyBKg
+   \item Basically involves stepping "vertically" through instructions
+         then moving ("stepping") to the next offset (next REMAP)
+   \item Horizontal-first: run through the entire REMAP schedule on a single
+         instruction before moving on to the next instruction
+
+  \end{itemize}
+}
 
 \frame{\frametitle{TODO rewrite Summary}
 
