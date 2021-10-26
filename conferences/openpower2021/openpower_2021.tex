@@ -70,14 +70,6 @@
 
 
 
-%%\frame{\frametitle{nmigen PowerISA Decoder}
-
-%%\begin{center}
-%%\includegraphics[width=0.55\textwidth]{2020-09-09_21-04.png}
-%%\end{center}
-
-%%}
-
 \begin{frame}[fragile]
 \frametitle{Reminder of Simple-V}
 
@@ -248,6 +240,23 @@ sv.fmadds: uses fp0 as accumulator
    \item Future can be investigated as part of EUR 22.6m EU Grant\\
         https://libre-soc.org/SEP-210803722-Libre-SOC-8-core/\vspace{15pt}
   \end{itemize}
+}
+
+\frame{\frametitle{nmigen PowerISA Decoder}
+
+ \begin{itemize}
+   \item Standard DCT Schedule (messy, impossible for SIMD)
+   \item Output is in bit-reversed order\\
+         0b000 = 0b000 (in: 0   out: 0)\\
+         0b001 = 0b100 (in: 1   out: 4)\\
+         0b110 = 0b011 (in: 7   out: 3)
+         0b111 = 0b111 (in: 7   out: 7)
+  \end{itemize}
+
+\begin{center}
+\includegraphics[width=0.75\textwidth]{plonka_dct1.png}
+\end{center}
+
 }
 
 
