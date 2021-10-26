@@ -124,7 +124,7 @@ function op\_add(RT, RA, rs2, predr) # add not VADD!
 \end{frame}
 
 \begin{frame}[fragile]
-\frametitle{Matrix Multiply Basics}
+\frametitle{Matrix Multiply: Basics}
 
 \begin{semiverbatim}
 (a00 a01 a02  x (b00 b01   =
@@ -148,31 +148,7 @@ function op\_add(RT, RA, rs2, predr) # add not VADD!
 
 
 \begin{frame}[fragile]
-\frametitle{Matrix Multiply Basics}
-
-\begin{semiverbatim}
-(a00 a01 a02  x (b00 b01   =
- a10 a11 a12)    b10 b11
-                 b20 b21)
-
-(a00*b00 + a01*b10 + a02*b20 a00*b01 + a01*b11 + a02*b21
- a10*b00 + a11*b10 + a12*b20 a10*b01 + a11*b11 + a12*b21)
-
- (b00 b01    x (a00 a01 a02  =
-  b10 b11       a10 a11 a12)
-  b20 b21)
-
-(b00*a00 + b01*a10  b00*a01 + b01*a11  b00*a02 + b01*a12
- b10*a00 + b11*a10  b10*a01 + b11*a11  b10*a02 + b11*a12
- b20*a00 + b21*a10  b20*a01 + b21*a11  b20*a02 + b21*a12)
-
-\end{semiverbatim}
-
-\end{frame}
-
-
-\begin{frame}[fragile]
-\frametitle{Naive Matrix Multiply with python for-loops}
+\frametitle{Matrix Multiply: naive, with python for-loops}
 
 \begin{semiverbatim}
 result = [] # final result
@@ -192,7 +168,7 @@ for i in range(len(A)):
 \end{frame}
 
 \begin{frame}[fragile]
-\frametitle{Matrix Multiply suitable for Hardware scheduling}
+\frametitle{Matrix Multiply: suitable for Hardware scheduling}
 
 \begin{semiverbatim}
 Unsuitable: creates massive Read-After-Write chains
@@ -214,19 +190,20 @@ for i in range(len(A)):
 \end{frame}
 
 
-\frame{\frametitle{Generalise but Specialise}
+\frame{\frametitle{Matrix Multiply: Generalise but Specialise}
 
-\vspace{15pt}
+\vspace{8pt}
 
  \begin{itemize}
    \item Why not make a general-purpose nested "Loop" system?\\
+        - Other uses (algorithms) beyond Matrix Multiplication\\
         - Allow any arbitrary-sized loops\\
         - Allow any permutation of nesting\\
-        - Allow reversing per-dimension\vspace{8pt}
+        - Allow reversing per-dimension\vspace{5pt}
    \item Specialise by making Matrix Multiply "setup" quick/easy\\
         - two 32-bit instructions to set up A, B, C sizes\\
         - one 64-bit SVP64 FMAC instruction.\\
-        - Nothing else needed.  Saves on I-Cache\vspace{8pt}
+        - Nothing else needed.  Saves on I-Cache\vspace{5pt}
    \item Hardware turns out to be near-identical to ZOLC\\
         https://opencores.org/projects/hwlu\\
         https://libre-soc.org/openpower/sv/remap/\vspace{15pt}
@@ -234,7 +211,7 @@ for i in range(len(A)):
 }
 
 \begin{frame}[fragile]
-\frametitle{Matrix Multiply unit test / example}
+\frametitle{Matrix Multiply: unit test / example}
 
 \begin{semiverbatim}
   94 def test_sv_remap2(self):
@@ -253,28 +230,28 @@ sv.fmadds: uses fp0 as accumulator
 
 \end{frame}
 
-\frame{\frametitle{Ehm that's all Folks}
+\frame{\frametitle{Matrix Multiply: Ehm that's all Folks}
 
-\vspace{15pt}
+\vspace{6pt}
 
  \begin{itemize}
    \item Really is that straightforward: no actual Vector ops\\
         - Does not dictate or limit micro-architectural detail\\
         - Issues Scalar FMACs into existing back-end hardware\\
         - Can use any 4-operand instruction (GF, INT, Bitmanip)\\
-        - Any operand width (8/16/32/64), up to 127 ops\vspace{8pt}
-   \item Specialise by making Matrix Multiply "setup" quick/easy\\
-        - two 32-bit instructions to set up A, B, C sizes\\
-        - one 64-bit SVP64 FMAC instruction.\\
-        - Nothing else needed.  Saves on I-Cache\vspace{8pt}
-   \item Hardware turns out to be near-identical to ZOLC\\
-        https://opencores.org/projects/hwlu\\
-        https://libre-soc.org/openpower/sv/remap/\vspace{15pt}
+        - No Power-2 limits. Any operand width (8/16/32/64)\vspace{8pt}
+   \item Limited to 127 scalar ops and in-place registers.  Future?\\
+        - https://arxiv.org/abs/2002.10143 CISC-like load-and-inc\\
+        - Auto-load/store (tagged) registers, keeps RISC ISA\\
+        - Extend to memory-based arbitrary NxN matrix sizes\\
+        - Still power-efficient: no I-cache usage during FMAC issue\vspace{8pt}
+   \item Future can be investigated as part of EUR 22.6m EU Grant\\
+        https://libre-soc.org/SEP-210803722-Libre-SOC-8-core/\vspace{15pt}
   \end{itemize}
 }
 
 
-\frame{\frametitle{Summary}
+\frame{\frametitle{TODO rewrite Summary}
 
  \begin{itemize}
    \item Goal is to create a mass-volume low-power embedded SoC suitable
