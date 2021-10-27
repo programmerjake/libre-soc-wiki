@@ -40,14 +40,19 @@
 
 \frame{\frametitle{Overview of Libre-SOC goals}
 
-\vspace{15pt}
+\vspace{8pt}
 
  \begin{itemize}
-   \item To create power-efficient mass-volume products\vspace{15pt}
-   \item To leverage the OpenPOWER ecosystem to do so\vspace{15pt}
-   \item To be entirely transparent for Security reasons\vspace{15pt}
+   \item To create power-efficient mass-volume products\vspace{8pt}
+   \item To leverage the OpenPOWER ecosystem to do so\vspace{8pt}
+   \item To be entirely transparent for Security reasons\vspace{8pt}
    \item To empower businesses to bring Secure transparent\\
-         mass-volume products to market\vspace{15pt}
+         mass-volume products to market\vspace{8pt}
+   \item Mass-volume end-user products need 3D, Video, Audio 
+         \textbf{therefore we require small-size Matrices (3x3 but not with
+         75\% utilisation, and 4x4) and the core strategic parts
+         of A/V CODECs and that means DCT and FFT.}
+         Anything else is a bonus (NTT with Galois Field bitmanip)
   \end{itemize}
 }
 
@@ -56,15 +61,15 @@
 \vspace{15pt}
 
  \begin{itemize}
-   \item High performance and high performance/watt\vspace{15pt}
+   \item High performance and high performance/watt\vspace{10pt}
    \item Reduced code density (reduced I-Cache usage)\\
          https://arxiv.org/abs/2002.10143 - 3.5x power reduction\vspace{8pt}
-   \item Remain accessible for assembler writers and compilers alike\vspace{15pt}
+   \item Remain accessible for assembler writers and compilers alike\vspace{10pt}
    \item Introduce true Vectorisation to the Power ISA\\
          (VSX is Packed SIMD)\vspace{8pt}
    \item Be adopted via the external OPF ISA WG RFC process\\
          (not: be a non-official custom extension. proprietary\\
-         custom extensions conflict with mass-volume adoption)\vspace{15pt}
+         custom extensions conflict with mass-volume adoption)\vspace{10pt}
   \end{itemize}
 }
 
@@ -119,16 +124,16 @@ function op\_add(RT, RA, rs2, predr) # add not VADD!
 \frametitle{Matrix Multiply: Basics}
 
 \begin{semiverbatim}
-(a00 a01 a02  x (b00 b01   =
- a10 a11 a12)    b10 b11
+(a00 a01 a02  x (b00 b01   =   (c00 c01
+ a10 a11 a12)    b10 b11        c10 c11)  = ...
                  b20 b21)
 
 (a00*b00 + a01*b10 + a02*b20 a00*b01 + a01*b11 + a02*b21
  a10*b00 + a11*b10 + a12*b20 a10*b01 + a11*b11 + a12*b21)
 
- (b00 b01    x (a00 a01 a02  =
-  b10 b11       a10 a11 a12)
-  b20 b21)
+ (b00 b01    x (a00 a01 a02  =   (c00 c01 c02
+  b10 b11       a10 a11 a12)      c10 c11 c12
+  b20 b21)                        c20 c21 c22)  = ...
 
 (b00*a00 + b01*a10  b00*a01 + b01*a11  b00*a02 + b01*a12
  b10*a00 + b11*a10  b10*a01 + b11*a11  b10*a02 + b11*a12
@@ -184,21 +189,22 @@ for i in range(len(A)):
 
 \frame{\frametitle{Matrix Multiply: Generalise but Specialise}
 
-\vspace{8pt}
-
  \begin{itemize}
    \item Why not make a general-purpose nested "Loop" system?\\
         - Other uses (algorithms) beyond Matrix Multiplication\\
         - Allow any arbitrary-sized loops\\
         - Allow any permutation of nesting\\
-        - Allow reversing per-dimension\vspace{5pt}
+        - Allow reversing per-dimension
    \item Specialise by making Matrix Multiply "setup" quick/easy\\
         - two 32-bit instructions to set up A, B, C sizes\\
-        - one 64-bit SVP64 FMAC instruction.\\
-        - Nothing else needed.  Saves on I-Cache\vspace{5pt}
+        - one 64-bit SVP64 FMAC instruction (hot-loop).\\
+        - Nothing else needed.  Saves on I-Cache
    \item Hardware turns out to be near-identical to ZOLC\\
         https://opencores.org/projects/hwlu\\
-        https://libre-soc.org/openpower/sv/remap/\vspace{15pt}
+        https://libre-soc.org/openpower/sv/remap/
+   \item Concept is actually borrowed from Aspex Array-String Processor
+         1D/2D/3D Memory DMA "reordering" Engine (except applied to
+         the register file)
   \end{itemize}
 }
 
@@ -293,7 +299,7 @@ sv.fmadds: uses fp0 as accumulator
 
 }
 
-\frame{\frametitle{FFT/DFT: 3-in, 2-out butterfly}
+\frame{\frametitle{FFT: 3-in, 2-out butterfly}
 
  \begin{itemize}
    \item One multiply (by coefficient), one add, one subtract
@@ -395,32 +401,32 @@ for j,k,hs in REMAP_TRIPLE_LOOP_GENERATOR():
          depending on the layer.  Cannot do as single instruction
    \item Problem (FFT): Complex number butterfly multiplication involves
          4 multiplies.  Cannot do in-place as single instruction\vspace{12pt}
-   \item Solution: "Vertical-First" style Vectors\vspace{12pt}
-   \item Understanding of SVP64 "Vertical-First"\\
-         30min explanatory video https://youtube.com/watch?v=fn2KJvWyBKg
+   \item Solution: "Vertical-First" Vectors (Mitch Alsup 66000 ISA)\vspace{12pt}
+   \item Understanding of SVP64 "Vertical-First" 30min video
+         https://youtube.com/watch?v=fn2KJvWyBKg
    \item Basically involves stepping "vertically" through instructions
-         then moving ("stepping") to the next offset (next REMAP)
+         then ("stepping") to the next offset (REMAP), loop with bc
    \item Horizontal-first: run through the entire REMAP schedule on a single
-         instruction before moving on to the next instruction
+         instruction before repeating looping on the next
 
   \end{itemize}
 }
 
-\frame{\frametitle{TODO rewrite Summary}
+\frame{\frametitle{Summary}
 
  \begin{itemize}
    \item Goal is to create a mass-volume low-power embedded SoC suitable
          for use in netbooks, chromebooks, tablets, smartphones, IoT SBCs.
-   \item No DRM. 'Trustable' (by the users, not by Media Moguls) design
-         ethos as a \textit{business} objective: requires full transparency
-         as well as Formal Correctness Proofs
-   \item Collaboration with OpenPOWER Foundation and Members absolutely
-         essential. No short-cuts.  Standards to be developed and ratified
-         so that everyone benefits.
-   \item Working on the back of huge stability of POWER ecosystem
-   \item Combination of which is that Board Support Package is 100\%
-         upstream, app and product development by customer is hugely
-         simplified and much more attractive
+   \item This means a computational focus on 3D and Audio/Video.\\
+         - Critical not to waste 75\% of Power-2 SIMD Lanes on 3x3
+   \item Reducing core work to a one-instruction hot-loop inherently
+         reduces power consumption because the I-Cache is 100\% idle.
+   \item REMAP system completely independent from the instructions it
+         REMAPs. Applies to future scalar ops (GF, Bitmanip)
+   \item Future versions involve proper Zero-Overhead Loop-Control
+         and hidden "tags" to automatically perform CISC-like
+         auto-load/store-and-inc (for much larger data sets)
+   \item Please help contribute: it's your Open Power ISA too.
 
   \end{itemize}
 }
@@ -428,17 +434,19 @@ for j,k,hs in REMAP_TRIPLE_LOOP_GENERATOR():
 
 \frame{
   \begin{center}
-    {\Huge The end\vspace{15pt}\\
-		   Thank you\vspace{15pt}\\
-		   Questions?\vspace{15pt}
+    {\Huge The end\vspace{10pt}\\
+		   Thank you\vspace{10pt}\\
+		   Questions?\vspace{10pt}
 	}
   \end{center}
 
   \begin{itemize}
-	\item Discussion: Libre-SOC-dev mailing list
-	\item Freenode IRC \#libre-soc
+	\item Discussion: Libre-SOC-ISA mailing list\\
+        http://lists.libre-soc.org/mailman/listinfo/libre-soc-isa
+	\item Libera IRC \#libre-soc
 	\item http://libre-soc.org/
-	\item http://nlnet.nl/PET
+	\item http://nlnet.nl/PET\\
+    https://www.ngi.eu/ngi-projects/ngi-pointer/
   \end{itemize}
 }
 
