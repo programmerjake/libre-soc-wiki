@@ -307,3 +307,16 @@ on SimdShape input parameters.
         def get_cases(self):
         @property
         def blanklanes(self):
+
+# SimdShape arithmetic operators
+
+Rudimentary arithmetic operations are required in order to perform
+tricks such as:
+
+       m = Module()
+       with SimdScope(m, elwid, vec_el_counts) as s:
+           shape = SimdShape(s, fixed_width=width)
+           a = s.Signal(shape)
+           b = s.Signal(shape*2)
+           o = s.Signal(shape*3)
+       m.c.comb + o.eq(Cat(a, b))
