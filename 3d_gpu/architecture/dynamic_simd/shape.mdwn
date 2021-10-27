@@ -319,4 +319,20 @@ tricks such as:
            a = s.Signal(shape)
            b = s.Signal(shape*2)
            o = s.Signal(shape*3)
-       m.c.comb + o.eq(Cat(a, b))
+       m.d.comb + o.eq(Cat(a, b))
+
+as well as:
+
+       with SimdScope(m, elwid, vec_el_counts) as s:
+           shape = SimdShape(s, fixed_width=width)
+           a = s.Signal(shape)
+           b = s.Signal(shape*2)
+           o2 = s.Signal(a.shape + b.shape)
+
+and:
+
+       with SimdScope(m, elwid, vec_el_counts) as s:
+           shape = SimdShape(s, fixed_width=width)
+           a = s.Signal(16) # element width set to 16
+           b = s.Signal(shape*2)
+           o2 = s.Signal(a.shape + b.shape)
