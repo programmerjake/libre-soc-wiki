@@ -251,10 +251,10 @@ Interfacing to SimdSignal requires an adapter that:
 SimdShape needs:
 
 * a constructor taking the following arguments:
-  - (mandatory) an elwidth Signal
+  - (mandatory, from scope) an elwidth Signal
   - (optional) an integer vector width or a dictionary of vector widths
     (the keys to be the "elwidth")
-  - (mandatory) a dictionary of "partition counts":
+  - (mandatory, from scope) a dictionary of "partition counts":
     the keys to again be the "elwidth" and the values
      to be the number of Vector Elements at that elwidth
   - (optional) a "fixed width" which if given shall
@@ -354,7 +354,16 @@ or elwidths priority
 With some thought it becomes clear that when performing operations
 not involving elwidth priority should simply calculate a new fixed
 width based on straight arithmetic on the LHS and RHS fixed width.
+The partition counts remains the same (coming from the scope
+context) therefore the result may also be a fixed_width priority
+result using the exact same partition counts.
 
-However the moment that elwidths (vec_op_widths) are involved then
+However - and bearing in mind that for fixed_width priority the
+elwidths are *computed* from the fixed width and the partition counts -
+the moment that elwidths (vec_op_widths) are involved then
 the priority switches to the elwidths, even if one of those elwidths were
-calculated initially from a fixed_width.
+calculated initially from a fixed_width and partition counts.
+In this case, the result will be an elwidths priority SimdShape,
+where the layout() function is already capable of computing the
+required overall width based on the (newly-computed) vec_el_widths.
+
