@@ -336,3 +336,25 @@ and:
            a = s.Signal(16) # element width set to 16
            b = s.Signal(shape*2)
            o2 = s.Signal(a.shape + b.shape)
+
+From these examples we deduce what the arithmetic operators
+have to cope with:
+
+* RHS of simple integers
+* RHS of another SimdShape
+
+In the latter case, there are further subdivisions because
+SimdShapes can be created as either fixed_width priority
+or elwidths priority
+
+* fixed_width priority (vec_op_widths=None)
+* elwidths priority  (fixed_width=None)
+* equal (no) priority (both are given)
+
+With some thought it becomes clear that when performing operations
+not involving elwidth priority should simply calculate a new fixed
+width based on straight arithmetic on the LHS and RHS fixed width.
+
+However the moment that elwidths (vec_op_widths) are involved then
+the priority switches to the elwidths, even if one of those elwidths were
+calculated initially from a fixed_width.
