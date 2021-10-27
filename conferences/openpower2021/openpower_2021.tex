@@ -259,6 +259,29 @@ sv.fmadds: uses fp0 as accumulator
 }
 
 
+\frame{\frametitle{DCT / FFT / DFT / NTT: other implementations?}
+
+\vspace{6pt}
+
+ \begin{itemize}
+   \item Texas Instruments TMS320 and C6xx DSPs (VLIW)
+        - 14 u-Ops per VLIW (including Zero-Overhead Looping)\\
+        - Performs Odd/Even FP32 looping single-instruction FFT\\
+        - Cannot do anything other than FP32\\
+        - Otherwise absolutely brilliant and elegant (20+ years)
+   \item Qualcom Hexagon DSP\\
+        - Again: VLIW (29 RISC-like u-Ops in 1 cycle)\\
+        - Seriously power-efficient and effective\\
+        - Has ZOLC and Complex-number Multiply\\
+        - Only seems to handle the inner loop of FFT though
+    \item SVP64\\
+        - not limited to inner loop (handles entire triple-loop) \\
+        - like Hexagon, not limted to type of operation inside loop \\
+        - Complex-number ops: a bit too heavy-duty for now (later?)
+  \end{itemize}
+}
+
+
 \frame{\frametitle{Discrete Cosine Transform (DCT): Basics}
 
  \begin{itemize}
