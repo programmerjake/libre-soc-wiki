@@ -424,7 +424,7 @@ Summary:
 
 * **Fixed_width Priority**
   - all operations (add, mul, sub, shift, div)
-    expected to work (caveat: layout() should check rounding)
+    expected to work (caveat: layout() should check partition alignment)
 * **Element-width Priority**
   - all operations expected to work (no caveats)
 * **Fixed-and-Elwidth (no priority)**
@@ -452,3 +452,12 @@ In this case, the result will be an elwidths priority SimdShape,
 where the layout() function is already capable of computing the
 required overall width based on the (newly-computed) vec_el_widths.
 
+Note that, interestingly, when fixed_width priority SimdShapes are
+used on both LHS and RHS, it is effectively an identical case to
+when the RHS is an integer, because the fixed_width of the RHS is
+itself an integer.
+
+Summary:
+
+* **Both LHS and RHS Fixed-width Priority**
+  - Exactly the same as for when RHS is an Integer
