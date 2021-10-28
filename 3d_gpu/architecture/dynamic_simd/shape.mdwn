@@ -389,6 +389,37 @@ Example:
 * therefore the newly-computed overall width is the maximum of these amounts
   (8x7) which is a 56-bit quantity.
 
+It is important to note that some arithmetic operations will not work
+correctly if both fixed_width and element-widths are specified.  Addition:
+
+* assume fixed_width=64, element_widths {8,8,8,8} and
+  partition_counts {1,2,4,8}.
+* adding 8 to each element width creates 16 element width for all
+  partitions
+* this creates a maximum expected width of 8x16 or 128 bits
+* but the fixed_width of 64 plus 8 is only 72.
+* therefore we must prohibit this operation when **both** fixed and
+  elwidth are specified
+
+However for multiply, it is fine, due to a property of multiplication:
+
+* assume fixed_width=64, element_widths {8,8,8,8} and
+  partition_counts {1,2,4,8}.
+* multiply by an integer value of 2
+* the new fixed_width is 2x64 = 128
+* each element width is **also** multiplied by 2 to create {16,16,16,16}
+* this creates partitions 1x16 2x16 4x16 8x16
+* the maximum is (not by a coincidence) exactly 128 bit wide
+* this matches perfectly the newly-calculated fixed_width
+
+Given that left-shift is a type of multiply, a left-shift arithmetic
+operator with an integer amount (as applied equally to all element widths
+and to the fixed_width) is also expected to also work.
+
+Divide on the other hand (and right-shift) will only work (when
+both elwidth and fixed-width are set) if there is
+no rounding (no bits lost due to the division / right-shift).
+
 ## Arithmetic of two SimdShapes
 
 With some thought it becomes clear that when performing operations
