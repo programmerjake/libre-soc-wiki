@@ -353,6 +353,42 @@ or elwidths priority
 
 ## RHS simple integers
 
+Although this is a simpler case, there are still three options:
+
+* add/mul/sub etc. of integer at fixed_width priority (vec_op_widths=None)
+* add/mul/sub etc. of integer at elwidths priority  (fixed_width=None)
+* add/mul/sub etc. of integer at equal (no) priority (both are given)
+
+The expected behaviour on fixed_width priority is that the arithmetic
+operation should take place on the fixed width.  adding 8 to a 64-bit
+fixed-width SimdSignal should result in the overall fixed width being
+extended to 72-bit, and for all partitions the new element-width within
+each partition is newly-computed to be the maximum possible permitted
+amount.  Example:
+
+* assume fixed_width=64 and partition_counts {1,2,4,8}.
+* therefore the computed element sizes are: 1x64, 2x32, 4x16, 8x8
+* assume that an add operation has requested to add 8 to the fixed width
+* the new fixed_width is 72
+* the newly-computed element sizes shall be: 1x72, 2x36, 4x18, 8x9
+
+The expected behaviour on element-width-priority on the other hand is that
+the arithmetic operation takes place on *each of the element-widths*
+
+Example:
+
+* assume element_widths={16,16,10,12} and partition_counds {1,2,4,8}
+* therefore the computed element sizes are: 1x16, 2x16, 4x10, 8x12
+* therefore the computed overall width is the maximum of these amounts
+  (8x12) which is a 96-bit wide Signal.
+* assume that a subtract operation has requested to subtract 5 from the
+  element_widths.
+* the newly-computed element_widths becomes {16-5,16-5,10-5,12-5} which
+  is {11,11,5,7}
+* therefore the computed element sizes are: 1x11, 2x11, 4x5, 8x7
+* therefore the newly-computed overall width is the maximum of these amounts
+  (8x7) which is a 56-bit quantity.
+
 ## Arithmetic of two SimdShapes
 
 With some thought it becomes clear that when performing operations
