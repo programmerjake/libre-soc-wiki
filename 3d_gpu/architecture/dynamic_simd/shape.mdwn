@@ -420,6 +420,20 @@ Divide on the other hand (and right-shift) will only work (when
 both elwidth and fixed-width are set) if there is
 no rounding (no bits lost due to the division / right-shift).
 
+Summary:
+
+* Fixed_width Priority
+  - all operations (add, mul, sub, shift, div)
+    expected to work (caveat: layout() should check rounding)
+* Element-width Priority
+  - all operations expected to work (no caveats)
+* Fixed-and-Elwidth (no priority)
+  - multiply and left-shift always expected to work
+  - divide and right-shift expected to work (caveat: no bits
+    lost due to rounding)
+  - add and subtract **not** expected to work (ambiguous):
+    exception must be raised
+
 ## Arithmetic of two SimdShapes
 
 With some thought it becomes clear that when performing operations
