@@ -422,12 +422,12 @@ no rounding (no bits lost due to the division / right-shift).
 
 Summary:
 
-* Fixed_width Priority
+* **Fixed_width Priority**
   - all operations (add, mul, sub, shift, div)
     expected to work (caveat: layout() should check rounding)
-* Element-width Priority
+* **Element-width Priority**
   - all operations expected to work (no caveats)
-* Fixed-and-Elwidth (no priority)
+* **Fixed-and-Elwidth (no priority)**
   - multiply and left-shift always expected to work
   - divide and right-shift expected to work (caveat: no bits
     lost due to rounding)
