@@ -17,6 +17,113 @@ Links
 * <https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=src/openpower/decoder/isa/remap_fft_yield.py;hb=HEAD>
 * <https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=src/openpower/decoder/isa/test_caller_svp64_matrix.py;hb=HEAD>
 
+# Notes from the talk
+
+```
+those are all "in-place" (i.e. you use the register file to complete the entire operation, no LD/STs needed in the middle) 
+it's a ridiculously-long list! https://en.wikipedia.org/wiki/Discrete_cosine_transform#Applications 
+https://en.wikipedia.org/wiki/Discrete_Fourier_transform_(general) 
+the NTT wiki page is here https://en.wikipedia.org/wiki/Discrete_Fourier_transform_(general)#Number-theoretic_transform 
+like, not having 4-wide SIMD and only using 3 of the SIMD lanes 
+https://arxiv.org/abs/2002.10143# 
+fascinating paper 
+that's down to not having to do branches 
+because the zero-overhead loop doesn't even need a branch instruction 
+no predication in VSX, either. 
+it's a rather unfortunate dichotomy, here 
+which according to the "strict" definition of "Custom Extension" would be in OPCODE 22 
+
+https://libre-soc.org/openpower/sv/overview/ 
+fascinatingly this was exactly what Peter Hsu (architect of the MIPS R8000) came up with back around 1994-5! 
+unfortunately, the only reason they didn't go ahead with it was because they hadn't worked out Multi-Issue Out-of-Order Execution at the time 
+so couldn't fully exploit the idea 
+each REMAP can actually be applied to more than one register if required 
+which is used (shown later) in the 5-operand (draft) instructions 
+you _could_ do this but you have to have a massive number of Reservation Stations 
+(an In-Order system would be hosed) 
+so with this trick you get multiple pipelined FMACs outstanding 
+the hope is that by the time the inner for-loop has completed, you can do another (partial) FMAC on the same register 
+i meant, you rotate (not transpose) :) 
+the matrix data is in order 0 1 2 3 
+but REMAP can access it in 0 2 1 3 
+or invert the X-dimension 
+1 2 0 3 
+
+and that is basically the values of the matrix "rotated" :) 
+https://libre-soc.org/openpower/sv/remap/ 
+Aspex was bought out by Ericsson, so the only information available on it now is papers by Argy Krikelis 
+and the other co-designers 
+https://www.researchgate.net/profile/Argy-Krikelis 
+here's the source for that matrix unit test 
+https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=src/openpower/decoder/isa/test_caller_svp64_matrix.py;hb=HEAD 
+to experiment with Matrix "Schedules" this is a simple stand-alone program 
+https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=src/openpower/decoder/isa/remapyield.py;hb=HEAD 
+
+so you can have data appear to be re-ordered *in-place* (register numbers): 
+r0 r3 r6 
+r1 r4 r7 
+r2 r5 r8 
+we cut down the MP3 FFMPEG main loop from 450 instructions down to *only 100*. 
+it was stunning, totally unexpected 
+ohh dear. FFT. this was hellishly complicated :) took about 2 months to do both DCT and FFT 
+that 5-operand draft instruction is crucial to do DCT and FFT in-place 
+if you don't want to do in-place, you can get away with the "normal" approach of using a temp scalar variable (and 3-4 instructions) 
+but, that kiinda defeats the object of the exercise :) 
+https://www.ti.com/lit/an/sprabb6b/sprabb6b.pdf 
+TMS320 FFT 
+standard library for the nexagon 
+https://developer.qualcomm.com/forum/qdn-forums/software/hexagon-dsp-sdk/audio-capiappi/33010 
+definite "wow" on the number of VLIW uOps for Hexagon
+
+https://developer.qualcomm.com/download/hexagon/hexagon-dsp-architecture.pdf 
+https://www.nayuki.io/res/fast-discrete-cosine-transform-algorithms/lee-new-algo-discrete-cosine-transform.pdf 
+the original paper by Byeong Gi Lee. 1984! 
+here's the stand-alone program which can generate the triple-loop schedules 
+https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=src/openpower/decoder/isa/remap_fft_yield.py;h=422c2187867bba75c5a33d395e74d2d1081199d1;hb=0b7eb1cc2b6f1b820a54e668724f1e00967e85f3 
+whoops i meant "add it to X[0]" :) 
+https://www.nayuki.io/page/free-small-fft-in-multiple-languages 
+https://developer.qualcomm.com/download/hexagon/hexagon-dsp-architecture.pdf 
+https://www.nayuki.io/res/fast-discrete-cosine-transform-algorithms/lee-new-algo-discrete-cosine-transform.pdf 
+the original paper by Byeong Gi Lee. 1984! 
+here's the stand-alone program which can generate the triple-loop schedules 
+https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=src/openpower/decoder/isa/remap_fft_yield.py;h=422c2187867bba75c5a33d395e74d2d1081199d1;hb=0b7eb1cc2b6f1b820a54e668724f1e00967e85f3 
+whoops i meant "add it to X[0]" :) 
+https://www.nayuki.io/page/free-small-fft-in-multiple-languages 
+really cool set of implementations of FFT 
+this was mind-bending :) 
+of course, if you are not doing in-place, it doesn't matter 
+but when you don't do in-place, you end up using *double the number of registers* which is how a lot of implementations of FFT work. sigh 
+that puts pressure on the regfile, which is a critical resource in 3D and Video applications 
+power consumption ends up going through the roof if you have to "spill" 
+the full unit test(s) for SVP64 FFT remap are here https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=src/openpower/decoder/isa/test_caller_svp64_fft.py;hb=HEAD 
+this is where the bit about mapping any one of the 3 REMAPs to *five* possible target registers is needed 
+which is why svremap takes so many operands :) 
+https://opencores.org/projects/hwlu 
+it's in VHDL. 
+the paper on ZOLC is fascinating https://www.researchgate.net/publication/224647569_A_portable_specification_of_zero-overhead_looping_control_hardware_applied_to_embedded_processors 
+and, like the Snitch core, has absolutely stunning reductions in instruction count (and power consumption) 
+reverse-order 
+0123 
+7654 
+for DCT 
+where FFT is 
+0123 
+4567 
+i was amazed by this elegant algorithm 
+from looking at the numbers 
+here's the source for a stand-alone program to create DCT schedules 
+https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=src/openpower/decoder/isa/remap_dct_yield.py;hb=HEAD 
+i use it to auto-generate the SVG DCT diagrams used in this talk :) 
+https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=src/openpower/decoder/isa/dct_butterfly_svg.py;hb=HEAD 
+https://www.youtube.com/watch?v=fn2KJvWyBKg 
+trying to explain it without a slide, sigh :) 
+it's in the video 
+here's the unit test for draft svp64 dct 
+https://git.libre-soc.org/?p=openpower-isa.git;a=blob;f=src/openpower/decoder/isa/test_caller_svp64_dct.py;hb=HEAD 
+i meant, 25% :) 
+they added a transpose-matrix instruction to turn 3x4 into 4x3 
+it might have been NEON that ARM added that to, rather than MALI 
+```
 
 # Abstract
 
