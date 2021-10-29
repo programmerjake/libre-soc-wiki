@@ -462,6 +462,7 @@ Summary:
 * **Both LHS and RHS Fixed-width Priority**
   - Exactly the same as for when RHS is an Integer, given that the
     integer fixed width is, in fact, an integer.
+  - the return result is always a fixed-width priority SimdShape
 * **Either LHS or RHS Elwidth Priority**
   - It is unsafe (not possible) to respect the fixed width therefore
     it is always ignored
@@ -469,4 +470,4 @@ Summary:
     the elwidths)
   - all operators work because they match elwidth-for-elwidth
     in their computations.
-
+  - the return result is always an elwidth-priority SimdShape
