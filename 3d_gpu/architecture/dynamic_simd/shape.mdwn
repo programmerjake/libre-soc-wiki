@@ -460,4 +460,13 @@ itself an integer.
 Summary:
 
 * **Both LHS and RHS Fixed-width Priority**
-  - Exactly the same as for when RHS is an Integer
+  - Exactly the same as for when RHS is an Integer, given that the
+    integer fixed width is, in fact, an integer.
+* **Either LHS or RHS Elwidth Priority**
+  - It is unsafe (not possible) to respect the fixed width therefore
+    it is always ignored
+  - all operators always expected to work (caveat: by only using
+    the elwidths)
+  - all operators work because they match elwidth-for-elwidth
+    in their computations.
+
