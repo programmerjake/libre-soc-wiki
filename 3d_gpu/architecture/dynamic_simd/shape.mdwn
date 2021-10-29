@@ -457,6 +457,11 @@ used on both LHS and RHS, it is effectively an identical case to
 when the RHS is an integer, because the fixed_width of the RHS is
 itself an integer.
 
+A special case of this also occurs in instances where all elwidths
+in all partitions on either LHS or RHS are identical: element widths {3,3,3,3} for
+example.  Under such special circumstances, multiply would
+function correctly even for dual-priority, due to uniform scaling.
+
 Summary:
 
 * **Both LHS and RHS Fixed-width Priority**
