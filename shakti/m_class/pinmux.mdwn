@@ -134,14 +134,14 @@ Relying on this capability, however, by selecting a fixed voltage for
 the entire SoC's GPIO domain, is simply not a good idea: all sensors
 and peripherals which do not have a variable (VREF) capability for the
 logic side, or coincidentally are not at the exact same fixed voltage,
-will simply not be compatible if they are high-speed CMOS-level push-push
+will simply not be compatible if they are high-speed CMOS-level push-pull
 driven.  Open-Drain on the other hand can be handled with a MOSFET for
 two-way or even a diode for one-way depending on the levels, but this means
 significant numbers of external components if the number of lines is large.
 
 So, selecting a fixed voltage (such as 1.8v or 3.3v) results in a bit of a
 problem: external level-shifting is required on pretty much absolutely every
-single pin, particularly the high-speed (CMOS) push-push I/O.  An example: the
+single pin, particularly the high-speed (CMOS) push-pull I/O.  An example: the
 DM9000 is best run at 3.3v.  A fixed 1.8v FlexBus would
 require a whopping 18 pins (possibly even 24 for a 16-bit-wide bus)
 worth of level-shifting, which is not just costly
