@@ -20,17 +20,26 @@ working when manufactured. Worse, the peripheral could be
 faulty.  How can you tell what the cause is? There are two
 possible faults, but only one symptom ("it dunt wurk").
 This problem is what JTAG Boundary Scan is designed to solve.
-JTAG can be operated
-at very low clock frequencies (5 khz is perfectly acceptable)
+JTAG can be operated from an external digital clock,
+at very low frequencies (5 khz is perfectly acceptable)
 so there is very little risk of clock skew during that testing.
 
 Additionally, an SoC is designed to be low cost, to use low cost
-packaging.  ASICs are typically 32 to 128 pins QFP
+packaging. ASICs are typically 32 to 128 pins QFP
 only in the Embedded
 Controller range, and between 300 to 650 FBGA in the Tablet /
 Smartphone range, absolute maximum of 19 mm on a side.
 1,000 pin packages common to Intel desktop processors are
 absolutely out of the question.
+
+(*With each pin wire bond smashing
+into the ASIC using purely heat of impact to melt the wire,
+cracks in the die can occur. The more times
+the bonding equipment smashes into the die, the higher the
+chances of irreversible damage, hence why larger pin packaged
+ASICs are much more expensive: not because of their manufacturing
+cost but because far more of them fail due to having been
+literally hit with a hammer many more times*)
 
 Yet, the expectation from the market is to be able to fit 1,000++
 pins worth of peripherals into only 200 to 400 worth of actual
