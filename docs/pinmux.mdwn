@@ -100,6 +100,19 @@ but it can also read or control the Core (peripheral).
 This is its entire purpose: to allow for the detection
 and triaging of faults.
 
+* Software may be uploaded and run which sets a bit on
+  one of the peripheral outputs (UART Tx for example).
+  If the UART TX IO Pad was faulty, no possibility existd
+  without Boundary Scan to determine if the peripheral
+  was at fault.  With the UART TX pin function being
+  redirected to a JTAG Shift Register, the results of the
+  software setting UART Tx may be detected by checking
+  the appropriate Shift Register bit.
+* Likewise, a voltage may be applied to the UART RX Pad,
+  and the corresponding SR bit checked to see if the
+  pad is working.  If the UART Rx peripheral was faulty
+  this would not be possible.
+
 <img src="https://libre-soc.org/shakti/m_class/JTAG/jtag-block.jpg"
   width=500 />
 
