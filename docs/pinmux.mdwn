@@ -45,7 +45,7 @@ ASICs are much more expensive: not because of their manufacturing
 cost but because far more of them fail due to having been
 literally hit with a hammer many more times*)
 
-Yet, the expectation from the market is to be able to fit 1,000++
+Yet, the expectation from the market is to be able to fit 1,000+
 pins worth of peripherals into only 200 to 400 worth of actual
 IO Pads. The solution here: a GPIO Pinmux, described in some
 detail here <https://ftp.libre-soc.org/Pin_Control_Subsystem_Overview.pdf>
@@ -64,16 +64,16 @@ Scan chaining can also connect multiple ASICs together so that
 the same test can be run on a large batch of ASICs at the same
 time.
 
-IO Pads come in four primary different types:
+IO Pads generslly come in four primary different types:
 
 * Input
 * Output
 * Output with Tristate (enable)
-* Bi-directional Input/Output with direction enable
+* Bi-directional Tristate Input/Output with direction enable
 
 Interestingly these can all be synthesised from one
-Bi-directional IO Pad.  Other features such as Differential
-Pairs may also be constructed from an inverter and a pair
+Bi-directional Tristate IO Pad.  Other types such as Differential
+Pair Transmit may also be constructed from an inverter and a pair
 of IO Pads.  Other more advanced features include pull-up
 and pull-down resistors, Schmidt triggering for interrupts,
 different drive strengths, and so on, but the basics are
@@ -81,12 +81,13 @@ that the Pad is either an input, or an output, or both.
 
 The JTAG Boundary Scan therefore needs to know what type
 each pad is (In/Out/Bi) and has to "insert" itself in between
-the wires, which may be just an input, or just an output,
+*all* the Pad's wires, which may be just an input, or just an output,
 and, if bi-directional, an "output enable" line.
 
 The "insertion" (or, "Tap") into those wires requires a
 pair of Muxes for each wire.  Under normal operation
-the Muxes bypass JTAG entirely: the IO Pad is connected
+the Muxes bypass JTAG entirely: the IO Pad is connected,
+through the two Muxes,
 directly to the Core (a hardware term for a "peripheral",
 in Software terminology).
 
@@ -100,7 +101,7 @@ When JTAG Scan is enabled, then for every pin that is
 
 In this way, not only can JTAG control or read the IO Pad,
 but it can also read or control the Core (peripheral).
-This is its entire purpose: to allow for the detection
+This is its entire purpose: interception to allow for the detection
 and triaging of faults.
 
 * Software may be uploaded and run which sets a bit on
@@ -140,7 +141,7 @@ clock did not.  Clearly this would be a problem.
 
 However, clocks are very special signals: they have to be distributed
 evenly to all and any Latches (DFFs) inside the peripheral so that
-data corruption does not occur.
+data corruption does not occur because of tiny delays.
 
 # GPIO Muxing
 
