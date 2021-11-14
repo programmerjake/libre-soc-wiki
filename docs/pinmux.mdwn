@@ -13,6 +13,18 @@ JTAG can be operated
 at very low clock frequencies (5 khz is perfectly acceptable)
 so there is very little risk of clock skew during that testing.
 
+Additionally, an SoC is designed to be low cost, to use low cost
+packaging.  ASICs are typically 32 to 128 pins QFP
+only in the Embedded
+Controller range, and between 300 to 650 FBGA in the Tablet /
+Smartphone range, absolute maximum of 19 mm on a side.
+1,000 pin packages common to Intel desktop processors are
+absolutely out of the question.
+
+Yet, the expectation from the market is to be able to fit 1,000++
+pins worth of peripherals into only 200 to 400 worth of actual
+IO Pads. The solution here: a GPIO Pinmux, described in some
+detail here 
 
 <img src="https://libre-soc.org/shakti/m_class/JTAG/jtag-block.jpg"
   width=600 />
