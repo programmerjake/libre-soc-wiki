@@ -1,5 +1,19 @@
 # Pinmux, IO Pads, and JTAG Boundary scan
 
+Managing IO on an ASIC is nowhere near as simple as on an FPGA.
+An FPGA has built-in IO Pads, the wires terminate inside an
+existing silicon block which has been tested for you.
+
+Designing an ASIC, there is no guarantee that the IO pad is
+working when manufactured. Worse, the peripheral could be
+faulty.  How can you tell what the cause is? There are two
+possible faults, but only one symptom ("it dunt wurk").
+This problem is what JTAG Boundary Scan is designed to solve.
+JTAG can be operated
+at very low clock frequencies (5 khz is perfectly acceptable)
+so there is very little risk of clock skew during that testing.
+
+
 <img src="https://libre-soc.org/shakti/m_class/JTAG/jtag-block.jpg"
   width=600 />
 
