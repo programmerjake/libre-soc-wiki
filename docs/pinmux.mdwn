@@ -130,6 +130,16 @@ both Received *and Transmitted* data and control is synchronised.  Notice
 very specifically that it is *not the main processor* generating that clock
 Signal, but the external peripheral (known as a PHY in Hardware terminology)
 
+Firstly: note that the Clock will, obviously, also need to be routed
+through JTAG Boundary Scan, because, after all, it is being received
+through just another ordinary IO Pad, after all.  Secondly: note thst
+if it didn't, then clock skew would occur for that peripheral because
+although the Data Wires went through JTAG Boundary Scan MUXes, the
+clock did not.  Clearly this would be a problem.
+
+However, clocks are very special signals: they have to be distributed
+evenly to all and any Latches (DFFs) inside the peripheral so that
+data corruption does not occur.
 
 # GPIO Muxing
 
