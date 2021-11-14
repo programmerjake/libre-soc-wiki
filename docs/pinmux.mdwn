@@ -51,6 +51,55 @@ This page goes over the details and issues involved in creating
 an ASIC that combines **both** JTAG Boundary Scan **and** GPIO
 Muxing, down to layout considerations using coriolis2.
 
+# JTAG Boundary Scan
+
+JTAG Scanning is a (paywalled) IEEE Standard: 1149.1 which with
+a little searching can be found online.  Its purpose is to allow
+a well-defined method of testing ASIC IO pads that a Foundry or
+ASIC test house may apply easily with off-the-shelf equipment.
+Scan chaining can also connect multiple ASICs together so that
+the same test can be run on a large batch of ASICs at the same
+time.
+
+IO Pads come in four primary different types:
+
+* Input
+* Output
+* Output with Tristate (enable)
+* Bi-directional Input/Output with direction enable
+
+Interestingly these can all be synthesised from one
+Bi-directional IO Pad.  Other features such as Differential
+Pairs may also be constructed from an inverter and a pair
+of IO Pads.  Other more advanced features include pull-up
+and pull-down resistors, Schmidt triggering for interrupts,
+different drive strengths, and so on, but the basics are
+that the Pad is either an input, or an output, or both.
+
+The JTAG Boundary Scan therefore needs to know what type
+each pad is (In/Out/Bi) and has to "insert" itself in between
+the wires, which may be just an input, or just an output,
+and, if bi-directional, an "output enable" line.
+
+The "insertion" (or, "Tap") into those wires requires a
+pair of Muxes for each wire.  Under normal operation
+the Muxes bypass JTAG entirely: the IO Pad is connected
+directly to the Core (a hardware term for a "peripheral",
+in Software terminology).
+
+When JTAG Scan is enabled, then for every pin that is
+"tapped into", the Muxes flip such that:
+
+* The IO Pad is connected directly to latches controlled
+  by the JTAG Shift Register
+* The Core (peripheral) likewise but to *different bits*
+  from those that the Pad is connected to
+
+In this way, not only can JTAG control or read the IO Pad,
+but it can also read or control the Core (peripheral).
+This is its entire purpose: to allow for the detection
+and triaging of faults.
+
 <img src="https://libre-soc.org/shakti/m_class/JTAG/jtag-block.jpg"
   width=500 />
 
