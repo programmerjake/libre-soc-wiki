@@ -142,6 +142,29 @@ clock did not.  Clearly this would be a problem.
 However, clocks are very special signals: they have to be distributed
 evenly to all and any Latches (DFFs) inside the peripheral so that
 data corruption does not occur because of tiny delays.
+To avoid that scenario, Clock Domain Crossing (CDC) is used, with
+Asynchronous FIFOs:
+
+        rx_fifo = stream.AsyncFIFO([("data", 8)], self.rx_depth, w_domain="ulpi", r_domain="sync")
+        tx_fifo = stream.AsyncFIFO([("data", 8)], self.tx_depth, w_domain="sync", r_domain="ulpi")
+        m.submodules.rx_fifo = rx_fifo
+        m.submodules.tx_fifo = tx_fifo
+
+However the entire FIFO must be covered by two Clock H-Trees: one
+by the ULPI external clock, and the other the main system clock.
+The size of the ULPI clock H-Tree, and consequently the size of
+the PHY on-chip, will result in more Clock Tree Buffers being
+inserted into the chain, and, correspondingly, matching buffers
+on the ULPI data input side likewise must be inserted so that
+the input data timing precisely matches that of its clock.
+
+The problem is not receiving of data, though: it is transmission
+on the output ULPI side.  With the ULPI Clock Tree having buffers
+inserted, each buffer creates delay.  The ULPI output FIFO has to
+correspondingly be synchronised not to the original incoming clock
+but to that clock *after going through H Tree Buffers*.  Therefore,
+there will be a lag on the output data compared to the incoming
+(external) clock
 
 # GPIO Muxing
 
