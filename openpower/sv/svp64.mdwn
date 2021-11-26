@@ -429,6 +429,16 @@ augmented to 7 bits in length.
 
 `RM-2P-2S` is for `stw` etc. and is Rsrc1 Rsrc2.
 
+## RM-1P-2S1D
+
+single-predicate, three registers (2 read, 1 write)
+ 
+| Field Name | Field bits | Description                 |
+|------------|------------|----------------------------|
+| Rdest_EXTRA3 | `10:12`    | extends Rdest             |
+| Rsrc1_EXTRA3 | `13:15`    | extends Rsrc1             |
+| Rsrc2_EXTRA3 | `16:18`    | extends Rsrc2             |
+
 ## RM-2P-2S1D/1S2D/3S
 
 The primary purpose for this encoding is for Twin Predication on LOAD
