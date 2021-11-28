@@ -204,3 +204,16 @@ Here is a function that defines a UART Resource:
       io.append(Subsignal("rx", Pins(rx, dir="i", assert_width=1)))
       io.append(Subsignal("tx", Pins(tx, dir="o", assert_width=1)))
       return Resource.family(*args, default_name="uart", ios=io)
+
+It would typically be part of a larger function that defines, for either
+an FPGA or an ASIC, a full array of IO Connections:
+
+    def create_resources(pinset):
+       resources = []
+       resources.append(UARTResource('uart', 0, tx='tx', rx='rx'))
+       # add clock and reset
+       clk = Resource("clk", 0, Pins("sys_clk", dir="i"))
+       rst = Resource("rst", 0, Pins("sys_rst", dir="i"))
+       resources.append(clk)
+       resources.append(rst)
+       return resources
