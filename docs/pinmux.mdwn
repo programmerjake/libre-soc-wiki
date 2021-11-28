@@ -302,6 +302,23 @@ is then taken care of **automatically and transparently**, but to
 all intents and purposes looking exactly like a Platform even to
 the extent of taking the exact same list of Resources.
 
+    class Blinker(Elaboratable):
+      def __init__(self, resources):
+          self.jtag = JTAG(resources)
+
+      def elaborate(self, platform):
+          m = Module()
+          m.submodules.jtag = jtag = self.jtag
+
+          # get the UART resource, mess with the output tx
+          uart = jtag.request('uart')
+          intermediary = Signal()
+          m.d.comb += uart.tx.eq(~intermediary) # invert, for fun
+          m.d.comb += intermediary.eq(uart.rx) # pass rx to tx
+
+          return jtag.boundary_elaborate(m, platform)
+
+
 ## Clock synchronisation
 
 Take for example USB ULPI:
