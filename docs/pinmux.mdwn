@@ -226,7 +226,14 @@ recogniseable well-known name.
 Next, these Resources need to be handed to a ResourceManager or
 a Platform (Platform derives from ResourceManager)
 
+    from nmigen.build.plat import TemplatedPlatform
+ 
     class ASICPlatform(TemplatedPlatform):
       def __init__(self, resources):
           super().__init__()
           self.add_resources(resources)
+
+An HDL Module may now be created, which, if given
+a platform instance during elaboration, may request
+a UART (caveat below):
+
