@@ -218,6 +218,22 @@ and triaging of faults.
 <img src="https://libre-soc.org/shakti/m_class/JTAG/jtag-block.jpg"
   width=500 />
 
+## C4M JTAG TAP
+
+Staf Verhaegen's Chips4Makers JTAG TAP module includes everything
+needed to create JTAG Boundary Scan Shift Registers.  However,
+connecting up cores (a hardware term: the equivalent software
+term is "peripherals") on one side and the pads on the other is
+especially confusing, but deceptively simple.  The actual addition
+to the Scan Shift Register is this straightforward:
+
+    class JTAG(DMITAP, Pins):
+       def __init__(self, pinset, domain, wb_data_wid=32):
+           TAP.__init__(self, ir_width=4)
+           tx = self.add_io(iotype=IOTypeOut, name="uart_tx")
+           rx = self.add_io(iotype=IOTypeIn, name="uart_rx")
+
+
 ## Clock synchronisation
 
 Take for example USB ULPI:
