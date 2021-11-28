@@ -217,3 +217,13 @@ an FPGA or an ASIC, a full array of IO Connections:
        resources.append(clk)
        resources.append(rst)
        return resources
+
+For an FPGA, the Pins names are typically the Ball Grid Array
+Pad or Pin name: A12, or N20.  ASICs can do likewise: it is
+for convenience when referring to schematics, to use the most
+recogniseable well-known name.
+
+Next, these Resources need to be handed to a ResourceManager or
+a Platform (Platform derives from ResourceManager)
+
+     
