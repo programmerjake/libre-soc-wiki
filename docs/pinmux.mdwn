@@ -54,6 +54,104 @@ This page goes over the details and issues involved in creating
 an ASIC that combines **both** JTAG Boundary Scan **and** GPIO
 Muxing, down to layout considerations using coriolis2.
 
+# Resources, Platforms and Pins
+
+When creating nmigen HDL as Modules, they typically know nothing about FPGA
+Boards or ASICs.  They especially do not know anything about the
+Peripheral ICs (UART, I2C, USB, SPI, PCIe) connected to a given FPGA
+on a given PCB, and they should not have to.
+
+Through the Resources, Platforms and Pins API, a level of abstraction
+between peripherals, boards and HDL designs is provided.  Peripherals
+may be given `(nane, number)` tuples, the HDL design may "request"
+a peripheral, which is described in terms of Resources, managed
+by a ResourceManager, and a Platform may provide that peripheral.
+The Platform is given
+the resposibility to wire up the Pins to the correct FPGA (or ASIC)
+IO Pads, and it is the HDL design's responsibility to connect up
+those same named Pins, on the other side, to the implementation
+of the PHY/Controller, in the HDL.
+
+Here is a function that defines a UART Resource:
+
+    #!/usr/bin/env python3
+    from nmigen.build.dsl import Resource, Subsignal, Pins
+
+    def UARTResource(*args, rx, tx):
+      io = []
+      io.append(Subsignal("rx", Pins(rx, dir="i", assert_width=1)))
+      io.append(Subsignal("tx", Pins(tx, dir="o", assert_width=1)))
+      return Resource.family(*args, default_name="uart", ios=io)
+
+Note that the Subsignal is given a convenient name (tx, rx) and that
+there are Pins associated with it.
+UARTResource  would typically be part of a larger function that defines, for either
+an FPGA or an ASIC, a full array of IO Connections:
+
+    def create_resources(pinset):
+       resources = []
+       resources.append(UARTResource('uart', 0, tx='A20', rx='A21'))
+       # add clock and reset
+       clk = Resource("clk", 0, Pins("sys_clk", dir="i"))
+       rst = Resource("rst", 0, Pins("sys_rst", dir="i"))
+       resources.append(clk)
+       resources.append(rst)
+       return resources
+
+For an FPGA, the Pins names are typically the Ball Grid Array
+Pad or Pin name: A12, or N20.  ASICs can do likewise: it is
+for convenience when referring to schematics, to use the most
+recogniseable well-known name.
+
+Next, these Resources need to be handed to a ResourceManager or
+a Platform (Platform derives from ResourceManager)
+
+    from nmigen.build.plat import TemplatedPlatform
+ 
+    class ASICPlatform(TemplatedPlatform):
+      def __init__(self, resources):
+          super().__init__()
+          self.add_resources(resources)
+
+An HDL Module may now be created, which, if given
+a platform instance during elaboration, may request
+a UART (caveat below):
+
+    from nmigen import Elaboratable, Module, Signal
+
+    class Blinker(Elaboratable): 
+      def elaborate(self, platform):
+          m = Module()
+          # get the UART resource, mess with the output tx
+          uart = platform.request('uart')
+          intermediary = Signal()
+          m.d.comb += uart.tx.eq(~intermediary) # invert, for fun
+          m.d.comb += intermediary.eq(uart.rx) # pass rx to tx
+ 
+          return m
+
+The caveat here is that the Resources of the platform actually
+have to have a UART in order for it to be requestable! Thus:
+
+    resources = create_resources()
+    asic = ASICPlatform(resources)
+    hdl = Blinker()
+    asic.build(hdl)
+
+Finally the association between HDL, Resources, and ASIC Platform
+is made:
+
+* The Resources contain the abstract expression of the
+type of peripheral, its port names, and the corresponding
+names of the IO Pads associated with each port.
+* The HDL which knows nothing about IO Pad names requests
+  a Resource by name
+* The ASIC Platform, given the list of Resources, takes care
+  of connecting requests for Resources to actual IO Pads.
+
+This is the simple version.  When JTAG Boundary Scan needs
+to be added, it gets a lot more complex.
+
 # JTAG Boundary Scan
 
 JTAG Scanning is a (paywalled) IEEE Standard: 1149.1 which with
@@ -176,76 +274,3 @@ Diagram constructed from the nmigen plat.py file.
 
 [[!img i_o_io_tristate_jtag.JPG]]
 
-# Resources, Platforms and Pins
-
-When creating nmigen HDL as Modules, they typically know nothing about FPGA
-Boards or ASICs.  They especially do not know anything about the
-Peripheral ICs (UART, I2C, USB, SPI, PCIe) connected to a given FPGA
-on a given PCB, and they should not have to.
-
-Through the Resources, Platforms and Pins API, a level of abstraction
-between peripherals, boards and HDL designs is provided.  Peripherals
-may be given `(nane, number)` tuples, the HDL design may "request"
-a peripheral, which is described in terms of Resources, managed
-by a ResourceManager, and a Platform may provide that peripheral.
-The Platform is given
-the resposibility to wire up the Pins to the correct FPGA (or ASIC)
-IO Pads, and it is the HDL design's responsibility to connect up
-those same named Pins, on the other side, to the implementation
-of the PHY/Controller, in the HDL.
-
-Here is a function that defines a UART Resource:
-
-    #!/usr/bin/env python3
-    from nmigen.build.dsl import Resource, Subsignal, Pins
-
-    def UARTResource(*args, rx, tx):
-      io = []
-      io.append(Subsignal("rx", Pins(rx, dir="i", assert_width=1)))
-      io.append(Subsignal("tx", Pins(tx, dir="o", assert_width=1)))
-      return Resource.family(*args, default_name="uart", ios=io)
-
-It would typically be part of a larger function that defines, for either
-an FPGA or an ASIC, a full array of IO Connections:
-
-    def create_resources(pinset):
-       resources = []
-       resources.append(UARTResource('uart', 0, tx='tx', rx='rx'))
-       # add clock and reset
-       clk = Resource("clk", 0, Pins("sys_clk", dir="i"))
-       rst = Resource("rst", 0, Pins("sys_rst", dir="i"))
-       resources.append(clk)
-       resources.append(rst)
-       return resources
-
-For an FPGA, the Pins names are typically the Ball Grid Array
-Pad or Pin name: A12, or N20.  ASICs can do likewise: it is
-for convenience when referring to schematics, to use the most
-recogniseable well-known name.
-
-Next, these Resources need to be handed to a ResourceManager or
-a Platform (Platform derives from ResourceManager)
-
-    from nmigen.build.plat import TemplatedPlatform
- 
-    class ASICPlatform(TemplatedPlatform):
-      def __init__(self, resources):
-          super().__init__()
-          self.add_resources(resources)
-
-An HDL Module may now be created, which, if given
-a platform instance during elaboration, may request
-a UART (caveat below):
-
-    from nmigen import Elaboratable, Module, Signal
-
-    class Blinker(Elaboratable): 
-      def elaborate(self, platform):
-          m = Module()
-          # get the UART resource, mess with the output tx
-          uart = platform.request('uart')
-          intermediary = Signal()
-          m.d.comb += uart.tx.eq(intermediary)
-          m.d.comb += intermediary.eq(uart.rx)
- 
-          return m
