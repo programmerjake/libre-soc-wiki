@@ -250,6 +250,11 @@ This results in the creation of:
   allow either direct connection between pad and core
   (bypassing JTAG) or interception
 
+During Interception Mode (Scanning) pad and core are connected
+to the Shift Register.  During "Production" Mode, pad and
+core are wired directly to each other (on a per-pin basis,
+for every pin. Clearly this is a lot of work).
+
 It is then your responsibility to:
 
 * connect up each and every peripheral input and output
