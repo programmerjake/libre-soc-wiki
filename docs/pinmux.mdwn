@@ -295,6 +295,8 @@ to intercept both the core and IO Pads, both input and output,
 and confirm the correct functionality of one even if the other is
 broken, during ASIC testing.
 
+## Libre-SOC Automatic Boundary Scan
+
 Libre-SOC's JTAG TAP Boundary Scan system is a little more sophisticated:
 it hooks into (replaces) ResourceManager.request(), intercepting the request
 and recording what was requested.  The above manual linkup to JTAG TAP
@@ -317,6 +319,28 @@ the extent of taking the exact same list of Resources.
           m.d.comb += intermediary.eq(uart.rx) # pass rx to tx
 
           return jtag.boundary_elaborate(m, platform)
+
+Connecting up and building the ASIC is as simple as a non-JTAG,
+non-scanning-aware Platform:
+
+    resources = create_resources()
+    asic = ASICPlatform(resources)
+    hdl = Blinker(resources)
+    asic.build(hdl)
+
+The differences:
+
+* The list of resources was also passed to the HDL Module
+  such that JTAG may create a complete identical list
+  of both core and pad matching Pins
+* Resources were requested from the JTAG instance,
+  not the Platform
+* A "magic function" (JTAG.boundary_elaborate) is called
+  which wires up all of the seamlessly intercepted
+  Platform resources to the JTAG core/pads Resources,
+  where the HDL connected to the core side, exactly
+  as if this was a non-JTAG-Scan-aware Platform.
+
 
 
 ## Clock synchronisation
