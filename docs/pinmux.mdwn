@@ -63,7 +63,7 @@ on a given PCB, and they should not have to.
 
 Through the Resources, Platforms and Pins API, a level of abstraction
 between peripherals, boards and HDL designs is provided.  Peripherals
-may be given `(nane, number)` tuples, the HDL design may "request"
+may be given `(name, number)` tuples, the HDL design may "request"
 a peripheral, which is described in terms of Resources, managed
 by a ResourceManager, and a Platform may provide that peripheral.
 The Platform is given
@@ -85,8 +85,8 @@ Here is a function that defines a UART Resource:
 
 Note that the Subsignal is given a convenient name (tx, rx) and that
 there are Pins associated with it.
-UARTResource  would typically be part of a larger function that defines, for either
-an FPGA or an ASIC, a full array of IO Connections:
+UARTResource  would typically be part of a larger function that defines,
+for either an FPGA or an ASIC, a full array of IO Connections:
 
     def create_resources(pinset):
        resources = []
