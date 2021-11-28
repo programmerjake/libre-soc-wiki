@@ -231,8 +231,8 @@ to the Scan Shift Register is this straightforward:
 
     from c4m.nmigen.jtag.tap import IOType, TAP
 
-    class JTAG(DMITAP, Pins):
-       def __init__(self, pinset, domain, wb_data_wid=32):
+    class JTAG(TAP):
+       def __init__(self):
            TAP.__init__(self, ir_width=4)
            self.u_tx = self.add_io(iotype=IOType.Out, name="tx")
            self.u_rx = self.add_io(iotype=IOType.In, name="rx")
