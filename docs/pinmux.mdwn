@@ -178,7 +178,7 @@ Diagram constructed from the nmigen plat.py file.
 
 # Resources, Platforms and Pins
 
-When creating nmigen Modules, they typically know nothing about FPGA
+When creating nmigen HDL as Modules, they typically know nothing about FPGA
 Boards or ASICs.  They especially do not know anything about the
 Peripheral ICs (UART, I2C, USB, SPI, PCIe) connected to a given FPGA
 on a given PCB, and they should not have to.
@@ -194,4 +194,13 @@ IO Pads, and it is the HDL design's responsibility to connect up
 those same named Pins, on the other side, to the implementation
 of the PHY/Controller, in the HDL.
 
+Here is a function that defines a UART Resource:
 
+    #!/usr/bin/env python3
+    from nmigen.build.dsl import Resource, Subsignal, Pins
+
+    def UARTResource(*args, rx, tx):
+      io = []
+      io.append(Subsignal("rx", Pins(rx, dir="i", assert_width=1)))
+      io.append(Subsignal("tx", Pins(tx, dir="o", assert_width=1)))
+      return Resource.family(*args, default_name="uart", ios=io)
