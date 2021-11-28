@@ -162,7 +162,7 @@ Scan chaining can also connect multiple ASICs together so that
 the same test can be run on a large batch of ASICs at the same
 time.
 
-IO Pads generslly come in four primary different types:
+IO Pads generally come in four primary different types:
 
 * Input
 * Output
@@ -227,12 +227,38 @@ term is "peripherals") on one side and the pads on the other is
 especially confusing, but deceptively simple.  The actual addition
 to the Scan Shift Register is this straightforward:
 
+    from c4m.nmigen.jtag.tap import IOType, TAP
+
     class JTAG(DMITAP, Pins):
        def __init__(self, pinset, domain, wb_data_wid=32):
            TAP.__init__(self, ir_width=4)
-           tx = self.add_io(iotype=IOTypeOut, name="uart_tx")
-           rx = self.add_io(iotype=IOTypeIn, name="uart_rx")
+           tx = self.add_io(iotype=IOType.Out, name="uart_tx")
+           rx = self.add_io(iotype=IOType.In, name="uart_rx")
 
+This results in the creation of:
+
+* Two Records, one of type In named rx, the other an output
+  named tx
+* Each Record contains a pair of sub-Records: one core-side
+  and the other pad-side
+* Entries in the Boundary Scan Shift Register which if set
+  may control (or read) either the peripheral / core or
+  the IO PAD
+* A suite of Muxes (as shown in the diagrams above) which
+  allow either direct connection between pad and core
+  (bypassing JTAG) or interception
+
+It is then your responsibility to:
+
+* connect up each and every peripheral input and output
+  to the right IO Core Record in your HDL
+* connect up each and every IO Pad input and output
+  to the right IO Pad in the Platform
+
+Both of these tasks are painstaking and tedious in the
+extreme if done manually, and prone to either sheer boredom,
+transliteration errors, dyslexia triggering or just utter
+confusion.
 
 ## Clock synchronisation
 
