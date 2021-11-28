@@ -232,8 +232,8 @@ to the Scan Shift Register is this straightforward:
     class JTAG(DMITAP, Pins):
        def __init__(self, pinset, domain, wb_data_wid=32):
            TAP.__init__(self, ir_width=4)
-           tx = self.add_io(iotype=IOType.Out, name="uart_tx")
-           rx = self.add_io(iotype=IOType.In, name="uart_rx")
+           self.u_tx = self.add_io(iotype=IOType.Out, name="uart_tx")
+           self.u_rx = self.add_io(iotype=IOType.In, name="uart_rx")
 
 This results in the creation of:
 
@@ -258,7 +258,30 @@ It is then your responsibility to:
 Both of these tasks are painstaking and tedious in the
 extreme if done manually, and prone to either sheer boredom,
 transliteration errors, dyslexia triggering or just utter
-confusion.
+confusion.  Despite this, let us proceed, and, augmenting
+the Blinky example, wire up a JTAG instance:
+
+    class Blinker(Elaboratable): 
+      def elaborate(self, platform):
+          m = Module()
+          m.submodules.jtag = jtag = JTAG()
+
+          # get the records from JTAG instance
+          utx, urx = jtag.u_tx, jtag.u_rx
+          # get the UART resource, mess with the output tx
+          p_uart = platform.request('uart')
+
+          # uart core-side from JTAG
+          intermediary = Signal()
+          m.d.comb += utx.core.o.eq(~intermediary) # invert, for fun
+          m.d.comb += intermediary.eq(urx.core.i) # pass rx to tx
+
+          # wire up the IO Pads (in right direction) to Platform
+          m.d.comb += uart.tx.eq(utx.pad.i) # transmit JTAG to pad
+          m.d.comb += utx.pad.o.eq(uart.rx) # pass rx to JTAG
+          return m
+
+
 
 ## Clock synchronisation
 
