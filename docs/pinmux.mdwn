@@ -237,3 +237,15 @@ An HDL Module may now be created, which, if given
 a platform instance during elaboration, may request
 a UART (caveat below):
 
+    from nmigen import Elaboratable, Module, Signal
+
+    class Blinker(Elaboratable): 
+      def elaborate(self, platform):
+          m = Module()
+          # get the UART resource, mess with the output tx
+          uart = platform.request('uart')
+          intermediary = Signal()
+          m.d.comb += uart.tx.eq(intermediary)
+          m.d.comb += intermediary.eq(uart.rx)
+ 
+          return m
