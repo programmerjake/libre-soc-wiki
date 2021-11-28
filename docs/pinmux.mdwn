@@ -226,4 +226,7 @@ recogniseable well-known name.
 Next, these Resources need to be handed to a ResourceManager or
 a Platform (Platform derives from ResourceManager)
 
-     
+    class ASICPlatform(TemplatedPlatform):
+      def __init__(self, resources):
+          super().__init__()
+          self.add_resources(resources)
