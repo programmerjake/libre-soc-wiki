@@ -232,8 +232,8 @@ to the Scan Shift Register is this straightforward:
     class JTAG(DMITAP, Pins):
        def __init__(self, pinset, domain, wb_data_wid=32):
            TAP.__init__(self, ir_width=4)
-           self.u_tx = self.add_io(iotype=IOType.Out, name="uart_tx")
-           self.u_rx = self.add_io(iotype=IOType.In, name="uart_rx")
+           self.u_tx = self.add_io(iotype=IOType.Out, name="tx")
+           self.u_rx = self.add_io(iotype=IOType.In, name="rx")
 
 This results in the creation of:
 
@@ -281,7 +281,19 @@ the Blinky example, wire up a JTAG instance:
           m.d.comb += utx.pad.o.eq(uart.rx) # pass rx to JTAG
           return m
 
+JTAG TAP capability on UART TX and RX has now been inserted into
+the chain.  Using openocd or other program it is possible to
+send TDI, TMS, TDO and TCK signals according to IEEE 1149.1 in order
+to intercept both the core and IO Pads, both input and output,
+and confirm the correct functionality of one even if the other is
+broken, during ASIC testing.
 
+Libre-SOC's JTAG TAP Boundary Scan system is a little more sophisticated:
+it hooks into (replaces) ResourceManager.request(), intercepting the request
+and recording what was requested.  The above manual linkup to JTAG TAP
+is then taken care of **automatically and transparently**, but to
+all intents and purposes looking exactly like a Platform even to
+the extent of taking the exact same list of Resources.
 
 ## Clock synchronisation
 
