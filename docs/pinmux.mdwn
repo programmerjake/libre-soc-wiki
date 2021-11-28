@@ -175,3 +175,23 @@ there will be a lag on the output data compared to the incoming
 Diagram constructed from the nmigen plat.py file.
 
 [[!img i_o_io_tristate_jtag.JPG]]
+
+# Resources, Platforms and Pins
+
+When creating nmigen Modules, they typically know nothing about FPGA
+Boards or ASICs.  They especially do not know anything about the
+Peripheral ICs (UART, I2C, USB, SPI, PCIe) connected to a given FPGA
+on a given PCB, and they should not have to.
+
+Through the Resources, Platforms and Pins API, a level of abstraction
+between peripherals, boards and HDL designs is provided.  Peripherals
+may be given `(nane, number)` tuples, the HDL design may "request"
+a peripheral, which is described in terms of Resources, managed
+by a ResourceManager, and a Platform may provide that peripheral.
+The Platform is given
+the resposibility to wire up the Pins to the correct FPGA (or ASIC)
+IO Pads, and it is the HDL design's responsibility to connect up
+those same named Pins, on the other side, to the implementation
+of the PHY/Controller, in the HDL.
+
+
