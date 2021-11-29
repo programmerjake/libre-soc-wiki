@@ -295,6 +295,14 @@ the Blinky example, wire up a JTAG instance:
           m.d.comb += utx.pad.o.eq(uart.rx) # pass rx to JTAG
           return m
 
+Compared to the non-scan-capable version, which connected UART
+Core Tx and Rx directly to the Platform Resource (and the Platform
+took care of wiring to IO Pads):
+
+* Core HDL is instead wired to the core-side of JTAG Scan
+* JTAG Pad side is instead wired to the Platform
+* (the Platform still takes care of wiring to actual IO Pads)
+
 JTAG TAP capability on UART TX and RX has now been inserted into
 the chain.  Using openocd or other program it is possible to
 send TDI, TMS, TDO and TCK signals according to IEEE 1149.1 in order
