@@ -260,7 +260,14 @@ It is then your responsibility to:
 * connect up each and every peripheral input and output
   to the right IO Core Record in your HDL
 * connect up each and every IO Pad input and output
-  to the right IO Pad in the Platform
+  to the right IO Pad in the Platform. **This
+  does not happen automatically and is not the
+  responsibility of the TAP Interface*
+
+The TAP interface connects the **other** side of the pads
+and cores Records: **to the Muxes**.  You **have** to
+connect **your** side of both core and pads Records in
+order for the Scan to be fully functional.
 
 Both of these tasks are painstaking and tedious in the
 extreme if done manually, and prone to either sheer boredom,
