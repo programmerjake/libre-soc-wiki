@@ -355,7 +355,11 @@ The differences:
   Platform resources to the JTAG core/pads Resources,
   where the HDL connected to the core side, exactly
   as if this was a non-JTAG-Scan-aware Platform.
-
+* ASICPlatform still takes care of connecting to actual
+  IO Pads, except that the Platform.resource requests were
+  triggered "behind the scenes". For that to work it
+  is absolutely essential that the JTAG instance and the
+  ASICPlatform be given the exact same list of Resources.
 
 
 ## Clock synchronisation
