@@ -133,7 +133,7 @@ a UART (caveat below):
 The caveat here is that the Resources of the platform actually
 have to have a UART in order for it to be requestable! Thus:
 
-    resources = create_resources()
+    resources = create_resources() # contains resource named "uart"
     asic = ASICPlatform(resources)
     hdl = Blinker()
     asic.build(hdl)
