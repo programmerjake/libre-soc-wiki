@@ -237,3 +237,13 @@ the top-level, without them being explicitly added they will be
  359     with sim_writer:
  360         sim.run()
 ```
+
+Here is an [actual practical use](https://git.libre-soc.org/?p=soc.git;a=commitdiff;h=ca3d417a6946dfde083a7c34d76c7572d4132be0)
+where a "debug_status" message has been added (and toggled) to
+show the different phases as a unit test progresses.  This
+unit test (MMU Virtual Memory Page-Table fault, and PTE insertion into
+the I-Cache) is particularly complex and so is a three-stage process
+that needed some context in order to see which phase of the test
+is underway.
+
+[[!img 2021-12-09_20-21.png size="800x" ]]
