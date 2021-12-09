@@ -569,12 +569,12 @@ this requires 3 parameters and a "degree"
 
 realistically with the degree also needing to be an immediate it should be brought down to an overwrite version:
 
-    RS = GFMUL(RS, RA, gfdegree, modulo=RB)
-    RS = GFMUL(RS, RA, gfdegree=RC, modulo=RB)
+    RS = GFMUL(RS, RA, gfdegree, modulo=RC)
+    RS = GFMUL(RS, RA, gfdegree=RB, modulo=RC)
 
 | 0.5|6.10|11.15|16.20|21.25| 26..30  |31|
 | -- | -- | --- | --- | --- | ------- |--|
-| NN | RS | RA  | RB  | deg | 00  011 |Rc|
+| NN | RS | RA  | deg | RC  | 00  011 |Rc|
 | NN | RS | RA  | RB  | RC  | 11  011 |Rc|
 
 where the SimpleV variant may override RS-as-src differently from RS-as-dest
@@ -631,12 +631,12 @@ if __name__ == "__main__":
 ```
 ## GF add
 
-    RS = GFADDI(RS, RA|0, gfdegree, modulo=RB)
-    RS = GFADD(RS, RA|0, gfdegree=RC, modulo=RB)
+    RS = GFADDI(RS, RA|0, gfdegree, modulo=RC)
+    RS = GFADD(RS, RA|0, gfdegree=RB, modulo=RC)
 
 | 0.5|6.10|11.15|16.20|21.25| 26..30  |31| name  |
 | -- | -- | --- | --- | --- | ------- |--| ----- |
-| NN | RS | RA  | RB  | deg | 0 1  011 |Rc| gfaddi |
+| NN | RS | RA  | deg | RC  | 0 1  011 |Rc| gfaddi |
 | NN | RS | RA  | RB  | RC  | 1 1  111 |Rc| gfadd |
 
 GFMOD is a pseudo-op where RA=0
