@@ -182,3 +182,24 @@ from the documentation for Signal:
         ``"{0.name:}/{0.value:}"``, or a number if the signal value
         is not a member of the enumeration.
 ```
+
+An [example how to do this](https://git.libre-soc.org/?p=nmutil.git;a=blob;f=src/nmutil/test/example_gtkwave.py;h=1b8c3b9c1b0bb5cde23c6896fc5cbde991790384;hb=HEAD#l262):
+
+```
+ 262     # demonstrates adding extra debug signal traces
+ 263     # they end up in the top module
+ 264     #
+ 265     zero = Signal()  # mark an interesting place
+ 266     #
+ 267     # demonstrates string traces
+ 268     #
+ 269     # display a message when the signal is high
+ 270     # the low level is just an horizontal line
+ 271     interesting = Signal(decoder=lambda v: 'interesting!' if v else '')
+ 272     # choose between alternate strings based on numerical value
+ 273     test_cases = ['', '13>>2', '3<<4', '21<<0']
+ 274     test_case = Signal(8, decoder=lambda v: test_cases[v])
+ 275     # hack to display arbitrary strings, like debug statements
+ 276     msg = Signal(decoder=lambda _: msg.str)
+ 277     msg.str = ''
+```
