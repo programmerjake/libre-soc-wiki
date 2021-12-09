@@ -171,3 +171,14 @@ Some applications are:
    single horizontal line. Useful to draw attention to a time interval.
 2. Display the stages of a unit test
 3. Display arbitrary debug statements along the timeline.
+
+from the documentation for Signal:
+
+```
+    decoder : function or Enum
+        A function converting integer signal values to human-readable
+        strings (e.g. FSM state names). If an ``Enum`` subclass is
+        passed, it is concisely decoded using format string
+        ``"{0.name:}/{0.value:}"``, or a number if the signal value
+        is not a member of the enumeration.
+```
