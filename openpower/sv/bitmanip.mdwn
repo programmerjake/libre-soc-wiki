@@ -73,8 +73,8 @@ minor opcode allocation
 
 | 0.5|6.10|11.15|16.20|21..25 | 26....30 |31| name |
 | -- | -- | --- | --- | ----- | -------- |--| ------ |
-| NN | RT | RA  | RB  | RC    | mode 001 |Rc| ternlog |
-| NN | RT | RA  | RB  | im0-4 | im5-7 00 |Rc| ternlogi |
+| NN | RT | RA  | RB  | RC    | mode 000 |1 | ternlog |
+| NN | RT | RA  | RB  | im0-4 | im5-7 00 |0 | ternlogi |
 | NN | RS | RA  | RB  | RC    | 00  011  |Rc| gfmul |
 | NN | RS | RA  | RB  | RC    | 01  011  |Rc| gfadd |
 | NN | RT | RA  | RB  | deg   | 10  011  |Rc| gfinv |
@@ -242,7 +242,7 @@ Like the x86 AVX512F [vpternlogd/vpternlogq](https://www.felixcloutier.com/x86/v
 
 | 0.5|6.10|11.15|16.20| 21..25| 26..30   |31|
 | -- | -- | --- | --- | ----- | -------- |--|
-| NN | RT | RA  | RB  | im0-4 | im5-7 00 |Rc|
+| NN | RT | RA  | RB  | im0-4 | im5-7 00 |0 |
 
     for i in range(64):
         idx = RT[i] << 2 | RA[i] << 1 | RB[i]
@@ -254,7 +254,7 @@ a 4 operand variant which becomes more along the lines of an FPGA:
 
 | 0.5|6.10|11.15|16.20|21.25| 26...30  |31|
 | -- | -- | --- | --- | --- | -------- |--|
-| NN | RT | RA  | RB  | RC  | mode 001 |Rc|
+| NN | RT | RA  | RB  | RC  | mode 100 |1 |
 
     for i in range(64):
         idx = RT[i] << 2 | RA[i] << 1 | RB[i]
