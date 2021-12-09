@@ -203,3 +203,37 @@ An [example how to do this](https://git.libre-soc.org/?p=nmutil.git;a=blob;f=src
  276     msg = Signal(decoder=lambda _: msg.str)
  277     msg.str = ''
 ```
+
+Then, in the Simulation, an arbitrary debug message can be inserted at
+exactly the right required point.  remember to "waggle" the Signal itself
+so that the Simulation knows to put the change *of the string*
+into the VCD file:
+
+```
+ 289         # show current operation operation
+ 290         if direction:
+ 291             msg.str = f'{data}>>{shift}'
+ 292         else:
+ 293             msg.str = f'{data}<<{shift}'
+ 294         # force dump of the above message by toggling the
+ 295         # underlying signal
+ 296         yield msg.eq(0)
+ 297         yield msg.eq(1)
+```
+
+Also very important is to explicitly add the debug Signal to the
+gtkwave list of Signals to watch for.  As the debug Signal is at
+the top-level, without them being explicitly added they will be
+*removed* from the vcd file.
+
+```
+ 352     sim.add_sync_process(producer)
+ 353     sim.add_sync_process(consumer)
+ 354     sim_writer = sim.write_vcd(
+ 355         "test_shifter.vcd",
+ 356         # include additional signals in the trace dump
+ 357         traces=[zero, interesting, test_case, msg],
+ 358     )
+ 359     with sim_writer:
+ 360         sim.run()
+```
