@@ -241,6 +241,8 @@ Similar to FPGA LUTs: for every bit perform a lookup into a table using an 8bit 
 
 Like the x86 AVX512F [vpternlogd/vpternlogq](https://www.felixcloutier.com/x86/vpternlogd:vpternlogq) instructions.
 
+## ternlogi
+
 | 0.5|6.10|11.15|16.20| 21..25| 26..30   |31|
 | -- | -- | --- | --- | ----- | -------- |--|
 | NN | RT | RA  | RB  | im0-4 | im5-7 00 |0 |
@@ -250,6 +252,8 @@ Like the x86 AVX512F [vpternlogd/vpternlogq](https://www.felixcloutier.com/x86/v
         RT[i] = (imm & (1<<idx)) != 0
 
 bits 21..22 may be used to specify a mode, such as treating the whole integer zero/nonzero and putting 1/0 in the result, rather than bitwise test.
+
+## ternlog
 
 a 4 operand variant which becomes more along the lines of an FPGA:
 
@@ -264,6 +268,8 @@ a 4 operand variant which becomes more along the lines of an FPGA:
 mode (2 bit) may be used to do inversion of ordering, similar to carryless mul,
 3 modes.
 
+## ternlogv
+
 also, another possible variant involving swizzle and vec4:
 
 | 0.5|6.10|11.15| 16.23 |24.27 | 28.30 |31|
@@ -275,6 +281,8 @@ also, another possible variant involving swizzle and vec4:
         res = (imm & (1<<idx)) != 0
         for j in range(3):
              if mask[j]: RT[i+j*8] = res
+
+## ternlogcr
 
 another mode selection would be CRs not Ints. 
 
