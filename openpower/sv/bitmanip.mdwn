@@ -223,6 +223,17 @@ another mode selection would be CRs not Ints.
               crregs[BC][i]
         crregs[BA][i] = (imm & (1<<idx)) != 0
 
+## cmix
+
+based on RV bitmanip, covered by ternlog bitops
+
+```
+uint_xlen_t cmix(uint_xlen_t RA, uint_xlen_t RB, uint_xlen_t RC) {
+    return (RA & RB) | (RC & ~RB);
+}
+```
+
+
 # bitmask set
 
 based on RV bitmanip singlebit set, instruction format similar to shift
@@ -449,16 +460,6 @@ uint64_t gorc64(uint64_t RA, uint64_t RB)
     return x;
 }
 
-```
-
-# cmix
-
-based on RV bitmanip, covered by ternlog bitops
-
-```
-uint_xlen_t cmix(uint_xlen_t RA, uint_xlen_t RB, uint_xlen_t RC) {
-    return (RA & RB) | (RC & ~RB);
-}
 ```
 
 # carryless mul
