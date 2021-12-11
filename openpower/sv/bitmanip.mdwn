@@ -130,17 +130,6 @@ are included here)
 | NN | RA | RB  | RC  | 11    | 1  | 1110 110 |Rc| clmulh  |
 | NN |    |     |     |       |    | --11 110 |Rc| setvl  |
 
-# count leading/trailing zeros with mask
-
-in v3.1 p105
-
-```
-count = 0
-do i = 0 to 63 if((RB)i=1) then do
-if((RS)i=1) then break end end count ← count + 1
-RA ← EXTZ64(count)
-```
-
 # bit to byte permute
 
 similar to matrix permute in RV bitmanip, which has XOR and OR variants
@@ -149,70 +138,6 @@ similar to matrix permute in RV bitmanip, which has XOR and OR variants
       do k = 0 to 7
          b = VSR[VRB+32].dword[i].byte[k].bit[j]
          VSR[VRT+32].dword[i].byte[j].bit[k] = b
-
-#  bit deposit
-
-vpdepd VRT,VRA,VRB, identical to RV bitmamip bdep, found already in v3.1 p106
-
-    do while(m < 64)
-       if VSR[VRB+32].dword[i].bit[63-m]=1 then do
-          result = VSR[VRA+32].dword[i].bit[63-k]
-          VSR[VRT+32].dword[i].bit[63-m] = result
-          k = k + 1
-       m = m + 1
-
-```
-
-uint_xlen_t bdep(uint_xlen_t RA, uint_xlen_t RB)
-{
-    uint_xlen_t r = 0;
-    for (int i = 0, j = 0; i < XLEN; i++)
-        if ((RB >> i) & 1) {
-            if ((RA >> j) & 1)
-                r |= uint_xlen_t(1) << i;
-            j++;
-        }
-    return r;
-}
-
-```
-
-# bit extract
-
-other way round: identical to RV bext, found in v3.1 p196
-
-```
-uint_xlen_t bext(uint_xlen_t RA, uint_xlen_t RB)
-{
-    uint_xlen_t r = 0;
-    for (int i = 0, j = 0; i < XLEN; i++)
-        if ((RB >> i) & 1) {
-            if ((RA >> i) & 1)
-                r |= uint_xlen_t(1) << j;
-            j++;
-        }
-    return r;
-}
-```
-
-# centrifuge
-
-found in v3.1 p106 so not to be added here
-
-```
-ptr0 = 0
-ptr1 = 0
-do i = 0 to 63
-    if((RB)i=0) then do
-       resultptr0 = (RS)i
-    end 
-    ptr0 = ptr0 + 1
-    if((RB)63-i==1) then do
-        result63-ptr1 = (RS)63-i
-    end
-    ptr1 = ptr1 + 1
-RA = result
-```
 
 # int min/max
 
@@ -732,3 +657,81 @@ uint64_t bmator(uint64_t RA, uint64_t RB)
 }
 
 ```
+
+# Already in POWER ISA
+
+## count leading/trailing zeros with mask
+
+in v3.1 p105
+
+```
+count = 0
+do i = 0 to 63 if((RB)i=1) then do
+if((RS)i=1) then break end end count ← count + 1
+RA ← EXTZ64(count)
+```
+
+##  bit deposit
+
+vpdepd VRT,VRA,VRB, identical to RV bitmamip bdep, found already in v3.1 p106
+
+    do while(m < 64)
+       if VSR[VRB+32].dword[i].bit[63-m]=1 then do
+          result = VSR[VRA+32].dword[i].bit[63-k]
+          VSR[VRT+32].dword[i].bit[63-m] = result
+          k = k + 1
+       m = m + 1
+
+```
+
+uint_xlen_t bdep(uint_xlen_t RA, uint_xlen_t RB)
+{
+    uint_xlen_t r = 0;
+    for (int i = 0, j = 0; i < XLEN; i++)
+        if ((RB >> i) & 1) {
+            if ((RA >> j) & 1)
+                r |= uint_xlen_t(1) << i;
+            j++;
+        }
+    return r;
+}
+
+```
+
+# bit extract
+
+other way round: identical to RV bext, found in v3.1 p196
+
+```
+uint_xlen_t bext(uint_xlen_t RA, uint_xlen_t RB)
+{
+    uint_xlen_t r = 0;
+    for (int i = 0, j = 0; i < XLEN; i++)
+        if ((RB >> i) & 1) {
+            if ((RA >> i) & 1)
+                r |= uint_xlen_t(1) << j;
+            j++;
+        }
+    return r;
+}
+```
+
+# centrifuge
+
+found in v3.1 p106 so not to be added here
+
+```
+ptr0 = 0
+ptr1 = 0
+do i = 0 to 63
+    if((RB)i=0) then do
+       resultptr0 = (RS)i
+    end 
+    ptr0 = ptr0 + 1
+    if((RB)63-i==1) then do
+        result63-ptr1 = (RS)63-i
+    end
+    ptr1 = ptr1 + 1
+RA = result
+```
+
