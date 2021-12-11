@@ -462,37 +462,6 @@ uint64_t gorc64(uint64_t RA, uint64_t RB)
 
 ```
 
-# carryless mul
-
-based on RV bitmanip
-see https://en.wikipedia.org/wiki/CLMUL_instruction_set
-
-```
-uint_xlen_t clmul(uint_xlen_t RA, uint_xlen_t RB)
-{
-    uint_xlen_t x = 0;
-    for (int i = 0; i < XLEN; i++)
-        if ((RB >> i) & 1)
-            x ^= RA << i;
-    return x;
-}
-uint_xlen_t clmulh(uint_xlen_t RA, uint_xlen_t RB)
-{
-    uint_xlen_t x = 0;
-    for (int i = 1; i < XLEN; i++)
-        if ((RB >> i) & 1)
-            x ^= RA >> (XLEN-i);
-    return x;
-}
-uint_xlen_t clmulr(uint_xlen_t RA, uint_xlen_t RB)
-{
-    uint_xlen_t x = 0;
-    for (int i = 0; i < XLEN; i++)
-        if ((RB >> i) & 1)
-            x ^= RA >> (XLEN-i-1);
-    return x;
-}
-```
 # Galois Field
 
 see <https://courses.csail.mit.edu/6.857/2016/files/ffield.py>
@@ -609,6 +578,42 @@ def gf_invert(a, mod=0x1B) :
     j = gf_degree(a) - gf_degree(v)
 
   return g1
+```
+
+## carryless mul
+
+based on RV bitmanip
+see https://en.wikipedia.org/wiki/CLMUL_instruction_set
+
+these are GF2 operations with the modulo set to 2^degree.
+they are worth adding as their own non-overwrite operations
+(in the same pipeline).
+
+```
+uint_xlen_t clmul(uint_xlen_t RA, uint_xlen_t RB)
+{
+    uint_xlen_t x = 0;
+    for (int i = 0; i < XLEN; i++)
+        if ((RB >> i) & 1)
+            x ^= RA << i;
+    return x;
+}
+uint_xlen_t clmulh(uint_xlen_t RA, uint_xlen_t RB)
+{
+    uint_xlen_t x = 0;
+    for (int i = 1; i < XLEN; i++)
+        if ((RB >> i) & 1)
+            x ^= RA >> (XLEN-i);
+    return x;
+}
+uint_xlen_t clmulr(uint_xlen_t RA, uint_xlen_t RB)
+{
+    uint_xlen_t x = 0;
+    for (int i = 0; i < XLEN; i++)
+        if ((RB >> i) & 1)
+            x ^= RA >> (XLEN-i-1);
+    return x;
+}
 ```
 
 # bitmatrix
