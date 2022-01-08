@@ -292,8 +292,8 @@ the Blinky example, wire up a JTAG instance:
           m.d.comb += intermediary.eq(urx.core.i) # pass rx to tx
 
           # wire up the IO Pads (in right direction) to Platform
-          m.d.comb += uart.tx.eq(utx.pad.i) # transmit JTAG to pad
-          m.d.comb += utx.pad.o.eq(uart.rx) # pass rx to JTAG
+          m.d.comb += uart.rx.eq(utx.pad.i) # receive rx from JTAG input pad
+          m.d.comb += utx.pad.o.eq(uart.tx) # transmit tx to JTAG output pad
           return m
 
 Compared to the non-scan-capable version, which connected UART
