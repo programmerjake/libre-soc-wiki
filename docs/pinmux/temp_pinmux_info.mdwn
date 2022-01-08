@@ -3,10 +3,12 @@
 
 Links:
 
-* <https://bugs.libre-soc.org/show_bug.cgi?id=50>
-* <https://git.libre-soc.org/?p=pinmux.git;a=blob;f=src/spec/testing_stage1.py>
-* <https://git.libre-soc.org/?p=c4m-jtag.git>
 * Main page on pinmux: [[/docs/pinmux]]
+* <https://bugs.libre-soc.org/show_bug.cgi?id=50>
+* <https://git.libre-soc.org/?p=c4m-jtag.git>
+* <https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/bus/simple_gpio.py;hb=HEAD>
+* <https://git.libre-soc.org/?p=pinmux.git;a=blob;f=src/spec/testing_stage1.py;hb=HEAD>
+* <https://git.libre-soc.org/?p=pinmux.git;a=blob;f=src/spec/simple_gpio.py;hb=HEAD>
 
 The tasks initially set out by Luke in 2019 (bug 50 description):
 
@@ -19,33 +21,60 @@ The tasks initially set out by Luke in 2019 (bug 50 description):
 * auto-generation of Technical Reference Manual sections
 
 # Definitions
-Useful definitions required for understanding the undertaken tasks.
+Useful definitions required for understanding the undertaken tasks. 
+See the main page for more indepth explanation on IO Pads, JTAG.
 
 ## JTAG Boundary Scan (BS) chain
-Essentially a combination of a multiplexer and shift register. The BS chain allows core signals to connect straight to the ASIC pads, or allow an external JTAG device to individually control the core inputs and pad outputs via the shift register. 
+Essentially a combination of a multiplexer and shift register.
+The BS chain allows core signals to connect straight to the ASIC pads, 
+or allow an external JTAG device to individually control the core inputs 
+and pad outputs via the shift register. 
 ## Core
-Refers to peripherals coming from the ASIC (I2C, SPI, UART, GPIO, etc.). Core signals come from the the actual HDL of the peripherals, and connect to the JTAG Boundary Scan chain.
+Refers to peripherals coming from the ASIC (I2C, SPI, UART, GPIO, etc.).
+ Core signals come from the the actual HDL of the peripherals, 
+and connect to the JTAG Boundary Scan chain.
 ## Pad/s
-Refers to the ASIC pads which are routed out to the outside world. These pads are what a chip user can interact with directly (for good or bad...).
+Refers to the ASIC pads which are routed out to the outside world. 
+These pads are what a chip user can interact with directly (for good or bad...).
 ## Pinmux
-Pin multiplexer allows ASIC pads to support a range of functions (although only one at a time per pad). Each function is allocated to a "bank", and the selected bank can be configured by the user.
+Pin multiplexer allows ASIC pads to support a range of functions 
+(although only one at a time per pad). 
+Each function is allocated to a "bank", and the selected bank 
+can be configured by the user.
 
-A pinmux is an absolute must when the amount of functionality (or peripheral signals) greatly exceed the available number of pins on a package. Also, pinmuxing allows to select packages with smaller pincounts, thus producing cheaper (and higher yield) chips.
+A pinmux is an absolute must when the amount of functionality 
+(or peripheral signals) greatly exceed the available number 
+of pins on a package. 
+Also, pinmuxing allows to select packages with smaller pincounts, 
+thus producing cheaper (and higher yield) chips.
 
-For example: A pad can be I2C SDA on bank0, a GPIO on bank1, a UART RX on bank2. By setting the bank select to 1, the pad can act as a GPIO (input or output).
+For example: A pad can be I2C SDA on bank0, a GPIO on bank1, 
+a UART RX on bank2. By setting the bank select to 1, 
+the pad can act as a GPIO (input or output).
 
-# Current progress on code for testing periph pin generation and JTAG in "testing_stage1.py":
-
+# Progress on code in "testing_stage1.py":
 ## Dummy pinset
-A test pinset that specifies which peripherals are to be added. In this case, four GPIOs, one UART,  one I2C.
+A test pinset that specifies which peripherals are to be added.
+In this case, four GPIOs, one UART,  one I2C.
 
 ## Resource signal creation
-"create_resources()" function parses a given pinset (the dummy one in this case), and creates a resources list containing the peripherals (with nmigen subsignals such as sda, gpio_o/i/oe etc.).
+"create_resources()" function parses a given pinset 
+(the dummy one in this case), and creates a resources list containing 
+the peripherals (with nmigen subsignals such as sda, gpio_o/i/oe etc.).
 
-Within this function, Resource.family(), JTAGResource(), UARTResource(), I2CResource() create the signals with correct direction (input/output/inout).
+Within this function, Resource.family(), JTAGResource(), UARTResource(), 
+I2CResource() create the signals with correct direction (input/output/inout).
 
 The returned "resources" list is used in....?
 
 ## Blinker test module
-Contains a JTAG module from Chips4Makers (c4m-jtag ?). The JTAG module is the backbone of the Blinker test module, because from it the Boundary Scan chain is produced.
-By using "jtag.request('i2c')" (or 'uart', 'gpio', etc.), the Boundary Scan chain is extended. Subsignals used to connect the peripherals from the core"
+Contains a JTAG module from Chips4Makers (c4m-jtag).
+The JTAG module is the backbone of the Blinker test module, 
+because from it the Boundary Scan chain is produced.
+
+By using "jtag.request('i2c')" (or 'uart', 'gpio', etc.), 
+the Boundary Scan chain is extended. The JTAG module then provides subsignals 
+to connect to core as well as pad side.
+
+# Simple GPIO extension
+The code from soc repo was taken and is being extended to support full gpio capability
