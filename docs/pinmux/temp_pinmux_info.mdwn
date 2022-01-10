@@ -76,5 +76,28 @@ By using "jtag.request('i2c')" (or 'uart', 'gpio', etc.),
 the Boundary Scan chain is extended. The JTAG module then provides subsignals 
 to connect to core as well as pad side.
 
+I2C and UART are connected in a loopback configuration (input to output), 
+allowing to test both signals at the same time. The GPIO output is an XOR of the GPIO input, and a test input controlled by sim (gpio_o_test). The oe signals are controlled by the sim using test input registers. 
+
+## ASIC Platform
+Performs some magic with file template code.
+Resource list (dummy pinset) provided at instantiation is added to the internal resource list (?).
+More magic with configuring pins that are inputs/outputs/tristates.
+Core/Pad pins are connected to the appropriate JTAG pins.
+
+## Unit tests
+### GPIO test
+For every output configuration of four GPIOs (16), go through each input configuration. Assert that signal states match the function in the Blinker class.
+
+### UART test
+Check TX matches RX when high and low.
+
+### I2C test
+Check SDA out and SCL out match SDA/SCL in. Check oe's by driving the test registers.
+
+### JTAG tests
+TODO
+
 # Simple GPIO extension
 The code from soc repo was taken and is being extended to support full gpio capability
+TODO
