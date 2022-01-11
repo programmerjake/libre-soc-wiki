@@ -9,6 +9,10 @@ Links:
 * <https://git.libre-soc.org/?p=soc.git;a=blob;f=src/soc/bus/simple_gpio.py;hb=HEAD>
 * <https://git.libre-soc.org/?p=pinmux.git;a=blob;f=src/spec/testing_stage1.py;hb=HEAD>
 * <https://git.libre-soc.org/?p=pinmux.git;a=blob;f=src/spec/simple_gpio.py;hb=HEAD>
+* ST Ericsson presentation on the GPIO subsystem: <https://ftp.libre-soc.org/Pin_Control_Subsystem_Overview.pdf>
+* Technical guide to JTAG: <https://www.corelis.com/education/tutorials/jtag-tutorial/jtag-technical-primer>
+* Presentation on JTAG: <http://www.facweb.iitkgp.ac.in/~isg/ADV-TESTING/SLIDES/5-JTAG.pdf>
+* Useful information on mandatory JTAG instructions: <https://www.corelis.com/education/tutorials/jtag-tutorial/jtag-technical-primer/#JTAG_Instructions> 
 
 The tasks initially set out by Luke in 2019 (bug 50 description):
 
@@ -117,6 +121,14 @@ The expected results are:
 1. All signals should be low (as JTAG TDI is ignored and all inputs low).
 1. All pad inputs and sim controlled input (output enables etc.) should be high.
 1. All signals should be high.
+
+These test cases are performed by the "jtag_unit_test" with selected JTAG
+ instructions (SAMPLE or EXTEST), data to send via TDI, and expected TDO data 
+vector. The TDO and TDI data is compared using asserts.
+
+NOTE: Currently the last test case's TDO data does not match the actual 
+core/pad signal values. Not sure why the returned TDO is icorrect, however 
+the signals are correct.
 
 # Simple GPIO extension
 The code from soc repo was taken and is being extended to support full gpio capability
