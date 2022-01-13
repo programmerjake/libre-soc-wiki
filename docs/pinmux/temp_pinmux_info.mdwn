@@ -131,5 +131,71 @@ core/pad signal values. Not sure why the returned TDO is icorrect, however
 the signals are correct.
 
 # Simple GPIO extension
-The code from soc repo was taken and is being extended to support full gpio capability
-TODO
+## Explanation
+The code from soc repo was taken and is being extended to support full gpio 
+capability.
+
+The simple GPIO module has a parameter specifying the number of I/O lines.
+For configuration, oe and bank select (capped at 4-bits or 16 banks, probably 
+plenty for now) are available.
+
+For simplicity, only one bank select parameter for the *WHOLE* GPIO block was 
+implemented (I wasn't able to get an array of signals working with the list() 
+function).
+
+For separate access of outputs or input registers, the two bits of the second 
+byte of the address have been used. 
+As a result this simple block is limited to 256 GPIOs (which is probably fine).
+
+## Address map
+
+* 0x0Y - Access (R/W) CSR of GPIO #Y
+* 0x1Y - Access (R/W) output of GPIO #Y
+* 0x2Y - Access (R) input of GPIO #Y
+
+By using the functions mentioned below, the user doesn't need to know the extra 
+addresses, just use "gpio_rd_input" etc. and the function will add the offset.
+
+## Configuration Word
+The proposed layout of the 16-bit data word for configuring the GPIO (through 
+CSR):
+
+* 0 0 0 INPUT | bank_select[3:0] | 0 PDEN PUEN ODEN | 0 IEN OE OUTPUT
+
+(This layout is not fixed in stone, and is trivial to update if there are better
+proposals.)
+
+* Bank select switches which bank the GPIO is connected to (*I'm not sure exactly 
+what the architecture is meant to be, so this will probably change*)
+* PDEN and PUEN are pull-up/down enables, ODEN is open-drain output enable.
+* IEN and OEN are input/output path enables respectively (see the Ericson 
+presentation for the GPIO diagram).
+* OUTPUT is the value driven by the output (R/W), INPUT is what's coming in (R).
+
+When reading the CSR (default GPIO address), the user will receive everything: 
+configuration, current input, and output states. The input/output states can 
+also be queried separately if the address offsets are used.
+
+## Sim commands for single GPIO
+* gpio_configure - Set the CSR (only oe and bank select at the moment).
+* gpio_rd_csr - Read the current CSR state and parse (TODO).
+* gpio_rd_input - Read the current input.
+* gpio_set_out - Set the output to given value.
+* gpio_set_in_pad - Set the input signals for the block (external, 
+not controlled by WB)
+* gpio_rd_out - (TODO)
+
+## Test
+The current test does the following:
+
+* Set the bank select to a random value between 0 and 15 (unless the 
+"use_random" argument is set to false)
+* Set oe (all GPIOs are outputs)
+* Set GPIO outputs sequentially
+* Set external GPIO inputs sequentially and clear
+
+No asserts have been added yet as I was still developing the logic and the sim 
+functions.
+
+*Before I make anymore updates, please let me know if this GPIO block is heading 
+in the right direction.*
