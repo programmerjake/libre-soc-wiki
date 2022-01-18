@@ -13,6 +13,8 @@ Links:
 * Technical guide to JTAG: <https://www.corelis.com/education/tutorials/jtag-tutorial/jtag-technical-primer>
 * Presentation on JTAG: <http://www.facweb.iitkgp.ac.in/~isg/ADV-TESTING/SLIDES/5-JTAG.pdf>
 * Useful information on mandatory JTAG instructions: <https://www.corelis.com/education/tutorials/jtag-tutorial/jtag-technical-primer/#JTAG_Instructions> 
+* IRC conversation on the 14th about GPIO improvement: <https://libre-soc.org/irclog/%23libre-soc.2022-01-14.log.html>
+* IRC conversation on the 16th about nmigen Records: <https://libre-soc.org/irclog/%23libre-soc.2022-01-16.log.html>
 
 The tasks initially set out by Luke in 2019 (bug 50 description):
 
@@ -150,31 +152,35 @@ As a result this simple block is limited to 256 GPIOs (which is probably fine).
 ## Address map
 
 * 0x0Y - Access (R/W) CSR of GPIO #Y
-* 0x1Y - Access (R/W) output of GPIO #Y
-* 0x2Y - Access (R) input of GPIO #Y
-
-By using the functions mentioned below, the user doesn't need to know the extra 
-addresses, just use "gpio_rd_input" etc. and the function will add the offset.
 
 ## Configuration Word
-The proposed layout of the 16-bit data word for configuring the GPIO (through 
-CSR):
+After a discussion with Luke on IRC (14th January 21), new layout of the 8-bit 
+data word for configuring the GPIO (through CSR):
 
-* 0 0 0 INPUT | bank_select[3:0] | 0 PDEN PUEN ODEN | 0 IEN OE OUTPUT
+* bank_select[2:0] IO | PDEN PUEN IE OE
 
-(This layout is not fixed in stone, and is trivial to update if there are better
-proposals.)
+(This layout is not fixed in stone, and is trivial to update if there are 
+better proposals.)
 
-* Bank select switches which bank the GPIO is connected to (*I'm not sure exactly 
-what the architecture is meant to be, so this will probably change*)
-* PDEN and PUEN are pull-up/down enables, ODEN is open-drain output enable.
-* IEN and OEN are input/output path enables respectively (see the Ericson 
+* Bank select switches the peripheral that gets to control the GPIO block. 
+By default, bank 0 allows full configuration through the Wishbone Bus (from the CPU looks like memory-mapped IO). 
+<--- TODO: create table of bank select options!
+* PDEN and PUEN are pull-up/down enables.
+* IE and OE are input/output path enables respectively (see the Ericson 
 presentation for the GPIO diagram).
-* OUTPUT is the value driven by the output (R/W), INPUT is what's coming in (R).
+* IO either shows the output state (if OE set), or the value of the input 
+(IE set). To change the output value, write to this bit.
 
-When reading the CSR (default GPIO address), the user will receive everything: 
-configuration, current input, and output states. The input/output states can 
-also be queried separately if the address offsets are used.
+## Planned Improvement
+A planned improvement is to fit multiple GPIO configurations within a single 
+WB transaction. For a 64-bit wide data bus, 8 GPIOs could be configured 
+simultaneously.
+
+If the block is created with more GPIOs than can fit in a single data word, 
+the next set of GPIOs can be accessed by incrementing the address.
+For example, if 16 GPIOs are instantiated, GPIOs 0-7 are accessed via 
+address 0, whereas GPIOs 8-15 are accessed by address 8 
+(TODO: DOES ADDRESS COUNT WORDS OR BYTES?)
 
 ## Sim commands for single GPIO
 * gpio_configure - Set the CSR (only oe and bank select at the moment).
@@ -197,5 +203,3 @@ The current test does the following:
 No asserts have been added yet as I was still developing the logic and the sim 
 functions.
 
-*Before I make anymore updates, please let me know if this GPIO block is heading 
-in the right direction.*
