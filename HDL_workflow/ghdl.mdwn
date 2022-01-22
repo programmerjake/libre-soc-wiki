@@ -61,3 +61,45 @@ auto-preparation script here:
 
 Please adjust the install paths for ghdl.
 
+### Installing ghdl, yosys, and ghdl-yosys-plugin in a Debian chroot
+
+This has been done on an AMD64 machine, the build failed on my Talos II.
+
+     debootstrap bullseye /var/chroot/bullseye_ghdl
+     chroot /var/chroot/bullseye_ghdl
+put some 'deb-src' URIs in your sources.list
+    apt-get update
+    apt-get upgrade
+    apt-get build-dep ghdl
+    apt-get install git
+    cd /root/
+    git clone https://github.com/ghdl/ghdl
+    cd ghdl
+    ./configure
+    make
+    make install
+    cd ..
+
+    apt-get build-dep yosys
+    git clone https://github.com/YosysHQ/yosys
+    cd yosys
+    make
+    make install
+
+    git clone https://github.com/ghdl/ghdl-yosys-plugin
+    cd ghdl-yosys-plugin
+    make
+    make install
+
+    [optional] apt-get install verilator
+    exit # exit the chroot
+
+Then install schroot and create a config file
+nano /etc/schroot/chroot.d/bullseye_ghdl
+
+[bullseye_ghdl]
+description=chroot
+type=directory
+directory=/var/chroot/bullseye_ghdl
+users=your_username
+
