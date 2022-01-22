@@ -134,7 +134,7 @@ the signals are correct.
 
 # Pinmux GPIO Block
 ## Diagram
-[[!img banked_gpio_block.png size="600x"]]
+[[!img banked_gpio_block.jpg size="600x"]]
 
 ## Explanation
 The simple GPIO module is multi-GPIO block integral to the pinmux system.
@@ -181,7 +181,7 @@ state of the configuration as part of the code (essentially a shadow register).
 The diagram below shows the layout of the configuration byte, and how it fits
 within a 64-bit data word. 
 
-[[!img gpio_csr_example.png size="600x"]]
+[[!img gpio_csr_example.jpg size="600x"]]
 
 If the block is created with more GPIOs than can fit in a single data word, 
 the next set of GPIOs can be accessed by incrementing the address.
@@ -190,7 +190,7 @@ For example, if 16 GPIOs are instantiated and 64-bit data bus is used, GPIOs
 (TODO: DOES ADDRESS COUNT WORDS OR BYTES?)
 
 ## Example Memory Map
-[[!img gpio_memory_example.png size="600x"]]
+[[!img gpio_memory_example.jpg size="600x"]]
 
 The diagrams above show the difference in memory layout between 16-GPIO block implemented with 64-bit and 32-bit WB data buses. The 64-bit case shows there are two rows with eight GPIOs in each, and it will take two writes (assuming simple WB write) to completely configure all 16 GPIOs. The 32-bit on the other hand has four address rows, and so will take four write transactions.
 
