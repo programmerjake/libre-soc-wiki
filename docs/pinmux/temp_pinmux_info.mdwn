@@ -136,6 +136,8 @@ the signals are correct.
 ## Diagram
 [[!img banked_gpio_block.jpg size="600x"]]
 
+*(Diagram is missing the "ie" signal as part of the bundle of signals given to the peripherals, will be updated later)*
+
 ## Explanation
 The simple GPIO module is multi-GPIO block integral to the pinmux system.
 To make the block flexible, it has a variable number of of I/Os based on an
@@ -147,18 +149,18 @@ perspective, it is no different to a conventional GPIO block.
 
 ### Bank Select Options
 * bank 0 - WB bus has full control (GPIO peripheral)
-* bank 1,2,3 - WB bus only controls puen/pden, periphal gets o/oe/i (Not fully
-specified how this should be arranged yet)
+* bank 1,2,3 - WB bus only controls puen/pden, periphal gets o/oe/i/ie (Not
+fully specified how this should be arranged yet)
 
 Bank select however, allows to switch over the control of the GPIO block to
 another peripheral. The peripheral will be given sole connectivity to the
-o/oe/i signals, while additional parameters such as pull up/down will either
+o/oe/i/ie signals, while additional parameters such as pull up/down will either
 be automatically configured (as the case for I2C), or will be configurable
 via the WB bus. *(This has not been implemented yet, so open to discussion)*
 
 ## Configuration Word
-After a discussion with Luke on IRC (14th January 21), new layout of the 8-bit 
-data word for configuring the GPIO (through CSR):
+After a discussion with Luke on IRC (14th January 2022), new layout of the
+8-bit data word for configuring the GPIO (through CSR):
 
 * oe - Output Enable (see the Ericson presentation for the GPIO diagram)
 * ie - Input Enable
