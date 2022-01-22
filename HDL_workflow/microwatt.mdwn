@@ -1,0 +1,19 @@
+# Build instructions for Microwatt
+
+After installing ghdl-yosys-plugin use schroot to switch environment
+
+    schroot -c bullseye_ghdl
+    git clone https://github.com/antonblanchard/microwatt
+    export FPGA_TARGET=verilator
+    make microwatt-verilator
+
+Then run the resulting binary
+
+    time ./microwatt-verilator
+
+If everything works correcly it will print out an light bulb in ascii art
+with the message Microwatt, it works. On my ASUS KGPE D16 this takes
+
+     real	1m4.986s
+     user	1m4.373s
+     sys	0m0.013s
