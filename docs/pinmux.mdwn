@@ -503,7 +503,44 @@ selecting different peripherals during testing. At the same time, JTAG may
 also require access to the WB bus to access GPIO configuration options
 not available to bank 1/2/3 peripherals.
 
-*(A diagram of the JTAG BS and GPIO pinmux will be added here)*
+### Proposal
+The proposed JTAG BS chain is as follows:
+
+* Between each peripheral and GPIO block, add a JTAG BS chain. For example
+the I2C SDA line will have core o/oe/i/ie, and from JTAG the pad o/oe/i/ie will
+connect to the GPIO block's ports 1-3.
+* Provide a test port for the GPIO block that gives full access to configuration
+(o/oe/i/ie/puen/pden) and bank select. Only allow full JTAG configuration *IF*
+ban select bit 2 is set!
+* No JTAG chain between WB bus and GPIO port 0 input *(not sure what to do for
+this, or whether it is even needed)*.
+
+Such a setup would allow the JTAG chain to control the bank select when testing
+connectivity of the peripherals, as well as give full control to the GPIO
+configuration when bank select bit 2 is set.
+
+For the purposes of muxing peripherals, bank select bit 2 is ignored. This means
+that even if JTAG is handed over full control, the peripheral is still connected
+to the GPIO block (via the BS chain).
+
+Signals for various ports:
+
+* WB bus or Periph0: WB data read, data write, address, cyc, stb, ack
+* Periph1/2/3: o,oe,i,ie (puen/pden are only controlled by WB, test port, or
+fixed by functionality)
+* Test port: bank_select[2:0], o,oe,i,ie,puen,pden. In addition, internal
+address to access individual GPIOs will be available (this will consist of a
+few bits, as more than 16 GPIOs per block is likely to be to big).
+
+As you can see by the above list, the GPIO block is becoming quite a complex
+beast. If there are suggestions to simplify or reduce some of the signals,
+that will be helpful.*
+
+The diagrams below show 1-bit GPIO connectivity, as well as the N-bit case.
+
+[[!img gpio_jtag_1bit.jpg size="600x"]]
+
+[[!img gpio_jtag_nbit.jpg size="600x"]]
 
 # Core/Pad Connection + JTAG Mux
 
