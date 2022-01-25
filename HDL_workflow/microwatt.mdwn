@@ -17,3 +17,16 @@ with the message Microwatt, it works. On my ASUS KGPE D16 this takes
      real	1m4.986s
      user	1m4.373s
      sys	0m0.013s
+     
+## Building the kernel
+On a POWER9 there is no need to install a cross compiler, 
+you can omit CROSS_COMPILE and ARCH in this case
+
+	apt install gcc-powerpc64le-linux-gnu
+	apt install flex bison
+	git clone -b microwatt-5.7 https://git.kernel.org/pub/scm/linux/kernel/git/joel/microwatt.git
+	cd microwatt
+	wget https://ozlabs.org/~paulus/rootfs.cpio.xz FIXME 404
+	unxz rootfs.cpio.xz
+	CROSS_COMPILE="ccache powerpc64le-linux-gnu-" ARCH=powerpc make -j8 O=microwatt microwatt_defconfig
+	CROSS_COMPILE="ccache powerpc64le-linux-gnu-" ARCH=powerpc make -j8 O=microwatt
