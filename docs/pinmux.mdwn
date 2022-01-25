@@ -409,15 +409,142 @@ but to that clock *after going through H Tree Buffers*.  Therefore,
 there will be a lag on the output data compared to the incoming
 (external) clock
 
-# GPIO Muxing
+# Pinmux GPIO Block
+The following diagram is an example of a GPIO block with switchable banks and comes from the Ericson presentation on a GPIO architecture.
+[[!img gpio_block.png size="600x"]]
 
-[[!img gpio_block.png]]
+The block we are developing is very similar, but is lacking some of configuration of the former (due to complexity and time constraints).
 
-[[!img io_mux_bank_planning.JPG]]
+## Diagram
+[[!img banked_gpio_block.jpg size="600x"]]
+
+*(Diagram is missing the "ie" signal as part of the bundle of signals given to the peripherals, will be updated later)*
+
+## Explanation
+The simple GPIO module is multi-GPIO block integral to the pinmux system.
+To make the block flexible, it has a variable number of of I/Os based on an
+input parameter.
+
+By default, the block is memory-mapped WB bus GPIO. The CPU
+core can just write the configuration word to the GPIO row address. From this
+perspective, it is no different to a conventional GPIO block.
+
+### Bank Select Options
+* bank 0 - WB bus has full control (GPIO peripheral)
+* bank 1,2,3 - WB bus only controls puen/pden, periphal gets o/oe/i/ie (Not
+fully specified how this should be arranged yet)
+
+Bank select however, allows to switch over the control of the GPIO block to
+another peripheral. The peripheral will be given sole connectivity to the
+o/oe/i/ie signals, while additional parameters such as pull up/down will either
+be automatically configured (as the case for I2C), or will be configurable
+via the WB bus. *(This has not been implemented yet, so open to discussion)*
+
+## Configuration Word
+After a discussion with Luke on IRC (14th January 2022), new layout of the
+8-bit data word for configuring the GPIO (through CSR):
+
+* oe - Output Enable (see the Ericson presentation for the GPIO diagram)
+* ie - Input Enable
+* puen - Pull-Up resistor enable
+* pden - Pull-Down resistor enable
+* i/o - When configured as output (oe set), this bit sets/clears output. When
+configured as input, shows the current state of input (read-only)
+* bank_sel[2:0] - Bank Select (only 4 banks used)
+
+### Simultaneous/Packed Configuration
+To make the configuration more efficient, multiple GPIOs can be configured with
+one data word. The number of GPIOs in one "row" is dependent on the width of the
+WB data bus.
+
+If for example, the data bus is 64-bits wide, eight GPIO configuration bytes -
+and thus eight GPIOs - are configured in one go. There is no way to specify
+which GPIO in a row is configured, so the programmer has to keep the current
+state of the configuration as part of the code (essentially a shadow register).
+
+The diagram below shows the layout of the configuration byte, and how it fits
+within a 64-bit data word.
+
+[[!img gpio_csr_example.jpg size="600x"]]
+
+If the block is created with more GPIOs than can fit in a single data word,
+the next set of GPIOs can be accessed by incrementing the address.
+For example, if 16 GPIOs are instantiated and 64-bit data bus is used, GPIOs
+0-7 are accessed via address 0, whereas GPIOs 8-15 are accessed by address 8
+(TODO: DOES ADDRESS COUNT WORDS OR BYTES?)
+
+## Example Memory Map
+[[!img gpio_memory_example.jpg size="600x"]]
+
+The diagrams above show the difference in memory layout between 16-GPIO block
+implemented with 64-bit and 32-bit WB data buses.
+The 64-bit case shows there are two rows with eight GPIOs in each, and it will
+take two writes (assuming simple WB write) to completely configure all 16 GPIOs.
+The 32-bit on the other hand has four address rows, and so will take four write transactions.
+
+64-bit:
+
+* 0x00 - Configure GPIOs  0-7
+* 0x01 - Configure GPIOs  8-15
+
+32-bit:
+
+* 0x00 - Configure GPIOs  0-3
+* 0x01 - Configure GPIOs  4-7
+* 0x02 - Configure GPIOs  8-11
+* 0x03 - Configure GPIOs 12-15
+
+
+## Combining JTAG BS Chain and Pinmux (In Progress)
+[[!img io_mux_bank_planning.JPG size="600x"]]
+
+The JTAG BS chain need to have access to the bank select bits, to allow
+selecting different peripherals during testing. At the same time, JTAG may
+also require access to the WB bus to access GPIO configuration options
+not available to bank 1/2/3 peripherals.
+
+### Proposal
+The proposed JTAG BS chain is as follows:
+
+* Between each peripheral and GPIO block, add a JTAG BS chain. For example
+the I2C SDA line will have core o/oe/i/ie, and from JTAG the pad o/oe/i/ie will
+connect to the GPIO block's ports 1-3.
+* Provide a test port for the GPIO block that gives full access to configuration
+(o/oe/i/ie/puen/pden) and bank select. Only allow full JTAG configuration *IF*
+ban select bit 2 is set!
+* No JTAG chain between WB bus and GPIO port 0 input *(not sure what to do for
+this, or whether it is even needed)*.
+
+Such a setup would allow the JTAG chain to control the bank select when testing
+connectivity of the peripherals, as well as give full control to the GPIO
+configuration when bank select bit 2 is set.
+
+For the purposes of muxing peripherals, bank select bit 2 is ignored. This means
+that even if JTAG is handed over full control, the peripheral is still connected
+to the GPIO block (via the BS chain).
+
+Signals for various ports:
+
+* WB bus or Periph0: WB data read, data write, address, cyc, stb, ack
+* Periph1/2/3: o,oe,i,ie (puen/pden are only controlled by WB, test port, or
+fixed by functionality)
+* Test port: bank_select[2:0], o,oe,i,ie,puen,pden. In addition, internal
+address to access individual GPIOs will be available (this will consist of a
+few bits, as more than 16 GPIOs per block is likely to be to big).
+
+As you can see by the above list, the GPIO block is becoming quite a complex
+beast. If there are suggestions to simplify or reduce some of the signals,
+that will be helpful.*
+
+The diagrams below show 1-bit GPIO connectivity, as well as the N-bit case.
+
+[[!img gpio_jtag_1bit.jpg size="600x"]]
+
+[[!img gpio_jtag_nbit.jpg size="600x"]]
 
 # Core/Pad Connection + JTAG Mux
 
 Diagram constructed from the nmigen plat.py file.
 
-[[!img i_o_io_tristate_jtag.JPG]]
+[[!img i_o_io_tristate_jtag.JPG size="600x"]]
 

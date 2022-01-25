@@ -129,62 +129,13 @@ These test cases are performed by the "jtag_unit_test" with selected JTAG
 vector. The TDO and TDI data is compared using asserts.
 
 NOTE: Currently the last test case's TDO data does not match the actual 
-core/pad signal values. Not sure why the returned TDO is icorrect, however 
+core/pad signal values. Not sure why the returned TDO is incorrect, however 
 the signals are correct.
 
-# Simple GPIO extension
-## Explanation
-The code from soc repo was taken and is being extended to support full gpio 
-capability.
-
-The simple GPIO module has a parameter specifying the number of I/O lines.
-For configuration, oe and bank select (capped at 4-bits or 16 banks, probably 
-plenty for now) are available.
-
-For simplicity, only one bank select parameter for the *WHOLE* GPIO block was 
-implemented (I wasn't able to get an array of signals working with the list() 
-function).
-
-For separate access of outputs or input registers, the two bits of the second 
-byte of the address have been used. 
-As a result this simple block is limited to 256 GPIOs (which is probably fine).
-
-## Address map
-
-* 0x0Y - Access (R/W) CSR of GPIO #Y
-
-## Configuration Word
-After a discussion with Luke on IRC (14th January 21), new layout of the 8-bit 
-data word for configuring the GPIO (through CSR):
-
-* bank_select[2:0] IO | PDEN PUEN IE OE
-
-(This layout is not fixed in stone, and is trivial to update if there are 
-better proposals.)
-
-* Bank select switches the peripheral that gets to control the GPIO block. 
-By default, bank 0 allows full configuration through the Wishbone Bus (from the CPU looks like memory-mapped IO). 
-<--- TODO: create table of bank select options!
-* PDEN and PUEN are pull-up/down enables.
-* IE and OE are input/output path enables respectively (see the Ericson 
-presentation for the GPIO diagram).
-* IO either shows the output state (if OE set), or the value of the input 
-(IE set). To change the output value, write to this bit.
-
-## Planned Improvement
-A planned improvement is to fit multiple GPIO configurations within a single 
-WB transaction. For a 64-bit wide data bus, 8 GPIOs could be configured 
-simultaneously.
-
-If the block is created with more GPIOs than can fit in a single data word, 
-the next set of GPIOs can be accessed by incrementing the address.
-For example, if 16 GPIOs are instantiated, GPIOs 0-7 are accessed via 
-address 0, whereas GPIOs 8-15 are accessed by address 8 
-(TODO: DOES ADDRESS COUNT WORDS OR BYTES?)
-
-## Sim commands for single GPIO
-* gpio_configure - Set the CSR (only oe and bank select at the moment).
-* gpio_rd_csr - Read the current CSR state and parse (TODO).
+# Pinmux GPIO Block Testing and Simulation
+## Sim commands for single GPIO - IN PROGRESS
+* gpio_config - Set the CSR (only the first GPIO is currently configured).
+* gpio_rd_csr - Read the current CSR state and parse (only first GPIO).
 * gpio_rd_input - Read the current input.
 * gpio_set_out - Set the output to given value.
 * gpio_set_in_pad - Set the input signals for the block (external, 
@@ -200,6 +151,6 @@ The current test does the following:
 * Set GPIO outputs sequentially
 * Set external GPIO inputs sequentially and clear
 
-No asserts have been added yet as I was still developing the logic and the sim 
-functions.
+## Yosys Diagram visualisation
+*(TODO)*
 
