@@ -504,6 +504,7 @@ also require access to the WB bus to access GPIO configuration options
 not available to bank 1/2/3 peripherals.
 
 ### Proposal
+TODO: REWORK BASED ON GPIO JTAG DIAGRAMS BELOW
 The proposed JTAG BS chain is as follows:
 
 * Between each peripheral and GPIO block, add a JTAG BS chain. For example
@@ -536,11 +537,11 @@ As you can see by the above list, the GPIO block is becoming quite a complex
 beast. If there are suggestions to simplify or reduce some of the signals,
 that will be helpful.*
 
-The diagrams below show 1-bit GPIO connectivity, as well as the N-bit case.
+The diagrams below show 1-bit GPIO connectivity, as well as the 4-bit case.
 
 [[!img gpio_jtag_1bit.jpg size="600x"]]
 
-[[!img gpio_jtag_nbit.jpg size="600x"]]
+[[!img gpio_jtag_4bit.jpg size="600x"]]
 
 # Core/Pad Connection + JTAG Mux
 
