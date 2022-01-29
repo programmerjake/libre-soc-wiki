@@ -1,6 +1,6 @@
 # Build instructions for Microwatt
 
-TODO integrate from <https://libre-soc.org/irclog/%23libre-soc.2022-01-26.log.html>
+WIP integrate from <https://libre-soc.org/irclog/%23libre-soc.2022-01-26.log.html>
 
 * install verilator: <https://git.libre-soc.org/?p=dev-env-setup.git;a=blob;f=verilator-install;hb=HEAD>
 * install yosys <https://git.libre-soc.org/?p=dev-env-setup.git;a=blob;f=hdl-tools-yosys;hb=HEAD>
@@ -33,9 +33,17 @@ you can omit CROSS_COMPILE and ARCH in this case
 	apt install flex bison lz4
 	git clone -b microwatt-5.7 https://git.kernel.org/pub/scm/linux/kernel/git/joel/microwatt.git
 	cd microwatt
+	wget https://ftp.libre-soc.org/microwatt-linux-5.7.patch
+	patch -p1 < microwatt-linux-5.7.patch
 	wget http://ftp.libre-soc.org/rootfs.cpio
 	CROSS_COMPILE="ccache powerpc64le-linux-gnu-" ARCH=powerpc make -j8 O=microwatt microwatt_defconfig
 	CROSS_COMPILE="ccache powerpc64le-linux-gnu-" ARCH=powerpc make -j8 O=microwatt
 	
 This will produce a file 
 	microwatt/arch/powerpc/boot/dtbImage.microwatt
+
+## Building sdram_init.bin
+This needs gcc-powerpc64le-linux-gnu if cross compilation is used.
+	cd microwatt
+	cd litedram/gen-src/sdram_init/
+	make 
