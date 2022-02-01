@@ -47,3 +47,16 @@ This needs gcc-powerpc64le-linux-gnu if cross compilation is used.
 	cd microwatt
 	cd litedram/gen-src/sdram_init/
 	make 
+	
+## Building microwatt-verilator using the libre-soc core
+	cd /path/to/soc
+	make microwatt_external_core
+	cp external_core_top.v /path/to/microwatt
+	cd /path/to/microwatt
+	export FPGA_TARGET=verilator
+	export GHDLSYNTH=ghdl
+	make microwatt-verilator
+
+## Running the simulation
+Copy microwatt/arch/powerpc/boot/dtbImage.microwatt and sdram_init.bin into the microwatt directory.
+./microwatt-verilator sdram_init.bin dtbImage.microwatt
