@@ -720,7 +720,7 @@ For modes:
 /// `temp_pred` is a user-visible Vector Condition register 
 ///
 /// all input arrays have length `vl`
-def reduce(  vl,  vec, pred, pred,):
+def reduce(vl, vec, pred):
     step = 1;
     while step < vl
         step *= 2;
@@ -732,7 +732,13 @@ def reduce(  vl,  vec, pred, pred,):
             else if other_pred
                 vec[i] = vec[other];
             pred[i] |= other_pred;
+```
 
+we'd want to use something based on the above pseudo-code
+rather than the below pseudo-code -- reasoning here:
+<https://bugs.libre-soc.org/show_bug.cgi?id=697#c11>
+
+```
 def reduce(  vl,  vec, pred, pred,):
     j = 0
     vi = [] # array of lookup indices to skip nonpredicated
