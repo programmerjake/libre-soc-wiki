@@ -76,3 +76,18 @@ notes for how to compile for ulx3s
     export FPGA_TARGET=ulx3s
     make microwatt.svf
 
+# Notes for nextpnr-xilinx
+
+for compiling nextpnr-xilinx:
+
+   git clone https://github.com/gatecat/nextpnr-xilinx
+   cd nextpnr-xilinx
+   git submodule init
+   git submodule update
+   cmake -DARCH=xilinx .
+   make
+   make install
+   python3 xilinx/python/bbaexport.py --device xc7a100tcsg324-1 --bba xilinx/xc7a100t.bba
+   ./bbasm --l xilinx/xc7a100t.bba xilinx/xc7a100t.bin
+   mkdir -p /usr/share/nextpnr/xilinx-chipdb
+   cp xilinx/*.bin /usr/share/nextpnr/xilinx-chipdb
