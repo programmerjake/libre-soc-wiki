@@ -1,5 +1,16 @@
 # ULX3S JTAG Connection with ft232r
 
+Note: this page is for connecting a *secondary* JTAG connection to
+the Libre-SOC Core, in order to test the actual HDL implementation
+of JTAG.  "Normal" JTAG documentation instructs you how to connect
+to the **FPGA** hard-macro JTAG port (in some fashion).  Whilst the
+FPGA has a JTAG port as a hard-macro these instructions do **not**
+apply to that: they apply **specifically** to actual implementation
+in HDL of a JTAG TAP interface suitable for deployment on an ASIC,
+and, consequently, in order to test that, four GPIO pads had to be
+picked to bring those signals out.  These instructions describe how
+to correctly wire up an FT232r to connect to those four GPIO pads.
+
 Cross referenced with:
 
 <https://bugs.libre-soc.org/show_bug.cgi?id=517>
