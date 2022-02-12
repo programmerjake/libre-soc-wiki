@@ -78,16 +78,29 @@ notes for how to compile for ulx3s
 
 # Notes for nextpnr-xilinx
 
-for compiling nextpnr-xilinx:
+for compiling nextpnr-xilinx and making it useable for nmigen
+to compile for the digilent arty-a7-100t, requires a little
+futzing around, using the symbiflow version of prjxray-db
+instead of the one recommended as a submodule
 
-   git clone https://github.com/gatecat/nextpnr-xilinx
-   cd nextpnr-xilinx
-   git submodule init
-   git submodule update
-   cmake -DARCH=xilinx .
-   make
-   make install
-   python3 xilinx/python/bbaexport.py --device xc7a100tcsg324-1 --bba xilinx/xc7a100t.bba
-   ./bbasm --l xilinx/xc7a100t.bba xilinx/xc7a100t.bin
-   mkdir -p /usr/share/nextpnr/xilinx-chipdb
-   cp xilinx/*.bin /usr/share/nextpnr/xilinx-chipdb
+    git clone https://github.com/gatecat/nextpnr-xilinx
+    cd nextpnr-xilinx
+    git checkout cd8b15db6ff5c1a7f10a9e
+    git submodule init
+    git submodule update
+    cd xilinx/external
+    mv prjxray-db prjxray-db-no
+    git clone https://github.com/SymbiFlow/prjxray-db
+    cd prjxray-db
+    git checkout 0a0addedd73e7
+    cp ./artix7/xc7a100t/*.json \
+       ./artix7/xc7a100tcsg324-1
+    cd ../../..
+    cmake -DARCH=xilinx .
+    make
+    make install
+    python3 xilinx/python/bbaexport.py --device xc7a100tcsg324-1 --bba xilinx/xc7a100t.bba
+    ./bbasm --l xilinx/xc7a100t.bba xilinx/xc7a100t.bin
+    mkdir -p /usr/share/nextpnr/xilinx-chipdb
+    cp xilinx/*.bin /usr/share/nextpnr/xilinx-chipdb
+    cp -aux xilinx/external/prjxray-db /usr/share/nextpnr
