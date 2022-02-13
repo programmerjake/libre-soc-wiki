@@ -79,8 +79,8 @@ TODO: convert all instructions to use RT and not RS
 | -- | -- | --- | ---  | -----   | -------- |--| ------ |
 | NN | RT | RA  | RB   | RC      | mode 000 |1 | ternlog |
 | NN | RT | RA  | RB   | im0-4   | im5-7 00 |0 | ternlogi |
-| NN | RT | RA  | RB   | im0-3 / | 00   100 |1 | grevlog |
-| NN | RT | RA  | s0-5 | im0-3 s6| 01   100 |1 | grevlogi |
+| NN | RT | RA  | RB   | / im0-3 | 00   100 |1 | grevlog |
+| NN | RT | RA  | s0-5 | s6 im0-3| 01   100 |1 | grevlogi |
 | NN | RT | RA  |      |         | 1-   100 |1 | rsvd |
 | NN | RS | RA  | RB   | RC      | 00  011  |Rc| gfmul |
 | NN | RS | RA  | RB   | RC      | 01  011  |Rc| gfadd |
