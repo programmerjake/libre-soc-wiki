@@ -36,7 +36,7 @@ minor opcode allocation
     | ------ |--| --------- |
     |   00   |0 | ternlogi  |
     |  000   |1 | ternlog   |
-    |  100   |1 | reserved  |
+    |  100   |1 | grevlog   |
     |  010   |Rc| bitmask   |
     |  011   |Rc| gf*       |
     |  101   |1 | ternlogv  |
@@ -75,15 +75,18 @@ minor opcode allocation
 
 TODO: convert all instructions to use RT and not RS
 
-| 0.5|6.10|11.15|16.20|21..25 | 26....30 |31| name |
-| -- | -- | --- | --- | ----- | -------- |--| ------ |
-| NN | RT | RA  | RB  | RC    | mode 000 |1 | ternlog |
-| NN | RT | RA  | RB  | im0-4 | im5-7 00 |0 | ternlogi |
-| NN | RS | RA  | RB  | RC    | 00  011  |Rc| gfmul |
-| NN | RS | RA  | RB  | RC    | 01  011  |Rc| gfadd |
-| NN | RT | RA  | RB  | deg   | 10  011  |Rc| gfinv |
-| NN | RS | RA  | RB  | deg   | 11  011  |Rc| gfmuli |
-| NN | RS | RA  | RB  | deg   | 11  111  |Rc| gfaddi |
+| 0.5|6.10|11.15|16.20 |21..25   | 26....30 |31| name |
+| -- | -- | --- | ---  | -----   | -------- |--| ------ |
+| NN | RT | RA  | RB   | RC      | mode 000 |1 | ternlog |
+| NN | RT | RA  | RB   | im0-4   | im5-7 00 |0 | ternlogi |
+| NN | RT | RA  | RB   | im0-3 / | 00   100 |1 | grevlog |
+| NN | RT | RA  | s0-5 | im0-3 s6| 01   100 |1 | grevlogi |
+| NN | RT | RA  |      |         | 1-   100 |1 | rsvd |
+| NN | RS | RA  | RB   | RC      | 00  011  |Rc| gfmul |
+| NN | RS | RA  | RB   | RC      | 01  011  |Rc| gfadd |
+| NN | RT | RA  | RB   | deg     | 10  011  |Rc| gfinv |
+| NN | RS | RA  | RB   | deg     | 11  011  |Rc| gfmuli |
+| NN | RS | RA  | RB   | deg     | 11  111  |Rc| gfaddi |
 
 | 0.5|6.10|11.15| 16.23 |24.27 | 28.30 |31| name |
 | -- | -- | --- | ----- | ---- | ----- |--| ------ |
