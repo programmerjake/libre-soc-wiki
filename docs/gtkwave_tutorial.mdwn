@@ -50,11 +50,11 @@ For example:
     traces = [
         'clk',
         # prev port
-        'op__sdir', 'p_data_i[7:0]', 'p_shift_i[7:0]', 'p_valid_i', 'p_ready_o',
+        'op__sdir', 'p_i_data[7:0]', 'p_shift_i[7:0]', 'p_i_valid', 'p_o_ready',
         # internal signals
         'fsm_state', 'count[3:0]', 'shift_reg[7:0]',
         # next port
-        'n_data_o[7:0]', 'n_valid_o', 'n_ready_i'
+        'n_o_data[7:0]', 'n_o_valid', 'n_i_ready'
     ]
 
 Now, create the document:
@@ -133,18 +133,18 @@ Let's add more color:
         'clk',
         # prev port
         ('op__sdir', 'in'),
-        ('p_data_i[7:0]', 'in'),
+        ('p_i_data[7:0]', 'in'),
         ('p_shift_i[7:0]', 'in'),
-        ('p_valid_i', 'in'),
-        ('p_ready_o', 'out'),
+        ('p_i_valid', 'in'),
+        ('p_o_ready', 'out'),
         # internal signals
         'fsm_state',
         'count[3:0]',
         'shift_reg[7:0]',
         # next port
-        ('n_data_o[7:0]', 'out'),
-        ('n_valid_o', 'out'),
-        ('n_ready_i', 'in'),
+        ('n_o_data[7:0]', 'out'),
+        ('n_o_valid', 'out'),
+        ('n_i_ready', 'in'),
     ]
 
 Then
