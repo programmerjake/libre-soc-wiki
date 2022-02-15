@@ -322,6 +322,10 @@ uint_xlen_t bmextrev(RA, RB, sh)
         idx = b << 1 | a
         return imm[idx] # idx by LSB0 order
 
+     dorow(imm, step_i, chunksize):
+        for j in 0 to 63:
+            step_o[j] = lut2(imm, step_i[j], step_i[j ^ chunk_size])
+        return step_o
 
 # grev
 
