@@ -318,6 +318,11 @@ uint_xlen_t bmextrev(RA, RB, sh)
 
 # grevlut
 
+generalised reverse combined with a LUT2 and allowing
+zero when RA=0 provides a wide range of instructions
+and a means to set regular 64 bit patterns in one
+32 bit instruction.
+
 ```
 lut2(imm, a, b):
     idx = b << 1 | a
