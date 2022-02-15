@@ -318,14 +318,28 @@ uint_xlen_t bmextrev(RA, RB, sh)
 
 # grevlut
 
-    lut2(imm, a, b):
-        idx = b << 1 | a
-        return imm[idx] # idx by LSB0 order
+```
+lut2(imm, a, b):
+    idx = b << 1 | a
+    return imm[idx] # idx by LSB0 order
 
-     dorow(imm, step_i, chunksize):
-        for j in 0 to 63:
-            step_o[j] = lut2(imm, step_i[j], step_i[j ^ chunk_size])
-        return step_o
+dorow(imm, step_i, chunksize):
+    for j in 0 to 63:
+        step_o[j] = lut2(imm, step_i[j], step_i[j ^ chunk_size])
+    return step_o
+
+uint64_t grevlut64(uint64_t RA, uint64_t RB, uint8 lut2)
+{
+    uint64_t x = RA;
+    int shamt = RB & 63;
+    int imm = lut2 & 0b1111;
+    for i in 0 to 6
+        step = 1<<i
+        if (shamt & step) x = dorow(imm, x, step)
+    return x;
+}
+
+```
 
 # grev
 
