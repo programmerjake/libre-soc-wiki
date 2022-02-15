@@ -181,9 +181,12 @@ Like the x86 AVX512F [vpternlogd/vpternlogq](https://www.felixcloutier.com/x86/v
 | -- | -- | --- | --- | ----- | -------- |--|
 | NN | RT | RA  | RB  | im0-4 | im5-7 00 |0 |
 
-    for i in range(64):
-        idx = RT[i] << 2 | RA[i] << 1 | RB[i]
-        RT[i] = (imm & (1<<idx)) != 0
+    lut3(imm, a, b, c):
+        idx = c << 2 | b << 1 | a
+        return imm[idx] # idx by LSB0 order
+
+    for i in range(64): 
+        RT[i] = lut3(imm, RB[i], RA[i], RT[i]) 
 
 bits 21..22 may be used to specify a mode, such as treating the whole integer zero/nonzero and putting 1/0 in the result, rather than bitwise test.
 
