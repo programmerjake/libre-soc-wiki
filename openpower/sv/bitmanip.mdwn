@@ -316,6 +316,12 @@ uint_xlen_t bmextrev(RA, RB, sh)
 | NN | RT | RA  | RB  | sh  | 0   111 |Rc| bmrevi |
 
 
+# grevlut
+
+    lut2(imm, a, b):
+        idx = b << 1 | a
+        return imm[idx] # idx by LSB0 order
+
 
 # grev
 
