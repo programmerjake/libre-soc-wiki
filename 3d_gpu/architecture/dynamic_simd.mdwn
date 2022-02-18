@@ -289,7 +289,7 @@ Analysis of the internals of nmigen shows that m.If, m.Else, m.FSM and m.Switch 
 function only ast.Mux and other Type 1 (AST) "global" functions
 similar to python operator are used.  The hypothesis is therefore proposed that if `Value.mux` is added in an identical way to how `operator.add` calls `__add__` this may turn out to be all that (or most of what) is needed.
 
-<https://github.com/nmigen/nmigen/blob/59ef6e6a1c4e389a41148554f2dd492328820ecd/nmigen/hdl/dsl.py#L447>
+<https://gitlab.com/nmigen/nmigen/blob/59ef6e6a1c4e389a41148554f2dd492328820ecd/nmigen/hdl/dsl.py#L447>
 
 A deeper analysis shows that dsl.Module uses explicit Value.cast on its
 If, Elif, and Switch clauses. Overriding that and allowing a cast to
