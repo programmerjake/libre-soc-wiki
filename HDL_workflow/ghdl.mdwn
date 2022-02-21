@@ -63,7 +63,7 @@ Please adjust the install paths for ghdl.
 
 ### Installing ghdl, yosys, and ghdl-yosys-plugin in a Debian chroot
 
-This has been done on an AMD64 machine, the build failed on my Talos II.
+Verified to work on a Talos II workstation (Debian Bullseye)
 
      debootstrap bullseye /var/chroot/bullseye_ghdl
      chroot /var/chroot/bullseye_ghdl
@@ -77,7 +77,7 @@ put some 'deb-src' URIs in your sources.list
     cd /root/
     git clone https://github.com/ghdl/ghdl
     cd ghdl
-    ./configure
+    ./configure --with-llvm-config
     make
     make install
     cd ..
