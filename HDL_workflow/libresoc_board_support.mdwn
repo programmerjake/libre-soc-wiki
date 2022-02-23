@@ -27,3 +27,7 @@ None of these are ideal... yet.  WIP.
 * <https://gitlab.raptorengineering.com/kestrel-collaboration/kestrel-firmware/bare-metal-firmware/-/blob/master/main.c#L2328>
 * <https://git.libre-soc.org/?p=microwatt.git;a=blob;f=README.tercel.md;h=874f352c2f4a85b54cd363e618e4bdde58549902;hb=HEAD>
 * <https://git.libre-soc.org/?p=microwatt.git;a=commitdiff;h=e04d79005b2d9da70dba49e54845c8fca2421ea6>
+
+Notes:
+
+User mode is an excellent way to test -- basically, first check you can even read the core's PnP ID (registers 0x00-0x07), and if so then throw the core into user mode and try to read the Flash device ID.  if those two operations work, you're good to go, just point Microwatt's reset vector at 0xf0000000...
