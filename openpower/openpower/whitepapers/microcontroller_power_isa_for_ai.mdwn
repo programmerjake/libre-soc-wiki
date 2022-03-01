@@ -1,3 +1,5 @@
+# Increasing area efficiency and reducing resource utilisation for the Power ISA
+
 in between attempting to compile microwatt and Libre-SOC for an 85k LUT4 FPGA which took 4 hours (and then did not run), i decided to see if, in Libre-SOC's HDL, what level of resource reduction could be achieved by going to 32 bit ALUs and register files.
 
 the difference was an astounding 1.4 to 1.
@@ -81,15 +83,15 @@ Quantity several thousand per processor, all of them capable of adapting to run 
 
 To achieve this requires some insights:
 
-1) access (addressing memory) beyond 8-bit, 16-bit, or 32-bit, can easily be achieved by allowing LD/STs to leverage *multiple* 8/16/32-bit registers to create 32 or 64 bit addresses.
+1. access (addressing memory) beyond 8-bit, 16-bit, or 32-bit, can easily be achieved by allowing LD/STs to leverage *multiple* 8/16/32-bit registers to create 32 or 64 bit addresses.
 
    SVP64 *already* has the concept of allowing consecutive 8/16/32/64 bit registers to be considered a "Vector" so typecasting to create 32 or 64 bit addresses fits easily
 
-2) If the Power ISA did not already have Carry-In/Out and Condition Registers, this entire idea would have much less merit.
+2. If the Power ISA did not already have Carry-In/Out and Condition Registers, this entire idea would have much less merit.
 
 the idea of using multiple instructions to construct bigger integer values is nothing new, but doing so is far easier and more efficient if the ISA has Carry Flags.  that particularly hits home if the basic arithmetic width is only 8 or 16 bit!
 
-3) SVP64 already has the concept of extending the GPRs and FPRs to 128 entries.  however if those are say 16 bit registers, the actual size of the regfile (in bytes) is back down to exactly the same size (in total bytes) as Power ISA 3.0
+3. SVP64 already has the concept of extending the GPRs and FPRs to 128 entries.  however if those are say 16 bit registers, the actual size of the regfile (in bytes) is back down to exactly the same size (in total bytes) as Power ISA 3.0
 
   * only 32 16-bit registers would be alarmingly resource pressured, particularly given that 4 of them would be needed to construct a 64 bit LD/ST address
   * 128 16-bit registers on the other hand are equivalent to 32 64-bit regs and Computer Science shows we are comfortable with that quantity.
