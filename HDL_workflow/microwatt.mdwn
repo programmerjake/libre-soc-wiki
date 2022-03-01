@@ -43,7 +43,7 @@ you can omit CROSS_COMPILE and ARCH in this case
 	cd microwatt
 	wget https://ftp.libre-soc.org/microwatt-linux-5.7.patch
 	patch -p1 < microwatt-linux-5.7.patch
-	wget http://ftp.libre-soc.org/rootfs.cpio
+	wget https://ftp.libre-soc.org/rootfs.cpio
 	CROSS_COMPILE="ccache powerpc64le-linux-gnu-" ARCH=powerpc make -j8 O=microwatt microwatt_defconfig
 	CROSS_COMPILE="ccache powerpc64le-linux-gnu-" ARCH=powerpc make -j8 O=microwatt
 	
