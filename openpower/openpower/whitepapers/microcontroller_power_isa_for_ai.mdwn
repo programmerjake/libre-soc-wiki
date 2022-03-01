@@ -1,0 +1,101 @@
+in between attempting to compile microwatt and Libre-SOC for an 85k LUT4 FPGA which took 4 hours (and then did not run), i decided to see if, in Libre-SOC's HDL, what level of resource reduction could be achieved by going to 32 bit ALUs and register files.
+
+the difference was an astounding 1.4 to 1.
+
+* the MUL pipeline dropped an astonishing 75% which given that multiply is O(N^2) is not surprising
+* SHIFT dropped to 50%
+* ALU (add) dropped over 50%
+* Logical dropped significantly
+* BRAM usage dropped by over 75%
+
+i then took a look at the I-Cache, D-Cache and MMU, and i am not seeing any practical barriers to setting them to 32 bit either, other than needing to define a new RADIX32 data format, which looks to be as simple as reducing the PTE and PDE lengths.
+
+why consider this at all? surely "32 bit is dead, Jim, dead, Jim, dead, Jim, dead" [https://m.youtube.com/watch?v=FCARADb9asE]
+
+the answers are multiple:
+
+* Anton had a hard time getting Microwatt into the Sky130 MPW1, which is limited to 10 mm^2.
+   (Libre-SOC's 180 nm test ASIC was 30 mm^2 and
+     that was with no MMU or L1 D/I-Cache)
+* Compared to RISC-V, which can easily fit into only 3000 LUT4s of an FPGA,
+   a Power ISA implementation is completely missing on opportunities
+    to be taken up by Hardware enthusiasts because it requires a bare minimum of 40K LUT4s.
+   (Without L1/MMU, Libre-SOC 64-bit is still 20k LUT4s)
+* The high resource utilisation is making life difficult for Libre-BMC
+   and the fact that it is not the slightest bit justified to be running a 64 bit OS, just for a bootloader,
+   leaves me puzzled as to the justification of what is inherently a self-inflicted handicap
+
+The high resource utilisation is (including for Libre-BMC) pressurising everyone, hindering adoption, and slowing down the iteration cycle on development.  The 4 hour turnround was not a throwaway comment, it was deeply significant: designs using 95% of a 45K LUT4 ECP5 can usually complete on nextpnr-ecp5 in around 12-15 minutes. 4 hours is insane and wasting time.
+
+it is also worth reiterating that larger designs give FPGA tools a much harder job, dramatically reducing the maximum achievable clock rate.
+
+
+a 32 bit implementation of a MMU-capable Power ISA core could easily fit into a lower cost Digilent Arty A7-35t, a 45K LUT4 VERSA_ECP5, and with a little corner-cutting (no MMU/L1) even potentially fit into the low-cost 25K orangecrab with plenty of room.
+
+this would make it affordable and accessible to e.g. students in India as well as increase general adoption 
+
+not only that but it would cleanly fit into sky130's 10 mm^2 budget (with reduced I/D-Caches), retain an MMU, and have room for some peripherals (kinda important, that)
+
+this in turn allows for a faster iterative cycle on ASIC development through access every couple of *months* to an MPW Shuttle run.
+
+
+the next step requires a little explanation and context.  SVP64 has been designed as a "Sub-Program-Counter for-loop in hardware" (similar to x86 "REP"). it is not a new idea: Peter Hsu, designer of the MIPS R8000, came up with the exact same concept behind SVP64, in 1994.
+
+the register file is treated as a byte-addressable SRAM (with byte-level masks this is not difficult to envisage) and the ALUs end up being conceptually similar to MMX, which can do 8x8 4x16 2x32 or 1x64 bit operations (except with predicate masks)
+
+however as an intermediary step on the path to converting Libre-SOC's HDL to cope with 8/16/32/64 we actually have to define and implement *scalar* operations at 8, 16 and 32 bit in addition to those already present in the 64-bit Power ISA.  this is underway with a Draft RFC proposal to define the Power ISA in terms of "XLEN", where XLEN=64 very deliberately, thoroughly and intentionally matches precisely, and by definition, with exactly that which is currently in Power ISA 3.0/3.1
+
+let that sink in a moment because the implications are startling:
+
+      we are in effect defining not only a 32 bit Draft
+      variant of the Power ISA, we (Libre-SOC) are also
+      defining a 16 bit *and an 8 bit* variant of Power
+      [and anticipate someone in the future to
+      define a 128-bit variant to match RISC-V RV128].
+
+bear in mind that SVP64 *has* to have Scalar Operations first, because by design and by definition *only Scalar operations may be Vectorised*.  SVP64 *DOES NOT* add *ANY* Vector Instructions. SVP64 is a generic loop around *Scalar* operations and it us up to the Architecture to take advantage of that, at the back-end.
+
+without SVP64 Sub-Looping it would on the face of it seem absolutely mental and a total waste of time and resources to define an 8 or 16 bit General-Purpose ISA in the year 2022 until you recall that:
+
+* students cannot possibly fit a Power ISA 64 bit implementation into a USD $10 ICE40 FPGA, but they might achieve a 16 bit one, and potentially do so in a few short weeks
+
+* the primary focus of AI is FP16, BF16, and even FP8 in some cases, QTY massive parallel banks of cores numbering in the thousands, often with SIMD ALUs.
+
+the inherent downside of such massively parallel task-centric cores is that they are absolutely useless at anything other than that specialist task, and are additionally a pig to program, lacking a useful ISA and compiler or, worse, having one but under proprietary licenses.
+
+the delicate balance of massively parallel supercomputing architecture is not to overcook the performance of a single core above all else (hint: Intel), but to focus instead on *average* efficiency per *total* area or power.
+
+    what if there was a way to leverage the Power ISA
+    to have high-end AI performance yet be able to
+    allow programmers to use standard compiler tools
+    to run general-purpose programs on all of those
+    massively-parallel cores?
+
+anyone who has tried either CUDA, 3D Shader programs, deep or wide SIMD Programming, or tried to get their heads twisted round GPU SIMT threads would celebrate and welcome the opportunity.
+
+(in particular, anyone who remembers how hard programming the Cell Processor turned out to be will be having that familiar "lightbulb moment" right about now)
+
+more than that: what if those 8 and 16 bit cores had a Supercomputing-class Vectorisation option in the ISA, and there were implementations out there with back-end ALUs that could perform 64 or 128 8 or 16 bit operations per clock cycle?
+
+Quantity several thousand per processor, all of them capable of adapting to run massive AI number crunching or (at lower IPC than "normal" processors) general-purpose compute?
+
+To achieve this requires some insights:
+
+1) access (addressing memory) beyond 8-bit, 16-bit, or 32-bit, can easily be achieved by allowing LD/STs to leverage *multiple* 8/16/32-bit registers to create 32 or 64 bit addresses.
+
+   SVP64 *already* has the concept of allowing consecutive 8/16/32/64 bit registers to be considered a "Vector" so typecasting to create 32 or 64 bit addresses fits easily
+
+2) If the Power ISA did not already have Carry-In/Out and Condition Registers, this entire idea would have much less merit.
+
+the idea of using multiple instructions to construct bigger integer values is nothing new, but doing so is far easier and more efficient if the ISA has Carry Flags.  that particularly hits home if the basic arithmetic width is only 8 or 16 bit!
+
+3) SVP64 already has the concept of extending the GPRs and FPRs to 128 entries.  however if those are say 16 bit registers, the actual size of the regfile (in bytes) is back down to exactly the same size (in total bytes) as Power ISA 3.0
+
+  * only 32 16-bit registers would be alarmingly resource pressured, particularly given that 4 of them would be needed to construct a 64 bit LD/ST address
+  * 128 16-bit registers on the other hand are equivalent to 32 64-bit regs and Computer Science shows we are comfortable with that quantity.
+
+given the ease with which both 32 and 64 bit addresses may be constructed, and 32 and 64 bit integer arithmetic (and beyond) may be created using multiple instructions *and* how much more efficient that can be done by leveraging SVP64, what at first sounded like an absolutely insane-to-the-point-of-laughable idea instead would be not only workable but combine General-Purpose Compute and AI workloads into a single hybrid ISA.
+
+as you are no doubt aware this has been the focus of so many unsuccessful ventures for so many decades, it would be nice to have one that worked. but, by definition, being "General" Purpose Compute (that happens to also be Supercomputing AI capable) it starts at the ISA and grows from there.
+
+bottom line, i would very much like to see the Power ISA take on Esperanto, but without having to define a custom proprietary extension to the ISA that nobody but they have access to.
