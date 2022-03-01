@@ -63,6 +63,11 @@ without SVP64 Sub-Looping it would on the face of it seem absolutely mental and 
 
 * the primary focus of AI is FP16, BF16, and even FP8 in some cases, QTY massive parallel banks of cores numbering in the thousands, often with SIMD ALUs.
 
+* a typical GPU has over 30% by area dedicated to parallel computational
+resources (SIMD ALUs) where a General-purpose RISC Core is typically
+dwarfed by literally two orders of magnitude by routing, register files,
+caches and peripherals.
+
 the inherent downside of such massively parallel task-centric cores is that they are absolutely useless at anything other than that specialist task, and are additionally a pig to program, lacking a useful ISA and compiler or, worse, having one but under proprietary licenses.
 
 the delicate balance of massively parallel supercomputing architecture is not to overcook the performance of a single core above all else (hint: Intel), but to focus instead on *average* efficiency per *total* area or power.
