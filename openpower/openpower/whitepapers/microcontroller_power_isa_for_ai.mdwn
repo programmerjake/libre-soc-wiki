@@ -6,10 +6,10 @@ in between attempting to compile microwatt and Libre-SOC for an 85k LUT4 FPGA wh
 
 the difference was an astounding 1.4 to 1.
 
-* the MUL pipeline dropped an astonishing 75% which given that multiply is O(N^2) is not surprising
+* the MUL pipeline dropped an astonishing 75% which given that multiply is O(N^2) is, retrospectively, not surprising
 * SHIFT dropped to 50%
 * ALU (add) dropped over 50%
-* Logical dropped significantly
+* Logical dropped over 60%
 * BRAM usage dropped by over 75%
 
 i then took a look at the I-Cache, D-Cache and MMU, and i am not seeing any practical barriers to setting them to 32 bit either, other than needing to define a new RADIX32 data format, which looks to be as simple as reducing the PTE and PDE lengths.
@@ -34,7 +34,7 @@ The high resource utilisation is (including for Libre-BMC) pressurising everyone
 it is also worth reiterating that larger designs give FPGA tools a much harder job, dramatically reducing the maximum achievable clock rate.
 
 
-a 32 bit implementation of a MMU-capable Power ISA core could easily fit into a lower cost Digilent Arty A7-35t, a 45K LUT4 VERSA_ECP5, and with a little corner-cutting (no MMU/L1) even potentially fit into the low-cost 25K orangecrab with plenty of room.
+based on the above analysis, a 32 bit implementation of a MMU-capable Power ISA core could easily fit into a lower cost Digilent Arty A7-35t, a 45K LUT4 VERSA_ECP5, and with a little corner-cutting (no MMU/L1) even potentially fit into the low-cost 25K orangecrab with plenty of room.
 
 this would make it affordable and accessible to e.g. students in India as well as increase general adoption 
 
