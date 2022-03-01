@@ -6,6 +6,7 @@ useful links:
 
 * <https://codeconstruct.com.au/docs/microwatt-orangecrab/>
 * <https://shenki.github.io/boot-linux-on-microwatt/>
+* <https://github.com/gregdavill/OrangeCrab-test-sw>
 
 prerequisite tools:
 
@@ -78,10 +79,14 @@ This needs gcc-powerpc64le-linux-gnu if cross compilation is used.
 
 notes for how to compile for ulx3s
 
+    git clone https://github.com/kost/fujprog
+    (follow build procedure shown in fujprog README)
     git clone https://git.libre-soc.org/git/microwatt.git
     git checkout -b verilator_trace
     export FPGA_TARGET=ulx3s
     make microwatt.svf
+    fujprog microwatt.svf
+
 
 # Notes for nextpnr-xilinx
 
