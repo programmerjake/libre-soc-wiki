@@ -1,0 +1,128 @@
+\documentclass[slidestop]{beamer}
+\usepackage{beamerthemesplit}
+\usepackage{graphics}
+\usepackage{pstricks}
+
+\graphicspath{{./}}
+
+\title{The Libre-SOC Hybrid 3D CPU}
+\author{Luke Kenneth Casson Leighton}
+
+
+\begin{document}
+
+\frame{
+   \begin{center}
+    \huge{The Libre-SOC Hybrid 3D CPU}\\
+    \vspace{32pt}
+    \Large{Update on the Libre-SOC Core}\\
+    \Large{Peripheral Fabric plans}\\
+    \Large{and next steps}\\
+    \vspace{24pt}
+    \large{Sponsored by NLnet and NGI POINTER}\\
+    \large{under EU Grants 825310 and 825322
+    }\\
+    \vspace{6pt}
+    \large{\today}
+  \end{center}
+}
+
+
+\frame{\frametitle{What's done already}
+ \begin{itemize}
+   \item 180 nm Test ASIC, 30 mm2, 130k Cells, 800k transistors\\
+   		 Implemented SFS (integer) 64-bit Power ISA 3.0B (ppc64le/be)
+   \item Created an IEEE764 FP Pipeline with ADD, MUL, SQRT, DIV
+   		 and CORDIC-based SIN/COS.
+   \item Created a Dynamic Partitionable SIMD infrastructure \\
+         using OO python-based nMigen\textsuperscript{TM}  HDL
+   \item Thousands of unit tests at every level.
+   \item Machine-readable version of the Power ISA Specification \\
+         and a python-based Power ISA Simulator that uses it.\\
+         (including a RADIX MMU)
+   \item A basic implementation of Draft SVP64 with a lot of demos\\
+   		 including Matrix Multiply, DSP/VLIW-like FFT and DCT
+  \end{itemize}
+}
+
+\frame{\frametitle{Where we would like to get}
+
+ \begin{itemize}
+   \item Multi-core SMP high-end Superscalar Multi-issue OoO \\
+         that knocks the stuffing out of everything on the market \\
+         for performance and performance/watt\\
+         (and doing so efficiently and cleanly at the ISA level)\\
+   		\vspace{4pt}
+   \item Introduce 3D GPU, Video and other accelerated tasks \\
+         as first-class citizens to the Power ISA \\
+         (i.e. not require a separate core) \\
+   		\vspace{4pt}
+   \item Advance SVP64 to include Extra-V, Zero-Overhead Loops \\
+        (suitable for Multi-issue), Coherent Graph/Node Processing,
+        Large Matrices, Large FFT/DCT
+   		\vspace{4pt}
+   \item Basically Extend and Supercharge the Power ISA \\
+   		\vspace{4pt}
+   \item This is a lot of work! \\
+   		\vspace{4pt}
+  \end{itemize}
+}
+
+\frame{\frametitle{Where we are now (what's underway)}
+
+ \begin{itemize}
+   \item Verilator, nmigen and Icarus Verilog simulations \\
+         which include Microwatt for interoperability
+   \item A new single-issue in-order Core using the exact \\
+   		 same pipelines already from the Test Core
+   \item Passing Microwatt unit tests in verilator simulation \\
+         (MMU, XICS, Timer/Dec, helloworld, micropython) \\
+         Buildroot Linux-5.7 run for 20 hours
+   \item Running in FPGAs: VERSA\_ECP5, ULX3S. \\
+         TODO: Arty A7-100t, Orange-Crab.
+   \item New nMigen-based Peripheral Fabric, with a nMigen-based
+         DDR3 DRAM Controller,  Opencores 16550, 10/100 MAC \\
+         JTAG Boundary Scan, Pinmux: all Designed-for-Test
+   \item New Power ISA Simulator underway (Power ISA cavatools)
+  \end{itemize}
+}
+
+\frame{\frametitle{Funding and timescales}
+
+   		\vspace{15pt}
+
+ \begin{itemize}
+   \item EUR 200,000 from NGI POINTER, deadline Oct 1st 2022 \\
+   		\vspace{6pt}
+   \item EUR 250,000 from NLnet, deadline Oct 1st 2022 \\
+   		\vspace{6pt}
+   \item EUR 150,000 from NLnet (Assure Program). \\
+   		\vspace{6pt}
+   \item Need help! Money available. \\
+   		\vspace{6pt}
+   \item Everything is Libre-Licensed (LGPLv3+ the default license). \\
+        https://libre-soc.org
+
+  \end{itemize}
+}
+
+
+\frame{
+  \begin{center}
+    {\Huge 
+		   Thank you\vspace{12pt}\\
+		   Questions?\vspace{12pt}
+	}
+  \end{center}
+
+  \begin{itemize}
+	\item Discussion: http://lists.libre-soc.org
+	\item Libera Chat IRC \#libre-soc
+	\item http://libre-soc.org/
+	\item http://nlnet.nl/PET
+	\item https://libre-soc.org/nlnet/\#faq
+  \end{itemize}
+}
+
+
+\end{document}
