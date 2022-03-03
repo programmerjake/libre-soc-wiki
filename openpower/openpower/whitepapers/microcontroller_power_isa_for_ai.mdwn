@@ -45,7 +45,9 @@ this in turn allows for a faster iterative cycle on ASIC development through acc
 
 the next step requires a little explanation and context.  SVP64 has been designed as a "Sub-Program-Counter for-loop in hardware" (similar to x86 "REP"). it is not a new idea: Peter Hsu, designer of the MIPS R8000, came up with the exact same concept behind SVP64, in 1994.
 
-the register file is treated as a byte-addressable SRAM (with byte-level masks this is not difficult to envisage) and the ALUs end up being conceptually similar to MMX, which can do 8x8 4x16 2x32 or 1x64 bit operations (except with predicate masks)
+the register file is treated as a byte-addressable SRAM (with byte-level masks this is not difficult to envisage) and the ALUs end up being conceptually similar to MMX, which can do 8x8 4x16 2x32 or 1x64 bit operations, except that SVP64 introduces predicate masks which of course
+map directly and simply onto the write-select lines of the underlying
+SRAM of the register file.
 
 however as an intermediary step on the path to converting Libre-SOC's HDL to cope with 8/16/32/64 we actually have to define and implement *scalar* operations at 8, 16 and 32 bit in addition to those already present in the 64-bit Power ISA.  this is underway with a Draft RFC proposal to define the Power ISA in terms of "XLEN", where XLEN=64 very deliberately, thoroughly and intentionally matches precisely, and by definition, with exactly that which is currently in Power ISA 3.0/3.1
 
