@@ -6,6 +6,7 @@
 * grev <https://bugs.libre-soc.org/show_bug.cgi?id=755>
 * remove Rc=1 from ternlog due to conflicts in encoding as well
   as saving space <https://bugs.libre-soc.org/show_bug.cgi?id=753#c5>
+* GF2^M <https://bugs.libre-soc.org/show_bug.cgi?id=782>
 
 # bitmanipulation
 
@@ -83,10 +84,10 @@ TODO: convert all instructions to use RT and not RS
 | NN | RT | RA  | s0-5 | s6 im0-3| 01   100 |1 | grevlogi |
 | NN | RT | RA  |      |         | 1-   100 |1 | rsvd |
 | NN | RS | RA  | RB   | RC      | 00  011  |Rc| gfmul |
-| NN | RS | RA  | RB   | RC      | 01  011  |Rc| gfadd |
-| NN | RT | RA  | RB   | deg     | 10  011  |Rc| gfinv |
-| NN | RS | RA  | RB   | deg     | 11  011  |Rc| gfmuli |
-| NN | RS | RA  | RB   | deg     | 11  111  |Rc| gfaddi |
+| NN | RS | RA  | RB   | RC      | 01  011  |Rc| gfmaddsub |
+| NN | RT | RA  | RB   |         | 10  011  |Rc| rsvd   |
+| NN | RS | RA  | RB   |         | 11  011  |Rc| rsvd   |
+| NN | RS | RA  | RB   |         | 11  111  |Rc| rsvd   |
 
 | 0.5|6.10|11.15| 16.23 |24.27 | 28.30 |31| name |
 | -- | -- | --- | ----- | ---- | ----- |--| ------ |
@@ -133,7 +134,8 @@ double check that instructions didn't need 3 inputs.
 | NN | RA | RB  | RC  | 0  | 10    | 0010 110 |Rc| shfl |
 | NN | RA | RB  | sh  | SH | 10    | 1010 110 |Rc| shfli |
 | NN | RA | RB  | RC  | 0  | 10    | 0110 110 |Rc| shflw |
-| NN | RA | RB  | RC  |    | 10    | 1110 110 |Rc| rsvd   |
+| NN | RA | RB  | RC  | 0  | 10    | 1110 110 |Rc| gfadd   |
+| NN | RA | RB  | RC  | 1  | 10    | 1110 110 |Rc| rsvd    |
 | NN | RA | RB  | RC  | 0  | 11    | 1110 110 |Rc| clmulr  |
 | NN | RA | RB  | RC  | 1  | 11    | 1110 110 |Rc| clmulh  |
 | NN |    |     |     |    |       | --11 110 |Rc| setvl  |
