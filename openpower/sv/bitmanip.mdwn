@@ -87,7 +87,7 @@ TODO: convert all instructions to use RT and not RS
 | NN | RS | RA  | RB   | RC      | 01  011  |Rc| gfmaddsub |
 | NN | RT | RA  | RB   |         | 10  011  |Rc| rsvd  |
 | NN | RS | RA  | RB   |         | 11  011  |Rc| rsvd  |
-| NN | RS | RA  | RB   |         | 11  111  |Rc| rsvd   |
+| NN | RS | RA  | RB   |         | --  111  |Rc| rsvd   |
 
 | 0.5|6.10|11.15| 16.23 |24.27 | 28.30 |31| name |
 | -- | -- | --- | ----- | ---- | ----- |--| ------ |
@@ -662,45 +662,6 @@ def FullDivision(self, f, v):
 | NN | RS | RA  | RB  | RC  | 1 1  111 |Rc| gfadd |
 
 GFMOD is a pseudo-op where RA=0
-
-## gf invert
-
-note this function is incorrect / incomplete, as-is
-https://stackoverflow.com/questions/45442396/
-
-```
-def gf_degree(a) :
-  res = 0
-  a >>= 1
-  while (a != 0) :
-    a >>= 1;
-    res += 1;
-  return res
-
-def gf_invert(a, mod=0x1B) :
-
-  mod_degree = gf_degree(mod)
-  v = mod
-  g1 = 1
-  g2 = 0
-  j = gf_degree(a) - 8
-
-  while (a != 1) :
-    if (j < 0) :
-      a, v = v, a
-      g1, g2 = g2, g1
-      j = -j
-
-    a ^= v << j
-    g1 ^= g2 << j
-
-    a %= (1<<8)  # Emulating 8-bit overflow
-    g1 %= (1<<8) # Emulating 8-bit overflow
-
-    j = gf_degree(a) - gf_degree(v)
-
-  return g1
-```
 
 ## carryless mul
 
