@@ -60,9 +60,9 @@ def xgcd(a, b):
     """return (g, x, y) such that a*x + b*y = g = gcd(a, b)"""
     x0, x1, y0, y1 = 0, 1, 1, 0
     while a != 0:
-        (q, a), b = divmod(b, a), a
-        y0, y1 = y1, y0 - q * y1
-        x0, x1 = x1, x0 - q * x1
+        (q, a), b = divmodGF2(b, a), a
+        y0, y1 = y1, y0 ^ multGF2(q , y1)
+        x0, x1 = x1, x0 ^ multGF2(q , x1)
     return b, x0, y0
 
 def gf_invert(a, mod=0x11B) :
@@ -117,6 +117,12 @@ if __name__ == "__main__":
     # reconstruct x by multiplying divided result by y and adding the remainder
     x1 = multGF2(res, y)
     print("%02x == %02x" % (z, x1 ^ rem))
+
+
+    print(xgcd(x, y))
+
+
+    exit(0)
 
     #for i in range(1, 256):
     #   print (i, gf_invert(i))
