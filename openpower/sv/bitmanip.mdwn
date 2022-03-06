@@ -83,7 +83,7 @@ TODO: convert all instructions to use RT and not RS
 | NN | RT | RA  | RB   | / im0-3 | 00   100 |1 | grevlog |
 | NN | RT | RA  | s0-5 | s6 im0-3| 01   100 |1 | grevlogi |
 | NN | RT | RA  |      |         | 1-   100 |1 | rsvd |
-| NN | RS | RA  | RB   | RC      | 00  011  |Rc| gfmul |
+| NN | RS | RA  | RB   | RC      | 00  011  |Rc| gfmadd |
 | NN | RS | RA  | RB   | RC      | 01  011  |Rc| gfmaddsub |
 | NN | RT | RA  | RB   |         | 10  011  |Rc| rsvd  |
 | NN | RS | RA  | RB   |         | 11  011  |Rc| rsvd  |
@@ -116,7 +116,7 @@ double check that instructions didn't need 3 inputs.
 | NN | RA | RB  |     |    |       | 1100 110 |Rc| rsvd |
 | NN | RT | RA  | RB  | 1  |  00   | 0001 110 |Rc| gfdiv |
 | NN | RT | RA  | RB  | 1  |  01   | 0001 110 |Rc| gfmod |
-| NN | RT | RA  |     | 1  |  10   | 0001 110 |Rc| rsvd |
+| NN | RT | RA  | RB  | 1  |  10   | 0001 110 |Rc| gfmul |
 | NN | RA | RB  |     | 1  |  11   | 0001 110 |Rc| rsvd |
 | NN | RA | RB  | RC  | 0  |   00  | 0001 110 |Rc| vec sbfm |
 | NN | RA | RB  | RC  | 0  |   01  | 0001 110 |Rc| vec sofm |
