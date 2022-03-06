@@ -85,8 +85,8 @@ TODO: convert all instructions to use RT and not RS
 | NN | RT | RA  |      |         | 1-   100 |1 | rsvd |
 | NN | RS | RA  | RB   | RC      | 00  011  |Rc| gfmul |
 | NN | RS | RA  | RB   | RC      | 01  011  |Rc| gfmaddsub |
-| NN | RT | RA  | RB   |         | 10  011  |Rc| gfdiv   |
-| NN | RS | RA  | RB   |         | 11  011  |Rc| gfmod   |
+| NN | RT | RA  | RB   |         | 10  011  |Rc| rsvd  |
+| NN | RS | RA  | RB   |         | 11  011  |Rc| rsvd  |
 | NN | RS | RA  | RB   |         | 11  111  |Rc| rsvd   |
 
 | 0.5|6.10|11.15| 16.23 |24.27 | 28.30 |31| name |
@@ -114,7 +114,10 @@ double check that instructions didn't need 3 inputs.
 | NN | RA | RB  |     | 1  |   11  | 0100 110 |Rc| rsvd |
 | NN | RA | RB  | sh  | SH | itype | 1000 110 |Rc| bmopsi |
 | NN | RA | RB  |     |    |       | 1100 110 |Rc| rsvd |
-| NN | RA | RB  |     | 1  |       | 0001 110 |Rc| rsvd |
+| NN | RT | RA  | RB  | 1  |  00   | 0001 110 |Rc| gfdiv |
+| NN | RT | RA  | RB  | 1  |  01   | 0001 110 |Rc| gfmod |
+| NN | RT | RA  |     | 1  |  10   | 0001 110 |Rc| rsvd |
+| NN | RA | RB  |     | 1  |  11   | 0001 110 |Rc| rsvd |
 | NN | RA | RB  | RC  | 0  |   00  | 0001 110 |Rc| vec sbfm |
 | NN | RA | RB  | RC  | 0  |   01  | 0001 110 |Rc| vec sofm |
 | NN | RA | RB  | RC  | 0  |   10  | 0001 110 |Rc| vec sifm |
@@ -134,8 +137,7 @@ double check that instructions didn't need 3 inputs.
 | NN | RA | RB  | RC  | 0  | 10    | 0010 110 |Rc| shfl |
 | NN | RA | RB  | sh  | SH | 10    | 1010 110 |Rc| shfli |
 | NN | RA | RB  | RC  | 0  | 10    | 0110 110 |Rc| shflw |
-| NN | RA | RB  | RC  | 0  | 10    | 1110 110 |Rc| gfadd   |
-| NN | RA | RB  | RC  | 1  | 10    | 1110 110 |Rc| rsvd    |
+| NN | RA | RB  | RC  |    | 10    | 1110 110 |Rc| rsvd    |
 | NN | RA | RB  | RC  | 0  | 11    | 1110 110 |Rc| clmulr  |
 | NN | RA | RB  | RC  | 1  | 11    | 1110 110 |Rc| clmulh  |
 | NN |    |     |     |    |       | --11 110 |Rc| setvl  |
