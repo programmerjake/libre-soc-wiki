@@ -594,9 +594,11 @@ def multGF2(p1, p2):
     """Multiply two polynomials in GF(2^m)/g(x)"""
     p = 0
     while p2:
+        # standard long-multiplication: check LSB and add
         if p2 & 1:
             p ^= p1
         p1 <<= 1
+        # standard modulo: check MSB and add polynomial
         if p1 & mask1:
             p1 ^= polyred
         p2 >>= 1
@@ -646,7 +648,7 @@ def FullDivision(self, f, v):
         i = fDegree
         mask = 1 << i
         while (i >= vDegree):
-            if (mask & rem):
+            if (mask & rem): # check MSB
                 res ^= (1 << (i - vDegree))
                 rem ^= ( v << (i - vDegree)))
             i -= 1
