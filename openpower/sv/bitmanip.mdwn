@@ -541,21 +541,14 @@ Pseudo-code:
 
 ## Multiply
 
-this requires 3 parameters and a "degree"
+with the modulo and degree being in an SPR, multiply can be identical
+equivalent to standard integer add
 
-    RT = GFMUL(RA, RB, gfdegree, modulo=RC)
+    RS = GFMUL(RA, RB)
 
-realistically with the degree also needing to be an immediate it should be brought down to an overwrite version:
-
-    RS = GFMUL(RS, RA, gfdegree, modulo=RC)
-    RS = GFMUL(RS, RA, gfdegree=RB, modulo=RC)
-
-| 0.5|6.10|11.15|16.20|21.25| 26..30  |31|
-| -- | -- | --- | --- | --- | ------- |--|
-| NN | RS | RA  | deg | RC  | 00  011 |Rc|
-| NN | RS | RA  | RB  | RC  | 11  011 |Rc|
-
-where the SimpleV variant may override RS-as-src differently from RS-as-dest
+| 0.5|6.10|11.15|16.20|21.25| 26..30 |31|
+| -- | -- | --- | --- | --- | ------ |--|
+| NN | RT | RA  | RB  |11000|  01110 |Rc|
 
 
 
