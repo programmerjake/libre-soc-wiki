@@ -607,10 +607,33 @@ if __name__ == "__main__":
     # Evaluate the product (x^7)(x^7 + x + 1)
     print("{:02x}".format(multGF2(0b10000000, 0b10000011)))
 ```
-## GF add
+## GF div and mod
 
-    RS = GFADDI(RS, RA|0, gfdegree, modulo=RC)
-    RS = GFADD(RS, RA|0, gfdegree=RB, modulo=RC)
+```
+def FullDivision(self, f, v, fDegree, vDegree):
+        """
+        Takes four arguments, f, v, fDegree, and vDegree where
+        fDegree and vDegree are the degrees of the field elements
+        f and v represented as a polynomials.
+        This method returns the field elements a and b such that
+
+            f(x) = a(x) * v(x) + b(x).  
+
+        That is, a is the divisor and b is the remainder, or in
+        other words a is like floor(f/v) and b is like f modulo v.
+        """
+
+        res, rem = 0, f
+        i = fDegree
+        mask = 1 << i
+        while (i >= vDegree):
+            if (mask & rem):
+                res ^= (1 << (i - vDegree))
+                rem ^= ( v << (i - vDegree)))
+            i -= 1
+            mask >>= 1
+        return (res, rem)
+```
 
 | 0.5|6.10|11.15|16.20|21.25| 26..30  |31| name  |
 | -- | -- | --- | --- | --- | ------- |--| ----- |
