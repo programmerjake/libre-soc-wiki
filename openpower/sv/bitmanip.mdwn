@@ -628,9 +628,9 @@ def gf_degree(a) :
     res += 1;
   return res
 
-def FullDivision(self, f, v, vDegree):
+def FullDivision(self, f, v):
         """
-        Takes four arguments, f, v, fDegree, and vDegree where
+        Takes two arguments, f, v
         fDegree and vDegree are the degrees of the field elements
         f and v represented as a polynomials.
         This method returns the field elements a and b such that
@@ -641,7 +641,7 @@ def FullDivision(self, f, v, vDegree):
         other words a is like floor(f/v) and b is like f modulo v.
         """
 
-        fDegree = gf_degree(f)
+        fDegree, vDegree = gf_degree(f), gf_degree(v)
         res, rem = 0, f
         i = fDegree
         mask = 1 << i
