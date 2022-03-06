@@ -65,6 +65,31 @@ def xgcd(a, b):
         x0, x1 = x1, x0 - q * x1
     return b, x0, y0
 
+def gf_invert(a, mod=0x11B) :
+
+  mod_degree = gf_degree(mod) - 1
+  v = mod
+  g1 = 1
+  g2 = 0
+  j = gf_degree(a) - mod_degree
+
+  while (a != 1) :
+    # print (bin(a), j, bin(g1), bin(g2))
+    if (j < 0) :
+      a, v = v, a
+      g1, g2 = g2, g1
+      j = -j
+
+    a ^= v << j
+    g1 ^= g2 << j
+
+
+    j = gf_degree(a) - gf_degree(v)
+
+  a %= (1<<mod_degree)  # Emulating 8-bit overflow
+  g1 %= (1<<mod_degree) # Emulating 8-bit overflow
+  return g1
+
 
 if __name__ == "__main__":
   
@@ -92,4 +117,12 @@ if __name__ == "__main__":
     # reconstruct x by multiplying divided result by y and adding the remainder
     x1 = multGF2(res, y)
     print("%02x == %02x" % (z, x1 ^ rem))
+
+    #for i in range(1, 256):
+    #   print (i, gf_invert(i))
+
+    # this is not quite functional as expected, gf_invert is incomplete
+    y1 = gf_invert(y, polyred)
+    z1 = multGF2(z, y1)
+    print(hex(y1), hex(z1))
 
