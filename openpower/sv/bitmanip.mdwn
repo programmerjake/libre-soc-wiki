@@ -664,10 +664,12 @@ def gf_degree(a) :
   return res
 
 def gf_invert(a, mod=0x1B) :
+
+  mod_degree = gf_degree(mod)
   v = mod
   g1 = 1
   g2 = 0
-  j = gf_degree(a) - 8
+  j = gf_degree(a) - mod_degree
 
   while (a != 1) :
     if (j < 0) :
@@ -678,8 +680,8 @@ def gf_invert(a, mod=0x1B) :
     a ^= v << j
     g1 ^= g2 << j
 
-    a %= 256  # Emulating 8-bit overflow
-    g1 %= 256 # Emulating 8-bit overflow
+    a %= (1<<mod_degree)  # Emulating 8-bit overflow
+    g1 %= (1<<mod_degree) # Emulating 8-bit overflow
 
     j = gf_degree(a) - gf_degree(v)
 
