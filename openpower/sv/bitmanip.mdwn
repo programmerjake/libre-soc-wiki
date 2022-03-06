@@ -620,7 +620,15 @@ if __name__ == "__main__":
 ## GF div and mod
 
 ```
-def FullDivision(self, f, v, fDegree, vDegree):
+def gf_degree(a) :
+  res = 0
+  a >>= 1
+  while (a != 0) :
+    a >>= 1;
+    res += 1;
+  return res
+
+def FullDivision(self, f, v, vDegree):
         """
         Takes four arguments, f, v, fDegree, and vDegree where
         fDegree and vDegree are the degrees of the field elements
@@ -633,6 +641,7 @@ def FullDivision(self, f, v, fDegree, vDegree):
         other words a is like floor(f/v) and b is like f modulo v.
         """
 
+        fDegree = gf_degree(f)
         res, rem = 0, f
         i = fDegree
         mask = 1 << i
