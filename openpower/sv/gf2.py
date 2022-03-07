@@ -9,13 +9,14 @@ def gf_degree(a) :
   return res
 
 # constants used in the multGF2 function
-mask1 = mask2 = polyred = None
+degree = mask1 = mask2 = polyred = None
 
 def setGF2(irPoly):
     """Define parameters of binary finite field GF(2^m)/g(x)
        - irPoly: coefficients of irreducible polynomial g(x)
     """
     # degree: extension degree of binary field
+    global degree, mask1, mask2, polyred
     degree = gf_degree(irPoly)
 
     def i2P(sInt):
@@ -23,11 +24,16 @@ def setGF2(irPoly):
         return [(sInt >> i) & 1
                 for i in reversed(range(sInt.bit_length()))]    
     
-    global mask1, mask2, polyred
     mask1 = mask2 = 1 << degree
     mask2 -= 1
     polyred = reduce(lambda x, y: (x << 1) + y, i2P(irPoly)[1:])
         
+
+def getGF2():
+    """reconstruct the polynomial coefficients of g(x)
+    """
+    return polyred | mask1
+
 
 def multGF2(p1, p2):
     """Multiply two polynomials in GF(2^m)/g(x)"""
@@ -65,30 +71,36 @@ def xgcd(a, b):
         x0, x1 = x1, x0 ^ multGF2(q , x1)
     return b, x0, y0
 
-def gf_invert(a, mod=0x11B) :
 
-  mod_degree = gf_degree(mod) - 1
-  v = mod
-  g1 = 1
-  g2 = 0
-  j = gf_degree(a) - mod_degree
+# https://bugs.libre-soc.org/show_bug.cgi?id=782#c33
+# https://ftp.libre-soc.org/ARITH18_Kobayashi.pdf
+def gf_invert(a) :
 
-  while (a != 1) :
-    # print (bin(a), j, bin(g1), bin(g2))
-    if (j < 0) :
-      a, v = v, a
-      g1, g2 = g2, g1
-      j = -j
+    s = polyred
+    r = a
+    v = 0
+    u = 1
+    j = 0
 
-    a ^= v << j
-    g1 ^= g2 << j
+    for i in range(1, 2*degree+1):
+        if r & mask1:
+            if s & mask1:
+                s ^= r
+                v ^= u
+            s <<= 1 # shift left 1
+            if j == 0:
+                r, s = s, r # swap r,s
+                u, v = v<<1, u # shift v and swap
+                j = 1
+            else:
+                u >>= 1 # right shift left
+                j -= 1
+        else:
+            r <<= 1 # shift left 1
+            u <<= 1 # shift left 1
+            j += 1
 
-
-    j = gf_degree(a) - gf_degree(v)
-
-  a %= (1<<mod_degree)  # Emulating 8-bit overflow
-  g1 %= (1<<mod_degree) # Emulating 8-bit overflow
-  return g1
+    return u
 
 
 if __name__ == "__main__":
@@ -102,6 +114,7 @@ if __name__ == "__main__":
     
     # Define binary field GF(2^8)/x^8 + x^4 + x^3 + x + 1
     # (used in the Advanced Encryption Standard-AES)
+    # note that polyred has the MSB stripped!
     setGF2(0b100011011) # degree 8
     
     # Evaluate the product (x^7 + x^2)(x^7 + x + 1)
@@ -121,14 +134,10 @@ if __name__ == "__main__":
 
     print(xgcd(x, y))
 
-
-    exit(0)
-
     #for i in range(1, 256):
     #   print (i, gf_invert(i))
 
-    # this is not quite functional as expected, gf_invert is incomplete
-    y1 = gf_invert(y, polyred)
+    y1 = gf_invert(y)
     z1 = multGF2(z, y1)
-    print(hex(y1), hex(z1))
+    print(hex(polyred), hex(y1), hex(z1))
 
