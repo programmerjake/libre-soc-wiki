@@ -76,15 +76,14 @@ minor opcode allocation
 
 TODO: convert all instructions to use RT and not RS
 
-| 0.5|6.10|11.15|16.20 |21..25   | 26....30 |31| name |
-| -- | -- | --- | ---  | -----   | -------- |--| ------ |
-| NN | RT | RA  | RB   | im0-4   | im5-7 00 |0 | ternlogi |
-| NN | RT | RA  | RB   | im0-4   | im5-7 00 |1 | grevlog |
-| NN | RT | RA  | s0-4 | im0-4   | im5-7 01 |s5| grevlogi |
-| NN | RS | RA  | RB   | RC      | 00   011 |Rc| gfmadd |
-| NN | RS | RA  | RB   | RC      | 01   011 |Rc| gfmaddsub |
-| NN | RT | RA  | RB   |         | 10   011 |Rc| rsvd  |
-| NN | RS | RA  | RB   |         | 11   011 |Rc| rsvd  |
+| 0.5|6.10|11.15|16.20 |21..25   | 26....30  |31| name |
+| -- | -- | --- | ---  | -----   | --------  |--| ------ |
+| NN | RT | RA  | RB   | im0-4   | im5-7  00 |0 | ternlogi |
+| NN | RT | RA  | RB   | im0-4   | im5-7  00 |1 | grevlog |
+| NN | RT | RA  | s0-4 | im0-4   | im5-7  01 |s5| grevlogi |
+| NN | RS | RA  | RB   | RC      | 00    011 |Rc| gfmadd |
+| NN | RS | RA  | RB   | RC      | 10    011 |Rc| gfmaddsub |
+| NN | RT | RA  | RB   | sh0-4   | sh5 1 011 |Rc| bmrevi |
 
 | 0.5|6.10|11.15| 16.23 |24.27 | 28.30 |31| name |
 | -- | -- | --- | ----- | ---- | ----- |--| ------ |
@@ -262,7 +261,6 @@ bmset(RA=0, RB=0, RC=mask) will produce a run of ones of length "mask" in a sing
 | 0.5|6.10|11.15|16.20|21.25| 26..30  |31| name  |
 | -- | -- | --- | --- | --- | ------- |--| ----- |
 | NN | RT | RA  | RB  | RC  | mode 010 |Rc| bm*   |
-| NN | RT | RA  | RB  | RC  | 0 1  111 |Rc| bmrev |
 
 
 ```
@@ -314,7 +312,7 @@ uint_xlen_t bmextrev(RA, RB, sh)
 
 | 0.5|6.10|11.15|16.20|21.26| 27..30  |31| name   |
 | -- | -- | --- | --- | --- | ------- |--| ------ |
-| NN | RT | RA  | RB  | sh  | 0   111 |Rc| bmrevi |
+| NN | RT | RA  | RB  | sh  | 1   011 |Rc| bmrevi |
 
 
 # grevlut
