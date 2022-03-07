@@ -35,15 +35,14 @@ minor opcode allocation
 
     |  28.30 |31| name      |
     | ------ |--| --------- |
-    |   00   |0 | ternlogi  |
-    |  000   |1 | ternlog   |
-    |  100   |1 | grevlog   |
+    |  -00   |0 | ternlogi  |
+    |  -00   |1 | grevlog   |
+    |  -01   |  | grevlogi  |
     |  010   |Rc| bitmask   |
-    |  011   |Rc| gf*       |
-    |  101   |1 | ternlogv  |
-    |  101   |0 | ternlogcr |
+    |  011   |Rc| gfmadd*   |
     |  110   |Rc| 1/2-op    |
-    |  111   |Rc| 3-op      |
+    |  111   |1 | ternlogv  |
+    |  111   |0 | ternlogcr |
 
 1-op and variants
 
@@ -66,7 +65,7 @@ minor opcode allocation
 | RT   | RA   | RB   | type | minmax | 
 | RT   | RA   | RB   |      | av abs avgadd  | 
 | RT   | RA   | RB   | type | vmask ops | 
-| RT   | RA   | RB   |  |  | 
+| RT   | RA   | RB   |      |       | 
 
 3 ops 
 
@@ -78,24 +77,21 @@ TODO: convert all instructions to use RT and not RS
 
 | 0.5|6.10|11.15|16.20 |21..25   | 26....30 |31| name |
 | -- | -- | --- | ---  | -----   | -------- |--| ------ |
-| NN | RT | RA  | RB   | RC      | mode 000 |1 | ternlog |
 | NN | RT | RA  | RB   | im0-4   | im5-7 00 |0 | ternlogi |
-| NN | RT | RA  | RB   | / im0-3 | 00   100 |1 | grevlog |
-| NN | RT | RA  | s0-5 | s6 im0-3| 01   100 |1 | grevlogi |
-| NN | RT | RA  |      |         | 1-   100 |1 | rsvd |
-| NN | RS | RA  | RB   | RC      | 00  011  |Rc| gfmadd |
-| NN | RS | RA  | RB   | RC      | 01  011  |Rc| gfmaddsub |
-| NN | RT | RA  | RB   |         | 10  011  |Rc| rsvd  |
-| NN | RS | RA  | RB   |         | 11  011  |Rc| rsvd  |
-| NN | RS | RA  | RB   |         | --  111  |Rc| rsvd   |
+| NN | RT | RA  | RB   | im0-4   | im5-7 00 |1 | grevlog |
+| NN | RT | RA  | s0-4 | im0-4   | im5-7 01 |s5| grevlogi |
+| NN | RS | RA  | RB   | RC      | 00   011 |Rc| gfmadd |
+| NN | RS | RA  | RB   | RC      | 01   011 |Rc| gfmaddsub |
+| NN | RT | RA  | RB   |         | 10   011 |Rc| rsvd  |
+| NN | RS | RA  | RB   |         | 11   011 |Rc| rsvd  |
 
 | 0.5|6.10|11.15| 16.23 |24.27 | 28.30 |31| name |
 | -- | -- | --- | ----- | ---- | ----- |--| ------ |
-| NN | RT | RA  | imm   | mask | 101   |1 | ternlogv |
+| NN | RT | RA  | imm   | mask | 111   |1 | ternlogv |
 
 | 0.5|6.8 | 9.11|12.14|15|16.23|24.27 | 28.30|31| name |
 | -- | -- | --- | --- |- |-----|----- | -----|--| -------|
-| NN | BA | BB  | BC  |0 |imm  | mask | 101  |0 | ternlogcr |
+| NN | BA | BB  | BC  |0 |imm  | mask | 111  |0 | ternlogcr |
 
 ops (note that av avg and abs as well as vec scalar mask
 are included here)
