@@ -532,7 +532,9 @@ arithmetic the modulo is to be set in an SPR
 ## Twin Butterfly (Tukey-Cooley) Mul-add-sub
 
 used in combination with SV FFT REMAP to perform
-a full NTT in-place
+a full NTT in-place. possible by having 3-in 2-out,
+to avoid the need for a temp register.  RS is written
+to as well as RT.
 
     gffmadd  RT,RA,RC,RB (Rc=0)
     gffmadd. RT,RA,RC,RB (Rc=1)
