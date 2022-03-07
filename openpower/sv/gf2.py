@@ -83,21 +83,22 @@ def gf_invert(a) :
     j = 0
 
     for i in range(1, 2*degree+1):
-        if r & mask1:
-            if s & mask1:
+        # could use count-trailing-1s here to skip ahead
+        if r & mask1:          # test MSB of r
+            if s & mask1:      # test MSB of s
                 s ^= r
                 v ^= u
-            s <<= 1 # shift left 1
+            s <<= 1            # shift left 1
             if j == 0:
-                r, s = s, r # swap r,s
+                r, s = s, r    # swap r,s
                 u, v = v<<1, u # shift v and swap
                 j = 1
             else:
-                u >>= 1 # right shift left
+                u >>= 1        # right shift left
                 j -= 1
         else:
-            r <<= 1 # shift left 1
-            u <<= 1 # shift left 1
+            r <<= 1            # shift left 1
+            u <<= 1            # shift left 1
             j += 1
 
     return u
