@@ -76,7 +76,7 @@ def xgcd(a, b):
 # https://ftp.libre-soc.org/ARITH18_Kobayashi.pdf
 def gf_invert(a) :
 
-    s = polyred
+    s = getGF2() # get the full polynomial (including the MSB)
     r = a
     v = 0
     u = 1
@@ -140,5 +140,5 @@ if __name__ == "__main__":
 
     y1 = gf_invert(y)
     z1 = multGF2(z, y1)
-    print(hex(polyred), hex(y1), hex(z1))
+    print(hex(polyred), hex(y1), hex(x), "==", hex(z1))
 
