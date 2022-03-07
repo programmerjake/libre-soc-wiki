@@ -317,26 +317,33 @@ uint_xlen_t bmextrev(RA, RB, sh)
 
 # grevlut
 
-generalised reverse combined with a LUT2 and allowing
+generalised reverse combined with a pair of LUT2s and allowing
 zero when RA=0 provides a wide range of instructions
 and a means to set regular 64 bit patterns in one
 32 bit instruction.
+
+the two LUT2s are applied left-half (when not swapping)
+and right-half (when swapping) so as to allow a wider
+range of options
 
 ```
 lut2(imm, a, b):
     idx = b << 1 | a
     return imm[idx] # idx by LSB0 order
 
-dorow(imm, step_i, chunksize):
+dorow(imm8, step_i, chunksize):
     for j in 0 to 63:
+        if (j&chunk_size) == 0
+           imm = imm8[0..3]
+        else
+           imm = imm8[4..7]
         step_o[j] = lut2(imm, step_i[j], step_i[j ^ chunk_size])
     return step_o
 
-uint64_t grevlut64(uint64_t RA, uint64_t RB, uint8 lut2)
+uint64_t grevlut64(uint64_t RA, uint64_t RB, uint8 imm)
 {
     uint64_t x = RA;
     int shamt = RB & 63;
-    int imm = lut2 & 0b1111;
     for i in 0 to 6
         step = 1<<i
         if (shamt & step) x = dorow(imm, x, step)
