@@ -41,7 +41,8 @@ minor opcode allocation
     |  -00   |1 | grevlog   |
     |  -01   |  | grevlogi  |
     |  010   |Rc| bitmask   |
-    |  011   |Rc| gfmadd*   |
+    |  011   |0 | gfbmadd*   |
+    |  011   |1 | clmadd*   |
     |  110   |Rc| 1/2-op    |
     |  111   |1 | ternlogv  |
     |  111   |0 | ternlogcr |
@@ -83,8 +84,10 @@ TODO: convert all instructions to use RT and not RS
 | NN | RT | RA  | RB   | im0-4   | im5-7  00 |0 | ternlogi |
 | NN | RT | RA  | RB   | im0-4   | im5-7  00 |1 | grevlog |
 | NN | RT | RA  | s0-4 | im0-4   | im5-7  01 |s5| grevlogi |
-| NN | RS | RA  | RB   | RC      | 00    011 |Rc| gfmadd |
-| NN | RS | RA  | RB   | RC      | 10    011 |Rc| gfmaddsub |
+| NN | RS | RA  | RB   | RC      | 00    011 |0 | gfbmadd |
+| NN | RS | RA  | RB   | RC      | 10    011 |0 | gfbmaddsub |
+| NN | RS | RA  | RB   | RC      | 00    011 |1 | clmadd |
+| NN | RS | RA  | RB   | RC      | 10    011 |1 | clmaddsub |
 | NN | RT | RA  | RB   | sh0-4   | sh5 1 011 |Rc| bmrevi |
 
 | 0.5|6.10|11.15| 16.23 |24.27 | 28.30 |31| name |
