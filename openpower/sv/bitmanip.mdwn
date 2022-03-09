@@ -736,6 +736,21 @@ uint_xlen_t clmulr(uint_xlen_t RA, uint_xlen_t RB)
     return x;
 }
 ```
+## carryless Twin Butterfly (Tukey-Cooley) Mul-add-sub
+
+used in combination with SV FFT REMAP to perform
+a full NTT in-place. possible by having 3-in 2-out,
+to avoid the need for a temp register.  RS is written
+to as well as RT.
+
+    clfmadd  RT,RA,RC,RB (Rc=0)
+    clfmadd. RT,RA,RC,RB (Rc=1)
+
+Pseudo-code:
+
+    RT <- CLMUL(RA, RC) ^ RB
+    RS <- CLMUL(RA, RC) ^ RB
+
 
 # bitmatrix
 
