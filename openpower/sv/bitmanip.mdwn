@@ -623,6 +623,44 @@ if __name__ == "__main__":
     # Evaluate the product (x^7)(x^7 + x + 1)
     print("{:02x}".format(multGF2(0b10000000, 0b10000011)))
 ```
+
+## GF(2^M) Inverse
+
+```
+# https://bugs.libre-soc.org/show_bug.cgi?id=782#c33
+# https://ftp.libre-soc.org/ARITH18_Kobayashi.pdf
+def gf_invert(a) :
+
+    s = getGF2() # get the full polynomial (including the MSB)
+    r = a
+    v = 0
+    u = 1
+    j = 0
+
+    for i in range(1, 2*degree+1):
+        # could use count-trailing-1s here to skip ahead
+        if r & mask1:          # test MSB of r
+            if s & mask1:      # test MSB of s
+                s ^= r
+                v ^= u
+            s <<= 1            # shift left 1
+            if j == 0:
+                r, s = s, r    # swap r,s
+                u, v = v<<1, u # shift v and swap
+                j = 1
+            else:
+                u >>= 1        # right shift left
+                j -= 1
+        else:
+            r <<= 1            # shift left 1
+            u <<= 1            # shift left 1
+            j += 1
+
+    return u
+```
+
+# GF2 (Carryless)
+
 ## GF2 (carryless) div and mod
 
 ```
@@ -661,7 +699,7 @@ def FullDivision(self, f, v):
 | NN | RT | RA  | RB  | 1  |  00   | 0001 110 |Rc| cldiv |
 | NN | RT | RA  | RB  | 1  |  01   | 0001 110 |Rc| clmod |
 
-## carryless mul
+## GF2 carryless mul
 
 based on RV bitmanip
 see <https://en.wikipedia.org/wiki/CLMUL_instruction_set> and
