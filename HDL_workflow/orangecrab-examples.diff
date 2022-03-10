@@ -1,0 +1,46 @@
+diff --git a/nmigen/blink.py b/nmigen/blink.py
+index a966594..6e78cc6 100644
+--- a/nmigen/blink.py
++++ b/nmigen/blink.py
+@@ -16,16 +16,32 @@ class Blink(Elaboratable):
+         red_led = rgb.r
+         green_led = rgb.g
+         blue_led = rgb.b
+-
+-        m.d.comb += [
+-            red_led.o.eq(self.count[27]),
+-            green_led.o.eq(self.count[26]),
+-            blue_led.o.eq(self.count[25]),
+-        ]
+-
++        #platform.request('0')
++        #platform.request('1')
++        color = "BLUE"
++
++        ## 27 26 25
++        if color=="GREEN":
++            m.d.comb += [
++                red_led.o.eq(0),
++                green_led.o.eq(self.count[26]),
++                blue_led.o.eq(0),
++            ]
++        elif color=="RED":
++            m.d.comb += [
++                red_led.o.eq(self.count[26]),
++                green_led.o.eq(0),
++                blue_led.o.eq(0),
++            ]
++        elif color=="BLUE":
++            m.d.comb += [
++                red_led.o.eq(0),
++                green_led.o.eq(0),
++                blue_led.o.eq(self.count[26]),
++            ]
+         return m
+ 
+ 
+ if __name__ == "__main__":
+-    platform = OrangeCrabR0_2Platform()
+-    platform.build(Blink(), do_program=True)
++    platform = OrangeCrabR0_2_85k_Platform()
++    platform.build(Blink(), do_program=False)
