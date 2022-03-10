@@ -527,7 +527,133 @@ uint64_t gorc64(uint64_t RA, uint64_t RB)
 
 ```
 
-# Galois Field 2^M
+# Instructions for Carry-less Operations aka. Polynomials with coefficients in `GF(2)`
+
+Carry-less addition/subtraction is simply XOR, so a `cladd`
+instruction is not provided since the `xor[i]` instruction can be used instead.
+
+These are operations on polynomials with coefficients in `GF(2)`, with the
+polynomial's coefficients packed into integers with the following algorithm:
+
+```python
+def pack_poly(poly):
+    """`poly` is a list where `poly[i]` is the coefficient for `x ** i`"""
+    retval = 0
+    for i, v in enumerate(poly):
+        retval |= v << i
+    return retval
+
+def unpack_poly(v):
+    """returns a list `poly`, where `poly[i]` is the coefficient for `x ** i`.
+    """
+    poly = []
+    while v != 0:
+        poly.append(v & 1)
+        v >>= 1
+    return poly
+```
+
+## Carry-less Multiply Instructions
+
+based on RV bitmanip
+see <https://en.wikipedia.org/wiki/CLMUL_instruction_set> and
+<https://www.felixcloutier.com/x86/pclmulqdq> and
+<https://en.m.wikipedia.org/wiki/Carry-less_product>
+
+They are worth adding as their own non-overwrite operations
+(in the same pipeline).
+
+### `clmul` Carry-less Multiply
+
+```c
+uint_xlen_t clmul(uint_xlen_t RA, uint_xlen_t RB)
+{
+    uint_xlen_t x = 0;
+    for (int i = 0; i < XLEN; i++)
+        if ((RB >> i) & 1)
+            x ^= RA << i;
+    return x;
+}
+```
+
+### `clmulh` Carry-less Multiply High
+
+```c
+uint_xlen_t clmulh(uint_xlen_t RA, uint_xlen_t RB)
+{
+    uint_xlen_t x = 0;
+    for (int i = 1; i < XLEN; i++)
+        if ((RB >> i) & 1)
+            x ^= RA >> (XLEN-i);
+    return x;
+}
+```
+
+### `clmulr` Carry-less Multiply (Reversed)
+
+Useful for CRCs. Equivalent to bit-reversing the result of `clmul` on
+bit-reversed inputs.
+
+```c
+uint_xlen_t clmulr(uint_xlen_t RA, uint_xlen_t RB)
+{
+    uint_xlen_t x = 0;
+    for (int i = 0; i < XLEN; i++)
+        if ((RB >> i) & 1)
+            x ^= RA >> (XLEN-i-1);
+    return x;
+}
+```
+
+## `clmadd` Carry-less Multiply-Add
+
+```
+clmadd RT, RA, RB, RC
+```
+
+```
+(RT) = clmul((RA), (RB)) ^ (RC)
+```
+
+## `cltmadd` Twin Carry-less Multiply-Add (for FFTs)
+
+```
+cltmadd RT, RA, RB, RC
+```
+
+TODO: add link to explanation for where `RS` comes from.
+
+```
+temp = clmul((RA), (RB)) ^ (RC)
+(RT) = temp
+(RS) = temp
+```
+
+## `cldiv` Carry-less Division
+
+```
+cldiv RT, RA, RB
+```
+
+TODO: decide what happens on division by zero
+
+```
+(RT) = cldiv((RA), (RB))
+```
+
+## `clrem` Carry-less Remainder
+
+```
+clrem RT, RA, RB
+```
+
+TODO: decide what happens on division by zero
+
+```
+(RT) = clrem((RA), (RB))
+```
+
+# Instructions for Binary Galois Fields `GF(2^m)`
 
 see:
 
@@ -535,10 +661,208 @@ see:
 * <https://engineering.purdue.edu/kak/compsec/NewLectures/Lecture7.pdf>
 * <https://foss.heptapod.net/math/libgf2/-/blob/branch/default/src/libgf2/gf2.py>
 
-## SPRs to set modulo and degree
+Binary Galois Field addition/subtraction is simply XOR, so a `gfbadd`
+instruction is not provided since the `xor[i]` instruction can be used instead.
 
-to save registers and make operations orthogonal with standard
-arithmetic the modulo is to be set in an SPR
+## `GFBREDPOLY` SPR -- Reducing Polynomial
+
+In order to save registers and to make operations orthogonal with standard
+arithmetic, the reducing polynomial is stored in a dedicated SPR `GFBREDPOLY`.
+This also allows hardware to pre-compute useful parameters (such as the
+degree, or look-up tables) based on the reducing polynomial, and store them
+alongside the SPR in hidden registers, only recomputing them whenever the SPR
+is written to, rather than having to recompute those values for every
+instruction.
+
+Because Galois Fields require the reducing polynomial to be an irreducible
+polynomial, that guarantees that any polynomial of `degree > 1` must have
+the LSB set, since otherwise it would be divisible by the polynomial `x`,
+making it reducible, making whatever we're working on no longer a Field.
+Therefore, we can reuse the LSB to indicate `degree == XLEN`.
+
+```python
+def decode_reducing_polynomial(GFBREDPOLY, XLEN):
+    """returns the decoded coefficient list in LSB to MSB order,
+        len(retval) == degree + 1"""
+    v = GFBREDPOLY & ((1 << XLEN) - 1) # mask to XLEN bits
+    if v == 0 or v == 2: # GF(2)
+        return [0, 1] # degree = 1, poly = x
+    if v & 1:
+        degree = floor_log2(v)
+    else:
+        # all reducing polynomials of degree > 1 must have the LSB set,
+        # because they must be irreducible polynomials (meaning they
+        # can't be factored), if the LSB was clear, then they would
+        # have `x` as a factor. Therefore, we can reuse the LSB clear
+        # to instead mean the polynomial has degree XLEN.
+        degree = XLEN
+        v |= 1 << XLEN
+        v |= 1 # LSB must be set
+    return [(v >> i) & 1 for i in range(1 + degree)]
+```
+
+## `gfbredpoly` -- Set the Reducing Polynomial SPR `GFBREDPOLY`
+
+unless this is an immediate op, `mtspr` is completely sufficient.
+
+## `gfbmul` -- Binary Galois Field `GF(2^m)` Multiplication
+
+```
+gfbmul RT, RA, RB
+```
+
+```
+(RT) = gfbmul((RA), (RB))
+```
+
+## `gfbmadd` -- Binary Galois Field `GF(2^m)` Multiply-Add
+
+```
+gfbmadd RT, RA, RB, RC
+```
+
+```
+(RT) = gfbadd(gfbmul((RA), (RB)), (RC))
+```
+
+## `gfbtmadd` -- Binary Galois Field `GF(2^m)` Twin Multiply-Add (for FFT)
+
+```
+gfbtmadd RT, RA, RB, RC
+```
+
+TODO: add link to explanation for where `RS` comes from.
+
+```
+temp = gfbadd(gfbmul((RA), (RB)), (RC))
+(RT) = temp
+(RS) = temp
+```
+
+## `gfbinv` -- Binary Galois Field `GF(2^m)` Inverse
+
+```
+gfbinv RT, RA
+```
+
+```
+(RT) = gfbinv((RA))
+```
+
+# Instructions for Prime Galois Fields `GF(p)`
+
+## Helper algorithms
+
+```python
+def int_to_gfp(int_value, prime):
+    return int_value % prime # follows Python remainder semantics
+```
+
+## `GFPRIME` SPR -- Prime Modulus For `gfp*` Instructions
+
+## `gfpadd` Prime Galois Field `GF(p)` Addition
+
+```
+gfpadd RT, RA, RB
+```
+
+```
+(RT) = int_to_gfp((RA) + (RB), GFPRIME)
+```
+
+the addition happens on infinite-precision integers
+
+## `gfpsub` Prime Galois Field `GF(p)` Subtraction
+
+```
+gfpsub RT, RA, RB
+```
+
+```
+(RT) = int_to_gfp((RA) - (RB), GFPRIME)
+```
+
+the subtraction happens on infinite-precision integers
+
+## `gfpmul` Prime Galois Field `GF(p)` Multiplication
+
+```
+gfpmul RT, RA, RB
+```
+
+```
+(RT) = int_to_gfp((RA) * (RB), GFPRIME)
+```
+
+the multiplication happens on infinite-precision integers
+
+## `gfpinv` Prime Galois Field `GF(p)` Invert
+
+```
+gfpinv RT, RA
+```
+
+Some potential hardware implementations are found in:
+<https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.90.5233&rep=rep1&type=pdf>
+
+```
+(RT) = gfpinv((RA), GFPRIME)
+```
+
+the multiplication happens on infinite-precision integers
+
+## `gfpmadd` Prime Galois Field `GF(p)` Multiply-Add
+
+```
+gfpmadd RT, RA, RB, RC
+```
+
+```
+(RT) = int_to_gfp((RA) * (RB) + (RC), GFPRIME)
+```
+
+the multiplication and addition happens on infinite-precision integers
+
+## `gfpmsub` Prime Galois Field `GF(p)` Multiply-Subtract
+
+```
+gfpmsub RT, RA, RB, RC
+```
+
+```
+(RT) = int_to_gfp((RA) * (RB) - (RC), GFPRIME)
+```
+
+the multiplication and subtraction happens on infinite-precision integers
+
+## `gfpmsubr` Prime Galois Field `GF(p)` Multiply-Subtract-Reversed
+
+```
+gfpmsubr RT, RA, RB, RC
+```
+
+```
+(RT) = int_to_gfp((RC) - (RA) * (RB), GFPRIME)
+```
+
+the multiplication and subtraction happens on infinite-precision integers
+
+## `gfpmaddsubr` Prime Galois Field `GF(p)` Multiply-Add and Multiply-Sub-Reversed (for FFT)
+
+```
+gfpmaddsubr RT, RA, RB, RC
+```
+
+TODO: add link to explanation for where `RS` comes from.
+
+```
+product = (RA) * (RB)
+term = (RC)
+(RT) = int_to_gfp(product + term, GFPRIME)
+(RS) = int_to_gfp(term - product, GFPRIME)
+```
+
+the multiplication, addition, and subtraction happens on infinite-precision integers
 
 ## Twin Butterfly (Tukey-Cooley) Mul-add-sub
 
