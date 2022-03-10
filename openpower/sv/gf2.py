@@ -9,17 +9,20 @@
 from functools import reduce
 
 # https://stackoverflow.com/questions/45442396/
-def gf_degree(a) :
-  res = 0
-  a >>= 1
-  while (a != 0) :
-    a >>= 1;
-    res += 1;
-  return res
+
+
+def gf_degree(a):
+    res = 0
+    a >>= 1
+    while (a != 0):
+        a >>= 1
+        res += 1
+    return res
 
 
 # useful constants used throughout this module
 degree = mask1 = mask2 = polyred = None
+
 
 def getGF2():
     """reconstruct the polynomial coefficients of g(x)
@@ -39,12 +42,12 @@ def setGF2(irPoly):
     def i2P(sInt):
         """Convert an integer into a polynomial"""
         return [(sInt >> i) & 1
-                for i in reversed(range(sInt.bit_length()))]    
-    
+                for i in reversed(range(sInt.bit_length()))]
+
     mask1 = mask2 = 1 << degree
     mask2 -= 1
     polyred = reduce(lambda x, y: (x << 1) + y, i2P(irPoly)[1:])
-        
+
 
 # original at https://jhafranco.com/tag/binary-finite-field/
 def multGF2(p1, p2):
@@ -70,7 +73,7 @@ def divmodGF2(f, v):
     while (i >= vDegree):
         if (mask & rem):
             res ^= (1 << (i - vDegree))
-            rem ^= ( v << (i - vDegree))
+            rem ^= (v << (i - vDegree))
         i -= 1
         mask >>= 1
     return (res, rem)
@@ -82,16 +85,16 @@ def xgcd(a, b):
     x0, x1, y0, y1 = 0, 1, 1, 0
     while a != 0:
         (q, a), b = divmodGF2(b, a), a
-        y0, y1 = y1, y0 ^ multGF2(q , y1)
-        x0, x1 = x1, x0 ^ multGF2(q , x1)
+        y0, y1 = y1, y0 ^ multGF2(q, y1)
+        x0, x1 = x1, x0 ^ multGF2(q, x1)
     return b, x0, y0
 
 
 # https://bugs.libre-soc.org/show_bug.cgi?id=782#c33
 # https://ftp.libre-soc.org/ARITH18_Kobayashi.pdf
-def gf_invert(a) :
+def gf_invert(a):
 
-    s = getGF2() # get the full polynomial (including the MSB)
+    s = getGF2()  # get the full polynomial (including the MSB)
     r = a
     v = 0
     u = 1
@@ -106,7 +109,7 @@ def gf_invert(a) :
             s <<= 1            # shift left 1
             if j == 0:
                 r, s = s, r    # swap r,s
-                u, v = v<<1, u # shift v and swap
+                u, v = v << 1, u  # shift v and swap
                 j = 1
             else:
                 u >>= 1        # right shift left
@@ -120,19 +123,19 @@ def gf_invert(a) :
 
 
 if __name__ == "__main__":
-  
+
     # Define binary field GF(2^3)/x^3 + x + 1
-    setGF2(0b1011) # degree 3
+    setGF2(0b1011)  # degree 3
 
     # Evaluate the product (x^2 + x + 1)(x^2 + 1)
     x = multGF2(0b111, 0b101)
     print("%02x" % x)
-    
+
     # Define binary field GF(2^8)/x^8 + x^4 + x^3 + x + 1
     # (used in Rijndael)
     # note that polyred has the MSB stripped!
-    setGF2(0b100011011) # degree 8
-    
+    setGF2(0b100011011)  # degree 8
+
     # Evaluate the product (x^7 + x^2)(x^7 + x + 1)
     x = 0b10000100
     y = 0b10000011
@@ -145,12 +148,12 @@ if __name__ == "__main__":
 
     # reconstruct x by multiplying divided result by y and adding the remainder
     x1 = multGF2(res, y)
-    print("%02x == %02x" % (z, x1 ^ rem)) # XOR is "add" in GF2
+    print("%02x == %02x" % (z, x1 ^ rem))  # XOR is "add" in GF2
 
     # demo output of xgcd
     print(xgcd(x, y))
 
-    #for i in range(1, 256):
+    # for i in range(1, 256):
     #   print (i, gf_invert(i))
 
     # show how inversion-and-multiply works.  answer here should be "x":
@@ -158,4 +161,3 @@ if __name__ == "__main__":
     y1 = gf_invert(y)
     z1 = multGF2(z, y1)
     print(hex(polyred), hex(y1), hex(x), "==", hex(z1))
-
