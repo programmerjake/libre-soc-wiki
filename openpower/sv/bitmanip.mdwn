@@ -33,19 +33,25 @@ Useful resource:
 
 # summary
 
+ternlog has its own major opcode
+
+|  29.30 |31| name      |
+| ------ |--| --------- |
+|   00   |Rc| ternlog   |
+
 minor opcode allocation
 
 |  28.30 |31| name      |
 | ------ |--| --------- |
-|  -00   |0 | ternlogi  |
+|  -00   |0 |           |
 |  -00   |1 | grevlog   |
 |  -01   |  | grevlogi  |
 |  010   |Rc| bitmask   |
 |  011   |0 | gfbmadd*  |
 |  011   |1 | clmadd*   |
 |  110   |Rc| 1/2-op    |
-|  111   |1 | ternlogv  |
-|  111   |0 | ternlogcr |
+|  111   |  |           |
+
 
 1-op and variants
 
@@ -186,7 +192,7 @@ TODO: if/when we get more encoding space, add Rc=1 option back to ternlogi, for 
 
 | 0.5|6.10|11.15|16.20| 21..25| 26..30   |31|
 | -- | -- | --- | --- | ----- | -------- |--|
-| NN | RT | RA  | RB  | im0-4 | im5-7 00 |0 |
+| NN | RT | RA  | RB  | im0-4 | im5-7 00 |Rc|
 
     lut3(imm, a, b, c):
         idx = c << 2 | b << 1 | a
@@ -203,13 +209,13 @@ a 4 operand variant which becomes more along the lines of an FPGA:
 
 | 0.5|6.10|11.15|16.20|21.25| 26...30  |31|
 | -- | -- | --- | --- | --- | -------- |--|
-| NN | RT | RA  | RB  | RC  | mode 100 |1 |
+| NN | RT | RA  | RB  | RC  | mode  01 |1 |
 
     for i in range(64):
         idx = RT[i] << 2 | RA[i] << 1 | RB[i]
         RT[i] = (RC & (1<<idx)) != 0
 
-mode (2 bit) may be used to do inversion of ordering, similar to carryless mul,
+mode (3 bit) may be used to do inversion of ordering, similar to carryless mul,
 3 modes.
 
 ## ternlogv
@@ -218,7 +224,7 @@ also, another possible variant involving swizzle and vec4:
 
 | 0.5|6.10|11.15| 16.23 |24.27 | 28.30 |31|
 | -- | -- | --- | ----- | ---- | ----- |--|
-| NN | RT | RA  | imm   | mask | 111   |1 |
+| NN | RT | RA  | imm   | mask | -01   |0 |
 
     for i in range(8):
         idx = RA.x[i] << 2 | RA.y[i] << 1 | RA.z[i]   
@@ -232,7 +238,7 @@ another mode selection would be CRs not Ints.
 
 | 0.5|6.8 | 9.11|12.14|15|16.23|24.27 | 28.30|31|
 | -- | -- | --- | --- |- |-----|----- | -----|--|
-| NN | BA | BB  | BC  |0 |imm  | mask | 111  |0 |
+| NN | BA | BB  | BC  |0 |imm  | mask | -10  |0 |
 
     for i in range(4):
         if not mask[i] continue
