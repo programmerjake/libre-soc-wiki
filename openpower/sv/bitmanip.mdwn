@@ -42,7 +42,7 @@ ternlog has its own major opcode
 |   01   |1 | ternlogv  |
 |   10   |0 | crternlog |
 
-minor opcode allocation
+2nd major opcode for other bitmanip: minor opcode allocation
 
 |  28.30 |31| name      |
 | ------ |--| --------- |
@@ -90,7 +90,7 @@ TODO: convert all instructions to use RT and not RS
 
 | 0.5|6.10|11.15|16.20 |21..25   | 26....30  |31| name |
 | -- | -- | --- | ---  | -----   | --------  |--| ------ |
-| NN | RT | RA  | RB   | im0-4   | im5-7  00 |0 | ternlogi |
+| NN | RT | RA  | RB   | im0-4   | im5-7  00 |0 |  |
 | NN | RT | RA  | RB   | im0-4   | im5-7  00 |1 | grevlog |
 | NN | RT | RA  | s0-4 | im0-4   | im5-7  01 |s5| grevlogi |
 | NN | RS | RA  | RB   | RC      | 00    011 |0 | gfbmadd |
@@ -98,14 +98,6 @@ TODO: convert all instructions to use RT and not RS
 | NN | RS | RA  | RB   | RC      | 00    011 |1 | clmadd |
 | NN | RS | RA  | RB   | RC      | 10    011 |1 | clmaddsub |
 | NN | RT | RA  | RB   | sh0-4   | sh5 1 011 |Rc| bmrevi |
-
-| 0.5|6.10|11.15| 16.23 |24.27 | 28.30 |31| name |
-| -- | -- | --- | ----- | ---- | ----- |--| ------ |
-| NN | RT | RA  | imm   | mask | 111   |1 | ternlogv |
-
-| 0.5|6.8 | 9.11|12.14|15|16.23|24.27 | 28.30|31| name |
-| -- | -- | --- | --- |- |-----|----- | -----|--| -------|
-| NN | BA | BB  | BC  |0 |imm  | mask | 111  |0 | ternlogcr |
 
 ops (note that av avg and abs as well as vec scalar mask
 are included here)
@@ -239,16 +231,17 @@ also, another possible variant involving swizzle and vec4:
 
 another mode selection would be CRs not Ints. 
 
-| 0.5|6.8 | 9.11|12.14|15|16.23|24.27 | 28.30|31|
-| -- | -- | --- | --- |- |-----|----- | -----|--|
-| NN | BA | BB  | BC  |0 |imm  | mask | -10  |0 |
+| 0.5|6.8 | 9.11|12.14|15.17|18.20|21.28 | 29.30|31|
+| -- | -- | --- | --- | --- |-----|----- | -----|--|
+| NN | BT | BA  | BB  | BC  |m0-3 | imm  |  10  |m4|
 
+    mask = m0-3,m4
     for i in range(4):
         if not mask[i] continue
-        idx = crregs[BA][i] << 2 |
-              crregs[BB][i] << 1 |
-              crregs[BC][i]
-        crregs[BA][i] = (imm & (1<<idx)) != 0
+        crregs[BT][i] = lut3(imm,
+                             crregs[BA][i],
+                             crregs[BB][i],
+                             crregs[BC][i])
 
 ## cmix
 
