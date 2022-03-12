@@ -144,37 +144,6 @@ double check that instructions didn't need 3 inputs.
 | NN | RA | RB  | RC  | 1  | 11    | 1110 110 |Rc| clmulh  |
 | NN |    |     |     |    |       | --11 110 |Rc| setvl  |
 
-# bit to byte permute
-
-similar to matrix permute in RV bitmanip, which has XOR and OR variants
-
-    do j = 0 to 7
-      do k = 0 to 7
-         b = VSR[VRB+32].dword[i].byte[k].bit[j]
-         VSR[VRT+32].dword[i].byte[j].bit[k] = b
-
-# int min/max
-
-signed and unsigned min/max for integer.  this is sort-of partly synthesiseable in [[sv/svp64]] with pred-result as long as the dest reg is one of the sources, but not both signed and unsigned.  when the dest is also one of the srces and the mv fails due to the CR bittest failing this will only overwrite the dest where the src is greater (or less).
-
-signed/unsigned min/max gives more flexibility.
-
-```
-uint_xlen_t min(uint_xlen_t rs1, uint_xlen_t rs2)
-{ return (int_xlen_t)rs1 < (int_xlen_t)rs2 ? rs1 : rs2;
-}
-uint_xlen_t max(uint_xlen_t rs1, uint_xlen_t rs2)
-{ return (int_xlen_t)rs1 > (int_xlen_t)rs2 ? rs1 : rs2;
-}
-uint_xlen_t minu(uint_xlen_t rs1, uint_xlen_t rs2)
-{ return rs1 < rs2 ? rs1 : rs2;
-}
-uint_xlen_t maxu(uint_xlen_t rs1, uint_xlen_t rs2)
-{ return rs1 > rs2 ? rs1 : rs2;
-}
-```
-
-
 # ternlog bitops
 
 Similar to FPGA LUTs: for every bit perform a lookup into a table using an 8bit immediate, or in another register.
@@ -243,6 +212,29 @@ another mode selection would be CRs not Ints.
                              crregs[BA][i],
                              crregs[BB][i],
                              crregs[BC][i])
+
+
+# int min/max
+
+signed and unsigned min/max for integer.  this is sort-of partly synthesiseable in [[sv/svp64]] with pred-result as long as the dest reg is one of the sources, but not both signed and unsigned.  when the dest is also one of the srces and the mv fails due to the CR bittest failing this will only overwrite the dest where the src is greater (or less).
+
+signed/unsigned min/max gives more flexibility.
+
+```
+uint_xlen_t min(uint_xlen_t rs1, uint_xlen_t rs2)
+{ return (int_xlen_t)rs1 < (int_xlen_t)rs2 ? rs1 : rs2;
+}
+uint_xlen_t max(uint_xlen_t rs1, uint_xlen_t rs2)
+{ return (int_xlen_t)rs1 > (int_xlen_t)rs2 ? rs1 : rs2;
+}
+uint_xlen_t minu(uint_xlen_t rs1, uint_xlen_t rs2)
+{ return rs1 < rs2 ? rs1 : rs2;
+}
+uint_xlen_t maxu(uint_xlen_t rs1, uint_xlen_t rs2)
+{ return rs1 > rs2 ? rs1 : rs2;
+}
+```
+
 
 ## cmix
 
@@ -1209,4 +1201,14 @@ do i = 0 to 63
     ptr1 = ptr1 + 1
 RA = result
 ```
+
+# bit to byte permute
+
+similar to matrix permute in RV bitmanip, which has XOR and OR variants,
+these perform a transpose.
+
+    do j = 0 to 7
+      do k = 0 to 7
+         b = VSR[VRB+32].dword[i].byte[k].bit[j]
+         VSR[VRT+32].dword[i].byte[j].bit[k] = b
 
