@@ -33,6 +33,8 @@ Useful resource:
 
 # summary
 
+two major opcodes are needed
+
 ternlog has its own major opcode
 
 |  29.30 |31| name      |
@@ -82,7 +84,6 @@ ternlog has its own major opcode
 3 ops 
 
 * grevlog
-* ternlog bitops
 * GF mul-add
 * bitmask-reverse
 
@@ -169,7 +170,8 @@ bits 21..22 may be used to specify a mode, such as treating the whole integer ze
 
 ## ternlog
 
-a 4 operand variant which becomes more along the lines of an FPGA:
+a 5 operand variant which becomes more along the lines of an FPGA,
+this is very expensive: 4 in and 1 out
 
 | 0.5|6.10|11.15|16.20|21.25| 26...30  |31|
 | -- | -- | --- | --- | --- | -------- |--|
@@ -189,13 +191,21 @@ also, another possible variant involving swizzle and vec4:
 
 | 0.5|6.10|11.15| 16.23 |24.27 | 28.30 |31|
 | -- | -- | --- | ----- | ---- | ----- |--|
-| NN | RT | RA  | imm   | mask | -01   |0 |
+| NN | RT | RA  | idx0-3| mask | sz 01   |0 |
 
-    for i in range(8):
-        idx = RA.x[i] << 2 | RA.y[i] << 1 | RA.z[i]   
-        res = (imm & (1<<idx)) != 0
+    SZ = sz * 8
+    raoff = idx0 * SZ
+    rboff = idx0 * SZ
+    rcoff = idx0 * SZ
+    imoff = idx0 * SZ
+    imm = RA[imoff:imoff+SZ]
+    for i in range(SZ):
+        ra = RA[raoff:+i]
+        rb = RA[rboff+i]
+        rc = RA[rcoff+i]
+        res = lut3(imm, ra, rb, rc)
         for j in range(3):
-             if mask[j]: RT[i+j*8] = res
+             if mask[j]: RT[i+j*SZ] = res
 
 ## ternlogcr
 
