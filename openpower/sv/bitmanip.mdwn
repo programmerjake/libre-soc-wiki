@@ -93,7 +93,7 @@ TODO: convert all instructions to use RT and not RS
 | NN | RT | RA  | RB   |         |        00 |0 | rsvd   |
 | NN | RT | RA  | RB   | im0-4   | im5-7  00 |1 | grevlog |
 | NN | RT | RA  | s0-4 | im0-4   | im5-7  01 |s5| grevlogi |
-| NN | RT | RA  | RB   | sh0-4   | mode  010 |Rc| bitmask* |
+| NN | RT | RA  | RB   | RC      | mode  010 |Rc| bitmask* |
 | NN | RS | RA  | RB   | RC      | 00    011 |0 | gfbmadd |
 | NN | RS | RA  | RB   | RC      | 00    011 |1 | gfbmaddsub |
 | NN | RS | RA  | RB   | RC      | 01    011 |0 | clmadd |
@@ -283,36 +283,41 @@ bmset(RA=0, RB=0, RC=mask) will produce a run of ones of length "mask" in a sing
 
 | 0.5|6.10|11.15|16.20|21.25| 26..30  |31| name  |
 | -- | -- | --- | --- | --- | ------- |--| ----- |
-| NN | RT | RA  | RB  | RC  | mode 010 |Rc| bm*   |
+| NN | RS | RA  | RB  | RC  | mode 010 |Rc| bm*   |
 
+Immediate-variant is an overwrite form:
+
+| 0.5|6.10|11.15|16.20| 21 | 22.23 | 24....30 |31| name |
+| -- | -- | --- | --- | -- | ----- | -------- |--| ---- |
+| NN | RS | RB  | sh  | SH | itype | 1000 110 |Rc| bm*i |
 
 ```
-uint_xlen_t bmset(RA, RB, sh)
+uint_xlen_t bmset(RS, RB, sh)
 {
     int shamt = RB & (XLEN - 1);
     mask = (2<<sh)-1;
-    return RA | (mask << shamt);
+    return RS | (mask << shamt);
 }
 
-uint_xlen_t bmclr(RA, RB, sh)
+uint_xlen_t bmclr(RS, RB, sh)
 {
     int shamt = RB & (XLEN - 1);
     mask = (2<<sh)-1;
-    return RA & ~(mask << shamt);
+    return RS & ~(mask << shamt);
 }
 
-uint_xlen_t bminv(RA, RB, sh)
+uint_xlen_t bminv(RS, RB, sh)
 {
     int shamt = RB & (XLEN - 1);
     mask = (2<<sh)-1;
-    return RA ^ (mask << shamt);
+    return RS ^ (mask << shamt);
 }
 
-uint_xlen_t bmext(RA, RB, sh)
+uint_xlen_t bmext(RS, RB, sh)
 {
     int shamt = RB & (XLEN - 1);
     mask = (2<<sh)-1;
-    return mask & (RA >> shamt);
+    return mask & (RS >> shamt);
 }
 ```
 
