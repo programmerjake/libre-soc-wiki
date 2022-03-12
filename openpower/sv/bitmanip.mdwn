@@ -191,12 +191,18 @@ mode (3 bit) may be used to do inversion of ordering, similar to carryless mul,
 ## ternlogv
 
 also, another possible variant involving swizzle-like selection
-and masking, this only requires 2 64 bit registers (RA, RT) and
-only up to 16 LUT3s
+and masking, this only requires 2 64 bit registers (RA, RS) and
+only up to 16 LUT3s.
+
+Note however that unless XLEN matches sz, this instruction
+is a Read-Modify-Write: RS must be read as a second operand
+and all unmodified bits preserved.  SVP64 may provide limited
+alternative destination for RS from RS-as-source, but again
+all unmodified bits must still be copied.
 
 | 0.5|6.10|11.15| 16.23 |24.27 | 28.30 |31|
 | -- | -- | --- | ----- | ---- | ----- |--|
-| NN | RT | RA  | idx0-3| mask | sz 01   |0 |
+| NN | RS | RA  | idx0-3| mask | sz 01   |0 |
 
     SZ = (1+sz) * 8 # 8 or 16
     raoff = MIN(XLEN, idx0 * SZ)
@@ -210,7 +216,7 @@ only up to 16 LUT3s
         rc = RA[rcoff+i]
         res = lut3(imm, ra, rb, rc)
         for j in range(MIN(XLEN//8, 4)):
-             if mask[j]: RT[i+j*SZ] = res
+             if mask[j]: RS[i+j*SZ] = res
 
 ## ternlogcr
 
