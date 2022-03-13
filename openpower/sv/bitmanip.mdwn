@@ -156,7 +156,6 @@ Like the x86 AVX512F [vpternlogd/vpternlogq](https://www.felixcloutier.com/x86/v
 
 ## ternlogi
 
-TODO: if/when we get more encoding space, add Rc=1 option back to ternlogi, for consistency with OpenPower base logical instructions (and./xor./or./etc.). <https://bugs.libre-soc.org/show_bug.cgi?id=745#c56>
 
 | 0.5|6.10|11.15|16.20| 21..25| 26..30   |31|
 | -- | -- | --- | --- | ----- | -------- |--|
@@ -168,8 +167,6 @@ TODO: if/when we get more encoding space, add Rc=1 option back to ternlogi, for 
 
     for i in range(64): 
         RT[i] = lut3(imm, RB[i], RA[i], RT[i]) 
-
-bits 21..22 may be used to specify a mode, such as treating the whole integer zero/nonzero and putting 1/0 in the result, rather than bitwise test.
 
 ## ternlog
 
