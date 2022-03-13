@@ -18,7 +18,18 @@ def dorow(imm8, step_i, chunk_size):
     return step_o
 
 def grevlut64(RA, RB, imm, iv):
-    x = RA
+    if RA is None: # RA=0
+        for i in range(6):
+            if 1<<i: break
+        x = {0: 0x5555555555555555,
+              1: 0x3333333333333333,
+              2: 0x0f0f0f0f0f0f0f0f,
+              3: 0x00ff00ff00ff00ff,
+              4: 0x0000ffff0000ffff,
+              5: 0x00000000ffffffff,
+        }[i]
+    else:
+        x = RA
     if (iv): x = ~x;
     shamt = RB & 63;
     #print (bin(shamt), bin(63))
@@ -31,41 +42,66 @@ def grevlut64(RA, RB, imm, iv):
 
 if __name__ == '__main__':
     # answer: 8888888...
-    RA = 0x5555555555555555
+    RB = 0b0000
+    imm = 0b11000110
+    x = grevlut64(None, RB, imm, 1)
+    print ("grevlut", bin(RB), bin(imm), hex(x), "\n", bin(x))
+
+    exit(0)
+
+    # answer: 8888888...
     RB = 0b0010
     imm = 0b11000110
-    x = grevlut64(RA, RB, imm, 1)
-    print ("grevlut", hex(RA), bin(RB), bin(imm), hex(x), "\n", bin(x))
+    x = grevlut64(None, RB, imm, 1)
+    print ("grevlut", bin(RB), bin(imm), hex(x), "\n", bin(x))
 
     # answer: 80808080...
     RB = 0b00110
     imm = 0b11000110
-    x = grevlut64(RA, RB, imm, 1)
-    print ("grevlut", hex(RA), bin(RB), bin(imm), hex(x), "\n", bin(x))
+    x = grevlut64(None, RB, imm, 1)
+    print ("grevlut", bin(RB), bin(imm), hex(x), "\n", bin(x))
 
     # answer: 80008000...
     RB = 0b01110
     imm = 0b11000110
-    x = grevlut64(RA, RB, imm, 1)
-    print ("grevlut", hex(RA), bin(RB), bin(imm), hex(x), "\n", bin(x))
+    x = grevlut64(None, RB, imm, 1)
+    print ("grevlut", bin(RB), bin(imm), hex(x), "\n", bin(x))
     print()
 
     # answer: 01010101...
     RB = 0b00110
     imm = 0b01101100
-    x = grevlut64(RA, RB, imm, 0)
-    print ("grevlut", hex(RA), bin(RB), bin(imm), hex(x), "\n", bin(x))
+    x = grevlut64(None, RB, imm, 0)
+    print ("grevlut", bin(RB), bin(imm), hex(x), "\n", bin(x))
 
     # answer: 00010001...
     RB = 0b01110
     imm = 0b01101100
-    x = grevlut64(RA, RB, imm, 0)
-    print ("grevlut", hex(RA), bin(RB), bin(imm), hex(x), "\n", bin(x))
+    x = grevlut64(None, RB, imm, 0)
+    print ("grevlut", bin(RB), bin(imm), hex(x), "\n", bin(x))
     print()
 
     for RB in range(64):
-        RA = 0x5555555555555555
         imm = 0b11000110
-        x = grevlut64(RA, RB, imm, 1)
-        print ("grevlut", hex(RA), bin(RB), bin(imm), hex(x), "\n", bin(x))
-        # answer: 8888888...
+        x = grevlut64(None, RB, imm, 1)
+        print ("grevlut", bin(RB), bin(imm), hex(x), "\n", bin(x))
+    print()
+
+    for RB in range(64):
+        imm = 0b01101100
+        x = grevlut64(None, RB, imm, 0)
+        print ("grevlut", bin(RB), bin(imm), hex(x), "\n", bin(x))
+    print()
+
+    for RB in range(64):
+        imm = 0b10011010
+        x = grevlut64(None, RB, imm, 1)
+        print ("grevlut", bin(RB), bin(imm), hex(x), "\n", bin(x))
+    print()
+
+    for RB in range(64):
+        imm = 0b01011001
+        x = grevlut64(None, RB, imm, 0)
+        print ("grevlut", bin(RB), bin(imm), hex(x), "\n", bin(x))
+    print()
+
