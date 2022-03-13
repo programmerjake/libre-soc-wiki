@@ -337,11 +337,15 @@ the two LUT2s are applied left-half (when not swapping)
 and right-half (when swapping) so as to allow a wider
 range of options
 
+<img src="/openpower/sv/grevlut2x2.jpg" width=700 />
+
 grevlut should be arranged so as to produce the constants
 needed to put into bext (bitextract) so as in turn to
 be able to emulate x86 pmovmask instructions <https://www.felixcloutier.com/x86/pmovmskb>
 
-<img src="/openpower/sv/grevlut2x2.jpg" width=700 />
+Better diagram showing the correct ordering of shamt.
+
+<img src="/openpower/sv/grevlut.png" width=700 />
 
 ```
 lut2(imm, a, b):
