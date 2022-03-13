@@ -18,16 +18,9 @@ def dorow(imm8, step_i, chunk_size):
     return step_o
 
 def grevlut64(RA, RB, imm, iv):
+    x = 0
     if RA is None: # RA=0
-        for i in range(6):
-            if 1<<i: break
-        x = {0: 0x5555555555555555,
-              1: 0x3333333333333333,
-              2: 0x0f0f0f0f0f0f0f0f,
-              3: 0x00ff00ff00ff00ff,
-              4: 0x0000ffff0000ffff,
-              5: 0x00000000ffffffff,
-        }[i]
+        x = 0x5555555555555555
     else:
         x = RA
     if (iv): x = ~x;
@@ -46,8 +39,6 @@ if __name__ == '__main__':
     imm = 0b11000110
     x = grevlut64(None, RB, imm, 1)
     print ("grevlut", bin(RB), bin(imm), hex(x), "\n", bin(x))
-
-    exit(0)
 
     # answer: 8888888...
     RB = 0b0010
@@ -100,8 +91,8 @@ if __name__ == '__main__':
     print()
 
     for RB in range(64):
-        imm = 0b01011001
-        x = grevlut64(None, RB, imm, 0)
+        imm = 0b01011010
+        x = grevlut64(None, RB, imm, 1)
         print ("grevlut", bin(RB), bin(imm), hex(x), "\n", bin(x))
     print()
 
