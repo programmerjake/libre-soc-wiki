@@ -343,6 +343,16 @@ grevlut should be arranged so as to produce the constants
 needed to put into bext (bitextract) so as in turn to
 be able to emulate x86 pmovmask instructions <https://www.felixcloutier.com/x86/pmovmskb>
 
+
+| RA       | RB      | imm        | iv | result        |
+| -------  | ------- | ---------- | -- | ----------    |
+| 0x555..  | 0b10    | 0b01101100 | 0  | 0x111111...   |
+| 0x555..  | 0b110   | 0b01101100 | 0  | 0x010101...   |
+| 0x555..  | 0b1110  | 0b01101100 | 0  | 0x00010001...   |
+| 0x555..  | 0b10    | 0b11000110 | 1  | 0x88888...   |
+| 0x555..  | 0b110   | 0b11000110 | 1  | 0x808080...   |
+| 0x555..  | 0b1110  | 0b11000110 | 1  | 0x80008000...   |
+
 Better diagram showing the correct ordering of shamt.
 
 <img src="/openpower/sv/grevlut.png" width=700 />
@@ -363,7 +373,7 @@ dorow(imm8, step_i, chunksize):
 
 uint64_t grevlut64(uint64_t RA, uint64_t RB, uint8 imm, bool iv)
 {
-    uint64_t x = 0;
+    uint64_t x = 0x5555_5555_5555_5555;
     if (RA != 0) x = GPR(RA);
     if (iv) x = ~x;
     int shamt = RB & 63;
