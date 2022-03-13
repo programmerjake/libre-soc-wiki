@@ -329,7 +329,9 @@ uint_xlen_t bmextrev(RA, RB, sh)
 # grevlut
 
 generalised reverse combined with a pair of LUT2s and allowing
-zero when RA=0 provides a wide range of instructions
+a constant `0b0101...0101` when RA=0, and an option to invert
+(including when RA=0, giving a constant 0b1010...1010 as the
+initial value) provides a wide range of instructions
 and a means to set regular 64 bit patterns in one
 32 bit instruction.
 
