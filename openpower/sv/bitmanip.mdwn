@@ -337,14 +337,20 @@ and a means to set regular 64 bit patterns in one
 
 the two LUT2s are applied left-half (when not swapping)
 and right-half (when swapping) so as to allow a wider
-range of options
+range of options.
 
 <img src="/openpower/sv/grevlut2x2.jpg" width=700 />
 
+* A value of `0b11001010` for the immediate provides
+the functionality of a standard "grev".  
+* `0b11101110` provides gorc
+
 grevlut should be arranged so as to produce the constants
 needed to put into bext (bitextract) so as in turn to
-be able to emulate x86 pmovmask instructions <https://www.felixcloutier.com/x86/pmovmskb>
-
+be able to emulate x86 pmovmask instructions <https://www.felixcloutier.com/x86/pmovmskb>.
+This only requires 2 instructions (grevlut, bext).
+The following
+settings provide the required mask constants:
 
 | RA       | RB      | imm        | iv | result        |
 | -------  | ------- | ---------- | -- | ----------    |
@@ -355,7 +361,10 @@ be able to emulate x86 pmovmask instructions <https://www.felixcloutier.com/x86/
 | 0x555..  | 0b110   | 0b11000110 | 1  | 0x808080...   |
 | 0x555..  | 0b1110  | 0b11000110 | 1  | 0x80008000...   |
 
-Better diagram showing the correct ordering of shamt.
+Better diagram showing the correct ordering of shamt (RB).  A LUT2
+is applied to all locations marked in red using the first 4
+bits of the immediate, and a separate LUT2 applied to all
+locations in green using the upper 4 bits of the immediate.
 
 <img src="/openpower/sv/grevlut.png" width=700 />
 
