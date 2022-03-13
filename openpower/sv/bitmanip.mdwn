@@ -40,8 +40,7 @@ ternlog has its own major opcode
 |  29.30 |31| name      |
 | ------ |--| --------- |
 |   00   |Rc| ternlogi  |
-|   01   |0 | ternlog   |
-|   01   |1 | ternlogv  |
+|   01   |sz| ternlogv  |
 |   10   |0 | crternlog |
 
 2nd major opcode for other bitmanip: minor opcode allocation
@@ -157,9 +156,9 @@ Like the x86 AVX512F [vpternlogd/vpternlogq](https://www.felixcloutier.com/x86/v
 ## ternlogi
 
 
-| 0.5|6.10|11.15|16.20| 21..25| 26..30   |31|
-| -- | -- | --- | --- | ----- | -------- |--|
-| NN | RT | RA  | RB  | im0-4 | im5-7 00 |Rc|
+| 0.5|6.10|11.15|16.20| 21..28|29.30|31|
+| -- | -- | --- | --- | ----- | --- |--|
+| NN | RT | RA  | RB  | im0-7 |  00 |Rc|
 
     lut3(imm, a, b, c):
         idx = c << 2 | b << 1 | a
@@ -168,28 +167,11 @@ Like the x86 AVX512F [vpternlogd/vpternlogq](https://www.felixcloutier.com/x86/v
     for i in range(64): 
         RT[i] = lut3(imm, RB[i], RA[i], RT[i]) 
 
-## ternlog
-
-a 5 operand variant which becomes more along the lines of an FPGA,
-this is very expensive: 4 in and 1 out  and is not recommended.
-
-| 0.5|6.10|11.15|16.20|21.25| 26...30  |31|
-| -- | -- | --- | --- | --- | -------- |--|
-| NN | RT | RA  | RB  | RC  | mode  01 |1 |
-
-    for i in range(64):
-        j = (i//8)*8 # 0,8,16,24,..,56
-        lookup = RC[j:j+8]
-        RT[i] = lut3(lookup, RT[i], RA[i], RB[i])
-
-mode (3 bit) may be used to do inversion of ordering, similar to carryless mul,
-3 modes.
-
 ## ternlogv
 
 also, another possible variant involving swizzle-like selection
-and masking, this only requires 2 64 bit registers (RA, RS) and
-only up to 16 LUT3s.
+and masking, this only requires 3 64 bit registers (RA, RS, RB) and
+only 16 LUT3s.
 
 Note however that unless XLEN matches sz, this instruction
 is a Read-Modify-Write: RS must be read as a second operand
@@ -197,23 +179,22 @@ and all unmodified bits preserved.  SVP64 may provide limited
 alternative destination for RS from RS-as-source, but again
 all unmodified bits must still be copied.
 
-| 0.5|6.10|11.15| 16.23 |24.27 | 28.30 |31|
-| -- | -- | --- | ----- | ---- | ----- |--|
-| NN | RS | RA  | idx0-3| mask | sz 01   |0 |
+| 0.5|6.10|11.15|16.20|21.28 | 29.30 |31|
+| -- | -- | --- | --- | ---- | ----- |--|
+| NN | RS | RA  | RB  |idx0-3|  01   |sz|
 
     SZ = (1+sz) * 8 # 8 or 16
     raoff = MIN(XLEN, idx0 * SZ)
     rboff = MIN(XLEN, idx1 * SZ)
     rcoff = MIN(XLEN, idx2 * SZ)
-    imoff = MIN(XLEN, idx3 * SZ)
-    imm = RA[imoff:imoff+SZ]
+    rsoff = MIN(XLEN, idx3 * SZ)
+    imm = RB[0:8]
     for i in range(MIN(XLEN, SZ)):
         ra = RA[raoff:+i]
         rb = RA[rboff+i]
         rc = RA[rcoff+i]
         res = lut3(imm, ra, rb, rc)
-        for j in range(MIN(XLEN//8, 4)):
-             if mask[j]: RS[i+j*SZ] = res
+        RS[rsoff+i] = res
 
 ## ternlogcr
 
