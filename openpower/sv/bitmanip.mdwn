@@ -89,7 +89,7 @@ TODO: convert all instructions to use RT and not RS
 
 | 0.5|6.10|11.15|16.20 |21..25   | 26....30  |31| name |
 | -- | -- | --- | ---  | -----   | --------  |--| ------ |
-| NN | RT | RA  | RB   |         |        00 |0 | rsvd   |
+| NN | RT | RA  |itype/| im0-4   | im5-7  00 |0 | xpermi  |
 | NN | RT | RA  | RB   | im0-4   | im5-7  00 |1 | grevlog |
 | NN | RT | RA  | s0-4 | im0-4   | im5-7  01 |s5| grevlogi |
 | NN | RT | RA  | RB   | RC      | mode  010 |Rc| bitmask* |
