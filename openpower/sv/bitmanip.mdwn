@@ -39,9 +39,9 @@ ternlog has its own major opcode
 
 |  29.30 |31| name      |
 | ------ |--| --------- |
-|   00   |Rc| ternlogi  |
-|   01   |sz| ternlogv  |
-|   10   |0 | crternlog |
+|   0  0   |Rc| ternlogi  |
+|   0  1   |sz| ternlogv  |
+|   1 iv   |  | grevlogi |
 
 2nd major opcode for other bitmanip: minor opcode allocation
 
@@ -91,7 +91,8 @@ TODO: convert all instructions to use RT and not RS
 | -- | -- | --- | ---  | -----   | --------  |--| ------ |
 | NN | RT | RA  |itype/| im0-4   | im5-7  00 |0 | xpermi  |
 | NN | RT | RA  | RB   | im0-4   | im5-7  00 |1 | grevlog |
-| NN | RT | RA  | s0-4 | im0-4   | im5-7  01 |s5| grevlogi |
+| NN | RT | RA  | s0-4 | im0-4   | im5-7  01 |0 | crternlog |
+| NN | RT | RA  |      |         | ////   01 |1 | rsvd    |
 | NN | RT | RA  | RB   | RC      | mode  010 |Rc| bitmask* |
 | NN | RS | RA  | RB   | RC      | 00    011 |0 | gfbmadd |
 | NN | RS | RA  | RB   | RC      | 00    011 |1 | gfbmaddsub |
