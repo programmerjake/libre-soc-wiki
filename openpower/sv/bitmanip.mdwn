@@ -111,15 +111,15 @@ double check that instructions didn't need 3 inputs.
 
 | 0.5|6.10|11.15|16.20| 21 | 22.23 | 24....30 |31| name |
 | -- | -- | --- | --- | -- | ----- | -------- |--| ---- |
-| NN | RA | RB  |     | 0  |       | 0000 110 |Rc| rsvd   |
-| NN | RA | RB  | RC  | 1  | itype | 0000 110 |Rc| xperm |
+| NN | RT | RA  | RB  | 0  |       | 0000 110 |Rc| rsvd   |
+| NN | RT | RA  | RB  | 1  | itype | 0000 110 |Rc| xperm |
 | NN | RA | RB  | RC  | 0  | itype | 0100 110 |Rc| minmax |
 | NN | RA | RB  | RC  | 1  |   00  | 0100 110 |Rc| av avgadd |
 | NN | RA | RB  | RC  | 1  |   01  | 0100 110 |Rc| av abs |
 | NN | RA | RB  |     | 1  |   10  | 0100 110 |Rc| rsvd |
 | NN | RA | RB  |     | 1  |   11  | 0100 110 |Rc| rsvd |
 | NN | RA | RB  | sh  | SH | itype | 1000 110 |Rc| bmopsi |
-| NN | RA | RB  |     |    |       | 1100 110 |Rc| rsvd |
+| NN | RT | RA  | RB  |    |       | 1100 110 |Rc| srsvd |
 | NN | RT | RA  | RB  | 1  |  00   | 0001 110 |Rc| cldiv |
 | NN | RT | RA  | RB  | 1  |  01   | 0001 110 |Rc| clmod |
 | NN | RT | RA  | RB  | 1  |  10   | 0001 110 |Rc|       |
@@ -490,7 +490,10 @@ uint64_t unshfl64(uint64_t RA, uint64_t RB)
 
 # xperm
 
-based on RV bitmanip
+based on RV bitmanip.
+
+RB contains a vector of indices to select parts of RA to be
+copied to RT.
 
 ```
 uint_xlen_t xperm(uint_xlen_t RA, uint_xlen_t RB, int sz_log2)
