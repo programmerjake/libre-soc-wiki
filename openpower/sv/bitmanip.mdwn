@@ -153,7 +153,6 @@ Like the x86 AVX512F [vpternlogd/vpternlogq](https://www.felixcloutier.com/x86/v
 
 ## ternlogi
 
-
 | 0.5|6.10|11.15|16.20| 21..28|29.30|31|
 | -- | -- | --- | --- | ----- | --- |--|
 | NN | RT | RA  | RB  | im0-7 |  00 |Rc|
@@ -346,8 +345,15 @@ grevlut should be arranged so as to produce the constants
 needed to put into bext (bitextract) so as in turn to
 be able to emulate x86 pmovmask instructions <https://www.felixcloutier.com/x86/pmovmskb>.
 This only requires 2 instructions (grevlut, bext).
-The following
-settings provide the required mask constants:
+
+Note that if the mask is required to be placed
+directly into CR Fields (for use as CR Predicate
+masks rather than a integer mask) then sv.ori
+may be used instead:
+
+    sv.ori./elwid=8 r10.v, r10.v, 0
+
+The following settings provide the required mask constants:
 
 | RA       | RB      | imm        | iv | result        |
 | -------  | ------- | ---------- | -- | ----------    |
