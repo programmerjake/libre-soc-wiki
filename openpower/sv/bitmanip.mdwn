@@ -349,7 +349,9 @@ This only requires 2 instructions (grevlut, bext).
 Note that if the mask is required to be placed
 directly into CR Fields (for use as CR Predicate
 masks rather than a integer mask) then sv.ori
-may be used instead:
+may be used instead, bearing in mind that sv.ori
+is a 64-bit instruction, and `VL` must have been
+set to the required length:
 
     sv.ori./elwid=8 r10.v, r10.v, 0
 
