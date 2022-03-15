@@ -547,45 +547,18 @@ They are worth adding as their own non-overwrite operations
 
 ### `clmul` Carry-less Multiply
 
-```c
-uint_xlen_t clmul(uint_xlen_t RA, uint_xlen_t RB)
-{
-    uint_xlen_t x = 0;
-    for (int i = 0; i < XLEN; i++)
-        if ((RB >> i) & 1)
-            x ^= RA << i;
-    return x;
-}
-```
+[[!inline pagenames="openpower/sv/bitmanip/clmul.py" raw="true" feeds="no" actions="yes"]]
 
 ### `clmulh` Carry-less Multiply High
 
-```c
-uint_xlen_t clmulh(uint_xlen_t RA, uint_xlen_t RB)
-{
-    uint_xlen_t x = 0;
-    for (int i = 1; i < XLEN; i++)
-        if ((RB >> i) & 1)
-            x ^= RA >> (XLEN-i);
-    return x;
-}
-```
+[[!inline pagenames="openpower/sv/bitmanip/clmulh.py" raw="true" feeds="no" actions="yes"]]
 
 ### `clmulr` Carry-less Multiply (Reversed)
 
 Useful for CRCs. Equivalent to bit-reversing the result of `clmul` on
 bit-reversed inputs.
 
-```c
-uint_xlen_t clmulr(uint_xlen_t RA, uint_xlen_t RB)
-{
-    uint_xlen_t x = 0;
-    for (int i = 0; i < XLEN; i++)
-        if ((RB >> i) & 1)
-            x ^= RA >> (XLEN-i-1);
-    return x;
-}
-```
+[[!inline pagenames="openpower/sv/bitmanip/clmulr.py" raw="true" feeds="no" actions="yes"]]
 
 ## `clmadd` Carry-less Multiply-Add
 
