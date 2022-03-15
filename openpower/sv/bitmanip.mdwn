@@ -640,10 +640,11 @@ for other instructions.
 cldiv RT, RA, RB
 ```
 
-TODO: decide what happens on division by zero
-
 ```
-(RT) = cldiv((RA), (RB))
+n = (RA)
+d = (RB)
+q, r = cldivrem(n, d, width=XLEN)
+(RT) = q
 ```
 
 ## `clrem` Carry-less Remainder
@@ -652,10 +653,11 @@ TODO: decide what happens on division by zero
 clrem RT, RA, RB
 ```
 
-TODO: decide what happens on division by zero
-
 ```
-(RT) = clrem((RA), (RB))
+n = (RA)
+d = (RB)
+q, r = cldivrem(n, d, width=XLEN)
+(RT) = r
 ```
 
 # Instructions for Binary Galois Fields `GF(2^m)`
