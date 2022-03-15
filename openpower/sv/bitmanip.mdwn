@@ -533,23 +533,7 @@ instruction is not provided since the `xor[i]` instruction can be used instead.
 These are operations on polynomials with coefficients in `GF(2)`, with the
 polynomial's coefficients packed into integers with the following algorithm:
 
-```python
-def pack_poly(poly):
-    """`poly` is a list where `poly[i]` is the coefficient for `x ** i`"""
-    retval = 0
-    for i, v in enumerate(poly):
-        retval |= v << i
-    return retval
-
-def unpack_poly(v):
-    """returns a list `poly`, where `poly[i]` is the coefficient for `x ** i`.
-    """
-    poly = []
-    while v != 0:
-        poly.append(v & 1)
-        v >>= 1
-    return poly
-```
+[[!inline pagenames="openpower/sv/bitmanip/pack_poly.py" raw="true" feeds="no" actions="yes"]]
 
 ## Carry-less Multiply Instructions
 
