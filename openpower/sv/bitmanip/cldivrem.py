@@ -9,26 +9,22 @@ def cldivrem(n, d, width):
     assert 0 <= d < 1 << width, f"bad d (doesn't fit in {width}-bit uint)"
     r = n
     q = 0
-    r_shift = 0
-    d_shift = 0
-    msb = 1 << (width - 1)
+    d <<= width
     for _ in range(width):
-        if r & msb:
-            if d & msb:
-                r ^= d
-                q |= 1
-            else:
-                d <<= 1
-                d_shift += 1
-        else:
-            if d & msb:
-                r <<= 1
-                q <<= 1
-                r_shift += 1
-            else:
-                r <<= 1
-                r_shift += 1
-                d <<= 1
-                d_shift += 1
-    r >>= r_shift
+        d >>= 1
+        q <<= 1
+        if degree(d) == degree(r):
+            r ^= d
+            q |= 1
     return q, r
+
+
+def degree(v):
+    """the degree of the GF(2) polynomial `v`. `v` is a non-negative integer.
+    """
+    assert v >= 0
+    retval = -1
+    while v != 0:
+        retval += 1
+        v >>= 1
+    return retval
