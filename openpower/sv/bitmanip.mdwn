@@ -287,22 +287,19 @@ def MASK(x, y):
 uint_xlen_t bmset(RS, RB, sh)
 {
     int shamt = RB & (XLEN - 1);
-    mask = (2<<sh)-1;
-    return RS | (mask << shamt);
+    return RS | MASK(shamt, sh)
 }
 
 uint_xlen_t bmclr(RS, RB, sh)
 {
     int shamt = RB & (XLEN - 1);
-    mask = (2<<sh)-1;
-    return RS & ~(mask << shamt);
+    return RS & ~MASK(shamt, sh)
 }
 
 uint_xlen_t bminv(RS, RB, sh)
 {
     int shamt = RB & (XLEN - 1);
-    mask = (2<<sh)-1;
-    return RS ^ (mask << shamt);
+    return RS ^ MASK(shamt, sh)
 }
 
 uint_xlen_t bmext(RS, RB, sh)
