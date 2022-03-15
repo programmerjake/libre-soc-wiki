@@ -310,7 +310,7 @@ uint_xlen_t bmext(RS, RB, sh)
 }
 ```
 
-bitmask extract with reverse.  can be done by bitinverting all of RB and getting bits of RB from the opposite end.
+bitmask extract with reverse.  can be done by bit-order-inverting all of RB and getting bits of RB from the opposite end.
 
 when RA is zero, no shift occurs. this makes bmextrev useful for
 simply reversing all bits of a register.
@@ -323,7 +323,7 @@ rt = ZE(rev[msb:0]);
 uint_xlen_t bmextrev(RA, RB, sh)
 {
     int shamt = XLEN-1;
-    if (RA != 0) (GPR(RA) & (XLEN - 1));
+    if (RA != 0) shamt = (GPR(RA) & (XLEN - 1));
     shamt = (XLEN-1)-shamt;  # shift other end
     bra = bitreverse(RB)     # swap LSB-MSB
     mask = (2<<sh)-1;
