@@ -114,14 +114,8 @@ double check that instructions didn't need 3 inputs.
 
 | 0.5|6.10|11.15|16.20| 21 | 22.23 | 24....30 |31| name |
 | -- | -- | --- | --- | -- | ----- | -------- |--| ---- |
-| NN | RT | RA  | RB  | 0  |       | 0000 110 |Rc| rsvd   |
-| NN | RT | RA  | RB  | 1  | itype | 0000 110 |Rc| xperm |
-| NN | RA | RB  | RC  | 0  | itype | 0100 110 |Rc| minmax |
-| NN | RA | RB  | RC  | 1  |   00  | 0100 110 |Rc| av avgadd |
-| NN | RA | RB  | RC  | 1  |   01  | 0100 110 |Rc| av abs |
-| NN | RA | RB  |     | 1  |   10  | 0100 110 |Rc| rsvd |
-| NN | RA | RB  |     | 1  |   11  | 0100 110 |Rc| rsvd |
-| NN | RA | RB  | sh  | SH | itype | 1000 110 |Rc| bmopsi |
+| NN | RS | me  | sh  | SH | ME 0  | nn00 110 |Rc| bmopsi |
+| NN | RS | RB  | sh  | SH | /   0 | nn00 110 |Rc| bmopsi |
 | NN | RT | RA  | RB  |    |       | 1100 110 |Rc| srsvd |
 | NN | RT | RA  | RB  | 1  |  00   | 0001 110 |Rc| cldiv |
 | NN | RT | RA  | RB  | 1  |  01   | 0001 110 |Rc| clmod |
@@ -131,7 +125,12 @@ double check that instructions didn't need 3 inputs.
 | NN | RA | RB  | RC  | 0  |   01  | 0001 110 |Rc| vec sofm |
 | NN | RA | RB  | RC  | 0  |   10  | 0001 110 |Rc| vec sifm |
 | NN | RA | RB  | RC  | 0  |   11  | 0001 110 |Rc| vec cprop |
-| NN | RA | RB  |     | 0  |       | 0101 110 |Rc| rsvd |
+| NN | RT | RA  | RB  | 1  | itype | 0101 110 |Rc| xperm |
+| NN | RA | RB  | RC  | 0  | itype | 0101 110 |Rc| minmax |
+| NN | RA | RB  | RC  | 1  |   00  | 0101 110 |Rc| av avgadd |
+| NN | RA | RB  | RC  | 1  |   01  | 0101 110 |Rc| av abs |
+| NN | RA | RB  |     | 1  |   10  | 0101 110 |Rc| rsvd |
+| NN | RA | RB  |     | 1  |   11  | 0101 110 |Rc| rsvd |
 | NN | RA | RB  | RC  | 0  | 00    | 0010 110 |Rc| gorc |
 | NN | RA | RB  | sh  | SH | 00    | 1010 110 |Rc| gorci |
 | NN | RA | RB  | RC  | 0  | 00    | 0110 110 |Rc| gorcw |
