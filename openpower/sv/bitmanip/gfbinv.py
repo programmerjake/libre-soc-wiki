@@ -5,7 +5,7 @@ from .cldivrem import degree
 def gfbinv(a):
     """compute the GF(2^m) inverse of `a`."""
     # Derived from Algorithm 3, from [7] in:
-    # https://scholar.archive.org/work/ktlygagf6jhslhx42gpuwwzc44/access/wayback/http://acsel-lab.com/arithmetic/arith18/papers/ARITH18_Kobayashi.pdf
+    # https://ftp.libre-soc.org/ARITH18_Kobayashi.pdf
 
     s = decode_reducing_polynomial()
     m = degree(s)
