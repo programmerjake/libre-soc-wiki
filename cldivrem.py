@@ -1,3 +1,6 @@
+from .log2 import floor_log2
+
+
 def cldivrem(n, d, width):
     """ Carry-less Division and Remainder.
         `n` and `d` are integers, `width` is the number of bits needed to hold
@@ -22,9 +25,6 @@ def cldivrem(n, d, width):
 def degree(v):
     """the degree of the GF(2) polynomial `v`. `v` is a non-negative integer.
     """
-    assert v >= 0
-    retval = -1
-    while v != 0:
-        retval += 1
-        v >>= 1
-    return retval
+    if v == 0:
+        return -1
+    return floor_log2(v)

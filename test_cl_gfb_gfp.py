@@ -1,5 +1,9 @@
+from .state import ST
 from .cldivrem import cldivrem
 from .clmul import clmul
+from .gfbmul import gfbmul
+from .gfbmadd import gfbmadd
+from .gfbinv import gfbinv
 from .pack_poly import pack_poly, unpack_poly
 import unittest
 
@@ -125,6 +129,24 @@ class GF2Poly:
         q, r = divmod(self, divisor)
         return r
 
+    def __pow__(self, exponent, modulus=None):
+        assert isinstance(exponent, int) and exponent >= 0
+        assert modulus is None or isinstance(modulus, GF2Poly)
+        retval = GF2Poly([1])
+        pow2 = GF2Poly(self)
+        while exponent != 0:
+            if exponent & 1:
+                retval *= pow2
+                if modulus is not None:
+                    retval %= modulus
+                exponent &= ~1
+            else:
+                pow2 *= pow2
+                if modulus is not None:
+                    pow2 %= modulus
+                exponent >>= 1
+        return retval
+
     def __eq__(self, rhs):
         if isinstance(rhs, GF2Poly):
             return self.coefficients == rhs.coefficients
@@ -206,6 +228,152 @@ class TestGF2Poly(unittest.TestCase):
         r = a % b
         self.assertEqual(r, GF2Poly([1, 0, 1, 0, 0, 1, 0, 1]))
 
+    def test_pow(self):
+        b = GF2Poly([0, 1])
+        for e in range(8):
+            expected = GF2Poly([0] * e + [1])
+            with self.subTest(b=str(b), e=e, expected=str(expected)):
+                v = b ** e
+                self.assertEqual(b, GF2Poly([0, 1]))
+                self.assertEqual(v, expected)
+
+        # AES's finite field reducing polynomial
+        m = GF2Poly([1, 1, 0, 1, 1, 0, 0, 0, 1])
+        period = 2 ** m.degree - 1
+        b = GF2Poly([1, 1, 0, 0, 1, 0, 1])
+        e = period - 1
+        expected = GF2Poly([0, 1, 0, 1, 0, 0, 1, 1])
+        v = pow(b, e, m)
+        self.assertEqual(m, GF2Poly([1, 1, 0, 1, 1, 0, 0, 0, 1]))
+        self.assertEqual(b, GF2Poly([1, 1, 0, 0, 1, 0, 1]))
+        self.assertEqual(v, expected)
+
+        # test that pow doesn't take inordinately long when given a modulus.
+        # adding a multiple of `period` should leave results unchanged.
+        e += period * 10 ** 15
+        v = pow(b, e, m)
+        self.assertEqual(m, GF2Poly([1, 1, 0, 1, 1, 0, 0, 0, 1]))
+        self.assertEqual(b, GF2Poly([1, 1, 0, 0, 1, 0, 1]))
+        self.assertEqual(v, expected)
+
+
+class GFB:
+    def __init__(self, value, red_poly=None):
+        if isinstance(value, GFB):
+            # copy value
+            assert red_poly is None
+            self.red_poly = GF2Poly(value.red_poly)
+            self.value = GF2Poly(value.value)
+            return
+        assert isinstance(value, GF2Poly)
+        assert isinstance(red_poly, GF2Poly)
+        assert red_poly.degree > 0
+        self.value = value % red_poly
+        self.red_poly = red_poly
+
+    def __repr__(self):
+        return f"GFB({self.value}, {self.red_poly})"
+
+    def __add__(self, rhs):
+        assert isinstance(rhs, GFB)
+        assert self.red_poly == rhs.red_poly
+        return GFB((self.value + rhs.value) % self.red_poly, self.red_poly)
+
+    def __sub__(self, rhs):
+        return self.__add__(rhs)
+
+    def __eq__(self, rhs):
+        if isinstance(rhs, GFB):
+            return self.value == rhs.value and self.red_poly == rhs.red_poly
+        return NotImplemented
+
+    def __mul__(self, rhs):
+        assert isinstance(rhs, GFB)
+        assert self.red_poly == rhs.red_poly
+        return GFB((self.value * rhs.value) % self.red_poly, self.red_poly)
+
+    def __div__(self, rhs):
+        assert isinstance(rhs, GFB)
+        assert self.red_poly == rhs.red_poly
+        return self * rhs ** -1
+
+    @property
+    def __pow_period(self):
+        period = (1 << self.red_poly.degree) - 1
+        assert period > 0, "internal logic error"
+        return period
+
+    def __pow__(self, exponent):
+        assert isinstance(exponent, int)
+        if len(self.value) == 0:
+            if exponent < 0:
+                raise ZeroDivisionError
+            else:
+                return GFB(self)
+        exponent %= self.__pow_period
+        return GFB(pow(self.value, exponent, self.red_poly), self.red_poly)
+
+
+class TestGFBClass(unittest.TestCase):
+    def test_add(self):
+        # AES's finite field reducing polynomial
+        red_poly = GF2Poly([1, 1, 0, 1, 1, 0, 0, 0, 1])
+        a = GFB(GF2Poly([0, 1, 0, 1]), red_poly)
+        b = GFB(GF2Poly([0, 0, 0, 0, 0, 0, 1, 1]), red_poly)
+        expected = GFB(GF2Poly([0, 1, 0, 1, 0, 0, 1, 1]), red_poly)
+        c = a + b
+        self.assertEqual(red_poly, GF2Poly([1, 1, 0, 1, 1, 0, 0, 0, 1]))
+        self.assertEqual(a, GFB(GF2Poly([0, 1, 0, 1]), red_poly))
+        self.assertEqual(b, GFB(GF2Poly([0, 0, 0, 0, 0, 0, 1, 1]), red_poly))
+        self.assertEqual(c, expected)
+        c = a - b
+        self.assertEqual(red_poly, GF2Poly([1, 1, 0, 1, 1, 0, 0, 0, 1]))
+        self.assertEqual(a, GFB(GF2Poly([0, 1, 0, 1]), red_poly))
+        self.assertEqual(b, GFB(GF2Poly([0, 0, 0, 0, 0, 0, 1, 1]), red_poly))
+        self.assertEqual(c, expected)
+        c = b - a
+        self.assertEqual(red_poly, GF2Poly([1, 1, 0, 1, 1, 0, 0, 0, 1]))
+        self.assertEqual(a, GFB(GF2Poly([0, 1, 0, 1]), red_poly))
+        self.assertEqual(b, GFB(GF2Poly([0, 0, 0, 0, 0, 0, 1, 1]), red_poly))
+        self.assertEqual(c, expected)
+
+    def test_mul(self):
+        # AES's finite field reducing polynomial
+        red_poly = GF2Poly([1, 1, 0, 1, 1, 0, 0, 0, 1])
+        a = GFB(GF2Poly([0, 1, 0, 1, 0, 0, 1, 1]), red_poly)
+        b = GFB(GF2Poly([1, 1, 0, 0, 1, 0, 1]), red_poly)
+        expected = GFB(GF2Poly([1]), red_poly)
+        c = a * b
+        self.assertEqual(red_poly, GF2Poly([1, 1, 0, 1, 1, 0, 0, 0, 1]))
+        self.assertEqual(a, GFB(GF2Poly([0, 1, 0, 1, 0, 0, 1, 1]), red_poly))
+        self.assertEqual(b, GFB(GF2Poly([1, 1, 0, 0, 1, 0, 1]), red_poly))
+        self.assertEqual(c, expected)
+
+    def test_pow(self):
+        # AES's finite field reducing polynomial
+        red_poly = GF2Poly([1, 1, 0, 1, 1, 0, 0, 0, 1])
+        period = 2 ** red_poly.degree - 1
+        b = GFB(GF2Poly([1, 1, 0, 0, 1, 0, 1]), red_poly)
+        e = period - 1
+        expected = GFB(GF2Poly([0, 1, 0, 1, 0, 0, 1, 1]), red_poly)
+        v = b ** e
+        self.assertEqual(red_poly, GF2Poly([1, 1, 0, 1, 1, 0, 0, 0, 1]))
+        self.assertEqual(b, GFB(GF2Poly([1, 1, 0, 0, 1, 0, 1]), red_poly))
+        self.assertEqual(v, expected)
+        e = -1
+        v = b ** e
+        self.assertEqual(red_poly, GF2Poly([1, 1, 0, 1, 1, 0, 0, 0, 1]))
+        self.assertEqual(b, GFB(GF2Poly([1, 1, 0, 0, 1, 0, 1]), red_poly))
+        self.assertEqual(v, expected)
+
+        # test that pow doesn't take inordinately long when given a modulus.
+        # adding a multiple of `period` should leave results unchanged.
+        e += period * 10 ** 15
+        v = b ** e
+        self.assertEqual(red_poly, GF2Poly([1, 1, 0, 1, 1, 0, 0, 0, 1]))
+        self.assertEqual(b, GFB(GF2Poly([1, 1, 0, 0, 1, 0, 1]), red_poly))
+        self.assertEqual(v, expected)
+
 
 class TestCL(unittest.TestCase):
     def test_cldivrem(self):
@@ -236,6 +404,63 @@ class TestCL(unittest.TestCase):
                     product = clmul(av, bv)
                     expected = pack_poly(expected.coefficients)
                     self.assertEqual(product, expected)
+
+
+class TestGFBInstructions(unittest.TestCase):
+    @staticmethod
+    def init_aes_red_poly():
+        # AES's finite field reducing polynomial
+        red_poly = GF2Poly([1, 1, 0, 1, 1, 0, 0, 0, 1])
+        ST.reinit(GFBREDPOLY=pack_poly(red_poly.coefficients))
+        return red_poly
+
+    def test_gfbmul(self):
+        # AES's finite field reducing polynomial
+        red_poly = self.init_aes_red_poly()
+        a_width = 8
+        b_width = 4
+        for av in range(2 ** a_width):
+            a = GFB(GF2Poly(unpack_poly(av)), red_poly)
+            for bv in range(2 ** b_width):
+                b = GFB(GF2Poly(unpack_poly(bv)), red_poly)
+                expected = a * b
+                with self.subTest(a=str(a), av=av, b=str(b), bv=bv, expected=str(expected)):
+                    product = gfbmul(av, bv)
+                    expectedv = pack_poly(expected.value.coefficients)
+                    self.assertEqual(product, expectedv)
+
+    def test_gfbmadd(self):
+        # AES's finite field reducing polynomial
+        red_poly = self.init_aes_red_poly()
+        a_width = 5
+        b_width = 4
+        c_width = 4
+        for av in range(2 ** a_width):
+            a = GFB(GF2Poly(unpack_poly(av)), red_poly)
+            for bv in range(2 ** b_width):
+                b = GFB(GF2Poly(unpack_poly(bv)), red_poly)
+                for cv in range(2 ** c_width):
+                    c = GFB(GF2Poly(unpack_poly(cv)), red_poly)
+                    expected = a * b + c
+                    with self.subTest(a=str(a), av=av,
+                                      b=str(b), bv=bv,
+                                      c=str(c), cv=cv,
+                                      expected=str(expected)):
+                        result = gfbmadd(av, bv, cv)
+                        expectedv = pack_poly(expected.value.coefficients)
+                        self.assertEqual(result, expectedv)
+
+    def test_gfbinv(self):
+        # AES's finite field reducing polynomial
+        red_poly = self.init_aes_red_poly()
+        width = 8
+        for av in range(2 ** width):
+            a = GFB(GF2Poly(unpack_poly(av)), red_poly)
+            expected = a ** -1 if av != 0 else GFB(GF2Poly(), red_poly)
+            with self.subTest(a=str(a), av=av, expected=str(expected)):
+                result = gfbinv(av)
+                expectedv = pack_poly(expected.value.coefficients)
+                self.assertEqual(result, expectedv)
 
 
 if __name__ == "__main__":
