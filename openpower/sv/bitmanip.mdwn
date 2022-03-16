@@ -588,10 +588,9 @@ cltmadd RT, RA, RB, RC
 
 TODO: add link to explanation for where `RS` comes from.
 
-```
-temp = clmul((RA), (RB)) ^ (RC)
-(RT) = temp
-(RS) = temp
+``` 
+(RT) = RC ^ clmul((RA), (RB))
+(RS) = RA ^ RC
 ```
 
 ## `cldivrem` Carry-less Division and Remainder
@@ -686,10 +685,9 @@ gfbtmadd RT, RA, RB, RC
 
 TODO: add link to explanation for where `RS` comes from.
 
-```
-temp = gfbmadd((RA), (RB), (RC))
-(RT) = temp
-(RS) = temp
+``` 
+(RT) = gfbmadd((RA), (RB), (RC))
+(RS) = RA ^ RC
 ```
 
 ## `gfbinv` -- Binary Galois Field `GF(2^m)` Inverse
