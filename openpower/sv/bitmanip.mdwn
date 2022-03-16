@@ -905,118 +905,6 @@ if __name__ == "__main__":
     print("{:02x}".format(multGF2(0b10000000, 0b10000011)))
 ```
 
-## GF(2^M) Inverse
-
-```
-# https://bugs.libre-soc.org/show_bug.cgi?id=782#c33
-# https://ftp.libre-soc.org/ARITH18_Kobayashi.pdf
-def gf_invert(a) :
-
-    s = getGF2() # get the full polynomial (including the MSB)
-    r = a
-    v = 0
-    u = 1
-    j = 0
-
-    for i in range(1, 2*degree+1):
-        # could use count-trailing-1s here to skip ahead
-        if r & mask1:          # test MSB of r
-            if s & mask1:      # test MSB of s
-                s ^= r
-                v ^= u
-            s <<= 1            # shift left 1
-            if j == 0:
-                r, s = s, r    # swap r,s
-                u, v = v<<1, u # shift v and swap
-                j = 1
-            else:
-                u >>= 1        # right shift left
-                j -= 1
-        else:
-            r <<= 1            # shift left 1
-            u <<= 1            # shift left 1
-            j += 1
-
-    return u
-```
-
-# GF2 (Carryless)
-
-## GF2 (carryless) div and mod
-
-```
-def gf_degree(a) :
-  res = 0
-  a >>= 1
-  while (a != 0) :
-    a >>= 1;
-    res += 1;
-  return res
-
-def FullDivision(self, f, v):
-        """
-        Takes two arguments, f, v
-        fDegree and vDegree are the degrees of the field elements
-        f and v represented as a polynomials.
-        This method returns the field elements a and b such that
-
-            f(x) = a(x) * v(x) + b(x).  
-
-        That is, a is the divisor and b is the remainder, or in
-        other words a is like floor(f/v) and b is like f modulo v.
-        """
-
-        fDegree, vDegree = gf_degree(f), gf_degree(v)
-        res, rem = 0, f
-        for i in reversed(range(vDegree, fDegree+1):
-            if ((rem >> i) & 1): # check bit
-                res ^= (1 << (i - vDegree))
-                rem ^= ( v << (i - vDegree)))
-        return (res, rem)
-```
-
-| 0.5|6.10|11.15|16.20| 21 | 22.23 | 24....30 |31| name |
-| -- | -- | --- | --- | -- | ----- | -------- |--| ---- |
-| NN | RT | RA  | RB  | 1  |  00   | 0001 110 |Rc| cldiv |
-| NN | RT | RA  | RB  | 1  |  01   | 0001 110 |Rc| clmod |
-
-## GF2 carryless mul
-
-based on RV bitmanip
-see <https://en.wikipedia.org/wiki/CLMUL_instruction_set> and
-<https://www.felixcloutier.com/x86/pclmulqdq> and
-<https://en.m.wikipedia.org/wiki/Carry-less_product>
-
-these are GF2 operations with the modulo set to 2^degree.
-they are worth adding as their own non-overwrite operations
-(in the same pipeline).
-
-```
-uint_xlen_t clmul(uint_xlen_t RA, uint_xlen_t RB)
-{
-    uint_xlen_t x = 0;
-    for (int i = 0; i < XLEN; i++)
-        if ((RB >> i) & 1)
-            x ^= RA << i;
-    return x;
-}
-uint_xlen_t clmulh(uint_xlen_t RA, uint_xlen_t RB)
-{
-    uint_xlen_t x = 0;
-    for (int i = 1; i < XLEN; i++)
-        if ((RB >> i) & 1)
-            x ^= RA >> (XLEN-i);
-    return x;
-}
-uint_xlen_t clmulr(uint_xlen_t RA, uint_xlen_t RB)
-{
-    uint_xlen_t x = 0;
-    for (int i = 0; i < XLEN; i++)
-        if ((RB >> i) & 1)
-            x ^= RA >> (XLEN-i-1);
-    return x;
-}
-```
 ## carryless Twin Butterfly (Tukey-Cooley) Mul-add-sub
 
 used in combination with SV FFT REMAP to perform
@@ -1094,7 +982,7 @@ if((RS)i=1) then break end end count ← count + 1
 RA ← EXTZ64(count)
 ```
 
-##  bit deposit
+## bit deposit
 
 vpdepd VRT,VRA,VRB, identical to RV bitmamip bdep, found already in v3.1 p106
 
