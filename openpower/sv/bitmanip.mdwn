@@ -654,30 +654,13 @@ the LSB set, since otherwise it would be divisible by the polynomial `x`,
 making it reducible, making whatever we're working on no longer a Field.
 Therefore, we can reuse the LSB to indicate `degree == XLEN`.
 
-```python
-def decode_reducing_polynomial(GFBREDPOLY, XLEN):
-    """returns the decoded coefficient list in LSB to MSB order,
-        len(retval) == degree + 1"""
-    v = GFBREDPOLY & ((1 << XLEN) - 1) # mask to XLEN bits
-    if v == 0 or v == 2: # GF(2)
-        return [0, 1] # degree = 1, poly = x
-    if v & 1:
-        degree = floor_log2(v)
-    else:
-        # all reducing polynomials of degree > 1 must have the LSB set,
-        # because they must be irreducible polynomials (meaning they
-        # can't be factored), if the LSB was clear, then they would
-        # have `x` as a factor. Therefore, we can reuse the LSB clear
-        # to instead mean the polynomial has degree XLEN.
-        degree = XLEN
-        v |= 1 << XLEN
-        v |= 1 # LSB must be set
-    return [(v >> i) & 1 for i in range(1 + degree)]
-```
+[[!inline pagenames="openpower/sv/bitmanip/decode_reducing_polynomial.py" raw="true" feeds="no" actions="yes"]]
 
 ## `gfbredpoly` -- Set the Reducing Polynomial SPR `GFBREDPOLY`
 
 unless this is an immediate op, `mtspr` is completely sufficient.
+
+[[!inline pagenames="openpower/sv/bitmanip/gfbredpoly.py" raw="true" feeds="no" actions="yes"]]
 
 ## `gfbmul` -- Binary Galois Field `GF(2^m)` Multiplication
 
@@ -685,9 +668,7 @@ unless this is an immediate op, `mtspr` is completely sufficient.
 gfbmul RT, RA, RB
 ```
 
-```
-(RT) = gfbmul((RA), (RB))
-```
+[[!inline pagenames="openpower/sv/bitmanip/gfbmul.py" raw="true" feeds="no" actions="yes"]]
 
 ## `gfbmadd` -- Binary Galois Field `GF(2^m)` Multiply-Add
 
@@ -695,9 +676,7 @@ gfbmul RT, RA, RB
 gfbmadd RT, RA, RB, RC
 ```
 
-```
-(RT) = gfbadd(gfbmul((RA), (RB)), (RC))
-```
+[[!inline pagenames="openpower/sv/bitmanip/gfbmadd.py" raw="true" feeds="no" actions="yes"]]
 
 ## `gfbtmadd` -- Binary Galois Field `GF(2^m)` Twin Multiply-Add (for FFT)
 
@@ -708,7 +687,7 @@ gfbtmadd RT, RA, RB, RC
 TODO: add link to explanation for where `RS` comes from.
 
 ```
-temp = gfbadd(gfbmul((RA), (RB)), (RC))
+temp = gfbmadd((RA), (RB), (RC))
 (RT) = temp
 (RS) = temp
 ```
@@ -719,9 +698,7 @@ temp = gfbadd(gfbmul((RA), (RB)), (RC))
 gfbinv RT, RA
 ```
 
-```
-(RT) = gfbinv((RA))
-```
+[[!inline pagenames="openpower/sv/bitmanip/gfbinv.py" raw="true" feeds="no" actions="yes"]]
 
 # Instructions for Prime Galois Fields `GF(p)`
 
