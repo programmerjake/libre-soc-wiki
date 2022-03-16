@@ -35,6 +35,6 @@ def gfbinv(a):
                 delta -= 1
     if a == 0:
         # we specifically choose 0 as the result of inverting 0, rather than an
-        # error or undefined, since that's what AES needs.
+        # error or undefined, since that's what Rijndael needs.
         return 0
     return u
