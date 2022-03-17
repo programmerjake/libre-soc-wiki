@@ -18,11 +18,13 @@
 | Bot 7  | CK       | Bot 1  | CKN      |
 | Bot 8  | DQ1      | Bot 2  | DQ7      |
 | Bot 9  | DQ6      | Bot 3  | DQ0      |
-| Bot 10 | CS5      | Bot 4  | NC       |
+| Bot 10 | DQ5      | Bot 4  | NC       |
 | Bot 11 | GND      | Bot 5  | GND      |
 | Bot 12 | 3V3      | Bot 6  | 3V3      |
 
-[[!img HDL_workflow/2022-03-17_10-23.jpg size="400x" ]] 
+[[!img HDL_workflow/ENtvxc9WwAAGyzl.png size="400x" ]] 
+[[!img HDL_workflow/ENw4bZ8W4AM8FOS.png size="400x" ]] 
+[[!img HDL_workflow/ENxOeloWsAMSw5u.jpeg size="400x" ]] 
 
 [[!img HDL_workflow/pmod-hyperram-64mbit-dual-pmod_large.jpg size="500x" ]] 
 
@@ -30,18 +32,32 @@
 
 Table of connections:
 
-| X3  pin #   | FPGA IO PAD |  Function | FT232  | Wire Colour|
-|-------------|-------------|-----------|--------|------------|
-|   39 +3.3V  | 3.3V supply |    (VCC)  | VREF   |   Red      |
-|    1 GND    |     GND     |    (GND)  | GND    |   Black    |
-|    4 IO29   |     B19     |    (TDI)  | RXD    |   Green    |
-|    5 IO30   |     B12     |    (TMS)  | CTS    |   Blue     |
-|    6 IO31   |     B9      |    (TCK)  | TXD    |   White    |
-|    7 IO32   |     E6      |    (TDO)  | RTS    |   Yellow   |
+| X3  pin #   | FPGA IO PAD |  Function | Wire Colour|
+|-------------|-------------|-----------|------------|
+|    8 IO33   |     D6      |    (DQ4)  |   Brown    |
+|    9 IO34   |     E7      |    (DQ3)  |   Brown    |
+|   10 IO35   |     D7      |    (DQ2)  |   Brown    |
+|   11 IO36   |     B11     |    (RWDS) |   Green    |
+|   12 IO37   |     B6      |    (CSN)  |   Blue     |
+|   13 IO38   |     E9      |    (RSTN) |   Yellow   |
+|   14 IO39   |     B8      |    (DQ5)  |   Green    |
+|   15 IO40   |     B8      |    (DQ0)  |   Orange   |
+|   16 IO41   |     C8      |    (DQ6)  |   Green    |
+|   17 IO42   |     D8      |    (DQ7)  |   Orange   |
+|   18 IO43   |     E8      |    (DQ1)  |   Green    |
+|   19 IO44   |     C7      |    (CKN)  |   Purple   |
+|   20 IO45   |     C6      |    (CK)   |   Yellow   |
+|   25 +3.3V  | 3.3V supply |    (VCC)  |   Red      |
+|   26 GND    |     GND     |    (GND)  |   Black    |
+|   27 +3.3V  | 3.3V supply |    (VCC)  |   Red      |
+|   28 GND    |     GND     |    (GND)  |   Black    |
+|   35 +3.3V  | 3.3V supply |    (VCC)  |   Red      |
+|   36 GND    |     GND     |    (GND)  |   Black    |
+|   37 +3.3V  | 3.3V supply |    (VCC)  |   Red      |
+|   38 GND    |     GND     |    (GND)  |   Black    |
 
-[[!img 2020-11-03_13-22.png size="900x" ]] 
+[[!img versa_ecp5_x3_hyperram.png size="900x" ]] 
 
 [[!img 2020-11-03_13-25.png size="900x" ]] 
 
-[[!img versa_ecp5_x3_hyperram.png size="900x" ]] 
 
