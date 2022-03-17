@@ -214,6 +214,9 @@ another mode selection would be CRs not Ints.
 
 # int min/max
 
+required for
+the [[sv/av_opcodes]]
+
 signed and unsigned min/max for integer.  this is sort-of partly synthesiseable in [[sv/svp64]] with pred-result as long as the dest reg is one of the sources, but not both signed and unsigned.  when the dest is also one of the srces and the mv fails due to the CR bittest failing this will only overwrite the dest where the src is greater (or less).
 
 signed/unsigned min/max gives more flexibility.
