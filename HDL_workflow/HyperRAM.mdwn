@@ -2,6 +2,16 @@
 
 * nmigen [hyperram.py](https://git.libre-soc.org/?p=lambdasoc.git;a=blob;f=lambdasoc/periph/hyperram.py;hb=HEAD) module
 
+```
+from nmigen.resources.memory import HyperRAMResources
+hyperram_ios = HyperRAMResources(cs_n="B1",
+                                 dq="D0 D1 D2 D3 D4 D7 D6 D7",
+                                 rwds="B2", rst_n="B3", clk_p="B4",
+								 attrs=IOStandard("LVCMOS33"))
+self.platform.add_extension(hyperram_ios)
+io = self.platform.request("hyperram")
+```
+
 ## 1bitsquared HyperRAM PMOD
 
 * <https://1bitsquared.de/products/pmod-hyperram>
