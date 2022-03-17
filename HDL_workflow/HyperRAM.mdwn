@@ -2,8 +2,7 @@
 
 ## 1bitsquared HyperRAM PMOD
 
-[[!img HDL_workflow/pmod-hyperram-64mbit-dual-pmod_large.jpg size="500x" ]] 
-
+* <https://1bitsquared.de/products/pmod-hyperram>
 
 | Pin    | Function | Pin    | Function |
 | ---    | -------- | ---    | -------- | 
@@ -23,4 +22,26 @@
 | Bot 11 | GND      | Bot 5  | GND      |
 | Bot 12 | 3V3      | Bot 6  | 3V3      |
 
-[[!img HDL_workflow/2022-03-17_10-23.jpg size="500x" ]] 
+[[!img HDL_workflow/2022-03-17_10-23.jpg size="400x" ]] 
+
+[[!img HDL_workflow/pmod-hyperram-64mbit-dual-pmod_large.jpg size="500x" ]] 
+
+# VERSA ECP5 Connections
+
+Table of connections:
+
+| X3  pin #   | FPGA IO PAD |  Function | FT232  | Wire Colour|
+|-------------|-------------|-----------|--------|------------|
+|   39 +3.3V  | 3.3V supply |    (VCC)  | VREF   |   Red      |
+|    1 GND    |     GND     |    (GND)  | GND    |   Black    |
+|    4 IO29   |     B19     |    (TDI)  | RXD    |   Green    |
+|    5 IO30   |     B12     |    (TMS)  | CTS    |   Blue     |
+|    6 IO31   |     B9      |    (TCK)  | TXD    |   White    |
+|    7 IO32   |     E6      |    (TDO)  | RTS    |   Yellow   |
+
+[[!img 2020-11-03_13-22.png size="900x" ]] 
+
+[[!img 2020-11-03_13-25.png size="900x" ]] 
+
+[[!img versa_ecp5_x3_hyperram.png size="900x" ]] 
+
