@@ -72,7 +72,7 @@ ternlog has its own major opcode
 | RT   | RA   | RB   | shuf  | shuffle | 
 | RT   | RA   | RB   | unshuf| shuffle | 
 | RT   | RA   | RB   | width | xperm  | 
-| RT   | RA   | RB   | type | minmax | 
+| RT   | RA   | RB   | type | av minmax | 
 | RT   | RA   | RB   |      | av abs avgadd  | 
 | RT   | RA   | RB   | type | vmask ops | 
 | RT   | RA   | RB   |      |       | 
@@ -114,7 +114,7 @@ double check that instructions didn't need 3 inputs.
 | 0.5|6.10|11.15|16.20| 21 | 22.23 | 24....30 |31| name |
 | -- | -- | --- | --- | -- | ----- | -------- |--| ---- |
 | NN | RS | me  | sh  | SH | ME 0  | nn00 110 |Rc| bmopsi |
-| NN | RS | RB  | sh  | SH | /   1 | nn00 110 |Rc| bmopsi |
+| NN | RS | RB  | sh  | SH | 0   1 | nn00 110 |Rc| bmopsi |
 | NN | RT | RA  | RB  | 1  |  00   | 0001 110 |Rc| cldiv |
 | NN | RT | RA  | RB  | 1  |  01   | 0001 110 |Rc| clmod |
 | NN | RT | RA  | RB  | 1  |  10   | 0001 110 |Rc|       |
@@ -124,10 +124,10 @@ double check that instructions didn't need 3 inputs.
 | NN | RA | RB  | RC  | 0  |   10  | 0001 110 |Rc| vec sifm |
 | NN | RA | RB  | RC  | 0  |   11  | 0001 110 |Rc| vec cprop |
 | NN | RT | RA  | RB  | 1  | itype | 0101 110 |Rc| xperm |
-| NN | RA | RB  | RC  | 0  | itype | 0101 110 |Rc| minmax |
+| NN | RA | RB  | RC  | 0  | itype | 0101 110 |Rc| av minmax |
 | NN | RA | RB  | RC  | 1  |   00  | 0101 110 |Rc| av abss |
 | NN | RA | RB  | RC  | 1  |   01  | 0101 110 |Rc| av absu|
-| NN | RA | RB  |     | 1  |   10  | 0101 110 |Rc| avg add |
+| NN | RA | RB  |     | 1  |   10  | 0101 110 |Rc| av avgadd |
 | NN | RA | RB  |     | 1  |   11  | 0101 110 |Rc| rsvd |
 | NN | RA | RB  |     |    |       | 1001 110 |Rc| rsvd |
 | NN | RA | RB  |     |    |       | 1101 110 |Rc| rsvd |
