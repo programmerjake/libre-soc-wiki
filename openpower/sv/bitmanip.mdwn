@@ -105,7 +105,8 @@ TODO: convert all instructions to use RT and not RS
 | NN | RT | RA  | RB   | sh0-4   | sh5 1 111 |Rc| bmrevi |
 
 ops (note that av avg and abs as well as vec scalar mask
-are included here)
+are included here [[sv/vector_ops]], and
+the [[sv/av_opcodes]])
 
 TODO: convert from RA, RB, and RC to correct field names of RT, RA, and RB, and
 double check that instructions didn't need 3 inputs.
@@ -124,9 +125,9 @@ double check that instructions didn't need 3 inputs.
 | NN | RA | RB  | RC  | 0  |   11  | 0001 110 |Rc| vec cprop |
 | NN | RT | RA  | RB  | 1  | itype | 0101 110 |Rc| xperm |
 | NN | RA | RB  | RC  | 0  | itype | 0101 110 |Rc| minmax |
-| NN | RA | RB  | RC  | 1  |   00  | 0101 110 |Rc| av avgadd |
-| NN | RA | RB  | RC  | 1  |   01  | 0101 110 |Rc| av abs |
-| NN | RA | RB  |     | 1  |   10  | 0101 110 |Rc| rsvd |
+| NN | RA | RB  | RC  | 1  |   00  | 0101 110 |Rc| av avgadds |
+| NN | RA | RB  | RC  | 1  |   01  | 0101 110 |Rc| av avgaddu|
+| NN | RA | RB  |     | 1  |   10  | 0101 110 |Rc| avg abs |
 | NN | RA | RB  |     | 1  |   11  | 0101 110 |Rc| rsvd |
 | NN | RA | RB  |     |    |       | 1001 110 |Rc| rsvd |
 | NN | RA | RB  |     |    |       | 1101 110 |Rc| rsvd |
