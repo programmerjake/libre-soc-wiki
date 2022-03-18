@@ -594,9 +594,13 @@ cltmadd RT, RA, RB, RC
 
 TODO: add link to explanation for where `RS` comes from.
 
-``` 
-(RT) = RC ^ clmul((RA), (RB))
-(RS) = RA ^ RC
+```
+a = (RA)
+c = (RC)
+# read all inputs before writing to any outputs in case
+# an input overlaps with an output register.
+(RT) = clmul(a, (RB)) ^ c
+(RS) = a ^ c
 ```
 
 ## `cldivrem` Carry-less Division and Remainder
@@ -691,9 +695,13 @@ gfbtmadd RT, RA, RB, RC
 
 TODO: add link to explanation for where `RS` comes from.
 
-``` 
-(RT) = gfbmadd((RA), (RB), (RC))
-(RS) = RA ^ RC
+```
+a = (RA)
+c = (RC)
+# read all inputs before writing to any outputs in case
+# an input overlaps with an output register.
+(RT) = gfbmadd(a, (RB), c)
+(RS) = a ^ c
 ```
 
 ## `gfbinv` -- Binary Galois Field `GF(2^m)` Inverse
