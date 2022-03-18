@@ -588,6 +588,17 @@ clmadd RT, RA, RB, RC
 
 ## `cltmadd` Twin Carry-less Multiply-Add (for FFTs)
 
+Used in combination with SV FFT REMAP to perform a full Discrete Fourier
+Transform of Polynomials over GF(2) in-place. Possible by having 3-in 2-out,
+to avoid the need for a temp register. RS is written to as well as RT.
+
+Note: Polynomials over GF(2) are a Ring rather than a Field, so, because the
+definition of the Inverse Discrete Fourier Transform involves calculating a
+multiplicative inverse, which may not exist in every Ring, therefore the
+Inverse Discrete Fourier Transform may not exist. (AFAICT the number of inputs
+to the IDFT must be odd for the IDFT to be defined for Polynomials over GF(2).
+TODO: check with someone who knows for sure if that's correct.)
+
 ```
 cltmadd RT, RA, RB, RC
 ```
@@ -689,6 +700,10 @@ gfbmadd RT, RA, RB, RC
 
 ## `gfbtmadd` -- Binary Galois Field `GF(2^m)` Twin Multiply-Add (for FFT)
 
+Used in combination with SV FFT REMAP to perform a full `GF(2^m)` Discrete
+Fourier Transform in-place. Possible by having 3-in 2-out, to avoid the need
+for a temp register. RS is written to as well as RT.
+
 ```
 gfbtmadd RT, RA, RB, RC
 ```
@@ -789,6 +804,11 @@ gfpmsubr RT, RA, RB, RC
 the multiplication and subtraction happens on infinite-precision integers
 
 ## `gfpmaddsubr` Prime Galois Field `GF(p)` Multiply-Add and Multiply-Sub-Reversed (for FFT)
+
+Used in combination with SV FFT REMAP to perform
+a full Number-Theoretic-Transform in-place. Possible by having 3-in 2-out,
+to avoid the need for a temp register. RS is written
+to as well as RT.
 
 ```
 gfpmaddsubr RT, RA, RB, RC
