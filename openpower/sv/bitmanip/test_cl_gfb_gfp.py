@@ -4,6 +4,13 @@ from .clmul import clmul
 from .gfbmul import gfbmul
 from .gfbmadd import gfbmadd
 from .gfbinv import gfbinv
+from .gfpadd import gfpadd
+from .gfpsub import gfpsub
+from .gfpmul import gfpmul
+from .gfpinv import gfpinv
+from .gfpmadd import gfpmadd
+from .gfpmsub import gfpmsub
+from .gfpmsubr import gfpmsubr
 from .pack_poly import pack_poly, unpack_poly
 import unittest
 
@@ -375,6 +382,133 @@ class TestGFBClass(unittest.TestCase):
         self.assertEqual(v, expected)
 
 
+class GFP:
+    def __init__(self, value, size):
+        assert isinstance(value, int)
+        assert isinstance(size, int) and size >= 2, "size is not a prime"
+        self.value = value % size
+        self.size = size
+
+    def __repr__(self):
+        return f"GFP({self.value}, {self.size})"
+
+    def __eq__(self, rhs):
+        if isinstance(rhs, GFP):
+            return self.value == rhs.value and self.size == rhs.size
+        return NotImplemented
+
+    def __add__(self, rhs):
+        assert isinstance(rhs, GFP)
+        assert self.size == rhs.size
+        return GFP((self.value + rhs.value) % self.size, self.size)
+
+    def __sub__(self, rhs):
+        assert isinstance(rhs, GFP)
+        assert self.size == rhs.size
+        return GFP((self.value - rhs.value) % self.size, self.size)
+
+    def __mul__(self, rhs):
+        assert isinstance(rhs, GFP)
+        assert self.size == rhs.size
+        return GFP((self.value * rhs.value) % self.size, self.size)
+
+    def __div__(self, rhs):
+        assert isinstance(rhs, GFP)
+        assert self.size == rhs.size
+        return self * rhs ** -1
+
+    @property
+    def __pow_period(self):
+        period = self.size - 1
+        assert period > 0, "internal logic error"
+        return period
+
+    def __pow__(self, exponent):
+        assert isinstance(exponent, int)
+        if self.value == 0:
+            if exponent < 0:
+                raise ZeroDivisionError
+            else:
+                return GFP(self.value, self.size)
+        exponent %= self.__pow_period
+        return GFP(pow(self.value, exponent, self.size), self.size)
+
+
+PRIMES = 2, 3, 5, 7, 11, 13, 17, 19
+"""handy list of small primes for testing"""
+
+
+class TestGFPClass(unittest.TestCase):
+    def test_add_sub(self):
+        for prime in PRIMES:
+            for av in range(prime):
+                for bv in range(prime):
+                    with self.subTest(av=av, bv=bv, prime=prime):
+                        a = GFP(av, prime)
+                        b = GFP(bv, prime)
+                        expected = GFP((av + bv) % prime, prime)
+                        c = a + b
+                        self.assertEqual(a, GFP(av, prime))
+                        self.assertEqual(b, GFP(bv, prime))
+                        self.assertEqual(c, expected)
+                        c = b + a
+                        self.assertEqual(a, GFP(av, prime))
+                        self.assertEqual(b, GFP(bv, prime))
+                        self.assertEqual(c, expected)
+                        expected = GFP((av - bv) % prime, prime)
+                        c = a - b
+                        self.assertEqual(a, GFP(av, prime))
+                        self.assertEqual(b, GFP(bv, prime))
+                        self.assertEqual(c, expected)
+                        expected = GFP((bv - av) % prime, prime)
+                        c = b - a
+                        self.assertEqual(a, GFP(av, prime))
+                        self.assertEqual(b, GFP(bv, prime))
+                        self.assertEqual(c, expected)
+
+    def test_mul(self):
+        for prime in PRIMES:
+            for av in range(prime):
+                for bv in range(prime):
+                    with self.subTest(av=av, bv=bv, prime=prime):
+                        a = GFP(av, prime)
+                        b = GFP(bv, prime)
+                        expected = GFP((av * bv) % prime, prime)
+                        c = a * b
+                        self.assertEqual(a, GFP(av, prime))
+                        self.assertEqual(b, GFP(bv, prime))
+                        self.assertEqual(c, expected)
+                        c = b * a
+                        self.assertEqual(a, GFP(av, prime))
+                        self.assertEqual(b, GFP(bv, prime))
+                        self.assertEqual(c, expected)
+
+    def test_pow(self):
+        for prime in PRIMES:
+            for bv in range(prime):
+                with self.subTest(bv=bv, prime=prime):
+                    b = GFP(bv, prime)
+                    period = prime - 1
+                    e = period - 1
+                    expected = GFP(pow(bv, e, prime) if bv != 0 else 0, prime)
+                    v = b ** e
+                    self.assertEqual(b, GFP(bv, prime))
+                    self.assertEqual(v, expected)
+                    e = -1
+                    if bv != 0:
+                        v = b ** e
+                        self.assertEqual(b, GFP(bv, prime))
+                        self.assertEqual(v, expected)
+
+                    # test that pow doesn't take inordinately long when given
+                    # a modulus. adding a multiple of `period` should leave
+                    # results unchanged.
+                    e += period * 10 ** 15
+                    v = b ** e
+                    self.assertEqual(b, GFP(bv, prime))
+                    self.assertEqual(v, expected)
+
+
 class TestCL(unittest.TestCase):
     def test_cldivrem(self):
         n_width = 8
@@ -461,6 +595,106 @@ class TestGFBInstructions(unittest.TestCase):
                 result = gfbinv(av)
                 expectedv = pack_poly(expected.value.coefficients)
                 self.assertEqual(result, expectedv)
+
+
+class TestGFPInstructions(unittest.TestCase):
+    def test_gfpadd(self):
+        for prime in PRIMES:
+            for av in range(prime):
+                for bv in range(prime):
+                    a = GFP(av, prime)
+                    b = GFP(bv, prime)
+                    expected = a + b
+                    with self.subTest(a=str(a), b=str(b),
+                                      expected=str(expected)):
+                        ST.reinit(GFPRIME=prime)
+                        v = gfpadd(av, bv)
+                        self.assertEqual(v, expected.value)
+
+    def test_gfpsub(self):
+        for prime in PRIMES:
+            for av in range(prime):
+                for bv in range(prime):
+                    a = GFP(av, prime)
+                    b = GFP(bv, prime)
+                    expected = a - b
+                    with self.subTest(a=str(a), b=str(b),
+                                      expected=str(expected)):
+                        ST.reinit(GFPRIME=prime)
+                        v = gfpsub(av, bv)
+                        self.assertEqual(v, expected.value)
+
+    def test_gfpmul(self):
+        for prime in PRIMES:
+            for av in range(prime):
+                for bv in range(prime):
+                    a = GFP(av, prime)
+                    b = GFP(bv, prime)
+                    expected = a * b
+                    with self.subTest(a=str(a), b=str(b),
+                                      expected=str(expected)):
+                        ST.reinit(GFPRIME=prime)
+                        v = gfpmul(av, bv)
+                        self.assertEqual(v, expected.value)
+
+    def test_gfpinv(self):
+        for prime in PRIMES:
+            for av in range(prime):
+                a = GFP(av, prime)
+                if av == 0:
+                    # TODO: determine what's expected for division by zero
+                    continue
+                else:
+                    expected = a ** -1
+                with self.subTest(a=str(a), expected=str(expected)):
+                    ST.reinit(GFPRIME=prime)
+                    v = gfpinv(av)
+                    self.assertEqual(v, expected.value)
+
+    def test_gfpmadd(self):
+        for prime in PRIMES:
+            for av in range(prime):
+                for bv in range(prime):
+                    for cv in range(prime):
+                        a = GFP(av, prime)
+                        b = GFP(bv, prime)
+                        c = GFP(cv, prime)
+                        expected = a * b + c
+                        with self.subTest(a=str(a), b=str(b), c=str(c),
+                                          expected=str(expected)):
+                            ST.reinit(GFPRIME=prime)
+                            v = gfpmadd(av, bv, cv)
+                            self.assertEqual(v, expected.value)
+
+    def test_gfpmsub(self):
+        for prime in PRIMES:
+            for av in range(prime):
+                for bv in range(prime):
+                    for cv in range(prime):
+                        a = GFP(av, prime)
+                        b = GFP(bv, prime)
+                        c = GFP(cv, prime)
+                        expected = a * b - c
+                        with self.subTest(a=str(a), b=str(b), c=str(c),
+                                          expected=str(expected)):
+                            ST.reinit(GFPRIME=prime)
+                            v = gfpmsub(av, bv, cv)
+                            self.assertEqual(v, expected.value)
+
+    def test_gfpmsubr(self):
+        for prime in PRIMES:
+            for av in range(prime):
+                for bv in range(prime):
+                    for cv in range(prime):
+                        a = GFP(av, prime)
+                        b = GFP(bv, prime)
+                        c = GFP(cv, prime)
+                        expected = c - a * b
+                        with self.subTest(a=str(a), b=str(b), c=str(c),
+                                          expected=str(expected)):
+                            ST.reinit(GFPRIME=prime)
+                            v = gfpmsubr(av, bv, cv)
+                            self.assertEqual(v, expected.value)
 
 
 if __name__ == "__main__":

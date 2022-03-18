@@ -715,13 +715,6 @@ gfbinv RT, RA
 
 # Instructions for Prime Galois Fields `GF(p)`
 
-## Helper algorithms
-
-```python
-def int_to_gfp(int_value, prime):
-    return int_value % prime # follows Python remainder semantics
-```
-
 ## `GFPRIME` SPR -- Prime Modulus For `gfp*` Instructions
 
 ## `gfpadd` Prime Galois Field `GF(p)` Addition
@@ -730,9 +723,7 @@ def int_to_gfp(int_value, prime):
 gfpadd RT, RA, RB
 ```
 
-```
-(RT) = int_to_gfp((RA) + (RB), GFPRIME)
-```
+[[!inline pagenames="openpower/sv/bitmanip/gfpadd.py" raw="true" feeds="no" actions="yes"]]
 
 the addition happens on infinite-precision integers
 
@@ -742,9 +733,7 @@ the addition happens on infinite-precision integers
 gfpsub RT, RA, RB
 ```
 
-```
-(RT) = int_to_gfp((RA) - (RB), GFPRIME)
-```
+[[!inline pagenames="openpower/sv/bitmanip/gfpsub.py" raw="true" feeds="no" actions="yes"]]
 
 the subtraction happens on infinite-precision integers
 
@@ -754,9 +743,7 @@ the subtraction happens on infinite-precision integers
 gfpmul RT, RA, RB
 ```
 
-```
-(RT) = int_to_gfp((RA) * (RB), GFPRIME)
-```
+[[!inline pagenames="openpower/sv/bitmanip/gfpmul.py" raw="true" feeds="no" actions="yes"]]
 
 the multiplication happens on infinite-precision integers
 
@@ -769,11 +756,7 @@ gfpinv RT, RA
 Some potential hardware implementations are found in:
 <https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.90.5233&rep=rep1&type=pdf>
 
-```
-(RT) = gfpinv((RA), GFPRIME)
-```
-
-the multiplication happens on infinite-precision integers
+[[!inline pagenames="openpower/sv/bitmanip/gfpinv.py" raw="true" feeds="no" actions="yes"]]
 
 ## `gfpmadd` Prime Galois Field `GF(p)` Multiply-Add
 
@@ -781,9 +764,7 @@ the multiplication happens on infinite-precision integers
 gfpmadd RT, RA, RB, RC
 ```
 
-```
-(RT) = int_to_gfp((RA) * (RB) + (RC), GFPRIME)
-```
+[[!inline pagenames="openpower/sv/bitmanip/gfpmadd.py" raw="true" feeds="no" actions="yes"]]
 
 the multiplication and addition happens on infinite-precision integers
 
@@ -793,9 +774,7 @@ the multiplication and addition happens on infinite-precision integers
 gfpmsub RT, RA, RB, RC
 ```
 
-```
-(RT) = int_to_gfp((RA) * (RB) - (RC), GFPRIME)
-```
+[[!inline pagenames="openpower/sv/bitmanip/gfpmsub.py" raw="true" feeds="no" actions="yes"]]
 
 the multiplication and subtraction happens on infinite-precision integers
 
@@ -805,9 +784,7 @@ the multiplication and subtraction happens on infinite-precision integers
 gfpmsubr RT, RA, RB, RC
 ```
 
-```
-(RT) = int_to_gfp((RC) - (RA) * (RB), GFPRIME)
-```
+[[!inline pagenames="openpower/sv/bitmanip/gfpmsubr.py" raw="true" feeds="no" actions="yes"]]
 
 the multiplication and subtraction happens on infinite-precision integers
 
@@ -820,13 +797,14 @@ gfpmaddsubr RT, RA, RB, RC
 TODO: add link to explanation for where `RS` comes from.
 
 ```
-product = (RA) * (RB)
+factor1 = (RA)
+factor2 = (RB)
 term = (RC)
-(RT) = int_to_gfp(product + term, GFPRIME)
-(RS) = int_to_gfp(term - product, GFPRIME)
+# read all inputs before writing to any outputs in case
+# an input overlaps with an output register.
+(RT) = gfpmadd(factor1, factor2, term)
+(RS) = gfpmsubr(factor1, factor2, term)
 ```
-
-the multiplication, addition, and subtraction happens on infinite-precision integers
 
 ## Twin Butterfly (Tukey-Cooley) Mul-add-sub
 
