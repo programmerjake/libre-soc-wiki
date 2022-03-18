@@ -701,7 +701,8 @@ c = (RC)
 # read all inputs before writing to any outputs in case
 # an input overlaps with an output register.
 (RT) = gfbmadd(a, (RB), c)
-(RS) = a ^ c
+# use gfbmadd again since it reduces the result
+(RS) = gfbmadd(a, 1, c) # "a * 1 + c"
 ```
 
 ## `gfbinv` -- Binary Galois Field `GF(2^m)` Inverse
