@@ -544,9 +544,19 @@ uint64_t gorc64(uint64_t RA, uint64_t RB)
 
 There are three completely separate types of Galois-Field-based
 arithmetic that we implement which are not well explained even in introductory
-literature.
+literature.  These are:
 
-## Polynomials with coefficients in `GF(2)` (aka. Carry-less arithmetic -- the `cl*` instructions).
+* carry-less binary arithmetic. this is not actually a Galois Field,
+  but is accidentally referred to as GF(2) - see below as to why.
+* modulo arithmetic with a Prime number, these are "proper" Galois Fields
+* modulo arithmetic with two limits: a power-of-2 (2^N) and a second
+  "reducing" polynomial (with characteristics similar to a prime number)
+
+further detailed explanations are provided below
+
+## Polynomials with coefficients in `GF(2)`
+
+(aka. Carry-less arithmetic -- the `cl*` instructions).
 
 This isn't actually a Galois Field, but its coefficients are. This is
 basically binary integer addition, subtraction, and multiplication like
@@ -554,11 +564,14 @@ usual, except that carries aren't propagated at all, effectively turning
 both addition and subtraction into the bitwise xor operation. Division and
 remainder are defined to match how addition and multiplication works.
 
-## Galois Fields with a prime size, aka. `GF(p)` or Prime Galois Fields (the `gfp*` instructions).
+## Galois Fields with a prime size
 
+aka. `GF(p)` or Prime Galois Fields (the `gfp*` instructions).
 This is basically just the integers mod `p`.
 
-## Galois Fields with a power-of-a-prime size, aka. `GF(p^n)` or `GF(q)` where `q == p^n` for prime `p` and integer `n > 0`.
+## Galois Fields with a power-of-a-prime size
+
+aka. `GF(p^n)` or `GF(q)` where `q == p^n` for prime `p` and integer `n > 0`.
 
 We only implement these for `p == 2`, called Binary Galois Fields
 (`GF(2^n)` -- the `gfb*` instructions).
@@ -572,9 +585,9 @@ and `n` are isomorphic to each other -- the choice of `red_poly` doesn't
 affect `GF(p^n)`'s mathematical shape, all that changes is the specific
 polynomials used to implement `GF(p^n)`.
 
-## GF(2) which is covered by binary XOR (lkcl, idk what you meant here)
+# Instructions for Carry-less Operations
 
-# Instructions for Carry-less Operations aka. Polynomials with coefficients in `GF(2)`
+aka. Polynomials with coefficients in `GF(2)`
 
 Carry-less addition/subtraction is simply XOR, so a `cladd`
 instruction is not provided since the `xor[i]` instruction can be used instead.
