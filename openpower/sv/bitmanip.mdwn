@@ -540,13 +540,39 @@ uint64_t gorc64(uint64_t RA, uint64_t RB)
 }
 
 ```
-# Introductory Explanation for Carry-less and Gallois Field
+# Introductory Explanation for Carry-less and Galois Field arithmetic
 
-There are three completely separate types of Galois Field
-arithmetic which are not well explained even in introductory
+There are three completely separate types of Galois-Field-based
+arithmetic that we implement which are not well explained even in introductory
 literature.
 
-* GF(2) which is covered by bibary XOR
+## Polynomials with coefficients in `GF(2)` (aka. Carry-less arithmetic -- the `cl*` instructions).
+
+This isn't actually a Galois Field, but its coefficients are. This is
+basically binary integer addition, subtraction, and multiplication like
+usual, except that carries aren't propagated at all, effectively turning
+both addition and subtraction into the bitwise xor operation. Division and
+remainder are defined to match how addition and multiplication works.
+
+## Galois Fields with a prime size, aka. `GF(p)` or Prime Galois Fields (the `gfp*` instructions).
+
+This is basically just the integers mod `p`.
+
+## Galois Fields with a power-of-a-prime size, aka. `GF(p^n)` or `GF(q)` where `q == p^n` for prime `p` and integer `n > 0`.
+
+We only implement these for `p == 2`, called Binary Galois Fields
+(`GF(2^n)` -- the `gfb*` instructions).
+For any prime `p`, `GF(p^n)` is implemented as polynomials with
+coefficients in `GF(p)` and degree `< n`, where the polynomials are the
+remainders of dividing by a specificly chosen polynomial in `GF(p)` called
+the Reducing Polynomial (we will denote that by `red_poly`). The Reducing
+Polynomial must be an irreducable polynomial (like primes, but for
+polynomials), as well as have degree `n`. All `GF(p^n)` for the same `p`
+and `n` are isomorphic to each other -- the choice of `red_poly` doesn't
+affect `GF(p^n)`'s mathematical shape, all that changes is the specific
+polynomials used to implement `GF(p^n)`.
+
+## GF(2) which is covered by binary XOR (lkcl, idk what you meant here)
 
 # Instructions for Carry-less Operations aka. Polynomials with coefficients in `GF(2)`
 
