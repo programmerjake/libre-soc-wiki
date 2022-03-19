@@ -16,12 +16,16 @@ def gfpinv(a):
     r = 0
     s = 1
     while v > 0:
+        # implementations could use count-zeros on
+        # both u and r to save cycles
         if u & 1 == 0:
             u >>= 1
             if r & 1 == 0:
                 r >>= 1
             else:
                 r = (r + p) >> 1
+        # implementations could use count-zeros on
+        # both v and s to save cycles
         elif v & 1 == 0:
             v >>= 1
             if s & 1 == 0:
