@@ -12,7 +12,7 @@
 
 **DRAFT STATUS**
 
-pseudocode: <https://libre-soc.org/openpower/isa/bitmanip/>
+pseudocode: [[openpower/isa/bitmanip]]
 
 this extension amalgamates bitmanipulation primitives from many sources, including RISC-V bitmanip, Packed SIMD, AVX-512 and OpenPOWER VSX.  Vectorisation and SIMD are removed: these are straight scalar (element) operations making them suitable for embedded applications.
 Vectorisation Context is provided by [[openpower/sv]].
@@ -543,6 +543,8 @@ uint64_t gorc64(uint64_t RA, uint64_t RB)
 
 ```
 # Introduction to Carry-less and GF arithmetic
+
+* obligatory xkcd <https://xkcd.com/2595/>
 
 There are three completely separate types of Galois-Field-based
 arithmetic that we implement which are not well explained even in introductory literature.  A slightly oversimplified explanation
