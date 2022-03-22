@@ -584,6 +584,18 @@ further detailed and more precise explanations are provided below
   affect `GF(p^n)`'s mathematical shape, all that changes is the specific
   polynomials used to implement `GF(p^n)`.
 
+Many implementations and much of the literature do not make a clear
+distinction between these three categories, which makes it confusing
+to understand what their purpose and value is.
+
+* carry-less multiply is extremely common and is used for the ubiquitous
+  CRC32 algorithm. [TODO add many others, helps justify to ISA WG]
+* GF(2^N) forms the basis of Rijndael (the current AES standard) and
+  has significant uses throughout cryptography
+* GF(p) is the basis again of a significant quantity of algorithms
+  (TODO, list them, jacob knows what they are), even though the
+  modulo is limited to be below 64-bit (size of a scalar int)
+
 # Instructions for Carry-less Operations
 
 aka. Polynomials with coefficients in `GF(2)`
