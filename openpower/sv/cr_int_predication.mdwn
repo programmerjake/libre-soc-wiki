@@ -196,19 +196,22 @@ Instead however in the scalar case these instructions **remain in the same regis
         # OR or AND to a single bit
         result = n0|n1|n2|n3 if M else n0&n1&n2&n3
         if RT.isvec:
-            if RT.elwidth == 0b00:
+            # TODO: RT.elwidth override to be also added here
+            # note, yes, really, the CR's elwidth field determines
+            # the bit-packing into the INT!
+            if BB.elwidth == 0b00:
                 # pack 1 result into 64-bit registers
                 iregs[RT+i][0..62] = 0
                 iregs[RT+i][63] = result # sets LSB to result
-            if RT.elwidth == 0b01:
+            if BB.elwidth == 0b01:
                 # pack 2 results sequentially into INT registers
                 iregs[RT+i//2][0..61] = 0
                 iregs[RT+i//2][63-(i%2)] = result
-            if RT.elwidth == 0b10:
+            if BB.elwidth == 0b10:
                 # pack 4 results sequentially into INT registers
                 iregs[RT+i//4][0..59] = 0
                 iregs[RT+i//4][63-(i%4)] = result
-            if RT.elwidth == 0b11:
+            if BB.elwidth == 0b11:
                 # pack 8 results sequentially into INT registers
                 iregs[RT+i//8][0..55] = 0
                 iregs[RT+i//8][63-(i%8)] = result
@@ -223,7 +226,9 @@ Note that:
 * in the INT-vector case the result is stored in the
   LSB of each element in the result vector
 
-Note that element width overrides are respected on the INT src or destination register (but that elwidth overrides on CRs are meaningless)
+Note that element width overrides are respected on the INT src or destination register, however that it is the CR element-width
+override that is used to indicate how many bits of CR results
+are packed/extracted into/from each INT register
 
 # v3.1 setbc instructions
 
