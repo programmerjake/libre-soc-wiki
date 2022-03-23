@@ -1,0 +1,63 @@
+This folder is synchronized between nmutil.git and libreriscv.git (the wiki) using `git subtree`.
+
+# Initial setup for your local repo:
+```sh
+cd nmutil
+git remote add -f wiki ssh://gitolite3@git.libre-soc.org:922/libreriscv.git
+git checkout -b wiki-master wiki/master
+git checkout master
+```
+
+# Copying latest changes from libreriscv.git to nmutil.git:
+
+Do the initial setup for your local repo first.
+
+```sh
+cd nmutil
+git checkout wiki-master
+git subtree split -P openpower/sv/bitmanip --rejoin -b openpower-sv-bitmanip
+git checkout master
+git subtree merge -P src/nmutil/openpower_sv_bitmanip_in_wiki openpower-sv-bitmanip
+git branch -d openpower-sv-bitmanip
+git push
+git checkout wiki-master
+git push
+git checkout master
+```
+
+# Copying latest changes from nmutil.git to libreriscv.git:
+
+Do the initial setup for your local repo first.
+
+```sh
+cd nmutil
+git checkout master
+git subtree split -P src/nmutil/openpower_sv_bitmanip_in_wiki --rejoin -b openpower-sv-bitmanip
+git checkout wiki-master
+git subtree merge -P openpower/sv/bitmanip openpower-sv-bitmanip
+git branch -d openpower-sv-bitmanip
+git push
+git checkout wiki-master
+git push
+git checkout master
+```
+
+# Initial setup for repos:
+
+This was already done for this folder, you don't need to do it.
+This is here merely for future reference in case anyone wants to reproduce our setup.
+
+Do the initial setup for your local repo first.
+
+```sh
+cd nmutil
+git checkout wiki-master
+git subtree split -P openpower/sv/bitmanip --rejoin -b openpower-sv-bitmanip
+git checkout master
+git subtree add -P src/nmutil/openpower_sv_bitmanip_in_wiki openpower-sv-bitmanip
+git branch -d openpower-sv-bitmanip
+git push
+git checkout wiki-master
+git push
+git checkout master
+```
