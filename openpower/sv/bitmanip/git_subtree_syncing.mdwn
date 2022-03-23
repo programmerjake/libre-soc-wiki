@@ -14,7 +14,10 @@ Do the initial setup for your local repo (above) first.
 
 ```sh
 cd nmutil
+git checkout master
+git pull
 git checkout wiki-master
+git pull
 git subtree split -P openpower/sv/bitmanip --rejoin -b openpower-sv-bitmanip
 git checkout master
 git subtree merge -P src/nmutil/openpower_sv_bitmanip_in_wiki openpower-sv-bitmanip
@@ -29,7 +32,10 @@ Do the initial setup for your local repo (above) first.
 
 ```sh
 cd nmutil
+git checkout wiki-master
+git pull
 git checkout master
+git pull
 git subtree split -P src/nmutil/openpower_sv_bitmanip_in_wiki --rejoin -b openpower-sv-bitmanip
 git checkout wiki-master
 git subtree merge -P openpower/sv/bitmanip openpower-sv-bitmanip
@@ -48,7 +54,10 @@ Do the initial setup for your local repo (above) first.
 
 ```sh
 cd nmutil
+git checkout master
+git pull
 git checkout wiki-master
+git pull
 git subtree split -P openpower/sv/bitmanip --rejoin -b openpower-sv-bitmanip
 git checkout master
 git subtree add -P src/nmutil/openpower_sv_bitmanip_in_wiki openpower-sv-bitmanip
