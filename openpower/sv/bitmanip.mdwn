@@ -1006,7 +1006,7 @@ uint_xlen_t bdep(uint_xlen_t RA, uint_xlen_t RB)
 
 ```
 
-# bit extract
+## bit extract
 
 other way round: identical to RV bext, found in v3.1 p196
 
@@ -1024,7 +1024,7 @@ uint_xlen_t bext(uint_xlen_t RA, uint_xlen_t RB)
 }
 ```
 
-# centrifuge
+## centrifuge
 
 found in v3.1 p106 so not to be added here
 
@@ -1043,10 +1043,11 @@ do i = 0 to 63
 RA = result
 ```
 
-# bit to byte permute
+## bit to byte permute
 
 similar to matrix permute in RV bitmanip, which has XOR and OR variants,
-these perform a transpose.
+these perform a transpose. TODO this looks VSX is there a scalar variant
+in v3.0/1 already
 
     do j = 0 to 7
       do k = 0 to 7
