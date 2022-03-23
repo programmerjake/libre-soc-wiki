@@ -37,7 +37,8 @@ Purpose:
 
 Side-effects:
 
-* mtcrweird when RA=0 is a means to set or clear arbitrary CR bits from immediates
+* mtcrweird when RA=0 is a means to set or clear arbitrary CR bits
+  using immediates embedded within the instruction.
 
 (Twin) Predication interactions:
 
@@ -94,7 +95,8 @@ Assuming that `offs` is set to `CR.eq` this results in:
 * ...
 * Arithmetic bit 7 of RS being inserted into CR7.eq
 
-To clarify, then: all instructions below do **NOT** follow the IBM convention, they follow the natural sequence CR0 CR1 instead, using `CR{fieldnum}` to refer to the individual CR Firlds.  However it is critically important to note that the offsets **in** a CR field (`CR.eq` for example) continue to follow the v3.0B definition and convention.
+To clarify, then: all instructions below do **NOT** follow the IBM convention, they follow the natural sequence CR0 CR1 instead, using `CR{fieldnum}` to refer to the individual CR Fields.  However it is critically important to note that the offsets **in** a CR field
+(`CR.eq` for example) continue to follow the v3.0B definition and convention.
 
 
 # Instruction form and pseudocode
@@ -172,7 +174,6 @@ Pseudo-op:
     mtcrset BB, mask  mtcrweird r0, BB, mask.0b0000
     mtcrclr BB, mask  mtcrweird r0, BB, mask.0b1111
 
-
 # Vectorised versions
 
 The name "weird" refers to a minor violation of SV rules when it comes to deriving the Vectorised versions of these instructions.
@@ -191,11 +192,27 @@ Instead however in the scalar case these instructions **remain in the same regis
         n1 = mask[1] & (mode[1] == creg[1])
         n2 = mask[2] & (mode[2] == creg[2])
         n3 = mask[3] & (mode[3] == creg[3])
+        # OR or AND to a single bit
         result = n0|n1|n2|n3 if M else n0&n1&n2&n3
         if RT.isvec:
-            iregs[RT+i][63] = result
+            if RT.elwidth == 0b00:
+                # pack 1 result into 64-bit registers
+                iregs[RT+i][0..62] = 0
+                iregs[RT+i][63] = result # sets LSB to result
+            if RT.elwidth == 0b01:
+                # pack 2 results sequentially into INT registers
+                iregs[RT+i//2][0..61] = 0
+                iregs[RT+i//2][63-(i%2)] = result
+            if RT.elwidth == 0b10:
+                # pack 4 results sequentially into INT registers
+                iregs[RT+i//4][0..59] = 0
+                iregs[RT+i//4][63-(i%4)] = result
+            if RT.elwidth == 0b11:
+                # pack 8 results sequentially into INT registers
+                iregs[RT+i//8][0..55] = 0
+                iregs[RT+i//8][63-(i%8)] = result
         else:
-            iregs[RT][63-i] = result
+            iregs[RT][63-i] = result # results also in scalar INT
 
 Note that:
 
