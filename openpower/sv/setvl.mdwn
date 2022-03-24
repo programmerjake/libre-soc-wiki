@@ -81,6 +81,11 @@ Form: SVL-Form (see [[isatables/fields.text]])
 | -- | -- | --- | ---- |----------- | ----- |--| ------- |
 |OPCD| RT | RA  | SVi  |cv ms vs vf | 11110 |Rc| setvl   |
 
+Instruction format:
+
+    setvl RT,RA,SVi,vf,vs,ms
+    setvl. RT,RA,SVi,vf,vs,ms
+
 Note that the immediate (`SVi`) spans 7 bits (16 to 22)
 
 * `cv` - bit 22 - reads CTR instead of RA 
