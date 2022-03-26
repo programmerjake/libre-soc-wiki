@@ -238,11 +238,21 @@ there are additional setb conditional instructions in v3.1 (p129)
 
 which also negate that, and also return -1 / 0.  these are similar yo crweird but not the same purpose.  most notable is that crweird acts on CR fields rather than the entire 32 bit CR.
 
-# Twin Predication Examples
+# Predication Examples
 
 let us take the following example:
 
-    r3 = 0b00011
-    r10 = 0b11000
-    sv.mtcrweird/sm=r3/dm=r10 0, 5, 0b1111.1111
+    r10 = 0b00010
+    sv.mtcrweird/dm=r10/dz cr8.v, 0, 0b0011.1111
 
+Here, RA is zero, so the source input is zero. The destination
+is CR Field 8, and the destination predicate mask indicates
+to target the first two elements.  Destination predicate zeroing is
+enabled, and the destination predicate is only set in the 2nd bit.
+mask is 0b0011, mode is all ones.
+
+Let us first consider what should go into element 0 (CR Field 8):
+
+* The destination predicate bit is zero, and zeroing is enabled.
+  Therefore, what is in the source is irrelevant: the result must
+  be zero.  All four bits of CR Field 8 are therefore set to zero.
