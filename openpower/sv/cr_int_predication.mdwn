@@ -243,16 +243,30 @@ which also negate that, and also return -1 / 0.  these are similar yo crweird bu
 let us take the following example:
 
     r10 = 0b00010
-    sv.mtcrweird/dm=r10/dz cr8.v, 0, 0b0011.1111
+    sv.mtcrweird/dm=r10/dz cr8.v, 0, 0b0011.0000
 
 Here, RA is zero, so the source input is zero. The destination
 is CR Field 8, and the destination predicate mask indicates
 to target the first two elements.  Destination predicate zeroing is
 enabled, and the destination predicate is only set in the 2nd bit.
-mask is 0b0011, mode is all ones.
+mask is 0b0011, mode is all zeros.
 
 Let us first consider what should go into element 0 (CR Field 8):
 
 * The destination predicate bit is zero, and zeroing is enabled.
-  Therefore, what is in the source is irrelevant: the result must
-  be zero.  All four bits of CR Field 8 are therefore set to zero.
+* Therefore, what is in the source is irrelevant: the result must
+  be zero.
+* Therefore all four bits of CR Field 8 are therefore set to zero.
+
+Now the second element, CR Field 9 (CR9):
+
+* Bit 2 of the destination predicate, r10, is 1. Therefore the computation
+  of the result is relevant.
+* RA is zero therefore bit 2 is zero.  mask is 0b0011 and mode is 0b0000
+* When calculating n0 thru n3 we get n0=1, n1=2, n2=0, n3=0
+* Therefore, CR9 is set (using LSB0 ordering) to 0b0011, i.e. to mask.
+
+It should be clear that this instruction uses bits of the integer
+predicate to decide whether to set CR Fields to `(mask & ~mode)`
+or to zero.  Thus, in effect, it is the integer predicate that has
+been copied into the CR Fields.
