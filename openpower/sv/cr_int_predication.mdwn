@@ -236,11 +236,11 @@ there are additional setb conditional instructions in v3.1 (p129)
 
     RT = (CR[BI] == 1) ? 1 : 0
 
-which also negate that, and also return -1 / 0.  these are similar yo crweird but not the same purpose.  most notable is that crweird acts on CR fields rather than the entire 32 bit CR.
+which also negate that, and also return -1 / 0.  these are similar to crweird but not the same purpose.  most notable is that crweird acts on CR fields rather than the entire 32 bit CR.
 
 # Predication Examples
 
-let us take the following example:
+Take the following example:
 
     r10 = 0b00010
     sv.mtcrweird/dm=r10/dz cr8.v, 0, 0b0011.0000
