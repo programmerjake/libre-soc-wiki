@@ -46,7 +46,7 @@ Side-effects:
 * INT twin predication with zeroing is a way to copy an integer into CRs without necessarily needing the INT register (RA).  if it is, it is effectively ANDed (or negate-and-ANDed) with the INT Predicate
 * CR twin predication with zeroing is likewise a way to interact with the incoming integer
 
-this gets particularly powerful if data-dependent predication is also enabled.
+this gets particularly powerful if data-dependent predication is also enabled.  further explanation is below.
 
 # Bit ordering.
 
@@ -112,7 +112,7 @@ Instruction format:
     | --- | ----  | -- | ----- | ----- | ----- | -----   | -----   | -- |
     | 19  | RT    |    | mask  | BB    |       | XO[0:4] | XO[5:9] | /  |
     | 19  | RT    | 0  | mask  | BB    |  0 M  | XO[0:4] | 0 mode  | Rc |
-    | 19  | RA    | 1  | mask  | BB    |  0 /  | XO[0:4] | 0 mode  | /  |
+    | 19  | RA    | 1  | mask  | BT    |  0 /  | XO[0:4] | 0 mode  | /  |
     | 19  | BT // | 0  | mask  | BB    |  1 /  | XO[0:4] | 0 mode  | /  |
     | 19  | BFT   | 1  | mask  | BB    |  1 M  | XO[0:4] | 0 mode  | /  |
 
@@ -134,7 +134,7 @@ bit 11=0, bit 19=0
 
 bit 11=1, bit 19=0
 
-    mtcrweird: RA, BB, mask.mode
+    mtcrweird: BT, RA, mask.mode
 
     reg = (RA|0)
     lsb = reg[63] # MSB0 numbering
@@ -142,7 +142,7 @@ bit 11=1, bit 19=0
     n1 = mask[1] & (mode[1] == lsb)
     n2 = mask[2] & (mode[2] == lsb)
     n3 = mask[3] & (mode[3] == lsb)
-    CR{BB} = n0 || n1 || n2 || n3
+    CR{BT} = n0 || n1 || n2 || n3
 
 bit 11=0, bit 19=1
 
@@ -238,4 +238,11 @@ there are additional setb conditional instructions in v3.1 (p129)
 
 which also negate that, and also return -1 / 0.  these are similar yo crweird but not the same purpose.  most notable is that crweird acts on CR fields rather than the entire 32 bit CR.
 
+# Twin Predication Examples
+
+let us take the following example:
+
+    r3 = 0b00011
+    r10 = 0b11000
+    sv.mtcrweird/sm=r3/dm=r10 0, 5, 0b1111.1111
 
