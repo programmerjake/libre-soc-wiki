@@ -19,6 +19,9 @@ hyperram_ios = HyperRAMResources(cs_n="B13 C13 A12 A13",
 								 attrs=IOStandard("LVCMOS33"))
 self.platform.add_extension(hyperram_ios)
 io = self.platform.request("hyperram")
+hyperram = HyperRAM(io=io, phy_kls=HyperRAMPHY,
+                    latency=7) # Winbond W956D8MBYA
+                               # latency=6 for Cypress S27KL0641DABHI020
 ```
 
 ## 1bitsquared HyperRAM PMOD
